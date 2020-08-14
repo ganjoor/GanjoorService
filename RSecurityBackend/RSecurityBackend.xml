@@ -1,0 +1,2957 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RSecurityBackend</name>
+    </assembly>
+    <members>
+        <member name="T:RSecurityBackend.Authorization.UserGroupPermissionHandler">
+            <summary>
+            UserGroupPermissionHandler
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Authorization.UserGroupPermissionHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext,RSecurityBackend.Authorization.UserGroupPermissionRequirement)">
+            <summary>
+            HandleRequirementAsync
+            </summary>
+            <param name="context"></param>
+            <param name="requirement"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Authorization.UserGroupPermissionHandler._userPermissionChecker">
+            <summary>
+            IUserPermissionChecker instance
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Authorization.UserGroupPermissionHandler.#ctor(RSecurityBackend.Services.IUserPermissionChecker)">
+            <summary>
+            constructor
+            </summary>
+            <param name="userPermissionChecker"></param>
+        </member>
+        <member name="T:RSecurityBackend.Authorization.UserGroupPermissionRequirement">
+            <summary>
+            UserGroupPermissionRequirement
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Authorization.UserGroupPermissionRequirement.SecurableItemShortName">
+             <summary>
+            
+             </summary>
+             <see cref="P:RSecurityBackend.Models.Auth.Memory.SecurableItem.ShortName"/>
+             <example>
+             job
+             </example>
+        </member>
+        <member name="P:RSecurityBackend.Authorization.UserGroupPermissionRequirement.OperationShortName">
+            <summary>
+            
+            </summary>
+            <see cref="P:RSecurityBackend.Models.Auth.Memory.SecurableItemOperation.ShortName"/>
+            <example>
+            view
+            </example>
+        </member>
+        <member name="M:RSecurityBackend.Authorization.UserGroupPermissionRequirement.#ctor(System.String,System.String)">
+            <summary>
+            constructor
+            </summary>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+        </member>
+        <member name="T:RSecurityBackend.Controllers.AppUserControllerBase">
+            <summary>
+            User login/logout/register/...
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Login(RSecurityBackend.Models.Auth.ViewModels.LoginViewModel)">
+            <summary>
+            login
+            </summary>
+            <param name="loginViewModel">loginViewModel</param>
+            <returns>LoggedOnUserModel</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Logout(System.Guid,System.Guid)">
+            <summary>
+            Logout user (users need user:delothersession to logout other users)
+            </summary>
+            <param name="userId"></param>
+            <param name="sessionId">User Session Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.IsSessionValid(System.Guid)">
+            <summary>
+            Check if my session is valid
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get">
+            <summary>
+            All Users Information (if user does not have user:view permission list only contains him/her information)
+            </summary>
+            <returns>All Users Information</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get(System.Guid)">
+            <summary>
+            returns user information (if user does not have user:view permission trying to view other users' information fails with a forbidden error)
+            </summary>
+            <param name="id">user id</param>
+            <returns>user information</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Post(RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser)">
+            <summary>
+            add a new user (if you are trying to add an admin user you yourself should be admin)
+            </summary>
+            <param name="newUserInfo">if passsword is sent empty system genrates one for it which could be retrieved from returned record</param>
+            <returns>id/generated password if required could be retrieved from return value</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Put(System.Guid,RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser)">
+            <summary>
+            update existing user (if you are trying to update an admin user you yourself should be admin) (if user does not have user:modify permission trying to modify other users' information fails with a forbidden error)
+            </summary>
+            <param name="id">user id</param>
+            <param name="existingUserInfo">existingUserInfo.id could be passed empty and it is ignored completely, if password is sent empty it does not has effect</param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.SetMyPassword(RSecurityBackend.Models.Auth.ViewModels.SetPasswordModel)">
+            <summary>
+            set my password
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Delete(System.Guid)">
+            <summary>
+            delete user (only admin users can delete other admin users, a user cannot delete himself/herself)
+            </summary>
+            <param name="id">user id</param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.IsAdmin(System.Guid)">
+            <summary>
+            Checks if user is admin (if user does not have user:viewall permission list it will be failed for any user id other than himself/herself)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetUserSessions(System.Nullable{System.Guid})">
+            <summary>
+            View User Sessions (user needs user:sessions permission to view other users sessions)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.SetUserImage">
+            <summary>
+            Set User Image (via FormData, specifying userId as 'id' in formData ) - if Files.count is 0 image would be removed - (users need user:modify to change other users image)
+            </summary>
+            <returns>new image id</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetUserImageBase64(System.Guid)">
+            <summary>
+            Get User Image in base 64
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetUserImage(System.Guid)">
+            <summary>
+            Get User Image in base 64
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetUserRoles(System.Guid)">
+            <summary>
+            returns user roles (if user does not have user:view permission trying to view other users' information fails with a forbidden error)
+            </summary>
+            <param name="id">user id</param>
+            <returns>user roles</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.RemoveFromRole(System.Guid,System.String)">
+            <summary>
+            remove user from role
+            </summary>
+            <param name="id">user id</param>
+            <param name="role"></param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.AddToRole(System.Guid,System.String)">
+            <summary>
+            add user to role
+            </summary>
+            <param name="id">user id</param>
+            <param name="role"></param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GenerateCaptchImage">
+            <summary>
+            get a captcha image for signup or forgot password
+            </summary>        
+            <returns>captchaimageid - display it using api/rimages/captchaimageid.jpg</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.SignUp(RSecurityBackend.Models.Auth.ViewModels.UnverifiedSignUpViewModel)">
+            <summary>
+            signup
+            </summary>
+            <param name="signUpViewModel">signUpViewModel</param>
+            <returns>result</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetSignUpEmailSubject(System.String)">
+            <summary>
+            Sign Up Email Subject
+            </summary>
+            <returns>
+            subject
+            </returns>
+            <param name="secretCode"></param>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetSignUpEmailHtmlContent(System.String)">
+            <summary>
+            Sign Up Email Html Content
+            </summary>
+            <param name="secretCode"></param>
+            <returns>html content</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.VerifySignUp(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String)">
+            <summary>
+            verify signup / forgot password
+            </summary>
+            <param name="type"></param>
+            <param name="secret"></param>
+            <returns>associated secret email</returns> 
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.FinalizeSignUp(RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel)">
+            <summary>
+            finalize signup process
+            </summary>
+            <param name="newUserInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.ForgotPassword(RSecurityBackend.Models.Auth.ViewModels.UnverifiedSignUpViewModel)">
+            <summary>
+            start forgot password process by email
+            </summary>
+            <param name="fpwdViewModel">signUpViewModel</param>
+            <returns>result</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetForgotPasswordEmailSubject(System.String)">
+            <summary>
+            Forgot Password Email Subject
+            </summary>
+            <returns>
+            subject
+            </returns>
+            <param name="secretCode"></param>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetForgotPasswordEmailHtmlContent(System.String)">
+            <summary>
+            Forgot Password Email Html Content
+            </summary>
+            <param name="secretCode"></param>
+            <returns>html content</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.IsSignupEnabled">
+            <summary>
+            Is Sign-up enabled?
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.ResetPassword(RSecurityBackend.Models.Auth.ViewModels.ResetPasswordViewModel)">
+            <summary>
+            reset password
+            </summary>
+            <param name="pwd"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RSecurityBackend.Controllers.AppUserControllerBase.SignupCallbackUrl">
+            <summary>
+            signup callback url
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Controllers.AppUserControllerBase.ForgotPasswordCallbackUrl">
+            <summary>
+            forgot password call back url
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.AppUserControllerBase._appUserService">
+            <summary>
+            IAppUserService instance
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.AppUserControllerBase._httpContextAccessor">
+            <summary>
+            for client IP resolution
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.AppUserControllerBase._userPermissionChecker">
+            <summary>
+            IUserPermissionChecker instance
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.AppUserControllerBase._emailSender">
+            <summary>
+            IEmailSender instance
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.AppUserControllerBase._imageFileService">
+            <summary>
+            Image File Service
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.AppUserControllerBase._captchaService">
+            <summary>
+            Captcha service
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Controllers.AppUserControllerBase.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.#ctor(Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor,RSecurityBackend.Services.IUserPermissionChecker,Microsoft.AspNetCore.Identity.UI.Services.IEmailSender,RSecurityBackend.Services.IImageFileService,RSecurityBackend.Services.ICaptchaService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="configuration"></param>
+            <param name="appUserService"></param>
+            <param name="httpContextAccessor"></param>
+            <param name="userPermissionChecker"></param>
+            <param name="emailSender"></param>
+            <param name="imageFileService"></param>
+            <param name="captchaService"></param>
+        </member>
+        <member name="T:RSecurityBackend.Controllers.AuditLogControllerBase">
+            <summary>
+            Audit Log Controller Base
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AuditLogControllerBase.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Boolean)">
+            <summary>
+            get all  audit logs ordered by time
+            </summary>
+            <param name="paging"></param>
+            <param name="userName"></param>
+            <param name="orderByTimeDescending"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AuditLogControllerBase.#ctor(RSecurityBackend.Services.IAuditLogService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="auditLogService">
+            </param>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.AuditLogControllerBase._auditLogService">
+            <summary>
+            Artifact Service
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Controllers.RImageControllerBase">
+            <summary>
+            Generic Image Provider
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RImageControllerBase.Get(System.Guid)">
+            <summary>
+            returns image stream
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RImageControllerBase.UploadImage">
+            <summary>
+            temporary api for uploading temporary images
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RImageControllerBase.#ctor(RSecurityBackend.Services.IImageFileService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="pictureFileService">
+            </param>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.RImageControllerBase._pictureFileService">
+            <summary>
+            Artifact Service
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Controllers.RoleControllerBase">
+            <summary>
+            User roles
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RoleControllerBase.Get">
+            <summary>
+            All Roles Information
+            </summary>
+            <returns>All Roles Information</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RoleControllerBase.Get(System.String)">
+            <summary>
+            returns role information
+            </summary>
+            <param name="roleName">role name</param>
+            <returns>role information</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RoleControllerBase.Post(RSecurityBackend.Models.Auth.Db.RAppRole)">
+            <summary>
+            add a new role
+            </summary>
+            <param name="newGroupInfo"></param>
+            <returns>id if required could be retrieved from return value</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RoleControllerBase.Put(System.String,RSecurityBackend.Models.Auth.Db.RAppRole)">
+            <summary>
+            update existing role
+            </summary>
+            <param name="roleName">role name</param>
+            <param name="existingGroupInfo">existingGroupInfo.id could be passed empty and it is ignored completely</param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RoleControllerBase.Delete(System.String)">
+            <summary>
+            delete role
+            </summary>
+            <param name="roleName">role name</param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RoleControllerBase.GetRoleSecurableItemsStatus(System.String)">
+            <summary>
+            lists role permissions
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RoleControllerBase.SetRoleSecurableItemsStatus(System.String,RSecurityBackend.Models.Auth.Memory.SecurableItem[])">
+            <summary>
+            Saves role permissions
+            </summary>
+            <param name="roleName">role name</param>
+            <param name="securableItems"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RoleControllerBase.GetSecurableItems">
+            <summary>
+            Get All SecurableItems
+            </summary>
+            <returns>All All SecurableItems</returns>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.RoleControllerBase._roleService">
+            <summary>
+            IUserRoleService instance
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RoleControllerBase.#ctor(RSecurityBackend.Services.IUserRoleService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="roleService"></param>
+        </member>
+        <member name="T:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase">
+            <summary>
+            base class for controllers needing UserScopeCheck
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase.UserScopeCheckEntityShortName">
+            <summary>
+            UserScopeCheck method EntityShortName;
+            </summary>
+            <example>
+            RBillingSecurableItem.TenantEntityShortName
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase.UserScopeCheckOperationShortName">
+            <summary>
+            UserScopeCheck method OperationShortName
+            </summary>
+            <example>
+            SecurableItem.ViewOperationShortName
+            </example>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase.GetUserIdUnlessUserHavePermissionToReadAllUsersDataWhichReturnEmptyUserId">
+            <summary>
+            returns user id if user is a guest, and empty if he/she has access to view all users information
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase.CanReadUserData(System.Guid)">
+            <summary>
+            can current user read this userId daya
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase._userPermissionChecker">
+            <summary>
+            Permission Checker Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase.#ctor(RSecurityBackend.Services.IUserPermissionChecker)">
+            <summary>
+            constructor
+            </summary>
+            <param name="userPermissionChecker"></param>
+        </member>
+        <member name="T:RSecurityBackend.DbContext.RSecurityDbContext`3">
+            <summary>
+            Security EF DbContext
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.DbContext.RSecurityDbContext`3.#ctor">
+            <summary>
+            parameterless constructor
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.DbContext.RSecurityDbContext`3.DeleteDb">
+            <summary>
+            delete db
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.DbContext.RSecurityDbContext`3.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            
+            </summary>
+            <param name="builder"></param>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.Permissions">
+            <summary>
+            Permissions
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.Sessions">
+            <summary>
+            User Sessions
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.VerifyQueueItems">
+            <summary>
+            Signup Queue Items
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.GeneralImages">
+            <summary>
+            General Images
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.CaptchaImages">
+            <summary>
+            Captcha Images
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.AuditLogs">
+            <summary>
+            Audit Logs Events
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Audit.Db.REvent">
+            <summary>
+            Audit Event
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Audit.Db.REvent.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Audit.Db.REvent.EventType">
+            <summary>
+            Event Type
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Audit.Db.REvent.StartDate">
+            <summary>
+            Start Date
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Audit.Db.REvent.EndDate">
+            <summary>
+            Last Updated Date
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Audit.Db.REvent.Duration">
+            <summary>
+            Duration
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Audit.Db.REvent.UserName">
+            <summary>
+            User Name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Audit.Db.REvent.IpAddress">
+            <summary>
+            IP Address
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Audit.Db.REvent.ResponseStatusCode">
+            <summary>
+            Response Code
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Audit.Db.REvent.RequestUrl">
+            <summary>
+            Requset Url
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Audit.Db.REvent.JsonData">
+            <summary>
+            Jason Data
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Db.RAppRole">
+            <summary>
+            Role Permissions (a set of defined permision policies which could be assigned to users)
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Models.Auth.Db.RAppRole.#ctor">
+            <summary>
+            default constructor
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Models.Auth.Db.RAppRole.#ctor(System.String)">
+            <summary>
+            constructor
+            </summary>
+            <param name="roleName"></param>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppRole.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppRole.Permissions">
+            <summary>
+            Permissions
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Db.RAppUser">
+            <summary>
+            Ganjoor Application User
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.FirstName">
+            <summary>
+            First Name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.SureName">
+            <summary>
+            Sure Name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.CreateDate">
+            <summary>
+            User Creation Date
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.Status">
+            <summary>
+            user status
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.RImage">
+            <summary>
+            user image
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.RImageId">
+            <summary>
+            user image id
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Db.RAppUserStatus">
+            <summary>
+            User Status
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Db.RAppUserStatus.Inactive">
+            <summary>
+            Inactive
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Db.RAppUserStatus.Active">
+            <summary>
+            Active
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Db.RCaptchaImage">
+            <summary>
+            Captcha Image
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RCaptchaImage.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RCaptchaImage.RImage">
+            <summary>
+            Captcha Image
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RCaptchaImage.RImageId">
+            <summary>
+            Captcha Image Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RCaptchaImage.Value">
+            <summary>
+            Captcha Text
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RCaptchaImage.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Db.RPermission">
+            <summary>
+            Permission line
+            </summary>
+            <see cref="T:RSecurityBackend.Models.Auth.Memory.SecurableItem"/>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RPermission.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RPermission.SecurableItemShortName">
+            <summary>
+            SecurableItem short name
+            </summary>
+            <example>
+            job
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RPermission.OperationShortName">
+            <summary>
+            Operation short name
+            </summary>
+            <example>
+            view
+            </example>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession">
+            <summary>
+            Ganjoor User Session (Temporary)
+            </summary>
+            <remarks>
+            Warning: Instances are supposed to delete when user logs out, so do not link anything serious to it
+            </remarks>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession.Id">
+            <summary>
+            Session Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession.RAppUserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession.RAppUser">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession.ClientIPAddress">
+            <summary>
+            Client IP Address
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession.ClientAppName">
+            <summary>
+            Client Application Name
+            </summary>
+            <example>
+            Ganjoor Angular Client
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession.Language">
+            <summary>
+            Client Language
+            </summary>
+            <example>
+            fa-IR
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession.LoginTime">
+            <summary>
+            Login Date
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession.LastRenewal">
+            <summary>
+            Last Renewal
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession.ValidUntil">
+            <summary>
+            Expiraton Time
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession.Token">
+            <summary>
+            User Token
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Db.RVerifyQueueItem">
+            <summary>
+            User SignUp Queue
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RVerifyQueueItem.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RVerifyQueueItem.QueueType">
+            <summary>
+            queue type
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RVerifyQueueItem.Email">
+            <summary>
+            Email
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RVerifyQueueItem.PhoneNumber">
+            <summary>
+            PhoneNumber
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RVerifyQueueItem.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RVerifyQueueItem.Secret">
+            <summary>
+            Secret
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RVerifyQueueItem.ClientIPAddress">
+            <summary>
+            client IP address
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RVerifyQueueItem.ClientAppName">
+            <summary>
+            client app name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RVerifyQueueItem.Language">
+            <summary>
+            Client Language
+            </summary>
+            <example>
+            fa-IR
+            </example>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Db.RVerifyQueueType">
+            <summary>
+            Verify Queue Type
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Db.RVerifyQueueType.SignUp">
+            <summary>
+            Sign up by email
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Db.RVerifyQueueType.ForgotPassword">
+            <summary>
+            Forgot Password by email
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Memory.SecurableItem">
+            <summary>
+            securable itmes: forms and ...
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.UserEntityShortName">
+            <summary>
+            user
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.RoleEntityShortName">
+            <summary>
+            role
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.AuditLogEntityShortName">
+            <summary>
+            audit
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.ViewOperationShortName">
+            <summary>
+            view
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.AddOperationShortName">
+            <summary>
+            add
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.ModifyOperationShortName">
+            <summary>
+            modify
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.DeleteOperationShortName">
+            <summary>
+            delete
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.SessionsOperationShortName">
+            <summary>
+            sessions
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.DelOtherUserSessionOperationShortName">
+            <summary>
+            delothersession
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.ViewAllOperationShortName">
+            <summary>
+            view all
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItem.Items">
+            <summary>
+            list of forms and their permissions
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItem.ShortName">
+            <summary>
+            Short Name
+            </summary>
+            <example>
+            user
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItem.Description">
+            <summary>
+            Descripttion
+            </summary>
+            <example>
+            کاربران
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItem.Operations">
+            <summary>
+            Operations (short name + description + has permission)
+            </summary>
+            <example>
+            [
+                [view, مشاهده, true],
+                [add, ایجاد, false]
+            ]
+            </example>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Memory.SecurableItemOperation">
+            <summary>
+            operations (rights/permissions) for SecurableItem s
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Models.Auth.Memory.SecurableItemOperation.#ctor">
+            <summary>
+            default constructor
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Models.Auth.Memory.SecurableItemOperation.#ctor(System.String,System.String,System.Boolean,RSecurityBackend.Models.Auth.Memory.SecurableItemOperationPrerequisite[])">
+            <summary>
+            one line constructor
+            </summary>
+            <param name="shortName"></param>
+            <param name="description"></param>
+            <param name="status"></param>
+            <param name="prerequisites"></param>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItemOperation.ShortName">
+            <summary>
+            Short Name
+            </summary>
+            <example>
+            view
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItemOperation.Description">
+            <summary>
+            Descripttion
+            </summary>
+            <example>
+            مشاهده
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItemOperation.Prerequisites">
+            <summary>
+            Prerequisites
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItemOperation.Status">
+            <summary>
+            Status (has permission)
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Memory.SecurableItemOperationPrerequisite">
+            <summary>
+            SecurableItemOperation Prerequisite
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Models.Auth.Memory.SecurableItemOperationPrerequisite.#ctor(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="secureItemShortName"></param>
+            <param name="operationShortName"></param>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItemOperationPrerequisite.SecureItemShortName">
+            <summary>
+            Prerequisite SecureItem ShortName
+            </summary>
+            <example>
+            job
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItemOperationPrerequisite.OperationShortName">
+            <summary>
+            Prerequisite Operation ShortName
+            </summary>
+            <example>
+            view
+            </example>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.BillingUserSignup">
+            <summary>
+            a model suitable for anonymous user sign up by billing users
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.BillingUserSignup.TenantSecret">
+            <summary>
+            secret for securing signup process
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.LoggedOnUserModel">
+            <summary>
+            Logged On User Model
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.LoggedOnUserModel.SessionId">
+            <summary>
+            Session Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.LoggedOnUserModel.Token">
+            <summary>
+            Security Token
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.LoggedOnUserModel.User">
+            <summary>
+            User Information
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.LoggedOnUserModel.SecurableItem">
+            <summary>
+            Permissions
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.LoginViewModel">
+            <summary>
+            AppUserController.Login parameter
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.LoginViewModel.Username">
+            <summary>
+            username
+            </summary>
+            <example>
+            admin
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.LoginViewModel.Password">
+            <summary>
+            password
+            </summary>
+            <example>
+            Test!123
+            </example>     
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.LoginViewModel.ClientAppName">
+            <summary>
+            Client App Name
+            </summary>
+            <example>
+            Swashbuckle UI Client
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.LoginViewModel.Language">
+            <summary>
+            Client Language
+            </summary>
+            <example>
+            fa-IR
+            </example>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser">
+            <summary>
+            user informtaion
+            </summary>
+            <remarks>
+            a safe subset of RAppUser
+            </remarks>
+        </member>
+        <member name="M:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.#ctor(RSecurityBackend.Models.Auth.Db.RAppUser)">
+            <summary>
+            constructor
+            </summary>
+            <param name="dbUserInfo"></param>
+        </member>
+        <member name="M:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.#ctor">
+            <summary>
+            default constructor
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.Id">
+            <summary>
+            Id
+            </summary>
+            
+            <example>
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.Username">
+            <summary>
+            User Name
+            </summary>
+            <example>
+            test
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.Email">
+            <summary>
+            User Email
+            </summary>
+            <example>
+            test@ganjoor.net
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.PhoneNumber">
+            <summary>
+            User Mobile Phone Number
+            </summary>
+            <example>
+            +989121234567
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.FirstName">
+            <summary>
+            First Name
+            </summary>
+            <example>
+            Hamid Reza
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.SureName">
+            <summary>
+            Sure Name
+            </summary>
+            <example>
+            Mohammadi
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.Status">
+            <summary>
+            user status
+            </summary>
+            <example>
+            1
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.RImageId">
+            <summary>
+            user image
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.PublicRUserSession">
+            <summary>
+            a safe subset of RUserSession
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Models.Auth.ViewModels.PublicRUserSession.#ctor(RSecurityBackend.Models.Auth.Db.RTemporaryUserSession)">
+            <summary>
+            constructor
+            </summary>
+            <param name="src"></param>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRUserSession.Id">
+            <summary>
+            Session Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRUserSession.RAppUser">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRUserSession.ClientIPAddress">
+            <summary>
+            Client IP Address
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRUserSession.ClientAppName">
+            <summary>
+            Client Application Name
+            </summary>
+            <example>
+            Ganjoor Angular Client
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRUserSession.Language">
+            <summary>
+            Client Language
+            </summary>
+            <example>
+            fa-IR
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRUserSession.LoginTime">
+            <summary>
+            Login Date
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRUserSession.LastRenewal">
+            <summary>
+            Last Renewal
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser">
+            <summary>
+            user infor used for registeration
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser.Password">
+            <summary>
+            desired password, if sent empty system generates one
+            </summary>
+            <example>
+            Test!123
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser.IsAdmin">
+            <summary>
+            is admin
+            </summary>
+            <example>
+            false
+            </example>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.ResetPasswordViewModel">
+            <summary>
+            reset password view model
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.ResetPasswordViewModel.Email">
+            <summary>
+            Email
+            </summary>
+            <example>
+            mohammadi.hr@gmail.com
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.ResetPasswordViewModel.Secret">
+            <summary>
+            Secret
+            </summary>
+            <example>
+            4ozHJQN0X6CebX0He0/xaznhIjvubfySFnwdoCYLLo8=
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.ResetPasswordViewModel.Password">
+            <summary>
+            password
+            </summary>
+            <example>
+            Test!123
+            </example>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.SetPasswordModel">
+            <summary>
+            set password model
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.SetPasswordModel.OldPassword">
+            <summary>
+            old password
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.SetPasswordModel.NewPassword">
+            <summary>
+            new password
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.UnverifiedSignUpViewModel">
+            <summary>
+            SignUp View Model
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.UnverifiedSignUpViewModel.Email">
+            <summary>
+            Email
+            </summary>
+            <example>
+            mohammadi.hr@gmail.com
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.UnverifiedSignUpViewModel.ClientAppName">
+            <summary>
+            Client App Name
+            </summary>
+            <example>
+            Swashbuckle UI Client
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.UnverifiedSignUpViewModel.Language">
+            <summary>
+            Client Language
+            </summary>
+            <example>
+            fa-IR
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.UnverifiedSignUpViewModel.CaptchaImageId">
+            <summary>
+            Captcha Image Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.UnverifiedSignUpViewModel.CaptchaValue">
+            <summary>
+            Captcha Value
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel">
+            <summary>
+            verified sign up view model
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel.Email">
+            <summary>
+            Email
+            </summary>
+            <example>
+            mohammadi.hr@gmail.com
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel.Secret">
+            <summary>
+            Secret
+            </summary>
+            <example>
+            4ozHJQN0X6CebX0He0/xaznhIjvubfySFnwdoCYLLo8=
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel.Password">
+            <summary>
+            password
+            </summary>
+            <example>
+            Test!123
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel.FirstName">
+            <summary>
+            First Name
+            </summary>
+            <example>
+            Hamid Reza
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel.SureName">
+            <summary>
+            Sure Name
+            </summary>
+            <example>
+            Mohammadi
+            </example>        
+        </member>
+        <member name="T:RSecurityBackend.Models.Billing.Ganjoor.ChargableFeatures">
+            <summary>
+            Ganjoor Chargable Features
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Billing.Ganjoor.ChargableFeatures.Setup">
+            <summary>
+            Setup
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Billing.Ganjoor.ChargableFeatures.ActiveUsers">
+            <summary>
+            Active Users
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Billing.Ganjoor.ChargableFeatures.GanjoorDocView">
+            <summary>
+            GanjoorDoc View
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Billing.Ganjoor.ChargableFeatures.GanjoorDocFull">
+            <summary>
+            GanjoorDoc Full
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Billing.Ganjoor.ChargableFeatures.GanjoorRunView">
+            <summary>
+            GanjoorRun View
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Billing.Ganjoor.ChargableFeatures.GanjoorRunFull">
+            <summary>
+            GanjoorRun Full
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.Ganjoor.ChargableFeatures.Features">
+            <summary>
+            Features
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Billing.RChargableFeature">
+            <summary>
+            Chargable Feature For Tenant
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.CodeName">
+            <summary>
+            Code Name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.Name">
+            <summary>
+            Feature Name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.Optional">
+            <summary>
+            if it is not optional it cannot be unselected (boolean) or it might be selected at least at minimum value
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.FeatureType">
+            <summary>
+            Feature Type
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.MinimumAmount">
+            <summary>
+            miniumum amount
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.SuggestedAmount">
+            <summary>
+            suggested amount
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.HasMaximumAmount">
+            <summary>
+            has maximum
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.MaximumnAmount">
+            <summary>
+            maximum value
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.Covering">
+            <summary>
+            if a module contains features for other modules added their codeNames here (comma separated)
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.ConstantOverPeriod">
+            <summary>
+            it must be priced according to period or it is a one time cost
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.Refundable">
+            <summary>
+            is it refundable
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.InitialSetupCost">
+            <summary>
+            is it setup cost
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.Active">
+            <summary>
+            is active
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeature.Prices">
+            <summary>
+            prices
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Billing.RChargableFeaturePrice">
+            <summary>
+            Chargable Feature Price Row
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeaturePrice.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeaturePrice.MinimumAmount">
+            <summary>
+            Minimum Amount For This Price To be applicable
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeaturePrice.BasePrice">
+            <summary>
+            base price: (Minimum Amount whole price)
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeaturePrice.UnitPrice">
+            <summary>
+            unit price for additional items from (Amount-MinimumAmount)
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeaturePrice.Active">
+            <summary>
+            active
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Billing.RChargableFeaturePrice.EffectiveFrom">
+            <summary>
+            is effective from which date/time (useful for maintaining histotical data)
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Billing.RChargableFeatureType">
+            <summary>
+            Chargable Feature For Tenant Type
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Billing.RChargableFeatureType.Boolean">
+            <summary>
+            yes/no
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Billing.RChargableFeatureType.RegularNumber">
+            <summary>
+            0, ...
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.ClientBilling.Db.RBillingData">
+            <summary>
+            cached billing info
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RBillingData.CodeName">
+            <summary>
+            code name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RBillingData.DatabaseName">
+            <summary>
+            db name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RBillingData.Personal">
+            <summary>
+            personal tenants have limitted unmodifyable features and are not listed in tenant management panel
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RBillingData.Active">
+            <summary>
+            active
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RBillingData.LastUpdate">
+            <summary>
+            last update (use for caching purposes)
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RBillingData.ValidUntil">
+            <summary>
+            data is valid until this date and should be refreshed after that because of changes of user billing status
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RBillingData.AutoCharge">
+            <summary>
+            auto charge user for tenant validitiy expiration
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RBillingData.Features">
+            <summary>
+            charged features
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.ClientBilling.Db.RChargedFeature">
+            <summary>
+            charged feature
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RChargedFeature.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RChargedFeature.CodeName">
+            <summary>
+            Code Name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RChargedFeature.Name">
+            <summary>
+            Feature Name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.ClientBilling.Db.RChargedFeature.Amount">
+            <summary>
+            Amount
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Generic.PaginationMetadata">
+            <summary>
+            pagination metadat
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.PaginationMetadata.totalCount">
+            <summary>
+            total count
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.PaginationMetadata.pageSize">
+            <summary>
+            page size
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.PaginationMetadata.currentPage">
+            <summary>
+            current page
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.PaginationMetadata.totalPages">
+            <summary>
+            total pages
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.PaginationMetadata.hasPreviousPage">
+            <summary>
+            has previous page
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.PaginationMetadata.hasNextPage">
+            <summary>
+            has next page
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Generic.PagingParameterModel">
+            <summary>
+            Paging Parameter Model
+            </summary>
+            <remarks>
+            https://www.c-sharpcorner.com/article/how-to-do-paging-with-asp-net-web-api/
+            </remarks>
+        </member>
+        <member name="F:RSecurityBackend.Models.Generic.PagingParameterModel.MaxPageSize">
+            <summary>
+            max page size
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.PagingParameterModel.PageNumber">
+            <summary>
+            page number
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.PagingParameterModel._pageSize">
+            <summary>
+            actual page size
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.PagingParameterModel.PageSize">
+            <summary>
+            settable  page size
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Generic.RServiceResult`1">
+            <summary>
+            a generic class containing service method return values + an exception string as a more readable replacement for Tuple 
+            and also a solution for writing async methods which do not permit using out parameters
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Models.Generic.RServiceResult`1.#ctor(`0,System.String)">
+            <summary>
+            constructor
+            </summary>
+            <param name="result"></param>
+            <param name="exceptionString"></param>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.RServiceResult`1.Result">
+            <summary>
+            Actual result
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.RServiceResult`1.ExceptionString">
+            <summary>
+            Exception String
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Models.Generic.RServiceResult`1.ToString">
+            <summary>
+            ToString
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Models.Image.RImage">
+            <summary>
+            Image Files
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Image.RImage.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Image.RImage.OriginalFileName">
+            <summary>
+            Original File Name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Image.RImage.ContentType">
+            <summary>
+            content type
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Image.RImage.FileSizeInBytes">
+            <summary>
+            Original Image File Size In Byte
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Image.RImage.ImageWidth">
+            <summary>
+            Original Image Width
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Image.RImage.ImageHeight">
+            <summary>
+            Original Image Height
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Image.RImage.FolderName">
+            <summary>
+            پوشه محل ذخیره تصویر
+            </summary>
+            <example>
+            2017-08
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Image.RImage.StoredFileName">
+            <summary>
+            نام فایل ذخیره شده با بالاترین کیفیت
+            </summary>
+            <example>
+            85007253-09f2-4434-8b7e-1a23db2cd9c9.png
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Image.RImage.DataTime">
+            <summary>
+            datetime
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Image.RImage.LastModified">
+            <summary>
+            Last Modified for caching purposes
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Mail.SmptConfig">
+            <summary>
+            smtp config
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Mail.SmptConfig.port">
+            <summary>
+            port
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Mail.SmptConfig.server">
+            <summary>
+            server
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Mail.SmptConfig.smtpUsername">
+            <summary>
+            username
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Mail.SmptConfig.smtpPassword">
+            <summary>
+            password
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Mail.SmptConfig.from">
+            <summary>
+            from
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Mail.SmptConfig.useSsl">
+            <summary>
+            use ssl
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Services.IAppUserService">
+            <summary>
+            Authentication Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.Login(RSecurityBackend.Models.Auth.ViewModels.LoginViewModel,System.String)">
+            <summary>
+            Login user, if failed return LoggedOnUserModel is null
+            </summary>
+            <param name="loginViewModel"></param>
+            <param name="clientIPAddress"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.Logout(System.Guid,System.Guid)">
+            <summary>
+            Logout
+            </summary>
+            <param name="userId"></param>
+            <param name="sessionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.SessionExists(System.Guid,System.Guid)">
+            <summary>
+            Does Session exist?
+            </summary>
+            <param name="userId"></param>
+            <param name="sessionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.IsAdmin(System.Guid)">
+            <summary>
+            is user admin?
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.IsInRoles(System.Guid,System.String[])">
+            <summary>
+            is user in either of passed roles?
+            </summary>
+            <param name="userId"></param>
+            <param name="roleNames"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetUserRoles(System.Guid)">
+            <summary>
+            Get User Roles
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.RemoveFromRole(System.Guid,System.String)">
+            <summary>
+            remove user from role
+            </summary>
+            <param name="id">user id</param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.AddToRole(System.Guid,System.String)">
+            <summary>
+            add user to role
+            </summary>
+            <param name="id">user id</param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetUserSecurableItemsStatus(System.Guid)">
+            <summary>
+            Lists user permissions
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.HasPermission(System.Guid,System.String,System.String)">
+            <summary>
+            Has user specified permission
+            </summary>
+            <param name="userId"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetUserInformation(System.Guid)">
+            <summary>
+            returns user information
+            </summary>
+            <remarks>
+            PasswordHash becomes empty
+            </remarks>
+            <param name="userId"></param>        
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetAllUsersInformation">
+            <summary>
+            all users informations
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.AddUser(RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser)">
+            <summary>
+            add a new user
+            </summary>
+            <param name="newUserInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.AddUserToRole(System.Guid,System.String)">
+            <summary>
+            add user to role
+            </summary>
+            <param name="userId"></param>
+            <param name="roleName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.ModifyUser(System.Guid,RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser)">
+            <summary>
+            modify existing user
+            </summary>
+            <param name="userId"></param>
+            <param name="updateUserInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.ChangePassword(System.Guid,System.String,System.String)">
+            <summary>
+            change user password checking old password
+            </summary>
+            <param name="userId"></param>
+            <param name="oldPassword"></param>
+            <param name="newPassword"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.DeleteUser(System.Guid)">
+            <summary>
+            delete user
+            </summary>
+            <param name="userId"></param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.SetUserImage(System.Guid,Microsoft.AspNetCore.Http.IFormFileCollection)">
+            <summary>
+            Set User Image
+            </summary>
+            <param name="userId"></param>
+            <param name="files"></param>
+            <returns>new user image id</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetUserSessions(System.Nullable{System.Guid})">
+            <summary>
+            Get User Sessions
+            </summary>
+            <param name="userId">if null is passed returns all sessions</param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetUserImage(System.Guid)">
+            <summary>
+            Get User Image
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.SignUp(System.String,System.String,System.String,System.String)">
+            <summary>
+            Start signup process using email
+            </summary>
+            <param name="email"></param>
+            <param name="clientIPAddress"></param>
+            <param name="clientAppName"></param>
+            <param name="langauge"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.RetrieveEmailFromQueueSecret(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String)">
+            <summary>
+            verify signup / forgot password
+            </summary>
+            <param name="verifyQueueType"></param>
+            <param name="secret"></param>
+            <returns>associated email</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.FinalizeSignUp(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            finalize signup process using email
+            </summary>
+            <param name="email"></param>
+            <param name="secret"></param>
+            <param name="password"></param>
+            <param name="firstName"></param>
+            <param name="sureName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.ForgotPassword(System.String,System.String,System.String,System.String)">
+            <summary>
+            Start forgot password process using email
+            </summary>
+            <param name="email"></param>
+            <param name="clientIPAddress"></param>
+            <param name="clientAppName"></param>
+            <param name="langauge"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.ResetPassword(System.String,System.String,System.String,System.String)">
+            <summary>
+            reset password using email
+            </summary>
+            <param name="email"></param>
+            <param name="secret"></param>
+            <param name="password"></param>
+            <param name="clientIPAddress"></param>       
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.DeleteTenant">
+            <summary>
+            delete tenant
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:RSecurityBackend.Services.IAppUserService.AdministratorRoleName">
+            <summary>
+            Administrator role name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.IAppUserService.TokenSecret">
+            <summary>
+            secret used for generating Jwt token
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.IAppUserService.DefaultTokenExpirationInSeconds">
+            <summary>
+            JWT Tokens Expiration Time Out
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Services.IAuditLogService">
+            <summary>
+            Audit Log Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAuditLogService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Boolean)">
+            <summary>
+            get all  audit logs ordered by time
+            </summary>
+            <param name="paging"></param>
+            <param name="userName">empty means unfiltered</param>
+            <param name="orderByTimeDescending"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Services.ICaptchaService">
+            <summary>
+            Captcha Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.ICaptchaService.Generate">
+            <summary>
+            Generate Captcha
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.ICaptchaService.Evaluate(System.Guid,System.String)">
+            <summary>
+            evaluate captcha
+            </summary>
+            <param name="imageId"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Services.IImageFileService">
+            <summary>
+            Image File Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.IImageFileService.Add(Microsoft.AspNetCore.Http.IFormFile,System.IO.Stream,System.String,System.String)">
+            <summary>
+            add new picture
+            </summary>
+            <param name="file"></param>
+            <param name="stream"></param>
+            <param name="originalFileNameForStreams"></param>
+            <param name="imageFolderName">pass empty if you want a generic date based folder</param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IImageFileService.Store(RSecurityBackend.Models.Image.RImage)">
+            <summary>
+            store added image
+            </summary>
+            <param name="image"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IImageFileService.GetImage(System.Guid)">
+            <summary>
+            returns image info
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IImageFileService.GetImagePath(RSecurityBackend.Models.Image.RImage)">
+            <summary>
+            returns image file stream
+            </summary>
+            <param name="image"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:RSecurityBackend.Services.IImageFileService.DeleteImage(System.Guid)">
+            <summary>
+            delete image from database and file system
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RSecurityBackend.Services.IImageFileService.ImageStoragePath">
+            <summary>
+            Image Storage Path
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.AppUserService">
+            <summary>
+            Authentication Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.Login(RSecurityBackend.Models.Auth.ViewModels.LoginViewModel,System.String)">
+            <summary>
+            Login user, if failed return LoggedOnUserModel is null
+            </summary>
+            <param name="loginViewModel"></param>
+            <param name="clientIPAddress"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.AddUserToRole(System.Guid,System.String)">
+            <summary>
+            add user to role
+            </summary>
+            <param name="userId"></param>
+            <param name="roleName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.Logout(System.Guid,System.Guid)">
+            <summary>
+            Logout
+            </summary>
+            <param name="userId"></param>
+            <param name="sessionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.SessionExists(System.Guid,System.Guid)">
+            <summary>
+            Does Session exist?
+            </summary>
+            <param name="userId"></param>
+            <param name="sessionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetUserInformation(System.Guid)">
+            <summary>
+            returns user information
+            </summary>
+            <remarks>
+            PasswordHash becomes empty
+            </remarks>
+            <param name="userId"></param>        
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetAllUsersInformation">
+            <summary>
+            all users informations
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetUserSessions(System.Nullable{System.Guid})">
+            <summary>
+            Get User Sessions
+            </summary>
+            <param name="userId">if null is passed returns all sessions</param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.IsAdmin(System.Guid)">
+            <summary>
+            is user admin?
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.IsInRoles(System.Guid,System.String[])">
+            <summary>
+            is user in either of passed roles?
+            </summary>
+            <param name="userId"></param>
+            <param name="roleNames"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetUserRoles(System.Guid)">
+            <summary>
+            Get User Roles
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.RemoveFromRole(System.Guid,System.String)">
+            <summary>
+            remove user from role
+            </summary>
+            <param name="id">user id</param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.AddToRole(System.Guid,System.String)">
+            <summary>
+            add user to role
+            </summary>
+            <param name="id">user id</param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetUserSecurableItemsStatus(System.Guid)">
+            <summary>
+            Lists user permissions
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.HasPermission(System.Guid,System.String,System.String)">
+            <summary>
+            Has user specified permission
+            </summary>
+            <param name="userId"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.AddUser(RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser)">
+            <summary>
+            add a new user
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.ModifyUser(System.Guid,RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser)">
+            <summary>
+            modify existing user
+            </summary>
+            <param name="userId"></param>
+            <param name="updateUserInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.ChangePassword(System.Guid,System.String,System.String)">
+            <summary>
+            change user password checking old password
+            </summary>
+            <param name="userId"></param>
+            <param name="oldPassword"></param>
+            <param name="newPassword"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.DeleteUser(System.Guid)">
+            <summary>
+            delete user
+            </summary>
+            <param name="userId"></param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.SetUserImage(System.Guid,Microsoft.AspNetCore.Http.IFormFileCollection)">
+            <summary>
+            Set User Image
+            </summary>
+            <param name="userId"></param>
+            <param name="files"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetUserImage(System.Guid)">
+            <summary>
+            Get User Image
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.SignUp(System.String,System.String,System.String,System.String)">
+            <summary>
+            Start signup process using email
+            </summary>
+            <param name="email"></param>
+            <param name="clientIPAddress"></param>
+            <param name="clientAppName"></param>
+            <param name="langauge"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.RetrieveEmailFromQueueSecret(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String)">
+            <summary>
+            verify signup / forgot password
+            </summary>
+            <param name="verifyQueueType"></param>
+            <param name="secret"></param>
+            <returns>associated email</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.FinalizeSignUp(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            finalize signup process using email
+            </summary>
+            <param name="email"></param>
+            <param name="secret"></param>
+            <param name="password"></param>
+            <param name="firstName"></param>
+            <param name="sureName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.ForgotPassword(System.String,System.String,System.String,System.String)">
+            <summary>
+            Start forgot password process using email
+            </summary>
+            <param name="email"></param>
+            <param name="clientIPAddress"></param>
+            <param name="clientAppName"></param>
+            <param name="langauge"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.ResetPassword(System.String,System.String,System.String,System.String)">
+            <summary>
+            reset password using email
+            </summary>
+            <param name="email"></param>
+            <param name="secret"></param>
+            <param name="password"></param>
+            <param name="clientIPAddress"></param>       
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.DeleteTenant">
+            <summary>
+            delete tenant
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.EnsureDefaultUserExists">
+            <summary>
+            EnsureDefaultUserExists
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.AppUserService.AdministratorRoleName">
+            <summary>
+            Administrator role name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.AppUserService.TokenSecret">
+            <summary>
+            secret used for generating Jwt token
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.AppUserService.DefaultTokenExpirationInSeconds">
+            <summary>
+            JWT Tokens Expiration Time Out
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GenerateToken(System.String,System.Guid,System.Guid)">
+            <summary>
+            Token Generation
+            </summary>
+            <param name="username"></param>
+            <param name="userId"></param>
+            <param name="sessionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.RegenerateToken(System.String)">
+            <summary>
+            Renew Expired token
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.ExtractTokenInfo(System.String,System.String@,System.Guid@,System.Guid@)">
+            <summary>
+            Extract Information From Token
+            </summary>
+            <param name="token"></param>
+            <param name="username"></param>
+            <param name="userId"></param>
+            <param name="sessionId"></param>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetPrincipalFromExpiredToken(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.ErrorsToString(System.Collections.Generic.IEnumerable{Microsoft.AspNetCore.Identity.IdentityError})">
+            <summary>
+            convert identity errors to string
+            </summary>
+            <param name="errors"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.AppUserService._context">
+            <summary>
+            Main Database context
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.AppUserService._imageFileService">
+            <summary>
+            Image File Service
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.AppUserService._userRoleService">
+            <summary>
+            User Role Service
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.AppUserService._userManager">
+            <summary>
+            Identity User Manageer
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.AppUserService._signInManager">
+            <summary>
+            Identity SignIn Manager
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.AppUserService._roleManager">
+            <summary>
+            Identity Role Manager
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.AppUserService._secretGenerator">
+            <summary>
+            secret generator
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.AppUserService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.#ctor(RSecurityBackend.DbContext.RSecurityDbContext{RSecurityBackend.Models.Auth.Db.RAppUser,RSecurityBackend.Models.Auth.Db.RAppRole,System.Guid},Microsoft.AspNetCore.Identity.UserManager{RSecurityBackend.Models.Auth.Db.RAppUser},Microsoft.AspNetCore.Identity.SignInManager{RSecurityBackend.Models.Auth.Db.RAppUser},Microsoft.AspNetCore.Identity.RoleManager{RSecurityBackend.Models.Auth.Db.RAppRole},RSecurityBackend.Services.ISecretGenerator,RSecurityBackend.Services.IImageFileService,RSecurityBackend.Services.IUserRoleService,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="userManager"></param>
+            <param name="signInManager"></param>
+            <param name="roleManager"></param>
+            <param name="secretGenerator"></param>
+            <param name="imageFileService"></param>
+            <param name="userRoleService"></param>
+            <param name="configuration"></param>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.AuditLogServiceEF">
+            <summary>
+            Audit Log Service Implementation
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AuditLogServiceEF.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Boolean)">
+            <summary>
+            get all  audit logs ordered by time
+            </summary>
+            <param name="paging"></param>
+            <param name="userName">empty means unfiltered</param>
+            <param name="orderByTimeDescending"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.AuditLogServiceEF._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AuditLogServiceEF.#ctor(RSecurityBackend.DbContext.RSecurityDbContext{RSecurityBackend.Models.Auth.Db.RAppUser,RSecurityBackend.Models.Auth.Db.RAppRole,System.Guid})">
+            <summary>
+            constuctor
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.CaptchaServiceEF">
+            <summary>
+            Captcha Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.CaptchaServiceEF.Generate">
+            <summary>
+            Generate Captcha
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.CaptchaServiceEF.Evaluate(System.Guid,System.String)">
+            <summary>
+            evaluate captcha
+            </summary>
+            <param name="imageId"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.CaptchaServiceEF._imageFileService">
+            <summary>
+            Image File Service
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.CaptchaServiceEF._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.CaptchaServiceEF.#ctor(RSecurityBackend.DbContext.RSecurityDbContext{RSecurityBackend.Models.Auth.Db.RAppUser,RSecurityBackend.Models.Auth.Db.RAppRole,System.Guid},RSecurityBackend.Services.IImageFileService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="imageFileService"></param>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.ImageFileServiceEF">
+            <summary>
+            Image File Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.ImageFileServiceEF.Add(Microsoft.AspNetCore.Http.IFormFile,System.IO.Stream,System.String,System.String)">
+            <summary>
+            Add Image File
+            </summary>
+            <param name="file"></param>
+            <param name="stream"></param>
+            <param name="originalFileNameForStreams"></param>
+            <param name="imageFolderName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.ImageFileServiceEF.Store(RSecurityBackend.Models.Image.RImage)">
+            <summary>
+            store added image
+            </summary>
+            <param name="image"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.ImageFileServiceEF.GetImage(System.Guid)">
+            <summary>
+            returns image info
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.ImageFileServiceEF.DeleteImage(System.Guid)">
+            <summary>
+            delete image (from database and file system)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.ImageFileServiceEF.GetImagePath(RSecurityBackend.Models.Image.RImage)">
+            <summary>
+            Get Image Storage Path
+            </summary>
+            <param name="image"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.ImageFileServiceEF.ImageStoragePath">
+            <summary>
+            Image Storage Path
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.ImageFileServiceEF._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.ImageFileServiceEF.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.ImageFileServiceEF.#ctor(RSecurityBackend.DbContext.RSecurityDbContext{RSecurityBackend.Models.Auth.Db.RAppUser,RSecurityBackend.Models.Auth.Db.RAppRole,System.Guid},Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="configuration"></param>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.MailKitEmailSenderBase">
+            <summary>
+            mail sender using MailKit
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.MailKitEmailSenderBase.#ctor">
+            <summary>
+            constructor
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.MailKitEmailSenderBase.Options">
+            <summary>
+            options
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.MailKitEmailSenderBase.SmptConfig">
+            <summary>
+            SmptConfig
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.MailKitEmailSenderBase.SendEmailAsync(System.String,System.String,System.String)">
+            <summary>
+            send email
+            </summary>
+            <param name="email"></param>
+            <param name="subject"></param>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.MailKitEmailSenderBase.Execute(RSecurityBackend.Models.Mail.SmptConfig,System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="options"></param>
+            <param name="subject"></param>
+            <param name="message"></param>
+            <param name="email"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.QueryablePaginator`1">
+            <summary>
+            Paginator
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.QueryablePaginator`1.Paginate(System.Linq.IQueryable{`0},RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            paginate
+            </summary>
+            <param name="source"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.RAuditDataProvider">
+            <summary>
+            Custom Audit Data Provider
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.InsertEvent(Audit.Core.AuditEvent)">
+            <summary>
+            Insert
+            </summary>
+            <param name="auditEvent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.InsertEventAsync(Audit.Core.AuditEvent)">
+            <summary>
+            Insert Async
+            </summary>
+            <param name="auditEvent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.ReplaceEvent(System.Object,Audit.Core.AuditEvent)">
+            <summary>
+            Update
+            </summary>
+            <param name="eventId"></param>
+            <param name="auditEvent"></param>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.ReplaceEventAsync(System.Object,Audit.Core.AuditEvent)">
+            <summary>
+            Update Async
+            </summary>
+            <param name="eventId"></param>
+            <param name="auditEvent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.GetEvent``1(System.Object)">
+            <summary>
+            Get
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="eventId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.GetEventAsync``1(System.Object)">
+            <summary>
+            Get Async
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="eventId"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.RAuditDataProvider._disposed">
+            <summary>
+            is disposed
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.Dispose">
+            <summary>
+            dispose
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.Dispose(System.Boolean)">
+            <summary>
+            Protected implementation of Dispose pattern.
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.RAuditDataProvider._connection">
+            <summary>
+            Connection
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.#ctor(System.String)">
+            <summary>
+            constructor
+            </summary>
+            <param name="connectionString"></param>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.RoleServiceBase">
+            <summary>
+            User Roles Service Implementation
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.GetAllRoles">
+            <summary>
+            returns all user roles
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.GetRoleInformation(System.String)">
+            <summary>
+            returns user role information
+            </summary>       
+            <param name="roleName"></param>        
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.ModifyRole(System.String,RSecurityBackend.Models.Auth.Db.RAppRole)">
+            <summary>
+            modify existing user role
+            </summary>
+            <param name="roleName"></param>
+            <param name="updateRoleInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.DeleteRole(System.String)">
+            <summary>
+            delete user role
+            </summary>
+            <param name="roleName"></param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.AddRole(RSecurityBackend.Models.Auth.Db.RAppRole)">
+            <summary>
+            adds a new user role
+            </summary>
+            <param name="newRoleInfo">new role info</param>
+            <returns>update user role info (id)</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.HasPermission(System.String,System.String,System.String)">
+            <summary>
+            Has role specified permission
+            </summary>
+            <param name="roleName"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.GetSecurableItems">
+            <summary>
+            gets list of SecurableItem, should be reimplemented in end user applications
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.GetRoleSecurableItemsStatus(System.String)">
+            <summary>
+            Lists role permissions
+            </summary>
+            <param name="roleName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.SetRoleSecurableItemsStatus(System.String,RSecurityBackend.Models.Auth.Memory.SecurableItem[])">
+            <summary>
+            Saves role permissions
+            </summary>
+            <param name="roleName"></param>
+            <param name="securableItems"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.RoleServiceBase._roleManager">
+            <summary>
+            Identity Role Manager
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.#ctor(Microsoft.AspNetCore.Identity.RoleManager{RSecurityBackend.Models.Auth.Db.RAppRole})">
+            <summary>
+            constructor
+            </summary>
+            <param name="roleManager"></param>       
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.SecretGenerator">
+            <summary>
+            Secret Generator
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.SecretGenerator.Generate">
+            <summary>
+            Generates a secret
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.UserPermissionChecker">
+            <summary>
+            Permission checker service implementation
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.UserPermissionChecker.Check(System.Guid,System.Guid,System.String,System.String)">
+            <summary>
+            check to see if user has permission to do operation
+            </summary>
+            <param name="userId">userId</param>
+            <param name="sessionId"></param>
+            <param name="securableItemShortName">form</param>
+            <param name="operationShortName">operation</param>
+            <returns>true if has permission</returns>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.UserPermissionChecker._appUserService">
+            <summary>
+            IAppUserService instance
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.UserPermissionChecker.#ctor(RSecurityBackend.Services.IAppUserService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="appUserService"></param>
+        </member>
+        <member name="T:RSecurityBackend.Services.ISecretGenerator">
+            <summary>
+            Secret Generator
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.ISecretGenerator.Generate">
+            <summary>
+            Generates a secret
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Services.IUserPermissionChecker">
+            <summary>
+            Permission checker service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.IUserPermissionChecker.Check(System.Guid,System.Guid,System.String,System.String)">
+            <summary>
+            check to see if user has permission to do operation
+            </summary>
+            <param name="userId">userId</param>
+            <param name="sessionId">sessionId</param>
+            <param name="securableItemShortName">form</param>
+            <param name="operationShortName">operation</param>
+            <returns>true if has permission</returns>
+        </member>
+        <member name="T:RSecurityBackend.Services.IUserRoleService">
+            <summary>
+            User Groups Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.IUserRoleService.GetAllRoles">
+            <summary>
+            returns all user roles
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IUserRoleService.GetRoleInformation(System.String)">
+            <summary>
+            returns user role information
+            </summary>       
+            <param name="roleName"></param>        
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IUserRoleService.AddRole(RSecurityBackend.Models.Auth.Db.RAppRole)">
+            <summary>
+            adds a new user role
+            </summary>
+            <param name="newRoleInfo">new role info</param>
+            <returns>update user role info (id)</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IUserRoleService.ModifyRole(System.String,RSecurityBackend.Models.Auth.Db.RAppRole)">
+            <summary>
+            modify existing user role
+            </summary>
+            <param name="roleName"></param>
+            <param name="editedRole"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IUserRoleService.DeleteRole(System.String)">
+            <summary>
+            delete user role
+            </summary>
+            <param name="roleName"></param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IUserRoleService.HasPermission(System.String,System.String,System.String)">
+            <summary>
+            Has role specified permission
+            </summary>
+            <param name="roleName"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IUserRoleService.GetSecurableItems">
+            <summary>
+            gets list of SecurableItem, should be reimplemented in end user applications
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IUserRoleService.GetRoleSecurableItemsStatus(System.String)">
+            <summary>
+            Lists role permissions
+            </summary>
+            <param name="roleName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IUserRoleService.SetRoleSecurableItemsStatus(System.String,RSecurityBackend.Models.Auth.Memory.SecurableItem[])">
+            <summary>
+            Saves role permissions
+            </summary>
+            <param name="roleName"></param>
+            <param name="securableItems"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Utilities.AuditNetEnvironmentSkippingContractResolver">
+            <summary>
+            Audit.NET Environment Skipping
+            https://stackoverflow.com/questions/59627835/dont-include-environment-in-serialised-auditevents
+            </summary>    
+        </member>
+        <member name="F:RSecurityBackend.Utilities.AuditNetEnvironmentSkippingContractResolver.Instance">
+            <summary>
+            instance
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.AuditNetEnvironmentSkippingContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)">
+            <summary>
+            create property
+            </summary>
+            <param name="member"></param>
+            <param name="memberSerialization"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RBilling.Models.Tenant.Db.RChargableFeatureType">
+            <summary>
+            Chargable Feature For Tenant Type
+            </summary>
+        </member>
+        <member name="F:RBilling.Models.Tenant.Db.RChargableFeatureType.Boolean">
+            <summary>
+            yes/no
+            </summary>
+        </member>
+        <member name="F:RBilling.Models.Tenant.Db.RChargableFeatureType.RegularNumber">
+            <summary>
+            0, ...
+            </summary>
+        </member>
+        <member name="F:RBilling.Models.Tenant.Db.RChargableFeatureType.FloatNumber">
+            <summary>
+            1.222 or large numbers
+            </summary>
+        </member>
+    </members>
+</doc>

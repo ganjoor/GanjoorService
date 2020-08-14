@@ -1,0 +1,3797 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RMuseum</name>
+    </assembly>
+    <members>
+        <member name="T:RMuseum.Controllers.AppUserController">
+            <summary>
+            User login/logout/register/...
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.AppUserController.#ctor(Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor,RSecurityBackend.Services.IUserPermissionChecker,Microsoft.AspNetCore.Identity.UI.Services.IEmailSender,RSecurityBackend.Services.IImageFileService,RSecurityBackend.Services.ICaptchaService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="configuration"></param>
+            <param name="appUserService"></param>
+            <param name="httpContextAccessor"></param>
+            <param name="userPermissionChecker"></param>
+            <param name="emailSender"></param>
+            <param name="imageFileService"></param>
+            <param name="captchaService"></param>
+        </member>
+        <member name="M:RMuseum.Controllers.AppUserController.GetSignUpEmailSubject(System.String)">
+            <summary>
+            Sign Up Email Subject
+            </summary>
+            <returns>
+            subject
+            </returns>
+            <param name="secretCode"></param>
+        </member>
+        <member name="M:RMuseum.Controllers.AppUserController.GetSignUpEmailHtmlContent(System.String)">
+            <summary>
+            Sign Up Email Html Content
+            </summary>
+            <param name="secretCode"></param>
+            <returns>html content</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.AppUserController.GetForgotPasswordEmailSubject(System.String)">
+            <summary>
+            Forgot Password Email Subject
+            </summary>
+            <returns>
+            subject
+            </returns>
+            <param name="secretCode"></param>
+        </member>
+        <member name="M:RMuseum.Controllers.AppUserController.GetForgotPasswordEmailHtmlContent(System.String)">
+            <summary>
+            Forgot Password Email Html Content
+            </summary>
+            <param name="secretCode"></param>
+            <returns>html content</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.AppUserController.IsSignupEnabled">
+            <summary>
+            Is Sign-up enabled?
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.Get(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get all published artifacts (including CoverImage info but not items info)
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController._GetUserVisibleArtifactStatusSet(System.Guid,System.Guid)">
+            <summary>
+            get list of artifact statuses user can see
+            </summary>
+            <param name="loggedOnUserId"></param>
+            <param name="sessionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetUserVisible(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get all artifacts visible by user (including CoverImage info but not items info)
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.Get(System.String)">
+            <summary>
+            gets specified publish artifact info (including CoverImage + images)
+            </summary>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.RemoveArtifactHavingNoNoteAndBookmarks(System.Guid)">
+            <summary>
+            remove unpublished artifact having no notes and not bookmarked
+            </summary>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetByFriendlyUrlFilterItemsByTag(System.String,System.String)">
+            <summary>
+            gets specified publish artifact info (including CoverImage + images) where its items are filteted by tag
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="tagFriendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetByFriendlyUrlFilterItemsByTag(System.String,System.String,System.String)">
+            <summary>
+            gets specified publish artifact info (including CoverImage + images) where its items are filteted by tag
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="tagFriendlyUrl"></param>
+            <param name="valueFriendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetUserVisible(System.String)">
+            <summary>
+            gets specified publish artifact info (including CoverImage + images)
+            </summary>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetUserVisibleByFriendlyUrlFilterItemsByTag(System.String,System.String)">
+            <summary>
+            gets specified publish artifact info (including CoverImage + images) where its items are filteted by tag
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="tagFriendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetUserVisibleByFriendlyUrlFilterItemsByTag(System.String,System.String,System.String)">
+            <summary>
+            gets specified publish artifact info (including CoverImage + images) where its items are filteted by tag
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="tagFriendlyUrl"></param>
+            <param name="valueFriendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.Put(System.Guid,RMuseum.Models.Artifact.RArtifactMasterRecord)">
+            <summary>
+            edit artifactt master record (user should have additional permissions artifact:awaiting and artifact:publish to change status of artifact)
+            </summary>
+            <remarks>
+            editing related collections such as images and attributed or complex properties such as CoverImage is ignored
+            </remarks>
+            <param name="id"></param>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.SetArtifactCoverItemIndex(System.Guid,System.Int32)">
+            <summary>
+            Set Artifact Cover Item Index
+            </summary>
+            <param name="id"></param>
+            <param name="itemIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetTagBundleByFiendlyUrl(System.String)">
+            <summary>
+            get tag bundle by frindly url
+            </summary>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.NewTag(RMuseum.Models.Artifact.RTag)">
+            <summary>
+            add new tag
+            </summary>
+            <param name="tag">only name is processed</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetTags(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get all tags
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.PutTag(System.Guid,RMuseum.Models.Artifact.RTag)">
+            <summary>
+            edit tag
+            </summary>
+            <remarks>
+            editable fields are limited
+            </remarks>
+            <param name="tagid"></param>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.MoveTag(System.Guid,System.Guid,System.String)">
+            <summary>
+            changes order of tags based on their position in artifacts
+            </summary>
+            <param name="tagId"></param>
+            <param name="artifactId"></param>
+            <param name="upordown">up / down</param>
+            <returns>the other tag which its Order got replaced with the input id</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.MoveTagInItem(System.Guid,System.Guid,System.String)">
+            <summary>
+            changes order of tags based on their position in artifact items
+            </summary>
+            <param name="tagId"></param>
+            <param name="itemId"></param>
+            <param name="upordown">up / down</param>
+            <returns>the other tag which its Order got replaced with the input id</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetTagValueBundleByFiendlyUrl(System.String,System.String)">
+            <summary>
+            get tag value bundle by frindly url
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="valueUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetTagValueByFriendlyUrl(System.Guid,System.String)">
+            <summary>
+            get tag value by frindly url
+            </summary>
+            <param name="tagId"></param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.NewArtifactTagValue(System.Guid,RMuseum.Models.Artifact.RTag)">
+            <summary>
+            add new tag value to artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="tag">only name is processed</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.PutAttributeValue(System.Guid,System.Boolean,RMuseum.Models.Artifact.RTagValue)">
+            <summary>
+            edit artifact attribute value
+            </summary>
+            <remarks>
+            editable fields are limited
+            </remarks>
+            <param name="artifactid"></param>
+            <param name="tagvalue"></param>
+            <param name="global">apply on all same value tags</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.RemoveArtifactTagValue(System.Guid,System.Guid)">
+            <summary>
+            remove tag from artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="tagValueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.NewItemTagValue(System.Guid,RMuseum.Models.Artifact.RTag)">
+            <summary>
+            add new tag value to item
+            </summary>
+            <param name="itemId"></param>
+            <param name="tag">only name is processed</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.PutItemTagValue(System.Guid,System.Boolean,RMuseum.Models.Artifact.RTagValue)">
+            <summary>
+            edit item attribute value
+            </summary>
+            <remarks>
+            editable fields are limited
+            </remarks>
+            <param name="itemId"></param>
+            <param name="tagvalue"></param>
+            <param name="global">apply on all same value tags</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.RemoveItemTagValue(System.Guid,System.Guid)">
+            <summary>
+            remove tag from item
+            </summary>
+            <param name="itemId"></param>
+            <param name="tagValueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.MoveTagValue(System.Guid,System.Guid,System.Guid,System.String)">
+            <summary>
+            changes order of tag values based on their position in an artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="tagId"></param>
+            <param name="valueId"></param>
+            <param name="upordown">up / down</param>
+            <returns>the other tag which its Order got replaced with the input id</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.MoveItemTagValue(System.Guid,System.Guid,System.Guid,System.String)">
+            <summary>
+            changes order of tag values based on their position in an item
+            </summary>
+            <param name="itemId"></param>
+            <param name="tagId"></param>
+            <param name="valueId"></param>
+            <param name="upordown">up / down</param>
+            <returns>the other tag which its Order got replaced with the input id</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetArtifactItemByFrienlyUrl(System.String,System.String)">
+            <summary>
+            gets specified publish artifact item info (including images + attributes)
+            </summary>
+            <param name="artifactUrl"></param>
+            <param name="itemUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetArtifactItemByFrienlyUrlUserVisible(System.String,System.String)">
+            <summary>
+            gets specified publish artifact item info (including images + attributes) 
+            </summary>
+            <param name="artifactUrl"></param>
+            <param name="itemUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.Post">
+            <summary>
+            Add new artifact (multipart/form-data)
+            
+            
+                const data = new FormData();
+                data.append('name', 'تست');
+                data.append('description', '');
+                data.append('srcUrl', '');
+                data.append('picTitle', 'تست');
+                data.append('picDescription', '');
+                data.append('file', this.file);
+                data.append('picSrcUrl', '');
+                
+            
+            </summary>        
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.Import(System.String,System.String,System.String,System.String)">
+            <summary>
+            import from external resources
+            </summary>
+            <param name="srcType">loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl</param>
+            <param name="resourceNumber">119</param>
+            <param name="friendlyUrl">golestan-baysonghori</param>
+            <param name="resourcePrefix"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.KeepAlive">
+            <summary>
+            keep alive (for import background service)
+            </summary>
+            <returns>true</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.RetryImport">
+            <summary>
+            retry import
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.ReExamineLocDownloads(System.String)">
+            <summary>
+            due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely
+            </summary>
+            <param name="pass">123456</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.BookmarkArtifact(System.Guid)">
+            <summary>
+            bookmark artifact
+            </summary>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.BookmarkItem(System.Guid)">
+            <summary>
+            bookmark item
+            </summary>
+            <param name="itemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.DeleteBookmark(System.Guid)">
+            <summary>
+            item bookmarks info
+            </summary>
+            <param name="bookmarkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.FavArtifact(System.Guid)">
+            <summary>
+            fav artifact
+            </summary>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.FavItem(System.Guid)">
+            <summary>
+            fav item
+            </summary>
+            <param name="itemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GeIArtifactUserBookmarks(System.Guid)">
+            <summary>
+            artifact bookmarks info
+            </summary>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GeItemUserBookmarks(System.Guid)">
+            <summary>
+            item bookmarks info
+            </summary>
+            <param name="itemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            user bookmarks
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetUserFavorites(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            user favorites
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.AddUserNoteToArtifact(RMuseum.Models.Note.ViewModels.PostUserNote)">
+            <summary>
+            add note for artifact
+            </summary>
+            <param name="note"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.AddUserNoteToArtifactItem(RMuseum.Models.Note.ViewModels.PostUserNote)">
+            <summary>
+            add note for artifact item
+            </summary>
+            <param name="note"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.EditUserNote(System.Guid,RMuseum.Models.Note.ViewModels.PostUserNote)">
+            <summary>
+            Edit User Notes
+            </summary>
+            <remarks>a note can not be edited by a user other than its owner or another using having note:moderate permission</remarks>
+            <param name="noteId"></param>
+            <param name="note">only htmlContent is processed</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.DeleteUserNote(System.Guid)">
+            <summary>
+            delete user notes
+            </summary>
+            <remarks>
+            1. a note can not be deleted by a user other than its owner or another using having note:moderate permission
+            2. all notes which have refernce to deleting note (sent in reply to it) would be deleted irrelevant of their ownership
+            </remarks>
+            <param name="noteId"></param>
+            <returns>list of notes deleted</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetArtifactUserNotes(System.Guid)">
+            <summary>
+            get private notes for artifact
+            </summary>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetArtifactPublicNotes(System.Guid)">
+            <summary>
+            get private notes for artifact
+            </summary>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetArtifactItemUserNotes(System.Guid)">
+            <summary>
+            get private notes for artifact item
+            </summary>
+            <param name="itemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetArtifactItemPublicNotes(System.Guid)">
+            <summary>
+            get public notes for artifact item
+            </summary>
+            <param name="itemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetUserPublicNotes(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            user public notes
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetUserPrivateNotes(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            user public notes
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetAllPublicNotes(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            all users public notes
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.SuggestGanjoorLink(RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion)">
+            <summary>
+            suggest ganjoor link
+            </summary>
+            <param name="link"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetSuggestedLinks(RMuseum.Models.GanjoorIntegration.ReviewResult,System.Boolean)">
+            <summary>
+            get suggested ganjoor links
+            </summary>
+            <param name="status"></param>
+            <param name="notSynced"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.ReviewGanjoorLink(System.Guid,RMuseum.Models.GanjoorIntegration.ReviewResult)">
+            <summary>
+            review suggested ganjoor link
+            </summary>
+            <param name="linkId"></param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.SynchronizeGanjoorLink(System.Guid)">
+            <summary>
+            mark suggested ganjoor link as synchronized
+            </summary>
+            <param name="linkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.AddTOCForSuggestedLinks">
+             <summary>
+            toc / temporary one time api / to be removed
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetSuggestedPinterestLinks(RMuseum.Models.GanjoorIntegration.ReviewResult,System.Boolean)">
+            <summary>
+            get suggested pinterest links
+            </summary>
+            <param name="status"></param>
+            <param name="notSynced"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.SuggestPinterestLink(RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion)">
+            <summary>
+            suggest pinterest link for ganjoor
+            </summary>
+            <param name="suggestion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.ReviewSuggestedPinterestLink(System.Guid,System.String,RMuseum.Models.GanjoorIntegration.ReviewResult,System.String,System.String)">
+            <summary>
+            review suggested ganjoor pinterest link
+            </summary>
+            <param name="linkId"></param>
+            <param name="altText"></param>
+            <param name="result"></param>
+            <param name="reviewDesc"></param>
+            <param name="imageUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.SynchronizeSuggestedPinterestLink(System.Guid)">
+            <summary>
+            mark suggested pinterest ganjoor link as synchronized
+            </summary>
+            <param name="linkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetUserNotifications">
+            <summary>
+            Get User Notifications
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.SwitchNotificationStatus(System.Guid)">
+            <summary>
+            Switch Notification Status
+            </summary>
+            <param name="notificationId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.DeleteNotification(System.Guid)">
+            <summary>
+            Delete Notification
+            </summary>
+            <param name="notificationId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.#ctor(RMuseum.Services.IArtifactService,RSecurityBackend.Services.IUserPermissionChecker,Microsoft.Extensions.Caching.Memory.IMemoryCache,RSecurityBackend.Services.ICaptchaService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="artifactService">
+            </param>
+            <param name="userPermissionChecker"></param>
+            <param name="memoryCache"></param>
+            <param name="captchaService"></param>
+        </member>
+        <member name="F:RMuseum.Controllers.ArtifactController._artifactService">
+            <summary>
+            Artifact Service
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.ArtifactController._userPermissionChecker">
+            <summary>
+            IUserPermissionChecker instance
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.ArtifactController._memoryCache">
+            <summary>
+            IMemoryCache
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.ArtifactController._captchaService">
+            <summary>
+            Captcha service
+            </summary>
+        </member>
+        <member name="T:RMuseum.Controllers.AuditLogController">
+            <summary>
+            Audit Log Controller Base
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.AuditLogController.#ctor(RSecurityBackend.Services.IAuditLogService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="auditLogService">
+            </param>
+        </member>
+        <member name="M:RMuseum.Controllers.ImageController.Get(System.Guid,System.String)">
+            <summary>
+            returns image stream
+            </summary>
+            <param name="id"></param>
+            <param name="size"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ImageController.Rotate(System.Guid,System.Int32)">
+            <summary>
+            Rotate Image in 90 deg. multiplicants: 90, 180 or 270
+            </summary>
+            <param name="id"></param>
+            <param name="degIn90mul"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ImageController.GenerateCroppedImageBasedOnThumbnailCoordinates(System.Guid,System.Decimal,System.Decimal,System.Decimal,System.Decimal)">
+            <summary>
+            Generate Cropped Image Based On ThumbnailCoordinates For Notes
+            </summary>
+            <param name="id"></param>
+            <param name="left"></param>
+            <param name="top"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <returns>id of cropped image</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ImageController.#ctor(RMuseum.Services.IPictureFileService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="pictureFileService">
+            </param>
+        </member>
+        <member name="F:RMuseum.Controllers.ImageController._pictureFileService">
+            <summary>
+            Artifact Service
+            </summary>
+        </member>
+        <member name="T:RMuseum.Controllers.RImageController">
+            <summary>
+            Generic Image Provider
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.RImageController.#ctor(RSecurityBackend.Services.IImageFileService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="pictureFileService">
+            </param>
+        </member>
+        <member name="T:RMuseum.Controllers.RoleController">
+             <summary>
+            roles
+             </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.RoleController.#ctor(RSecurityBackend.Services.IUserRoleService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="roleService"></param>
+        </member>
+        <member name="T:RMuseum.DbContext.RMuseumDbContext">
+            <summary>
+            Museum Database Context
+            </summary>
+        </member>
+        <member name="M:RMuseum.DbContext.RMuseumDbContext.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            constructor
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.Configuration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RMuseum.DbContext.RMuseumDbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
+            <summary>
+            
+            </summary>
+            <param name="optionsBuilder"></param>
+        </member>
+        <member name="M:RMuseum.DbContext.RMuseumDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            
+            </summary>
+            <param name="builder"></param>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.PictureFiles">
+            <summary>
+            Picture Files
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.Tags">
+            <summary>
+            Item Attributes
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.Artifacts">
+            <summary>
+            Artifacts
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.Items">
+            <summary>
+            Items
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.ImportJobs">
+            <summary>
+            Import Jobs
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.TagValues">
+            <summary>
+            Tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.UserBookmarks">
+            <summary>
+            User Bookmarks
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.UserNotes">
+            <summary>
+            User Notes
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorLinks">
+            <summary>
+            Ganjoor Links
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.Notifications">
+            <summary>
+            Notifications
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.PinterestLinks">
+            <summary>
+            Pinterest Links
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.PublishStatus">
+            <summary>
+            Items or pictures status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.RArtifactMasterRecordId">
+            <summary>
+            parent id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.Order">
+            <summary>
+            Order in Collections
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.FriendlyUrl">
+            <summary>
+            Friendly Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.NameInEnglish">
+            <summary>
+            Name In English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.DescriptionInEnglish">
+            <summary>
+            Description In English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.CoverImageIndex">
+            <summary>
+            Main Image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.LastModified">
+            <summary>
+            Last Modified for caching purposes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.Images">
+            <summary>
+            All Images
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactItemRecord.Tags">
+            <summary>
+            Attributes
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.RArtifactMasterRecord">
+            <summary>
+            Museum Master Item
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.FriendlyUrl">
+            <summary>
+            Friendly Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.Status">
+            <summary>
+            Publish Status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.NameInEnglish">
+            <summary>
+            Name In English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.DescriptionInEnglish">
+            <summary>
+            Description In English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.DateTime">
+            <summary>
+            Date/Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.LastModified">
+            <summary>
+            Last Modified for caching purposes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.CoverItemIndex">
+            <summary>
+            Cover Item Index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.CoverImage">
+            <summary>
+            Cover Image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.CoverImageId">
+            <summary>
+            Cover Image Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.Items">
+            <summary>
+            Parts of this item
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.ItemCount">
+            <summary>
+            Item Count (for lists and queries)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RArtifactMasterRecord.Tags">
+            <summary>
+            Attributes
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.RPictureFile">
+            <summary>
+            Artifact Picture Files
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.Title">
+            <summary>
+            Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.TitleInEnglish">
+            <summary>
+            Title in English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.DescriptionInEnglish">
+            <summary>
+            Description in English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.Status">
+            <summary>
+            Publish status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.Order">
+            <summary>
+            order in the collection it belongs to it
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.NormalSizeImageStoredFileName">
+            <summary>
+            نام فایل ذخیره شده با بالاترین کیفیت
+            </summary>
+            <example>
+            e0d7050a-7e30-4a2f-b181-0daa4a1e1068.jpg
+            </example>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.ThumbnailImageStoredFileName">
+            <summary>
+            نام فایل ذخیره شده با بالاترین کیفیت
+            </summary>
+            <example>
+            fbe9cc8e-12fa-4cb9-8f09-bbf353333383.jpg
+            </example>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.NormalSizeImageWidth">
+            <summary>
+            عرض تصویر مناسب نمایش در صفحهٔ اختصاصی
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.NormalSizeImageHeight">
+            <summary>
+            طول تصویر مناسب نمایش در صفحهٔ اختصاصی
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.ThumbnailImageWidth">
+             <summary>
+            عرض تصویر با اندازه مناسب نمایش در صفحات لیستی
+             </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.ThumbnailImageHeight">
+             <summary>
+            طول تصویر با اندازه مناسب نمایش در صفحات لیستی
+             </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.SrcUrl">
+            <summary>
+            source url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.LastModifiedMeta">
+            <summary>
+            Last Modified for caching purposes
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.Artifact.RPictureFile.Duplicate(RMuseum.Models.Artifact.RPictureFile)">
+            <summary>
+            duplicated a picture record (Id is missing so you should store this to get a new Id)
+            </summary>
+            <param name="src"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.RTag">
+            <summary>
+            Item Attribute
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTag.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTag.Order">
+            <summary>
+            Order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTag.TagType">
+            <summary>
+            tag type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTag.FriendlyUrl">
+            <summary>
+            Friendly Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTag.Status">
+            <summary>
+            Publish Status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTag.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTag.NameInEnglish">
+            <summary>
+            Name In English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTag.PluralName">
+            <summary>
+            Plural Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTag.PluralNameInEnglish">
+            <summary>
+            Plural Name In English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTag.GlobalValue">
+            <summary>
+            Value is normally changed globally 
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.RTagType">
+            <summary>
+            نوع ویژگی
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Artifact.RTagType.Ordinary">
+            <summary>
+            عادی
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Artifact.RTagType.Link">
+            <summary>
+            پیوند
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Artifact.RTagType.Search">
+            <summary>
+            جستجو
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Artifact.RTagType.LinkSearch">
+            <summary>
+            پیوند و جستجو
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Artifact.RTagType.LeftToRightText">
+            <summary>
+            متن چپ به راست
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Artifact.RTagType.Binary">
+            <summary>
+            بدون مقدار
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Artifact.RTagType.TitleInContents">
+            <summary>
+            عنوان در فهرست
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.RTagValue">
+            <summary>
+            Attribute Value
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTagValue.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTagValue.FriendlyUrl">
+            <summary>
+            Friendly Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTagValue.Status">
+            <summary>
+            Publish Status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTagValue.Value">
+            <summary>
+            Value
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTagValue.ValueInEnglish">
+            <summary>
+            Values In English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RTagValue.ValueSupplement">
+            <summary>
+            link or ....
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.ViewModels.NewArtifact">
+            <summary>
+            new artifact view model
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel">
+            <summary>
+            RArtifactItemRecord with additional info
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.Item">
+            <summary>
+            main item info
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.ParentFriendlyUrl">
+            <summary>
+            parent
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.ParentName">
+            <summary>
+            parent name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.ParentImageId">
+            <summary>
+            parent image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.ParentItemCount">
+            <summary>
+            parent item count
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.NextItemFriendlyUrl">
+            <summary>
+            empty or null means this is last item
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.NextItemImageId">
+            <summary>
+            next image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.PreviousItemFriendlyUrl">
+            <summary>
+            empty or null means this is first item
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.PrevItemImageId">
+            <summary>
+            prev image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.FormattedTags">
+            <summary>
+            Formatted Tags
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel">
+            <summary>
+            Museum Master Item View Model
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.#ctor(RMuseum.Models.Artifact.RArtifactMasterRecord)">
+            <summary>
+            constructor
+            </summary>
+            <param name="src"></param>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.ArtifactTags">
+            <summary>
+            Tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.RTagSums">
+            <summary>
+            Binary Tagged Items
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.Contents">
+            <summary>
+            Titles of Items in Contents
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel">
+            <summary>
+            Artifact Tag (RTag with grouped related RTagValues of Artifact)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.ViewModels.RTagBundleValueViewModel">
+            <summary>
+            Tag Bundle View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagBundleValueViewModel.Name">
+            <summary>
+            Item Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagBundleValueViewModel.FriendlyUrl">
+            <summary>
+            Item Friendly Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagBundleValueViewModel.Count">
+            <summary>
+            Items Count
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagBundleValueViewModel.ImageId">
+            <summary>
+            Item Image Id
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.ViewModels.RTagBundleViewModel">
+            <summary>
+            Tag Bundle View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagBundleViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagBundleViewModel.FriendlyUrl">
+            <summary>
+            Friendly Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagBundleViewModel.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagBundleViewModel.PluralName">
+            <summary>
+            Plural Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagBundleViewModel.Values">
+            <summary>
+            Values
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.ViewModels.RTagSum">
+            <summary>
+            Artifact Binary Tagged items Summation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagSum.TagName">
+            <summary>
+            Tag Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagSum.TagFriendlyUrl">
+            <summary>
+            Tag Friendly Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagSum.ItemCount">
+            <summary>
+            Item Count
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.ViewModels.RTitleInContents">
+            <summary>
+            Title of an Item in Artifact Contents
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTitleInContents.Title">
+            <summary>
+            Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTitleInContents.Order">
+            <summary>
+            Order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTitleInContents.Level">
+            <summary>
+            Level
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTitleInContents.ItemFriendlyUrl">
+            <summary>
+            Item Friendly Url
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Auth.Memory.RMuseumSecurableItem">
+            <summary>
+            specific forms and permission
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ArtifactEntityShortName">
+            <summary>
+            artifact
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.TagEntityShortName">
+            <summary>
+            tag
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.NoteEntityShortName">
+            <summary>
+            note
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ViewDraftOperationShortName">
+            <summary>
+             view drafts
+             </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.EditTagValueOperationShortName">
+            <summary>
+             edittag
+             </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ToAwaitingStatusOperationShortName">
+            <summary>
+             awaiting
+             </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.PublishOperationShortName">
+            <summary>
+             publish
+             </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ImportOperationShortName">
+            <summary>
+             import
+             </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModerateCommentsOperationShortName">
+            <summary>
+             moderate
+             </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName">
+            <summary>
+             review suggested ganjoor links
+             </summary>
+        </member>
+        <member name="P:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.Items">
+            <summary>
+            list of forms and their permissions
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Bookmark.RBookmarkType">
+            <summary>
+            Bookmark Type
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Bookmark.RBookmarkType.Bookmark">
+            <summary>
+            Private Bookmark
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Bookmark.RBookmarkType.Favorite">
+            <summary>
+            Public Favorite
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Bookmark.RUserBookmark">
+            <summary>
+            User Bookmarks
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.RUserBookmark.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.RUserBookmark.RAppUserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.RUserBookmark.RAppUser">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.RUserBookmark.RArtifactMasterRecordId">
+            <summary>
+            Master Record Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.RUserBookmark.RArtifactMasterRecord">
+            <summary>
+            Master Record
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.RUserBookmark.RArtifactItemRecordId">
+            <summary>
+            Item Record Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.RUserBookmark.RArtifactItemRecord">
+            <summary>
+            Item Record
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.RUserBookmark.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.RUserBookmark.RBookmarkType">
+            <summary>
+            Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.RUserBookmark.Note">
+            <summary>
+            User Note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.ViewModels.RUserBookmarkViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.ViewModels.RUserBookmarkViewModel.RAppUserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.ViewModels.RUserBookmarkViewModel.RArtifactMasterRecord">
+            <summary>
+            Master Record
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.ViewModels.RUserBookmarkViewModel.RArtifactItemRecord">
+            <summary>
+            Item Record
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.ViewModels.RUserBookmarkViewModel.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.ViewModels.RUserBookmarkViewModel.RBookmarkType">
+            <summary>
+            Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Bookmark.ViewModels.RUserBookmarkViewModel.Note">
+            <summary>
+            User Note
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorIntegration.GanjoorLink">
+            <summary>
+            ganjoor link for artifacts and items
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.GanjoorPostId">
+            <summary>
+            Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.GanjoorUrl">
+            <summary>
+            ganjoor url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.GanjoorTitle">
+            <summary>
+            ganjoor title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.ArtifactId">
+            <summary>
+            Artifact Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.Artifact">
+            <summary>
+            artifact
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.ItemId">
+            <summary>
+            Artifact Item Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.Item">
+            <summary>
+            Artifact Item
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.SuggestedById">
+            <summary>
+            User Id who suggested the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.SuggestionDate">
+            <summary>
+            Suggestion Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.SuggestedBy">
+            <summary>
+            User who suggested the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.ReviewerId">
+            <summary>
+            User id who reviewed the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.Reviewer">
+            <summary>
+            User who reviewed the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.ReviewDate">
+            <summary>
+            Review Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.ReviewResult">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.Synchronized">
+            <summary>
+            Synchronized with ganjoor
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorIntegration.LinkType">
+            <summary>
+            Link Type
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorIntegration.LinkType.Custom">
+            <summary>
+            Custom
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorIntegration.LinkType.Museum">
+            <summary>
+            Museum
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorIntegration.LinkType.Pinterest">
+            <summary>
+            Pinterest
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorIntegration.LinkType.Instagram">
+            <summary>
+            Instagram
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorIntegration.PinterestLink">
+            <summary>
+            pinterest link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.GanjoorPostId">
+            <summary>
+            Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.GanjoorUrl">
+            <summary>
+            ganjoor url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.GanjoorTitle">
+            <summary>
+            ganjoor title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.AltText">
+            <summary>
+            alt text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.LinkType">
+            <summary>
+            link type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.PinterestUrl">
+            <summary>
+            pinterest url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.PinterestImageUrl">
+            <summary>
+            pinterest image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.SuggestedById">
+            <summary>
+            User Id who suggested the link (this would always be null for anonyous suggestions, kept it so that someday it would be used to integerate GanjoorLink into this class)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.SuggestionDate">
+            <summary>
+            Suggestion Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.SuggestedBy">
+            <summary>
+            User who suggested the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.ReviewerId">
+            <summary>
+            User id who reviewed the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.Reviewer">
+            <summary>
+            User who reviewed the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.ReviewDate">
+            <summary>
+            Review Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.ReviewResult">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.ReviewDesc">
+            <summary>
+            review description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.ArtifactId">
+            <summary>
+            Artifact Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.Artifact">
+            <summary>
+            artifact
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.ItemId">
+            <summary>
+            Artifact Item Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.Item">
+            <summary>
+            Artifact Item
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.Synchronized">
+            <summary>
+            Synchronized with ganjoor
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorIntegration.ReviewResult">
+            <summary>
+            Review Result
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorIntegration.ReviewResult.Awaiting">
+            <summary>
+            Awaiting (default)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorIntegration.ReviewResult.Approved">
+            <summary>
+            Approved
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorIntegration.ReviewResult.Rejected">
+            <summary>
+            Rejected
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel">
+            <summary>
+            Ganjoor Link View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.GanjoorPostId">
+            <summary>
+            Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.GanjoorUrl">
+            <summary>
+            ganjoor url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.GanjoorTitle">
+            <summary>
+            ganjoor title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.EntityName">
+            <summary>
+            entity name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.EntityFriendlyUrl">
+            <summary>
+            entity friendly url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.EntityImageId">
+            <summary>
+            entity image id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.ReviewResult">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.Synchronized">
+            <summary>
+            Synchronized with ganjoor
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.SuggestedBy">
+            <summary>
+            suggested by
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion">
+            <summary>
+            Link Suggestion
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion.GanjoorPostId">
+            <summary>
+            Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion.GanjoorUrl">
+            <summary>
+            ganjoor url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion.GanjoorTitle">
+            <summary>
+            ganjoor title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion.ArtifactFriendlyUrl">
+            <summary>
+            Artifact Friendly Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion.ItemId">
+            <summary>
+            Artifact Item Id
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel">
+            <summary>
+            Safe pinterest link view model
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.#ctor(RMuseum.Models.GanjoorIntegration.PinterestLink,System.String,System.String,System.Guid)">
+            <summary>
+            cosntructor
+            </summary>
+            <param name="src"></param>
+            <param name="entityFriendlyUrl"></param>
+            <param name="entityImageId"></param>
+            <param name="entityName"></param>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.GanjoorPostId">
+            <summary>
+            Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.GanjoorUrl">
+            <summary>
+            ganjoor url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.GanjoorTitle">
+            <summary>
+            ganjoor title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.AltText">
+            <summary>
+            alt text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.LinkType">
+            <summary>
+            link type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.PinterestUrl">
+            <summary>
+            pinterest url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.PinterestImageUrl">
+            <summary>
+            pinterest image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.SuggestionDate">
+            <summary>
+            Suggestion Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.ReviewerId">
+            <summary>
+            User id who reviewed the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.ReviewDate">
+            <summary>
+            Review Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.ReviewResult">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.ReviewDesc">
+            <summary>
+            review description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.ArtifactId">
+            <summary>
+            Artifact Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.ItemId">
+            <summary>
+            Artifact Item Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.Synchronized">
+            <summary>
+            Synchronized with ganjoor
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.EntityName">
+            <summary>
+            entity name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.EntityFriendlyUrl">
+            <summary>
+            entity friendly url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.EntityImageId">
+            <summary>
+            entity image id
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion">
+            <summary>
+            pinterest / ganjoor link suggestion view model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.GanjoorPostId">
+            <summary>
+            Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.GanjoorUrl">
+            <summary>
+            ganjoor url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.GanjoorTitle">
+            <summary>
+            ganjoor title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.AltText">
+            <summary>
+            alt text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.LinkType">
+            <summary>
+            link type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.PinterestUrl">
+            <summary>
+            pinterest url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.PinterestImageUrl">
+            <summary>
+            pinterest image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.CaptchaImageId">
+            <summary>
+            Captcha Image Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.CaptchaValue">
+            <summary>
+            Captcha Value
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.ImportJob.ImportJob">
+            <summary>
+            Import Job
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.ImportJob.JobType">
+            <summary>
+            Job Type
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Note.RNoteType">
+            <summary>
+            Note Type
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Note.RNoteType.Private">
+            <summary>
+            private
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Note.RNoteType.Public">
+            <summary>
+            public
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Note.RUserNote">
+            <summary>
+            User Note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.RAppUserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.RAppUser">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.RArtifactMasterRecordId">
+            <summary>
+            Master Record Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.RArtifactMasterRecord">
+            <summary>
+            Master Record
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.RArtifactItemRecordId">
+            <summary>
+            Item Record Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.RArtifactItemRecord">
+            <summary>
+            Item Record
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.Modified">
+            <summary>
+            Is Updated by User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.LastModified">
+            <summary>
+            Last Modified
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.NoteType">
+            <summary>
+            Private / Public
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.HtmlContent">
+            <summary>
+            content
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.ReferenceNote">
+            <summary>
+            In Reply to Other Note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.ReferenceNoteId">
+            <summary>
+            Reference Note Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNote.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Note.ViewModels.PostUserNote">
+            <summary>
+            New User Note For Artifact
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.PostUserNote.EntityId">
+            <summary>
+            Artifact / Item Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.PostUserNote.NoteType">
+            <summary>
+            Note Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.PostUserNote.Contents">
+            <summary>
+            Contents
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.PostUserNote.ReferenceNoteId">
+            <summary>
+            Reference Note Id
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Note.ViewModels.RUserNoteViewModel">
+            <summary>
+            Safe User Note View Model
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.#ctor(RMuseum.Models.Note.RUserNote,RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="src"></param>
+            <param name="user"></param>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.RAppUserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.UserName">
+            <summary>
+            User Name (FirstName + SureName)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.RUserImageId">
+            <summary>
+            user image id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.Modified">
+            <summary>
+            Is Updated by User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.LastModified">
+            <summary>
+            Last Modified
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.NoteType">
+            <summary>
+            Private / Public
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.HtmlContent">
+            <summary>
+            content
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.ReferenceNoteId">
+            <summary>
+            Reference Note Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.RelatedEntityName">
+            <summary>
+            Related Entity (Artifact/Item) Name
+            </summary>
+            <remarks>
+            It is set only in cummulative api calls
+            </remarks>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.RelatedEntityImageId">
+            <summary>
+            Realated entity Image Id 
+            </summary>
+            <remarks>
+            It is set only in cummulative api calls
+            </remarks>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.RelatedEntityFriendlyUrl">
+            <summary>
+            Realated entity Friendly Url (for artifact items it would be ParentFiendlyUrl/ItemFriendlyUrl )
+            </summary>
+            <remarks>
+            It is set only in cummulative api calls
+            </remarks>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.RelatedItemParentName">
+            <summary>
+            Related Item Artifact Name
+            </summary>
+            <remarks>
+            It is set only in cummulative api calls
+            </remarks>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.Notes">
+            <summary>
+            child notes
+            </summary>
+            <remarks>
+            It os set only in certain cases
+            </remarks>
+        </member>
+        <member name="T:RMuseum.Models.Notification.NotificationStatus">
+            <summary>
+            Notifaction Status
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Notification.RUserNotification">
+            <summary>
+            User Notification
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Notification.RUserNotification.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Notification.RUserNotification.UserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Notification.RUserNotification.User">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Notification.RUserNotification.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Notification.RUserNotification.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Notification.RUserNotification.Subject">
+            <summary>
+            Subject
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Notification.RUserNotification.HtmlText">
+            <summary>
+            Text
+            </summary>
+        </member>
+        <member name="T:RMuseum.Services.IArtifactService">
+            <summary>
+            Artifact Item Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            get all  artifacts (including CoverImage info but not items or attributes info) 
+            </summary>
+            <param name="paging"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetByTagValue(System.String,System.String,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            get tagged publish artifacts (including CoverImage info but not items or tagibutes info)
+            </summary>
+            <param name="tagUrl"></param>
+            <param name="valueUrl"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetByFriendlyUrl(System.String,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            gets specified artifact info (including CoverImage + images +  attributes)
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetByFriendlyUrlFilterItemsByTag(System.String,RMuseum.Models.Artifact.PublishStatus[],System.String,System.String)">
+            <summary>
+            gets specified artifact info (including CoverImage + images +  tagibutes)
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="statusArray"></param>
+            <param name="tagFriendlyUrl"></param>
+            <param name="tagValueFriendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.EditMasterRecord(RMuseum.Models.Artifact.RArtifactMasterRecord,System.Boolean,System.Boolean)">
+            <summary>
+            edit master record
+            </summary>
+            <param name="edited"></param>
+            <param name="canChangeStatusToAwaiting"></param>
+            <param name="canPublish"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.SetArtifactCoverItemIndex(System.Guid,System.Int32)">
+            <summary>
+            Set Artifact Cover Item Index
+            </summary>
+            <param name="artifactId"></param>
+            <param name="itemIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetTagBundleByFiendlyUrl(System.String)">
+            <summary>
+            get tag bundle by frindly url
+            </summary>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetMaxArtifactLastModified">
+            <summary>
+            get max lastmodified artifact date for caching purposes
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetAllTags(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get all  tags 
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetTagByFriendlyUrl(System.String)">
+            <summary>
+            get tag bu friendly url
+            </summary>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.AddTag(System.String)">
+            <summary>
+            add tag
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.EditTag(RMuseum.Models.Artifact.RTag)">
+            <summary>
+            edit tag
+            </summary>
+            <param name="edited"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.EditTagOrderBasedOnArtifact(System.Guid,System.Guid,System.Boolean)">
+            <summary>
+            changes order of tags based on their position in artifacts
+            </summary>
+            <param name="tagId"></param>
+            <param name="artifactId"></param>
+            <param name="up">true => up, false => down</param>
+            <returns>the other tag which its Order has been changed</returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.EditTagOrderBasedOnItem(System.Guid,System.Guid,System.Boolean)">
+            <summary>
+            changes order of tags based on their position in artifact items
+            </summary>
+            <param name="tagId"></param>
+            <param name="itemId"></param>
+            <param name="up">true => up, false => down</param>
+            <returns>the other tag which its Order has been changed</returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.TagArtifact(System.Guid,RMuseum.Models.Artifact.RTag)">
+            <summary>
+            add artifact tag value
+            </summary>
+            <param name="artifactId"></param>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.EditTagValueOrder(System.Guid,System.Guid,System.Guid,System.Boolean)">
+            <summary>
+            changes order of tag values based on their position in an artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="tagId"></param>
+            <param name="valueId"></param>        
+            <param name="up">true => up, false => down</param>
+            <returns>the other tag value which its Order has been changed</returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.EditItemTagValueOrder(System.Guid,System.Guid,System.Guid,System.Boolean)">
+            <summary>
+            changes order of tag values based on their position in an item
+            </summary>
+            <param name="itemId"></param>
+            <param name="tagId"></param>
+            <param name="valueId"></param>        
+            <param name="up">true => up, false => down</param>
+            <returns>the other tag value which its Order has been changed</returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetTagValueBundleByFiendlyUrl(System.String,System.String)">
+            <summary>
+            get tag value bundle by frindly url
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="valueUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetTagValueByFriendlyUrl(System.Guid,System.String)">
+            <summary>
+            get tag value by frindly url
+            </summary>
+            <param name="tagId"></param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.EditTagValue(System.Guid,RMuseum.Models.Artifact.RTagValue,System.Boolean)">
+            <summary>
+            edit artifact tagibute value
+            </summary>
+            <param name="artifactId"></param>
+            <param name="edited"></param>
+            <param name="global">apply on all same value tags</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.UnTagArtifact(System.Guid,System.Guid)">
+            <summary>
+            remove artfiact tag value
+            </summary>
+            <param name="artifactId"></param>
+            <param name="tagValueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.TagItem(System.Guid,RMuseum.Models.Artifact.RTag)">
+            <summary>
+            add item tag value
+            </summary>
+            <param name="itemId"></param>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.EditItemTagValue(System.Guid,RMuseum.Models.Artifact.RTagValue,System.Boolean)">
+            <summary>
+            edit item tag value
+            </summary>
+            <param name="itemId"></param>
+            <param name="edited"></param>
+            <param name="global">apply on all same value tags</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.UnTagItem(System.Guid,System.Guid)">
+            <summary>
+            remove item tag value
+            </summary>
+            <param name="itemId"></param>
+            <param name="tagValueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetArtifactItemByFrienlyUrl(System.String,System.String,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            gets specified artifact item info (including images + attributes) 
+            </summary>
+            <param name="artifactUrl"></param>
+            <param name="itemUrl"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.Add(System.String,System.String,System.String,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.String,System.IO.Stream)">
+            <summary>
+            add new artifact
+            </summary>
+            <param name="name"></param>
+            <param name="description"></param>
+            <param name="srcurl"></param>
+            <param name="pictitle"></param>
+            <param name="picdescription"></param>
+            <param name="file"></param>
+            <param name="picsrcurl"></param>
+            <param name="stream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartImportingFromTheLibraryOfCongress(System.String,System.String,System.String)">
+            <summary>
+            for now it only supports https://www.loc.gov
+            </summary>
+            <param name="resourceNumber">
+            <example>
+            m084
+            </example>
+            </param>
+            <param name="fiendlyUrl">
+            <example>
+            boostan1207
+            </example>
+            </param>
+            <param name="resourcePrefix"></param>
+            <example>
+            plmp
+            </example>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartImportingFromPrinceton(System.String,System.String)">
+            <summary>
+            from http://pudl.princeton.edu/
+            </summary>
+            <param name="resourceNumber">dj52w476m</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartImportingFromHarvard(System.String,System.String)">
+            <summary>
+            from https://curiosity.lib.harvard.edu
+            </summary>
+            <param name="url">example: https://curiosity.lib.harvard.edu/islamic-heritage-project/catalog/40-990114893240203941</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartImportingFromHarvardDirectly(System.String,System.String,System.String)">
+            <summary>
+            import from http://www.qajarwomen.org
+            </summary>
+            <param name="hardvardResourceNumber">43117279</param>
+            <param name="friendlyUrl">atame</param>
+            <param name="srcUrl">http://www.qajarwomen.org/fa/items/1018A10.html</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartImportingFromHathiTrust(System.String,System.String)">
+            <summary>
+            from https://catalog.hathitrust.org
+            </summary>
+            <param name="resourceNumber">006814127</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartImportingFromPenLibraries(System.String,System.String)">
+            <summary>
+            from http://www.library.upenn.edu/
+            </summary>
+            <param name="resourceNumber">MEDREN_9949222153503681</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartImportingFromCambridge(System.String,System.String)">
+            <summary>
+            from http://cudl.lib.cam.ac.uk
+            </summary>
+            <param name="resourceNumber">MS-RAS-00258</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartImportingFromBritishLibrary(System.String,System.String)">
+            <summary>
+            from http://www.bl.uk
+            </summary>
+            <param name="resourceNumber">grenville_xli_f001r</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartImportingFromServerFolder(System.String,System.String,System.String)">
+            <summary>
+            import from server folder
+            </summary>
+            <param name="folderPath">C:\Tools\batches\florence</param>
+            <param name="friendlyUrl">shahname-florence</param>
+            <param name="srcUrl">https://t.me/dr_khatibi_abolfazl/888</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartImportingFromWalters(System.String,System.String)">
+            <summary>
+            from http://www.thedigitalwalters.org/01_ACCESS_WALTERS_MANUSCRIPTS.html
+            </summary>
+            <param name="resourceNumber">W619</param>
+            <param name="friendlyUrl">golestan-walters-01</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartImportingFromChesterBeatty(System.String,System.String)">
+            <summary>
+            import from https://viewer.cbl.ie
+            </summary>
+            <param name="resourceNumber">119</param>
+            <param name="friendlyUrl">golestan-baysonghori</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.RescheduleJobs">
+            <summary>
+            reschedule jobs
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.ReExamineLocDownloads">
+            <summary>
+            due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetImportJobs(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            import jobs
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.BookmarkArtifact(System.Guid,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            Bookmark Artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetArtifactUserBookmarks(System.Guid,System.Guid)">
+            <summary>
+            get artifact user bookmarks
+            </summary>
+            <param name="artifactId"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.BookmarkItem(System.Guid,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            Bookmark Item
+            </summary>
+            <param name="itemId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GeItemUserBookmarks(System.Guid,System.Guid)">
+            <summary>
+            get item user bookmarks
+            </summary>
+            <param name="itemId"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.UpdateUserBookmark(System.Guid,System.String)">
+            <summary>
+            update bookmark note
+            </summary>
+            <param name="bookmarkId"></param>
+            <param name="note"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.DeleteUserBookmark(System.Guid)">
+            <summary>
+            delete user bookmark         
+            /// </summary>
+            <param name="bookmarkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.Bookmark.RBookmarkType,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            get user bookmarks (artifacts and items)
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.AddUserNoteToArtifact(System.Guid,System.Guid,RMuseum.Models.Note.RNoteType,System.String,System.Nullable{System.Guid})">
+            <summary>
+            Add Note to Artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <param name="noteContents"></param>
+            <param name="referenceNoteId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.AddUserNoteToArtifactItem(System.Guid,System.Guid,RMuseum.Models.Note.RNoteType,System.String,System.Nullable{System.Guid})">
+            <summary>
+            Add Note to Artifact Item
+            </summary>
+            <param name="itemId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <param name="noteContents"></param>
+            <param name="referenceNoteId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.EditUserNote(System.Guid,System.Nullable{System.Guid},System.String)">
+            <summary>
+            Edit Note
+            </summary>
+            <param name="noteId"></param>
+            <param name="userId">sending null here means user is a moderator</param>
+            <param name="noteContents"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.DeleteUserNote(System.Guid,System.Nullable{System.Guid})">
+            <summary>
+            delete note
+            </summary>
+            <param name="noteId"></param>
+            <param name="userId">sending null here means user is a moderator or the note is being deleted in a recursive delete of referenced notes</param>
+            <returns>list of notes deleted</returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetArtifactUserNotes(System.Guid,System.Guid)">
+            <summary>
+            get artifact private user notes
+            </summary>
+            <param name="artifactId"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetArtifactPublicNotes(System.Guid)">
+            <summary>
+            get artifact public user notes
+            </summary>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetArtifactItemUserNotes(System.Guid,System.Guid)">
+            <summary>
+            get item artifact private user notes
+            </summary>
+            <param name="itemId"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetArtifactItemPublicNotes(System.Guid)">
+            <summary>
+            get item artifact item public user notes
+            </summary>
+            <param name="itemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetUserNotes(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Note.RNoteType,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            Get All USer Notes
+            </summary>
+            <param name="userId"></param>
+            <param name="paging"></param>
+            <param name="type"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetAllPublicNotes(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            Get All Public Notes
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.SuggestGanjoorLink(System.Guid,RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion)">
+            <summary>
+            suggest ganjoor link
+            </summary>
+            <param name="userId"></param>
+            <param name="link"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetSuggestedLinks(RMuseum.Models.GanjoorIntegration.ReviewResult,System.Boolean)">
+            <summary>
+            get suggested ganjoor links
+            </summary>
+            <param name="status"></param>
+            <param name="notSynced"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.ReviewSuggestedLink(System.Guid,System.Guid,RMuseum.Models.GanjoorIntegration.ReviewResult)">
+            <summary>
+            Review Suggested Link
+            </summary>
+            <param name="linkId"></param>
+            <param name="userId"></param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.AddTOCForSuggestedLinks">
+            <summary>
+            Temporary api
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.SynchronizeSuggestedLink(System.Guid)">
+            <summary>
+            Synchronize suggested link
+            </summary>
+            <param name="linkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetSuggestedPinterestLinks(RMuseum.Models.GanjoorIntegration.ReviewResult,System.Boolean)">
+            <summary>
+            get suggested pinterest links
+            </summary>
+            <param name="status"></param>
+            <param name="notSynced"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.SuggestPinterestLink(RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion)">
+            <summary>
+            suggest pinterest link
+            </summary>
+            <param name="suggestion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.ReviewSuggestedPinterestLink(System.Guid,System.Guid,System.String,RMuseum.Models.GanjoorIntegration.ReviewResult,System.String,System.String)">
+            <summary>
+            Review Suggested Pinterest Link
+            </summary>
+            <param name="linkId"></param>
+            <param name="userId"></param>
+            <param name="altText"></param>
+            <param name="result"></param>
+            <param name="reviewDesc"></param>
+            <param name="imageUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.SynchronizeSuggestedPinterestLink(System.Guid)">
+            <summary>
+            Synchronize suggested pinterest link
+            </summary>
+            <param name="linkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.PushNotification(System.Guid,System.String,System.String)">
+            <summary>
+            Add Notification
+            </summary>
+            <param name="userId"></param>
+            <param name="subject"></param>
+            <param name="htmlText"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetUserNotifications(System.Guid)">
+            <summary>
+            Get User Notifications
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetUnreadUserNotificationsCount(System.Guid)">
+            <summary>
+            Get Unread User Notifications Count
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.SwitchNotificationStatus(System.Guid)">
+            <summary>
+            Switch Notification Status
+            </summary>
+            <param name="notificationId"></param>    
+            <returns>updated notification object</returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.DeleteNotification(System.Guid)">
+            <summary>
+            Delete Notification
+            </summary>
+            <param name="notificationId"></param>    
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.RemoveArtifactHavingNoNoteAndBookmarks(System.Guid,System.Boolean)">
+            <summary>
+            an incomplete prototype for removing artifacts
+            </summary>
+            <param name="artifactId"></param>
+            <param name="checkJobs"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.ArtifactService">
+            <summary>
+            IArtifactService implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            get all artifacts (including CoverImage info but not items or tagibutes info)
+            </summary>
+            <param name="paging"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetByTagValue(System.String,System.String,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            get tagged publish artifacts (including CoverImage info but not items or tagibutes info) 
+            </summary>
+            <param name="tagUrl"></param>
+            <param name="valueUrl"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetByFriendlyUrl(System.String,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            gets specified artifact info (including CoverImage + images +  tagibutes)
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetByFriendlyUrlFilterItemsByTag(System.String,RMuseum.Models.Artifact.PublishStatus[],System.String,System.String)">
+            <summary>
+            gets specified artifact info (including CoverImage + images +  tagibutes)
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="statusArray"></param>
+            <param name="tagFriendlyUrl"></param>
+            <param name="tagValueFriendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.EditMasterRecord(RMuseum.Models.Artifact.RArtifactMasterRecord,System.Boolean,System.Boolean)">
+            <summary>
+            edit master record
+            </summary>
+            <param name="edited"></param>
+            <param name="canChangeStatusToAwaiting"></param>
+            <param name="canPublish"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.SetArtifactCoverItemIndex(System.Guid,System.Int32)">
+            <summary>
+            Set Artifact Cover Item Index
+            </summary>
+            <param name="artifactId"></param>
+            <param name="itemIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetTagBundleByFiendlyUrl(System.String)">
+            <summary>
+            get tag bundle by frindly url
+            </summary>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetMaxArtifactLastModified">
+            <summary>
+            get max lastmodified artifact date for caching purposes
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetAllTags(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get all  tags 
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetTagByFriendlyUrl(System.String)">
+            <summary>
+            get tag bu friendly url
+            </summary>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetTagValueByFriendlyUrl(System.Guid,System.String)">
+            <summary>
+            get tag value by frindly url
+            </summary>
+            <param name="tagId"></param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.AddTag(System.String)">
+            <summary>
+            add tag
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.EditTag(RMuseum.Models.Artifact.RTag)">
+            <summary>
+            edit tag
+            </summary>
+            <param name="edited"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.UpdateTaggedItems(RMuseum.Models.Artifact.RTag)">
+            <summary>
+            changes LastModified field value for tagged artifacts and items
+            </summary>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.EditTagOrderBasedOnArtifact(System.Guid,System.Guid,System.Boolean)">
+            <summary>
+            changes order of tags based on their position in artifacts
+            </summary>
+            <param name="tagId"></param>
+            <param name="artifactId"></param>
+            <param name="up">true => up, false => down</param>
+            <returns>the other tag which its Order has been changed</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.EditTagOrderBasedOnItem(System.Guid,System.Guid,System.Boolean)">
+            <summary>
+            changes order of tags based on their position in artifact items
+            </summary>
+            <param name="tagId"></param>
+            <param name="itemId"></param>
+            <param name="up">true => up, false => down</param>
+            <returns>the other tag which its Order has been changed</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetTagValueBundleByFiendlyUrl(System.String,System.String)">
+            <summary>
+            get tag value bundle by frindly url
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="valueUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.TagArtifact(System.Guid,RMuseum.Models.Artifact.RTag)">
+            <summary>
+            add artifact tag value
+            </summary>
+            <param name="artifactId"></param>
+            <param name="rTag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.UnTagArtifact(System.Guid,System.Guid)">
+            <summary>
+            remove artfiact tag value
+            </summary>
+            <param name="artifactId"></param>
+            <param name="tagValueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.EditTagValue(System.Guid,RMuseum.Models.Artifact.RTagValue,System.Boolean)">
+            <summary>
+            edit artifact tag value
+            </summary>
+            <param name="artifactId"></param>
+            <param name="edited"></param>
+            <param name="global">apply on all same value tags</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.TagItem(System.Guid,RMuseum.Models.Artifact.RTag)">
+            <summary>
+            add item tag value
+            </summary>
+            <param name="itemId"></param>
+            <param name="rTag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.UnTagItem(System.Guid,System.Guid)">
+            <summary>
+            remove item tag value
+            </summary>
+            <param name="itemId"></param>
+            <param name="tagValueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.EditItemTagValue(System.Guid,RMuseum.Models.Artifact.RTagValue,System.Boolean)">
+            <summary>
+            edit item tagibute value
+            </summary>
+            <param name="itemtId"></param>
+            <param name="edited"></param>
+            <param name="global">apply on all same value tags</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.EditTagValueOrder(System.Guid,System.Guid,System.Guid,System.Boolean)">
+            <summary>
+            changes order of tag values based on their position in an artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="tagId"></param>
+            <param name="valueId"></param>        
+            <param name="up">true => up, false => down</param>
+            <returns>the other tag value which its Order has been changed</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.EditItemTagValueOrder(System.Guid,System.Guid,System.Guid,System.Boolean)">
+            <summary>
+            changes order of tag values based on their position in an item
+            </summary>
+            <param name="itemId"></param>
+            <param name="tagId"></param>
+            <param name="valueId"></param>        
+            <param name="up">true => up, false => down</param>
+            <returns>the other tag value which its Order has been changed</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetArtifactItemByFrienlyUrl(System.String,System.String,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            gets specified artifact item info (including images + tagibutes)
+            </summary>
+            <param name="artifactUrl"></param>
+            <param name="itemUrl"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.Add(System.String,System.String,System.String,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.String,System.IO.Stream)">
+            <summary>
+            add new artifact
+            </summary>
+            <param name="name"></param>
+            <param name="description"></param>
+            <param name="srcurl"></param>
+            <param name="pictitle"></param>
+            <param name="picdescription"></param>
+            <param name="file"></param>
+            <param name="picsrcurl"></param>
+            <param name="stream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromTheLibraryOfCongress(System.String,System.String,System.String)">
+            <summary>
+            from https://www.loc.gov
+            </summary>
+            <param name="resourceNumber">
+            <example>
+            m084
+            </example>
+            </param>
+            <param name="friendlyUrl">
+            <example>
+            boostan1207
+            </example>
+            </param>
+            <param name="resourcePrefix"></param>
+            <example>
+            plmp
+            </example>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPrinceton(System.String,System.String)">
+            <summary>
+            from http://pudl.princeton.edu/
+            </summary>
+            <param name="resourceNumber">dj52w476m</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHarvard(System.String,System.String)">
+            <summary>
+            from https://curiosity.lib.harvard.edu
+            </summary>
+            <param name="url">example: https://curiosity.lib.harvard.edu/islamic-heritage-project/catalog/40-990114893240203941</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHarvardDirectly(System.String,System.String,System.String)">
+            <summary>
+            import from http://www.qajarwomen.org
+            </summary>
+            <param name="hardvardResourceNumber">43117279</param>
+            <param name="friendlyUrl">atame</param>
+            <param name="srcUrl">http://www.qajarwomen.org/fa/items/1018A10.html</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHathiTrust(System.String,System.String)">
+            <summary>
+            from https://catalog.hathitrust.org
+            </summary>
+            <param name="resourceNumber">006814127</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPenLibraries(System.String,System.String)">
+            <summary>
+            from http://www.library.upenn.edu/
+            </summary>
+            <param name="resourceNumber">MEDREN_9949222153503681</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromCambridge(System.String,System.String)">
+            <summary>
+            from http://cudl.lib.cam.ac.uk
+            </summary>
+            <param name="resourceNumber">MS-RAS-00258</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromBritishLibrary(System.String,System.String)">
+            <summary>
+            from http://www.bl.uk
+            </summary>
+            <param name="resourceNumber">grenville_xli_f001r</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromServerFolder(System.String,System.String,System.String)">
+            <summary>
+            import from server folder
+            </summary>
+            <param name="folderPath">C:\Tools\batches\florence</param>
+            <param name="friendlyUrl">shahname-florence</param>
+            <param name="srcUrl">https://t.me/dr_khatibi_abolfazl/888</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromWalters(System.String,System.String)">
+            <summary>
+            from http://www.thedigitalwalters.org/01_ACCESS_WALTERS_MANUSCRIPTS.html
+            </summary>
+            <param name="resourceNumber">W619</param>
+            <param name="friendlyUrl">golestan-walters-01</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromChesterBeatty(System.String,System.String)">
+            <summary>
+            import from https://viewer.cbl.ie
+            </summary>
+            <param name="resourceNumber">119</param>
+            <param name="friendlyUrl">golestan-baysonghori</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.RescheduleJobs">
+            <summary>
+            reschedule jobs
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.RemoveArtifactHavingNoNoteAndBookmarks(System.Guid,System.Boolean)">
+            <summary>
+            an incomplete prototype for removing artifacts
+            </summary>
+            <param name="artifactId"></param>
+            <param name="checkJobs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.ReExamineLocDownloads">
+            <summary>
+            due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetImportJobs(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+             import jobs
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.BookmarkArtifact(System.Guid,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            Bookmark Artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetArtifactUserBookmarks(System.Guid,System.Guid)">
+            <summary>
+            get artifact user bookmarks
+            </summary>
+            <param name="artifactId"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.BookmarkItem(System.Guid,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            Bookmark Item
+            </summary>
+            <param name="itemId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GeItemUserBookmarks(System.Guid,System.Guid)">
+            <summary>
+            get item user bookmarks
+            </summary>
+            <param name="itemId"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.UpdateUserBookmark(System.Guid,System.String)">
+            <summary>
+            update bookmark note
+            </summary>
+            <param name="bookmarkId"></param>
+            <param name="note"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.DeleteUserBookmark(System.Guid)">
+            <summary>
+            delete user bookmark         
+            /// </summary>
+            <param name="bookmarkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.Bookmark.RBookmarkType,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            get user bookmarks (artifacts and items)
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.AddUserNoteToArtifact(System.Guid,System.Guid,RMuseum.Models.Note.RNoteType,System.String,System.Nullable{System.Guid})">
+            <summary>
+            Add Note to Artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <param name="noteContents"></param>
+            <param name="referenceNoteId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.AddUserNoteToArtifactItem(System.Guid,System.Guid,RMuseum.Models.Note.RNoteType,System.String,System.Nullable{System.Guid})">
+            <summary>
+            Add Note to Artifact Item
+            </summary>
+            <param name="itemId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <param name="noteContents"></param>
+            <param name="referenceNoteId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.EditUserNote(System.Guid,System.Nullable{System.Guid},System.String)">
+            <summary>
+            Edit Note
+            </summary>
+            <param name="noteId"></param>
+            <param name="userId"></param>
+            <param name="noteContents"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.DeleteUserNote(System.Guid,System.Nullable{System.Guid})">
+            <summary>
+            delete note
+            </summary>
+            <param name="noteId"></param>
+            <param name="userId">sending null here means user is a moderator or the note is being deleted in a recursive delete of referenced notes</param>
+            <returns>list of notes deleted</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetArtifactUserNotes(System.Guid,System.Guid)">
+            <summary>
+            get artifact private user notes
+            </summary>
+            <param name="artifactId"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService._GetArtifactPublicNotes(System.Guid,System.Nullable{System.Guid})">
+            <summary>
+            recursvie call to build notes tree
+            </summary>
+            <param name="artifactId"></param>
+            <param name="parentNoteId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetArtifactPublicNotes(System.Guid)">
+            <summary>
+            get artifact public user notes
+            </summary>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetArtifactItemUserNotes(System.Guid,System.Guid)">
+            <summary>
+            get item artifact private user notes
+            </summary>
+            <param name="itemId"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService._GetArtifactItemPublicNotes(System.Guid,System.Nullable{System.Guid})">
+            <summary>
+            recursvie call to build notes tree for iten
+            </summary>
+            <param name="itemId"></param>
+            <param name="parentNoteId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetArtifactItemPublicNotes(System.Guid)">
+            <summary>
+            get item artifact item public user notes
+            </summary>
+            <param name="itemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetUserNotes(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Note.RNoteType,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            Get All USer Notes
+            </summary>
+            <param name="userId"></param>
+            <param name="paging"></param>
+            <param name="type"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetAllPublicNotes(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            Get All Public Notes
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.SuggestGanjoorLink(System.Guid,RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion)">
+            <summary>
+            suggest ganjoor link
+            </summary>
+            <param name="userId"></param>
+            <param name="link"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetSuggestedLinks(RMuseum.Models.GanjoorIntegration.ReviewResult,System.Boolean)">
+            <summary>
+            get suggested ganjoor links
+            </summary>
+            <param name="status"></param>
+            <param name="notSynced"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.ReviewSuggestedLink(System.Guid,System.Guid,RMuseum.Models.GanjoorIntegration.ReviewResult)">
+            <summary>
+            Review Suggested Link
+            </summary>
+            <param name="linkId"></param>
+            <param name="userId"></param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.AddTOCForSuggestedLinks">
+            <summary>
+            Temporary api
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.SynchronizeSuggestedLink(System.Guid)">
+            <summary>
+            Synchronize suggested link
+            </summary>
+            <param name="linkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetSuggestedPinterestLinks(RMuseum.Models.GanjoorIntegration.ReviewResult,System.Boolean)">
+            <summary>
+            get suggested pinterest links
+            </summary>
+            <param name="status"></param>
+            <param name="notSynced"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.SuggestPinterestLink(RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion)">
+            <summary>
+            suggest pinterest link
+            </summary>
+            <param name="suggestion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.ReviewSuggestedPinterestLink(System.Guid,System.Guid,System.String,RMuseum.Models.GanjoorIntegration.ReviewResult,System.String,System.String)">
+            <summary>
+            Review Suggested Pinterest Link
+            </summary>
+            <param name="linkId"></param>
+            <param name="userId"></param>
+            <param name="altText"></param>
+            <param name="result"></param>
+            <param name="reviewDesc"></param>
+            <param name="imageUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.SynchronizeSuggestedPinterestLink(System.Guid)">
+            <summary>
+            Synchronize suggested pinterest link
+            </summary>
+            <param name="linkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.PushNotification(System.Guid,System.String,System.String)">
+            <summary>
+            Add Notification
+            </summary>
+            <param name="userId"></param>
+            <param name="subject"></param>
+            <param name="htmlText"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.SwitchNotificationStatus(System.Guid)">
+            <summary>
+            Switch Notification Status
+            </summary>
+            <param name="notificationId"></param>    
+            <returns>updated notification object</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.DeleteNotification(System.Guid)">
+            <summary>
+            Delete Notification
+            </summary>
+            <param name="notificationId"></param>    
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetUserNotifications(System.Guid)">
+            <summary>
+            Get User Notifications
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetUnreadUserNotificationsCount(System.Guid)">
+            <summary>
+            Get Unread User Notifications Count
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.ArtifactService._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.ArtifactService._pictureFileService">
+            <summary>
+            Picture File Service
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.ArtifactService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.ArtifactService._backgroundTaskQueue">
+            <summary>
+            Background Task Queue Instance
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.ArtifactService._userService">
+            <summary>
+            User Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IPictureFileService,RMuseum.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="configuration"></param>
+            <param name="pictureFileService"></param>
+            <param name="backgroundTaskQueue"></param>
+            <param name="userService"></param>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.BLTileMixer">
+            <summary>
+            British Library Tile Downloader And Mixer
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.BLTileMixer.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.BLTileMixer._GetEncoder(System.Drawing.Imaging.ImageFormat)">
+            <summary>
+            find image encodder
+            </summary>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.MailKitEmailSender.SmptConfig">
+            <summary>
+            SmptConfig
+            </summary>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.PictureFileService">
+            <summary>
+            manipulating picture files 
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PictureFileService.RecoverFromeFiles(System.String,System.String,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            recover from files
+            </summary>
+            <param name="title"></param>
+            <param name="description"></param>
+            <param name="order"></param>
+            <param name="srcurl"></param>
+            <param name="orignalFilePath"></param>
+            <param name="normalFilePath"></param>
+            <param name="thumbFilePath"></param>
+            <param name="originalFileNameForStreams"></param>
+            <param name="imageFolderName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PictureFileService.Add(System.String,System.String,System.Int32,Microsoft.AspNetCore.Http.IFormFile,System.String,System.IO.Stream,System.String,System.String)">
+            <summary>
+            add new picture
+            </summary>
+            <param name="title"></param>
+            <param name="description"></param>
+            <param name="order"></param>
+            <param name="file"></param>
+            <param name="srcurl"></param>
+            <param name="stream"></param>
+            <param name="originalFileNameForStreams"></param>
+            <param name="imageFolderName">pass empty if you want a generic date based folder</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PictureFileService.GetImage(System.Guid)">
+            <summary>
+            returns image info
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PictureFileService.RotateImage(System.Guid,System.Int32)">
+            <summary>
+            Rotate Image in 90 deg. multiplicants: 90, 180 or 270
+            </summary>
+            <param name="id"></param>
+            <param name="degIn90mul"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PictureFileService.GetEncoder(System.Drawing.Imaging.ImageFormat)">
+            <summary>
+            find image encodder
+            </summary>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PictureFileService.GetImagePath(RMuseum.Models.Artifact.RPictureFile,System.String)">
+            <summary>
+            returns image file stream
+            </summary>
+            <param name="image"></param>
+            <param name="sz"></param>
+            <returns></returns>        
+        </member>
+        <member name="P:RMuseum.Services.Implementation.PictureFileService.ResizedImageContentType">
+            <summary>
+            فرمت تصاویر بندانگشتی و ...
+            </summary>
+            <example>image/jpeg</example>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.PictureFileService.NormalImageMaxWidth">
+            <summary>
+            عرض تصویر با اندازه نرمال - جهت نمایش در صفحات
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.PictureFileService.NormalImageMaxHeight">
+            <summary>
+            /// طول تصویر با اندازه نرمال - جهت نمایش در صفحات
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.PictureFileService.ThumbnailImageWidth">
+            <summary>
+            عرض تصویر بندانگشتی
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.PictureFileService.ThumbnailImageMaxHeight">
+            <summary>
+            طول تصویر بندانگشتی
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.PictureFileService.ImageStoragePath">
+            <summary>
+            Image Storage Path
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PictureFileService.GenerateCroppedImageBasedOnThumbnailCoordinates(System.Guid,System.Decimal,System.Decimal,System.Decimal,System.Decimal)">
+            <summary>
+            Generated Cropped Image Based On ThumbnailCoordinates For Notes
+            </summary>
+            <param name="id"></param>
+            <param name="left"></param>
+            <param name="top"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.PictureFileService._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.PictureFileService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.PictureFileService._simpleImageStorage">
+            <summary>
+            Simple Image Storage (not storing multiple image sizes) for creating small cropped images
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PictureFileService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IImageFileService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="configuration"></param>
+            <param name="simpleImageStorage"></param>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.RoleService">
+            <summary>
+            Role Service Implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RoleService.GetSecurableItems">
+            <summary>
+            gets list of SecurableItem, should be reimplemented in end user applications
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RoleService.#ctor(Microsoft.AspNetCore.Identity.RoleManager{RSecurityBackend.Models.Auth.Db.RAppRole})">
+            <summary>
+            constructor
+            </summary>
+            <param name="roleManager"></param>       
+        </member>
+        <member name="T:RMuseum.Services.IPictureFileService">
+            <summary>
+            manipulating picture files 
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IPictureFileService.Add(System.String,System.String,System.Int32,Microsoft.AspNetCore.Http.IFormFile,System.String,System.IO.Stream,System.String,System.String)">
+            <summary>
+            add new picture
+            </summary>
+            <param name="title"></param>
+            <param name="description"></param>
+            <param name="order"></param>
+            <param name="file"></param>
+            <param name="srcurl"></param>
+            <param name="stream"></param>
+            <param name="originalFileNameForStreams"></param>
+            <param name="imageFolderName">pass empty if you want a generic date based folder</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPictureFileService.RecoverFromeFiles(System.String,System.String,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            recover from files
+            </summary>
+            <param name="title"></param>
+            <param name="description"></param>
+            <param name="order"></param>
+            <param name="srcurl"></param>
+            <param name="orignalFilePath"></param>
+            <param name="normalFilePath"></param>
+            <param name="thumbFilePath"></param>
+            <param name="originalFileNameForStreams"></param>
+            <param name="imageFolderName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPictureFileService.GetImage(System.Guid)">
+            <summary>
+            returns image info
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPictureFileService.GetImagePath(RMuseum.Models.Artifact.RPictureFile,System.String)">
+            <summary>
+            returns image file stream
+            </summary>
+            <param name="image"></param>
+            <param name="sz"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:RMuseum.Services.IPictureFileService.RotateImage(System.Guid,System.Int32)">
+            <summary>
+            Rotate Image in 90 deg. multiplicants: 90, 180 or 270
+            </summary>
+            <param name="id"></param>
+            <param name="degIn90mul"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPictureFileService.GetEncoder(System.Drawing.Imaging.ImageFormat)">
+            <summary>
+            Get Encoder
+            </summary>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPictureFileService.GenerateCroppedImageBasedOnThumbnailCoordinates(System.Guid,System.Decimal,System.Decimal,System.Decimal,System.Decimal)">
+            <summary>
+            Generate Cropped Image Based On ThumbnailCoordinates For Notes
+            </summary>
+            <param name="id"></param>
+            <param name="left"></param>
+            <param name="top"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RMuseum.Services.IPictureFileService.ImageStoragePath">
+            <summary>
+            Image Storage Path
+            </summary>
+        </member>
+        <member name="T:RMuseum.Swashbuckle.SecurityRequirementsOperationFilter">
+            <summary>
+            //https://mattfrear.com/2018/07/21/add-an-authorization-header-to-your-swagger-ui-with-swashbuckle-revisited/
+            </summary>
+        </member>
+        <member name="M:RMuseum.Swashbuckle.SecurityRequirementsOperationFilter.Apply(Microsoft.OpenApi.Models.OpenApiOperation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)">
+            <summary>
+            
+            </summary>
+            <param name="operation"></param>
+            <param name="context"></param>
+        </member>
+    </members>
+</doc>

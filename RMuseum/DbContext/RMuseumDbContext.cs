@@ -1,0 +1,130 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using RMuseum.Models.Artifact;
+using RMuseum.Models.Bookmark;
+using RMuseum.Models.GanjoorIntegration;
+using RMuseum.Models.ImportJob;
+using RMuseum.Models.Note;
+using RMuseum.Models.Notification;
+using RSecurityBackend.DbContext;
+using RSecurityBackend.Models.Auth.Db;
+using System;
+
+namespace RMuseum.DbContext
+{
+    /// <summary>
+    /// Museum Database Context
+    /// </summary>
+    public class RMuseumDbContext : RSecurityDbContext<RAppUser, RAppRole, Guid>
+    {
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public RMuseumDbContext(IConfiguration configuration)
+        {
+            Configuration = configuration;
+            Database.Migrate();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IConfiguration Configuration { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="optionsBuilder"></param>
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            base.OnConfiguring(optionsBuilder);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="builder"></param>
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<RArtifactMasterRecord>()
+                .HasIndex(m => m.FriendlyUrl)
+                .IsUnique();
+
+            builder.Entity<RArtifactItemRecord>()
+                .HasIndex(i => new { i.RArtifactMasterRecordId, i.FriendlyUrl })
+                .IsUnique();
+
+            builder.Entity<RArtifactItemRecord>()
+                .HasIndex(i => new { i.RArtifactMasterRecordId, i.Order })
+                .IsUnique();
+
+            builder.Entity<RTag>()
+                .HasIndex(t => t.FriendlyUrl);
+
+            builder.Entity<RTagValue>()
+                .HasIndex(t => t.FriendlyUrl);            
+
+        }
+
+
+        /// <summary>
+        /// Picture Files
+        /// </summary>
+        public DbSet<RPictureFile> PictureFiles { get; set; }
+
+        /// <summary>
+        /// Item Attributes
+        /// </summary>
+        public DbSet<RTag> Tags { get; set; }
+
+        /// <summary>
+        /// Artifacts
+        /// </summary>
+        public DbSet<RArtifactMasterRecord> Artifacts { get; set; }
+
+        /// <summary>
+        /// Items
+        /// </summary>
+        public DbSet<RArtifactItemRecord> Items { get; set; }
+
+
+        /// <summary>
+        /// Import Jobs
+        /// </summary>
+        public DbSet<ImportJob> ImportJobs { get; set; }
+
+        /// <summary>
+        /// Tags
+        /// </summary>
+        public DbSet<RTagValue> TagValues { get; set; }
+
+        /// <summary>
+        /// User Bookmarks
+        /// </summary>
+        public DbSet<RUserBookmark> UserBookmarks { get; set; }
+        
+        /// <summary>
+        /// User Notes
+        /// </summary>
+        public DbSet<RUserNote> UserNotes { get; set; }
+
+        /// <summary>
+        /// Ganjoor Links
+        /// </summary>
+        public DbSet<GanjoorLink> GanjoorLinks { get; set; }
+
+        /// <summary>
+        /// Notifications
+        /// </summary>
+        public DbSet<RUserNotification> Notifications { get; set; }
+
+        /// <summary>
+        /// Pinterest Links
+        /// </summary>
+        public DbSet<PinterestLink> PinterestLinks { get; set; }
+
+    }
+}
