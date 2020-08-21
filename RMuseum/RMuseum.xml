@@ -2780,6 +2780,141 @@
             <summary>
             IArtifactService implementation
             </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHarvardDirectly(System.String,System.String,System.String)">
+            <summary>
+            import from http://www.qajarwomen.org
+            </summary>
+            <param name="hardvardResourceNumber">43117279</param>
+            <param name="friendlyUrl">atame</param>
+            <param name="srcUrl">http://www.qajarwomen.org/fa/items/1018A10.html</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromBritishLibrary(System.String,System.String)">
+            <summary>
+            from http://www.bl.uk
+            </summary>
+            <param name="resourceNumber">grenville_xli_f001r</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromCambridge(System.String,System.String)">
+            <summary>
+            from http://cudl.lib.cam.ac.uk
+            </summary>
+            <param name="resourceNumber">MS-RAS-00258</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromChesterBeatty(System.String,System.String)">
+            <summary>
+            import from https://viewer.cbl.ie
+            </summary>
+            <param name="resourceNumber">119</param>
+            <param name="friendlyUrl">golestan-baysonghori</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHarvard(System.String,System.String)">
+            <summary>
+            from https://curiosity.lib.harvard.edu
+            </summary>
+            <param name="url">example: https://curiosity.lib.harvard.edu/islamic-heritage-project/catalog/40-990114893240203941</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHathiTrust(System.String,System.String)">
+            <summary>
+            from https://catalog.hathitrust.org
+            </summary>
+            <param name="resourceNumber">006814127</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromTheLibraryOfCongress(System.String,System.String,System.String)">
+            <summary>
+            from https://www.loc.gov
+            </summary>
+            <param name="resourceNumber">
+            <example>
+            m084
+            </example>
+            </param>
+            <param name="friendlyUrl">
+            <example>
+            boostan1207
+            </example>
+            </param>
+            <param name="resourcePrefix"></param>
+            <example>
+            plmp
+            </example>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPenLibraries(System.String,System.String)">
+            <summary>
+            from http://www.library.upenn.edu/
+            </summary>
+            <param name="resourceNumber">MEDREN_9949222153503681</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromServerFolder(System.String,System.String,System.String)">
+            <summary>
+            import from server folder
+            </summary>
+            <param name="folderPath">C:\Tools\batches\florence</param>
+            <param name="friendlyUrl">shahname-florence</param>
+            <param name="srcUrl">https://t.me/dr_khatibi_abolfazl/888</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromWalters(System.String,System.String)">
+            <summary>
+            from http://www.thedigitalwalters.org/01_ACCESS_WALTERS_MANUSCRIPTS.html
+            </summary>
+            <param name="resourceNumber">W619</param>
+            <param name="friendlyUrl">golestan-walters-01</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPrinceton(System.String,System.String)">
+            <summary>
+            from http://pudl.princeton.edu/
+            </summary>
+            <param name="resourceNumber">dj52w476m</param>
+            <param name="friendlyUrl"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Artifact.PublishStatus[])">
             <summary>
@@ -3015,108 +3150,6 @@
             <param name="resourceNumber">119</param>
             <param name="friendlyUrl">golestan-baysonghori</param>
             <param name="resourcePrefix"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromTheLibraryOfCongress(System.String,System.String,System.String)">
-            <summary>
-            from https://www.loc.gov
-            </summary>
-            <param name="resourceNumber">
-            <example>
-            m084
-            </example>
-            </param>
-            <param name="friendlyUrl">
-            <example>
-            boostan1207
-            </example>
-            </param>
-            <param name="resourcePrefix"></param>
-            <example>
-            plmp
-            </example>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPrinceton(System.String,System.String)">
-            <summary>
-            from http://pudl.princeton.edu/
-            </summary>
-            <param name="resourceNumber">dj52w476m</param>
-            <param name="friendlyUrl"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHarvard(System.String,System.String)">
-            <summary>
-            from https://curiosity.lib.harvard.edu
-            </summary>
-            <param name="url">example: https://curiosity.lib.harvard.edu/islamic-heritage-project/catalog/40-990114893240203941</param>
-            <param name="friendlyUrl"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHarvardDirectly(System.String,System.String,System.String)">
-            <summary>
-            import from http://www.qajarwomen.org
-            </summary>
-            <param name="hardvardResourceNumber">43117279</param>
-            <param name="friendlyUrl">atame</param>
-            <param name="srcUrl">http://www.qajarwomen.org/fa/items/1018A10.html</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHathiTrust(System.String,System.String)">
-            <summary>
-            from https://catalog.hathitrust.org
-            </summary>
-            <param name="resourceNumber">006814127</param>
-            <param name="friendlyUrl"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPenLibraries(System.String,System.String)">
-            <summary>
-            from http://www.library.upenn.edu/
-            </summary>
-            <param name="resourceNumber">MEDREN_9949222153503681</param>
-            <param name="friendlyUrl"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromCambridge(System.String,System.String)">
-            <summary>
-            from http://cudl.lib.cam.ac.uk
-            </summary>
-            <param name="resourceNumber">MS-RAS-00258</param>
-            <param name="friendlyUrl"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromBritishLibrary(System.String,System.String)">
-            <summary>
-            from http://www.bl.uk
-            </summary>
-            <param name="resourceNumber">grenville_xli_f001r</param>
-            <param name="friendlyUrl"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromServerFolder(System.String,System.String,System.String)">
-            <summary>
-            import from server folder
-            </summary>
-            <param name="folderPath">C:\Tools\batches\florence</param>
-            <param name="friendlyUrl">shahname-florence</param>
-            <param name="srcUrl">https://t.me/dr_khatibi_abolfazl/888</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromWalters(System.String,System.String)">
-            <summary>
-            from http://www.thedigitalwalters.org/01_ACCESS_WALTERS_MANUSCRIPTS.html
-            </summary>
-            <param name="resourceNumber">W619</param>
-            <param name="friendlyUrl">golestan-walters-01</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromChesterBeatty(System.String,System.String)">
-            <summary>
-            import from https://viewer.cbl.ie
-            </summary>
-            <param name="resourceNumber">119</param>
-            <param name="friendlyUrl">golestan-baysonghori</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.RescheduleJobs">
