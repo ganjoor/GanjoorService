@@ -1339,6 +1339,50 @@ namespace RMuseum.Services.Implementation
                       
         }
 
+        /// <summary>
+        /// import from external resources
+        /// </summary>
+        /// <param name="srcType">loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl</param>
+        /// <param name="resourceNumber">119</param>
+        /// <param name="friendlyUrl">golestan-baysonghori</param>
+        /// <param name="resourcePrefix"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix)
+        {
+           return
+                srcType == "princeton" ?
+                await StartImportingFromPrinceton(resourceNumber, friendlyUrl)
+                :
+                srcType == "harvard" ?
+                await StartImportingFromHarvard(resourceNumber, friendlyUrl)
+                :
+                 srcType == "qajarwomen" ?
+                await StartImportingFromHarvardDirectly(resourceNumber, friendlyUrl, resourcePrefix)
+                :
+                 srcType == "hathitrust" ?
+                await StartImportingFromHathiTrust(resourceNumber, friendlyUrl)
+                :
+                srcType == "penn" ?
+                await StartImportingFromPenLibraries(resourceNumber, friendlyUrl)
+                :
+                srcType == "cam" ?
+                await StartImportingFromCambridge(resourceNumber, friendlyUrl)
+                :
+                srcType == "bl" ?
+                await StartImportingFromBritishLibrary(resourceNumber, friendlyUrl)
+                :
+                srcType == "folder" ?
+                await StartImportingFromServerFolder(resourceNumber, friendlyUrl, resourcePrefix)
+                :
+                srcType == "walters" ?
+                await StartImportingFromWalters(resourceNumber, friendlyUrl)
+                 :
+                srcType == "cbl" ?
+                await StartImportingFromChesterBeatty(resourceNumber, friendlyUrl)
+                :
+                await StartImportingFromTheLibraryOfCongress(resourceNumber, friendlyUrl, resourcePrefix);
+        }
+
 
 
         /// <summary>
@@ -1359,7 +1403,7 @@ namespace RMuseum.Services.Implementation
         /// plmp
         /// </example>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingFromTheLibraryOfCongress(string resourceNumber, string friendlyUrl, string resourcePrefix)
+        private async Task<RServiceResult<bool>> StartImportingFromTheLibraryOfCongress(string resourceNumber, string friendlyUrl, string resourcePrefix)
         {
             string url = $"https://www.loc.gov/resource/{resourcePrefix}.{resourceNumber}/?fo=json&st=gallery";
 
@@ -1869,7 +1913,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="resourceNumber">dj52w476m</param>
         /// <param name="friendlyUrl"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingFromPrinceton(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromPrinceton(string resourceNumber, string friendlyUrl)
         {
             string url = $"http://pudl.princeton.edu/mdCompiler2.php?obj={resourceNumber}";
             if (
@@ -2323,7 +2367,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="url">example: https://curiosity.lib.harvard.edu/islamic-heritage-project/catalog/40-990114893240203941</param>
         /// <param name="friendlyUrl"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingFromHarvard(string url, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromHarvard(string url, string friendlyUrl)
         {
             try
             {
@@ -2789,7 +2833,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="friendlyUrl">atame</param>
         /// <param name="srcUrl">http://www.qajarwomen.org/fa/items/1018A10.html</param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingFromHarvardDirectly(string hardvardResourceNumber, string friendlyUrl, string srcUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromHarvardDirectly(string hardvardResourceNumber, string friendlyUrl, string srcUrl)
         {
             try
             {
@@ -2959,7 +3003,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="resourceNumber">006814127</param>
         /// <param name="friendlyUrl"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingFromHathiTrust(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromHathiTrust(string resourceNumber, string friendlyUrl)
         {
             string url = $"https://catalog.hathitrust.org/Record/{resourceNumber}.xml";
             if (
@@ -3454,7 +3498,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="resourceNumber">MEDREN_9949222153503681</param>
         /// <param name="friendlyUrl"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingFromPenLibraries(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromPenLibraries(string resourceNumber, string friendlyUrl)
         {
             string url = $"http://dla.library.upenn.edu/dla/medren/pageturn.html?id={resourceNumber}&rotation=0&size=0";
             if (
@@ -3932,7 +3976,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="resourceNumber">MS-RAS-00258</param>
         /// <param name="friendlyUrl"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingFromCambridge(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromCambridge(string resourceNumber, string friendlyUrl)
         {
             string url = $"http://cudl.lib.cam.ac.uk/view/{resourceNumber}.json";
             if (
@@ -4379,7 +4423,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="resourceNumber">grenville_xli_f001r</param>
         /// <param name="friendlyUrl"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingFromBritishLibrary(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromBritishLibrary(string resourceNumber, string friendlyUrl)
         {
             string url = $"http://www.bl.uk/manuscripts/Viewer.aspx?ref={resourceNumber}";
             if (
@@ -5060,7 +5104,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="friendlyUrl">shahname-florence</param>
         /// <param name="srcUrl">https://t.me/dr_khatibi_abolfazl/888</param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingFromServerFolder(string folderPath, string friendlyUrl, string srcUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromServerFolder(string folderPath, string friendlyUrl, string srcUrl)
         {
             try
             {
@@ -5305,7 +5349,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="resourceNumber">W619</param>
         /// <param name="friendlyUrl">golestan-walters-01</param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingFromWalters(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromWalters(string resourceNumber, string friendlyUrl)
         {
             string url = $"http://www.thedigitalwalters.org/Data/WaltersManuscripts/ManuscriptDescriptions/{resourceNumber}_tei.xml";
             if (
@@ -5768,7 +5812,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="resourceNumber">119</param>
         /// <param name="friendlyUrl">golestan-baysonghori</param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingFromChesterBeatty(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromChesterBeatty(string resourceNumber, string friendlyUrl)
         {
             try
             {

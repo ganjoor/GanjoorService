@@ -1091,37 +1091,7 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix)
         {
             RServiceResult<bool> res =
-                srcType == "princeton" ?
-                await _artifactService.StartImportingFromPrinceton(resourceNumber, friendlyUrl)
-                :
-                srcType == "harvard" ?
-                await _artifactService.StartImportingFromHarvard(resourceNumber, friendlyUrl)
-                :
-                 srcType == "qajarwomen" ?
-                await _artifactService.StartImportingFromHarvardDirectly(resourceNumber, friendlyUrl, resourcePrefix)
-                :
-                 srcType == "hathitrust" ?
-                await _artifactService.StartImportingFromHathiTrust(resourceNumber, friendlyUrl)
-                :
-                srcType == "penn" ?
-                await _artifactService.StartImportingFromPenLibraries(resourceNumber, friendlyUrl)
-                :
-                srcType == "cam" ?
-                await _artifactService.StartImportingFromCambridge(resourceNumber, friendlyUrl)
-                :
-                srcType == "bl" ?
-                await _artifactService.StartImportingFromBritishLibrary(resourceNumber, friendlyUrl)
-                :
-                srcType == "folder" ?
-                await _artifactService.StartImportingFromServerFolder(resourceNumber, friendlyUrl, resourcePrefix)
-                :
-                srcType == "walters" ?
-                await _artifactService.StartImportingFromWalters(resourceNumber, friendlyUrl)
-                 :
-                srcType == "cbl" ?
-                await _artifactService.StartImportingFromChesterBeatty(resourceNumber, friendlyUrl)
-                :
-                await _artifactService.StartImportingFromTheLibraryOfCongress(resourceNumber, friendlyUrl, resourcePrefix);
+                await _artifactService.Import(srcType, resourceNumber, friendlyUrl, resourcePrefix);
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);

@@ -252,106 +252,14 @@ namespace RMuseum.Services
 
 
         /// <summary>
-        /// for now it only supports https://www.loc.gov
+        /// import from external resources
         /// </summary>
-        /// <param name="resourceNumber">
-        /// <example>
-        /// m084
-        /// </example>
-        /// </param>
-        /// <param name="fiendlyUrl">
-        /// <example>
-        /// boostan1207
-        /// </example>
-        /// </param>
-        /// <param name="resourcePrefix"></param>
-        /// <example>
-        /// plmp
-        /// </example>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> StartImportingFromTheLibraryOfCongress(string resourceNumber, string fiendlyUrl, string resourcePrefix);
-
-        /// <summary>
-        /// from http://pudl.princeton.edu/
-        /// </summary>
-        /// <param name="resourceNumber">dj52w476m</param>
-        /// <param name="friendlyUrl"></param>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> StartImportingFromPrinceton(string resourceNumber, string friendlyUrl);
-
-        /// <summary>
-        /// from https://curiosity.lib.harvard.edu
-        /// </summary>
-        /// <param name="url">example: https://curiosity.lib.harvard.edu/islamic-heritage-project/catalog/40-990114893240203941</param>
-        /// <param name="friendlyUrl"></param>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> StartImportingFromHarvard(string url, string friendlyUrl);
-
-        /// <summary>
-        /// import from http://www.qajarwomen.org
-        /// </summary>
-        /// <param name="hardvardResourceNumber">43117279</param>
-        /// <param name="friendlyUrl">atame</param>
-        /// <param name="srcUrl">http://www.qajarwomen.org/fa/items/1018A10.html</param>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> StartImportingFromHarvardDirectly(string hardvardResourceNumber, string friendlyUrl, string srcUrl);
-
-        /// <summary>
-        /// from https://catalog.hathitrust.org
-        /// </summary>
-        /// <param name="resourceNumber">006814127</param>
-        /// <param name="friendlyUrl"></param>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> StartImportingFromHathiTrust(string resourceNumber, string friendlyUrl);
-
-        /// <summary>
-        /// from http://www.library.upenn.edu/
-        /// </summary>
-        /// <param name="resourceNumber">MEDREN_9949222153503681</param>
-        /// <param name="friendlyUrl"></param>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> StartImportingFromPenLibraries(string resourceNumber, string friendlyUrl);
-
-        /// <summary>
-        /// from http://cudl.lib.cam.ac.uk
-        /// </summary>
-        /// <param name="resourceNumber">MS-RAS-00258</param>
-        /// <param name="friendlyUrl"></param>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> StartImportingFromCambridge(string resourceNumber, string friendlyUrl);
-
-        /// <summary>
-        /// from http://www.bl.uk
-        /// </summary>
-        /// <param name="resourceNumber">grenville_xli_f001r</param>
-        /// <param name="friendlyUrl"></param>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> StartImportingFromBritishLibrary(string resourceNumber, string friendlyUrl);
-
-        /// <summary>
-        /// import from server folder
-        /// </summary>
-        /// <param name="folderPath">C:\Tools\batches\florence</param>
-        /// <param name="friendlyUrl">shahname-florence</param>
-        /// <param name="srcUrl">https://t.me/dr_khatibi_abolfazl/888</param>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> StartImportingFromServerFolder(string folderPath, string friendlyUrl, string srcUrl);
-
-        /// <summary>
-        /// from http://www.thedigitalwalters.org/01_ACCESS_WALTERS_MANUSCRIPTS.html
-        /// </summary>
-        /// <param name="resourceNumber">W619</param>
-        /// <param name="friendlyUrl">golestan-walters-01</param>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> StartImportingFromWalters(string resourceNumber, string friendlyUrl);
-
-        /// <summary>
-        /// import from https://viewer.cbl.ie
-        /// </summary>
+        /// <param name="srcType">loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl</param>
         /// <param name="resourceNumber">119</param>
         /// <param name="friendlyUrl">golestan-baysonghori</param>
+        /// <param name="resourcePrefix"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> StartImportingFromChesterBeatty(string resourceNumber, string friendlyUrl);
+        Task<RServiceResult<bool>> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix);
 
         /// <summary>
         /// reschedule jobs
