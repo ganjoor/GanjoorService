@@ -1,6 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using MimeKit;
 using RSecurityBackend.Models.Mail;
 using System.Threading.Tasks;
@@ -10,38 +10,55 @@ namespace RSecurityBackend.Services.Implementation
     /// <summary>
     /// mail sender using MailKit
     /// </summary>
-    public class MailKitEmailSenderBase : IEmailSender
+    public class MailKitEmailSender : IEmailSender
     {
         /// <summary>
         /// constructor
         /// </summary>
-        public MailKitEmailSenderBase()
+        /// <param name="configuration"></param>
+        public MailKitEmailSender(IConfiguration configuration)
         {
+            Configuration = configuration;
             Options = SmptConfig;
+           
         }
+
+        /// <summary>
+        /// Configuration
+        /// </summary>
+        protected IConfiguration Configuration { get; }
 
         /// <summary>
         /// options
         /// </summary>
         public SmptConfig Options { get; } //set only via Secret Manager
 
+
+        private SmptConfig _SmptConfig = null;
+
         /// <summary>
         /// SmptConfig
         /// </summary>
-        public virtual SmptConfig SmptConfig
+        public SmptConfig SmptConfig
         {
             get
             {
-                return
-                    new SmptConfig()
-                    {
-                        port = 465,
-                        server = "smtp.gmail.com",
-                        smtpUsername = "nonexistingganjoor@gmail.com",
-                        smtpPassword = "APasswordHere",
-                        from = "nonexistingganjoor@gmail.com",
-                        useSsl = true
-                    };
+                if (_SmptConfig == null)
+                {
+                    _SmptConfig =
+                            new SmptConfig()
+                            {
+                                server = $"{Configuration.GetSection("SmptConfig")["Server"]}",
+                                port = int.Parse($"{Configuration.GetSection("SmptConfig")["Port"]}"),
+                                useSsl = bool.Parse($"{Configuration.GetSection("SmptConfig")["UseSsl"]}"),
+                                smtpUsername = $"{ Configuration.GetSection("SmptConfig")["Username"] }",
+                                smtpPassword = $"{Configuration.GetSection("SmptConfig")["Password"]}",
+                                from = $"{ Configuration.GetSection("SmptConfig")["From"] }"
+
+                            };
+                }
+                return _SmptConfig;
+
             }
         }
 

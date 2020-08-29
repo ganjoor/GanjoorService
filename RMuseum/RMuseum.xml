@@ -3710,11 +3710,6 @@
             <param name="format"></param>
             <returns></returns>
         </member>
-        <member name="P:RMuseum.Services.Implementation.MailKitEmailSender.SmptConfig">
-            <summary>
-            SmptConfig
-            </summary>
-        </member>
         <member name="T:RMuseum.Services.Implementation.PictureFileService">
             <summary>
             manipulating picture files 
