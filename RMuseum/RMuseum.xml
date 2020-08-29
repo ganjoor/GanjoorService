@@ -1495,6 +1495,185 @@
             User Note
             </summary>
         </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.AudioSyncStatus">
+            <summary>
+            Audio Synchronization Status (binary combination is acceptable)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.Synchronized">
+            <summary>
+            no changed
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.NewItem">
+            <summary>
+            new upload
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.MetadataChanged">
+            <summary>
+            meta data should be updated
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.SoundFilesChanged">
+            <summary>
+            sound files should be reuploaded
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.XmlFileChanged">
+            <summary>
+            Xml file should be reuploaded
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.Deleted">
+            <summary>
+            Item is deleted
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.PoemNarration">
+            <summary>
+            Poem Narration
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Owner">
+            <summary>
+            Owner User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.OwnerId">
+            <summary>
+            Owner User Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.GanjoorPostId">
+            <summary>
+            Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioOrder">
+            <summary>
+            This determines where an audio is displayed between a list of sounds related to a specfic poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.GanjoorAudioId">
+            <summary>
+            Final data is actually exported to a MySQL database which this auto increment field is its key
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.FileNameWithoutExtension">
+            <summary>
+            Using this field content you would determine xml, mp3 and ogg file names
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.SoundFilesFolder">
+            <summary>
+            combining this with <see cref="P:RMuseum.Models.GanjoorAudio.PoemNarration.FileNameWithoutExtension"/> + .ext would preduce relative path of sound files on our file server the full path would become [HOMEPath] + '/i/' + this value
+            </summary>
+            <sample>
+            "a2"
+            </sample>
+            <remarks>
+            We had previously used different pathes because when a directory became overcrowded our connection time would increase unbearably due to IRAN internet problems, so it is sensible to store it per record and not as a global option value
+            </remarks>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Mp3FilePath">
+            <summary>
+            MP3 File Path
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Mp3Url">
+            <summary>
+            MP3 url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.OggFilePath">
+            <summary>
+            OGG File Path
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.OggUrl">
+            <summary>
+            OGG url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.XMLFilePath">
+            <summary>
+            This is also a legacy field
+            </summary>
+            <sample>
+            "/i/a2/x"
+            </sample>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioTitle">
+            <summary>
+            Audio Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioArtist">
+            <summary>
+            Audio Artist
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioArtistUrl">
+            <summary>
+            Audio Artist Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioSrc">
+            <summary>
+            Audio Source
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioSrcUrl">
+            <summary>
+            Audio Src Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.LegacyAudioGuid">
+            <summary>
+            Legacy Audio Guid
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Mp3FileCheckSum">
+            <summary>
+            Audio File CheckSum
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Mp3SizeInBytes">
+            <summary>
+            mp3 size in bytes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.OggSizeInBytes">
+            <summary>
+            ogg size in bytes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.UploadDate">
+            <summary>
+            Audio Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.TemporaryUploadedMp3FilePath">
+            <summary>
+            MP3 File temporary pass on Windows Server
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.TemporaryUploadedXmlFilePath">
+            <summary>
+            XML File temporary pass on Windows Server
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioSyncStatus">
+            <summary>
+            Value is one or a combination of <see cref="T:RMuseum.Models.GanjoorAudio.AudioSyncStatus"/>
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.GanjoorLink">
             <summary>
             ganjoor link for artifacts and items
