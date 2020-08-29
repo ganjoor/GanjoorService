@@ -8,7 +8,7 @@
         /// <summary>
         /// no changed
         /// </summary>
-        Synchronized = 0,
+        SynchronizedOrRejected = 0,
 
         /// <summary>
         /// new upload

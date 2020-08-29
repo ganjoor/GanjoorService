@@ -25,6 +25,11 @@ namespace RMuseum.Models.GanjoorAudio
         public Guid OwnerId { get; set; }
 
         /// <summary>
+        /// Final data is actually exported to a MySQL database which this auto increment field is its key
+        /// </summary>
+        public int GanjoorAudioId { get; set; }
+
+        /// <summary>
         /// Ganjoor Post Id
         /// </summary>
         public int GanjoorPostId { get; set; }
@@ -33,11 +38,6 @@ namespace RMuseum.Models.GanjoorAudio
         /// This determines where an audio is displayed between a list of sounds related to a specfic poem
         /// </summary>
         public int AudioOrder { get; set; }
-
-        /// <summary>
-        /// Final data is actually exported to a MySQL database which this auto increment field is its key
-        /// </summary>
-        public int GanjoorAudioId { get; set; }
 
         /// <summary>
         /// Using this field content you would determine xml, mp3 and ogg file names
@@ -58,7 +58,7 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// MP3 File Path
         /// </summary>
-        public string Mp3FilePath { get { return $"/i/{SoundFilesFolder}/{FileNameWithoutExtension}.mp3"; } }
+        public string RemoteMp3FilePath { get { return $"/i/{SoundFilesFolder}/{FileNameWithoutExtension}.mp3"; } }
 
         /// <summary>
         /// MP3 url
@@ -69,7 +69,7 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// OGG File Path
         /// </summary>
-        public string OggFilePath { get { return $"/i/{SoundFilesFolder}/{FileNameWithoutExtension}.ogg"; } }
+        public string RemoteOggFilePath { get { return $"/i/{SoundFilesFolder}/{FileNameWithoutExtension}.ogg"; } }
 
         /// <summary>
         /// OGG url
@@ -82,7 +82,7 @@ namespace RMuseum.Models.GanjoorAudio
         /// <sample>
         /// "/i/a2/x"
         /// </sample>
-        public string XMLFilePath { get { return $"/i/{SoundFilesFolder}/x/{FileNameWithoutExtension}.xml"; } }
+        public string RemoteXMLFilePath { get { return $"/i/{SoundFilesFolder}/x/{FileNameWithoutExtension}.xml"; } }
 
         /// <summary>
         /// Audio Title
@@ -130,23 +130,35 @@ namespace RMuseum.Models.GanjoorAudio
         public int OggSizeInBytes { get; set; }
 
         /// <summary>
-        /// Audio Date
+        /// Upload Date
         /// </summary>
         public DateTime UploadDate { get; set; }
 
         /// <summary>
-        /// MP3 File temporary pass on Windows Server
+        /// Review Date (Approve or Reject)
         /// </summary>
-        public string TemporaryUploadedMp3FilePath { get; set; }
+        public DateTime ReviewDate{ get; set; }
 
         /// <summary>
-        /// XML File temporary pass on Windows Server
+        /// MP3 File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
         /// </summary>
-        public string TemporaryUploadedXmlFilePath { get; set; }
+        public string LocalMp3FilePath { get; set; }
+
+        /// <summary>
+        /// XML File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
+        /// </summary>
+        public string LocalXmlFilePath { get; set; }
 
         /// <summary>
         /// Value is one or a combination of <see cref="RMuseum.Models.GanjoorAudio.AudioSyncStatus"/>
         /// </summary>
         public int AudioSyncStatus { get; set; }
+
+        /// <summary>
+        /// Review Status
+        /// </summary>
+        public AudioReviewStatus ReviewStatus { get; set; }
+
+
     }
 }

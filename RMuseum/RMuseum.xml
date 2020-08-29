@@ -1495,12 +1495,32 @@
             User Note
             </summary>
         </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.AudioReviewStatus">
+            <summary>
+            Audio Review Status
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioReviewStatus.Pending">
+            <summary>
+            pending for review
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioReviewStatus.Approved">
+            <summary>
+            approved
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioReviewStatus.Rejected">
+            <summary>
+            Rejected
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorAudio.AudioSyncStatus">
             <summary>
             Audio Synchronization Status (binary combination is acceptable)
             </summary>
         </member>
-        <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.Synchronized">
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.SynchronizedOrRejected">
             <summary>
             no changed
             </summary>
@@ -1550,6 +1570,11 @@
             Owner User Id
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.GanjoorAudioId">
+            <summary>
+            Final data is actually exported to a MySQL database which this auto increment field is its key
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.GanjoorPostId">
             <summary>
             Ganjoor Post Id
@@ -1558,11 +1583,6 @@
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioOrder">
             <summary>
             This determines where an audio is displayed between a list of sounds related to a specfic poem
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.GanjoorAudioId">
-            <summary>
-            Final data is actually exported to a MySQL database which this auto increment field is its key
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.FileNameWithoutExtension">
@@ -1581,7 +1601,7 @@
             We had previously used different pathes because when a directory became overcrowded our connection time would increase unbearably due to IRAN internet problems, so it is sensible to store it per record and not as a global option value
             </remarks>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Mp3FilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.RemoteMp3FilePath">
             <summary>
             MP3 File Path
             </summary>
@@ -1591,7 +1611,7 @@
             MP3 url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.OggFilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.RemoteOggFilePath">
             <summary>
             OGG File Path
             </summary>
@@ -1601,7 +1621,7 @@
             OGG url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.XMLFilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.RemoteXMLFilePath">
             <summary>
             This is also a legacy field
             </summary>
@@ -1656,22 +1676,32 @@
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.UploadDate">
             <summary>
-            Audio Date
+            Upload Date
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.TemporaryUploadedMp3FilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.ReviewDate">
             <summary>
-            MP3 File temporary pass on Windows Server
+            Review Date (Approve or Reject)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.TemporaryUploadedXmlFilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.LocalMp3FilePath">
             <summary>
-            XML File temporary pass on Windows Server
+            MP3 File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.LocalXmlFilePath">
+            <summary>
+            XML File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioSyncStatus">
             <summary>
             Value is one or a combination of <see cref="T:RMuseum.Models.GanjoorAudio.AudioSyncStatus"/>
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.ReviewStatus">
+            <summary>
+            Review Status
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.GanjoorLink">
