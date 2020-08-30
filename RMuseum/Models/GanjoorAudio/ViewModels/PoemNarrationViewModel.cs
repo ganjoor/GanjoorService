@@ -1,14 +1,63 @@
-﻿using RSecurityBackend.Models.Auth.Db;
+﻿using RSecurityBackend.Models.Auth.ViewModels;
 using System;
+using System.Collections.Generic;
 
-
-namespace RMuseum.Models.GanjoorAudio
+namespace RMuseum.Models.GanjoorAudio.ViewModels
 {
     /// <summary>
-    /// Poem Narration
+    ///  Poem Narration view model
     /// </summary>
-    public class PoemNarration
+    public class PoemNarrationViewModel
     {
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="src"></param>
+        public PoemNarrationViewModel(PoemNarration src)
+        {
+            Id = src.Id;
+            Owner = new PublicRAppUser(src.Owner);
+            GanjoorAudioId = src.GanjoorAudioId;
+            GanjoorPostId = src.GanjoorPostId;
+            AudioOrder = src.AudioOrder;
+            FileNameWithoutExtension = src.FileNameWithoutExtension;
+            SoundFilesFolder = src.SoundFilesFolder;
+            AudioTitle = src.AudioTitle;
+            AudioArtist = src.AudioArtist;
+            AudioArtistUrl = src.AudioArtistUrl;
+            AudioSrc = src.AudioSrc;
+            AudioSrcUrl = src.AudioSrcUrl;
+            LegacyAudioGuid = src.LegacyAudioGuid;
+            Mp3FileCheckSum = src.Mp3FileCheckSum;
+            Mp3SizeInBytes = src.Mp3SizeInBytes;
+            OggSizeInBytes = src.OggSizeInBytes;
+            LocalMp3FilePath = src.LocalMp3FilePath;
+            LocalXmlFilePath = src.LocalXmlFilePath;            
+            ReviewStatus = src.ReviewStatus;
+            UploadDate = src.UploadDate;
+            ReviewDate = src.ReviewDate;
+            List<AudioSyncStatus> lst = new List<AudioSyncStatus>();
+            foreach(AudioSyncStatus status in 
+                new AudioSyncStatus[] 
+                {
+                    AudioSyncStatus.SynchronizedOrRejected,
+                    AudioSyncStatus.NewItem,
+                    AudioSyncStatus.MetadataChanged,
+                    AudioSyncStatus.SoundFilesChanged,
+                    AudioSyncStatus.XmlFileChanged,
+                    AudioSyncStatus.Deleted
+                })
+            {
+                if(
+                    src.AudioSyncStatus == (( (int)status )| src.AudioSyncStatus)
+                   )
+                {
+                    lst.Add(status);
+                }               
+            }
+            AudioSyncStatusArray = lst.ToArray();
+        }
+
         /// <summary>
         /// Id
         /// </summary>
@@ -17,12 +66,7 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// Owner User
         /// </summary>
-        public RAppUser Owner { get; set; }
-
-        /// <summary>
-        /// Owner User Id
-        /// </summary>
-        public Guid OwnerId { get; set; }
+        public PublicRAppUser Owner { get; set; }
 
         /// <summary>
         /// Final data is actually exported to a MySQL database which this auto increment field is its key
@@ -63,9 +107,9 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// MP3 url
         /// </summary>
-        public string Mp3Url { get { return $"https://i.ganjoor.net/{SoundFilesFolder}/{FileNameWithoutExtension}.mp3";  } }
+        public string Mp3Url { get { return $"https://i.ganjoor.net/{SoundFilesFolder}/{FileNameWithoutExtension}.mp3"; } }
 
-        
+
         /// <summary>
         /// OGG File Path
         /// </summary>
@@ -147,7 +191,7 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// Review Date (Approve or Reject)
         /// </summary>
-        public DateTime ReviewDate{ get; set; }
+        public DateTime ReviewDate { get; set; }
 
         /// <summary>
         /// MP3 File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
@@ -162,13 +206,11 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// Value is one or a combination of <see cref="RMuseum.Models.GanjoorAudio.AudioSyncStatus"/>
         /// </summary>
-        public int AudioSyncStatus { get; set; }
+        public AudioSyncStatus[] AudioSyncStatusArray { get; set; }
 
         /// <summary>
         /// Review Status
         /// </summary>
         public AudioReviewStatus ReviewStatus { get; set; }
-
-
     }
 }

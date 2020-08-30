@@ -14,17 +14,17 @@
         const int MaxPageSize = 1000;
 
         /// <summary>
-        /// page number
+        /// page number starting from 1
         /// </summary>
         public int PageNumber { get; set; } = 1;
 
         /// <summary>
-        /// actual page size
+        /// actual page size (-1 == all items)
         /// </summary>
         private int _pageSize { get; set; } = -1;
 
         /// <summary>
-        /// settable  page size
+        /// settable  page size  (-1 == all items, 1000 maxpagesize)
         /// </summary>
         public int PageSize
         {

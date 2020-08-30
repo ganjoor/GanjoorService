@@ -620,6 +620,15 @@
             Captcha service
             </summary>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+            <summary>
+            Gets audio narrations, user must have narration::moderate permission to be able to see all users narrations
+            </summary>
+            <param name="paging"></param>
+            <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users narrations</param>
+            <param name="status">default: -1, unfiltered</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.MysqlonetimeImport">
             <summary>
             imports data from ganjoor MySql database
@@ -1404,7 +1413,7 @@
              import
              </summary>
         </member>
-        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModerateCommentsOperationShortName">
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModerateOperationShortName">
             <summary>
              moderate
              </summary>
@@ -1532,6 +1541,16 @@
         <member name="T:RMuseum.Models.GanjoorAudio.AudioReviewStatus">
             <summary>
             Audio Review Status
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioReviewStatus.All">
+            <summary>
+            All / Unfiltered (for queris)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioReviewStatus.Draft">
+            <summary>
+            Draft
             </summary>
         </member>
         <member name="F:RMuseum.Models.GanjoorAudio.AudioReviewStatus.Pending">
@@ -1668,6 +1687,11 @@
             https://github.com/ganjoor/ganjoor/blob/master/ganjoor/Audio%20Support/PoemAudioListProcessor.cs
             </remarks>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.XMLUrl">
+            <summary>
+            XML url
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioTitle">
             <summary>
             Audio Title
@@ -1739,6 +1763,171 @@
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.ReviewStatus">
+            <summary>
+            Review Status
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel">
+            <summary>
+             Poem Narration view model
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.#ctor(RMuseum.Models.GanjoorAudio.PoemNarration)">
+            <summary>
+            constructor
+            </summary>
+            <param name="src"></param>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Owner">
+            <summary>
+            Owner User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.GanjoorAudioId">
+            <summary>
+            Final data is actually exported to a MySQL database which this auto increment field is its key
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.GanjoorPostId">
+            <summary>
+            Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioOrder">
+            <summary>
+            This determines where an audio is displayed between a list of sounds related to a specfic poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.FileNameWithoutExtension">
+            <summary>
+            Using this field content you would determine xml, mp3 and ogg file names
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.SoundFilesFolder">
+            <summary>
+            combining this with <see cref="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.FileNameWithoutExtension"/> + .ext would preduce relative path of sound files on our file server the full path would become [HOMEPath] + '/i/' + this value
+            </summary>
+            <sample>
+            "a2"
+            </sample>
+            <remarks>
+            We had previously used different pathes because when a directory became overcrowded our connection time would increase unbearably due to IRAN internet problems, so it is sensible to store it per record and not as a global option value
+            </remarks>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.RemoteMp3FilePath">
+            <summary>
+            MP3 File Path
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Mp3Url">
+            <summary>
+            MP3 url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.RemoteOggFilePath">
+            <summary>
+            OGG File Path
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.OggUrl">
+            <summary>
+            OGG url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.RemoteXMLFilePath">
+            <summary>
+            This is also a legacy field
+            </summary>
+            <sample>
+            "/i/a2/x"
+            </sample>
+            <remarks>
+            XML Schema is defined based on Desktop Ganjoor (https://github.com/ganjoor/ganjoor) code, for
+            more information take a look at this code:
+            https://github.com/ganjoor/ganjoor/blob/master/ganjoor/Audio%20Support/PoemAudioListProcessor.cs
+            </remarks>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.XMLUrl">
+            <summary>
+            XML url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioTitle">
+            <summary>
+            Audio Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioArtist">
+            <summary>
+            Audio Artist
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioArtistUrl">
+            <summary>
+            Audio Artist Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioSrc">
+            <summary>
+            Audio Source
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioSrcUrl">
+            <summary>
+            Audio Src Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.LegacyAudioGuid">
+            <summary>
+            Legacy Audio Guid
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Mp3FileCheckSum">
+            <summary>
+            Audio File CheckSum
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Mp3SizeInBytes">
+            <summary>
+            mp3 size in bytes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.OggSizeInBytes">
+            <summary>
+            ogg size in bytes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.UploadDate">
+            <summary>
+            Upload Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.ReviewDate">
+            <summary>
+            Review Date (Approve or Reject)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.LocalMp3FilePath">
+            <summary>
+            MP3 File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.LocalXmlFilePath">
+            <summary>
+            XML File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioSyncStatusArray">
+            <summary>
+            Value is one or a combination of <see cref="T:RMuseum.Models.GanjoorAudio.AudioSyncStatus"/>
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.ReviewStatus">
             <summary>
             Review Status
             </summary>
@@ -3029,6 +3218,15 @@
             Audio Narration Service
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+            <summary>
+            returns list of narrations
+            </summary>
+            <param name="paging"></param>
+            <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
+            <param name="status"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IAudioNarrationService.OneTimeImport(System.Guid)">
             <summary>
             imports data from ganjoor MySql database
@@ -3748,6 +3946,15 @@
             <summary>
             Audio Narration Service Implementation
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+            <summary>
+            returns list of narrations
+            </summary>
+            <param name="paging"></param>
+            <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
+            <param name="status"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.AudioNarrationService.OneTimeImport(System.Guid)">
             <summary>

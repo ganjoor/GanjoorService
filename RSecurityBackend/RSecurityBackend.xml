@@ -1669,17 +1669,17 @@
         </member>
         <member name="P:RSecurityBackend.Models.Generic.PagingParameterModel.PageNumber">
             <summary>
-            page number
+            page number starting from 1
             </summary>
         </member>
         <member name="P:RSecurityBackend.Models.Generic.PagingParameterModel._pageSize">
             <summary>
-            actual page size
+            actual page size (-1 == all items)
             </summary>
         </member>
         <member name="P:RSecurityBackend.Models.Generic.PagingParameterModel.PageSize">
             <summary>
-            settable  page size
+            settable  page size  (-1 == all items, 1000 maxpagesize)
             </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Generic.RServiceResult`1">
