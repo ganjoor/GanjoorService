@@ -1,3 +1,8 @@
 # GanjoorService
 Ganjoor museum and maybe ganjooe.net own future backend
 این کد وب سرویس گنجینهٔ گنجور است که ممکن است در آینده کد زیرساخت آینده گنجور مبتنی بر آن نوشته شود.
+
+[فهرست توابع در دسترس](https://ganjgah.ir)
+
+![https://ganjgah.ir](https://user-images.githubusercontent.com/582212/91652208-14a63c00-eaaa-11ea-89c2-5acabdfda7de.png)
+
