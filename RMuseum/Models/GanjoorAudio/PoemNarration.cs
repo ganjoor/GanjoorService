@@ -82,6 +82,11 @@ namespace RMuseum.Models.GanjoorAudio
         /// <sample>
         /// "/i/a2/x"
         /// </sample>
+        /// <remarks>
+        /// XML Schema is defined based on Desktop Ganjoor (https://github.com/ganjoor/ganjoor) code, for
+        /// more information take a look at this code:
+        /// https://github.com/ganjoor/ganjoor/blob/master/ganjoor/Audio%20Support/PoemAudioListProcessor.cs
+        /// </remarks>
         public string RemoteXMLFilePath { get { return $"/i/{SoundFilesFolder}/x/{FileNameWithoutExtension}.xml"; } }
 
         /// <summary>

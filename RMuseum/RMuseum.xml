@@ -620,6 +620,30 @@
             Captcha service
             </summary>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.MysqlonetimeImport">
+            <summary>
+            imports data from ganjoor MySql database
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.#ctor(RMuseum.Services.IAudioNarrationService,RSecurityBackend.Services.IUserPermissionChecker)">
+            <summary>
+            constructor
+            </summary>
+            <param name="audioService">
+            </param>
+            <param name="userPermissionChecker"></param>
+        </member>
+        <member name="F:RMuseum.Controllers.AudioNarrationController._audioService">
+            <summary>
+            Artifact Service
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.AudioNarrationController._userPermissionChecker">
+            <summary>
+            IUserPermissionChecker instance
+            </summary>
+        </member>
         <member name="T:RMuseum.Controllers.AuditLogController">
             <summary>
             Audit Log Controller Base
@@ -774,6 +798,11 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.PinterestLinks">
             <summary>
             Pinterest Links
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.AudioFiles">
+            <summary>
+            Ganjoor Audio Files
             </summary>
         </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
@@ -1385,6 +1414,11 @@
              review suggested ganjoor links
              </summary>
         </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.AudioNarrationEntityShortName">
+            <summary>
+            audio narrations
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.Items">
             <summary>
             list of forms and their permissions
@@ -1537,7 +1571,7 @@
         </member>
         <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.SoundFilesChanged">
             <summary>
-            sound files should be reuploaded
+            sound files should be reuploaded (this means xml file is also needs to reuploaded)
             </summary>
         </member>
         <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.XmlFileChanged">
@@ -1547,7 +1581,7 @@
         </member>
         <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.Deleted">
             <summary>
-            Item is deleted
+            Item should be deleted
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.PoemNarration">
@@ -1628,6 +1662,11 @@
             <sample>
             "/i/a2/x"
             </sample>
+            <remarks>
+            XML Schema is defined based on Desktop Ganjoor (https://github.com/ganjoor/ganjoor) code, for
+            more information take a look at this code:
+            https://github.com/ganjoor/ganjoor/blob/master/ganjoor/Audio%20Support/PoemAudioListProcessor.cs
+            </remarks>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioTitle">
             <summary>
@@ -2985,6 +3024,18 @@
             <param name="checkJobs"></param>
             <returns></returns>
         </member>
+        <member name="T:RMuseum.Services.IAudioNarrationService">
+            <summary>
+            Audio Narration Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.OneTimeImport(System.Guid)">
+            <summary>
+            imports data from ganjoor MySql database
+            </summary>
+            <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -3692,6 +3743,34 @@
             <param name="pictureFileService"></param>
             <param name="backgroundTaskQueue"></param>
             <param name="userService"></param>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.AudioNarrationService">
+            <summary>
+            Audio Narration Service Implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.OneTimeImport(System.Guid)">
+            <summary>
+            imports data from ganjoor MySql database
+            </summary>
+            <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.AudioNarrationService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.AudioNarrationService._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="configuration"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.BLTileMixer">
             <summary>
