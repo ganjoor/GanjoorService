@@ -6,18 +6,26 @@
     public enum AudioReviewStatus
     {
         /// <summary>
+        /// All / Unfiltered (for queris)
+        /// </summary>
+        All = -1,
+        /// <summary>
+        /// Draft
+        /// </summary>
+        Draft = 0,
+        /// <summary>
         /// pending for review
         /// </summary>
-        Pending = 0,
+        Pending = 1,
 
         /// <summary>
         /// approved
         /// </summary>
-        Approved = 1,
+        Approved = 2,
 
         /// <summary>
         /// Rejected
         /// </summary>
-        Rejected = 2
+        Rejected = 3
     }
 }

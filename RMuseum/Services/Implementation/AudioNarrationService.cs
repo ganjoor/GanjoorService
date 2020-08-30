@@ -3,21 +3,64 @@ using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using RMuseum.DbContext;
 using RMuseum.Models.GanjoorAudio;
+using RMuseum.Models.GanjoorAudio.ViewModels;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Services.Implementation;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
 {
+
     /// <summary>
     /// Audio Narration Service Implementation
     /// </summary>
     public class AudioNarrationService : IAudioNarrationService
     {
+        /// <summary>
+        /// returns list of narrations
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status)
+        {
+            try
+            {
+                var source =
+                    
+                     _context.AudioFiles
+                     .Include(a => a.Owner)
+                     .Where(a => 
+                            (filteredUserId == Guid.Empty || a.OwnerId == filteredUserId)
+                            &&
+                            (status == AudioReviewStatus.All || a.ReviewStatus == status)
+                     )
+                    .OrderBy(a => a.UploadDate)
+                    .AsQueryable();
+
+                (PaginationMetadata PagingMeta, PoemNarration[] Items) paginatedResult =
+                    await QueryablePaginator<PoemNarration>.Paginate(source, paging);
+
+                List<PoemNarrationViewModel> res = new List<PoemNarrationViewModel>();
+                foreach(PoemNarration audio in paginatedResult.Items)
+                {
+                    res.Add(new PoemNarrationViewModel(audio));
+                }
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>((paginatedResult.PagingMeta, res.ToArray()));
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+            }
+        }
+
         /// <summary>
         /// imports data from ganjoor MySql database
         /// </summary>

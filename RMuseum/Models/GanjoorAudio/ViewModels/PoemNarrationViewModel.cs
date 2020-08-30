@@ -34,6 +34,8 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
             LocalMp3FilePath = src.LocalMp3FilePath;
             LocalXmlFilePath = src.LocalXmlFilePath;            
             ReviewStatus = src.ReviewStatus;
+            UploadDate = src.UploadDate;
+            ReviewDate = src.ReviewDate;
             List<AudioSyncStatus> lst = new List<AudioSyncStatus>();
             foreach(AudioSyncStatus status in 
                 new AudioSyncStatus[] 

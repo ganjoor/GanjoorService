@@ -1423,7 +1423,7 @@ namespace RMuseum.Controllers
                         loggedOnUserId,
                         new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value),
                         RMuseumSecurableItem.NoteEntityShortName,
-                        RMuseumSecurableItem.ModerateCommentsOperationShortName
+                        RMuseumSecurableItem.ModerateOperationShortName
                         );
             if (!string.IsNullOrEmpty(canModerate.ExceptionString))
                 return BadRequest(canModerate.ExceptionString);
@@ -1460,7 +1460,7 @@ namespace RMuseum.Controllers
                         loggedOnUserId,
                         new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value),
                         RMuseumSecurableItem.NoteEntityShortName,
-                        RMuseumSecurableItem.ModerateCommentsOperationShortName
+                        RMuseumSecurableItem.ModerateOperationShortName
                         );
             if (!string.IsNullOrEmpty(canModerate.ExceptionString))
                 return BadRequest(canModerate.ExceptionString);

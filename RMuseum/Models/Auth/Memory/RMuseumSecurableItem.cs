@@ -51,7 +51,7 @@ namespace RMuseum.Models.Auth.Memory
         ///<summary>
         /// moderate
         /// </summary>
-        public const string ModerateCommentsOperationShortName = "moderate";
+        public const string ModerateOperationShortName = "moderate";
 
         ///<summary>
         /// review suggested ganjoor links
@@ -108,7 +108,7 @@ namespace RMuseum.Models.Auth.Memory
                         Description = "یادداشتها",
                         Operations = new SecurableItemOperation[]
                         {
-                            new SecurableItemOperation(ModerateCommentsOperationShortName, "بررسی", false)
+                            new SecurableItemOperation(ModerateOperationShortName, "بررسی", false)
                         }
                     },
                     new SecurableItem()
@@ -118,7 +118,7 @@ namespace RMuseum.Models.Auth.Memory
                         Operations = new SecurableItemOperation[]
                         {
                             new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات", false),
-                            new SecurableItemOperation(ModerateCommentsOperationShortName, "بررسی", false)
+                            new SecurableItemOperation(ModerateOperationShortName, "بررسی", false)
                         }
                     },
 

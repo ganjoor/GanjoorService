@@ -620,6 +620,15 @@
             Captcha service
             </summary>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+            <summary>
+            Gets audio narrations, user must have narration::moderate permission to be able to see all users narrations
+            </summary>
+            <param name="paging"></param>
+            <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users narrations</param>
+            <param name="status">default: -1, unfiltered</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.MysqlonetimeImport">
             <summary>
             imports data from ganjoor MySql database
@@ -1404,7 +1413,7 @@
              import
              </summary>
         </member>
-        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModerateCommentsOperationShortName">
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModerateOperationShortName">
             <summary>
              moderate
              </summary>
@@ -1532,6 +1541,16 @@
         <member name="T:RMuseum.Models.GanjoorAudio.AudioReviewStatus">
             <summary>
             Audio Review Status
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioReviewStatus.All">
+            <summary>
+            All / Unfiltered (for queris)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioReviewStatus.Draft">
+            <summary>
+            Draft
             </summary>
         </member>
         <member name="F:RMuseum.Models.GanjoorAudio.AudioReviewStatus.Pending">
@@ -3199,6 +3218,15 @@
             Audio Narration Service
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+            <summary>
+            returns list of narrations
+            </summary>
+            <param name="paging"></param>
+            <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
+            <param name="status"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IAudioNarrationService.OneTimeImport(System.Guid)">
             <summary>
             imports data from ganjoor MySql database
@@ -3918,6 +3946,15 @@
             <summary>
             Audio Narration Service Implementation
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+            <summary>
+            returns list of narrations
+            </summary>
+            <param name="paging"></param>
+            <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
+            <param name="status"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.AudioNarrationService.OneTimeImport(System.Guid)">
             <summary>
