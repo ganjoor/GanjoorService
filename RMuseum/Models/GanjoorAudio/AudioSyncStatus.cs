@@ -21,7 +21,7 @@
         MetadataChanged = 2,
 
         /// <summary>
-        /// sound files should be reuploaded
+        /// sound files should be reuploaded (this means xml file is also needs to reuploaded)
         /// </summary>
         SoundFilesChanged = 4,
 
@@ -31,7 +31,7 @@
         XmlFileChanged = 8,
 
         /// <summary>
-        /// Item is deleted
+        /// Item should be deleted
         /// </summary>
         Deleted = 16
 
