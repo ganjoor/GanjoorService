@@ -248,6 +248,9 @@ namespace RMuseum
             //artifact service
             services.AddTransient<IArtifactService, ArtifactService>();
 
+            //audio service
+            services.AddTransient<IAudioNarrationService, AudioNarrationService>();
+
 
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();

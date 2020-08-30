@@ -620,6 +620,30 @@
             Captcha service
             </summary>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.MysqlonetimeImport">
+            <summary>
+            imports data from ganjoor MySql database
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.#ctor(RMuseum.Services.IAudioNarrationService,RSecurityBackend.Services.IUserPermissionChecker)">
+            <summary>
+            constructor
+            </summary>
+            <param name="audioService">
+            </param>
+            <param name="userPermissionChecker"></param>
+        </member>
+        <member name="F:RMuseum.Controllers.AudioNarrationController._audioService">
+            <summary>
+            Artifact Service
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.AudioNarrationController._userPermissionChecker">
+            <summary>
+            IUserPermissionChecker instance
+            </summary>
+        </member>
         <member name="T:RMuseum.Controllers.AuditLogController">
             <summary>
             Audit Log Controller Base
@@ -3000,6 +3024,18 @@
             <param name="checkJobs"></param>
             <returns></returns>
         </member>
+        <member name="T:RMuseum.Services.IAudioNarrationService">
+            <summary>
+            Audio Narration Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.OneTimeImport(System.Guid)">
+            <summary>
+            imports data from ganjoor MySql database
+            </summary>
+            <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -3707,6 +3743,34 @@
             <param name="pictureFileService"></param>
             <param name="backgroundTaskQueue"></param>
             <param name="userService"></param>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.AudioNarrationService">
+            <summary>
+            Audio Narration Service Implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.OneTimeImport(System.Guid)">
+            <summary>
+            imports data from ganjoor MySql database
+            </summary>
+            <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.AudioNarrationService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.AudioNarrationService._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="configuration"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.BLTileMixer">
             <summary>
