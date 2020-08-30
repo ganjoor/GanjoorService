@@ -1537,7 +1537,7 @@
         </member>
         <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.SoundFilesChanged">
             <summary>
-            sound files should be reuploaded
+            sound files should be reuploaded (this means xml file is also needs to reuploaded)
             </summary>
         </member>
         <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.XmlFileChanged">
@@ -1547,7 +1547,7 @@
         </member>
         <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.Deleted">
             <summary>
-            Item is deleted
+            Item should be deleted
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.PoemNarration">
@@ -1628,6 +1628,11 @@
             <sample>
             "/i/a2/x"
             </sample>
+            <remarks>
+            XML Schema is defined based on Desktop Ganjoor (https://github.com/ganjoor/ganjoor) code, for
+            more information take a look at this code:
+            https://github.com/ganjoor/ganjoor/blob/master/ganjoor/Audio%20Support/PoemAudioListProcessor.cs
+            </remarks>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioTitle">
             <summary>

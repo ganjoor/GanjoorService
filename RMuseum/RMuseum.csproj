@@ -18,6 +18,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MySql.Data" Version="8.0.21" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="5.0.2" />
