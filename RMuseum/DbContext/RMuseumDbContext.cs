@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using RMuseum.Models.Artifact;
 using RMuseum.Models.Bookmark;
+using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorIntegration;
 using RMuseum.Models.ImportJob;
 using RMuseum.Models.Note;
@@ -125,6 +126,11 @@ namespace RMuseum.DbContext
         /// Pinterest Links
         /// </summary>
         public DbSet<PinterestLink> PinterestLinks { get; set; }
+
+        /// <summary>
+        /// Ganjoor Audio Files
+        /// </summary>
+        public DbSet<PoemNarration> AudioFiles { get; set; }
 
     }
 }

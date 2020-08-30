@@ -776,6 +776,11 @@
             Pinterest Links
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.AudioFiles">
+            <summary>
+            Ganjoor Audio Files
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status
