@@ -1,5 +1,6 @@
 ﻿using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Models.UploadSession;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Threading.Tasks;
@@ -26,5 +27,19 @@ namespace RMuseum.Services
         /// <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>
         /// <returns></returns>
         Task<RServiceResult<bool>> OneTimeImport(Guid OwnrRAppUserId);
+
+        /// <summary>
+        /// Initiate New Upload Session for audio
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<UploadSession>> InitiateNewUploadSession(Guid userId);
+
+        /// <summary>
+        /// Get Upload Session (including files)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<UploadSession>> GetUploadSession(Guid id);
     }
 }

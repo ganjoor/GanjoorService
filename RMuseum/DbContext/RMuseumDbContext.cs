@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using RMuseum.Models.Artifact;
 using RMuseum.Models.Bookmark;
 using RMuseum.Models.GanjoorAudio;
+using RMuseum.Models.UploadSession;
 using RMuseum.Models.GanjoorIntegration;
 using RMuseum.Models.ImportJob;
 using RMuseum.Models.Note;
@@ -131,6 +132,11 @@ namespace RMuseum.DbContext
         /// Ganjoor Audio Files
         /// </summary>
         public DbSet<PoemNarration> AudioFiles { get; set; }
+
+        /// <summary>
+        /// Upload Sessions
+        /// </summary>
+        public DbSet<UploadSession> UploadSessions { get; set; }
 
     }
 }

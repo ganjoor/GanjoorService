@@ -4,6 +4,7 @@ using MySql.Data.MySqlClient;
 using RMuseum.DbContext;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Models.UploadSession;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -134,6 +135,56 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
            
+        }
+
+        /// <summary>
+        /// Initiate New Upload Session for audio
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<UploadSession>> InitiateNewUploadSession(Guid userId)
+        {
+            try
+            {
+                UploadSession session = new UploadSession()
+                {
+                    SessionType = UploadSessionType.Audio,
+                    UseId = userId,
+                    UploadStartTime = DateTime.Now,
+                    Status = UploadSessionProcessStatus.NotStarted,
+                    ProcessProgress = 0
+                };
+                await _context.UploadSessions.AddAsync(session);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<UploadSession>(session);
+                  
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<UploadSession>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Get Upload Session (including files)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<UploadSession>> GetUploadSession(Guid id)
+        {
+            try
+            {
+                return new RServiceResult<UploadSession>
+                    (
+                    await _context.UploadSessions.Include(s => s.UploadedFiles).FirstOrDefaultAsync(s => s.Id == id)
+                    );
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<UploadSession>(null, exp.ToString());
+            }
         }
 
 
