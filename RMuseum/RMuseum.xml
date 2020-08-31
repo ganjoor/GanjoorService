@@ -629,6 +629,12 @@
             <param name="status">default: -1, unfiltered</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.UploadNarrations">
+            <summary>
+            Narration Upload
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.MysqlonetimeImport">
             <summary>
             imports data from ganjoor MySql database
@@ -812,6 +818,11 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.AudioFiles">
             <summary>
             Ganjoor Audio Files
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.UploadSessions">
+            <summary>
+            Upload Sessions
             </summary>
         </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
@@ -2698,6 +2709,141 @@
             Text
             </summary>
         </member>
+        <member name="T:RMuseum.Models.UploadSession.UploadSession">
+            <summary>
+            Upload Session
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSession.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSession.SessionType">
+            <summary>
+            Session Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSession.User">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSession.UseId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSession.UploadStartTime">
+            <summary>
+            Upload Start Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSession.UploadEndTime">
+            <summary>
+            Upload End Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSession.ProcessStartTime">
+            <summary>
+            Process Start Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSession.ProcessEndTime">
+            <summary>
+            Process End Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSession.ProcessProgress">
+            <summary>
+            Process Progress
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSession.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSession.UploadedFiles">
+            <summary>
+            Uploaded Files
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.UploadSession.UploadSessionFile">
+            <summary>
+            Upload Session File
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.ContentDisposition">
+            <summary>
+            ContentDisposition
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.ContentType">
+            <summary>
+            ContentType
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.FileName">
+            <summary>
+            FileName
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.Length">
+            <summary>
+            Length
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.FilePath">
+            <summary>
+            File Path
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.UploadSession.UploadSessionProcessStatus">
+            <summary>
+            Upload Session Process Status
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.UploadSession.UploadSessionProcessStatus.NotStarted">
+            <summary>
+            Not Started
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.UploadSession.UploadSessionProcessStatus.Started">
+            <summary>
+            Started
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.UploadSession.UploadSessionProcessStatus.Finished">
+            <summary>
+            Finished
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.UploadSession.UploadSessionType">
+            <summary>
+            Upload Session Types
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.UploadSession.UploadSessionType.Generic">
+            <summary>
+            Generic
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.UploadSession.UploadSessionType.Audio">
+            <summary>
+            Audio
+            </summary>
+        </member>
         <member name="T:RMuseum.Services.IArtifactService">
             <summary>
             Artifact Item Service
@@ -3232,6 +3378,20 @@
             imports data from ganjoor MySql database
             </summary>
             <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.InitiateNewUploadSession(System.Guid)">
+            <summary>
+            Initiate New Upload Session for audio
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.GetUploadSession(System.Guid)">
+            <summary>
+            Get Upload Session (including files)
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
@@ -3961,6 +4121,20 @@
             imports data from ganjoor MySql database
             </summary>
             <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.InitiateNewUploadSession(System.Guid)">
+            <summary>
+            Initiate New Upload Session for audio
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUploadSession(System.Guid)">
+            <summary>
+            Get Upload Session (including files)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.AudioNarrationService.Configuration">
             <summary>

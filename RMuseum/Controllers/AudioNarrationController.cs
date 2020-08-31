@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Models.UploadSession;
 using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
@@ -64,6 +66,36 @@ namespace RMuseum.Controllers
             HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             return Ok(res.Result.Items);
+        }
+
+        /// <summary>
+        /// Narration Upload
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UploadSession))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+        public async Task<IActionResult> UploadNarrations()
+        {
+            try
+            {
+                Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+                RServiceResult<UploadSession> resSession = await _audioService.InitiateNewUploadSession(loggedOnUserId);
+                if (!string.IsNullOrEmpty(resSession.ExceptionString))
+                    return BadRequest(resSession.ExceptionString);
+                foreach(IFormFile file in Request.Form.Files)
+                {
+
+                }              
+                return Ok(await _audioService.GetUploadSession(resSession.Result.Id));
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
         }
 
 

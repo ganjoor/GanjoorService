@@ -251,6 +251,12 @@ namespace RMuseum
             //audio service
             services.AddTransient<IAudioNarrationService, AudioNarrationService>();
 
+            //upload limit for IIS
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.MaxRequestBodySize = 52428800; //50MB
+            });
+
 
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
