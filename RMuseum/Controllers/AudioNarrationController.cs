@@ -86,9 +86,15 @@ namespace RMuseum.Controllers
                 RServiceResult<UploadSession> resSession = await _audioService.InitiateNewUploadSession(loggedOnUserId);
                 if (!string.IsNullOrEmpty(resSession.ExceptionString))
                     return BadRequest(resSession.ExceptionString);
+                List<UploadSessionFile> files = new List<UploadSessionFile>();
                 foreach(IFormFile file in Request.Form.Files)
                 {
-
+                    RServiceResult<UploadSessionFile> rsFileResult = await _audioService.SaveUploadedFile(file);
+                    if(!string.IsNullOrEmpty(rsFileResult.ExceptionString))
+                    {
+                        return BadRequest(rsFileResult.ExceptionString);
+                    }
+                    files.Add(rsFileResult.Result);
                 }              
                 return Ok(await _audioService.GetUploadSession(resSession.Result.Id));
             }

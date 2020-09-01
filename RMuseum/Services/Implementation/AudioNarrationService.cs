@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using RMuseum.DbContext;
@@ -163,6 +164,67 @@ namespace RMuseum.Services.Implementation
             catch(Exception exp)
             {
                 return new RServiceResult<UploadSession>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Save uploaded file
+        /// </summary>
+        /// <param name="uploadedFile"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<UploadSessionFile>> SaveUploadedFile(IFormFile uploadedFile)
+        {
+            try
+            {
+                UploadSessionFile file = new UploadSessionFile()
+                {
+                    ContentDisposition = uploadedFile.ContentDisposition,
+                    ContentType = uploadedFile.ContentType,
+                    FileName = uploadedFile.FileName,
+                    Length = uploadedFile.Length,
+                    Name = uploadedFile.Name,
+                    ProcessResult = true,
+                    ProcessResultMsg = ""
+                };
+
+                string ext = Path.GetExtension(file.FileName).ToLower();
+                if(ext != ".mp3" && ext != ".xml" && ext != ".zip")
+                {
+                    file.ProcessResult = false;
+                    file.ProcessResultMsg = "تنها فایلهای با پسوند mp3، xml و zip قابل قبول هستند.";
+                }
+                else
+                {
+                    if (!Directory.Exists(Configuration.GetSection("AudioUploadService")["StoragePath"]))
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(Configuration.GetSection("AudioUploadService")["StoragePath"]);
+                        }
+                        catch
+                        {
+                            return new RServiceResult<UploadSessionFile>(null, $"ProcessImage: create dir failed {Configuration.GetSection("AudioUploadService")["StoragePath"]}");
+                        }
+                    }
+
+                    string filePath = Path.Combine(Configuration.GetSection("AudioUploadService")["StoragePath"], file.FileName);
+                    while(File.Exists(filePath))
+                    {
+                        filePath = Path.Combine(Configuration.GetSection("AudioUploadService")["StoragePath"], Guid.NewGuid().ToString() + ext);
+                    }
+                    using (FileStream fsMain = new FileStream(filePath, FileMode.Create))
+                    {
+                         await uploadedFile.CopyToAsync(fsMain);
+                    }
+                    file.FilePath = filePath;
+                }                
+
+                return new RServiceResult<UploadSessionFile>(file);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<UploadSessionFile>(null, exp.ToString());
             }
         }
 

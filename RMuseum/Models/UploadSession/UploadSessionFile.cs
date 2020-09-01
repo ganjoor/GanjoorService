@@ -43,6 +43,16 @@ namespace RMuseum.Models.UploadSession
         /// </summary>
         public string FilePath { get; set; }
 
+        
+        /// <summary>
+        /// Process Result
+        /// </summary>
+        public bool ProcessResult { get; set; }
+
+        /// <summary>
+        /// Process Result Message
+        /// </summary>
+        public string ProcessResultMsg { get; set; }
 
     }
 }

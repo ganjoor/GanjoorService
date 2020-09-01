@@ -2809,6 +2809,16 @@
             File Path
             </summary>
         </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.ProcessResult">
+            <summary>
+            Process Result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.ProcessResultMsg">
+            <summary>
+            Process Result Message
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.UploadSession.UploadSessionProcessStatus">
             <summary>
             Upload Session Process Status
@@ -3385,6 +3395,13 @@
             Initiate New Upload Session for audio
             </summary>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.SaveUploadedFile(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Save uploaded file
+            </summary>
+            <param name="uploadedFile"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IAudioNarrationService.GetUploadSession(System.Guid)">
@@ -4127,6 +4144,13 @@
             Initiate New Upload Session for audio
             </summary>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.SaveUploadedFile(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Save uploaded file
+            </summary>
+            <param name="uploadedFile"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUploadSession(System.Guid)">
