@@ -1,4 +1,5 @@
-﻿using RMuseum.Models.GanjoorAudio;
+﻿using Microsoft.AspNetCore.Http;
+using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
 using RSecurityBackend.Models.Generic;
@@ -34,6 +35,13 @@ namespace RMuseum.Services
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<RServiceResult<UploadSession>> InitiateNewUploadSession(Guid userId);
+
+        /// <summary>
+        /// Save uploaded file
+        /// </summary>
+        /// <param name="uploadedFile"></param>
+        /// <returns></returns>
+        Task<RServiceResult<UploadSessionFile>> SaveUploadedFile(IFormFile uploadedFile);
 
         /// <summary>
         /// Get Upload Session (including files)
