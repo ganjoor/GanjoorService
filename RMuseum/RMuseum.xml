@@ -2809,6 +2809,11 @@
             File Path
             </summary>
         </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.MP3FileCheckSum">
+            <summary>
+            File check sum for mp3 files
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.ProcessResult">
             <summary>
             Process Result
@@ -3402,6 +3407,14 @@
             Save uploaded file
             </summary>
             <param name="uploadedFile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.UploadSession.UploadSessionFile[])">
+            <summary>
+            finalize upload session (add files)
+            </summary>
+            <param name="session"></param>
+            <param name="files"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IAudioNarrationService.GetUploadSession(System.Guid)">
@@ -4153,6 +4166,14 @@
             <param name="uploadedFile"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.UploadSession.UploadSessionFile[])">
+            <summary>
+            finalize upload session (add files)
+            </summary>
+            <param name="session"></param>
+            <param name="files"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUploadSession(System.Guid)">
             <summary>
             Get Upload Session (including files)
@@ -4170,7 +4191,12 @@
             Database Contetxt
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="F:RMuseum.Services.Implementation.AudioNarrationService._backgroundTaskQueue">
+            <summary>
+            Background Task Queue Instance
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue)">
             <summary>
             constructor
             </summary>
@@ -4431,6 +4457,138 @@
             </summary>
             <param name="operation"></param>
             <param name="context"></param>
+        </member>
+        <member name="T:ganjoor.PoemAudio">
+            <summary>
+            اطلاعات فایل صوتی شعر
+            </summary>
+        </member>
+        <member name="M:ganjoor.PoemAudio.#ctor">
+            <summary>
+            سازنده
+            </summary>
+        </member>
+        <member name="P:ganjoor.PoemAudio.PoemId">
+            <summary>
+            شناسۀ شعر
+            </summary>
+        </member>
+        <member name="P:ganjoor.PoemAudio.Id">
+            <summary>
+            شناسۀ فایل صوتی با شروع از 1 برای هر شعر
+            </summary>
+        </member>
+        <member name="P:ganjoor.PoemAudio.FilePath">
+            <summary>
+            مسیر فایل
+            </summary>
+        </member>
+        <member name="P:ganjoor.PoemAudio.Description">
+            <summary>
+            شرح
+            </summary>
+        </member>
+        <member name="P:ganjoor.PoemAudio.IsSynced">
+            <summary>
+            آیا همگام شده
+            </summary>
+        </member>
+        <member name="T:ganjoor.PoemAudio.SyncInfo">
+            <summary>
+            ساختار اطلاعات همگام سازی
+            </summary>
+        </member>
+        <member name="F:ganjoor.PoemAudio.SyncInfo.VerseOrder">
+            <summary>
+            ترتیب مصرع (-1 نشانگر آغاز فایل صوتی و -2 نشانگر پایان آن است)
+            </summary>
+        </member>
+        <member name="F:ganjoor.PoemAudio.SyncInfo.AudioMiliseconds">
+            <summary>
+            زمان در فایل صوتی بر حسب میلی ثانیه
+            </summary>
+        </member>
+        <member name="P:ganjoor.PoemAudio.SyncArray">
+            <summary>
+            اطلاعات همگام سازی
+            </summary>
+        </member>
+        <member name="P:ganjoor.PoemAudio.DownloadUrl">
+            <summary>
+            نشانی دریافت فایل صوتی
+            </summary>
+        </member>
+        <member name="P:ganjoor.PoemAudio.IsDirectlyDownloadable">
+            <summary>
+            آیا لینک دریافت فایل صوتی مستقیم است
+            </summary>
+        </member>
+        <member name="P:ganjoor.PoemAudio.SyncGuid">
+            <summary>
+            شناسۀ یکتای اطلاعات همگام سازی
+            </summary>
+        </member>
+        <member name="P:ganjoor.PoemAudio.FileCheckSum">
+            <summary>
+            امضای یکتای فایل صوتی
+            </summary>
+        </member>
+        <member name="M:ganjoor.PoemAudio.ComputeCheckSum(System.String)">
+            <summary>
+            محاسبه چک سام فایل
+            </summary>
+            <param name="filePath"></param>
+        </member>
+        <member name="P:ganjoor.PoemAudio.IsUploaded">
+            <summary>
+            آیا اطلاعات همگام سازی آپلود شده؟
+            </summary>
+        </member>
+        <member name="M:ganjoor.PoemAudio.ToString">
+            <summary>
+            تبدیل به رشته
+            </summary>
+            <returns>شرح</returns>
+        </member>
+        <member name="P:ganjoor.PoemAudio.PoetName">
+            <remarks>
+            Warning: not always filled
+            </remarks>
+        </member>
+        <member name="P:ganjoor.PoemAudio.PoemTitle">
+            <remarks>
+            Warning: Rarely filled
+            </remarks>
+        </member>
+        <member name="T:ganjoor.PoemAudioListProcessor">
+            <summary>
+            پردازشگر ذخیره و بارگذاری لیستهای اشعار
+            </summary>
+        </member>
+        <member name="M:ganjoor.PoemAudioListProcessor.Save(System.String,ganjoor.PoemAudio,System.Boolean)">
+            <summary>
+            ذخیره در فایل
+            </summary>
+            <param name="FileName"></param>
+            <param name="poemAudio"></param>
+            <param name="oldVersion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ganjoor.PoemAudioListProcessor.Save(System.String,System.Collections.Generic.List{ganjoor.PoemAudio},System.Boolean)">
+            <summary>
+            ذخیره در فایل
+            </summary>
+            <param name="FileName"></param>
+            <param name="List"></param>
+            <param name="oldVersion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ganjoor.PoemAudioListProcessor.Load(System.String)">
+            <summary>
+            بارگذاری از فایل
+            </summary>
+            <param name="FileName"></param>
+            <returns></returns>
         </member>
     </members>
 </doc>

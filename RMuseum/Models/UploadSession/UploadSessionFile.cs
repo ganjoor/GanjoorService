@@ -43,7 +43,11 @@ namespace RMuseum.Models.UploadSession
         /// </summary>
         public string FilePath { get; set; }
 
-        
+        /// <summary>
+        /// File check sum for mp3 files
+        /// </summary>
+        public string MP3FileCheckSum { get; set; }
+
         /// <summary>
         /// Process Result
         /// </summary>

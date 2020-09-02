@@ -44,10 +44,19 @@ namespace RMuseum.Services
         Task<RServiceResult<UploadSessionFile>> SaveUploadedFile(IFormFile uploadedFile);
 
         /// <summary>
+        /// finalize upload session (add files)
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="files"></param>
+        /// <returns></returns>
+        Task<RServiceResult<UploadSession>> FinalizeNewUploadSession(UploadSession session, UploadSessionFile[] files);
+
+        /// <summary>
         /// Get Upload Session (including files)
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<UploadSession>> GetUploadSession(Guid id);
+       
     }
 }
