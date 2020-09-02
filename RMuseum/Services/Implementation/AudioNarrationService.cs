@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Audit.WebApi;
+using ganjoor;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
@@ -183,14 +185,13 @@ namespace RMuseum.Services.Implementation
                     FileName = uploadedFile.FileName,
                     Length = uploadedFile.Length,
                     Name = uploadedFile.Name,
-                    ProcessResult = true,
-                    ProcessResultMsg = ""
+                    ProcessResult = false,
+                    ProcessResultMsg = "پردازش نشده (فایلهای mp3‌ که مشخصات آنها در فایلهای xml ارسالی یافت نشود پردازش نمی‌شوند)."
                 };
 
                 string ext = Path.GetExtension(file.FileName).ToLower();
                 if(ext != ".mp3" && ext != ".xml" && ext != ".zip")
                 {
-                    file.ProcessResult = false;
                     file.ProcessResultMsg = "تنها فایلهای با پسوند mp3، xml و zip قابل قبول هستند.";
                 }
                 else
@@ -229,6 +230,91 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// finalize upload session (add files)
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="files"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<UploadSession>> FinalizeNewUploadSession(UploadSession session, UploadSessionFile[] files)
+        {
+            try
+            {
+                session.UploadedFiles = files;
+
+                _context.UploadSessions.Update(session);
+                await _context.SaveChangesAsync();
+
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                    (
+                    async token =>
+                    {
+                        using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
+                        {
+                            List<UploadSessionFile> mp3files = new List<UploadSessionFile>();
+                            foreach (UploadSessionFile file in session.UploadedFiles.Where(file => Path.GetExtension(file.FilePath) == ".mp3").ToList())
+                            {
+                                try
+                                {
+                                    file.MP3FileCheckSum = PoemAudio.ComputeCheckSum(file.FilePath);
+                                    mp3files.Add(file);
+                                }
+                                catch (Exception exp)
+                                {
+                                    session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = exp.ToString();
+                                    context.UploadSessions.Update(session);
+                                    await context.SaveChangesAsync();
+                                }
+                            }
+
+                            foreach (UploadSessionFile file in session.UploadedFiles.Where(file => Path.GetExtension(file.FilePath) == ".xml").ToList())
+                            {
+                                try
+                                {
+                                    foreach (PoemAudio audio in PoemAudioListProcessor.Load(file.FilePath))
+                                    {
+                                        UploadSessionFile mp3file = mp3files.Where(mp3 => mp3.MP3FileCheckSum == audio.FileCheckSum).SingleOrDefault();
+                                        if(mp3file == null)
+                                        {
+                                            session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "فایل mp3 متناظر یافت نشد (توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است. اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).";
+                                            context.UploadSessions.Update(session);
+                                        }
+                                        else
+                                        {
+                                            //here we should produce and save ogg file
+
+                                            session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "";
+                                            session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResult = true;
+                                            session.UploadedFiles.Where(f => f.Id == mp3file.Id).SingleOrDefault().ProcessResultMsg = "";
+                                            session.UploadedFiles.Where(f => f.Id == mp3file.Id).SingleOrDefault().ProcessResult = true;
+                                        }
+                                        await context.SaveChangesAsync();
+                                    }
+                                }
+                                catch (Exception exp)
+                                {
+                                    session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "فایل XML نامعتبر است. اطلاعات بیشتر: " + exp.ToString();
+                                    context.UploadSessions.Update(session);
+                                    await context.SaveChangesAsync();
+                                }
+                            }
+                        }
+                       
+                    }
+                    );
+
+                   
+
+                return new RServiceResult<UploadSession>(session);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<UploadSession>(null, exp.ToString());
+            }
+        }
+
+        
+        /// <summary>
         /// Get Upload Session (including files)
         /// </summary>
         /// <param name="id"></param>
@@ -261,14 +347,20 @@ namespace RMuseum.Services.Implementation
         protected readonly RMuseumDbContext _context;
 
         /// <summary>
+        /// Background Task Queue Instance
+        /// </summary>
+        protected readonly IBackgroundTaskQueue _backgroundTaskQueue;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="configuration"></param>
-        public AudioNarrationService(RMuseumDbContext context, IConfiguration configuration)
+        public AudioNarrationService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue)
         {
             _context = context;
             Configuration = configuration;
+            _backgroundTaskQueue = backgroundTaskQueue;
         }
     }
 }

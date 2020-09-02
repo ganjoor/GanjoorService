@@ -95,8 +95,10 @@ namespace RMuseum.Controllers
                         return BadRequest(rsFileResult.ExceptionString);
                     }
                     files.Add(rsFileResult.Result);
-                }              
-                return Ok(await _audioService.GetUploadSession(resSession.Result.Id));
+                }
+                resSession = await _audioService.FinalizeNewUploadSession(resSession.Result, files.ToArray());
+
+                return Ok(resSession.Result);
             }
             catch (Exception exp)
             {
