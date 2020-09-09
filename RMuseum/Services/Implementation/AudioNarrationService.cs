@@ -283,14 +283,48 @@ namespace RMuseum.Services.Implementation
                                         else
                                         {
                                             //here we should produce and save ogg file
-
-                                            using(Mp3FileReader mp3FileReader = new Mp3FileReader(mp3file.FilePath))
+                                            byte[] mp3bytes = File.ReadAllBytes(mp3file.FilePath);
+                                            int mp3fileSize = mp3bytes.Length;
+                                            int oggfileSize;
+                                            using (MemoryStream ms = new MemoryStream(mp3bytes))                                            
+                                            using (Mp3FileReader mp3FileReader = new Mp3FileReader(ms))
                                             {
                                                 byte[] samples = new byte[mp3FileReader.Length];
                                                 await mp3FileReader.ReadAsync(samples, 0, (int)mp3FileReader.Length);
                                                 var oggBytes = ConvertRawPCMFile(mp3FileReader.Mp3WaveFormat.SampleRate, mp3FileReader.Mp3WaveFormat.Channels, samples, PCMSample.EightBit, mp3FileReader.Mp3WaveFormat.SampleRate, mp3FileReader.Mp3WaveFormat.Channels);
+                                                oggfileSize = oggBytes.Length;
                                                 File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(mp3file.FilePath), $"{Path.GetFileNameWithoutExtension(mp3file.FilePath)}.ogg") , oggBytes);
                                             }
+
+                                            //create draft poem narration:
+                                            var FileNameWithoutExtension = $"{audio.PoemId}-{session.UseId}";//TODO: use user profiles for audio files here
+                                            //TODO: rename and move files somewhere here
+                                            
+                                            PoemNarration narration = new PoemNarration()
+                                            {
+                                                OwnerId = session.UseId,
+                                                GanjoorAudioId = 1 + await context.AudioFiles.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
+                                                AudioOrder = 1 + await context.AudioFiles.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
+                                                FileNameWithoutExtension = FileNameWithoutExtension,
+                                                SoundFilesFolder = "a2",
+                                                AudioTitle = audio.PoemTitle,
+                                                AudioArtist = "",//TODO: use user profiles for audio files here
+                                                AudioArtistUrl = "",//TODO: use user profiles for audio files here
+                                                AudioSrc = "", //TODO: use user profiles for audio files here
+                                                AudioSrcUrl = "", //TODO: use user profiles for audio files here
+                                                LegacyAudioGuid = audio.SyncGuid, //check for repeated guid here
+                                                Mp3FileCheckSum = audio.FileCheckSum,
+                                                Mp3SizeInBytes = mp3fileSize,
+                                                OggSizeInBytes = oggfileSize,
+                                                UploadDate = session.UploadEndTime,
+                                                LocalMp3FilePath = mp3file.FilePath,
+                                                LocalXmlFilePath = file.FilePath,
+                                                AudioSyncStatus = (int)AudioSyncStatus.NewItem,
+                                                ReviewStatus = AudioReviewStatus.Draft
+                                            };
+
+                                            context.AudioFiles.Add(narration);
+
 
                                             session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "";
                                             session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResult = true;
