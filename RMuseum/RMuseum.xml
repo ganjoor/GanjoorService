@@ -4259,6 +4259,7 @@
             </summary>
             <param name="context"></param>
             <param name="configuration"></param>
+            <param name="backgroundTaskQueue"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.BLTileMixer">
             <summary>
@@ -4304,6 +4305,11 @@
         <member name="F:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync._PinglishDic">
             <summary>
             equaivalnet for persian characters
+            </summary>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.OggVorbisConvertor">
+            <summary>
+            ogg vorbis convertor
             </summary>
         </member>
         <member name="T:RMuseum.Services.Implementation.PictureFileService">
