@@ -11,6 +11,7 @@ using RMuseum.Models.Notification;
 using RSecurityBackend.DbContext;
 using RSecurityBackend.Models.Auth.Db;
 using System;
+using Dapper;
 
 namespace RMuseum.DbContext
 {
@@ -137,6 +138,11 @@ namespace RMuseum.DbContext
         /// Upload Sessions
         /// </summary>
         public DbSet<UploadSession> UploadSessions { get; set; }
+
+        /// <summary>
+        /// User Narration Profiles
+        /// </summary>
+        public DbSet<UserNarrationProfile> UserNarrationProfiles { get; set; }
 
     }
 }

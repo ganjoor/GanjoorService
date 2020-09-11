@@ -825,6 +825,11 @@
             Upload Sessions
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.UserNarrationProfiles">
+            <summary>
+            User Narration Profiles
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status
@@ -1776,6 +1781,58 @@
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.ReviewStatus">
             <summary>
             Review Status
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.UserNarrationProfile">
+            <summary>
+            Narration Profiles for users
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.User">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.UserId">
+            <summary>
+            UserId
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.FileSuffixWithoutDash">
+            <summary>
+            this would be appended to audio files names prefixed by a dash to make them unique and specfic to user
+            filenames usually would look like {GanjoorPostId}-{FileSuffixWithoutDash}.{ext}
+            for example 2200-hrm.xml
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.ArtistName">
+            <summary>
+            artist name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.ArtistUrl">
+            <summary>
+            artist url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.AudioSrc">
+            <summary>
+            audio src
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.AudioSrcUrl">
+            <summary>
+            audio src url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.IsDefault">
+            <summary>
+            is default
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel">
@@ -4219,6 +4276,35 @@
             </summary>
             <param name="format"></param>
             <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync">
+            <summary>
+            Persian specific text utility class
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync.Sync(System.String)">
+            <summary>
+            convert arabic characters to persian equivalents
+            </summary>
+            <param name="inputStr"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync.PersianLetters">
+            <summary>
+            list of persian letters
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync.Farglisize(System.String)">
+            <summary>
+            convert persian text to simple pinglish
+            </summary>
+            <param name="inputStr"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync._PinglishDic">
+            <summary>
+            equaivalnet for persian characters
+            </summary>
         </member>
         <member name="T:RMuseum.Services.Implementation.PictureFileService">
             <summary>

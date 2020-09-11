@@ -7,9 +7,11 @@ using MySql.Data.MySqlClient;
 using NAudio.Wave;
 using OggVorbisEncoder;
 using RMuseum.DbContext;
+using RMuseum.Migrations;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
+using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -157,7 +159,8 @@ namespace RMuseum.Services.Implementation
                     UseId = userId,
                     UploadStartTime = DateTime.Now,
                     Status = UploadSessionProcessStatus.NotStarted,
-                    ProcessProgress = 0
+                    ProcessProgress = 0,
+                    User = await _context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync() //this would be referenced later and is needed
                 };
                 await _context.UploadSessions.AddAsync(session);
                 await _context.SaveChangesAsync();
@@ -258,7 +261,7 @@ namespace RMuseum.Services.Implementation
                                 try
                                 {
                                     file.MP3FileCheckSum = PoemAudio.ComputeCheckSum(file.FilePath);
-                                    mp3files.Add(file);
+                                    mp3files.Add(file); 
                                 }
                                 catch (Exception exp)
                                 {
@@ -296,10 +299,36 @@ namespace RMuseum.Services.Implementation
                                                 File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(mp3file.FilePath), $"{Path.GetFileNameWithoutExtension(mp3file.FilePath)}.ogg") , oggBytes);
                                             }
 
-                                            //create draft poem narration:
-                                            var FileNameWithoutExtension = $"{audio.PoemId}-{session.UseId}";//TODO: use user profiles for audio files here
-                                            //TODO: rename and move files somewhere here
                                             
+                                            
+
+                                            UserNarrationProfile defProfile = await context.UserNarrationProfiles.Where(p => p.UserId == session.UseId && p.IsDefault == true).FirstOrDefaultAsync();
+                                            if(defProfile == null)
+                                            {
+                                                defProfile = new UserNarrationProfile()
+                                                {
+                                                    FileSuffixWithoutDash = !string.IsNullOrEmpty(session.User.FirstName) ? !string.IsNullOrEmpty(session.User.SureName) ?
+                                                                            GPersianTextSync.Farglisize($"{session.User.FirstName[0]}{session.User.SureName[0]}")
+                                                                            :
+                                                                            GPersianTextSync.Farglisize($"{session.User.FirstName[0]}") : $"{session.User.UserName[0]}",
+                                                    ArtistName = $"{session.User.FirstName} {session.User.SureName}",
+                                                    ArtistUrl = "",
+                                                    AudioSrc = "",
+                                                    AudioSrcUrl = ""
+                                                    
+                                                };
+                                            }
+                                            //create draft poem narration:
+                                            string FileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}";
+
+                                            Guid legacyAudioGuid = audio.SyncGuid;
+                                            while(
+                                                (await context.AudioFiles.Where(a => a.LegacyAudioGuid == legacyAudioGuid).FirstOrDefaultAsync()) != null
+                                                ) 
+                                            { legacyAudioGuid = Guid.NewGuid(); }
+
+                                            //TODO: rename and move files somewhere here
+
                                             PoemNarration narration = new PoemNarration()
                                             {
                                                 OwnerId = session.UseId,
@@ -308,11 +337,11 @@ namespace RMuseum.Services.Implementation
                                                 FileNameWithoutExtension = FileNameWithoutExtension,
                                                 SoundFilesFolder = "a2",
                                                 AudioTitle = audio.PoemTitle,
-                                                AudioArtist = "",//TODO: use user profiles for audio files here
-                                                AudioArtistUrl = "",//TODO: use user profiles for audio files here
-                                                AudioSrc = "", //TODO: use user profiles for audio files here
-                                                AudioSrcUrl = "", //TODO: use user profiles for audio files here
-                                                LegacyAudioGuid = audio.SyncGuid, //check for repeated guid here
+                                                AudioArtist = defProfile.ArtistName,
+                                                AudioArtistUrl = defProfile.ArtistUrl,
+                                                AudioSrc = defProfile.AudioSrc, 
+                                                AudioSrcUrl = defProfile.AudioSrcUrl, 
+                                                LegacyAudioGuid = legacyAudioGuid,
                                                 Mp3FileCheckSum = audio.FileCheckSum,
                                                 Mp3SizeInBytes = mp3fileSize,
                                                 OggSizeInBytes = oggfileSize,
