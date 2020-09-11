@@ -271,12 +271,67 @@ namespace RMuseum.Services.Implementation
                                 }
                             }
 
+                            UserNarrationProfile defProfile = await context.UserNarrationProfiles.Where(p => p.UserId == session.UseId && p.IsDefault == true).FirstOrDefaultAsync();
+                            if (defProfile == null)
+                            {
+                                defProfile = new UserNarrationProfile()
+                                {
+                                    FileSuffixWithoutDash = !string.IsNullOrEmpty(session.User.FirstName) ? !string.IsNullOrEmpty(session.User.SureName) ?
+                                                            GPersianTextSync.Farglisize($"{session.User.FirstName[0]}{session.User.SureName[0]}")
+                                                            :
+                                                            GPersianTextSync.Farglisize($"{session.User.FirstName[0]}") : $"{session.User.UserName[0]}",
+                                    ArtistName = $"{session.User.FirstName} {session.User.SureName}",
+                                    ArtistUrl = "",
+                                    AudioSrc = "",
+                                    AudioSrcUrl = ""
+
+                                };
+                            }
+
                             foreach (UploadSessionFile file in session.UploadedFiles.Where(file => Path.GetExtension(file.FilePath) == ".xml").ToList())
                             {
                                 try
                                 {
-                                    foreach (PoemAudio audio in PoemAudioListProcessor.Load(file.FilePath))
+                                    //although each xml can theorically contain more than one file information
+                                    //this assumption was never implemented and used in Desktop Ganjoor which produces this xml file
+                                    //within the loop code the file is moved somewhere else and if the loop reaches is unexpected second path
+                                    //the code would fail!
+                                    foreach (PoemAudio audio in PoemAudioListProcessor.Load(file.FilePath)) 
                                     {
+                                        string soundFilesFolder = Configuration.GetSection("AudioUploadService")["StoragePath"];
+                                        string targetPathForAudioFiles = Path.Combine(Configuration.GetSection("LocalAudioRepositoryPath")["StoragePath"], Configuration.GetSection("AudioUploadService")["StoragePath"]);
+                                        if (!Directory.Exists(targetPathForAudioFiles))
+                                        {
+                                            Directory.CreateDirectory(targetPathForAudioFiles);
+                                        }
+                                        string targetPathForXmlFiles = Path.Combine(targetPathForAudioFiles, "x");
+                                        if (!Directory.Exists(targetPathForXmlFiles))
+                                        {
+                                            Directory.CreateDirectory(targetPathForXmlFiles);
+                                        }
+
+                                        string fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}";
+                                        int tmp = 1;
+                                        while
+                                        (
+                                        File.Exists(Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.mp3"))
+                                        ||
+                                        File.Exists(Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.ogg"))
+                                        ||
+                                        File.Exists(Path.Combine(targetPathForXmlFiles, $"{fileNameWithoutExtension}.xml"))
+                                        )
+                                        {
+                                            fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}{tmp}";
+                                            tmp++;
+                                        }
+
+                                        
+                                        string localXmlFilePath = Path.Combine(targetPathForXmlFiles, $"{fileNameWithoutExtension}.xml");
+                                        File.Move(file.FilePath, localXmlFilePath); //this is the movemnet I talked about earlier
+
+
+                                        string localMp3FilePath = Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.mp3");
+
                                         UploadSessionFile mp3file = mp3files.Where(mp3 => mp3.MP3FileCheckSum == audio.FileCheckSum).SingleOrDefault();
                                         if(mp3file == null)
                                         {
@@ -285,8 +340,10 @@ namespace RMuseum.Services.Implementation
                                         }
                                         else
                                         {
+                                            File.Move(mp3file.FilePath, localMp3FilePath);
+
                                             //here we should produce and save ogg file
-                                            byte[] mp3bytes = File.ReadAllBytes(mp3file.FilePath);
+                                            byte[] mp3bytes = File.ReadAllBytes(Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.mp3"));
                                             int mp3fileSize = mp3bytes.Length;
                                             int oggfileSize;
                                             using (MemoryStream ms = new MemoryStream(mp3bytes))                                            
@@ -296,46 +353,27 @@ namespace RMuseum.Services.Implementation
                                                 await mp3FileReader.ReadAsync(samples, 0, (int)mp3FileReader.Length);
                                                 var oggBytes = ConvertRawPCMFile(mp3FileReader.Mp3WaveFormat.SampleRate, mp3FileReader.Mp3WaveFormat.Channels, samples, PCMSample.EightBit, mp3FileReader.Mp3WaveFormat.SampleRate, mp3FileReader.Mp3WaveFormat.Channels);
                                                 oggfileSize = oggBytes.Length;
-                                                File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(mp3file.FilePath), $"{Path.GetFileNameWithoutExtension(mp3file.FilePath)}.ogg") , oggBytes);
+                                                File.WriteAllBytes(Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.ogg"), oggBytes);
                                             }
 
                                             
-                                            
-
-                                            UserNarrationProfile defProfile = await context.UserNarrationProfiles.Where(p => p.UserId == session.UseId && p.IsDefault == true).FirstOrDefaultAsync();
-                                            if(defProfile == null)
-                                            {
-                                                defProfile = new UserNarrationProfile()
-                                                {
-                                                    FileSuffixWithoutDash = !string.IsNullOrEmpty(session.User.FirstName) ? !string.IsNullOrEmpty(session.User.SureName) ?
-                                                                            GPersianTextSync.Farglisize($"{session.User.FirstName[0]}{session.User.SureName[0]}")
-                                                                            :
-                                                                            GPersianTextSync.Farglisize($"{session.User.FirstName[0]}") : $"{session.User.UserName[0]}",
-                                                    ArtistName = $"{session.User.FirstName} {session.User.SureName}",
-                                                    ArtistUrl = "",
-                                                    AudioSrc = "",
-                                                    AudioSrcUrl = ""
-                                                    
-                                                };
-                                            }
-                                            //create draft poem narration:
-                                            string FileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}";
 
                                             Guid legacyAudioGuid = audio.SyncGuid;
                                             while(
                                                 (await context.AudioFiles.Where(a => a.LegacyAudioGuid == legacyAudioGuid).FirstOrDefaultAsync()) != null
                                                 ) 
-                                            { legacyAudioGuid = Guid.NewGuid(); }
+                                            { 
+                                                legacyAudioGuid = Guid.NewGuid(); 
+                                            }
 
-                                            //TODO: rename and move files somewhere here
 
                                             PoemNarration narration = new PoemNarration()
                                             {
                                                 OwnerId = session.UseId,
                                                 GanjoorAudioId = 1 + await context.AudioFiles.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
                                                 AudioOrder = 1 + await context.AudioFiles.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
-                                                FileNameWithoutExtension = FileNameWithoutExtension,
-                                                SoundFilesFolder = "a2",
+                                                FileNameWithoutExtension = fileNameWithoutExtension,
+                                                SoundFilesFolder = soundFilesFolder,
                                                 AudioTitle = audio.PoemTitle,
                                                 AudioArtist = defProfile.ArtistName,
                                                 AudioArtistUrl = defProfile.ArtistUrl,
@@ -346,8 +384,8 @@ namespace RMuseum.Services.Implementation
                                                 Mp3SizeInBytes = mp3fileSize,
                                                 OggSizeInBytes = oggfileSize,
                                                 UploadDate = session.UploadEndTime,
-                                                LocalMp3FilePath = mp3file.FilePath,
-                                                LocalXmlFilePath = file.FilePath,
+                                                LocalMp3FilePath = localMp3FilePath,
+                                                LocalXmlFilePath = localXmlFilePath,
                                                 AudioSyncStatus = (int)AudioSyncStatus.NewItem,
                                                 ReviewStatus = AudioReviewStatus.Draft
                                             };
