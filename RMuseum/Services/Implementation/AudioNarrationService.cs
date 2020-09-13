@@ -299,7 +299,7 @@ namespace RMuseum.Services.Implementation
                                     foreach (PoemAudio audio in PoemAudioListProcessor.Load(file.FilePath)) 
                                     {
                                         string soundFilesFolder = Configuration.GetSection("AudioUploadService")["StoragePath"];
-                                        string targetPathForAudioFiles = Path.Combine(Configuration.GetSection("LocalAudioRepositoryPath")["StoragePath"], Configuration.GetSection("AudioUploadService")["StoragePath"]);
+                                        string targetPathForAudioFiles = Path.Combine(Configuration.GetSection("AudioUploadService")["LocalAudioRepositoryPath"], Configuration.GetSection("AudioUploadService")["StoragePath"]);
                                         if (!Directory.Exists(targetPathForAudioFiles))
                                         {
                                             Directory.CreateDirectory(targetPathForAudioFiles);
