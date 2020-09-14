@@ -4307,11 +4307,6 @@
             equaivalnet for persian characters
             </summary>
         </member>
-        <member name="T:RMuseum.Services.Implementation.OggVorbisConvertor">
-            <summary>
-            ogg vorbis convertor
-            </summary>
-        </member>
         <member name="T:RMuseum.Services.Implementation.PictureFileService">
             <summary>
             manipulating picture files 

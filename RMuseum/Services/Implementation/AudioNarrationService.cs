@@ -1,11 +1,8 @@
-﻿using Audit.WebApi;
-using ganjoor;
+﻿using ganjoor;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
-using NAudio.Wave;
-using OggVorbisEncoder;
 using RMuseum.DbContext;
 using RMuseum.Migrations;
 using RMuseum.Models.GanjoorAudio;
@@ -195,9 +192,9 @@ namespace RMuseum.Services.Implementation
                 };
 
                 string ext = Path.GetExtension(file.FileName).ToLower();
-                if(ext != ".mp3" && ext != ".xml" && ext != ".zip")
+                if(ext != ".mp3" && ext != ".xml" && ext != ".ogg")
                 {
-                    file.ProcessResultMsg = "تنها فایلهای با پسوند mp3، xml و zip قابل قبول هستند.";
+                    file.ProcessResultMsg = "تنها فایلهای با پسوند mp3، xml و ogg قابل قبول هستند.";
                 }
                 else
                 {
@@ -331,6 +328,7 @@ namespace RMuseum.Services.Implementation
 
 
                                         string localMp3FilePath = Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.mp3");
+                                        string localOggFilePath = Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.ogg");
 
                                         UploadSessionFile mp3file = mp3files.Where(mp3 => mp3.MP3FileCheckSum == audio.FileCheckSum).SingleOrDefault();
                                         if(mp3file == null)
@@ -341,22 +339,11 @@ namespace RMuseum.Services.Implementation
                                         else
                                         {
                                             File.Move(mp3file.FilePath, localMp3FilePath);
+                                            File.Move(Path.Combine(Path.GetDirectoryName(mp3file.FilePath), $"{Path.GetFileNameWithoutExtension(mp3file.FilePath)}.ogg"), localOggFilePath);
+                                            int mp3fileSize = File.ReadAllBytes(localMp3FilePath).Length;
+                                            int oggfileSize  = File.ReadAllBytes(localOggFilePath).Length;
 
-                                            //here we should produce and save ogg file
-                                            byte[] mp3bytes = File.ReadAllBytes(Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.mp3"));
-                                            int mp3fileSize = mp3bytes.Length;
-                                            int oggfileSize;
-                                            using (MemoryStream ms = new MemoryStream(mp3bytes))                                            
-                                            using (Mp3FileReader mp3FileReader = new Mp3FileReader(ms))
-                                            {
-                                                byte[] samples = new byte[mp3FileReader.Length];
-                                                await mp3FileReader.ReadAsync(samples, 0, (int)mp3FileReader.Length);
-                                                var oggBytes = OggVorbisConvertor.ConvertRawPCMFile(mp3FileReader.Mp3WaveFormat.SampleRate, mp3FileReader.Mp3WaveFormat.Channels, samples, PCMSample.EightBit, mp3FileReader.Mp3WaveFormat.SampleRate, mp3FileReader.Mp3WaveFormat.Channels);
-                                                oggfileSize = oggBytes.Length;
-                                                File.WriteAllBytes(Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.ogg"), oggBytes);
-                                            }
 
-                                            
 
                                             Guid legacyAudioGuid = audio.SyncGuid;
                                             while(
