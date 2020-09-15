@@ -296,7 +296,7 @@ namespace RMuseum.Services.Implementation
                                     foreach (PoemAudio audio in PoemAudioListProcessor.Load(file.FilePath)) 
                                     {
                                         string soundFilesFolder = Configuration.GetSection("AudioUploadService")["StoragePath"];
-                                        string targetPathForAudioFiles = Path.Combine(Configuration.GetSection("AudioUploadService")["LocalAudioRepositoryPath"], Configuration.GetSection("AudioUploadService")["StoragePath"]);
+                                        string targetPathForAudioFiles = Configuration.GetSection("AudioUploadService")["LocalAudioRepositoryPath"];
                                         if (!Directory.Exists(targetPathForAudioFiles))
                                         {
                                             Directory.CreateDirectory(targetPathForAudioFiles);
@@ -313,8 +313,6 @@ namespace RMuseum.Services.Implementation
                                         (
                                         File.Exists(Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.mp3"))
                                         ||
-                                        File.Exists(Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.ogg"))
-                                        ||
                                         File.Exists(Path.Combine(targetPathForXmlFiles, $"{fileNameWithoutExtension}.xml"))
                                         )
                                         {
@@ -328,7 +326,6 @@ namespace RMuseum.Services.Implementation
 
 
                                         string localMp3FilePath = Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.mp3");
-                                        string localOggFilePath = Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.ogg");
 
                                         UploadSessionFile mp3file = mp3files.Where(mp3 => mp3.MP3FileCheckSum == audio.FileCheckSum).SingleOrDefault();
                                         if(mp3file == null)
@@ -339,9 +336,7 @@ namespace RMuseum.Services.Implementation
                                         else
                                         {
                                             File.Move(mp3file.FilePath, localMp3FilePath);
-                                            File.Move(Path.Combine(Path.GetDirectoryName(mp3file.FilePath), $"{Path.GetFileNameWithoutExtension(mp3file.FilePath)}.ogg"), localOggFilePath);
                                             int mp3fileSize = File.ReadAllBytes(localMp3FilePath).Length;
-                                            int oggfileSize  = File.ReadAllBytes(localOggFilePath).Length;
 
 
 
@@ -369,7 +364,7 @@ namespace RMuseum.Services.Implementation
                                                 LegacyAudioGuid = legacyAudioGuid,
                                                 Mp3FileCheckSum = audio.FileCheckSum,
                                                 Mp3SizeInBytes = mp3fileSize,
-                                                OggSizeInBytes = oggfileSize,
+                                                OggSizeInBytes = 0,
                                                 UploadDate = session.UploadEndTime,
                                                 LocalMp3FilePath = localMp3FilePath,
                                                 LocalXmlFilePath = localXmlFilePath,
