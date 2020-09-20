@@ -126,6 +126,24 @@ namespace RMuseum.Controllers
             return BadRequest(res.ExceptionString);
         }
 
+        [HttpGet("profiles")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<UserNarrationProfileViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+
+        public async Task<IActionResult> GetUserNarrationProfiles()
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+
+            var res = await _audioService.GetUserNarrationProfiles(loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+
+            return Ok(res.Result);
+        }
 
         /// <summary>
         /// constructor

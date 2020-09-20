@@ -57,6 +57,14 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<UploadSession>> GetUploadSession(Guid id);
-       
+
+        /// <summary>
+        /// Get User Profiles
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<UserNarrationProfileViewModel[]>> GetUserNarrationProfiles(Guid userId);
+
+
     }
 }

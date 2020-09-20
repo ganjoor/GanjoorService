@@ -2000,6 +2000,64 @@
             Review Status
             </summary>
         </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel">
+            <summary>
+            UserNarrationProfile View Model
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.#ctor(RMuseum.Models.GanjoorAudio.UserNarrationProfile)">
+            <summary>
+            constructor
+            </summary>
+            <param name="src"></param>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.User">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.UserId">
+            <summary>
+            UserId
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.FileSuffixWithoutDash">
+            <summary>
+            this would be appended to audio files names prefixed by a dash to make them unique and specfic to user
+            filenames usually would look like {GanjoorPostId}-{FileSuffixWithoutDash}.{ext}
+            for example 2200-hrm.xml
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.ArtistName">
+            <summary>
+            artist name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.ArtistUrl">
+            <summary>
+            artist url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.AudioSrc">
+            <summary>
+            audio src
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.AudioSrcUrl">
+            <summary>
+            audio src url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.IsDefault">
+            <summary>
+            is default
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.GanjoorLink">
             <summary>
             ganjoor link for artifacts and items
@@ -3481,6 +3539,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.GetUserNarrationProfiles(System.Guid)">
+            <summary>
+            Get User Profiles
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -4236,6 +4301,13 @@
             Get Upload Session (including files)
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUserNarrationProfiles(System.Guid)">
+            <summary>
+            Get User Profiles
+            </summary>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.AudioNarrationService.Configuration">

@@ -432,6 +432,29 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// Get User Profiles
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<UserNarrationProfileViewModel[]>> GetUserNarrationProfiles(Guid userId)
+        {
+            try
+            {
+                List<UserNarrationProfileViewModel> profiles = new List<UserNarrationProfileViewModel>();
+                
+                foreach(UserNarrationProfile p in (await _context.UserNarrationProfiles.Include(p => p.User).Where(p => p.UserId == userId).ToArrayAsync()))
+                {
+                    profiles.Add(new UserNarrationProfileViewModel(p));
+                }
+                return new RServiceResult<UserNarrationProfileViewModel[]>(profiles.ToArray());
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<UserNarrationProfileViewModel[]>(null, exp.ToString());
+            }
+        }
 
         /// <summary>
         /// Configuration
