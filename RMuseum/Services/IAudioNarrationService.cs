@@ -65,6 +65,13 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<UserNarrationProfileViewModel[]>> GetUserNarrationProfiles(Guid userId);
 
+        /// <summary>
+        /// Add a narration profile
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <returns></returns>
+        Task<RServiceResult<UserNarrationProfileViewModel>> AddUserNarrationProfiles(UserNarrationProfileViewModel profile);
+
 
     }
 }

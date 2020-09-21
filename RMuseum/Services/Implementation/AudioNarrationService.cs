@@ -457,6 +457,45 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// Add a narration profile
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<UserNarrationProfileViewModel>> AddUserNarrationProfiles(UserNarrationProfileViewModel profile)
+        {
+            try
+            {
+                var p =  new UserNarrationProfile()
+                {
+                    UserId = profile.UserId,
+                    ArtistName = profile.ArtistName,
+                    ArtistUrl = profile.ArtistUrl,
+                    AudioSrc = profile.AudioSrc,
+                    AudioSrcUrl = profile.AudioSrcUrl,
+                    FileSuffixWithoutDash = profile.FileSuffixWithoutDash,
+                    IsDefault = profile.IsDefault
+                };
+                await _context.UserNarrationProfiles.AddAsync(p);
+                   
+                await _context.SaveChangesAsync();
+                if(p.IsDefault)
+                {
+                    foreach(var o in _context.UserNarrationProfiles.Where(o => o.Id != p.Id && o.IsDefault).Select(o => o))
+                    {
+                        o.IsDefault = false;
+                        _context.UserNarrationProfiles.Update(o);
+                    }
+                    await _context.UserNarrationProfiles.AddAsync(p);
+                }
+                return new RServiceResult<UserNarrationProfileViewModel>(new UserNarrationProfileViewModel(p));
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<UserNarrationProfileViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Configuration
         /// </summary>
         protected IConfiguration Configuration { get; }

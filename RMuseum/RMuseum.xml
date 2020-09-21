@@ -641,6 +641,19 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.GetUserNarrationProfiles">
+            <summary>
+            Get User Profiles
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
+            <summary>
+            Add a narration profile
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.#ctor(RMuseum.Services.IAudioNarrationService,RSecurityBackend.Services.IUserPermissionChecker)">
             <summary>
             constructor
@@ -3546,6 +3559,13 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
+            <summary>
+            Add a narration profile
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -4308,6 +4328,13 @@
             Get User Profiles
             </summary>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
+            <summary>
+            Add a narration profile
+            </summary>
+            <param name="profile"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.AudioNarrationService.Configuration">
