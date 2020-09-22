@@ -654,6 +654,20 @@
             <param name="profile"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.UpdateUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
+            <summary>
+            Update a narration profile
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.DeleteUserNarrationProfiles(System.Guid)">
+            <summary>
+            Delete a narration profile 
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.#ctor(RMuseum.Services.IAudioNarrationService,RSecurityBackend.Services.IUserPermissionChecker)">
             <summary>
             constructor
@@ -3566,6 +3580,21 @@
             <param name="profile"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.UpdateUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
+            <summary>
+            Update a narration profile 
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.DeleteUserNarrationProfiles(System.Guid,System.Guid)">
+            <summary>
+            Delete a narration profile 
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -4335,6 +4364,21 @@
             Add a narration profile
             </summary>
             <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.UpdateUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
+            <summary>
+            Update a narration profile 
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.DeleteUserNarrationProfiles(System.Guid,System.Guid)">
+            <summary>
+            Delete a narration profile 
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.AudioNarrationService.Configuration">

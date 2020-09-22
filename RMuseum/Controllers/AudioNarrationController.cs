@@ -176,6 +176,52 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Update a narration profile
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <returns></returns>
+        [HttpPut("profile")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserNarrationProfileViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+
+        public async Task<IActionResult> UpdateUserNarrationProfiles([FromBody] UserNarrationProfileViewModel profile)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            profile.UserId = loggedOnUserId;
+
+            var res = await _audioService.UpdateUserNarrationProfiles(profile);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// Delete a narration profile 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpDelete("profile/{id}")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> DeleteUserNarrationProfiles(Guid id)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<bool> res = await _audioService.DeleteUserNarrationProfiles(id, loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="audioService">

@@ -485,13 +485,83 @@ namespace RMuseum.Services.Implementation
                         o.IsDefault = false;
                         _context.UserNarrationProfiles.Update(o);
                     }
-                    await _context.UserNarrationProfiles.AddAsync(p);
+                    await _context.SaveChangesAsync();
                 }
                 return new RServiceResult<UserNarrationProfileViewModel>(new UserNarrationProfileViewModel(p));
             }
             catch (Exception exp)
             {
                 return new RServiceResult<UserNarrationProfileViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Update a narration profile 
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<UserNarrationProfileViewModel>> UpdateUserNarrationProfiles(UserNarrationProfileViewModel profile)
+        {
+            try
+            {
+
+                var p = await _context.UserNarrationProfiles.Where(p => p.Id == profile.Id).SingleOrDefaultAsync();
+
+                if (p.UserId != profile.UserId)
+                    return new RServiceResult<UserNarrationProfileViewModel>(null, "permission error");
+
+                p.ArtistName = profile.ArtistName;
+                p.ArtistUrl = profile.ArtistUrl;
+                p.AudioSrc = profile.AudioSrc;
+                p.AudioSrcUrl = profile.AudioSrcUrl;
+                p.FileSuffixWithoutDash = profile.FileSuffixWithoutDash;
+                p.IsDefault = profile.IsDefault;
+
+                _context.UserNarrationProfiles.Update(p);
+
+                await _context.SaveChangesAsync();
+                if (p.IsDefault)
+                {
+                    foreach (var o in _context.UserNarrationProfiles.Where(o => o.Id != p.Id && o.IsDefault).Select(o => o))
+                    {
+                        o.IsDefault = false;
+                        _context.UserNarrationProfiles.Update(o);
+                    }
+                    await _context.SaveChangesAsync();
+                }
+                return new RServiceResult<UserNarrationProfileViewModel>(new UserNarrationProfileViewModel(p));
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<UserNarrationProfileViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Delete a narration profile 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteUserNarrationProfiles(Guid id, Guid userId)
+        {
+            try
+            {
+
+                var p = await _context.UserNarrationProfiles.Where(p => p.Id == id).SingleOrDefaultAsync();
+
+                if (p.UserId != userId)
+                    return new RServiceResult<bool>(false);
+
+                _context.UserNarrationProfiles.Remove(p);
+
+                await _context.SaveChangesAsync();
+                
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 
