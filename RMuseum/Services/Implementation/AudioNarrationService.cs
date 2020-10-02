@@ -46,7 +46,7 @@ namespace RMuseum.Services.Implementation
                             &&
                             (status == AudioReviewStatus.All || a.ReviewStatus == status)
                      )
-                    .OrderBy(a => a.UploadDate)
+                    .OrderByDescending(a => a.UploadDate)
                     .AsQueryable();
 
                 (PaginationMetadata PagingMeta, PoemNarration[] Items) paginatedResult =
@@ -242,6 +242,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 session.UploadedFiles = files;
+                session.UploadEndTime = DateTime.Now;
 
                 _context.UploadSessions.Update(session);
                 await _context.SaveChangesAsync();
