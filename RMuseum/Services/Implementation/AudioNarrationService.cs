@@ -198,22 +198,22 @@ namespace RMuseum.Services.Implementation
                 }
                 else
                 {
-                    if (!Directory.Exists(Configuration.GetSection("AudioUploadService")["StoragePath"]))
+                    if (!Directory.Exists(Configuration.GetSection("AudioUploadService")["TempUploadPath"]))
                     {
                         try
                         {
-                            Directory.CreateDirectory(Configuration.GetSection("AudioUploadService")["StoragePath"]);
+                            Directory.CreateDirectory(Configuration.GetSection("AudioUploadService")["TempUploadPath"]);
                         }
                         catch
                         {
-                            return new RServiceResult<UploadSessionFile>(null, $"ProcessImage: create dir failed {Configuration.GetSection("AudioUploadService")["StoragePath"]}");
+                            return new RServiceResult<UploadSessionFile>(null, $"ProcessImage: create dir failed {Configuration.GetSection("AudioUploadService")["TempUploadPath"]}");
                         }
                     }
 
-                    string filePath = Path.Combine(Configuration.GetSection("AudioUploadService")["StoragePath"], file.FileName);
+                    string filePath = Path.Combine(Configuration.GetSection("AudioUploadService")["TempUploadPath"], file.FileName);
                     while(File.Exists(filePath))
                     {
-                        filePath = Path.Combine(Configuration.GetSection("AudioUploadService")["StoragePath"], Guid.NewGuid().ToString() + ext);
+                        filePath = Path.Combine(Configuration.GetSection("AudioUploadService")["TempUploadPath"], Guid.NewGuid().ToString() + ext);
                     }
                     using (FileStream fsMain = new FileStream(filePath, FileMode.Create))
                     {
@@ -295,99 +295,124 @@ namespace RMuseum.Services.Implementation
                                     //the code would fail!
                                     foreach (PoemAudio audio in PoemAudioListProcessor.Load(file.FilePath)) 
                                     {
-                                        string soundFilesFolder = Configuration.GetSection("AudioUploadService")["StoragePath"];
-                                        string targetPathForAudioFiles = Configuration.GetSection("AudioUploadService")["LocalAudioRepositoryPath"];
-                                        if (!Directory.Exists(targetPathForAudioFiles))
+                                        if( await context.AudioFiles.Where(a => a.Mp3FileCheckSum == audio.FileCheckSum).SingleOrDefaultAsync() != null)
                                         {
-                                            Directory.CreateDirectory(targetPathForAudioFiles);
-                                        }
-                                        string targetPathForXmlFiles = Path.Combine(targetPathForAudioFiles, "x");
-                                        if (!Directory.Exists(targetPathForXmlFiles))
-                                        {
-                                            Directory.CreateDirectory(targetPathForXmlFiles);
-                                        }
-
-                                        string fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}";
-                                        int tmp = 1;
-                                        while
-                                        (
-                                        File.Exists(Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.mp3"))
-                                        ||
-                                        File.Exists(Path.Combine(targetPathForXmlFiles, $"{fileNameWithoutExtension}.xml"))
-                                        )
-                                        {
-                                            fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}{tmp}";
-                                            tmp++;
-                                        }
-
-                                        
-                                        string localXmlFilePath = Path.Combine(targetPathForXmlFiles, $"{fileNameWithoutExtension}.xml");
-                                        File.Move(file.FilePath, localXmlFilePath); //this is the movemnet I talked about earlier
-
-
-                                        string localMp3FilePath = Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.mp3");
-
-                                        UploadSessionFile mp3file = mp3files.Where(mp3 => mp3.MP3FileCheckSum == audio.FileCheckSum).SingleOrDefault();
-                                        if(mp3file == null)
-                                        {
-                                            session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "فایل mp3 متناظر یافت نشد (توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است. اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).";
+                                            session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "فایل صوتیی همسان با فایل ارسالی پیشتر آپلود شده است.";
                                             context.UploadSessions.Update(session);
                                         }
                                         else
                                         {
-                                            File.Move(mp3file.FilePath, localMp3FilePath);
-                                            int mp3fileSize = File.ReadAllBytes(localMp3FilePath).Length;
+                                            string soundFilesFolder = Configuration.GetSection("AudioUploadService")["TempUploadPath"];
+                                            string targetPathForAudioFiles = Configuration.GetSection("AudioUploadService")["LocalAudioRepositoryPath"];
+                                            if (!Directory.Exists(targetPathForAudioFiles))
+                                            {
+                                                Directory.CreateDirectory(targetPathForAudioFiles);
+                                            }
+                                            string targetPathForXmlFiles = Path.Combine(targetPathForAudioFiles, "x");
+                                            if (!Directory.Exists(targetPathForXmlFiles))
+                                            {
+                                                Directory.CreateDirectory(targetPathForXmlFiles);
+                                            }
 
-
-
-                                            Guid legacyAudioGuid = audio.SyncGuid;
-                                            while(
-                                                (await context.AudioFiles.Where(a => a.LegacyAudioGuid == legacyAudioGuid).FirstOrDefaultAsync()) != null
-                                                ) 
-                                            { 
-                                                legacyAudioGuid = Guid.NewGuid(); 
+                                            string fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}";
+                                            int tmp = 1;
+                                            while
+                                            (
+                                            File.Exists(Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.mp3"))
+                                            ||
+                                            File.Exists(Path.Combine(targetPathForXmlFiles, $"{fileNameWithoutExtension}.xml"))
+                                            )
+                                            {
+                                                fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}{tmp}";
+                                                tmp++;
                                             }
 
 
-                                            PoemNarration narration = new PoemNarration()
+                                            string localXmlFilePath = Path.Combine(targetPathForXmlFiles, $"{fileNameWithoutExtension}.xml");
+                                            File.Move(file.FilePath, localXmlFilePath); //this is the movemnet I talked about earlier
+
+
+                                            string localMp3FilePath = Path.Combine(targetPathForAudioFiles, $"{fileNameWithoutExtension}.mp3");
+
+                                            UploadSessionFile mp3file = mp3files.Where(mp3 => mp3.MP3FileCheckSum == audio.FileCheckSum).SingleOrDefault();
+                                            if (mp3file == null)
                                             {
-                                                OwnerId = session.UseId,
-                                                GanjoorAudioId = 1 + await context.AudioFiles.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
-                                                AudioOrder = 1 + await context.AudioFiles.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
-                                                FileNameWithoutExtension = fileNameWithoutExtension,
-                                                SoundFilesFolder = soundFilesFolder,
-                                                AudioTitle = audio.PoemTitle,
-                                                AudioArtist = defProfile.ArtistName,
-                                                AudioArtistUrl = defProfile.ArtistUrl,
-                                                AudioSrc = defProfile.AudioSrc, 
-                                                AudioSrcUrl = defProfile.AudioSrcUrl, 
-                                                LegacyAudioGuid = legacyAudioGuid,
-                                                Mp3FileCheckSum = audio.FileCheckSum,
-                                                Mp3SizeInBytes = mp3fileSize,
-                                                OggSizeInBytes = 0,
-                                                UploadDate = session.UploadEndTime,
-                                                LocalMp3FilePath = localMp3FilePath,
-                                                LocalXmlFilePath = localXmlFilePath,
-                                                AudioSyncStatus = (int)AudioSyncStatus.NewItem,
-                                                ReviewStatus = AudioReviewStatus.Draft
-                                            };
-
-                                            context.AudioFiles.Add(narration);
+                                                session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "فایل mp3 متناظر یافت نشد (توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است. اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).";
+                                                context.UploadSessions.Update(session);
+                                            }
+                                            else
+                                            {
+                                                File.Move(mp3file.FilePath, localMp3FilePath);
+                                                int mp3fileSize = File.ReadAllBytes(localMp3FilePath).Length;
 
 
-                                            session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "";
-                                            session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResult = true;
-                                            session.UploadedFiles.Where(f => f.Id == mp3file.Id).SingleOrDefault().ProcessResultMsg = "";
-                                            session.UploadedFiles.Where(f => f.Id == mp3file.Id).SingleOrDefault().ProcessResult = true;
+
+                                                Guid legacyAudioGuid = audio.SyncGuid;
+                                                while (
+                                                    (await context.AudioFiles.Where(a => a.LegacyAudioGuid == legacyAudioGuid).FirstOrDefaultAsync()) != null
+                                                    )
+                                                {
+                                                    legacyAudioGuid = Guid.NewGuid();
+                                                }
+
+
+                                                PoemNarration narration = new PoemNarration()
+                                                {
+                                                    OwnerId = session.UseId,
+                                                    GanjoorAudioId = 1 + await context.AudioFiles.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
+                                                    AudioOrder = 1 + await context.AudioFiles.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
+                                                    FileNameWithoutExtension = fileNameWithoutExtension,
+                                                    SoundFilesFolder = Configuration.GetSection("AudioUploadService")["CurrentSoundFilesFolder"],
+                                                    AudioTitle = audio.PoemTitle,
+                                                    AudioArtist = defProfile.ArtistName,
+                                                    AudioArtistUrl = defProfile.ArtistUrl,
+                                                    AudioSrc = defProfile.AudioSrc,
+                                                    AudioSrcUrl = defProfile.AudioSrcUrl,
+                                                    LegacyAudioGuid = legacyAudioGuid,
+                                                    Mp3FileCheckSum = audio.FileCheckSum,
+                                                    Mp3SizeInBytes = mp3fileSize,
+                                                    OggSizeInBytes = 0,
+                                                    UploadDate = session.UploadEndTime,
+                                                    LocalMp3FilePath = localMp3FilePath,
+                                                    LocalXmlFilePath = localXmlFilePath,
+                                                    AudioSyncStatus = (int)AudioSyncStatus.NewItem,
+                                                    ReviewStatus = AudioReviewStatus.Draft
+                                                };
+
+                                                context.AudioFiles.Add(narration);
+
+
+                                                session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "";
+                                                session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResult = true;
+                                                session.UploadedFiles.Where(f => f.Id == mp3file.Id).SingleOrDefault().ProcessResultMsg = "";
+                                                session.UploadedFiles.Where(f => f.Id == mp3file.Id).SingleOrDefault().ProcessResult = true;
+                                            }
                                         }
+                                        
                                         await context.SaveChangesAsync();
                                     }
                                 }
                                 catch (Exception exp)
                                 {
-                                    session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "فایل XML نامعتبر است. اطلاعات بیشتر: " + exp.ToString();
+                                    session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "خطا در پس پردازش فایل. اطلاعات بیشتر: " + exp.ToString();
                                     context.UploadSessions.Update(session);
                                     await context.SaveChangesAsync();
+                                }
+                            }
+
+                            //remove session files (house keeping)
+                            foreach(UploadSessionFile file in session.UploadedFiles)
+                            {
+                                if(File.Exists(file.FilePath))
+                                {
+                                    try
+                                    {
+                                        File.Delete(file.FilePath);
+                                    }
+                                    catch
+                                    {
+                                        //there should be a house keeping process somewhere to handle undeletable files
+                                    }
                                 }
                             }
                         }
