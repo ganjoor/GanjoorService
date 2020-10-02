@@ -364,7 +364,7 @@ namespace RMuseum.Services.Implementation
                                                     AudioOrder = 1 + await context.AudioFiles.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
                                                     FileNameWithoutExtension = fileNameWithoutExtension,
                                                     SoundFilesFolder = Configuration.GetSection("AudioUploadService")["CurrentSoundFilesFolder"],
-                                                    AudioTitle = audio.PoemTitle,
+                                                    AudioTitle = string.IsNullOrEmpty(audio.PoemTitle) ? audio.Description : audio.PoemTitle,
                                                     AudioArtist = defProfile.ArtistName,
                                                     AudioArtistUrl = defProfile.ArtistUrl,
                                                     AudioSrc = defProfile.AudioSrc,
