@@ -403,6 +403,13 @@ namespace RMuseum.Services.Implementation
                             //remove session files (house keeping)
                             foreach(UploadSessionFile file in session.UploadedFiles)
                             {
+                                if(!file.ProcessResult)
+                                {
+                                    file.ProcessResultMsg = "فایل xml یا mp3 متناظر این فایل یافت نشد.";
+                                    file.ProcessResult = true;
+                                    context.Update(file);
+                                    await context.SaveChangesAsync();
+                                }
                                 if(File.Exists(file.FilePath))
                                 {
                                     try
