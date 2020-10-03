@@ -2,6 +2,7 @@
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
+using RMuseum.Models.UploadSession.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Threading.Tasks;
@@ -86,6 +87,14 @@ namespace RMuseum.Services
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> DeleteUserNarrationProfiles(Guid id, Guid userId);
+
+        /// <summary>
+        /// Get uploads descending by upload time
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId">if userId is empty all user uploads would be returned</param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, UploadSessionViewModel[] Items)>> GetUploads(PagingParameterModel paging, Guid userId);
 
 
     }

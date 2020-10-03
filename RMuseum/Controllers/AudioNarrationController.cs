@@ -6,6 +6,7 @@ using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
+using RMuseum.Models.UploadSession.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
@@ -60,6 +61,51 @@ namespace RMuseum.Controllers
 
             var res = await _audioService.GetAll(paging, allUsers ? Guid.Empty : loggedOnUserId, status);
             if(!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            return Ok(res.Result.Items);
+        }
+
+        /// <summary>
+        /// Get User Uploads
+        /// </summary>
+        /// <param name="paging">default: false, user must have narration::moderate permission to be able to see all users uploads</param>
+        /// <param name="allUsers"></param>
+        /// <returns></returns>
+        [HttpGet("uploads")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<UploadSessionViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+
+        public async Task<IActionResult> GetUploads([FromQuery] PagingParameterModel paging, bool allUsers = false)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+
+            if (allUsers)
+            {
+                RServiceResult<bool>
+                 canView =
+                 await _userPermissionChecker.Check
+                     (
+                         loggedOnUserId,
+                         sessionId,
+                         RMuseumSecurableItem.AudioNarrationEntityShortName,
+                         RMuseumSecurableItem.ModerateOperationShortName
+                         );
+                if (!string.IsNullOrEmpty(canView.ExceptionString))
+                    return BadRequest(canView.ExceptionString);
+
+                if (!canView.Result)
+                    return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
+            var res = await _audioService.GetUploads(paging, allUsers ? Guid.Empty : loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 
             // Paging Header

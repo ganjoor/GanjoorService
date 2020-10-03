@@ -8,6 +8,7 @@ using RMuseum.Migrations;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
+using RMuseum.Models.UploadSession.ViewModels;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
@@ -595,6 +596,42 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Get uploads descending by upload time
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId">if userId is empty all user uploads would be returned</param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, UploadSessionViewModel[] Items)>> GetUploads(PagingParameterModel paging, Guid userId)
+        {
+            try
+            {
+                var source =
+
+                     _context.UploadSessions
+                     .Include(u => u.User)
+                     .Include(u => u.UploadedFiles)
+                     .Where(u => userId == Guid.Empty || u.UseId == userId )
+                    .OrderByDescending(u => u.UploadEndTime)
+                    .AsQueryable();
+
+                (PaginationMetadata PagingMeta, UploadSession[] Items) paginatedResult =
+                    await QueryablePaginator<UploadSession>.Paginate(source, paging);
+
+                List<UploadSessionViewModel> res = new List<UploadSessionViewModel>();
+                foreach (UploadSession upload in paginatedResult.Items)
+                {
+                    res.Add(new UploadSessionViewModel(upload));
+                }
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, UploadSessionViewModel[] Items)>((paginatedResult.PagingMeta, res.ToArray()));
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, UploadSessionViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
             }
         }
 

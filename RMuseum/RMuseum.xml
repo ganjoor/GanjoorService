@@ -629,6 +629,14 @@
             <param name="status">default: -1, unfiltered</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean)">
+            <summary>
+            Get User Uploads
+            </summary>
+            <param name="paging">default: false, user must have narration::moderate permission to be able to see all users uploads</param>
+            <param name="allUsers"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.UploadNarrations">
             <summary>
             Narration Upload
@@ -3001,6 +3009,67 @@
             Audio
             </summary>
         </member>
+        <member name="T:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel">
+            <summary>
+            Upload session view model
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.#ctor(RMuseum.Models.UploadSession.UploadSession)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="src"></param>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.SessionType">
+            <summary>
+            Session Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.User">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.UploadStartTime">
+            <summary>
+            Upload Start Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.UploadEndTime">
+            <summary>
+            Upload End Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.ProcessStartTime">
+            <summary>
+            Process Start Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.ProcessEndTime">
+            <summary>
+            Process End Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.ProcessProgress">
+            <summary>
+            Process Progress
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.UploadedFiles">
+            <summary>
+            Uploaded Files
+            </summary>
+        </member>
         <member name="T:RMuseum.Services.IArtifactService">
             <summary>
             Artifact Item Service
@@ -3593,6 +3662,14 @@
             </summary>
             <param name="id"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+            <summary>
+            Get uploads descending by upload time
+            </summary>
+            <param name="paging"></param>
+            <param name="userId">if userId is empty all user uploads would be returned</param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
@@ -4379,6 +4456,14 @@
             </summary>
             <param name="id"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+            <summary>
+            Get uploads descending by upload time
+            </summary>
+            <param name="paging"></param>
+            <param name="userId">if userId is empty all user uploads would be returned</param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.AudioNarrationService.Configuration">
