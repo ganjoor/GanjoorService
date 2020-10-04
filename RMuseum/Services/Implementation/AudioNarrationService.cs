@@ -4,11 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using RMuseum.DbContext;
-using RMuseum.Migrations;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
-using RMuseum.Models.UploadSession.ViewModels;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
@@ -254,9 +252,14 @@ namespace RMuseum.Services.Implementation
                     {
                         using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
                         {
+                            session.ProcessStartTime = DateTime.Now;
+                            double fileCount = session.UploadedFiles.Count;
+                            int processFilesCount = 0;
                             List<UploadSessionFile> mp3files = new List<UploadSessionFile>();
                             foreach (UploadSessionFile file in session.UploadedFiles.Where(file => Path.GetExtension(file.FilePath) == ".mp3").ToList())
                             {
+                                processFilesCount++;
+                                session.ProcessProgress = (int)(processFilesCount / fileCount * 100.0);
                                 try
                                 {
                                     file.MP3FileCheckSum = PoemAudio.ComputeCheckSum(file.FilePath);
@@ -400,17 +403,21 @@ namespace RMuseum.Services.Implementation
                                     context.UploadSessions.Update(session);
                                     await context.SaveChangesAsync();
                                 }
+                                processFilesCount++;
+                                session.ProcessProgress = (int)(processFilesCount / fileCount * 100.0);
                             }
 
+                            session.ProcessEndTime = DateTime.Now;
+                            context.Update(session);
+
                             //remove session files (house keeping)
-                            foreach(UploadSessionFile file in session.UploadedFiles)
+                            foreach (UploadSessionFile file in session.UploadedFiles)
                             {
-                                if(!file.ProcessResult)
+                                if(!file.ProcessResult && string.IsNullOrEmpty(file.ProcessResultMsg))
                                 {
                                     file.ProcessResultMsg = "فایل xml یا mp3 متناظر این فایل یافت نشد.";
-                                    file.ProcessResult = true;
                                     context.Update(file);
-                                    await context.SaveChangesAsync();
+                                   
                                 }
                                 if(File.Exists(file.FilePath))
                                 {
@@ -424,6 +431,7 @@ namespace RMuseum.Services.Implementation
                                     }
                                 }
                             }
+                            await context.SaveChangesAsync();
                         }
                        
                     }
@@ -619,14 +627,6 @@ namespace RMuseum.Services.Implementation
                     select new
                     { file.FileName, file.ProcessResult, file.ProcessResultMsg, session.UploadEndTime, session.User.UserName, session.ProcessStartTime, session.ProcessProgress, session.ProcessEndTime }
                     ).AsQueryable();
-                    
-                    /*
-                     _context.UploadSessions
-                     .Include(u => u.User)
-                     .Include(u => u.UploadedFiles)
-                     .Where(u => userId == Guid.Empty || u.UseId == userId )
-                    .OrderByDescending(u => u.UploadEndTime)
-                    .AsQueryable();*/
                     
                 (PaginationMetadata PagingMeta, dynamic[] Items) paginatedResult =
                     await QueryablePaginator<dynamic>.Paginate(source, paging);

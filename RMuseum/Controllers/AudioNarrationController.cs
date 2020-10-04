@@ -6,7 +6,6 @@ using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
-using RMuseum.Models.UploadSession.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;

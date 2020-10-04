@@ -3019,67 +3019,6 @@
             Audio
             </summary>
         </member>
-        <member name="T:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel">
-            <summary>
-            Upload session view model
-            </summary>
-        </member>
-        <member name="M:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.#ctor(RMuseum.Models.UploadSession.UploadSession)">
-            <summary>
-            Constructor
-            </summary>
-            <param name="src"></param>
-        </member>
-        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.Id">
-            <summary>
-            Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.SessionType">
-            <summary>
-            Session Type
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.User">
-            <summary>
-            User
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.UploadStartTime">
-            <summary>
-            Upload Start Time
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.UploadEndTime">
-            <summary>
-            Upload End Time
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.ProcessStartTime">
-            <summary>
-            Process Start Time
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.ProcessEndTime">
-            <summary>
-            Process End Time
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.ProcessProgress">
-            <summary>
-            Process Progress
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.Status">
-            <summary>
-            Status
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadSessionViewModel.UploadedFiles">
-            <summary>
-            Uploaded Files
-            </summary>
-        </member>
         <member name="T:RMuseum.Services.IArtifactService">
             <summary>
             Artifact Item Service
