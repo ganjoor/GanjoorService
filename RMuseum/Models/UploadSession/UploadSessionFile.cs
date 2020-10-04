@@ -14,6 +14,11 @@ namespace RMuseum.Models.UploadSession
         public Guid Id { get; set; }
 
         /// <summary>
+        /// Upload Session Id
+        /// </summary>
+        public Guid UploadSessionId { get; set; }
+
+        /// <summary>
         /// ContentDisposition
         /// </summary>
         public string ContentDisposition { get; set; }

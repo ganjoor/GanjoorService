@@ -140,6 +140,11 @@ namespace RMuseum.DbContext
         public DbSet<UploadSession> UploadSessions { get; set; }
 
         /// <summary>
+        /// Uploaded files
+        /// </summary>
+        public DbSet<UploadSessionFile> UploadedFiles { get; set; }
+
+        /// <summary>
         /// User Narration Profiles
         /// </summary>
         public DbSet<UserNarrationProfile> UserNarrationProfiles { get; set; }

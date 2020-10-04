@@ -605,33 +605,39 @@ namespace RMuseum.Services.Implementation
         /// <param name="paging"></param>
         /// <param name="userId">if userId is empty all user uploads would be returned</param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, UploadSessionViewModel[] Items)>> GetUploads(PagingParameterModel paging, Guid userId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, dynamic[] Items)>> GetUploads(PagingParameterModel paging, Guid userId)
         {
             try
             {
                 var source =
-
+                    (
+                    from file in _context.UploadedFiles
+                    join session in _context.UploadSessions.Include(s => s.User)
+                    on file.UploadSessionId equals session.Id
+                    where userId == Guid.Empty || session.UseId == userId
+                    orderby session.UploadEndTime descending
+                    select new
+                    { file.FileName, file.ProcessResult, file.ProcessResultMsg, session.UploadEndTime, session.User.UserName, session.ProcessStartTime, session.ProcessProgress, session.ProcessEndTime }
+                    ).AsQueryable();
+                    
+                    /*
                      _context.UploadSessions
                      .Include(u => u.User)
                      .Include(u => u.UploadedFiles)
                      .Where(u => userId == Guid.Empty || u.UseId == userId )
                     .OrderByDescending(u => u.UploadEndTime)
-                    .AsQueryable();
+                    .AsQueryable();*/
+                    
+                (PaginationMetadata PagingMeta, dynamic[] Items) paginatedResult =
+                    await QueryablePaginator<dynamic>.Paginate(source, paging);
 
-                (PaginationMetadata PagingMeta, UploadSession[] Items) paginatedResult =
-                    await QueryablePaginator<UploadSession>.Paginate(source, paging);
+               
 
-                List<UploadSessionViewModel> res = new List<UploadSessionViewModel>();
-                foreach (UploadSession upload in paginatedResult.Items)
-                {
-                    res.Add(new UploadSessionViewModel(upload));
-                }
-
-                return new RServiceResult<(PaginationMetadata PagingMeta, UploadSessionViewModel[] Items)>((paginatedResult.PagingMeta, res.ToArray()));
+                return new RServiceResult<(PaginationMetadata PagingMeta, dynamic[] Items)>((paginatedResult.PagingMeta, paginatedResult.Items));
             }
             catch (Exception exp)
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, UploadSessionViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+                return new RServiceResult<(PaginationMetadata PagingMeta, dynamic[] Items)>((PagingMeta: null, Items: null), exp.ToString());
             }
         }
 

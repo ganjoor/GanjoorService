@@ -94,7 +94,7 @@ namespace RMuseum.Services
         /// <param name="paging"></param>
         /// <param name="userId">if userId is empty all user uploads would be returned</param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, UploadSessionViewModel[] Items)>> GetUploads(PagingParameterModel paging, Guid userId);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, dynamic[] Items)>> GetUploads(PagingParameterModel paging, Guid userId);
 
 
     }

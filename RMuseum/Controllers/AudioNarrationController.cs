@@ -77,7 +77,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet("uploads")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<UploadSessionViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<dynamic>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
 

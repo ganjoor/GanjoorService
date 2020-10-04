@@ -860,6 +860,11 @@
             Upload Sessions
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.UploadedFiles">
+            <summary>
+            Uploaded files
+            </summary>
+        </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.UserNarrationProfiles">
             <summary>
             User Narration Profiles
@@ -2927,6 +2932,11 @@
         <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.Id">
             <summary>
             Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.UploadSessionId">
+            <summary>
+            Upload Session Id
             </summary>
         </member>
         <member name="P:RMuseum.Models.UploadSession.UploadSessionFile.ContentDisposition">
