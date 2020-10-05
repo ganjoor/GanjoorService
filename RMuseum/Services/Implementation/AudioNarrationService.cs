@@ -66,6 +66,52 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// return selected narration information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PoemNarrationViewModel>> Get(Guid id)
+        {
+            try
+            {
+                return new RServiceResult<PoemNarrationViewModel>(new PoemNarrationViewModel(await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync()));
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PoemNarrationViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// updates metadata for narration
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> UpdatePoemNarration(Guid id, PoemNarrationUpdateViewModel metadata)
+        {
+            try
+            {
+                PoemNarration narration =  await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync();
+                if(narration == null)
+                    return new RServiceResult<bool>(false, "404");
+                narration.AudioTitle = metadata.AudioTitle;
+                narration.AudioArtist = metadata.AudioArtist;
+                narration.AudioArtistUrl = metadata.AudioArtistUrl;
+                narration.AudioSrc = metadata.AudioSrc;
+                narration.AudioSrcUrl = metadata.AudioSrcUrl;
+                narration.ReviewStatus = metadata.ReviewStatus;
+                _context.AudioFiles.Update(narration);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// imports data from ganjoor MySql database
         /// </summary>
         /// <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>

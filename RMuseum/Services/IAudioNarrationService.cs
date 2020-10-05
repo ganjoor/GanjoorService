@@ -23,6 +23,21 @@ namespace RMuseum.Services
         public Task<RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status);
 
         /// <summary>
+        /// return selected narration information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemNarrationViewModel>> Get(Guid id);
+
+        /// <summary>
+        /// updates metadata for narration
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> UpdatePoemNarration(Guid id, PoemNarrationUpdateViewModel metadata);
+
+        /// <summary>
         /// imports data from ganjoor MySql database
         /// </summary>
         /// <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>

@@ -629,6 +629,14 @@
             <param name="status">default: -1, unfiltered</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.UpdatePoemNarration(System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel)">
+            <summary>
+            updates narration metadata, user must have narration::moderate permission to change narration status from pending to approved or rejected or modify other users narrations metadata
+            </summary>
+            <param name="id"></param>
+            <param name="metadata"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean)">
             <summary>
             Get User Uploads
@@ -1874,6 +1882,44 @@
             <summary>
             is default
             </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel">
+            <summary>
+            Poem Narration View Model for updates
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel.AudioTitle">
+            <summary>
+            Audio Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel.AudioArtist">
+            <summary>
+            Audio Artist
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel.AudioArtistUrl">
+            <summary>
+            Audio Artist Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel.AudioSrc">
+            <summary>
+            Audio Source
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel.AudioSrcUrl">
+            <summary>
+            Audio Src Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel.ReviewStatus">
+            <summary>
+            Review Status
+            </summary>
+            <remarks>
+            changing from Draft => Pending or Pending => Draft is possible for owner, other changes need narration::moderate permission
+            </remarks>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel">
             <summary>
@@ -3548,6 +3594,21 @@
             <param name="status"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.Get(System.Guid)">
+            <summary>
+            return selected narration information
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.UpdatePoemNarration(System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel)">
+            <summary>
+            updates metadata for narration
+            </summary>
+            <param name="id"></param>
+            <param name="metadata"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IAudioNarrationService.OneTimeImport(System.Guid)">
             <summary>
             imports data from ganjoor MySql database
@@ -4341,6 +4402,21 @@
             <param name="paging"></param>
             <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
             <param name="status"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.Get(System.Guid)">
+            <summary>
+            return selected narration information
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.UpdatePoemNarration(System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel)">
+            <summary>
+            updates metadata for narration
+            </summary>
+            <param name="id"></param>
+            <param name="metadata"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.AudioNarrationService.OneTimeImport(System.Guid)">

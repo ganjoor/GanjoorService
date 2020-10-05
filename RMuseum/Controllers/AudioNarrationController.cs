@@ -69,6 +69,54 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// updates narration metadata, user must have narration::moderate permission to change narration status from pending to approved or rejected or modify other users narrations metadata
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+
+        [HttpPut("{id}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemNarrationUpdateViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+        public async Task<IActionResult> UpdatePoemNarration(Guid id, [FromBody] PoemNarrationUpdateViewModel metadata)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            var narration = await _audioService.Get(id);
+            if (!string.IsNullOrEmpty(narration.ExceptionString))
+                return BadRequest(narration.ExceptionString);
+
+            if(narration.Result.Owner.Id != id || metadata.ReviewStatus == AudioReviewStatus.Approved || metadata.ReviewStatus == AudioReviewStatus.Rejected)
+            {
+                Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+                RServiceResult<bool>
+                 canModerate =
+                 await _userPermissionChecker.Check
+                     (
+                         loggedOnUserId,
+                         sessionId,
+                         RMuseumSecurableItem.AudioNarrationEntityShortName,
+                         RMuseumSecurableItem.ModerateOperationShortName
+                         );
+                if (!string.IsNullOrEmpty(canModerate.ExceptionString))
+                    return BadRequest(canModerate.ExceptionString);
+
+                if (!canModerate.Result)
+                    return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
+            var res = await _audioService.UpdatePoemNarration(id, metadata);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok(res.Result);
+        }
+
+
+
+        /// <summary>
         /// Get User Uploads
         /// </summary>
         /// <param name="paging">default: false, user must have narration::moderate permission to be able to see all users uploads</param>
