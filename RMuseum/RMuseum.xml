@@ -1831,6 +1831,21 @@
             Review Status
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Reviewer">
+            <summary>
+            Reviewer user
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.ReviewerId">
+            <summary>
+            Reviewer user
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.ReviewMsg">
+            <summary>
+            Review Message
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorAudio.UserNarrationProfile">
             <summary>
             Narration Profiles for users

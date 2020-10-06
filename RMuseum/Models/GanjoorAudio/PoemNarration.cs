@@ -169,6 +169,21 @@ namespace RMuseum.Models.GanjoorAudio
         /// </summary>
         public AudioReviewStatus ReviewStatus { get; set; }
 
+        /// <summary>
+        /// Reviewer user
+        /// </summary>
+        public virtual RAppUser Reviewer { get; set; }
+
+        /// <summary>
+        /// Reviewer user
+        /// </summary>
+        public Guid? ReviewerId { get; set; }
+
+        /// <summary>
+        /// Review Message
+        /// </summary>
+        public string ReviewMsg { get; set; }
+
 
     }
 }
