@@ -67,6 +67,15 @@ namespace RMuseum.Services
         Task<RServiceResult<UploadSession>> FinalizeNewUploadSession(UploadSession session, UploadSessionFile[] files);
 
         /// <summary>
+        /// Moderate pending narration
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="moderatorId"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ModeratePoemNarration(Guid id, Guid moderatorId, PoemNarrationModerateViewModel model);
+
+        /// <summary>
         /// Get Upload Session (including files)
         /// </summary>
         /// <param name="id"></param>

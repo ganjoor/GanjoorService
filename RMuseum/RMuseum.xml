@@ -631,10 +631,22 @@
         </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.UpdatePoemNarration(System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel)">
             <summary>
-            updates narration metadata, user must have narration::moderate permission to change narration status from pending to approved or rejected or modify other users narrations metadata
+            updates narration metadata
             </summary>
             <param name="id"></param>
             <param name="metadata"></param>
+            <remarks>
+            reviewstatus cannot be set to Approved or Rejected using this method, use moderate method instead
+            TODO: for approved narrations provide another API or solution
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.ModeratePoemNarration(System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
+            <summary>
+            Moderate pending narration
+            </summary>
+            <param name="id"></param>
+            <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean)">
@@ -1896,6 +1908,21 @@
         <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.IsDefault">
             <summary>
             is default
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel">
+            <summary>
+            Poem Narration Moderation View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel.Approve">
+            <summary>
+            Approve or Reject
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel.Message">
+            <summary>
+            Rejection Message
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel">
@@ -3653,6 +3680,15 @@
             <param name="files"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.ModeratePoemNarration(System.Guid,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
+            <summary>
+            Moderate pending narration
+            </summary>
+            <param name="id"></param>
+            <param name="moderatorId"></param>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IAudioNarrationService.GetUploadSession(System.Guid)">
             <summary>
             Get Upload Session (including files)
@@ -4460,6 +4496,15 @@
             </summary>
             <param name="session"></param>
             <param name="files"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.ModeratePoemNarration(System.Guid,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
+            <summary>
+            Moderate pending narration
+            </summary>
+            <param name="id"></param>
+            <param name="moderatorId"></param>
+            <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUploadSession(System.Guid)">

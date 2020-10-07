@@ -69,10 +69,14 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// updates narration metadata, user must have narration::moderate permission to change narration status from pending to approved or rejected or modify other users narrations metadata
+        /// updates narration metadata
         /// </summary>
         /// <param name="id"></param>
         /// <param name="metadata"></param>
+        /// <remarks>
+        /// reviewstatus cannot be set to Approved or Rejected using this method, use moderate method instead
+        /// TODO: for approved narrations provide another API or solution
+        /// </remarks>
         /// <returns></returns>
 
         [HttpPut("{id}")]
@@ -86,28 +90,55 @@ namespace RMuseum.Controllers
 
             var narration = await _audioService.Get(id);
             if (!string.IsNullOrEmpty(narration.ExceptionString))
-                return BadRequest(narration.ExceptionString);
-
-            if(narration.Result.Owner.Id != id || metadata.ReviewStatus == AudioReviewStatus.Approved || metadata.ReviewStatus == AudioReviewStatus.Rejected)
             {
-                Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
-                RServiceResult<bool>
-                 canModerate =
-                 await _userPermissionChecker.Check
-                     (
-                         loggedOnUserId,
-                         sessionId,
-                         RMuseumSecurableItem.AudioNarrationEntityShortName,
-                         RMuseumSecurableItem.ModerateOperationShortName
-                         );
-                if (!string.IsNullOrEmpty(canModerate.ExceptionString))
-                    return BadRequest(canModerate.ExceptionString);
+               return BadRequest(narration.ExceptionString);
+            }
 
-                if (!canModerate.Result)
-                    return StatusCode((int)HttpStatusCode.Forbidden);
+            if (!string.IsNullOrEmpty(narration.ExceptionString))
+            {
+                return BadRequest(narration.ExceptionString);
+            }
+
+            if (narration.Result == null)
+                return NotFound();
+
+            if (metadata.ReviewStatus == AudioReviewStatus.Approved || metadata.ReviewStatus == AudioReviewStatus.Rejected)
+            {
+               return StatusCode((int)HttpStatusCode.Forbidden);
             }
 
             var res = await _audioService.UpdatePoemNarration(id, metadata);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// Moderate pending narration
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPut("moderate/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemNarrationUpdateViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+        public async Task<IActionResult> ModeratePoemNarration(Guid id, [FromBody] PoemNarrationModerateViewModel model)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            var narration = await _audioService.Get(id);
+            if (!string.IsNullOrEmpty(narration.ExceptionString))
+            {              
+                return BadRequest(narration.ExceptionString);
+            }
+
+            if (narration.Result == null)
+                return NotFound();
+
+            var res = await _audioService.ModeratePoemNarration(id, loggedOnUserId, model);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 

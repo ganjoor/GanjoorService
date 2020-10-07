@@ -74,7 +74,12 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                return new RServiceResult<PoemNarrationViewModel>(new PoemNarrationViewModel(await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync()));
+                var narration = await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync();
+                if(narration == null)
+                {
+                    return new RServiceResult<PoemNarrationViewModel>(null);
+                }
+                return new RServiceResult<PoemNarrationViewModel>(new PoemNarrationViewModel(narration));
             }
             catch (Exception exp)
             {
@@ -111,6 +116,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        
         /// <summary>
         /// imports data from ganjoor MySql database
         /// </summary>
@@ -494,9 +500,40 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        
+        /// <summary>
+        /// Moderate pending narration
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="moderatorId"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ModeratePoemNarration(Guid id, Guid moderatorId, PoemNarrationModerateViewModel model)
+        {
+            try
+            {
+                PoemNarration narration = await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync();
+                if (narration == null)
+                    return new RServiceResult<bool>(false, "404");
+                if (narration.ReviewStatus != AudioReviewStatus.Pending)
+                    return new RServiceResult<bool>(false, "خوانش می‌بایست در وضعیت در انتظار بازبینی باشد.");
+                narration.ReviewDate = DateTime.Now;
+                narration.ReviewerId = moderatorId;
+                narration.ReviewStatus = model.Approve ? AudioReviewStatus.Approved : AudioReviewStatus.Rejected;
+                narration.ReviewMsg = model.Message;
+                _context.AudioFiles.Update(narration);
+                await _context.SaveChangesAsync();
 
-        
+                //TODO: 1 . notify user on moderation result
+                //TODO: 2 . start a background job for finalizing approved narrations
+                //TODO: 3 . notify user on publication of approved narration
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
 
 
         /// <summary>
