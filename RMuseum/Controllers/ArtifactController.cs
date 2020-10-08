@@ -1822,7 +1822,7 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> GetUserNotifications()
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<RUserNotification[]> res = await _artifactService.GetUserNotifications(loggedOnUserId);
+            RServiceResult<RUserNotification[]> res = await _notificationService.GetUserNotifications(loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -1836,7 +1836,7 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> GetUnreadUserNotificationsCount()
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<int> res = await _artifactService.GetUnreadUserNotificationsCount(loggedOnUserId);
+            RServiceResult<int> res = await _notificationService.GetUnreadUserNotificationsCount(loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -1854,7 +1854,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> SwitchNotificationStatus(Guid notificationId)
         {
-            RServiceResult<RUserNotification> res = await _artifactService.SwitchNotificationStatus(notificationId);
+            RServiceResult<RUserNotification> res = await _notificationService.SwitchNotificationStatus(notificationId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -1872,7 +1872,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> DeleteNotification(Guid notificationId)
         {
-            RServiceResult<bool> res = await _artifactService.DeleteNotification(notificationId);
+            RServiceResult<bool> res = await _notificationService.DeleteNotification(notificationId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();
@@ -1886,12 +1886,14 @@ namespace RMuseum.Controllers
         /// <param name="userPermissionChecker"></param>
         /// <param name="memoryCache"></param>
         /// <param name="captchaService"></param>
-        public ArtifactController(IArtifactService artifactService, IUserPermissionChecker userPermissionChecker, IMemoryCache memoryCache, ICaptchaService captchaService)
+        /// <param name="notificationService"></param>
+        public ArtifactController(IArtifactService artifactService, IUserPermissionChecker userPermissionChecker, IMemoryCache memoryCache, ICaptchaService captchaService, IRNotificationService notificationService)
         {
             _artifactService = artifactService;
             _userPermissionChecker = userPermissionChecker;
             _memoryCache = memoryCache;
             _captchaService = captchaService;
+            _notificationService = notificationService;
         }
 
         /// <summary>
@@ -1913,5 +1915,10 @@ namespace RMuseum.Controllers
         /// Captcha service
         /// </summary>
         protected readonly ICaptchaService _captchaService;
+
+        /// <summary>
+        /// Notification Service
+        /// </summary>
+        protected readonly IRNotificationService _notificationService;
     }
 }

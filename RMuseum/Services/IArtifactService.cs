@@ -498,44 +498,6 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<bool>> SynchronizeSuggestedPinterestLink(Guid linkId);
 
-
-        /// <summary>
-        /// Add Notification
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="subject"></param>
-        /// <param name="htmlText"></param>
-        /// <returns></returns>
-        Task<RServiceResult<RUserNotification>> PushNotification(Guid userId, string subject, string htmlText);
-
-        /// <summary>
-        /// Get User Notifications
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        Task<RServiceResult<RUserNotification[]>> GetUserNotifications(Guid userId);
-
-        /// <summary>
-        /// Get Unread User Notifications Count
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        Task<RServiceResult<int>> GetUnreadUserNotificationsCount(Guid userId);
-
-        /// <summary>
-        /// Switch Notification Status
-        /// </summary>
-        /// <param name="notificationId"></param>    
-        /// <returns>updated notification object</returns>
-        Task<RServiceResult<RUserNotification>> SwitchNotificationStatus(Guid notificationId);
-
-        /// <summary>
-        /// Delete Notification
-        /// </summary>
-        /// <param name="notificationId"></param>    
-        /// <returns></returns>
-        Task<RServiceResult<bool>> DeleteNotification(Guid notificationId);
-
         /// <summary>
         /// an incomplete prototype for removing artifacts
         /// </summary>

@@ -1965,7 +1965,7 @@ namespace RMuseum.Services.Implementation
                     if(referenceNote.RAppUserId != userId)
                     {
                         RArtifactMasterRecord artificat = await _context.Artifacts.Where(a => a.Id == artifactId).SingleOrDefaultAsync();
-                        await PushNotification
+                        await _notificationService.PushNotification
                             (
                             referenceNote.RAppUserId,
                             $"پاسخگویی {userInfo.Result.FirstName} {userInfo.Result.SureName} به یادداشت شما دربارهٔ {artificat.Name}",
@@ -2032,7 +2032,7 @@ namespace RMuseum.Services.Implementation
                     {
                         RArtifactItemRecord item = await _context.Items.Where(a => a.Id == itemId).SingleOrDefaultAsync();
                         RArtifactMasterRecord artificat = await _context.Artifacts.Where(a => a.Id == item.RArtifactMasterRecordId).SingleOrDefaultAsync();
-                        await PushNotification
+                        await _notificationService.PushNotification
                             (
                             referenceNote.RAppUserId,
                             $"پاسخگویی {userInfo.Result.FirstName} {userInfo.Result.SureName} به یادداشت شما دربارهٔ {artificat.Name} « {item.Name}",
@@ -3050,124 +3050,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        /// <summary>
-        /// Add Notification
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="subject"></param>
-        /// <param name="htmlText"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<RUserNotification>> PushNotification(Guid userId, string subject, string htmlText)
-        {
-            try
-            {
-                RUserNotification notification =
-                            new RUserNotification()
-                            {
-                                UserId = userId,
-                                DateTime = DateTime.Now,
-                                Status = NotificationStatus.Unread,
-                                Subject = subject,
-                                HtmlText = htmlText
-                            };
-                _context.Notifications.Add(notification);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<RUserNotification>(notification);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNotification>(null, exp.ToString());
-            }
-        }
 
-        /// <summary>
-        /// Switch Notification Status
-        /// </summary>
-        /// <param name="notificationId"></param>    
-        /// <returns>updated notification object</returns>
-        public async Task<RServiceResult<RUserNotification>> SwitchNotificationStatus(Guid notificationId)
-        {
-            try
-            {
-                RUserNotification notification =
-                            await _context.Notifications.Where(n => n.Id == notificationId).SingleAsync();
-                notification.Status = notification.Status == NotificationStatus.Unread ? NotificationStatus.Read : NotificationStatus.Unread;
-                _context.Notifications.Update(notification);
-                await _context.SaveChangesAsync();               
-                return new RServiceResult<RUserNotification>(notification);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNotification>(null, exp.ToString());
-            }
-        }
-
-
-        /// <summary>
-        /// Delete Notification
-        /// </summary>
-        /// <param name="notificationId"></param>    
-        /// <returns></returns>
-        public async Task<RServiceResult<bool>> DeleteNotification(Guid notificationId)
-        {
-            try
-            {
-                RUserNotification notification =
-                            await _context.Notifications.Where(n => n.Id == notificationId).SingleAsync();               
-                _context.Notifications.Remove(notification);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
-        }
-
-        /// <summary>
-        /// Get User Notifications
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<RUserNotification[]>> GetUserNotifications(Guid userId)
-        {
-            try
-            {               
-                return new RServiceResult<RUserNotification[]>
-                    (
-                    await _context.Notifications
-                    .Where(n => n.UserId == userId)
-                    .OrderByDescending(n => n.DateTime)
-                    .ToArrayAsync()
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNotification[]>(null, exp.ToString());
-            }
-        }
-
-        /// <summary>
-        /// Get Unread User Notifications Count
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<int>> GetUnreadUserNotificationsCount(Guid userId)
-        {
-            try
-            {
-                return new RServiceResult<int>
-                    (
-                    await _context.Notifications
-                    .Where(n => n.UserId == userId && n.Status == NotificationStatus.Unread)
-                    .CountAsync()
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<int>(0, exp.ToString());
-            }
-        }
 
 
         /// <summary>
@@ -3197,6 +3080,11 @@ namespace RMuseum.Services.Implementation
         protected readonly IAppUserService _userService;
 
         /// <summary>
+        /// Messaging service
+        /// </summary>
+        protected readonly IRNotificationService _notificationService;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
@@ -3204,13 +3092,15 @@ namespace RMuseum.Services.Implementation
         /// <param name="pictureFileService"></param>
         /// <param name="backgroundTaskQueue"></param>
         /// <param name="userService"></param>
-        public ArtifactService(RMuseumDbContext context, IConfiguration configuration, IPictureFileService pictureFileService, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService userService)
+        /// <param name="notificationService"></param>
+        public ArtifactService(RMuseumDbContext context, IConfiguration configuration, IPictureFileService pictureFileService, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService userService, IRNotificationService notificationService)
         {
             _context = context;
             _pictureFileService = pictureFileService;
             Configuration = configuration;
             _backgroundTaskQueue = backgroundTaskQueue;
             _userService = userService;
+            _notificationService = notificationService;
         }
     }
 }

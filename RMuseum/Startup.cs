@@ -245,6 +245,9 @@ namespace RMuseum
             //picture file service
             services.AddTransient<IPictureFileService, PictureFileService>();
 
+            //messaging service
+            services.AddTransient<IRNotificationService, RNotificationService>();
+
             //artifact service
             services.AddTransient<IArtifactService, ArtifactService>();
 
