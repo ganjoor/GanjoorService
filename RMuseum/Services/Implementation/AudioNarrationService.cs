@@ -484,6 +484,14 @@ namespace RMuseum.Services.Implementation
                                 }
                             }
                             await context.SaveChangesAsync();
+
+                            await _notificationService.PushNotification
+                            (
+                                session.UseId,
+                                "پایان پردازش خوانش بارگذاری شده",
+                                $"پردازش خوانشهای بارگذاری شدهٔ اخیر شما تکمیل شده است.{Environment.NewLine}" +
+                                $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آنها را بررسی و ذر صورت عدم وجود خطا تقاضای بررسی آنها توسط ناظران را ثبت کنید."
+                            );
                         }
                        
                     }
@@ -519,13 +527,30 @@ namespace RMuseum.Services.Implementation
                 narration.ReviewDate = DateTime.Now;
                 narration.ReviewerId = moderatorId;
                 narration.ReviewStatus = model.Approve ? AudioReviewStatus.Approved : AudioReviewStatus.Rejected;
+                if(!model.Approve)
+                {
+                    narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
+                    //TODO: send narration in a delayed deletion queue or delete rejected items passed a certain period of time in a maintenance job
+                }
                 narration.ReviewMsg = model.Message;
                 _context.AudioFiles.Update(narration);
                 await _context.SaveChangesAsync();
 
                 //TODO: 1 . notify user on moderation result
+                if(narration.ReviewStatus == AudioReviewStatus.Rejected) 
+                {
+                    await _notificationService.PushNotification
+                         (
+                             narration.OwnerId,
+                             "عدم پذیرش خوانش ارسالی",
+                             $"خوانش ارسالی شما قابل پذیرش نبود.{Environment.NewLine}" +
+                             $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید.."
+                         );
+                }
+
                 //TODO: 2 . start a background job for finalizing approved narrations
                 //TODO: 3 . notify user on publication of approved narration
+
 
                 return new RServiceResult<bool>(true);
             }
@@ -740,16 +765,24 @@ namespace RMuseum.Services.Implementation
         protected readonly IBackgroundTaskQueue _backgroundTaskQueue;
 
         /// <summary>
+        /// Messaging service
+        /// </summary>
+        protected readonly IRNotificationService _notificationService;
+
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="configuration"></param>
         /// <param name="backgroundTaskQueue"></param>
-        public AudioNarrationService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue)
+        /// <param name="notificationService"></param>
+        public AudioNarrationService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IRNotificationService notificationService)
         {
             _context = context;
             Configuration = configuration;
             _backgroundTaskQueue = backgroundTaskQueue;
+            _notificationService = notificationService;
         }
     }
 }

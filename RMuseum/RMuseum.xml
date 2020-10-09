@@ -4504,13 +4504,19 @@
             Background Task Queue Instance
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue)">
+        <member name="F:RMuseum.Services.Implementation.AudioNarrationService._notificationService">
+            <summary>
+            Messaging service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue,RMuseum.Services.IRNotificationService)">
             <summary>
             constructor
             </summary>
             <param name="context"></param>
             <param name="configuration"></param>
             <param name="backgroundTaskQueue"></param>
+            <param name="notificationService"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.BLTileMixer">
             <summary>
