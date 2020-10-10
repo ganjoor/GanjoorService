@@ -1,8 +1,10 @@
-﻿using ganjoor;
+﻿using Dapper;
+using ganjoor;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
+using Renci.SshNet;
 using RMuseum.DbContext;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
@@ -530,13 +532,12 @@ namespace RMuseum.Services.Implementation
                 if(!model.Approve)
                 {
                     narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
-                    //TODO: send narration in a delayed deletion queue or delete rejected items passed a certain period of time in a maintenance job
+                    //TODO: delete rejected items files passed a certain period of time in a maintenance job
                 }
                 narration.ReviewMsg = model.Message;
                 _context.AudioFiles.Update(narration);
                 await _context.SaveChangesAsync();
 
-                //TODO: 1 . notify user on moderation result
                 if(narration.ReviewStatus == AudioReviewStatus.Rejected) 
                 {
                     await _notificationService.PushNotification
@@ -544,12 +545,86 @@ namespace RMuseum.Services.Implementation
                              narration.OwnerId,
                              "عدم پذیرش خوانش ارسالی",
                              $"خوانش ارسالی شما قابل پذیرش نبود.{Environment.NewLine}" +
-                             $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید.."
+                             $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
                          );
                 }
+                else
+                {
+                    _backgroundTaskQueue.QueueBackgroundWorkItem
+                    (
+                    async token =>
+                    {
+                        using var client = new SftpClient
+                        (
+                            Configuration.GetSection("AudioSFPServer")["Host"],
+                            int.Parse(Configuration.GetSection("AudioSFPServer")["Port"]),
+                            Configuration.GetSection("Username")["Host"],
+                            Configuration.GetSection("Password")["Host"]
+                            );
+                        try
+                        {
+                            client.Connect();
 
-                //TODO: 2 . start a background job for finalizing approved narrations
-                //TODO: 3 . notify user on publication of approved narration
+                            using var x = File.OpenRead(narration.LocalXmlFilePath);
+                            client.UploadFile(x, narration.RemoteXMLFilePath, true);
+
+                            using var s = File.OpenRead(narration.LocalMp3FilePath);
+                            client.UploadFile(s, narration.RemoteMp3FilePath, true);
+
+                            string sql = $"INSERT INTO ganja_gaudio (audio_post_ID,audio_order,audio_xml,audio_ogg,audio_mp3,audio_title,audio_artist," +
+                                    $"audio_artist_url,audio_src,audio_src_url, audio_guid, audio_fchecksum, audio_mp3bsize, audio_oggbsize, audio_date) VALUES " +
+                                    $"({narration.GanjoorPostId},{narration.AudioOrder},'{narration.RemoteXMLFilePath}', '', '{narration.Mp3Url}', '{narration.AudioTitle}', '{narration.AudioArtist}', " +
+                                    $"'{narration.AudioArtistUrl}', '{narration.AudioSrc}', '{narration.AudioSrcUrl}', '{narration.LegacyAudioGuid}', '{narration.Mp3FileCheckSum}', {narration.Mp3SizeInBytes}, 0, '{$"{narration.ReviewDate:0:u}".Replace("Z", "")}')";
+
+                            using (MySqlConnection connection = new MySqlConnection
+                            (
+                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
+                            ))
+                            {
+                                await connection.OpenAsync();
+                                await connection.ExecuteAsync(sql);
+                            }
+
+                            //We are using two database for different purposes on the remote
+                            using (MySqlConnection connection = new MySqlConnection
+                            (
+                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
+                            ))
+                            {
+                                await connection.OpenAsync();
+                                await connection.ExecuteAsync(sql);
+                            }
+
+                            using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
+                            {
+                                narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
+                                context.AudioFiles.Update(narration);
+                                await context.SaveChangesAsync();
+                            }
+
+                         await _notificationService.PushNotification
+                         (
+                             narration.OwnerId,
+                             "انتشار خوانش ارسالی",
+                             $"خوانش ارسالی شما منتشر شد.{Environment.NewLine}" +
+                             $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
+                         );
+
+
+                        }
+                        catch
+                        {
+                            //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retry" attempts
+                        }
+                        finally
+                        {
+                            client.Disconnect();
+                        }
+                       
+                    });
+                }
+
+                
 
 
                 return new RServiceResult<bool>(true);
