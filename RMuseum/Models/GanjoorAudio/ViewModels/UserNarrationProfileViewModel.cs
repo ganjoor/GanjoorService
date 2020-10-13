@@ -9,6 +9,13 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
     public class UserNarrationProfileViewModel
     {
         /// <summary>
+        /// parameterless constructor
+        /// </summary>
+        public UserNarrationProfileViewModel()
+        {
+
+        }
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="src"></param>
@@ -28,16 +35,25 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// <summary>
         /// Id
         /// </summary>
+        /// <remarks>
+        /// Do not fill it in POST api
+        /// </remarks>
         public Guid Id { get; set; }
 
         /// <summary>
         /// User
         /// </summary>
+        /// <remarks>
+        /// Do not fill it in POST api
+        /// </remarks>
         public PublicRAppUser User { get; set; }
 
         /// <summary>
         /// UserId
         /// </summary>
+        /// <remarks>
+        /// Do not fill it in POST api
+        /// </remarks>
         public Guid UserId { get; set; }
 
         /// <summary>

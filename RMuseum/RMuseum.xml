@@ -2139,6 +2139,11 @@
             UserNarrationProfile View Model
             </summary>
         </member>
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.#ctor">
+            <summary>
+            parameterless constructor
+            </summary>
+        </member>
         <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.#ctor(RMuseum.Models.GanjoorAudio.UserNarrationProfile)">
             <summary>
             constructor
@@ -2149,16 +2154,25 @@
             <summary>
             Id
             </summary>
+            <remarks>
+            Do not fill it in POST api
+            </remarks>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.User">
             <summary>
             User
             </summary>
+            <remarks>
+            Do not fill it in POST api
+            </remarks>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.UserId">
             <summary>
             UserId
             </summary>
+            <remarks>
+            Do not fill it in POST api
+            </remarks>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.FileSuffixWithoutDash">
             <summary>
@@ -4563,6 +4577,30 @@
             <summary>
             equaivalnet for persian characters
             </summary>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.LanguageUtils">
+            <summary>
+            Language Utilitis
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.LanguageUtils.PersianAlphabet">
+            <summary>
+            Persian Alphabet
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.LanguageUtils.EnglishLowerCaseAlphabet">
+            <summary>
+            English Alphabet
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.LanguageUtils.ContainsOnlySpecificCharacters(System.String,System.String,System.String)">
+            <summary>
+            Contains Only Specific Characters
+            </summary>
+            <param name="input"></param>
+            <param name="specfics"></param>
+            <param name="additional"></param>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.PictureFileService">
             <summary>
