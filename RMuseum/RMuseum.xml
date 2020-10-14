@@ -4473,6 +4473,13 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUserProfileValidationError(RMuseum.Models.GanjoorAudio.UserNarrationProfile)">
+            <summary>
+            validating narration profile
+            </summary>
+            <param name="p"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.AudioNarrationService.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
             <summary>
             Add a narration profile
@@ -4593,9 +4600,9 @@
             English Alphabet
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.LanguageUtils.ContainsOnlySpecificCharacters(System.String,System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.LanguageUtils.GetFirstNotMatchingCharacter(System.String,System.String,System.String)">
             <summary>
-            Contains Only Specific Characters
+            Check to see if input Contains Only Specific Characters
             </summary>
             <param name="input"></param>
             <param name="specfics"></param>

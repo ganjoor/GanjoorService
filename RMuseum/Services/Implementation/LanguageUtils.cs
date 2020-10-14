@@ -16,19 +16,19 @@
         public const string EnglishLowerCaseAlphabet = "abcdefghijklmnopqrstuvwxyz";
 
         /// <summary>
-        /// Contains Only Specific Characters
+        /// Check to see if input Contains Only Specific Characters
         /// </summary>
         /// <param name="input"></param>
         /// <param name="specfics"></param>
         /// <param name="additional"></param>
         /// <returns></returns>
-        public static bool ContainsOnlySpecificCharacters(string input, string specfics, string additional= "")
+        public static string GetFirstNotMatchingCharacter(string input, string specfics, string additional= "")
         {
             string all = specfics + additional;
             foreach (char c in input)
                 if (all.IndexOf(c) == -1)
-                    return false;
-            return true;
+                    return (c + "");
+            return "";
         }
     }
 }

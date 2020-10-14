@@ -682,6 +682,58 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// validating narration profile
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private static string GetUserProfileValidationError(UserNarrationProfile p)
+        {
+            if (p.ArtistName.Length < 3)
+            {
+                return "نام خوانشگر باید حداقل شامل سه نویسه باشد.";
+            }
+
+            if (p.FileSuffixWithoutDash.Length < 2)
+            {
+                return "طول پسوند قابل پذیرش حداقل دو کاراکتر است.";
+            }
+
+            if (p.FileSuffixWithoutDash.Length > 4)
+            {
+                return "طول پسوند قابل پذیرش حداکثر چهار کاراکتر است.";
+            }
+
+            string s = LanguageUtils.GetFirstNotMatchingCharacter(p.ArtistName, LanguageUtils.PersianAlphabet, " ");
+            if (s != "")
+            {
+                return  $"نام فقط باید شامل حروف فارسی و فاصله باشد. اولین حرف غیرمجاز = {s}";
+            }
+
+            s = LanguageUtils.GetFirstNotMatchingCharacter(p.ArtistUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/.");
+
+            if (s != "")
+            {
+                return $"نشانی وب خوانشگر شامل حروف غیر مجاز است. اولین حرف غیرمجاز = {s}";
+            }
+
+            s = LanguageUtils.GetFirstNotMatchingCharacter(p.AudioSrcUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/.");
+            if (s != "")
+            {
+                return $"نشانی وب منبع شامل حروف غیر مجاز است. اولین حرف غیرمجاز = {s}";
+            }
+
+            s = LanguageUtils.GetFirstNotMatchingCharacter(p.FileSuffixWithoutDash, LanguageUtils.EnglishLowerCaseAlphabet);
+
+            if (s != "")
+            {
+                return $"پسوند فقط می‌تواند از حروف کوچک انگلیسی تشکیل شود. اولین حرف غیر مجاز = {s}";
+            }
+
+            return "";
+        }
+
+
+        /// <summary>
         /// Add a narration profile
         /// </summary>
         /// <param name="profile"></param>
@@ -701,42 +753,11 @@ namespace RMuseum.Services.Implementation
                     IsDefault = profile.IsDefault
                 };
 
-                if(p.ArtistName.Length < 3)
+                string error = GetUserProfileValidationError(p);
+                if(error != "")
                 {
-                    return new RServiceResult<UserNarrationProfileViewModel>(null, "نام خوانشگر باید حداقل شامل سه نویسه باشد.");
+                    return new RServiceResult<UserNarrationProfileViewModel>(null, error);
                 }
-
-                if (p.FileSuffixWithoutDash.Length < 2)
-                {
-                    return new RServiceResult<UserNarrationProfileViewModel>(null, "طول پسوند قابل پذیرش حداقل دو کاراکتر است.");
-                }
-
-                if (p.FileSuffixWithoutDash.Length > 4)
-                {
-                    return new RServiceResult<UserNarrationProfileViewModel>(null, "طول پسوند قابل پذیرش حداکثر چهار کاراکتر است.");
-                }
-
-                if (!LanguageUtils.ContainsOnlySpecificCharacters(p.ArtistName, LanguageUtils.PersianAlphabet, " "))
-                {
-                    return new RServiceResult<UserNarrationProfileViewModel>(null, "نام فقط باید شامل حروف فارسی و فاصله باشد.");
-                }
-
-                if (
-                    !LanguageUtils.ContainsOnlySpecificCharacters(p.ArtistUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/.")
-                    ||
-                    !LanguageUtils.ContainsOnlySpecificCharacters(p.AudioSrcUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/.")
-
-                    )
-                {
-                    return new RServiceResult<UserNarrationProfileViewModel>(null, "نشانیهای وب نادرستند.");
-                }
-
-                if (!LanguageUtils.ContainsOnlySpecificCharacters(p.FileSuffixWithoutDash, LanguageUtils.EnglishLowerCaseAlphabet))
-                {
-                    return new RServiceResult<UserNarrationProfileViewModel>(null, "پسوند فقط می‌تواند از حروف کوچک انگلیسی تشکیل شود.");
-                }
-
-               
 
                 await _context.UserNarrationProfiles.AddAsync(p);
                    
