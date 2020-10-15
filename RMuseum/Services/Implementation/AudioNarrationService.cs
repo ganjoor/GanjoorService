@@ -794,12 +794,18 @@ namespace RMuseum.Services.Implementation
                 if (p.UserId != profile.UserId)
                     return new RServiceResult<UserNarrationProfileViewModel>(null, "permission error");
 
-                p.ArtistName = profile.ArtistName;
-                p.ArtistUrl = profile.ArtistUrl;
-                p.AudioSrc = profile.AudioSrc;
-                p.AudioSrcUrl = profile.AudioSrcUrl;
-                p.FileSuffixWithoutDash = profile.FileSuffixWithoutDash;
+                p.ArtistName = profile.ArtistName.Trim();
+                p.ArtistUrl = profile.ArtistUrl.Trim();
+                p.AudioSrc = profile.AudioSrc.Trim();
+                p.AudioSrcUrl = profile.AudioSrcUrl.Trim();
+                p.FileSuffixWithoutDash = profile.FileSuffixWithoutDash.Trim();
                 p.IsDefault = profile.IsDefault;
+
+                string error = GetUserProfileValidationError(p);
+                if (error != "")
+                {
+                    return new RServiceResult<UserNarrationProfileViewModel>(null, error);
+                }
 
                 _context.UserNarrationProfiles.Update(p);
 
