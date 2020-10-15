@@ -203,6 +203,12 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                UserNarrationProfile defProfile = await _context.UserNarrationProfiles.Where(p => p.UserId == userId && p.IsDefault == true).FirstOrDefaultAsync();
+                if (defProfile == null)
+                {
+                    return new RServiceResult<UploadSession>(null, "نمایهٔ پیش‌فرض شما مشخص نیست. لطفا پیش از ارسال خوانش نمایهٔ پیش‌فرض خود را تعریف کنید.");
+                }
+
                 UploadSession session = new UploadSession()
                 {
                     SessionType = UploadSessionType.Audio,
@@ -327,22 +333,7 @@ namespace RMuseum.Services.Implementation
                                 }
                             }
 
-                            UserNarrationProfile defProfile = await context.UserNarrationProfiles.Where(p => p.UserId == session.UseId && p.IsDefault == true).FirstOrDefaultAsync();
-                            if (defProfile == null)
-                            {
-                                defProfile = new UserNarrationProfile()
-                                {
-                                    FileSuffixWithoutDash = !string.IsNullOrEmpty(session.User.FirstName) ? !string.IsNullOrEmpty(session.User.SureName) ?
-                                                            GPersianTextSync.Farglisize($"{session.User.FirstName[0]}{session.User.SureName[0]}")
-                                                            :
-                                                            GPersianTextSync.Farglisize($"{session.User.FirstName[0]}") : $"{session.User.UserName[0]}",
-                                    ArtistName = $"{session.User.FirstName} {session.User.SureName}",
-                                    ArtistUrl = "",
-                                    AudioSrc = "",
-                                    AudioSrcUrl = ""
-
-                                };
-                            }
+                            UserNarrationProfile defProfile = await context.UserNarrationProfiles.Where(p => p.UserId == session.UseId && p.IsDefault == true).FirstOrDefaultAsync(); //this should not be null
 
                             foreach (UploadSessionFile file in session.UploadedFiles.Where(file => Path.GetExtension(file.FilePath) == ".xml").ToList())
                             {
