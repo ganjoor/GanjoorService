@@ -561,80 +561,7 @@ namespace RMuseum.Services.Implementation
                     (
                     async token =>
                     {
-                        using var client = new SftpClient
-                        (
-                            Configuration.GetSection("AudioSFPServer")["Host"],
-                            int.Parse(Configuration.GetSection("AudioSFPServer")["Port"]),
-                            Configuration.GetSection("AudioSFPServer")["Username"],
-                            Configuration.GetSection("AudioSFPServer")["Password"]
-                            );
-                        try
-                        {
-                            client.Connect();
-
-                            using var x = File.OpenRead(narration.LocalXmlFilePath);
-                            client.UploadFile(x, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}", true);
-
-                            using var s = File.OpenRead(narration.LocalMp3FilePath);
-                            client.UploadFile(s, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}", true);
-
-                            string sql = $"INSERT INTO ganja_gaudio (audio_post_ID,audio_order,audio_xml,audio_ogg,audio_mp3,audio_title,audio_artist," +
-                                    $"audio_artist_url,audio_src,audio_src_url, audio_guid, audio_fchecksum, audio_mp3bsize, audio_oggbsize, audio_date) VALUES " +
-                                    $"({narration.GanjoorPostId},{narration.AudioOrder},'{narration.RemoteXMLFilePath}', '', '{narration.Mp3Url}', '{narration.AudioTitle}', '{narration.AudioArtist}', " +
-                                    $"'{narration.AudioArtistUrl}', '{narration.AudioSrc}', '{narration.AudioSrcUrl}', '{narration.LegacyAudioGuid}', '{narration.Mp3FileCheckSum}', {narration.Mp3SizeInBytes}, 0, '{$"{narration.ReviewDate:0:u}".Replace("Z", "")}')";
-
-                            using (MySqlConnection connection = new MySqlConnection
-                            (
-                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
-                            ))
-                            {
-                                await connection.OpenAsync();
-                                await connection.ExecuteAsync(sql);
-                            }
-
-                            //We are using two database for different purposes on the remote
-                            using (MySqlConnection connection = new MySqlConnection
-                            (
-                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
-                            ))
-                            {
-                                await connection.OpenAsync();
-                                await connection.ExecuteAsync(sql);
-                            }
-
-                            using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
-                            {
-                                narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
-                                context.AudioFiles.Update(narration);
-                                await context.SaveChangesAsync();
-                            }
-
-                         await _notificationService.PushNotification
-                         (
-                             narration.OwnerId,
-                             "انتشار خوانش ارسالی",
-                             $"خوانش ارسالی شما منتشر شد.{Environment.NewLine}" +
-                             $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
-                         );
-
-
-                        }
-                        catch(Exception exp)
-                        {
-                            //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retry" attempts
-                            await _notificationService.PushNotification
-                        (
-                            narration.OwnerId,
-                            "خطا در پردازش نهایی",
-                            $"{exp}{Environment.NewLine}" +
-                            $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
-                        );
-                        }
-                        finally
-                        {
-                            client.Disconnect();
-                        }
-                       
+                        await _PublishNarration(narration);
                     });
                 }
 
@@ -646,6 +573,83 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        private async Task _PublishNarration(PoemNarration narration)
+        {
+            using var client = new SftpClient
+                        (
+                            Configuration.GetSection("AudioSFPServer")["Host"],
+                            int.Parse(Configuration.GetSection("AudioSFPServer")["Port"]),
+                            Configuration.GetSection("AudioSFPServer")["Username"],
+                            Configuration.GetSection("AudioSFPServer")["Password"]
+                            );
+            try
+            {
+                client.Connect();
+
+                using var x = File.OpenRead(narration.LocalXmlFilePath);
+                client.UploadFile(x, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}", true);
+
+                using var s = File.OpenRead(narration.LocalMp3FilePath);
+                client.UploadFile(s, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}", true);
+
+                string sql = $"INSERT INTO ganja_gaudio (audio_post_ID,audio_order,audio_xml,audio_ogg,audio_mp3,audio_title,audio_artist," +
+                        $"audio_artist_url,audio_src,audio_src_url, audio_guid, audio_fchecksum, audio_mp3bsize, audio_oggbsize, audio_date) VALUES " +
+                        $"({narration.GanjoorPostId},{narration.AudioOrder},'{narration.RemoteXMLFilePath}', '', '{narration.Mp3Url}', '{narration.AudioTitle}', '{narration.AudioArtist}', " +
+                        $"'{narration.AudioArtistUrl}', '{narration.AudioSrc}', '{narration.AudioSrcUrl}', '{narration.LegacyAudioGuid}', '{narration.Mp3FileCheckSum}', {narration.Mp3SizeInBytes}, 0, '{$"{narration.ReviewDate:0:u}".Replace("Z", "")}')";
+
+                using (MySqlConnection connection = new MySqlConnection
+                (
+                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
+                ))
+                {
+                    await connection.OpenAsync();
+                    await connection.ExecuteAsync(sql);
+                }
+
+                //We are using two database for different purposes on the remote
+                using (MySqlConnection connection = new MySqlConnection
+                (
+                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
+                ))
+                {
+                    await connection.OpenAsync();
+                    await connection.ExecuteAsync(sql);
+                }
+
+                using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
+                {
+                    narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
+                    context.AudioFiles.Update(narration);
+                    await context.SaveChangesAsync();
+                }
+
+                await _notificationService.PushNotification
+                (
+                    narration.OwnerId,
+                    "انتشار خوانش ارسالی",
+                    $"خوانش ارسالی شما منتشر شد.{Environment.NewLine}" +
+                    $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
+                );
+
+
+            }
+            catch (Exception exp)
+            {
+                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retry" attempts
+                await _notificationService.PushNotification
+            (
+                narration.OwnerId,
+                "خطا در پردازش نهایی",
+                $"{exp}{Environment.NewLine}" +
+                $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
+            );
+            }
+            finally
+            {
+                client.Disconnect();
             }
         }
 
