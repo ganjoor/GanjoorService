@@ -1916,14 +1916,34 @@
             is default
             </summary>
         </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult">
+            <summary>
+            Moderation Result
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult.MetadataNeedsFixation">
+            <summary>
+            no moderation
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult.Approve">
+            <summary>
+            approve 
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult.Reject">
+            <summary>
+            reject
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel">
             <summary>
             Poem Narration Moderation View Model
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel.Approve">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel.Result">
             <summary>
-            Approve or Reject
+            Moderation Result
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel.Message">

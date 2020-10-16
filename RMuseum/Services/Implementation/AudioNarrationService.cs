@@ -519,8 +519,11 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<bool>(false, "خوانش می‌بایست در وضعیت در انتظار بازبینی باشد.");
                 narration.ReviewDate = DateTime.Now;
                 narration.ReviewerId = moderatorId;
-                narration.ReviewStatus = model.Approve ? AudioReviewStatus.Approved : AudioReviewStatus.Rejected;
-                if(!model.Approve)
+                if(model.Result != PoemNarrationModerationResult.MetadataNeedsFixation)
+                {
+                    narration.ReviewStatus = model.Result == PoemNarrationModerationResult.Approve ? AudioReviewStatus.Approved : AudioReviewStatus.Rejected;
+                }
+                if (narration.ReviewStatus == AudioReviewStatus.Rejected)
                 {
                     narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
                     //TODO: delete rejected items files passed a certain period of time in a maintenance job
@@ -529,7 +532,18 @@ namespace RMuseum.Services.Implementation
                 _context.AudioFiles.Update(narration);
                 await _context.SaveChangesAsync();
 
-                if(narration.ReviewStatus == AudioReviewStatus.Rejected) 
+                if (model.Result == PoemNarrationModerationResult.MetadataNeedsFixation)
+                {
+                    await _notificationService.PushNotification
+                         (
+                             narration.OwnerId,
+                             "نیاز به بررسی خوانش ارسالی",
+                             $"خوانش شما بررسی شده و نیاز به اعمال تغییرات دارد.{Environment.NewLine}" +
+                             $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
+                         );
+                }
+                else
+                if (narration.ReviewStatus == AudioReviewStatus.Rejected) 
                 {
                     await _notificationService.PushNotification
                          (
@@ -539,7 +553,7 @@ namespace RMuseum.Services.Implementation
                              $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
                          );
                 }
-                else
+                else //approved:
                 {
                     _backgroundTaskQueue.QueueBackgroundWorkItem
                     (
