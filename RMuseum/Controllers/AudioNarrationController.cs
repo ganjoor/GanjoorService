@@ -251,6 +251,29 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// retry publish unpublished narrations
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("retrypublish")]
+        [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult RetryPublish()
+        {
+            try
+            {
+                _audioService.RetryPublish();
+                return Ok();
+            }
+            catch(Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }     
+            
+        }
+
+        /// <summary>
         /// Get User Profiles
         /// </summary>
         /// <returns></returns>

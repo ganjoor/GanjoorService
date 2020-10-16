@@ -9,7 +9,6 @@ using RMuseum.DbContext;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
-using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -561,7 +560,10 @@ namespace RMuseum.Services.Implementation
                     (
                     async token =>
                     {
-                        await _PublishNarration(narration);
+                        using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
+                        {
+                            await _PublishNarration(narration, context);
+                        }
                     });
                 }
 
@@ -576,7 +578,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task _PublishNarration(PoemNarration narration)
+        private async Task _PublishNarration(PoemNarration narration, RMuseumDbContext context)
         {
             using var client = new SftpClient
                         (
@@ -619,12 +621,9 @@ namespace RMuseum.Services.Implementation
                     await connection.ExecuteAsync(sql);
                 }
 
-                using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
-                {
-                    narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
-                    context.AudioFiles.Update(narration);
-                    await context.SaveChangesAsync();
-                }
+                narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
+                context.AudioFiles.Update(narration);
+                await context.SaveChangesAsync();
 
                 await _notificationService.PushNotification
                 (
@@ -636,21 +635,35 @@ namespace RMuseum.Services.Implementation
 
 
             }
-            catch (Exception exp)
+            catch
             {
-                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retry" attempts
-                await _notificationService.PushNotification
-            (
-                narration.OwnerId,
-                "خطا در پردازش نهایی",
-                $"{exp}{Environment.NewLine}" +
-                $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
-            );
+                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
+                //a logging solution should be put to work here to find out what is gone wrong
             }
             finally
             {
                 client.Disconnect();
             }
+        }
+
+        /// <summary>
+        /// retry publish unpublished narrations
+        /// </summary>
+        public void RetryPublish()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                    (
+                    async token =>
+                    {
+                        using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
+                        {
+                            var list = await context.AudioFiles.Where(a => a.ReviewStatus == AudioReviewStatus.Approved && a.AudioSyncStatus != (int)AudioSyncStatus.SynchronizedOrRejected).ToListAsync();
+                            foreach (PoemNarration narration in list)
+                            {
+                                await _PublishNarration(narration, context);
+                            }
+                        }
+                    });
         }
 
 

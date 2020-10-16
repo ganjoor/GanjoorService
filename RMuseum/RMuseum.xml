@@ -675,6 +675,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.RetryPublish">
+            <summary>
+            retry publish unpublished narrations
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.GetUserNarrationProfiles">
             <summary>
             Get User Profiles
@@ -3736,6 +3742,11 @@
             <param name="userId">if userId is empty all user uploads would be returned</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.RetryPublish">
+            <summary>
+            retry publish unpublished narrations
+            </summary>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -4478,6 +4489,11 @@
             <param name="moderatorId"></param>
             <param name="model"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.RetryPublish">
+            <summary>
+            retry publish unpublished narrations
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUploadSession(System.Guid)">
             <summary>

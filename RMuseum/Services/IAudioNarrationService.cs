@@ -119,6 +119,9 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, dynamic[] Items)>> GetUploads(PagingParameterModel paging, Guid userId);
 
-
+        /// <summary>
+        /// retry publish unpublished narrations
+        /// </summary>
+        public void RetryPublish();
     }
 }
