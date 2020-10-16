@@ -353,7 +353,8 @@ namespace RMuseum.Services.Implementation
                                         else
                                         {
                                             string soundFilesFolder = Configuration.GetSection("AudioUploadService")["TempUploadPath"];
-                                            string targetPathForAudioFiles = Configuration.GetSection("AudioUploadService")["LocalAudioRepositoryPath"];
+                                            string currentTargetFolder = Configuration.GetSection("AudioUploadService")["CurrentSoundFilesFolder"];
+                                            string targetPathForAudioFiles = Path.Combine(Configuration.GetSection("AudioUploadService")["LocalAudioRepositoryPath"], currentTargetFolder);
                                             if (!Directory.Exists(targetPathForAudioFiles))
                                             {
                                                 Directory.CreateDirectory(targetPathForAudioFiles);
@@ -408,11 +409,12 @@ namespace RMuseum.Services.Implementation
 
                                                 PoemNarration narration = new PoemNarration()
                                                 {
+                                                    GanjoorPostId = audio.PoemId,
                                                     OwnerId = session.UseId,
                                                     GanjoorAudioId = 1 + await context.AudioFiles.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
                                                     AudioOrder = 1 + await context.AudioFiles.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
                                                     FileNameWithoutExtension = fileNameWithoutExtension,
-                                                    SoundFilesFolder = Configuration.GetSection("AudioUploadService")["CurrentSoundFilesFolder"],
+                                                    SoundFilesFolder = currentTargetFolder,
                                                     AudioTitle = string.IsNullOrEmpty(audio.PoemTitle) ? audio.Description : audio.PoemTitle,
                                                     AudioArtist = defProfile.ArtistName,
                                                     AudioArtistUrl = defProfile.ArtistUrl,
@@ -563,18 +565,18 @@ namespace RMuseum.Services.Implementation
                         (
                             Configuration.GetSection("AudioSFPServer")["Host"],
                             int.Parse(Configuration.GetSection("AudioSFPServer")["Port"]),
-                            Configuration.GetSection("Username")["Host"],
-                            Configuration.GetSection("Password")["Host"]
+                            Configuration.GetSection("AudioSFPServer")["Username"],
+                            Configuration.GetSection("AudioSFPServer")["Password"]
                             );
                         try
                         {
                             client.Connect();
 
                             using var x = File.OpenRead(narration.LocalXmlFilePath);
-                            client.UploadFile(x, narration.RemoteXMLFilePath, true);
+                            client.UploadFile(x, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}", true);
 
                             using var s = File.OpenRead(narration.LocalMp3FilePath);
-                            client.UploadFile(s, narration.RemoteMp3FilePath, true);
+                            client.UploadFile(s, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}", true);
 
                             string sql = $"INSERT INTO ganja_gaudio (audio_post_ID,audio_order,audio_xml,audio_ogg,audio_mp3,audio_title,audio_artist," +
                                     $"audio_artist_url,audio_src,audio_src_url, audio_guid, audio_fchecksum, audio_mp3bsize, audio_oggbsize, audio_date) VALUES " +
@@ -617,9 +619,16 @@ namespace RMuseum.Services.Implementation
 
 
                         }
-                        catch
+                        catch(Exception exp)
                         {
                             //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retry" attempts
+                            await _notificationService.PushNotification
+                        (
+                            narration.OwnerId,
+                            "خطا در پردازش نهایی",
+                            $"{exp}{Environment.NewLine}" +
+                            $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
+                        );
                         }
                         finally
                         {
