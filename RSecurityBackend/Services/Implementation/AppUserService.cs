@@ -16,7 +16,6 @@ using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.DbContext;
-using RSecurityBackend.Utilities;
 using RSecurityBackend.Models.Image;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Audit.Db;
@@ -28,7 +27,7 @@ namespace RSecurityBackend.Services.Implementation
     /// Authentication Service
     /// </summary>
     public class AppUserService : IAppUserService
-    {      
+    {    
 
         /// <summary>
         /// Login user, if failed return LoggedOnUserModel is null
@@ -41,7 +40,7 @@ namespace RSecurityBackend.Services.Implementation
             try
             {
 
-                //we ignore loginViewModel in automatic auditing to prevent loginng password data, so we would add a manual auditing to have enough data on login intrusion and ...
+                //we ignore loginViewModel in automatic auditing to prevent logging password data, so we would add a manual auditing to have enough data on login intrusion and ...
                 REvent log = new REvent()
                 {
                     EventType = "AppUser/Login (POST)(Manual)",
@@ -122,6 +121,75 @@ namespace RSecurityBackend.Services.Implementation
                         Token = userToken.Result,
                         SecurableItem = securableItems.Result
                     }                    
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<LoggedOnUserModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// replace a (probably expired session) with a new one
+        /// </summary>
+        /// <param name="sessionId"></param>
+        /// <param name="clientIPAddress"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<LoggedOnUserModel>> ReLogin(Guid sessionId, string clientIPAddress)
+        {
+            try
+            {
+                RTemporaryUserSession oldSession = await _context.Sessions.Include(s => s.RAppUser).Where(s => s.Id == sessionId).SingleOrDefaultAsync();
+                if (oldSession == null)
+                {
+                    return new RServiceResult<LoggedOnUserModel>(null, "Invalid session");
+                }
+                RAppUser appUser = oldSession.RAppUser;
+                if (appUser.Status == RAppUserStatus.Inactive)
+                {
+                    return new RServiceResult<LoggedOnUserModel>(null, "User is disabled by an admin.");
+                }
+                RServiceResult<SecurableItem[]> securableItems = await GetUserSecurableItemsStatus(appUser.Id);
+                if (!string.IsNullOrEmpty(securableItems.ExceptionString))
+                    return new RServiceResult<LoggedOnUserModel>(null, securableItems.ExceptionString);
+
+                RTemporaryUserSession newSession =
+                    new RTemporaryUserSession()
+                    {
+                        RAppUserId = appUser.Id,
+                        ClientIPAddress = clientIPAddress,
+                        ClientAppName = oldSession.ClientAppName,
+                        Language = oldSession.Language,
+                        LoginTime = DateTime.Now,
+                        LastRenewal = DateTime.Now,
+                        ValidUntil = DateTime.Now + TimeSpan.FromSeconds(DefaultTokenExpirationInSeconds),
+                        Token = ""
+                    };
+
+
+                await _context.Sessions.AddAsync(newSession);
+                _context.Sessions.Remove(oldSession);
+
+                await _context.SaveChangesAsync();
+
+                RServiceResult<string> userToken = await GenerateToken(appUser.UserName, appUser.Id, newSession.Id);
+                if (userToken.Result == null)
+                {
+                    return new RServiceResult<LoggedOnUserModel>(null, userToken.ExceptionString);
+                }
+                newSession.Token = userToken.Result;
+                _context.Sessions.Update(newSession);
+                _context.SaveChanges();
+
+                return
+                    new RServiceResult<LoggedOnUserModel>(
+                    new LoggedOnUserModel()
+                    {
+                        SessionId = newSession.Id,
+                        User = new PublicRAppUser(appUser),
+                        Token = userToken.Result,
+                        SecurableItem = securableItems.Result
+                    }
                     );
             }
             catch (Exception exp)

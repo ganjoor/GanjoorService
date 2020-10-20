@@ -54,6 +54,30 @@ namespace RSecurityBackend.Controllers
         }
 
         /// <summary>
+        /// renew an expired session
+        /// </summary>
+        /// <param name="sessionId">user session id</param>
+        /// <returns>LoggedOnUserModel</returns>
+        [HttpPut]
+        [AllowAnonymous]
+        [Route("relogin/{sessionId}")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LoggedOnUserModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ReLogin(
+            Guid sessionId
+            )
+        {
+            string clientIPAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            RServiceResult<LoggedOnUserModel> res = await _appUserService.ReLogin(sessionId, clientIPAddress);
+            if (res.Result == null)
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// Logout user (users need user:delothersession to logout other users)
         /// </summary>
         /// <param name="userId"></param>

@@ -70,6 +70,13 @@
             <param name="loginViewModel">loginViewModel</param>
             <returns>LoggedOnUserModel</returns>
         </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.ReLogin(System.Guid)">
+            <summary>
+            renew an expired session
+            </summary>
+            <param name="sessionId">user session id</param>
+            <returns>LoggedOnUserModel</returns>
+        </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Logout(System.Guid,System.Guid)">
             <summary>
             Logout user (users need user:delothersession to logout other users)
@@ -1820,6 +1827,14 @@
             <param name="clientIPAddress"></param>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.ReLogin(System.Guid,System.String)">
+            <summary>
+            replace a (probably expired session) with a new one
+            </summary>
+            <param name="sessionId"></param>
+            <param name="clientIPAddress"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Services.IAppUserService.Logout(System.Guid,System.Guid)">
             <summary>
             Logout
@@ -2128,6 +2143,14 @@
             Login user, if failed return LoggedOnUserModel is null
             </summary>
             <param name="loginViewModel"></param>
+            <param name="clientIPAddress"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.ReLogin(System.Guid,System.String)">
+            <summary>
+            replace a (probably expired session) with a new one
+            </summary>
+            <param name="sessionId"></param>
             <param name="clientIPAddress"></param>
             <returns></returns>
         </member>

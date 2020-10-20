@@ -25,6 +25,14 @@ namespace RSecurityBackend.Services
         Task<RServiceResult<LoggedOnUserModel>> Login(LoginViewModel loginViewModel, string clientIPAddress);
 
         /// <summary>
+        /// replace a (probably expired session) with a new one
+        /// </summary>
+        /// <param name="sessionId"></param>
+        /// <param name="clientIPAddress"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LoggedOnUserModel>> ReLogin(Guid sessionId, string clientIPAddress);
+
+        /// <summary>
         /// Logout
         /// </summary>
         /// <param name="userId"></param>
