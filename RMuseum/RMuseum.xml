@@ -738,6 +738,23 @@
             <param name="auditLogService">
             </param>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ImportLocalSQLiteDb">
+            <summary>
+            imports data from ganjoor SQLite database
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
+            <summary>
+            Ganjoor Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="ganjoorService"></param>
+        </member>
         <member name="M:RMuseum.Controllers.ImageController.Get(System.Guid,System.String)">
             <summary>
             returns image stream
@@ -1536,6 +1553,11 @@
             audio narrations
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.GanjoorEntityShortName">
+            <summary>
+            ganjoor contents
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.Items">
             <summary>
             list of forms and their permissions
@@ -1735,6 +1757,10 @@
             <summary>
             Final data is actually exported to a MySQL database which this auto increment field is its key
             </summary>
+            <remarks>
+            Caution: this could become a relation with newly added table <see cref="T:RMuseum.Models.Ganjoor.GanjoorPoem"/>
+            but if we do this we lose the ability to drop and create <see cref="T:RMuseum.Models.Ganjoor.GanjoorPoem"/> without losing narration data
+            </remarks>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.GanjoorPostId">
             <summary>
@@ -3855,7 +3881,7 @@
         </member>
         <member name="M:RMuseum.Services.IAudioNarrationService.OneTimeImport(System.Guid)">
             <summary>
-            imports data from ganjoor MySql database
+            imports narration data from ganjoor MySql database
             </summary>
             <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>
             <returns></returns>
@@ -3939,6 +3965,17 @@
             <summary>
             retry publish unpublished narrations
             </summary>
+        </member>
+        <member name="T:RMuseum.Services.IGanjoorService">
+            <summary>
+            Ganjoor Poems Content Privider Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ImportLocalSQLiteDb">
+            <summary>
+            imports unimported poem data from a locally accessible ganjoor SqlLite database
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
@@ -4784,6 +4821,34 @@
             </summary>
             <param name="format"></param>
             <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.GanjoorService">
+            <summary>
+            IGanjoorService implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportLocalSQLiteDb">
+            <summary>
+            imports unimported poem data from a locally accessible ganjoor SqlLite database
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorService._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.GanjoorService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="configuration"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync">
             <summary>

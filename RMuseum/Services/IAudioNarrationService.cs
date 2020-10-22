@@ -38,7 +38,7 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> UpdatePoemNarration(Guid id, PoemNarrationUpdateViewModel metadata);
 
         /// <summary>
-        /// imports data from ganjoor MySql database
+        /// imports narration data from ganjoor MySql database
         /// </summary>
         /// <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>
         /// <returns></returns>

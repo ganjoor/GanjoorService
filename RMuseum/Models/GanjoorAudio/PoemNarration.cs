@@ -27,6 +27,10 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// Final data is actually exported to a MySQL database which this auto increment field is its key
         /// </summary>
+        /// <remarks>
+        /// Caution: this could become a relation with newly added table <see cref="RMuseum.Models.Ganjoor.GanjoorPoem"/>
+        /// but if we do this we lose the ability to drop and create <see cref="RMuseum.Models.Ganjoor.GanjoorPoem"/> without losing narration data
+        /// </remarks>
         public int GanjoorAudioId { get; set; }
 
         /// <summary>

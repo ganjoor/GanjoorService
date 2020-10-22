@@ -254,6 +254,9 @@ namespace RMuseum
             //audio service
             services.AddTransient<IAudioNarrationService, AudioNarrationService>();
 
+            //ganjoor service
+            services.AddTransient<IGanjoorService, GanjoorService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {

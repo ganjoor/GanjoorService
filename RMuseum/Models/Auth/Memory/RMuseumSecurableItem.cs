@@ -64,6 +64,11 @@ namespace RMuseum.Models.Auth.Memory
         public const string AudioNarrationEntityShortName = "narration";
 
         /// <summary>
+        /// ganjoor contents
+        /// </summary>
+        public const string GanjoorEntityShortName = "ganjoor";
+
+        /// <summary>
         /// list of forms and their permissions
         /// </summary>
         public new static SecurableItem[] Items
@@ -119,6 +124,15 @@ namespace RMuseum.Models.Auth.Memory
                         {
                             new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات", false),
                             new SecurableItemOperation(ModerateOperationShortName, "بررسی", false)
+                        }
+                    },
+                    new SecurableItem()
+                    {
+                        ShortName = GanjoorEntityShortName,
+                        Description = "محتوای گنجور",
+                        Operations = new SecurableItemOperation[]
+                        {
+                            new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات", false),
                         }
                     },
 
