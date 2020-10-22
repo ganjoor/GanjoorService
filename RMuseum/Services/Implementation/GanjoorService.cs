@@ -1,14 +1,15 @@
-﻿using Microsoft.Data.Sqlite;
-using RMuseum.DbContext;
-using RSecurityBackend.Models.Generic;
-using System.Threading.Tasks;
-using System.Data;
-using Dapper;
-using System.Linq;
+﻿using Dapper;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using RMuseum.Models.Ganjoor;
-using System;
 using Microsoft.Extensions.Configuration;
+using RMuseum.DbContext;
+using RMuseum.Models.Ganjoor;
+using RSecurityBackend.Models.Generic;
+using System;
+using System.Data;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
 {
@@ -28,42 +29,35 @@ namespace RMuseum.Services.Implementation
             {
                 SqliteConnectionStringBuilder connectionStringBuilder = new SqliteConnectionStringBuilder();
                 connectionStringBuilder.DataSource = @"C:\Users\moham\AppData\Local\ganjoor\ganjoor.s3db";
-                using (SqliteConnection connection = new SqliteConnection(connectionStringBuilder.ToString()))
+                using (SqliteConnection sqliteConnection = new SqliteConnection(connectionStringBuilder.ToString()))
                 {
-                    await connection.OpenAsync();
+                    await sqliteConnection.OpenAsync();
 
-                    IDbConnection dapper = connection;
+                    IDbConnection dapper = sqliteConnection;
 
-                    foreach (var poet in await dapper.QueryAsync("SELECT * FROM poet ORDER BY id"))
+                    using (var sqlConnection = _context.Database.GetDbConnection())
                     {
-                        int poetId = (int)poet.id;
-                        using(RMuseumDbContext context = new RMuseumDbContext(Configuration))
+                        await sqlConnection.OpenAsync();
+                        using (var command = sqlConnection.CreateCommand())
                         {
-                            if ((await context.GanjoorPoets.Where(p => p.Id == poetId).FirstOrDefaultAsync()) != null)
+                            foreach (var poet in await dapper.QueryAsync("SELECT * FROM poet ORDER BY id"))
                             {
-                                continue;
-                            }
-
-                            context.GanjoorPoets.Add
-                                (
-                                new GanjoorPoet()
+                                int poetId = (int)poet.id;
+                                if ((await _context.GanjoorPoets.Where(p => p.Id == poetId).FirstOrDefaultAsync()) != null)
                                 {
-                                    Id = poetId,
-                                    Name = poet.name,
-                                    Description = poet.description
+                                    continue;
                                 }
-                                );
-
-                            await context.SaveChangesAsync();
-
-                            
+                                command.CommandText =
+                                    $"INSERT INTO GanjoorPoets (Id, Name, Description) VALUES (${poet.id}, N'{poet.name}', N'{poet.description}')";
+                                await command.ExecuteNonQueryAsync();
+                                                              
+                                
+                                await _ImportSQLiteCatChildren(command, dapper, poetId, 0, poet.name);
+                            }
                         }
 
-                        await _ImportSQLiteCatChildren(dapper, poetId, 0, poet.name);
-
-
-
                     }
+
 
                 }
             }
@@ -77,59 +71,43 @@ namespace RMuseum.Services.Implementation
 
         
 
-        private async Task _ImportSQLiteCatChildren(IDbConnection dapper, int poetId, int catId, string itemFullTitle)
+        private async Task _ImportSQLiteCatChildren(DbCommand command, IDbConnection dapper, int poetId, int catId, string itemFullTitle)
         {
            
             foreach(var cat in await dapper.QueryAsync($"SELECT * FROM cat WHERE poet_id = {poetId} AND parent_id = {catId} ORDER BY id"))
             {
-                using (RMuseumDbContext context = new RMuseumDbContext(Configuration))
+                if(catId == 0)
                 {
-                    context.GanjoorCategories.Add
-                    (
-                    new GanjoorCat()
+                    command.CommandText =
+                                  $"INSERT INTO GanjoorCategories (Id, PoetId, Title, UrlSlug) VALUES (${cat.id}, {poetId}, N'{cat.text}', '{ _ExtractUrlSlug(cat.url)}')";
+                }
+                else
+                {
+                    command.CommandText =
+                                  $"INSERT INTO GanjoorCategories (Id, PoetId, Title, ParentId, UrlSlug) VALUES (${cat.id}, {poetId}, N'{cat.text}', {catId}, '{ _ExtractUrlSlug(cat.url)}')";
+                }
+               
+                await command.ExecuteNonQueryAsync();
+
+
+                foreach (var poem in await dapper.QueryAsync($"SELECT * FROM poem WHERE cat_id = {cat.id} ORDER BY id"))
+                {
+                    command.CommandText =
+                               $"INSERT INTO GanjoorPoems (Id, CatId, Title, UrlSlug, FullTitle) VALUES (${poem.id}, {cat.id}, N'{poem.title}', '{ _ExtractUrlSlug(poem.url)}', N'{$"{itemFullTitle} » {cat.text} » {poem.title}"}')";
+                    await command.ExecuteNonQueryAsync();
+
+                    foreach (var verse in await dapper.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder"))
                     {
-                        Id = (int)cat.id,
-                        PoetId = poetId,
-                        Title = cat.text,
-                        UrlSlug = _ExtractUrlSlug(cat.url)
+                        command.CommandText =
+                              $"INSERT INTO GanjoorVerses (PoemId, VOrder, VersePosition, Text) VALUES (${poem.id}, {verse.vorder}, {verse.position}, N'{verse.text}')";
+                        await command.ExecuteNonQueryAsync();
                     }
-                    );
 
-                    foreach (var poem in await dapper.QueryAsync($"SELECT * FROM poem WHERE cat_id = {cat.id} ORDER BY id"))
-                    {
-                        context.GanjoorPoems.Add
-                            (
-                            new GanjoorPoem()
-                            {
-                                Id = (int)poem.id,
-                                CatId = (int)cat.id,
-                                Title = poem.title,
-                                UrlSlug = _ExtractUrlSlug(poem.url),
-                                FullTitle = $"{itemFullTitle} » {cat.text} » {poem.title}"
-                            }
-                            );
-
-                        foreach (var verse in await dapper.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder"))
-                        {
-                            context.GanjoorVerses.Add
-                                (
-                                new GanjoorVerse()
-                                {
-                                    PoemId = (int)poem.id,
-                                    VOrder = (int)verse.vorder,
-                                    VersePosition = (VersePosition)verse.position,
-                                    Text = verse.text
-                                }
-                                );
-                        }
-
-                        await context.SaveChangesAsync();
-                    }
-                
-
-                    await _ImportSQLiteCatChildren(dapper, poetId, (int)cat.id, $"{itemFullTitle} » {cat.text}");
                 }
 
+
+                await _ImportSQLiteCatChildren(command, dapper, poetId, (int)cat.id, $"{itemFullTitle} » {cat.text}");
+                
 
             }
         }
