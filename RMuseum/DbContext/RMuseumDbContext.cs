@@ -12,6 +12,7 @@ using RSecurityBackend.DbContext;
 using RSecurityBackend.Models.Auth.Db;
 using System;
 using Dapper;
+using RMuseum.Models.Ganjoor;
 
 namespace RMuseum.DbContext
 {
@@ -148,6 +149,26 @@ namespace RMuseum.DbContext
         /// User Narration Profiles
         /// </summary>
         public DbSet<UserNarrationProfile> UserNarrationProfiles { get; set; }
+
+        /// <summary>
+        /// Ganjoor Poets
+        /// </summary>
+        public DbSet<GanjoorPoet> GanjoorPoets { get; set; }
+
+        /// <summary>
+        /// Ganjoor Categories
+        /// </summary>
+        public DbSet<GanjoorCat> GanjoorCategories { get; set; }
+
+        /// <summary>
+        /// Ganjoor Poems
+        /// </summary>
+        public DbSet<GanjoorPoem> GanjoorPoems { get; set; }
+
+        /// <summary>
+        /// Ganjoor Verses
+        /// </summary>
+        public DbSet<GanjoorVerse> GanjoorVerses { get; set; }
 
     }
 }

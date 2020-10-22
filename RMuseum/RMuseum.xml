@@ -902,6 +902,26 @@
             User Narration Profiles
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoets">
+            <summary>
+            Ganjoor Poets
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorCategories">
+            <summary>
+            Ganjoor Categories
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoems">
+            <summary>
+            Ganjoor Poems
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorVerses">
+            <summary>
+            Ganjoor Verses
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status
@@ -2714,6 +2734,179 @@
         <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.CaptchaValue">
             <summary>
             Captcha Value
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorCat">
+            <summary>
+            Ganjoor Category
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.PoetId">
+            <summary>
+            poet_id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.Poet">
+            <summary>
+            poet
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.Title">
+            <summary>
+            text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.ParentId">
+            <summary>
+            parent_id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.Parent">
+            <summary>
+            parent
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.UrlSlug">
+            <summary>
+            url => slug
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoem">
+            <summary>
+            Ganjoor Poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.CatId">
+            <summary>
+            cat-id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.Cat">
+            <summary>
+            cat
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.FullTitle">
+            <summary>
+            cat + parent cats title + title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.UrlSlug">
+            <summary>
+            url => slug
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">
+            <summary>
+            Ganjoor Poet
+            </summary>
+            <remarks>
+            cat_id field is removed, it is retrievable by querying <see cref="T:RMuseum.Models.Ganjoor.GanjoorCat"/> 
+            where <see cref="P:RMuseum.Models.Ganjoor.GanjoorCat.PoetId"/> == <see cref="P:RMuseum.Models.Ganjoor.GanjoorPoet.Id"/> and
+            <see cref="P:RMuseum.Models.Ganjoor.GanjoorCat.Parent"/> == null
+            </remarks>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorVerse">
+            <summary>
+            Ganjoor Verse
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.Id">
+            <summary>
+            global id, auto generated (missing in Ganjoor Desktop database)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.PoemId">
+            <summary>
+            poem_id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.Poem">
+            <summary>
+            poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.VOrder">
+            <summary>
+            vorder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.VersePosition">
+            <summary>
+            position
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.Text">
+            <summary>
+            text
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.VersePosition">
+            <summary>
+            معنی فیلد position در جدول verse با توجه به مقادیر این ساختار داده مشخص می شود.
+            </summary>
+            <remarks>
+            imported from Desktop Ganjoor source
+            </remarks>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.VersePosition.Right">
+            <summary>
+            First Verse in a normal Beyt
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.VersePosition.Left">
+            <summary>
+            Second Verse in a normal Beyt
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1">
+            <summary>
+            First Verse or the only one in a Band Beyt
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.VersePosition.CenteredVerse2">
+            <summary>
+            Second Verse in a Band Beyt
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.VersePosition.Single">
+            <summary>
+            Free form verse
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.VersePosition.Paragraph">
+            <summary>
+            Non-poem paragraph
             </summary>
         </member>
         <member name="T:RMuseum.Models.ImportJob.ImportJob">
