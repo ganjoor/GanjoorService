@@ -2046,7 +2046,7 @@
              Poem Narration view model
             </summary>
         </member>
-        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.#ctor(RMuseum.Models.GanjoorAudio.PoemNarration)">
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.#ctor(RMuseum.Models.GanjoorAudio.PoemNarration,RMuseum.Models.Ganjoor.GanjoorPoem)">
             <summary>
             constructor
             </summary>
@@ -2070,6 +2070,16 @@
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.GanjoorPostId">
             <summary>
             Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.PoemFullTitle">
+            <summary>
+            Poem Full Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.PoemFullUrl">
+            <summary>
+            Poem Full Url (without domain name)
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioOrder">

@@ -1,4 +1,5 @@
-﻿using RSecurityBackend.Models.Auth.ViewModels;
+﻿using RMuseum.Models.Ganjoor;
+using RSecurityBackend.Models.Auth.ViewModels;
 using System;
 using System.Collections.Generic;
 
@@ -13,7 +14,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// constructor
         /// </summary>
         /// <param name="src"></param>
-        public PoemNarrationViewModel(PoemNarration src)
+        public PoemNarrationViewModel(PoemNarration src, GanjoorPoem poem)
         {
             Id = src.Id;
             Owner = new PublicRAppUser(src.Owner);
@@ -36,6 +37,8 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
             ReviewStatus = src.ReviewStatus;
             UploadDate = src.UploadDate;
             ReviewDate = src.ReviewDate;
+            PoemFullTitle = poem.FullTitle;
+            PoemFullUrl = poem.FullUrl;
             List<AudioSyncStatus> lst = new List<AudioSyncStatus>();
             foreach(AudioSyncStatus status in 
                 new AudioSyncStatus[] 
@@ -77,6 +80,16 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// Ganjoor Post Id
         /// </summary>
         public int GanjoorPostId { get; set; }
+
+        /// <summary>
+        /// Poem Full Title
+        /// </summary>
+        public string PoemFullTitle { get; set; }
+
+        /// <summary>
+        /// Poem Full Url (without domain name)
+        /// </summary>
+        public string PoemFullUrl { get; set; }
 
         /// <summary>
         /// This determines where an audio is displayed between a list of sounds related to a specfic poem

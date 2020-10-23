@@ -49,7 +49,7 @@ namespace RMuseum.Services.Implementation
                     .OrderByDescending(a => a.UploadDate)
                      join poem in _context.GanjoorPoems
                      on audio.GanjoorPostId equals poem.Id
-                     select new PoemNarrationViewModel(audio);
+                     select new PoemNarrationViewModel(audio, poem);
 
                 
 
@@ -75,12 +75,16 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var narration = await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync();
-                if(narration == null)
-                {
-                    return new RServiceResult<PoemNarrationViewModel>(null);
-                }
-                return new RServiceResult<PoemNarrationViewModel>(new PoemNarrationViewModel(narration));
+                var source =
+                     from audio in _context.AudioFiles
+                     .Include(a => a.Owner)
+                     .Where(a => a.Id == id)
+                     join poem in _context.GanjoorPoems
+                     on audio.GanjoorPostId equals poem.Id
+                     select new PoemNarrationViewModel(audio, poem);
+
+                var narration = await source.SingleOrDefaultAsync();
+                return new RServiceResult<PoemNarrationViewModel>(narration);
             }
             catch (Exception exp)
             {
