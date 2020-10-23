@@ -260,7 +260,7 @@ namespace RMuseum
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {
-                options.MaxRequestBodySize = 52428800; //50MB
+                options.MaxRequestBodySize = int.Parse(Configuration.GetSection("IIS")["UploadLimit"]);
             });
 
 

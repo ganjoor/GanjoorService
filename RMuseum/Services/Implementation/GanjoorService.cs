@@ -28,7 +28,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 SqliteConnectionStringBuilder connectionStringBuilder = new SqliteConnectionStringBuilder();
-                connectionStringBuilder.DataSource = @"C:\Users\moham\AppData\Local\ganjoor\ganjoor.s3db";
+                connectionStringBuilder.DataSource = Configuration.GetSection("LocalSqliteImport")["FilePath"];
                 using (SqliteConnection sqliteConnection = new SqliteConnection(connectionStringBuilder.ToString()))
                 {
                     await sqliteConnection.OpenAsync();
