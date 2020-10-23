@@ -69,7 +69,13 @@ namespace RMuseum.DbContext
                 .HasIndex(t => t.FriendlyUrl);
 
             builder.Entity<RTagValue>()
-                .HasIndex(t => t.FriendlyUrl);            
+                .HasIndex(t => t.FriendlyUrl);
+
+            builder.Entity<GanjoorCat>()
+                .HasIndex(c => c.FullUrl);
+
+            builder.Entity<GanjoorPoem>()
+                .HasIndex(c => c.FullUrl);
 
         }
 

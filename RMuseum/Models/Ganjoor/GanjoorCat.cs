@@ -43,5 +43,15 @@ namespace RMuseum.Models.Ganjoor
         /// url => slug
         /// </summary>
         public string UrlSlug { get; set; }
+
+        /// <summary>
+        /// sample: /hafez/ghazal
+        /// </summary>
+        public string FullUrl { get; set; }
+
+        /// <summary>
+        /// Cached Content to be used on UI
+        /// </summary>
+        public string CachedContent { get; set; }
     }
 }

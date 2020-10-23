@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RMuseum.DbContext;
 
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    partial class RMuseumDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201023091130_GanjoorCachingFields")]
+    partial class GanjoorCachingFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -345,7 +347,7 @@ namespace RMuseum.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullUrl")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
@@ -360,8 +362,6 @@ namespace RMuseum.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FullUrl");
 
                     b.HasIndex("ParentId");
 
@@ -385,7 +385,7 @@ namespace RMuseum.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullUrl")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -396,8 +396,6 @@ namespace RMuseum.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CatId");
-
-                    b.HasIndex("FullUrl");
 
                     b.ToTable("GanjoorPoems");
                 });

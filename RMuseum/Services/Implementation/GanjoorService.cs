@@ -54,7 +54,7 @@ namespace RMuseum.Services.Implementation
                                         command.CommandText =
                                             $"INSERT INTO GanjoorPoets (Id, Name, Description) VALUES (${poet.id}, N'{poet.name}', N'{poet.description}')";
                                         await command.ExecuteNonQueryAsync();
-                                        await _ImportSQLiteCatChildren(command, dapper, poetId, 0, poet.name);
+                                        await _ImportSQLiteCatChildren(command, dapper, poetId, 0, poet.name, "");
                                         await transaction.CommitAsync();
                                     }
                                 }
@@ -79,20 +79,21 @@ namespace RMuseum.Services.Implementation
 
         
 
-        private async Task _ImportSQLiteCatChildren(DbCommand command, IDbConnection dapper, int poetId, int catId, string itemFullTitle)
+        private async Task _ImportSQLiteCatChildren(DbCommand command, IDbConnection dapper, int poetId, int catId, string itemFullTitle, string itemFullSlug)
         {
            
             foreach(var cat in await dapper.QueryAsync($"SELECT * FROM cat WHERE poet_id = {poetId} AND parent_id = {catId} ORDER BY id"))
             {
-                if(catId == 0)
+               
+                if (catId == 0)
                 {
                     command.CommandText =
-                                  $"INSERT INTO GanjoorCategories (Id, PoetId, Title, UrlSlug) VALUES (${cat.id}, {poetId}, N'{cat.text}', '{ _ExtractUrlSlug(cat.url)}')";
+                                  $"INSERT INTO GanjoorCategories (Id, PoetId, Title, UrlSlug, FullUrl) VALUES (${cat.id}, {poetId}, N'{cat.text}', '{ _ExtractUrlSlug(cat.url)}', '{itemFullSlug}/{ _ExtractUrlSlug(cat.url)}')";
                 }
                 else
                 {
                     command.CommandText =
-                                  $"INSERT INTO GanjoorCategories (Id, PoetId, Title, ParentId, UrlSlug) VALUES (${cat.id}, {poetId}, N'{cat.text}', {catId}, '{ _ExtractUrlSlug(cat.url)}')";
+                                  $"INSERT INTO GanjoorCategories (Id, PoetId, Title, ParentId, UrlSlug, FullUrl) VALUES (${cat.id}, {poetId}, N'{cat.text}', {catId}, '{ _ExtractUrlSlug(cat.url)}', '{itemFullSlug}/{ _ExtractUrlSlug(cat.url)}')";
                 }
                
                 await command.ExecuteNonQueryAsync();
@@ -101,7 +102,7 @@ namespace RMuseum.Services.Implementation
                 foreach (var poem in await dapper.QueryAsync($"SELECT * FROM poem WHERE cat_id = {cat.id} ORDER BY id"))
                 {
                     command.CommandText =
-                               $"INSERT INTO GanjoorPoems (Id, CatId, Title, UrlSlug, FullTitle) VALUES (${poem.id}, {cat.id}, N'{poem.title}', '{ _ExtractUrlSlug(poem.url)}', N'{$"{itemFullTitle} » {cat.text} » {poem.title}"}')";
+                               $"INSERT INTO GanjoorPoems (Id, CatId, Title, UrlSlug, FullTitle, FullUrl) VALUES (${poem.id}, {cat.id}, N'{poem.title}', '{ _ExtractUrlSlug(poem.url)}', N'{$"{itemFullTitle} » {cat.text} » {poem.title}"}', '{itemFullSlug}/{ _ExtractUrlSlug(cat.url)}/{_ExtractUrlSlug(poem.url)}')";
                     await command.ExecuteNonQueryAsync();
 
                     foreach (var verse in await dapper.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder"))
@@ -114,7 +115,7 @@ namespace RMuseum.Services.Implementation
                 }
 
 
-                await _ImportSQLiteCatChildren(command, dapper, poetId, (int)cat.id, $"{itemFullTitle} » {cat.text}");
+                await _ImportSQLiteCatChildren(command, dapper, poetId, (int)cat.id, $"{itemFullTitle} » {cat.text}", $"{itemFullSlug}/{ _ExtractUrlSlug(cat.url)}");
                 
 
             }
