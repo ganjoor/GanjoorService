@@ -340,10 +340,7 @@ namespace RMuseum.Migrations
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
-
-                    b.Property<string>("CachedContent")
-                        .HasColumnType("nvarchar(max)");
-
+                   
                     b.Property<string>("FullUrl")
                         .HasColumnType("nvarchar(450)");
 
@@ -374,10 +371,7 @@ namespace RMuseum.Migrations
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
-
-                    b.Property<string>("CachedContent")
-                        .HasColumnType("nvarchar(max)");
-
+                   
                     b.Property<int>("CatId")
                         .HasColumnType("int");
 

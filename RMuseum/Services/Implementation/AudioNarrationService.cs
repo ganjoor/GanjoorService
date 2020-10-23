@@ -39,27 +39,26 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var source =
-                    
-                     _context.AudioFiles
+                     from audio in _context.AudioFiles
                      .Include(a => a.Owner)
-                     .Where(a => 
+                     .Where(a =>
                             (filteredUserId == Guid.Empty || a.OwnerId == filteredUserId)
                             &&
                             (status == AudioReviewStatus.All || a.ReviewStatus == status)
                      )
                     .OrderByDescending(a => a.UploadDate)
-                    .AsQueryable();
+                     join poem in _context.GanjoorPoems
+                     on audio.GanjoorPostId equals poem.Id
+                     select new PoemNarrationViewModel(audio);
 
-                (PaginationMetadata PagingMeta, PoemNarration[] Items) paginatedResult =
-                    await QueryablePaginator<PoemNarration>.Paginate(source, paging);
+                
 
-                List<PoemNarrationViewModel> res = new List<PoemNarrationViewModel>();
-                foreach(PoemNarration audio in paginatedResult.Items)
-                {
-                    res.Add(new PoemNarrationViewModel(audio));
-                }
+                (PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items) paginatedResult =
+                    await QueryablePaginator<PoemNarrationViewModel>.Paginate(source, paging);
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>((paginatedResult.PagingMeta, res.ToArray()));
+                
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>((paginatedResult.PagingMeta, paginatedResult.Items));
             }
             catch (Exception exp)
             {

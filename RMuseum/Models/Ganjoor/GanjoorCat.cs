@@ -48,10 +48,5 @@ namespace RMuseum.Models.Ganjoor
         /// sample: /hafez/ghazal
         /// </summary>
         public string FullUrl { get; set; }
-
-        /// <summary>
-        /// Cached Content to be used on UI
-        /// </summary>
-        public string CachedContent { get; set; }
     }
 }

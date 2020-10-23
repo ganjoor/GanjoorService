@@ -54,7 +54,7 @@ namespace RMuseum.Services.Implementation
                                         command.CommandText =
                                             $"INSERT INTO GanjoorPoets (Id, Name, Description) VALUES (${poet.id}, N'{poet.name}', N'{poet.description}')";
                                         await command.ExecuteNonQueryAsync();
-                                        await _ImportSQLiteCatChildren(command, dapper, poetId, 0, poet.name, "");
+                                        await _ImportSQLiteCatChildren(command, dapper, poetId, 0, "", "");
                                         await transaction.CommitAsync();
                                     }
                                 }
@@ -102,7 +102,7 @@ namespace RMuseum.Services.Implementation
                 foreach (var poem in await dapper.QueryAsync($"SELECT * FROM poem WHERE cat_id = {cat.id} ORDER BY id"))
                 {
                     command.CommandText =
-                               $"INSERT INTO GanjoorPoems (Id, CatId, Title, UrlSlug, FullTitle, FullUrl) VALUES (${poem.id}, {cat.id}, N'{poem.title}', '{ _ExtractUrlSlug(poem.url)}', N'{$"{itemFullTitle} » {cat.text} » {poem.title}"}', '{itemFullSlug}/{ _ExtractUrlSlug(cat.url)}/{_ExtractUrlSlug(poem.url)}')";
+                               $"INSERT INTO GanjoorPoems (Id, CatId, Title, UrlSlug, FullTitle, FullUrl) VALUES (${poem.id}, {cat.id}, N'{poem.title}', '{ _ExtractUrlSlug(poem.url)}', N'{$"{itemFullTitle}{cat.text} » {poem.title}"}', '{itemFullSlug}/{ _ExtractUrlSlug(cat.url)}/{_ExtractUrlSlug(poem.url)}')";
                     await command.ExecuteNonQueryAsync();
 
                     foreach (var verse in await dapper.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder"))
@@ -115,7 +115,7 @@ namespace RMuseum.Services.Implementation
                 }
 
 
-                await _ImportSQLiteCatChildren(command, dapper, poetId, (int)cat.id, $"{itemFullTitle} » {cat.text}", $"{itemFullSlug}/{ _ExtractUrlSlug(cat.url)}");
+                await _ImportSQLiteCatChildren(command, dapper, poetId, (int)cat.id, $"{itemFullTitle}{cat.text} » ", $"{itemFullSlug}/{ _ExtractUrlSlug(cat.url)}");
                 
 
             }

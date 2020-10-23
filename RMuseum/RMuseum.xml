@@ -2807,11 +2807,6 @@
             sample: /hafez/ghazal
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.CachedContent">
-            <summary>
-            Cached Content to be used on UI
-            </summary>
-        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoem">
             <summary>
             Ganjoor Poem
@@ -2850,11 +2845,6 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.FullUrl">
             <summary>
             sample: /hafez/ghazal/sh1
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.CachedContent">
-            <summary>
-            Cached Content to be used on UI
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">
