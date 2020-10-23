@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using Renci.SshNet;
 using RMuseum.DbContext;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
@@ -429,6 +430,18 @@ namespace RMuseum.Services.Implementation
                                                     AudioSyncStatus = (int)AudioSyncStatus.NewItem,
                                                     ReviewStatus = AudioReviewStatus.Draft
                                                 };
+
+                                                if (narration.AudioTitle.IndexOf("فایل صوتی") == 0) //no modification on title
+                                                {
+                                                    GanjoorPoem poem = await _context.GanjoorPoems.Where(p => p.Id == audio.PoemId).SingleOrDefaultAsync();
+                                                    if (poem != null)
+                                                    {
+                                                        narration.AudioTitle = poem.Title;
+                                                    }
+                                                }
+
+
+                                                
 
                                                 context.AudioFiles.Add(narration);
 
