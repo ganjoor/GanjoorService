@@ -32,14 +32,11 @@ namespace RMuseum.Services.Implementation
                 using (SqliteConnection sqliteConnection = new SqliteConnection(connectionStringBuilder.ToString()))
                 {
                     await sqliteConnection.OpenAsync();
-
                     IDbConnection dapper = sqliteConnection;
-
                     using (var sqlConnection = _context.Database.GetDbConnection())
                     {
                         await sqlConnection.OpenAsync();
-                        using (var command = sqlConnection.CreateCommand())
-                        {
+                        
                             foreach (var poet in await dapper.QueryAsync("SELECT * FROM poet ORDER BY id"))
                             {
                                 int poetId = (int)poet.id;
@@ -47,25 +44,36 @@ namespace RMuseum.Services.Implementation
                                 {
                                     continue;
                                 }
-                                command.CommandText =
-                                    $"INSERT INTO GanjoorPoets (Id, Name, Description) VALUES (${poet.id}, N'{poet.name}', N'{poet.description}')";
-                                await command.ExecuteNonQueryAsync();
-                                                              
-                                
-                                await _ImportSQLiteCatChildren(command, dapper, poetId, 0, poet.name);
+
+                                DbTransaction transaction = await sqlConnection.BeginTransactionAsync();
+                                try
+                                {
+                                    using (var command = sqlConnection.CreateCommand())
+                                    {
+                                        command.Transaction = transaction;
+                                        command.CommandText =
+                                            $"INSERT INTO GanjoorPoets (Id, Name, Description) VALUES (${poet.id}, N'{poet.name}', N'{poet.description}')";
+                                        await command.ExecuteNonQueryAsync();
+                                        await _ImportSQLiteCatChildren(command, dapper, poetId, 0, poet.name);
+                                        await transaction.CommitAsync();
+                                    }
+                                }
+                                catch (Exception exp2)
+                                {
+                                    await transaction.RollbackAsync();
+                                    return new RServiceResult<bool>(false, exp2.ToString());
+                                }
+                            
+                               
                             }
-                        }
-
                     }
-
-
+                        
                 }
             }
             catch(Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
-            
             return new RServiceResult<bool>(true);
         }
 
