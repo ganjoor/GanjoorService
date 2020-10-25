@@ -14,6 +14,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// constructor
         /// </summary>
         /// <param name="src"></param>
+        /// <param name="poem"></param>
         public PoemNarrationViewModel(PoemNarration src, GanjoorPoem poem)
         {
             Id = src.Id;

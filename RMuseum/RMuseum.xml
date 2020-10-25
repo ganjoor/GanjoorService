@@ -2051,6 +2051,7 @@
             constructor
             </summary>
             <param name="src"></param>
+            <param name="poem"></param>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Id">
             <summary>

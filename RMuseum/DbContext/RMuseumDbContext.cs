@@ -71,6 +71,9 @@ namespace RMuseum.DbContext
             builder.Entity<RTagValue>()
                 .HasIndex(t => t.FriendlyUrl);
 
+            builder.Entity<PoemNarration>()
+                .HasIndex(p => p.GanjoorPostId);
+
             builder.Entity<GanjoorCat>()
                 .HasIndex(c => c.FullUrl);
 

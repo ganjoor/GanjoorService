@@ -39,7 +39,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var source =
-                     from audio in _context.AudioFiles
+                     _context.AudioFiles
                      .Include(a => a.Owner)
                      .Where(a =>
                             (filteredUserId == Guid.Empty || a.OwnerId == filteredUserId)
@@ -47,9 +47,12 @@ namespace RMuseum.Services.Implementation
                             (status == AudioReviewStatus.All || a.ReviewStatus == status)
                      )
                     .OrderByDescending(a => a.UploadDate)
-                     join poem in _context.GanjoorPoems
-                     on audio.GanjoorPostId equals poem.Id
-                     select new PoemNarrationViewModel(audio, poem);
+                    .Join(
+                         _context.GanjoorPoems,
+                         audio => audio.GanjoorPostId,
+                         poem => poem.Id,
+                         (audio, poem) => new PoemNarrationViewModel(audio, poem)
+                         );
 
                 
 
