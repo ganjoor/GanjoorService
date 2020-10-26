@@ -19,17 +19,18 @@ namespace RSecurityBackend.Models.Auth.ViewModels
         /// <param name="dbUserInfo"></param>
         public PublicRAppUser(RAppUser dbUserInfo)
         {
-            if (dbUserInfo != null)
+            if (dbUserInfo == null)
             {
-                Id = dbUserInfo.Id;
-                Username = dbUserInfo.UserName;
-                FirstName = dbUserInfo.FirstName;
-                SureName = dbUserInfo.SureName;
-                Email = dbUserInfo.Email;
-                PhoneNumber = dbUserInfo.PhoneNumber;
-                Status = dbUserInfo.Status;
-                RImageId = dbUserInfo.RImageId;
+                return;
             }
+            Id = dbUserInfo.Id;
+            Username = dbUserInfo.UserName;
+            FirstName = dbUserInfo.FirstName;
+            SureName = dbUserInfo.SureName;
+            Email = dbUserInfo.Email;
+            PhoneNumber = dbUserInfo.PhoneNumber;
+            Status = dbUserInfo.Status;
+            RImageId = dbUserInfo.RImageId;
         }
         /// <summary>
         /// default constructor

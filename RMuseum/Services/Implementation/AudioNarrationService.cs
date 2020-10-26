@@ -38,23 +38,22 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var source =
-                     _context.AudioFiles
+                var narrations = _context.AudioFiles
                      .Include(a => a.Owner)
                      .Where(a =>
                             (filteredUserId == Guid.Empty || a.OwnerId == filteredUserId)
                             &&
                             (status == AudioReviewStatus.All || a.ReviewStatus == status)
                      )
-                    .OrderByDescending(a => a.UploadDate)
+                    .OrderByDescending(a => a.Id);
+                var source =
+                    narrations
                     .Join(
                          _context.GanjoorPoems,
                          audio => audio.GanjoorPostId,
                          poem => poem.Id,
                          (audio, poem) => new PoemNarrationViewModel(audio, poem)
                          );
-
-                
 
                 (PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items) paginatedResult =
                     await QueryablePaginator<PoemNarrationViewModel>.Paginate(source, paging);
@@ -74,7 +73,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PoemNarrationViewModel>> Get(Guid id)
+        public async Task<RServiceResult<PoemNarrationViewModel>> Get(int id)
         {
             try
             {
@@ -101,7 +100,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="id"></param>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> UpdatePoemNarration(Guid id, PoemNarrationUpdateViewModel metadata)
+        public async Task<RServiceResult<bool>> UpdatePoemNarration(int id, PoemNarrationUpdateViewModel metadata)
         {
             try
             {
@@ -148,7 +147,7 @@ namespace RMuseum.Services.Implementation
                         "SELECT audio_ID, audio_post_ID, audio_order, audio_xml, audio_ogg, audio_mp3, " +
                         "audio_title,  audio_artist, audio_artist_url, audio_src,  audio_src_url, audio_guid, " +
                         "audio_fchecksum,  audio_mp3bsize,  audio_oggbsize,  audio_date " +
-                        "FROM adab.ganja_gaudio ORDER BY audio_ID",
+                        "FROM adab.ganja_gaudio ORDER BY audio_date",
                         connection
                         ))
                     {
@@ -528,7 +527,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="moderatorId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ModeratePoemNarration(Guid id, Guid moderatorId, PoemNarrationModerateViewModel model)
+        public async Task<RServiceResult<bool>> ModeratePoemNarration(int id, Guid moderatorId, PoemNarrationModerateViewModel model)
         {
             try
             {

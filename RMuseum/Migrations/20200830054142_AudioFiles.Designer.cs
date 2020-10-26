@@ -340,9 +340,10 @@ namespace RMuseum.Migrations
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.PoemNarration", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Id")
+                       .ValueGeneratedOnAdd()
+                       .HasColumnType("int")
+                       .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("AudioArtist")
                         .HasColumnType("nvarchar(max)");

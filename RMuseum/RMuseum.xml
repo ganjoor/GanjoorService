@@ -635,7 +635,7 @@
             <param name="status">default: -1, unfiltered</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.UpdatePoemNarration(System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel)">
+        <member name="M:RMuseum.Controllers.AudioNarrationController.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel)">
             <summary>
             updates narration metadata
             </summary>
@@ -647,7 +647,7 @@
             </remarks>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.ModeratePoemNarration(System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
+        <member name="M:RMuseum.Controllers.AudioNarrationController.ModeratePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
             <summary>
             Moderate pending narration
             </summary>
@@ -3885,14 +3885,14 @@
             <param name="status"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.Get(System.Guid)">
+        <member name="M:RMuseum.Services.IAudioNarrationService.Get(System.Int32)">
             <summary>
             return selected narration information
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.UpdatePoemNarration(System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel)">
+        <member name="M:RMuseum.Services.IAudioNarrationService.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel)">
             <summary>
             updates metadata for narration
             </summary>
@@ -3929,7 +3929,7 @@
             <param name="files"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.ModeratePoemNarration(System.Guid,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
+        <member name="M:RMuseum.Services.IAudioNarrationService.ModeratePoemNarration(System.Int32,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
             <summary>
             Moderate pending narration
             </summary>
@@ -4689,14 +4689,14 @@
             <param name="status"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.Get(System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.Get(System.Int32)">
             <summary>
             return selected narration information
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.UpdatePoemNarration(System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel)">
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel)">
             <summary>
             updates metadata for narration
             </summary>
@@ -4732,7 +4732,7 @@
             <param name="files"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.ModeratePoemNarration(System.Guid,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.ModeratePoemNarration(System.Int32,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
             <summary>
             Moderate pending narration
             </summary>

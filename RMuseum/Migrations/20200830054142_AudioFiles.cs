@@ -11,7 +11,8 @@ namespace RMuseum.Migrations
                 name: "AudioFiles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     OwnerId = table.Column<Guid>(nullable: false),
                     GanjoorAudioId = table.Column<int>(nullable: false),
                     GanjoorPostId = table.Column<int>(nullable: false),

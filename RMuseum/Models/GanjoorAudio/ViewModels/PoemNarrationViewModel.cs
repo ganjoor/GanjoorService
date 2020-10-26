@@ -18,7 +18,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         public PoemNarrationViewModel(PoemNarration src, GanjoorPoem poem)
         {
             Id = src.Id;
-            Owner = new PublicRAppUser(src.Owner);
+            Owner = src.Owner == null ? null : new PublicRAppUser(src.Owner);
             GanjoorAudioId = src.GanjoorAudioId;
             GanjoorPostId = src.GanjoorPostId;
             AudioOrder = src.AudioOrder;
@@ -65,7 +65,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// <summary>
         /// Id
         /// </summary>
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Owner User

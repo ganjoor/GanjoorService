@@ -12,7 +12,7 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// Id
         /// </summary>
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Owner User

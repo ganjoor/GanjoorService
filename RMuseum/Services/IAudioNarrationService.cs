@@ -27,7 +27,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RServiceResult<PoemNarrationViewModel>> Get(Guid id);
+        Task<RServiceResult<PoemNarrationViewModel>> Get(int id);
 
         /// <summary>
         /// updates metadata for narration
@@ -35,7 +35,7 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> UpdatePoemNarration(Guid id, PoemNarrationUpdateViewModel metadata);
+        Task<RServiceResult<bool>> UpdatePoemNarration(int id, PoemNarrationUpdateViewModel metadata);
 
         /// <summary>
         /// imports narration data from ganjoor MySql database
@@ -73,7 +73,7 @@ namespace RMuseum.Services
         /// <param name="moderatorId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> ModeratePoemNarration(Guid id, Guid moderatorId, PoemNarrationModerateViewModel model);
+        Task<RServiceResult<bool>> ModeratePoemNarration(int id, Guid moderatorId, PoemNarrationModerateViewModel model);
 
         /// <summary>
         /// Get Upload Session (including files)
