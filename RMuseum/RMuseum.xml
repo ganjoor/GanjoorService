@@ -2063,6 +2063,11 @@
             Owner User
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.OwnerId">
+            <summary>
+            Owner Id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.GanjoorAudioId">
             <summary>
             Final data is actually exported to a MySQL database which this auto increment field is its key

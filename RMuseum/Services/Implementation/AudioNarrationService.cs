@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using ganjoor;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
@@ -10,6 +11,7 @@ using RMuseum.Models.Ganjoor;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
+using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -38,28 +40,31 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var narrations = _context.AudioFiles
-                     .Include(a => a.Owner)
+                
+                var source =
+                     _context.AudioFiles.Include(a => a.Owner)
                      .Where(a =>
                             (filteredUserId == Guid.Empty || a.OwnerId == filteredUserId)
                             &&
                             (status == AudioReviewStatus.All || a.ReviewStatus == status)
                      )
-                    .OrderByDescending(a => a.Id);
-                var source =
-                    narrations
-                    .Join(
-                         _context.GanjoorPoems,
-                         audio => audio.GanjoorPostId,
-                         poem => poem.Id,
-                         (audio, poem) => new PoemNarrationViewModel(audio, poem)
-                         );
+                    .OrderByDescending(a => a.UploadDate)
+                    .Select(a => new PoemNarrationViewModel(a, null));
 
                 (PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items) paginatedResult =
                     await QueryablePaginator<PoemNarrationViewModel>.Paginate(source, paging);
 
-                
-
+                var commonOwner = filteredUserId == Guid.Empty ? null : new PublicRAppUser(await _context.Users.Where(u => u.Id == filteredUserId).SingleOrDefaultAsync());
+                foreach (var item in paginatedResult.Items)
+                {
+                    GanjoorPoem poem = await _context.GanjoorPoems.Where(p => p.Id == item.GanjoorPostId).SingleOrDefaultAsync();
+                    if(poem != null)
+                    {
+                        item.PoemFullTitle = poem.FullTitle;
+                        item.PoemFullUrl = poem.FullUrl;
+                    }
+                    item.Owner = filteredUserId == Guid.Empty ? new PublicRAppUser(await _context.Users.Where(u => u.Id == item.OwnerId).SingleOrDefaultAsync()) : commonOwner;
+                }
                 return new RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>((paginatedResult.PagingMeta, paginatedResult.Items));
             }
             catch (Exception exp)
@@ -147,7 +152,7 @@ namespace RMuseum.Services.Implementation
                         "SELECT audio_ID, audio_post_ID, audio_order, audio_xml, audio_ogg, audio_mp3, " +
                         "audio_title,  audio_artist, audio_artist_url, audio_src,  audio_src_url, audio_guid, " +
                         "audio_fchecksum,  audio_mp3bsize,  audio_oggbsize,  audio_date " +
-                        "FROM adab.ganja_gaudio ORDER BY audio_date",
+                        "FROM ganja_gaudio ORDER BY audio_ID",
                         connection
                         ))
                     {

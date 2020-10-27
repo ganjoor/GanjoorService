@@ -18,6 +18,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         public PoemNarrationViewModel(PoemNarration src, GanjoorPoem poem)
         {
             Id = src.Id;
+            OwnerId = src.OwnerId;
             Owner = src.Owner == null ? null : new PublicRAppUser(src.Owner);
             GanjoorAudioId = src.GanjoorAudioId;
             GanjoorPostId = src.GanjoorPostId;
@@ -38,8 +39,12 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
             ReviewStatus = src.ReviewStatus;
             UploadDate = src.UploadDate;
             ReviewDate = src.ReviewDate;
-            PoemFullTitle = poem.FullTitle;
-            PoemFullUrl = poem.FullUrl;
+            if(poem != null)
+            {
+                PoemFullTitle = poem.FullTitle;
+                PoemFullUrl = poem.FullUrl;
+            }
+            
             List<AudioSyncStatus> lst = new List<AudioSyncStatus>();
             foreach(AudioSyncStatus status in 
                 new AudioSyncStatus[] 
@@ -71,6 +76,11 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// Owner User
         /// </summary>
         public PublicRAppUser Owner { get; set; }
+
+        /// <summary>
+        /// Owner Id
+        /// </summary>
+        public Guid OwnerId { get; set; }
 
         /// <summary>
         /// Final data is actually exported to a MySQL database which this auto increment field is its key
