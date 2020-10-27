@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using ganjoor;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
@@ -152,7 +151,7 @@ namespace RMuseum.Services.Implementation
                         "SELECT audio_ID, audio_post_ID, audio_order, audio_xml, audio_ogg, audio_mp3, " +
                         "audio_title,  audio_artist, audio_artist_url, audio_src,  audio_src_url, audio_guid, " +
                         "audio_fchecksum,  audio_mp3bsize,  audio_oggbsize,  audio_date " +
-                        "FROM ganja_gaudio ORDER BY audio_ID",
+                        "FROM ganja_gaudio ORDER BY audio_date",
                         connection
                         ))
                     {
