@@ -1,4 +1,5 @@
 ﻿using RMuseum.Models.Ganjoor;
+using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,12 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// constructor
         /// </summary>
         /// <param name="src"></param>
+        /// <param name="owner"></param>
         /// <param name="poem"></param>
-        public PoemNarrationViewModel(PoemNarration src, GanjoorPoem poem)
+        public PoemNarrationViewModel(PoemNarration src, RAppUser owner, GanjoorPoem poem)
         {
             Id = src.Id;
-            OwnerId = src.OwnerId;
-            Owner = src.Owner == null ? null : new PublicRAppUser(src.Owner);
+            Owner = new PublicRAppUser(owner);
             GanjoorAudioId = src.GanjoorAudioId;
             GanjoorPostId = src.GanjoorPostId;
             AudioOrder = src.AudioOrder;
@@ -77,10 +78,6 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// </summary>
         public PublicRAppUser Owner { get; set; }
 
-        /// <summary>
-        /// Owner Id
-        /// </summary>
-        public Guid OwnerId { get; set; }
 
         /// <summary>
         /// Final data is actually exported to a MySQL database which this auto increment field is its key

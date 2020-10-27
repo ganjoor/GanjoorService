@@ -10,6 +10,7 @@ using RMuseum.Models.Ganjoor;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
+using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
@@ -39,32 +40,24 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                
+                //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
                 var source =
-                     _context.AudioFiles.Include(a => a.Owner)
+                     from audio in _context.AudioFiles
+                     .Include(a => a.Owner)
                      .Where(a =>
                             (filteredUserId == Guid.Empty || a.OwnerId == filteredUserId)
                             &&
                             (status == AudioReviewStatus.All || a.ReviewStatus == status)
                      )
                     .OrderByDescending(a => a.UploadDate)
-                    .Select(a => new PoemNarrationViewModel(a, null));
+                     join poem in _context.GanjoorPoems
+                     on audio.GanjoorPostId equals poem.Id
+                     select new PoemNarrationViewModel(audio, audio.Owner, poem);
 
                 (PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items) paginatedResult =
                     await QueryablePaginator<PoemNarrationViewModel>.Paginate(source, paging);
 
-                var commonOwner = filteredUserId == Guid.Empty ? null : new PublicRAppUser(await _context.Users.Where(u => u.Id == filteredUserId).SingleOrDefaultAsync());
-                foreach (var item in paginatedResult.Items)
-                {
-                    GanjoorPoem poem = await _context.GanjoorPoems.Where(p => p.Id == item.GanjoorPostId).SingleOrDefaultAsync();
-                    if(poem != null)
-                    {
-                        item.PoemFullTitle = poem.FullTitle;
-                        item.PoemFullUrl = poem.FullUrl;
-                    }
-                    item.Owner = filteredUserId == Guid.Empty ? new PublicRAppUser(await _context.Users.Where(u => u.Id == item.OwnerId).SingleOrDefaultAsync()) : commonOwner;
-                }
-                return new RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>((paginatedResult.PagingMeta, paginatedResult.Items));
+                return new RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>(paginatedResult);
             }
             catch (Exception exp)
             {
@@ -81,13 +74,14 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
                 var source =
                      from audio in _context.AudioFiles
                      .Include(a => a.Owner)
                      .Where(a => a.Id == id)
                      join poem in _context.GanjoorPoems
                      on audio.GanjoorPostId equals poem.Id
-                     select new PoemNarrationViewModel(audio, poem);
+                     select new PoemNarrationViewModel(audio, audio.Owner, poem);
 
                 var narration = await source.SingleOrDefaultAsync();
                 return new RServiceResult<PoemNarrationViewModel>(narration);
@@ -147,6 +141,9 @@ namespace RMuseum.Services.Implementation
                     ))
                 {
                     connection.Open();
+                    //I thought that result Id fields would become corresponant to order of selection (and later insertions) but it is not
+                    //the case in batch insertion, so this ORDER BY clause is useless unless we do save every time we insert a record
+                    //which I guess might take much longer
                     using(MySqlDataAdapter src = new MySqlDataAdapter(
                         "SELECT audio_ID, audio_post_ID, audio_order, audio_xml, audio_ogg, audio_mp3, " +
                         "audio_title,  audio_artist, audio_artist_url, audio_src,  audio_src_url, audio_guid, " +

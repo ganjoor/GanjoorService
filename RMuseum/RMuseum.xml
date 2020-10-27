@@ -2046,11 +2046,12 @@
              Poem Narration view model
             </summary>
         </member>
-        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.#ctor(RMuseum.Models.GanjoorAudio.PoemNarration,RMuseum.Models.Ganjoor.GanjoorPoem)">
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.#ctor(RMuseum.Models.GanjoorAudio.PoemNarration,RSecurityBackend.Models.Auth.Db.RAppUser,RMuseum.Models.Ganjoor.GanjoorPoem)">
             <summary>
             constructor
             </summary>
             <param name="src"></param>
+            <param name="owner"></param>
             <param name="poem"></param>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Id">
@@ -2061,11 +2062,6 @@
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Owner">
             <summary>
             Owner User
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.OwnerId">
-            <summary>
-            Owner Id
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.GanjoorAudioId">
