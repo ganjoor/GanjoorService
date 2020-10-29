@@ -286,6 +286,18 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> GetUserNarrationProfiles()
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+
+            RServiceResult<bool> sessionCheckResult = await _appUserService.SessionExists(loggedOnUserId, sessionId);
+            if (!string.IsNullOrEmpty(sessionCheckResult.ExceptionString))
+            {
+                return BadRequest(sessionCheckResult.ExceptionString);
+            }
+
+            if(!sessionCheckResult.Result)
+            {
+                return BadRequest("نشست کاربر معتبر نیست.");
+            }
 
 
             var res = await _audioService.GetUserNarrationProfiles(loggedOnUserId);
@@ -373,10 +385,12 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="audioService">
         /// </param>
+        /// <param name="appUserService"></param>
         /// <param name="userPermissionChecker"></param>
-        public AudioNarrationController(IAudioNarrationService audioService, IUserPermissionChecker userPermissionChecker)
+        public AudioNarrationController(IAudioNarrationService audioService, IAppUserService appUserService, IUserPermissionChecker userPermissionChecker)
         {
             _audioService = audioService;
+            _appUserService = appUserService;
             _userPermissionChecker = userPermissionChecker;
         }
 
@@ -389,5 +403,10 @@ namespace RMuseum.Controllers
         /// IUserPermissionChecker instance
         /// </summary>
         protected IUserPermissionChecker _userPermissionChecker;
+
+        /// <summary>
+        /// IAppUserService instance
+        /// </summary>
+        protected IAppUserService _appUserService;
     }
 }

@@ -708,12 +708,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.#ctor(RMuseum.Services.IAudioNarrationService,RSecurityBackend.Services.IUserPermissionChecker)">
+        <member name="M:RMuseum.Controllers.AudioNarrationController.#ctor(RMuseum.Services.IAudioNarrationService,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IUserPermissionChecker)">
             <summary>
             constructor
             </summary>
             <param name="audioService">
             </param>
+            <param name="appUserService"></param>
             <param name="userPermissionChecker"></param>
         </member>
         <member name="F:RMuseum.Controllers.AudioNarrationController._audioService">
@@ -724,6 +725,11 @@
         <member name="F:RMuseum.Controllers.AudioNarrationController._userPermissionChecker">
             <summary>
             IUserPermissionChecker instance
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.AudioNarrationController._appUserService">
+            <summary>
+            IAppUserService instance
             </summary>
         </member>
         <member name="T:RMuseum.Controllers.AuditLogController">
