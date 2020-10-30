@@ -10,6 +10,7 @@ using RMuseum.Models.Ganjoor;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
+using RMuseum.Models.UploadSession.ViewModels;
 using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -911,7 +912,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="paging"></param>
         /// <param name="userId">if userId is empty all user uploads would be returned</param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, dynamic[] Items)>> GetUploads(PagingParameterModel paging, Guid userId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, UploadedItemViewModel[] Items)>> GetUploads(PagingParameterModel paging, Guid userId)
         {
             try
             {
@@ -922,20 +923,20 @@ namespace RMuseum.Services.Implementation
                     on file.UploadSessionId equals session.Id
                     where userId == Guid.Empty || session.UseId == userId
                     orderby session.UploadEndTime descending
-                    select new
-                    { file.FileName, file.ProcessResult, file.ProcessResultMsg, session.UploadEndTime, session.User.UserName, session.ProcessStartTime, session.ProcessProgress, session.ProcessEndTime }
+                    select new UploadedItemViewModel()
+                    { FileName = file.FileName, ProcessResult = file.ProcessResult, ProcessResultMsg = file.ProcessResultMsg, UploadEndTime = session.UploadEndTime, UserName = session.User.UserName, ProcessStartTime = session.ProcessStartTime, ProcessProgress = session.ProcessProgress, ProcessEndTime = session.ProcessEndTime }
                     ).AsQueryable();
                     
-                (PaginationMetadata PagingMeta, dynamic[] Items) paginatedResult =
-                    await QueryablePaginator<dynamic>.Paginate(source, paging);
+                (PaginationMetadata PagingMeta, UploadedItemViewModel[] Items) paginatedResult =
+                    await QueryablePaginator<UploadedItemViewModel>.Paginate(source, paging);
 
                
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, dynamic[] Items)>((paginatedResult.PagingMeta, paginatedResult.Items));
+                return new RServiceResult<(PaginationMetadata PagingMeta, UploadedItemViewModel[] Items)>((paginatedResult.PagingMeta, paginatedResult.Items));
             }
             catch (Exception exp)
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, dynamic[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+                return new RServiceResult<(PaginationMetadata PagingMeta, UploadedItemViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
             }
         }
 

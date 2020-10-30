@@ -2,6 +2,7 @@
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
+using RMuseum.Models.UploadSession.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Threading.Tasks;
@@ -117,7 +118,7 @@ namespace RMuseum.Services
         /// <param name="paging"></param>
         /// <param name="userId">if userId is empty all user uploads would be returned</param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, dynamic[] Items)>> GetUploads(PagingParameterModel paging, Guid userId);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, UploadedItemViewModel[] Items)>> GetUploads(PagingParameterModel paging, Guid userId);
 
         /// <summary>
         /// retry publish unpublished narrations

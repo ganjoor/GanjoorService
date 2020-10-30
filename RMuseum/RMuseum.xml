@@ -3400,6 +3400,51 @@
             Audio
             </summary>
         </member>
+        <member name="T:RMuseum.Models.UploadSession.ViewModels.UploadedItemViewModel">
+            <summary>
+            Uploaded Item View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadedItemViewModel.FileName">
+            <summary>
+            filename
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadedItemViewModel.ProcessResult">
+            <summary>
+            process result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadedItemViewModel.ProcessResultMsg">
+            <summary>
+            process result message
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadedItemViewModel.UploadEndTime">
+            <summary>
+            Upload End Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadedItemViewModel.UserName">
+            <summary>
+            Upload User Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadedItemViewModel.ProcessStartTime">
+            <summary>
+            Process Start Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadedItemViewModel.ProcessProgress">
+            <summary>
+            progress progress
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.UploadSession.ViewModels.UploadedItemViewModel.ProcessEndTime">
+            <summary>
+            process end time
+            </summary>
+        </member>
         <member name="T:RMuseum.Services.IArtifactService">
             <summary>
             Artifact Item Service
