@@ -22,11 +22,17 @@
             IUserPermissionChecker instance
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Authorization.UserGroupPermissionHandler.#ctor(RSecurityBackend.Services.IUserPermissionChecker)">
+        <member name="F:RSecurityBackend.Authorization.UserGroupPermissionHandler._appUserService">
+            <summary>
+            IAppUserService instance
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Authorization.UserGroupPermissionHandler.#ctor(RSecurityBackend.Services.IUserPermissionChecker,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
             </summary>
             <param name="userPermissionChecker"></param>
+            <param name="appUserService"></param>
         </member>
         <member name="T:RSecurityBackend.Authorization.UserGroupPermissionRequirement">
             <summary>

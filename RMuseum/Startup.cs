@@ -154,6 +154,13 @@ namespace RMuseum
 
             services.AddAuthorization(options =>
             {
+                //this is the default policy to make sure the use session has not yet been deleted by him/her from another client
+                //or by an addmin (Authorize with no policy should fail on deleted sessions)
+                var defPolicy = new AuthorizationPolicyBuilder();
+                defPolicy.Requirements.Add(new UserGroupPermissionRequirement("null", "null"));
+                options.DefaultPolicy = defPolicy.Build();
+
+
                 foreach (SecurableItem Item in RMuseumSecurableItem.Items)
                 {
                     foreach (SecurableItemOperation Operation in Item.Operations)
