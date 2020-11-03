@@ -151,8 +151,8 @@ namespace RMuseum.Controllers
         /// <summary>
         /// Get User Uploads
         /// </summary>
-        /// <param name="paging">default: false, user must have narration::moderate permission to be able to see all users uploads</param>
-        /// <param name="allUsers"></param>
+        /// <param name="paging"></param>
+        /// <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users uploads</param>
         /// <returns></returns>
         [HttpGet("uploads")]
         [Authorize]
