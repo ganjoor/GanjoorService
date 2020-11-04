@@ -115,7 +115,7 @@ namespace RMuseum.Controllers
         /// </remarks>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("file/{id}.xml")]
+        [HttpGet("xml/{id}")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
