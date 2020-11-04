@@ -11,8 +11,6 @@ using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
 using RMuseum.Models.UploadSession.ViewModels;
-using RSecurityBackend.Models.Auth.Db;
-using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -158,6 +156,9 @@ namespace RMuseum.Services.Implementation
                             await src.FillAsync(srcData);
 
                             int audioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
+
+                            
+
                             foreach (DataRow row in srcData.Rows)
                             {
                                 PoemNarration newRecord = new PoemNarration()
@@ -184,12 +185,20 @@ namespace RMuseum.Services.Implementation
                                 //sample audio_xml value: /i/a/x/11876-Simorgh.xml
                                 audio_xml = audio_xml.Substring("/i/".Length); // /i/a/x/11876-Simorgh.xml -> a/x/11876-Simorgh.xml
                                 newRecord.SoundFilesFolder = audio_xml.Substring(0, audio_xml.IndexOf('/')); //(a)
+                                string targetForAudioFile = Path.Combine(Configuration.GetSection("AudioUploadService")["LocalAudioRepositoryPath"], newRecord.SoundFilesFolder);
+                                string targetForXmlAudioFile = Path.Combine(targetForAudioFile, "x");
+                               
                                 newRecord.FileNameWithoutExtension = Path.GetFileNameWithoutExtension(audio_xml.Substring(audio_xml.LastIndexOf('/') + 1)); //(11876-Simorgh)
+                                newRecord.LocalMp3FilePath = Path.Combine(targetForAudioFile, $"{newRecord.FileNameWithoutExtension}.mp3");
+                                newRecord.LocalXmlFilePath = Path.Combine(targetForXmlAudioFile, $"{newRecord.FileNameWithoutExtension}.xml");
 
                                 _context.AudioFiles.Add(newRecord);
+                                await _context.SaveChangesAsync(); //this logically should be outside this loop, 
+                                                                   //but it messes with the order of records so I decided 
+                                                                   //to wait a little longer and have an ordered set of records
                             }
                         }
-                        await _context.SaveChangesAsync();
+                       
                     }
                 }
                 return new RServiceResult<bool>(true);
