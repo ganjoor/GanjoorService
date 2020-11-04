@@ -107,7 +107,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// get the corresponding xml file for the narration
+        /// get the corresponding xml file contemnts (xml) for the narration
         /// </summary>
         /// <remarks>
         /// it could be protected (Authorized), but I guess I would have problems with available client components support,
@@ -117,7 +117,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet("file/{id}.xml")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetXMLFile(int id)
         {
@@ -139,7 +139,7 @@ namespace RMuseum.Controllers
                 return StatusCode(StatusCodes.Status304NotModified);
             }
 
-            return new FileStreamResult(new FileStream(narration.Result.LocalXmlFilePath, FileMode.Open, FileAccess.Read), "text/xml");
+            return Ok(System.IO.File.ReadAllText(narration.Result.LocalXmlFilePath));
         }
 
         /// <summary>
