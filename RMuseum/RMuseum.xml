@@ -635,6 +635,28 @@
             <param name="status">default: -1, unfiltered</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.GetMp3File(System.Int32)">
+            <summary>
+            get the corresponding mp3 file for the narration
+            </summary>
+            <remarks>
+            it could be protected (Authorized), but I guess I would have problems with available client components support,
+            so I preferred it to be anonymous, as it does not harm anybody I guess 
+            </remarks>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.GetXMLFile(System.Int32)">
+            <summary>
+            get the corresponding xml file for the narration
+            </summary>
+            <remarks>
+            it could be protected (Authorized), but I guess I would have problems with available client components support,
+            so I preferred it to be anonymous, as it does not harm anybody I guess 
+            </remarks>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationUpdateViewModel)">
             <summary>
             updates narration metadata
