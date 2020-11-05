@@ -102,7 +102,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var narration = await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync();
-                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == narration.GanjoorPostId).ToListAsync();
+                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == narration.GanjoorPostId).OrderBy(v => v.VOrder).ToListAsync();
 
                 string xml = File.ReadAllText(narration.LocalXmlFilePath);
 
@@ -114,7 +114,8 @@ namespace RMuseum.Services.Implementation
                     int verseOrder = int.Parse(syncInfo.Element("VerseOrder").Value);
                     if (verseOrder < 0) //this happens, seems to be a bug, I did not trace it yet
                         verseOrder = 0;
-                    var verse = verses.Where(v => v.VOrder == verseOrder).Single();
+                    verseOrder++;
+                    var verse = verses.Where(v => v.VOrder == verseOrder).SingleOrDefault();
                     if(verse != null)
                     {
                         verseSyncs.Add(new NarrationVerseSync()
