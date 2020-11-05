@@ -31,6 +31,13 @@ namespace RMuseum.Services
         Task<RServiceResult<PoemNarrationViewModel>> Get(int id);
 
         /// <summary>
+        /// Gets Verse Sync Range Information
+        /// </summary>
+        /// <param name="id">narration id</param>
+        /// <returns></returns>
+        Task<RServiceResult<NarrationVerseSync[]>> GetPoemNarrationVerseSyncArray(int id);
+
+        /// <summary>
         /// updates metadata for narration
         /// </summary>
         /// <param name="id"></param>

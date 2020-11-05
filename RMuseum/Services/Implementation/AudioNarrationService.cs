@@ -19,6 +19,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace RMuseum.Services.Implementation
 {
@@ -88,6 +89,48 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<PoemNarrationViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Gets Verse Sync Range Information
+        /// </summary>
+        /// <param name="id">narration id</param>
+        /// <returns></returns>
+        public async Task<RServiceResult<NarrationVerseSync[]>> GetPoemNarrationVerseSyncArray(int id)
+        {
+            try
+            {
+                var narration = await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync();
+                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == narration.GanjoorPostId).ToListAsync();
+
+                string xml = File.ReadAllText(narration.LocalXmlFilePath);
+
+                List<NarrationVerseSync> verseSyncs = new List<NarrationVerseSync>();
+
+                XElement elObject = XDocument.Parse(xml).Root;
+                foreach (var syncInfo in elObject.Element("PoemAudio").Element("SyncArray").Elements("SyncInfo"))
+                {
+                    int verseOrder = int.Parse(syncInfo.Element("VerseOrder").Value);
+                    if (verseOrder < 0) //this happens, seems to be a bug, I did not trace it yet
+                        verseOrder = 0;
+                    var verse = verses.Where(v => v.VOrder == verseOrder).Single();
+                    if(verse != null)
+                    {
+                        verseSyncs.Add(new NarrationVerseSync()
+                        {
+                            VerseOrder = verseOrder,
+                            VerseText = verse.Text,
+                            AudioStartMilliseconds = int.Parse(syncInfo.Element("AudioMiliseconds").Value)
+                        });
+                    }
+                }
+
+                return new RServiceResult<NarrationVerseSync[]>(verseSyncs.ToArray());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<NarrationVerseSync[]>(null, exp.ToString());
             }
         }
 

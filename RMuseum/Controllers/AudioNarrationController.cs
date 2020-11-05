@@ -143,6 +143,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Gets Verse Sync Information
+        /// </summary>
+        /// <param name="id">narration id</param>
+        /// <returns></returns>
+        [HttpGet("verses/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemNarrationVerseSyncArray(int id)
+        {
+            RServiceResult<NarrationVerseSync[]> verses =
+                await _audioService.GetPoemNarrationVerseSyncArray(id);
+            if (!string.IsNullOrEmpty(verses.ExceptionString))
+                return BadRequest(verses.ExceptionString);
+            return Ok(verses.Result);
+        }
+
+        /// <summary>
         /// updates narration metadata
         /// </summary>
         /// <param name="id"></param>
