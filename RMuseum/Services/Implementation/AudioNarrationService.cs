@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Crypto.Engines;
 using Renci.SshNet;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
@@ -11,8 +12,10 @@ using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
 using RMuseum.Models.UploadSession.ViewModels;
+using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
+using SQLitePCL;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -168,8 +171,8 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// imports data from ganjoor MySql database
         /// </summary>
-        /// <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>
-        public async Task<RServiceResult<bool>> OneTimeImport(Guid OwnrRAppUserId)
+        /// <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
+        public async Task<RServiceResult<bool>> OneTimeImport(Guid ownerRAppUserId)
         {
             try
             {
@@ -207,7 +210,7 @@ namespace RMuseum.Services.Implementation
                             {
                                 PoemNarration newRecord = new PoemNarration()
                                 {
-                                    OwnerId = OwnrRAppUserId,
+                                    OwnerId = ownerRAppUserId,
                                     GanjoorAudioId = int.Parse(row["audio_ID"].ToString()),
                                     GanjoorPostId = (int)row["audio_post_ID"],
                                     AudioOrder = (int)row["audio_order"],
@@ -245,13 +248,91 @@ namespace RMuseum.Services.Implementation
                        
                     }
                 }
+                string err = await BuildProfilesFromExistingData(ownerRAppUserId);
+                if(!string.IsNullOrEmpty(err))
+                    return new RServiceResult<bool>(false, err);
                 return new RServiceResult<bool>(true);
             }
             catch(Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
-           
+        }
+
+        /// <summary>
+        /// build profiles from exisng narrations data
+        /// </summary>
+        /// <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
+        /// <returns>error string if occurs</returns>
+        public async Task<string> BuildProfilesFromExistingData(Guid ownerRAppUserId)
+        {
+            try
+            {
+                List<UserNarrationProfile> profiles =
+                     await _context.AudioFiles
+                     .GroupBy(audio => new { audio.AudioArtist, audio.AudioArtistUrl, audio.AudioSrc, audio.AudioSrcUrl })
+                     .OrderByDescending(g => g.Count())
+                     .Select(g => new UserNarrationProfile()
+                     {
+                         UserId = ownerRAppUserId,
+                         ArtistName = g.Key.AudioArtist,
+                         ArtistUrl = g.Key.AudioArtistUrl,
+                         AudioSrc = g.Key.AudioSrc,
+                         AudioSrcUrl = g.Key.AudioSrcUrl,
+                         IsDefault = false
+                     }
+                     ).ToListAsync();
+                foreach(UserNarrationProfile profile in profiles)
+                {
+                    PoemNarration narration = 
+                        await _context.AudioFiles.Where(audio =>
+                                                audio.AudioArtist == profile.ArtistName
+                                                &&
+                                                audio.AudioArtistUrl == profile.ArtistUrl
+                                                &&
+                                                audio.AudioSrc == profile.AudioSrc
+                                                &&
+                                                audio.AudioSrcUrl == profile.AudioSrcUrl
+                                                //&&
+                                                //audio.FileNameWithoutExtension.Contains('-')
+                                                ).FirstOrDefaultAsync();
+                    string ext = "";
+                    if (narration != null && narration.FileNameWithoutExtension.IndexOf('-') != -1)
+                    {
+                        ext = narration.FileNameWithoutExtension.Substring(narration.FileNameWithoutExtension.IndexOf('-') + 1);
+                    }
+                    if(ext.Length < 2)
+                    {
+                        string[] parts = profile.ArtistName.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                        if(parts.Length < 2)
+                        {
+                            ext = GPersianTextSync.Farglisize(profile.ArtistName).ToLower();
+                            if (ext.Length > 3)
+                                ext = ext.Substring(0, 3);
+                        }
+                        else
+                        {
+                            ext = "";
+                            foreach (string part in parts)
+                            {
+                                string farglisi = GPersianTextSync.Farglisize(part).ToLower();
+                                if (!string.IsNullOrEmpty(farglisi))
+                                    ext += farglisi[0];
+                            }
+                        }
+                    }
+                    profile.FileSuffixWithoutDash = ext;
+                    _context.UserNarrationProfiles.Add(profile);
+                    await _context.SaveChangesAsync(); //this logically should be outside this loop, 
+                                                       //but it messes with the order of records so I decided 
+                                                       //to wait a little longer and have an ordered set of records
+                }
+                return "";
+            }
+            catch (Exception exp)
+            {
+                return exp.ToString();
+            }
         }
 
         /// <summary>

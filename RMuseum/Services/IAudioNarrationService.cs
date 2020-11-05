@@ -48,9 +48,16 @@ namespace RMuseum.Services
         /// <summary>
         /// imports narration data from ganjoor MySql database
         /// </summary>
-        /// <param name="OwnrRAppUserId">User Id which becomes owner of imported data</param>
+        /// <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> OneTimeImport(Guid OwnrRAppUserId);
+        Task<RServiceResult<bool>> OneTimeImport(Guid ownerRAppUserId);
+
+        /// <summary>
+        /// build profiles from exisng narrations data
+        /// </summary>
+        /// <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
+        /// <returns>error string if occurs</returns>
+        Task<string> BuildProfilesFromExistingData(Guid ownerRAppUserId);
 
         /// <summary>
         /// Initiate New Upload Session for audio
