@@ -74,6 +74,9 @@ namespace RMuseum.DbContext
             builder.Entity<PoemNarration>()
                 .HasIndex(p => p.GanjoorPostId);
 
+            builder.Entity<PoemNarration>()
+               .HasIndex(p => p.UploadDate);
+
             builder.Entity<GanjoorCat>()
                 .HasIndex(c => c.FullUrl);
 
