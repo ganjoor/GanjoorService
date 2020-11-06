@@ -10,8 +10,8 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20201023091559_GanjoorIndices")]
-    partial class GanjoorIndices
+    [Migration("20201106070554_AudioNarrations")]
+    partial class AudioNarrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -442,9 +442,10 @@ namespace RMuseum.Migrations
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.PoemNarration", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("AudioArtist")
                         .HasColumnType("nvarchar(max)");
@@ -466,6 +467,9 @@ namespace RMuseum.Migrations
 
                     b.Property<string>("AudioTitle")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FileLastUpdated")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FileNameWithoutExtension")
                         .HasColumnType("nvarchar(max)");
@@ -517,6 +521,8 @@ namespace RMuseum.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GanjoorPostId");
+
                     b.HasIndex("OwnerId");
 
                     b.HasIndex("ReviewerId");
@@ -547,6 +553,9 @@ namespace RMuseum.Migrations
 
                     b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");

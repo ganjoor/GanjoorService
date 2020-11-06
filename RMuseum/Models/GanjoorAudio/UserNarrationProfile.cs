@@ -24,6 +24,11 @@ namespace RMuseum.Models.GanjoorAudio
         public Guid UserId { get; set; }
 
         /// <summary>
+        /// Profile Name
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// this would be appended to audio files names prefixed by a dash to make them unique and specfic to user
         /// filenames usually would look like {GanjoorPostId}-{FileSuffixWithoutDash}.{ext}
         /// for example 2200-hrm.xml

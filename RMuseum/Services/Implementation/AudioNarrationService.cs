@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
-using Org.BouncyCastle.Crypto.Engines;
 using Renci.SshNet;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
@@ -15,7 +14,6 @@ using RMuseum.Models.UploadSession.ViewModels;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
-using SQLitePCL;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -227,6 +225,7 @@ namespace RMuseum.Services.Implementation
                                     AudioSyncStatus = audioSyncStatus,
                                     ReviewStatus = AudioReviewStatus.Approved
                                 };
+                                newRecord.FileLastUpdated = newRecord.UploadDate;
                                 newRecord.ReviewDate = newRecord.UploadDate;
                                 string audio_xml = row["audio_xml"].ToString();
                                 //sample audio_xml value: /i/a/x/11876-Simorgh.xml
@@ -322,6 +321,13 @@ namespace RMuseum.Services.Implementation
                         }
                     }
                     profile.FileSuffixWithoutDash = ext;
+                    profile.Name = profile.ArtistName;
+                    int pIndex = 1;
+                    while((await _context.UserNarrationProfiles.Where(p => p.UserId == ownerRAppUserId && p.Name == profile.Name).SingleOrDefaultAsync())!=null)
+                    {
+                        pIndex++;
+                        profile.Name = $"{profile.ArtistName} {GPersianTextSync.Sync(pIndex.ToString())}";
+                    }
                     _context.UserNarrationProfiles.Add(profile);
                     await _context.SaveChangesAsync(); //this logically should be outside this loop, 
                                                        //but it messes with the order of records so I decided 
@@ -566,6 +572,7 @@ namespace RMuseum.Services.Implementation
                                                     Mp3SizeInBytes = mp3fileSize,
                                                     OggSizeInBytes = 0,
                                                     UploadDate = session.UploadEndTime,
+                                                    FileLastUpdated = session.UploadEndTime,
                                                     LocalMp3FilePath = localMp3FilePath,
                                                     LocalXmlFilePath = localXmlFilePath,
                                                     AudioSyncStatus = (int)AudioSyncStatus.NewItem,
@@ -873,6 +880,10 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         private static string GetUserProfileValidationError(UserNarrationProfile p)
         {
+            if(string.IsNullOrEmpty(p.Name))
+            {
+                return "نام نمایه نباید خالی باشد.";
+            }
             if (p.ArtistName.Length < 3)
             {
                 return "نام خوانشگر باید حداقل شامل سه نویسه باشد.";
@@ -927,9 +938,10 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var p =  new UserNarrationProfile()
+                var p = new UserNarrationProfile()
                 {
                     UserId = profile.UserId,
+                    Name = profile.Name.Trim(),
                     ArtistName = profile.ArtistName.Trim(),
                     ArtistUrl = profile.ArtistUrl.Trim(),
                     AudioSrc = profile.AudioSrc.Trim(),
@@ -942,6 +954,11 @@ namespace RMuseum.Services.Implementation
                 if(error != "")
                 {
                     return new RServiceResult<UserNarrationProfileViewModel>(null, error);
+                }
+
+                if((await _context.UserNarrationProfiles.Where(e => e.UserId == p.Id && e.Name == p.Name).SingleOrDefaultAsync())!=null)
+                {
+                    return new RServiceResult<UserNarrationProfileViewModel>(null, "شما نمایهٔ دیگری با همین نام دارید.");
                 }
 
                 await _context.UserNarrationProfiles.AddAsync(p);
@@ -979,6 +996,7 @@ namespace RMuseum.Services.Implementation
                 if (p.UserId != profile.UserId)
                     return new RServiceResult<UserNarrationProfileViewModel>(null, "permission error");
 
+                p.Name = profile.Name.Trim();
                 p.ArtistName = profile.ArtistName.Trim();
                 p.ArtistUrl = profile.ArtistUrl.Trim();
                 p.AudioSrc = profile.AudioSrc.Trim();
@@ -990,6 +1008,11 @@ namespace RMuseum.Services.Implementation
                 if (error != "")
                 {
                     return new RServiceResult<UserNarrationProfileViewModel>(null, error);
+                }
+
+                if ((await _context.UserNarrationProfiles.Where(e => e.UserId == p.Id && e.Name == p.Name && e.Id != p.Id).SingleOrDefaultAsync()) != null)
+                {
+                    return new RServiceResult<UserNarrationProfileViewModel>(null, "شما نمایهٔ دیگری با همین نام دارید.");
                 }
 
                 _context.UserNarrationProfiles.Update(p);

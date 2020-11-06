@@ -1904,6 +1904,11 @@
             Upload Date
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.FileLastUpdated">
+            <summary>
+            File Last Updated
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.ReviewDate">
             <summary>
             Review Date (Approve or Reject)
@@ -1962,6 +1967,11 @@
         <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.UserId">
             <summary>
             UserId
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.Name">
+            <summary>
+            Profile Name
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.FileSuffixWithoutDash">
@@ -2241,6 +2251,11 @@
             Upload Date
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.FileLastUpdated">
+            <summary>
+            File Last Updated
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.ReviewDate">
             <summary>
             Review Date (Approve or Reject)
@@ -2305,6 +2320,11 @@
             <remarks>
             Do not fill it in POST api
             </remarks>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.Name">
+            <summary>
+            Profile Name
+            </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.FileSuffixWithoutDash">
             <summary>

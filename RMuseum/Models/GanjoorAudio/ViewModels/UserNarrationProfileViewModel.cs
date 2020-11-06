@@ -24,6 +24,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
             Id = src.Id;
             User = src.User == null ? null : new PublicRAppUser(src.User);
             UserId = src.UserId;
+            Name = src.Name;
             FileSuffixWithoutDash = src.FileSuffixWithoutDash;
             ArtistName = src.ArtistName;
             ArtistUrl = src.ArtistUrl;
@@ -55,6 +56,11 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// Do not fill it in POST api
         /// </remarks>
         public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Profile Name
+        /// </summary>
+        public string Name { get; set; }
 
         /// <summary>
         /// this would be appended to audio files names prefixed by a dash to make them unique and specfic to user

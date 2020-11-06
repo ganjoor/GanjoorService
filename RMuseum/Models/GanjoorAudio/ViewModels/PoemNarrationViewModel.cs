@@ -39,6 +39,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
             LocalXmlFilePath = src.LocalXmlFilePath;            
             ReviewStatus = src.ReviewStatus;
             UploadDate = src.UploadDate;
+            FileLastUpdated = src.FileLastUpdated;
             ReviewDate = src.ReviewDate;
             if(poem != null)
             {
@@ -208,6 +209,11 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// Upload Date
         /// </summary>
         public DateTime UploadDate { get; set; }
+
+        /// <summary>
+        /// File Last Updated
+        /// </summary>
+        public DateTime FileLastUpdated { get; set; }
 
         /// <summary>
         /// Review Date (Approve or Reject)

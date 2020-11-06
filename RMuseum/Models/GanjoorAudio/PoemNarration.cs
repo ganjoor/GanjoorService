@@ -149,6 +149,11 @@ namespace RMuseum.Models.GanjoorAudio
         public DateTime UploadDate { get; set; }
 
         /// <summary>
+        /// File Last Updated
+        /// </summary>
+        public DateTime FileLastUpdated { get; set; }
+
+        /// <summary>
         /// Review Date (Approve or Reject)
         /// </summary>
         public DateTime ReviewDate{ get; set; }
