@@ -1,22 +1,21 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
+﻿using Audit.WebApi;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Models.Image;
+using RSecurityBackend.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using RSecurityBackend.Services;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using RSecurityBackend.Models.Auth.Db;
-using RSecurityBackend.Models.Image;
-using System.IO;
-using Microsoft.Extensions.Configuration;
-using Audit.WebApi;
 
 namespace RSecurityBackend.Controllers
 {
@@ -39,13 +38,13 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> Login(
             [AuditIgnore]
-            [FromBody]            
+            [FromBody]
             LoginViewModel loginViewModel
             )
         {
             string clientIPAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
             RServiceResult<LoggedOnUserModel> res = await _appUserService.Login(loginViewModel, clientIPAddress);
-            if(res.Result == null)
+            if (res.Result == null)
             {
                 return BadRequest(res.ExceptionString);
             }
@@ -96,16 +95,16 @@ namespace RSecurityBackend.Controllers
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             if (loggedOnUserId != userId)
-            {                
-                RServiceResult<bool> canLogoutAllUsers = 
+            {
+                RServiceResult<bool> canLogoutAllUsers =
                     await _userPermissionChecker.Check
                     (
-                        loggedOnUserId, 
-                        new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value), 
-                        SecurableItem.UserEntityShortName, 
-                        SecurableItem.DelOtherUserSessionOperationShortName                        
+                        loggedOnUserId,
+                        new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value),
+                        SecurableItem.UserEntityShortName,
+                        SecurableItem.DelOtherUserSessionOperationShortName
                         );
-                
+
                 if (!string.IsNullOrEmpty(canLogoutAllUsers.ExceptionString))
                     return BadRequest(canLogoutAllUsers.ExceptionString);
                 if (!canLogoutAllUsers.Result)
@@ -130,13 +129,13 @@ namespace RSecurityBackend.Controllers
         [Authorize]
         [Route("checkmysession")]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PublicRAppUser>))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]        
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> IsSessionValid(Guid sessionId)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
             RServiceResult<bool> res = await _appUserService.SessionExists(loggedOnUserId, sessionId);
-            
+
             if (!string.IsNullOrEmpty(res.ExceptionString))
             {
                 return BadRequest(res.ExceptionString);
@@ -159,12 +158,12 @@ namespace RSecurityBackend.Controllers
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
-            RServiceResult<bool> canViewAllUsersInformation = 
+            RServiceResult<bool> canViewAllUsersInformation =
                 await _userPermissionChecker.Check
                 (
-                    loggedOnUserId, 
-                    new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value), 
-                    SecurableItem.UserEntityShortName, 
+                    loggedOnUserId,
+                    new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value),
+                    SecurableItem.UserEntityShortName,
                     SecurableItem.ViewAllOperationShortName
                     );
             if (!string.IsNullOrEmpty(canViewAllUsersInformation.ExceptionString))
@@ -206,15 +205,15 @@ namespace RSecurityBackend.Controllers
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
-            if(loggedOnUserId != id)
+            if (loggedOnUserId != id)
             {
-                RServiceResult<bool> canViewAllUsersInformation = 
+                RServiceResult<bool> canViewAllUsersInformation =
                     await _userPermissionChecker.Check
                     (
-                        loggedOnUserId, 
-                        new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value), 
-                        SecurableItem.UserEntityShortName, 
-                        SecurableItem.ViewAllOperationShortName                       
+                        loggedOnUserId,
+                        new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value),
+                        SecurableItem.UserEntityShortName,
+                        SecurableItem.ViewAllOperationShortName
                         );
                 if (!string.IsNullOrEmpty(canViewAllUsersInformation.ExceptionString))
                     return BadRequest(canViewAllUsersInformation.ExceptionString);
@@ -223,7 +222,7 @@ namespace RSecurityBackend.Controllers
                     return Forbid();
             }
 
-           
+
             RServiceResult<PublicRAppUser> userInfo = await _appUserService.GetUserInformation(id);
             if (userInfo.Result == null)
             {
@@ -234,7 +233,7 @@ namespace RSecurityBackend.Controllers
             return Ok(userInfo.Result);
         }
 
-  
+
         /// <summary>
         /// add a new user (if you are trying to add an admin user you yourself should be admin)
         /// </summary>
@@ -245,17 +244,17 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RegisterRAppUser))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public virtual async Task<IActionResult> Post([FromBody]RegisterRAppUser newUserInfo)
+        public virtual async Task<IActionResult> Post([FromBody] RegisterRAppUser newUserInfo)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            if(newUserInfo.IsAdmin)
+            if (newUserInfo.IsAdmin)
             {
                 RServiceResult<bool> isAdmin = await _appUserService.IsAdmin(loggedOnUserId);
                 if (!string.IsNullOrEmpty(isAdmin.ExceptionString))
                     return BadRequest(isAdmin.ExceptionString);
                 if (!isAdmin.Result)
                     return Forbid();//Only admin users can create admin users
-            }            
+            }
             RServiceResult<RAppUser> result = await _appUserService.AddUser(newUserInfo);
             if (result.Result == null)
                 return BadRequest(result.ExceptionString);
@@ -285,7 +284,7 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public virtual async Task<IActionResult> Put(Guid id, [FromBody]RegisterRAppUser existingUserInfo)
+        public virtual async Task<IActionResult> Put(Guid id, [FromBody] RegisterRAppUser existingUserInfo)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<bool> isAdmin = await _appUserService.IsAdmin(loggedOnUserId);
@@ -294,16 +293,16 @@ namespace RSecurityBackend.Controllers
             RServiceResult<PublicRAppUser> userInfo = await _appUserService.GetUserInformation(id);
             if (!isAdmin.Result)
             {
-               
+
                 if (!string.IsNullOrEmpty(userInfo.ExceptionString))
                     return BadRequest(userInfo.ExceptionString);
-               
+
                 if (existingUserInfo.IsAdmin)
                     return Forbid();//You should be admin to make other users admin
                 RServiceResult<bool> isEditingUserAdmin = await _appUserService.IsAdmin(id);
                 if (!string.IsNullOrEmpty(isEditingUserAdmin.ExceptionString))
                     return BadRequest(isEditingUserAdmin.ExceptionString);
-                if(isEditingUserAdmin.Result)
+                if (isEditingUserAdmin.Result)
                     return Forbid();//You can not modify admin users.
 
                 if (loggedOnUserId != id)
@@ -350,7 +349,7 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public virtual async Task<IActionResult> SetMyPassword([AuditIgnore][FromBody]SetPasswordModel model)
+        public virtual async Task<IActionResult> SetMyPassword([AuditIgnore][FromBody] SetPasswordModel model)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -388,7 +387,7 @@ namespace RSecurityBackend.Controllers
                     return Forbid();//You can not delete admin users.
             }
 
-            if(loggedOnUserId == id)
+            if (loggedOnUserId == id)
             {
                 return BadRequest("SOS! Suicide attempt detected!");
             }
@@ -448,7 +447,7 @@ namespace RSecurityBackend.Controllers
                         loggedOnUserId,
                         new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value),
                         SecurableItem.UserEntityShortName,
-                        SecurableItem.SessionsOperationShortName                        
+                        SecurableItem.SessionsOperationShortName
                         );
                 if (!string.IsNullOrEmpty(canViewAllUsersInformation.ExceptionString))
                     return BadRequest(canViewAllUsersInformation.ExceptionString);
@@ -479,8 +478,8 @@ namespace RSecurityBackend.Controllers
         public async Task<IActionResult> SetUserImage()
         {
             try
-            {               
-                if(!Request.Form.TryGetValue("id", out Microsoft.Extensions.Primitives.StringValues tmp))
+            {
+                if (!Request.Form.TryGetValue("id", out Microsoft.Extensions.Primitives.StringValues tmp))
                 {
                     return BadRequest("id is null");
                 }
@@ -508,19 +507,19 @@ namespace RSecurityBackend.Controllers
 
                 RServiceResult<Guid?> res = await _appUserService.SetUserImage(userId, Request.Form.Files);
 
-                if(!string.IsNullOrEmpty(res.ExceptionString))
+                if (!string.IsNullOrEmpty(res.ExceptionString))
                 {
                     return BadRequest(res.ExceptionString);
                 }
 
-                if(res.Result == null)
+                if (res.Result == null)
                 {
                     return Ok("");
                 }
 
                 return Ok(res.Result.ToString());
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return BadRequest(exp.ToString());
             }
@@ -553,7 +552,7 @@ namespace RSecurityBackend.Controllers
 
                 RServiceResult<string> imgPath = _imageFileService.GetImagePath(img.Result);
                 if (!string.IsNullOrEmpty(imgPath.ExceptionString))
-                    return BadRequest(imgPath.ExceptionString);                
+                    return BadRequest(imgPath.ExceptionString);
 
 
                 return new ObjectResult(Convert.ToBase64String(System.IO.File.ReadAllBytes(imgPath.Result)));
@@ -582,7 +581,7 @@ namespace RSecurityBackend.Controllers
             {
                 RServiceResult<RImage> img = await _appUserService.GetUserImage(id);
 
-                if(!string.IsNullOrEmpty(img.ExceptionString))
+                if (!string.IsNullOrEmpty(img.ExceptionString))
                 {
                     return BadRequest(img.ExceptionString);
 
@@ -668,7 +667,7 @@ namespace RSecurityBackend.Controllers
         public async Task<IActionResult> RemoveFromRole(Guid id, string role)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            if(loggedOnUserId == id)
+            if (loggedOnUserId == id)
             {
                 return BadRequest("You cannot modify your own roles.");
             }
@@ -684,7 +683,7 @@ namespace RSecurityBackend.Controllers
                     return Forbid();//You can not delete admin users roles.
             }
 
-            
+
 
             RServiceResult<bool> res = await _appUserService.RemoveFromRole(id, role);
             if (!res.Result)
@@ -757,7 +756,7 @@ namespace RSecurityBackend.Controllers
 
             return Ok(img.Result.Id);
         }
-        
+
 
         /// <summary>
         /// signup
@@ -769,19 +768,16 @@ namespace RSecurityBackend.Controllers
         [Route("signup")]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> SignUp(
-            [FromBody]
-            UnverifiedSignUpViewModel signUpViewModel
-            )
+        public async Task<IActionResult> SignUp([FromBody] UnverifiedSignUpViewModel signUpViewModel)
         {
             if (!IsSignupEnabled())
                 return BadRequest("ثبت نام غیرفعال است.");
 
-            RServiceResult<bool> captchaRes  = await _captchaService.Evaluate(signUpViewModel.CaptchaImageId, signUpViewModel.CaptchaValue);
+            RServiceResult<bool> captchaRes = await _captchaService.Evaluate(signUpViewModel.CaptchaImageId, signUpViewModel.CaptchaValue);
             if (!string.IsNullOrEmpty(captchaRes.ExceptionString))
                 return BadRequest(captchaRes.ExceptionString);
 
-            if(!captchaRes.Result)
+            if (!captchaRes.Result)
                 return BadRequest("مقدار تصویر امنیتی درست وارد نشده است.");
 
             string clientIPAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -800,7 +796,7 @@ namespace RSecurityBackend.Controllers
                     GetSignUpEmailHtmlContent(res.Result.Secret)
                     );
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return BadRequest("Error sending email: " + exp.ToString());
             }
@@ -853,7 +849,7 @@ namespace RSecurityBackend.Controllers
             }
             if (string.IsNullOrWhiteSpace(res.Result))
             {
-                return NotFound();
+                return NotFound("رمز وارد شده تطابق ندارد");
             }
             return Ok(res.Result);
         }
@@ -869,7 +865,7 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> FinalizeSignUp([AuditIgnore][FromBody]VerifiedSignUpViewModel newUserInfo)
+        public async Task<IActionResult> FinalizeSignUp([AuditIgnore][FromBody] VerifiedSignUpViewModel newUserInfo)
         {
             RServiceResult<bool> result = await _appUserService.FinalizeSignUp(newUserInfo.Email, newUserInfo.Secret, newUserInfo.Password, newUserInfo.FirstName, newUserInfo.SureName);
             if (!result.Result)
@@ -912,7 +908,7 @@ namespace RSecurityBackend.Controllers
                 await _emailSender.SendEmailAsync
                     (
                     fpwdViewModel.Email,
-                    GetForgotPasswordEmailSubject( res.Result.Secret),
+                    GetForgotPasswordEmailSubject(res.Result.Secret),
                     GetForgotPasswordEmailHtmlContent(res.Result.Secret)
                     );
             }
@@ -966,7 +962,7 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> ResetPassword([AuditIgnore][FromBody]ResetPasswordViewModel pwd)
+        public async Task<IActionResult> ResetPassword([AuditIgnore][FromBody] ResetPasswordViewModel pwd)
         {
             string clientIPAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
             RServiceResult<bool> result = await _appUserService.ResetPassword(pwd.Email, pwd.Secret, pwd.Password, clientIPAddress);
