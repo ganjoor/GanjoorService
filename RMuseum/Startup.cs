@@ -1,10 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Audit.Core;
-using Audit.WebApi;
+﻿using Audit.WebApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -33,6 +27,11 @@ using RSecurityBackend.Services;
 using RSecurityBackend.Services.Implementation;
 using RSecurityBackend.Utilities;
 using Swashbuckle.AspNetCore.Filters;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RMuseum
 {
@@ -66,8 +65,6 @@ namespace RMuseum
             Audit.Core.Configuration.JsonSettings.ContractResolver = AuditNetEnvironmentSkippingContractResolver.Instance;
             Audit.Core.Configuration.DataProvider = new RAuditDataProvider(Configuration.GetConnectionString("DefaultConnection"));
 
-
-
             services.AddIdentityCore<RAppUser>(
                 options =>
                 {
@@ -85,29 +82,26 @@ namespace RMuseum
                     options.Lockout.AllowedForNewUsers = true;
 
                     // User settings.
-                    options.User.AllowedUserNameCharacters =
-                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                     options.User.RequireUniqueEmail = false;
                 }
-                );
+                ).AddErrorDescriber<PersianIdentityErrorDescriber>();
+
 
             new IdentityBuilder(typeof(RAppUser), typeof(RAppRole), services)
                 .AddRoleManager<RoleManager<RAppRole>>()
                 .AddSignInManager<SignInManager<RAppUser>>()
-                .AddEntityFrameworkStores<RMuseumDbContext>();
-            ;              
+                .AddEntityFrameworkStores<RMuseumDbContext>()
+                .AddErrorDescriber<PersianIdentityErrorDescriber>();
 
-     
 
-            services.AddMvc
-                (
-                mvc =>
+            services.AddMvc(mvc =>
                     mvc.AddAuditFilter(config => config
                     .LogRequestIf(r => r.Method != "GET")
                     .WithEventType("{controller}/{action} ({verb})")
                     .IncludeHeaders(ctx => !ctx.ModelState.IsValid)
                     .IncludeRequestBody()
-                    .IncludeModelState()                
+                    .IncludeModelState()
                 )).SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddMemoryCache();
@@ -155,7 +149,7 @@ namespace RMuseum
             services.AddAuthorization(options =>
             {
                 //this is the default policy to make sure the use session has not yet been deleted by him/her from another client
-                //or by an addmin (Authorize with no policy should fail on deleted sessions)
+                //or by an admin (Authorize with no policy should fail on deleted sessions)
                 var defPolicy = new AuthorizationPolicyBuilder();
                 defPolicy.Requirements.Add(new UserGroupPermissionRequirement("null", "null"));
                 options.DefaultPolicy = defPolicy.Build();
@@ -202,7 +196,7 @@ namespace RMuseum
                     In = ParameterLocation.Header,
                     Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey
-                        
+
                 });
 
 
@@ -214,7 +208,7 @@ namespace RMuseum
 
             //IHttpContextAccessor
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            
+
 
             //authorization handler
             services.AddScoped<IAuthorizationHandler, UserGroupPermissionHandler>();
@@ -227,13 +221,13 @@ namespace RMuseum
             services.AddTransient<ICaptchaService, CaptchaServiceEF>();
 
 
-            //generic image file sercie
+            //generic image file service
             services.AddTransient<IImageFileService, ImageFileServiceEF>();
 
             //app user services
             services.AddTransient<IAppUserService, AppUserService>();
 
-            //user groups servicess
+            //user groups services
             services.AddTransient<IUserRoleService, RoleService>();
 
             //audit service
@@ -243,7 +237,7 @@ namespace RMuseum
             services.AddTransient<IUserPermissionChecker, UserPermissionChecker>();
 
             //secret generator
-            services.AddTransient<ISecretGenerator, SecretGenerator>();            
+            services.AddTransient<ISecretGenerator, SecretGenerator>();
 
             // email service
             services.AddTransient<IEmailSender, MailKitEmailSender>();
@@ -301,7 +295,7 @@ namespace RMuseum
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "RMuseum API V1");
                 c.RoutePrefix = string.Empty;
             });
-            
+
 
             app.UseAuthentication();
 

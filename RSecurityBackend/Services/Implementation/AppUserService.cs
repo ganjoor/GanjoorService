@@ -213,7 +213,7 @@ namespace RSecurityBackend.Services.Implementation
 
                 if (dbUserInfo == null)
                 {
-                    return new RServiceResult<bool>(false, $"User not found");
+                    return new RServiceResult<bool>(false, $"کاربر مورد نظر با ایمیل {userId} پیدا نشد ");
                 }
 
                 if (!await _roleManager.RoleExistsAsync(roleName))
@@ -384,7 +384,7 @@ namespace RSecurityBackend.Services.Implementation
                 RAppUser dbUserInfo = await _userManager.FindByIdAsync(userId.ToString());
                 if (dbUserInfo == null)
                 {
-                    return new RServiceResult<bool>(false, "user not found");
+                    return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
                 }
           
                 bool res = await _userManager.IsInRoleAsync(dbUserInfo, AdministratorRoleName);
@@ -409,7 +409,7 @@ namespace RSecurityBackend.Services.Implementation
                 RAppUser dbUserInfo = await _userManager.FindByIdAsync(userId.ToString());
                 if (dbUserInfo == null)
                 {
-                    return new RServiceResult<bool>(false, "user not found");
+                    return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
                 }
 
                 foreach(string roleName in roleNames)
@@ -442,7 +442,7 @@ namespace RSecurityBackend.Services.Implementation
                 RAppUser dbUserInfo = await _userManager.FindByIdAsync(userId.ToString());
                 if (dbUserInfo == null)
                 {
-                    return new RServiceResult<IList<string>>(null, "user not found");
+                    return new RServiceResult<IList<string>>(null, "کاربر مورد نظر یافت نشد");
                 }                
 
                 return new RServiceResult<IList<string>>(await _userManager.GetRolesAsync(dbUserInfo));
@@ -466,7 +466,7 @@ namespace RSecurityBackend.Services.Implementation
                 RAppUser dbUserInfo = await _userManager.FindByIdAsync(id.ToString());
                 if (dbUserInfo == null)
                 {
-                    return new RServiceResult<bool>(false, "user not found");
+                    return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
                 }
 
                 IdentityResult result = await _userManager.RemoveFromRoleAsync(dbUserInfo, role);
@@ -496,7 +496,7 @@ namespace RSecurityBackend.Services.Implementation
                 RAppUser dbUserInfo = await _userManager.FindByIdAsync(id.ToString());
                 if (dbUserInfo == null)
                 {
-                    return new RServiceResult<bool>(false, "user not found");
+                    return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
                 }
 
                 IdentityResult result = await _userManager.AddToRoleAsync(dbUserInfo, role);
@@ -688,7 +688,7 @@ namespace RSecurityBackend.Services.Implementation
                 RAppUser existingInfo = await _userManager.FindByIdAsync(userId.ToString());
                 if (existingInfo == null)
                 {
-                    return new RServiceResult<bool>(false, "username not found");
+                    return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
                 }
 
                 RServiceResult<bool> isAdmin = await IsAdmin(userId);
@@ -720,7 +720,7 @@ namespace RSecurityBackend.Services.Implementation
 
                     if(anotheruserWithUserName != null)
                     {
-                        return new RServiceResult<bool>(false, "duplicated username");
+                        return new RServiceResult<bool>(false, "کلمه عبور تکراری می باشد");
                     }
 
                     existingInfo.UserName = updateUserInfo.Username;
@@ -782,7 +782,7 @@ namespace RSecurityBackend.Services.Implementation
 
             if (appUser == null)
             {
-                return new RServiceResult<bool>(false, "Invalid user.");
+                return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
             }
 
             var result = await _userManager.ChangePasswordAsync(appUser, oldPassword, newPassword);
@@ -816,7 +816,7 @@ namespace RSecurityBackend.Services.Implementation
                     }
                     return new RServiceResult<bool>(true);
                 }
-                return new RServiceResult<bool>(false, "user not found.");
+                return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
             }
             catch (Exception exp)
             {
@@ -972,13 +972,13 @@ namespace RSecurityBackend.Services.Implementation
                 RAppUser existingUser = await _userManager.FindByEmailAsync(email);
                 if (existingUser != null)
                 {
-                    return new RServiceResult<RVerifyQueueItem>(null, "user already registered using same email");
+                    return new RServiceResult<RVerifyQueueItem>(null, "این آدرس ایمیل قبلا استفاده شده است");
                 }
 
                 existingUser = await _userManager.FindByNameAsync(email);
                 if (existingUser != null)
                 {
-                    return new RServiceResult<RVerifyQueueItem>(null, "user already registered using same username");
+                    return new RServiceResult<RVerifyQueueItem>(null, "این نام کاربری قبلا استفاده شده است");
                 }
 
                 //checking this queue for previous signup attempts is unnecessary and is not done intentionally
@@ -1056,13 +1056,13 @@ namespace RSecurityBackend.Services.Implementation
                 RAppUser existingUser = await _userManager.FindByEmailAsync(email);
                 if (existingUser != null)
                 {
-                    return new RServiceResult<bool>(false, "user already registered using same email");
+                    return new RServiceResult<bool>(false, "این آدرس ایمیل قبلا استفاده شده است");
                 }
 
                 existingUser = await _userManager.FindByNameAsync(email);
                 if (existingUser != null)
                 {
-                    return new RServiceResult<bool>(false, "user already registered using same username");
+                    return new RServiceResult<bool>(false, "این نام کاربری قبلا استفاده شده است");
                 }
 
                 if(
@@ -1071,7 +1071,7 @@ namespace RSecurityBackend.Services.Implementation
                     (await RetrieveEmailFromQueueSecret(RVerifyQueueType.SignUp, secret)).Result
                  )
                 {
-                    return new RServiceResult<bool>(false, "secret mismatch");
+                    return new RServiceResult<bool>(false, "کلمه عبور اشتباه وارد شده است");
                 }
 
                 secret = secret.Replace(" ", "");//TODO: check this
@@ -1138,7 +1138,7 @@ namespace RSecurityBackend.Services.Implementation
                 RAppUser rAppUser = await _userManager.FindByEmailAsync(email);
                 if (rAppUser == null)
                 {
-                    return new RServiceResult<RVerifyQueueItem>(null, "user not found");
+                    return new RServiceResult<RVerifyQueueItem>(null, "کاربر مورد نظر یافت نشد");
                 }               
 
                 //checking this queue for previous signup attempts is unnecessary and is not done intentionally
@@ -1201,7 +1201,7 @@ namespace RSecurityBackend.Services.Implementation
                 RAppUser existingUser = await _userManager.FindByEmailAsync(email);
                 if (existingUser == null)
                 {
-                    return new RServiceResult<bool>(false, "user not found");
+                    return new RServiceResult<bool>(false, "کاربر مورد نظر با این آدرس ایمیل یافت نشد");
                 }
                
 
@@ -1211,7 +1211,7 @@ namespace RSecurityBackend.Services.Implementation
                     (await RetrieveEmailFromQueueSecret(RVerifyQueueType.ForgotPassword, secret)).Result
                  )
                 {
-                    return new RServiceResult<bool>(false, "secret mismatch");
+                    return new RServiceResult<bool>(false, "کلمه عبور اشتباه وارد شده است");
                 }
 
                 foreach (var passwordValidator in _userManager.PasswordValidators)
@@ -1350,7 +1350,7 @@ namespace RSecurityBackend.Services.Implementation
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
-                return new RServiceResult<string>(null, "user not found");
+                return new RServiceResult<string>(null, "کاربر مورد نظر یافت نشد");
 
             var claims = new List<Claim>
             {
