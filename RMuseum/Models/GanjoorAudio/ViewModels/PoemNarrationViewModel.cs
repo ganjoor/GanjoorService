@@ -12,6 +12,13 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
     public class PoemNarrationViewModel
     {
         /// <summary>
+        /// parameterless constructor for deserialization support
+        /// </summary>
+        public PoemNarrationViewModel()
+        {
+
+        }
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="src"></param>

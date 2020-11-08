@@ -146,7 +146,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                PoemNarration narration =  await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync();
+                PoemNarration narration =  await _context.AudioFiles.Include(a => a.Owner).Where(a => a.Id == id).SingleOrDefaultAsync();
                 if(narration == null)
                     return new RServiceResult<PoemNarrationViewModel>(null, "404");
                 narration.AudioTitle = metadata.AudioTitle;
@@ -157,7 +157,7 @@ namespace RMuseum.Services.Implementation
                 narration.ReviewStatus = metadata.ReviewStatus;
                 _context.AudioFiles.Update(narration);
                 await _context.SaveChangesAsync();
-                return new RServiceResult<PoemNarrationViewModel>(new PoemNarrationViewModel(narration, null, null));
+                return new RServiceResult<PoemNarrationViewModel>(new PoemNarrationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
             }
             catch (Exception exp)
             {

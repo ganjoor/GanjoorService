@@ -2066,6 +2066,11 @@
              Poem Narration view model
             </summary>
         </member>
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.#ctor">
+            <summary>
+            parameterless constructor for deserialization support
+            </summary>
+        </member>
         <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.#ctor(RMuseum.Models.GanjoorAudio.PoemNarration,RSecurityBackend.Models.Auth.Db.RAppUser,RMuseum.Models.Ganjoor.GanjoorPoem)">
             <summary>
             constructor
