@@ -173,10 +173,10 @@ namespace RMuseum.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemNarrationUpdateViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemNarrationViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
-        public async Task<IActionResult> UpdatePoemNarration(int id, [FromBody] PoemNarrationUpdateViewModel metadata)
+        public async Task<IActionResult> UpdatePoemNarration(int id, [FromBody] PoemNarrationViewModel metadata)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -214,7 +214,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPut("moderate/{id}")]
         [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemNarrationUpdateViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
         public async Task<IActionResult> ModeratePoemNarration(int id, [FromBody] PoemNarrationModerateViewModel model)

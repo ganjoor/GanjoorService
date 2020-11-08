@@ -142,13 +142,13 @@ namespace RMuseum.Services.Implementation
         /// <param name="id"></param>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> UpdatePoemNarration(int id, PoemNarrationUpdateViewModel metadata)
+        public async Task<RServiceResult<PoemNarrationViewModel>> UpdatePoemNarration(int id, PoemNarrationViewModel metadata)
         {
             try
             {
                 PoemNarration narration =  await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync();
                 if(narration == null)
-                    return new RServiceResult<bool>(false, "404");
+                    return new RServiceResult<PoemNarrationViewModel>(null, "404");
                 narration.AudioTitle = metadata.AudioTitle;
                 narration.AudioArtist = metadata.AudioArtist;
                 narration.AudioArtistUrl = metadata.AudioArtistUrl;
@@ -157,11 +157,11 @@ namespace RMuseum.Services.Implementation
                 narration.ReviewStatus = metadata.ReviewStatus;
                 _context.AudioFiles.Update(narration);
                 await _context.SaveChangesAsync();
-                return new RServiceResult<bool>(true);
+                return new RServiceResult<PoemNarrationViewModel>(new PoemNarrationViewModel(narration, null, null));
             }
             catch (Exception exp)
             {
-                return new RServiceResult<bool>(false, exp.ToString());
+                return new RServiceResult<PoemNarrationViewModel>(null, exp.ToString());
             }
         }
 
