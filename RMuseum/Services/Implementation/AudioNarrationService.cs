@@ -899,7 +899,7 @@ namespace RMuseum.Services.Implementation
                 return "طول پسوند قابل پذیرش حداکثر چهار کاراکتر است.";
             }
 
-            string s = LanguageUtils.GetFirstNotMatchingCharacter(p.ArtistName, LanguageUtils.PersianAlphabet, " ");
+            string s = LanguageUtils.GetFirstNotMatchingCharacter(p.ArtistName, LanguageUtils.PersianAlphabet, " ‌");
             if (s != "")
             {
                 return  $"نام فقط باید شامل حروف فارسی و فاصله باشد. اولین حرف غیرمجاز = {s}";
