@@ -581,7 +581,7 @@ namespace RMuseum.Services.Implementation
 
                                                 if (narration.AudioTitle.IndexOf("فایل صوتی") == 0) //no modification on title
                                                 {
-                                                    GanjoorPoem poem = await _context.GanjoorPoems.Where(p => p.Id == audio.PoemId).SingleOrDefaultAsync();
+                                                    GanjoorPoem poem = await context.GanjoorPoems.Where(p => p.Id == audio.PoemId).SingleOrDefaultAsync();
                                                     if (poem != null)
                                                     {
                                                         narration.AudioTitle = poem.Title;
