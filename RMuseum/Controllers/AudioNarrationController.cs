@@ -167,7 +167,8 @@ namespace RMuseum.Controllers
         /// <param name="metadata"></param>
         /// <remarks>
         /// reviewstatus cannot be set to Approved or Rejected using this method, use moderate method instead
-        /// TODO: for approved narrations provide another API or solution
+        /// only these set of fields are updatable: AudioTitle, AudioArtist, AudioArtistUrl, AudioSrc, AudioSrcUrl, ReviewStatus (Draft to Pending and vice versa and Approved/Rejected to Pending)
+        /// only narrator or a moderator can update the narration 
         /// </remarks>
         /// <returns></returns>
 
@@ -178,6 +179,11 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
         public async Task<IActionResult> UpdatePoemNarration(int id, [FromBody] PoemNarrationViewModel metadata)
         {
+            if (metadata.ReviewStatus == AudioReviewStatus.Approved || metadata.ReviewStatus == AudioReviewStatus.Rejected)
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
             var narration = await _audioService.Get(id);
@@ -185,18 +191,28 @@ namespace RMuseum.Controllers
             {
                return BadRequest(narration.ExceptionString);
             }
-
-            if (!string.IsNullOrEmpty(narration.ExceptionString))
-            {
-                return BadRequest(narration.ExceptionString);
-            }
-
+            
             if (narration.Result == null)
                 return NotFound();
 
-            if (metadata.ReviewStatus == AudioReviewStatus.Approved || metadata.ReviewStatus == AudioReviewStatus.Rejected)
+            if(narration.Result.Owner.Id != loggedOnUserId)
             {
-               return StatusCode((int)HttpStatusCode.Forbidden);
+                Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+                RServiceResult<bool>
+                 serviceResult =
+                 await _userPermissionChecker.Check
+                     (
+                         loggedOnUserId,
+                         sessionId,
+                         RMuseumSecurableItem.AudioNarrationEntityShortName,
+                         RMuseumSecurableItem.ModerateOperationShortName
+                         );
+                if (!string.IsNullOrEmpty(serviceResult.ExceptionString))
+                    return BadRequest(serviceResult.ExceptionString);
+
+                if (!serviceResult.Result)
+                    return StatusCode((int)HttpStatusCode.Forbidden);
+
             }
 
             var res = await _audioService.UpdatePoemNarration(id, metadata);
@@ -221,18 +237,16 @@ namespace RMuseum.Controllers
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
-            var narration = await _audioService.Get(id);
-            if (!string.IsNullOrEmpty(narration.ExceptionString))
-            {              
-                return BadRequest(narration.ExceptionString);
-            }
-
-            if (narration.Result == null)
-                return NotFound();
 
             var res = await _audioService.ModeratePoemNarration(id, loggedOnUserId, model);
             if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                if(res.ExceptionString == "404")
+                {
+                    return NotFound();
+                }
                 return BadRequest(res.ExceptionString);
+            }
 
             return Ok(res.Result);
         }

@@ -672,7 +672,8 @@
             <param name="metadata"></param>
             <remarks>
             reviewstatus cannot be set to Approved or Rejected using this method, use moderate method instead
-            TODO: for approved narrations provide another API or solution
+            only these set of fields are updatable: AudioTitle, AudioArtist, AudioArtistUrl, AudioSrc, AudioSrcUrl, ReviewStatus (Draft to Pending and vice versa and Approved/Rejected to Pending)
+            only narrator or a moderator can update the narration 
             </remarks>
             <returns></returns>
         </member>
