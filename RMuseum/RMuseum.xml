@@ -4799,6 +4799,13 @@
             <param name="id">narration id</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetPoemNarrationValidationError(RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel)">
+            <summary>
+            validate PoemNarrationViewModel
+            </summary>
+            <param name="p"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.AudioNarrationService.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel)">
             <summary>
             updates metadata for narration

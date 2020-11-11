@@ -137,6 +137,40 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// validate PoemNarrationViewModel
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private static string GetPoemNarrationValidationError(PoemNarrationViewModel p)
+        {
+            if (p.AudioArtist.Length < 3)
+            {
+                return "نام خوانشگر باید حداقل شامل سه نویسه باشد.";
+            }
+
+            string s = LanguageUtils.GetFirstNotMatchingCharacter(p.AudioArtist, LanguageUtils.PersianAlphabet, " ‌");
+            if (s != "")
+            {
+                return $"نام فقط باید شامل حروف فارسی و فاصله باشد. اولین حرف غیرمجاز = {s}";
+            }
+
+            s = LanguageUtils.GetFirstNotMatchingCharacter(p.AudioArtistUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/._-");
+
+            if (s != "")
+            {
+                return $"نشانی وب خوانشگر شامل حروف غیر مجاز است. اولین حرف غیرمجاز = {s}";
+            }
+
+            s = LanguageUtils.GetFirstNotMatchingCharacter(p.AudioSrcUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/._-");
+            if (s != "")
+            {
+                return $"نشانی وب منبع شامل حروف غیر مجاز است. اولین حرف غیرمجاز = {s}";
+            }
+
+            return "";
+        }
+
+        /// <summary>
         /// updates metadata for narration
         /// </summary>
         /// <param name="id"></param>
@@ -146,6 +180,19 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+
+                metadata.AudioTitle = metadata.AudioTitle.Trim();
+                metadata.AudioArtist = metadata.AudioArtist.Trim();
+                metadata.AudioArtistUrl = metadata.AudioArtistUrl.Trim();
+                metadata.AudioSrc = metadata.AudioSrc.Trim();
+                metadata.AudioSrcUrl = metadata.AudioSrcUrl.Trim();
+
+                string err = GetPoemNarrationValidationError(metadata);
+                if(!string.IsNullOrEmpty(err))
+                {
+                    return new RServiceResult<PoemNarrationViewModel>(null, err);
+                }
+
                 PoemNarration narration =  await _context.AudioFiles.Include(a => a.Owner).Where(a => a.Id == id).SingleOrDefaultAsync();
                 if(narration == null)
                     return new RServiceResult<PoemNarrationViewModel>(null, "404");
@@ -902,7 +949,7 @@ namespace RMuseum.Services.Implementation
             string s = LanguageUtils.GetFirstNotMatchingCharacter(p.ArtistName, LanguageUtils.PersianAlphabet, " ‌");
             if (s != "")
             {
-                return  $"نام فقط باید شامل حروف فارسی و فاصله باشد. اولین حرف غیرمجاز = {s}";
+                return  $"نام خوانشگر فقط باید شامل حروف فارسی و فاصله باشد. اولین حرف غیرمجاز = {s}";
             }
 
             s = LanguageUtils.GetFirstNotMatchingCharacter(p.ArtistUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/._-");
@@ -927,6 +974,8 @@ namespace RMuseum.Services.Implementation
 
             return "";
         }
+
+
 
 
         /// <summary>
