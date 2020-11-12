@@ -179,10 +179,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
         public async Task<IActionResult> UpdatePoemNarration(int id, [FromBody] PoemNarrationViewModel metadata)
         {
-            if (metadata.ReviewStatus == AudioReviewStatus.Approved || metadata.ReviewStatus == AudioReviewStatus.Rejected)
-            {
-                return StatusCode((int)HttpStatusCode.Forbidden);
-            }
+           
 
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -215,6 +212,14 @@ namespace RMuseum.Controllers
 
             }
 
+            if(narration.Result.ReviewStatus != metadata.ReviewStatus)
+            {
+                if (metadata.ReviewStatus == AudioReviewStatus.Approved || metadata.ReviewStatus == AudioReviewStatus.Rejected)
+                {
+                    return StatusCode((int)HttpStatusCode.Forbidden);
+                }
+            }
+
             var res = await _audioService.UpdatePoemNarration(id, metadata);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -230,7 +235,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPut("moderate/{id}")]
         [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemNarrationViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
         public async Task<IActionResult> ModeratePoemNarration(int id, [FromBody] PoemNarrationModerateViewModel model)

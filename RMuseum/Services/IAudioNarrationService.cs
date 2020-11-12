@@ -88,7 +88,7 @@ namespace RMuseum.Services
         /// <param name="moderatorId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> ModeratePoemNarration(int id, Guid moderatorId, PoemNarrationModerateViewModel model);
+        Task<RServiceResult<PoemNarrationViewModel>> ModeratePoemNarration(int id, Guid moderatorId, PoemNarrationModerateViewModel model);
 
         /// <summary>
         /// Get Upload Session (including files)

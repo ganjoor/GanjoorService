@@ -717,15 +717,15 @@ namespace RMuseum.Services.Implementation
         /// <param name="moderatorId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ModeratePoemNarration(int id, Guid moderatorId, PoemNarrationModerateViewModel model)
+        public async Task<RServiceResult<PoemNarrationViewModel>> ModeratePoemNarration(int id, Guid moderatorId, PoemNarrationModerateViewModel model)
         {
             try
             {
-                PoemNarration narration = await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync();
+                PoemNarration narration = await _context.AudioFiles.Include(a => a.Owner).Where(a => a.Id == id).SingleOrDefaultAsync();
                 if (narration == null)
-                    return new RServiceResult<bool>(false, "404");
-                if (narration.ReviewStatus != AudioReviewStatus.Pending)
-                    return new RServiceResult<bool>(false, "خوانش می‌بایست در وضعیت در انتظار بازبینی باشد.");
+                    return new RServiceResult<PoemNarrationViewModel>(null, "404");
+                if (narration.ReviewStatus != AudioReviewStatus.Draft || narration.ReviewStatus != AudioReviewStatus.Pending)
+                    return new RServiceResult<PoemNarrationViewModel>(null, "خوانش می‌بایست در وضعیت پیش‌نویس یا در انتظار بازبینی باشد.");
                 narration.ReviewDate = DateTime.Now;
                 narration.ReviewerId = moderatorId;
                 if(model.Result != PoemNarrationModerationResult.MetadataNeedsFixation)
@@ -778,11 +778,11 @@ namespace RMuseum.Services.Implementation
                 
 
 
-                return new RServiceResult<bool>(true);
+                return new RServiceResult<PoemNarrationViewModel>(new PoemNarrationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
             }
             catch (Exception exp)
             {
-                return new RServiceResult<bool>(false, exp.ToString());
+                return new RServiceResult<PoemNarrationViewModel>(null, exp.ToString());
             }
         }
 
