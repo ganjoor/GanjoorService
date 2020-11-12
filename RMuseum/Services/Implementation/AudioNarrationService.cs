@@ -724,7 +724,7 @@ namespace RMuseum.Services.Implementation
                 PoemNarration narration = await _context.AudioFiles.Include(a => a.Owner).Where(a => a.Id == id).SingleOrDefaultAsync();
                 if (narration == null)
                     return new RServiceResult<PoemNarrationViewModel>(null, "404");
-                if (narration.ReviewStatus != AudioReviewStatus.Draft || narration.ReviewStatus != AudioReviewStatus.Pending)
+                if (narration.ReviewStatus != AudioReviewStatus.Draft && narration.ReviewStatus != AudioReviewStatus.Pending)
                     return new RServiceResult<PoemNarrationViewModel>(null, "خوانش می‌بایست در وضعیت پیش‌نویس یا در انتظار بازبینی باشد.");
                 narration.ReviewDate = DateTime.Now;
                 narration.ReviewerId = moderatorId;
