@@ -182,5 +182,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorVerse> GanjoorVerses { get; set; }
 
+        /// <summary>
+        /// Narration Publishing Tracker
+        /// </summary>
+        public DbSet<NarrationPublishingTracker> NarrationPublishingTrackers { get; set; }
+
     }
 }

@@ -738,6 +738,16 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.AudioNarrationController.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
+            <summary>
+            publishing tracker data
+            </summary>
+            <remarks>TODO: Poem Narration Data is not purified yet (includes sensitive information), so it needs a very special permission</remarks>
+            <param name="paging"></param>
+            <param name="inProgress"></param>
+            <param name="finished"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.AudioNarrationController.#ctor(RMuseum.Services.IAudioNarrationService,RSecurityBackend.Services.IUserPermissionChecker)">
             <summary>
             constructor
@@ -966,6 +976,11 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorVerses">
             <summary>
             Ganjoor Verses
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.NarrationPublishingTrackers">
+            <summary>
+            Narration Publishing Tracker
             </summary>
         </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
@@ -1760,6 +1775,66 @@
         <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.Deleted">
             <summary>
             Item should be deleted
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker">
+            <summary>
+            Narration Publishing Tracker
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.PoemNarrationId">
+            <summary>
+            Poem Narration Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.PoemNarration">
+            <summary>
+            Poem Narration
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.StartDate">
+            <summary>
+            Start Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.XmlFileCopied">
+            <summary>
+            XML File Copied
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.Mp3FileCopied">
+            <summary>
+            MP3 File Copied
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.FirstDbUpdated">
+            <summary>
+            First MySql DB Updated
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.SecondDbUpdated">
+            <summary>
+            Second DB Updated
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.Finished">
+            <summary>
+            Finished
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.FinishDate">
+            <summary>
+            Finish Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.LastException">
+            <summary>
+            Last Excecption
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.PoemNarration">
@@ -4083,6 +4158,15 @@
             retry publish unpublished narrations
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IAudioNarrationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
+            <summary>
+            publishing tracker data
+            </summary>
+            <param name="paging"></param>
+            <param name="inProgress"></param>
+            <param name="finished"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorService">
             <summary>
             Ganjoor Poems Content Privider Service
@@ -4912,6 +4996,15 @@
             </summary>
             <param name="paging"></param>
             <param name="userId">if userId is empty all user uploads would be returned</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
+            <summary>
+            publishing tracker data
+            </summary>
+            <param name="paging"></param>
+            <param name="inProgress"></param>
+            <param name="finished"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.AudioNarrationService.Configuration">

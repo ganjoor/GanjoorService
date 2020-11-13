@@ -138,5 +138,14 @@ namespace RMuseum.Services
         /// retry publish unpublished narrations
         /// </summary>
         public void RetryPublish();
+
+        /// <summary>
+        /// publishing tracker data
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="inProgress"></param>
+        /// <param name="finished"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, NarrationPublishingTracker[] Items)>> GetPublishingQueueStatus(PagingParameterModel paging, bool inProgress, bool finished);
     }
 }

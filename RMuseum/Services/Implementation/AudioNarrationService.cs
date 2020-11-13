@@ -30,6 +30,10 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public class AudioNarrationService : IAudioNarrationService
     {
+
+        
+
+
         /// <summary>
         /// returns list of narrations
         /// </summary>
@@ -786,8 +790,22 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+       
+
         private async Task _PublishNarration(PoemNarration narration, RMuseumDbContext context)
         {
+            NarrationPublishingTracker tracker = new NarrationPublishingTracker()
+            {
+                PoemNarrationId = narration.Id,
+                StartDate = DateTime.Now,
+                XmlFileCopied = false,
+                Mp3FileCopied = false,
+                FirstDbUpdated = false,
+                SecondDbUpdated = false,
+            };
+            context.NarrationPublishingTrackers.Add(tracker);
+            await context.SaveChangesAsync();
+           
             using var client = new SftpClient
                         (
                             Configuration.GetSection("AudioSFPServer")["Host"],
@@ -802,8 +820,16 @@ namespace RMuseum.Services.Implementation
                 using var x = File.OpenRead(narration.LocalXmlFilePath);
                 client.UploadFile(x, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}", true);
 
+                tracker.XmlFileCopied = true;
+                context.NarrationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
                 using var s = File.OpenRead(narration.LocalMp3FilePath);
                 client.UploadFile(s, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}", true);
+
+                tracker.Mp3FileCopied = true;
+                context.NarrationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
 
                 string sql = $"INSERT INTO ganja_gaudio (audio_post_ID,audio_order,audio_xml,audio_ogg,audio_mp3,audio_title,audio_artist," +
                         $"audio_artist_url,audio_src,audio_src_url, audio_guid, audio_fchecksum, audio_mp3bsize, audio_oggbsize, audio_date) VALUES " +
@@ -819,6 +845,10 @@ namespace RMuseum.Services.Implementation
                     await connection.ExecuteAsync(sql);
                 }
 
+                tracker.FirstDbUpdated = true;
+                context.NarrationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
                 //We are using two database for different purposes on the remote
                 using (MySqlConnection connection = new MySqlConnection
                 (
@@ -829,9 +859,15 @@ namespace RMuseum.Services.Implementation
                     await connection.ExecuteAsync(sql);
                 }
 
+                tracker.SecondDbUpdated = true;
+                context.NarrationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
                 narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
                 context.AudioFiles.Update(narration);
                 await context.SaveChangesAsync();
+
+
 
                 await _notificationService.PushNotification
                 (
@@ -841,12 +877,19 @@ namespace RMuseum.Services.Implementation
                     $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
                 );
 
+                tracker.Finished = true;
+                tracker.FinishDate = DateTime.Now;
+                context.NarrationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
 
             }
-            catch
+            catch(Exception exp)
             {
                 //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
-                //a logging solution should be put to work here to find out what is gone wrong
+                tracker.LastException = exp.ToString();
+                context.NarrationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
             }
             finally
             {
@@ -1143,6 +1186,39 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<(PaginationMetadata PagingMeta, UploadedItemViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// publishing tracker data
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="inProgress"></param>
+        /// <param name="finished"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, NarrationPublishingTracker[] Items)>> GetPublishingQueueStatus(PagingParameterModel paging, bool inProgress, bool finished)
+        {
+            try
+            {
+                var source =
+                     from tracker in _context.NarrationPublishingTrackers
+                     .Include(t => t.PoemNarration)
+                     .Where(a =>
+                            (inProgress && !a.Finished)
+                            ||
+                            (finished && a.Finished)
+                            )
+                    .OrderByDescending(a => a.StartDate)
+                     select tracker;
+
+                (PaginationMetadata PagingMeta, NarrationPublishingTracker[] Items) paginatedResult =
+                    await QueryablePaginator<NarrationPublishingTracker>.Paginate(source, paging);
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, NarrationPublishingTracker[] Items)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, NarrationPublishingTracker[] Items)>((PagingMeta: null, Items: null), exp.ToString());
             }
         }
 

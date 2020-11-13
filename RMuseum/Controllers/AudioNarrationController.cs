@@ -70,6 +70,8 @@ namespace RMuseum.Controllers
             return Ok(res.Result.Items);
         }
 
+
+
         /// <summary>
         /// get the corresponding mp3 file for the narration
         /// </summary>
@@ -475,6 +477,31 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
             }
             return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// publishing tracker data
+        /// </summary>
+        /// <remarks>TODO: Poem Narration Data is not purified yet (includes sensitive information), so it needs a very special permission</remarks>
+        /// <param name="paging"></param>
+        /// <param name="inProgress"></param>
+        /// <param name="finished"></param>
+        /// <returns></returns>
+
+        [HttpGet("publishqueue")]
+        [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<NarrationPublishingTracker>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+        public async Task<IActionResult> GetPublishingQueueStatus([FromQuery] PagingParameterModel paging, bool inProgress = true, bool finished = true)
+        {
+            var res = await _audioService.GetPublishingQueueStatus(paging, inProgress, finished);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            return Ok(res.Result.Items);
         }
 
         /// <summary>
