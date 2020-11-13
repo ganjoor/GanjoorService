@@ -158,18 +158,28 @@ namespace RMuseum.Services.Implementation
                 return $"نام فقط باید شامل حروف فارسی و فاصله باشد. اولین حرف غیرمجاز = {s}";
             }
 
-            s = LanguageUtils.GetFirstNotMatchingCharacter(p.AudioArtistUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/._-");
-
-            if (s != "")
+            if (!string.IsNullOrEmpty(p.AudioArtistUrl))
             {
-                return $"نشانی وب خوانشگر شامل حروف غیر مجاز است. اولین حرف غیرمجاز = {s}";
+                bool result = Uri.TryCreate(p.AudioArtistUrl, UriKind.Absolute, out Uri uriResult)
+                    && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+                if (!result)
+                {
+                    return $"نشانی وب خوانشگر نامعتبر است.";
+                }
             }
 
-            s = LanguageUtils.GetFirstNotMatchingCharacter(p.AudioSrcUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/._-");
-            if (s != "")
+            if(!string.IsNullOrEmpty(p.AudioSrcUrl))
             {
-                return $"نشانی وب منبع شامل حروف غیر مجاز است. اولین حرف غیرمجاز = {s}";
+                bool result = Uri.TryCreate(p.AudioSrcUrl, UriKind.Absolute, out Uri uriResult)
+               && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+                if (!result)
+                {
+                    return $"نشانی وب منبع نامعتبر است.";
+                }
             }
+            
 
             return "";
         }
@@ -995,19 +1005,31 @@ namespace RMuseum.Services.Implementation
                 return  $"نام خوانشگر فقط باید شامل حروف فارسی و فاصله باشد. اولین حرف غیرمجاز = {s}";
             }
 
-            s = LanguageUtils.GetFirstNotMatchingCharacter(p.ArtistUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/._-");
+            s = LanguageUtils.GetFirstNotMatchingCharacter(p.ArtistUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/._-0123456789%");
 
-            if (s != "")
+            if(!string.IsNullOrEmpty(p.ArtistUrl))
             {
-                return $"نشانی وب خوانشگر شامل حروف غیر مجاز است. اولین حرف غیرمجاز = {s}";
+                bool result = Uri.TryCreate(p.ArtistUrl, UriKind.Absolute, out Uri uriResult)
+                   && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                if (!result)
+                {
+                    return $"نشانی وب خوانشگر نامعتبر است.";
+                }
             }
+            
 
-            s = LanguageUtils.GetFirstNotMatchingCharacter(p.AudioSrcUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/._-");
-            if (s != "")
+            s = LanguageUtils.GetFirstNotMatchingCharacter(p.AudioSrcUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/._-0123456789%");
+            
+            if(!string.IsNullOrEmpty(p.AudioSrcUrl))
             {
-                return $"نشانی وب منبع شامل حروف غیر مجاز است. اولین حرف غیرمجاز = {s}";
+                bool result = Uri.TryCreate(p.AudioSrcUrl, UriKind.Absolute, out Uri uriResult)
+                   && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                if (!result)
+                {
+                    return $"نشانی وب منبع نامعتبر است.";
+                }
             }
-
+            
             s = LanguageUtils.GetFirstNotMatchingCharacter(p.FileSuffixWithoutDash, LanguageUtils.EnglishLowerCaseAlphabet);
 
             if (s != "")
