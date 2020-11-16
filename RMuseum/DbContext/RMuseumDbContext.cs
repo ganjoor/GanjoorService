@@ -71,11 +71,8 @@ namespace RMuseum.DbContext
             builder.Entity<RTagValue>()
                 .HasIndex(t => t.FriendlyUrl);
 
-            builder.Entity<PoemNarration>()
+            builder.Entity<Recitation>()
                 .HasIndex(p => p.GanjoorPostId);
-
-            builder.Entity<PoemNarration>()
-               .HasIndex(p => p.UploadDate);
 
             builder.Entity<GanjoorCat>()
                 .HasIndex(c => c.FullUrl);
@@ -145,7 +142,7 @@ namespace RMuseum.DbContext
         /// <summary>
         /// Ganjoor Audio Files
         /// </summary>
-        public DbSet<PoemNarration> AudioFiles { get; set; }
+        public DbSet<Recitation> Recitations { get; set; }
 
         /// <summary>
         /// Upload Sessions
@@ -158,9 +155,9 @@ namespace RMuseum.DbContext
         public DbSet<UploadSessionFile> UploadedFiles { get; set; }
 
         /// <summary>
-        /// User Narration Profiles
+        /// User Recitation Profiles
         /// </summary>
-        public DbSet<UserNarrationProfile> UserNarrationProfiles { get; set; }
+        public DbSet<UserRecitationProfile> UserRecitationProfiles { get; set; }
 
         /// <summary>
         /// Ganjoor Poets
@@ -185,7 +182,7 @@ namespace RMuseum.DbContext
         /// <summary>
         /// Narration Publishing Tracker
         /// </summary>
-        public DbSet<NarrationPublishingTracker> NarrationPublishingTrackers { get; set; }
+        public DbSet<RecitationPublishingTracker> RecitationPublishingTrackers { get; set; }
 
     }
 }

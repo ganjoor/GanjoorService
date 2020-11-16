@@ -7,7 +7,7 @@ namespace RMuseum.Models.GanjoorAudio
     /// <summary>
     /// Poem Narration
     /// </summary>
-    public class PoemNarration
+    public class Recitation
     {
         /// <summary>
         /// Id

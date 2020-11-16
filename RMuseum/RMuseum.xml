@@ -626,145 +626,6 @@
             Notification Service
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
-            <summary>
-            Gets audio narrations, user must have narration::moderate permission to be able to see all users narrations
-            </summary>
-            <param name="paging"></param>
-            <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users narrations</param>
-            <param name="status">default: -1, unfiltered</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.GetMp3File(System.Int32)">
-            <summary>
-            get the corresponding mp3 file for the narration
-            </summary>
-            <remarks>
-            it could be protected (Authorized), but I guess I would have problems with available client components support,
-            so I preferred it to be anonymous, as it does not harm anybody I guess 
-            </remarks>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.GetXMLFile(System.Int32)">
-            <summary>
-            get the corresponding xml file contemnts (xml) for the narration
-            </summary>
-            <remarks>
-            it could be protected (Authorized), but I guess I would have problems with available client components support,
-            so I preferred it to be anonymous, as it does not harm anybody I guess 
-            </remarks>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.GetPoemNarrationVerseSyncArray(System.Int32)">
-            <summary>
-            Gets Verse Sync Information
-            </summary>
-            <param name="id">narration id</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel)">
-            <summary>
-            updates narration metadata
-            </summary>
-            <param name="id"></param>
-            <param name="metadata"></param>
-            <remarks>
-            reviewstatus cannot be set to Approved or Rejected using this method, use moderate method instead
-            only these set of fields are updatable: AudioTitle, AudioArtist, AudioArtistUrl, AudioSrc, AudioSrcUrl, ReviewStatus (Draft to Pending and vice versa and Approved/Rejected to Pending)
-            only narrator or a moderator can update the narration 
-            </remarks>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.ModeratePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
-            <summary>
-            Moderate pending narration
-            </summary>
-            <param name="id"></param>
-            <param name="model"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean)">
-            <summary>
-            Get User Uploads
-            </summary>
-            <param name="paging"></param>
-            <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users uploads</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.UploadNarrations">
-            <summary>
-            Narration Upload
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.MysqlonetimeImport">
-            <summary>
-            imports data from ganjoor MySql database
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.RetryPublish">
-            <summary>
-            retry publish unpublished narrations
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.GetUserNarrationProfiles">
-            <summary>
-            Get User Profiles
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
-            <summary>
-            Add a narration profile
-            </summary>
-            <param name="profile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.UpdateUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
-            <summary>
-            Update a narration profile
-            </summary>
-            <param name="profile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.DeleteUserNarrationProfiles(System.Guid)">
-            <summary>
-            Delete a narration profile 
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
-            <summary>
-            publishing tracker data
-            </summary>
-            <remarks>TODO: Poem Narration Data is not purified yet (includes sensitive information), so it needs a very special permission</remarks>
-            <param name="paging"></param>
-            <param name="inProgress"></param>
-            <param name="finished"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.AudioNarrationController.#ctor(RMuseum.Services.IAudioNarrationService,RSecurityBackend.Services.IUserPermissionChecker)">
-            <summary>
-            constructor
-            </summary>
-            <param name="audioService"></param>
-            <param name="userPermissionChecker"></param>
-        </member>
-        <member name="F:RMuseum.Controllers.AudioNarrationController._audioService">
-            <summary>
-            Artifact Service
-            </summary>
-        </member>
-        <member name="F:RMuseum.Controllers.AudioNarrationController._userPermissionChecker">
-            <summary>
-            IUserPermissionChecker instance
-            </summary>
-        </member>
         <member name="T:RMuseum.Controllers.AuditLogController">
             <summary>
             Audit Log Controller Base
@@ -831,6 +692,145 @@
         <member name="F:RMuseum.Controllers.ImageController._pictureFileService">
             <summary>
             Artifact Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+            <summary>
+            Gets audio narrations, user must have narration::moderate permission to be able to see all users narrations
+            </summary>
+            <param name="paging"></param>
+            <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users narrations</param>
+            <param name="status">default: -1, unfiltered</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetMp3File(System.Int32)">
+            <summary>
+            get the corresponding mp3 file for the narration
+            </summary>
+            <remarks>
+            it could be protected (Authorized), but I guess I would have problems with available client components support,
+            so I preferred it to be anonymous, as it does not harm anybody I guess 
+            </remarks>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetXMLFile(System.Int32)">
+            <summary>
+            get the corresponding xml file contemnts (xml) for the narration
+            </summary>
+            <remarks>
+            it could be protected (Authorized), but I guess I would have problems with available client components support,
+            so I preferred it to be anonymous, as it does not harm anybody I guess 
+            </remarks>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetPoemNarrationVerseSyncArray(System.Int32)">
+            <summary>
+            Gets Verse Sync Information
+            </summary>
+            <param name="id">narration id</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel)">
+            <summary>
+            updates narration metadata
+            </summary>
+            <param name="id"></param>
+            <param name="metadata"></param>
+            <remarks>
+            reviewstatus cannot be set to Approved or Rejected using this method, use moderate method instead
+            only these set of fields are updatable: AudioTitle, AudioArtist, AudioArtistUrl, AudioSrc, AudioSrcUrl, ReviewStatus (Draft to Pending and vice versa and Approved/Rejected to Pending)
+            only narrator or a moderator can update the narration 
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.ModeratePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel)">
+            <summary>
+            Moderate pending narration
+            </summary>
+            <param name="id"></param>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean)">
+            <summary>
+            Get User Uploads
+            </summary>
+            <param name="paging"></param>
+            <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users uploads</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.UploadNarrations">
+            <summary>
+            Narration Upload
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.MysqlonetimeImport">
+            <summary>
+            imports data from ganjoor MySql database
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.RetryPublish">
+            <summary>
+            retry publish unpublished narrations
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetUserNarrationProfiles">
+            <summary>
+            Get User Profiles
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel)">
+            <summary>
+            Add a narration profile
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.UpdateUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel)">
+            <summary>
+            Update a narration profile
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.DeleteUserNarrationProfiles(System.Guid)">
+            <summary>
+            Delete a narration profile 
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
+            <summary>
+            publishing tracker data
+            </summary>
+            <remarks>TODO: Poem Narration Data is not purified yet (includes sensitive information), so it needs a very special permission</remarks>
+            <param name="paging"></param>
+            <param name="inProgress"></param>
+            <param name="finished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.#ctor(RMuseum.Services.IRecitationService,RSecurityBackend.Services.IUserPermissionChecker)">
+            <summary>
+            constructor
+            </summary>
+            <param name="audioService"></param>
+            <param name="userPermissionChecker"></param>
+        </member>
+        <member name="F:RMuseum.Controllers.RecitationController._audioService">
+            <summary>
+            Artifact Service
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.RecitationController._userPermissionChecker">
+            <summary>
+            IUserPermissionChecker instance
             </summary>
         </member>
         <member name="T:RMuseum.Controllers.RImageController">
@@ -938,7 +938,7 @@
             Pinterest Links
             </summary>
         </member>
-        <member name="P:RMuseum.DbContext.RMuseumDbContext.AudioFiles">
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.Recitations">
             <summary>
             Ganjoor Audio Files
             </summary>
@@ -953,9 +953,9 @@
             Uploaded files
             </summary>
         </member>
-        <member name="P:RMuseum.DbContext.RMuseumDbContext.UserNarrationProfiles">
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.UserRecitationProfiles">
             <summary>
-            User Narration Profiles
+            User Recitation Profiles
             </summary>
         </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoets">
@@ -978,7 +978,7 @@
             Ganjoor Verses
             </summary>
         </member>
-        <member name="P:RMuseum.DbContext.RMuseumDbContext.NarrationPublishingTrackers">
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.RecitationPublishingTrackers">
             <summary>
             Narration Publishing Tracker
             </summary>
@@ -1777,87 +1777,27 @@
             Item should be deleted
             </summary>
         </member>
-        <member name="T:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker">
-            <summary>
-            Narration Publishing Tracker
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.Id">
-            <summary>
-            Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.PoemNarrationId">
-            <summary>
-            Poem Narration Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.PoemNarration">
+        <member name="T:RMuseum.Models.GanjoorAudio.Recitation">
             <summary>
             Poem Narration
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.StartDate">
-            <summary>
-            Start Date
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.XmlFileCopied">
-            <summary>
-            XML File Copied
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.Mp3FileCopied">
-            <summary>
-            MP3 File Copied
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.FirstDbUpdated">
-            <summary>
-            First MySql DB Updated
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.SecondDbUpdated">
-            <summary>
-            Second DB Updated
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.Finished">
-            <summary>
-            Finished
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.FinishDate">
-            <summary>
-            Finish Date
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.NarrationPublishingTracker.LastException">
-            <summary>
-            Last Excecption
-            </summary>
-        </member>
-        <member name="T:RMuseum.Models.GanjoorAudio.PoemNarration">
-            <summary>
-            Poem Narration
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Id">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.Id">
             <summary>
             Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Owner">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.Owner">
             <summary>
             Owner User
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.OwnerId">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.OwnerId">
             <summary>
             Owner User Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.GanjoorAudioId">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.GanjoorAudioId">
             <summary>
             Final data is actually exported to a MySQL database which this auto increment field is its key
             </summary>
@@ -1866,24 +1806,24 @@
             but if we do this we lose the ability to drop and create <see cref="T:RMuseum.Models.Ganjoor.GanjoorPoem"/> without losing narration data
             </remarks>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.GanjoorPostId">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.GanjoorPostId">
             <summary>
             Ganjoor Post Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioOrder">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.AudioOrder">
             <summary>
             This determines where an audio is displayed between a list of sounds related to a specfic poem
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.FileNameWithoutExtension">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.FileNameWithoutExtension">
             <summary>
             Using this field content you would determine xml, mp3 and ogg file names
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.SoundFilesFolder">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.SoundFilesFolder">
             <summary>
-            combining this with <see cref="P:RMuseum.Models.GanjoorAudio.PoemNarration.FileNameWithoutExtension"/> + .ext would preduce relative path of sound files on our file server the full path would become [HOMEPath] + '/i/' + this value
+            combining this with <see cref="P:RMuseum.Models.GanjoorAudio.Recitation.FileNameWithoutExtension"/> + .ext would preduce relative path of sound files on our file server the full path would become [HOMEPath] + '/i/' + this value
             </summary>
             <sample>
             "a2"
@@ -1892,27 +1832,27 @@
             We had previously used different pathes because when a directory became overcrowded our connection time would increase unbearably due to IRAN internet problems, so it is sensible to store it per record and not as a global option value
             </remarks>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.RemoteMp3FilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.RemoteMp3FilePath">
             <summary>
             MP3 File Path
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Mp3Url">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.Mp3Url">
             <summary>
             MP3 url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.RemoteOggFilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.RemoteOggFilePath">
             <summary>
             OGG File Path
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.OggUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.OggUrl">
             <summary>
             OGG url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.RemoteXMLFilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.RemoteXMLFilePath">
             <summary>
             This is also a legacy field
             </summary>
@@ -1925,181 +1865,221 @@
             https://github.com/ganjoor/ganjoor/blob/master/ganjoor/Audio%20Support/PoemAudioListProcessor.cs
             </remarks>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.XMLUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.XMLUrl">
             <summary>
             XML url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioTitle">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.AudioTitle">
             <summary>
             Audio Title
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioArtist">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.AudioArtist">
             <summary>
             Audio Artist
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioArtistUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.AudioArtistUrl">
             <summary>
             Audio Artist Url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioSrc">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.AudioSrc">
             <summary>
             Audio Source
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioSrcUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.AudioSrcUrl">
             <summary>
             Audio Src Url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.LegacyAudioGuid">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.LegacyAudioGuid">
             <summary>
             Legacy Audio Guid
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Mp3FileCheckSum">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.Mp3FileCheckSum">
             <summary>
             Audio File CheckSum
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Mp3SizeInBytes">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.Mp3SizeInBytes">
             <summary>
             mp3 size in bytes
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.OggSizeInBytes">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.OggSizeInBytes">
             <summary>
             ogg size in bytes
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.UploadDate">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.UploadDate">
             <summary>
             Upload Date
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.FileLastUpdated">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.FileLastUpdated">
             <summary>
             File Last Updated
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.ReviewDate">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.ReviewDate">
             <summary>
             Review Date (Approve or Reject)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.LocalMp3FilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.LocalMp3FilePath">
             <summary>
             MP3 File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.LocalXmlFilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.LocalXmlFilePath">
             <summary>
             XML File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.AudioSyncStatus">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.AudioSyncStatus">
             <summary>
             Value is one or a combination of <see cref="T:RMuseum.Models.GanjoorAudio.AudioSyncStatus"/>
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.ReviewStatus">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.ReviewStatus">
             <summary>
             Review Status
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.Reviewer">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.Reviewer">
             <summary>
             Reviewer user
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.ReviewerId">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.ReviewerId">
             <summary>
             Reviewer user
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.PoemNarration.ReviewMsg">
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.ReviewMsg">
             <summary>
             Review Message
             </summary>
         </member>
-        <member name="T:RMuseum.Models.GanjoorAudio.UserNarrationProfile">
+        <member name="T:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker">
             <summary>
-            Narration Profiles for users
+            Narration Publishing Tracker
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.Id">
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.Id">
             <summary>
             Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.User">
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.PoemNarrationId">
+            <summary>
+            Poem Narration Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.PoemNarration">
+            <summary>
+            Poem Narration
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.StartDate">
+            <summary>
+            Start Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.XmlFileCopied">
+            <summary>
+            XML File Copied
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.Mp3FileCopied">
+            <summary>
+            MP3 File Copied
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.FirstDbUpdated">
+            <summary>
+            First MySql DB Updated
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.SecondDbUpdated">
+            <summary>
+            Second DB Updated
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.Finished">
+            <summary>
+            Finished
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.FinishDate">
+            <summary>
+            Finish Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.LastException">
+            <summary>
+            Last Excecption
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.UserRecitationProfile">
+            <summary>
+            Narration Profiles for users
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserRecitationProfile.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.UserRecitationProfile.User">
             <summary>
             User
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.UserId">
+        <member name="P:RMuseum.Models.GanjoorAudio.UserRecitationProfile.UserId">
             <summary>
             UserId
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.Name">
+        <member name="P:RMuseum.Models.GanjoorAudio.UserRecitationProfile.Name">
             <summary>
             Profile Name
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.FileSuffixWithoutDash">
+        <member name="P:RMuseum.Models.GanjoorAudio.UserRecitationProfile.FileSuffixWithoutDash">
             <summary>
             this would be appended to audio files names prefixed by a dash to make them unique and specfic to user
             filenames usually would look like {GanjoorPostId}-{FileSuffixWithoutDash}.{ext}
             for example 2200-hrm.xml
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.ArtistName">
+        <member name="P:RMuseum.Models.GanjoorAudio.UserRecitationProfile.ArtistName">
             <summary>
             artist name
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.ArtistUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.UserRecitationProfile.ArtistUrl">
             <summary>
             artist url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.AudioSrc">
+        <member name="P:RMuseum.Models.GanjoorAudio.UserRecitationProfile.AudioSrc">
             <summary>
             audio src
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.AudioSrcUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.UserRecitationProfile.AudioSrcUrl">
             <summary>
             audio src url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.UserNarrationProfile.IsDefault">
+        <member name="P:RMuseum.Models.GanjoorAudio.UserRecitationProfile.IsDefault">
             <summary>
             is default
-            </summary>
-        </member>
-        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.NarrationVerseSync">
-            <summary>
-            Verse Sync Range
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.NarrationVerseSync.VerseOrder">
-            <summary>
-            Verse Order
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.NarrationVerseSync.VerseText">
-            <summary>
-            Verse Text
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.NarrationVerseSync.AudioStartMilliseconds">
-            <summary>
-            Audio Start in Milliseconds
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult">
@@ -2122,32 +2102,52 @@
             reject
             </summary>
         </member>
-        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel">
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel">
             <summary>
             Poem Narration Moderation View Model
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel.Result">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel.Result">
             <summary>
             Moderation Result
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel.Message">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel.Message">
             <summary>
             Rejection Message
             </summary>
         </member>
-        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel">
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationVerseSync">
+            <summary>
+            Verse Sync Range
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationVerseSync.VerseOrder">
+            <summary>
+            Verse Order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationVerseSync.VerseText">
+            <summary>
+            Verse Text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationVerseSync.AudioStartMilliseconds">
+            <summary>
+            Audio Start in Milliseconds
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel">
             <summary>
              Poem Narration view model
             </summary>
         </member>
-        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.#ctor">
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.#ctor">
             <summary>
             parameterless constructor for deserialization support
             </summary>
         </member>
-        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.#ctor(RMuseum.Models.GanjoorAudio.PoemNarration,RSecurityBackend.Models.Auth.Db.RAppUser,RMuseum.Models.Ganjoor.GanjoorPoem)">
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.#ctor(RMuseum.Models.GanjoorAudio.Recitation,RSecurityBackend.Models.Auth.Db.RAppUser,RMuseum.Models.Ganjoor.GanjoorPoem)">
             <summary>
             constructor
             </summary>
@@ -2155,49 +2155,49 @@
             <param name="owner"></param>
             <param name="poem"></param>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Id">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.Id">
             <summary>
             Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Owner">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.Owner">
             <summary>
             Owner User
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.GanjoorAudioId">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.GanjoorAudioId">
             <summary>
             Final data is actually exported to a MySQL database which this auto increment field is its key
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.GanjoorPostId">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.GanjoorPostId">
             <summary>
             Ganjoor Post Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.PoemFullTitle">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.PoemFullTitle">
             <summary>
             Poem Full Title
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.PoemFullUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.PoemFullUrl">
             <summary>
             Poem Full Url (without domain name)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioOrder">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.AudioOrder">
             <summary>
             This determines where an audio is displayed between a list of sounds related to a specfic poem
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.FileNameWithoutExtension">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.FileNameWithoutExtension">
             <summary>
             Using this field content you would determine xml, mp3 and ogg file names
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.SoundFilesFolder">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.SoundFilesFolder">
             <summary>
-            combining this with <see cref="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.FileNameWithoutExtension"/> + .ext would preduce relative path of sound files on our file server the full path would become [HOMEPath] + '/i/' + this value
+            combining this with <see cref="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.FileNameWithoutExtension"/> + .ext would preduce relative path of sound files on our file server the full path would become [HOMEPath] + '/i/' + this value
             </summary>
             <sample>
             "a2"
@@ -2206,27 +2206,27 @@
             We had previously used different pathes because when a directory became overcrowded our connection time would increase unbearably due to IRAN internet problems, so it is sensible to store it per record and not as a global option value
             </remarks>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.RemoteMp3FilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.RemoteMp3FilePath">
             <summary>
             MP3 File Path
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Mp3Url">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.Mp3Url">
             <summary>
             MP3 url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.RemoteOggFilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.RemoteOggFilePath">
             <summary>
             OGG File Path
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.OggUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.OggUrl">
             <summary>
             OGG url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.RemoteXMLFilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.RemoteXMLFilePath">
             <summary>
             This is also a legacy field
             </summary>
@@ -2239,108 +2239,108 @@
             https://github.com/ganjoor/ganjoor/blob/master/ganjoor/Audio%20Support/PoemAudioListProcessor.cs
             </remarks>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.XMLUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.XMLUrl">
             <summary>
             XML url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioTitle">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.AudioTitle">
             <summary>
             Audio Title
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioArtist">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.AudioArtist">
             <summary>
             Audio Artist
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioArtistUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.AudioArtistUrl">
             <summary>
             Audio Artist Url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioSrc">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.AudioSrc">
             <summary>
             Audio Source
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioSrcUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.AudioSrcUrl">
             <summary>
             Audio Src Url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.LegacyAudioGuid">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.LegacyAudioGuid">
             <summary>
             Legacy Audio Guid
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Mp3FileCheckSum">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.Mp3FileCheckSum">
             <summary>
             Audio File CheckSum
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.Mp3SizeInBytes">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.Mp3SizeInBytes">
             <summary>
             mp3 size in bytes
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.OggSizeInBytes">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.OggSizeInBytes">
             <summary>
             ogg size in bytes
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.UploadDate">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.UploadDate">
             <summary>
             Upload Date
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.FileLastUpdated">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.FileLastUpdated">
             <summary>
             File Last Updated
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.ReviewDate">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.ReviewDate">
             <summary>
             Review Date (Approve or Reject)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.LocalMp3FilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.LocalMp3FilePath">
             <summary>
             MP3 File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.LocalXmlFilePath">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.LocalXmlFilePath">
             <summary>
             XML File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.AudioSyncStatusArray">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.AudioSyncStatusArray">
             <summary>
             Value is one or a combination of <see cref="T:RMuseum.Models.GanjoorAudio.AudioSyncStatus"/>
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel.ReviewStatus">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.ReviewStatus">
             <summary>
             Review Status
             </summary>
         </member>
-        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel">
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel">
             <summary>
             UserNarrationProfile View Model
             </summary>
         </member>
-        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.#ctor">
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.#ctor">
             <summary>
             parameterless constructor
             </summary>
         </member>
-        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.#ctor(RMuseum.Models.GanjoorAudio.UserNarrationProfile)">
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.#ctor(RMuseum.Models.GanjoorAudio.UserRecitationProfile)">
             <summary>
             constructor
             </summary>
             <param name="src"></param>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.Id">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.Id">
             <summary>
             Id
             </summary>
@@ -2348,7 +2348,7 @@
             Do not fill it in POST api
             </remarks>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.User">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.User">
             <summary>
             User
             </summary>
@@ -2356,7 +2356,7 @@
             Do not fill it in POST api
             </remarks>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.UserId">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.UserId">
             <summary>
             UserId
             </summary>
@@ -2364,39 +2364,39 @@
             Do not fill it in POST api
             </remarks>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.Name">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.Name">
             <summary>
             Profile Name
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.FileSuffixWithoutDash">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.FileSuffixWithoutDash">
             <summary>
             this would be appended to audio files names prefixed by a dash to make them unique and specfic to user
             filenames usually would look like {GanjoorPostId}-{FileSuffixWithoutDash}.{ext}
             for example 2200-hrm.xml
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.ArtistName">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.ArtistName">
             <summary>
             artist name
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.ArtistUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.ArtistUrl">
             <summary>
             artist url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.AudioSrc">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.AudioSrc">
             <summary>
             audio src
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.AudioSrcUrl">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.AudioSrcUrl">
             <summary>
             audio src url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel.IsDefault">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.IsDefault">
             <summary>
             is default
             </summary>
@@ -4028,145 +4028,6 @@
             <param name="checkJobs"></param>
             <returns></returns>
         </member>
-        <member name="T:RMuseum.Services.IAudioNarrationService">
-            <summary>
-            Audio Narration Service
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
-            <summary>
-            returns list of narrations
-            </summary>
-            <param name="paging"></param>
-            <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
-            <param name="status"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.Get(System.Int32)">
-            <summary>
-            return selected narration information
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.GetPoemNarrationVerseSyncArray(System.Int32)">
-            <summary>
-            Gets Verse Sync Range Information
-            </summary>
-            <param name="id">narration id</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel)">
-            <summary>
-            updates metadata for narration
-            </summary>
-            <param name="id"></param>
-            <param name="metadata"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.OneTimeImport(System.Guid)">
-            <summary>
-            imports narration data from ganjoor MySql database
-            </summary>
-            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.BuildProfilesFromExistingData(System.Guid)">
-            <summary>
-            build profiles from exisng narrations data
-            </summary>
-            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
-            <returns>error string if occurs</returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.InitiateNewUploadSession(System.Guid)">
-            <summary>
-            Initiate New Upload Session for audio
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.SaveUploadedFile(Microsoft.AspNetCore.Http.IFormFile)">
-            <summary>
-            Save uploaded file
-            </summary>
-            <param name="uploadedFile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.UploadSession.UploadSessionFile[])">
-            <summary>
-            finalize upload session (add files)
-            </summary>
-            <param name="session"></param>
-            <param name="files"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.ModeratePoemNarration(System.Int32,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
-            <summary>
-            Moderate pending narration
-            </summary>
-            <param name="id"></param>
-            <param name="moderatorId"></param>
-            <param name="model"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.GetUploadSession(System.Guid)">
-            <summary>
-            Get Upload Session (including files)
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.GetUserNarrationProfiles(System.Guid)">
-            <summary>
-            Get User Profiles
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
-            <summary>
-            Add a narration profile
-            </summary>
-            <param name="profile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.UpdateUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
-            <summary>
-            Update a narration profile 
-            </summary>
-            <param name="profile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.DeleteUserNarrationProfiles(System.Guid,System.Guid)">
-            <summary>
-            Delete a narration profile 
-            </summary>
-            <param name="id"></param>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
-            <summary>
-            Get uploads descending by upload time
-            </summary>
-            <param name="paging"></param>
-            <param name="userId">if userId is empty all user uploads would be returned</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.RetryPublish">
-            <summary>
-            retry publish unpublished narrations
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.IAudioNarrationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
-            <summary>
-            publishing tracker data
-            </summary>
-            <param name="paging"></param>
-            <param name="inProgress"></param>
-            <param name="finished"></param>
-            <returns></returns>
-        </member>
         <member name="T:RMuseum.Services.IGanjoorService">
             <summary>
             Ganjoor Poems Content Privider Service
@@ -4855,187 +4716,6 @@
             <param name="userService"></param>
             <param name="notificationService"></param>
         </member>
-        <member name="T:RMuseum.Services.Implementation.AudioNarrationService">
-            <summary>
-            Audio Narration Service Implementation
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
-            <summary>
-            returns list of narrations
-            </summary>
-            <param name="paging"></param>
-            <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
-            <param name="status"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.Get(System.Int32)">
-            <summary>
-            return selected narration information
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetPoemNarrationVerseSyncArray(System.Int32)">
-            <summary>
-            Gets Verse Sync Range Information
-            </summary>
-            <param name="id">narration id</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetPoemNarrationValidationError(RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel)">
-            <summary>
-            validate PoemNarrationViewModel
-            </summary>
-            <param name="p"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationViewModel)">
-            <summary>
-            updates metadata for narration
-            </summary>
-            <param name="id"></param>
-            <param name="metadata"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.OneTimeImport(System.Guid)">
-            <summary>
-            imports data from ganjoor MySql database
-            </summary>
-            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.BuildProfilesFromExistingData(System.Guid)">
-            <summary>
-            build profiles from exisng narrations data
-            </summary>
-            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
-            <returns>error string if occurs</returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.InitiateNewUploadSession(System.Guid)">
-            <summary>
-            Initiate New Upload Session for audio
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.SaveUploadedFile(Microsoft.AspNetCore.Http.IFormFile)">
-            <summary>
-            Save uploaded file
-            </summary>
-            <param name="uploadedFile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.UploadSession.UploadSessionFile[])">
-            <summary>
-            finalize upload session (add files)
-            </summary>
-            <param name="session"></param>
-            <param name="files"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.ModeratePoemNarration(System.Int32,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerateViewModel)">
-            <summary>
-            Moderate pending narration
-            </summary>
-            <param name="id"></param>
-            <param name="moderatorId"></param>
-            <param name="model"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.RetryPublish">
-            <summary>
-            retry publish unpublished narrations
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUploadSession(System.Guid)">
-            <summary>
-            Get Upload Session (including files)
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUserNarrationProfiles(System.Guid)">
-            <summary>
-            Get User Profiles
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUserProfileValidationError(RMuseum.Models.GanjoorAudio.UserNarrationProfile)">
-            <summary>
-            validating narration profile
-            </summary>
-            <param name="p"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
-            <summary>
-            Add a narration profile
-            </summary>
-            <param name="profile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.UpdateUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserNarrationProfileViewModel)">
-            <summary>
-            Update a narration profile 
-            </summary>
-            <param name="profile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.DeleteUserNarrationProfiles(System.Guid,System.Guid)">
-            <summary>
-            Delete a narration profile 
-            </summary>
-            <param name="id"></param>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
-            <summary>
-            Get uploads descending by upload time
-            </summary>
-            <param name="paging"></param>
-            <param name="userId">if userId is empty all user uploads would be returned</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
-            <summary>
-            publishing tracker data
-            </summary>
-            <param name="paging"></param>
-            <param name="inProgress"></param>
-            <param name="finished"></param>
-            <returns></returns>
-        </member>
-        <member name="P:RMuseum.Services.Implementation.AudioNarrationService.Configuration">
-            <summary>
-            Configuration
-            </summary>
-        </member>
-        <member name="F:RMuseum.Services.Implementation.AudioNarrationService._context">
-            <summary>
-            Database Contetxt
-            </summary>
-        </member>
-        <member name="F:RMuseum.Services.Implementation.AudioNarrationService._backgroundTaskQueue">
-            <summary>
-            Background Task Queue Instance
-            </summary>
-        </member>
-        <member name="F:RMuseum.Services.Implementation.AudioNarrationService._notificationService">
-            <summary>
-            Messaging service
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.AudioNarrationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue,RMuseum.Services.IRNotificationService)">
-            <summary>
-            constructor
-            </summary>
-            <param name="context"></param>
-            <param name="configuration"></param>
-            <param name="backgroundTaskQueue"></param>
-            <param name="notificationService"></param>
-        </member>
         <member name="T:RMuseum.Services.Implementation.BLTileMixer">
             <summary>
             British Library Tile Downloader And Mixer
@@ -5263,6 +4943,187 @@
             <param name="configuration"></param>
             <param name="simpleImageStorage"></param>
         </member>
+        <member name="T:RMuseum.Services.Implementation.RecitationService">
+            <summary>
+            Audio Narration Service Implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+            <summary>
+            returns list of narrations
+            </summary>
+            <param name="paging"></param>
+            <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
+            <param name="status"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.Get(System.Int32)">
+            <summary>
+            return selected narration information
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetPoemNarrationVerseSyncArray(System.Int32)">
+            <summary>
+            Gets Verse Sync Range Information
+            </summary>
+            <param name="id">narration id</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetPoemNarrationValidationError(RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel)">
+            <summary>
+            validate PoemNarrationViewModel
+            </summary>
+            <param name="p"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel)">
+            <summary>
+            updates metadata for narration
+            </summary>
+            <param name="id"></param>
+            <param name="metadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.OneTimeImport(System.Guid)">
+            <summary>
+            imports data from ganjoor MySql database
+            </summary>
+            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.BuildProfilesFromExistingData(System.Guid)">
+            <summary>
+            build profiles from exisng narrations data
+            </summary>
+            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
+            <returns>error string if occurs</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.InitiateNewUploadSession(System.Guid)">
+            <summary>
+            Initiate New Upload Session for audio
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.SaveUploadedFile(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Save uploaded file
+            </summary>
+            <param name="uploadedFile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.UploadSession.UploadSessionFile[])">
+            <summary>
+            finalize upload session (add files)
+            </summary>
+            <param name="session"></param>
+            <param name="files"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.ModeratePoemNarration(System.Int32,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel)">
+            <summary>
+            Moderate pending narration
+            </summary>
+            <param name="id"></param>
+            <param name="moderatorId"></param>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.RetryPublish">
+            <summary>
+            retry publish unpublished narrations
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUploadSession(System.Guid)">
+            <summary>
+            Get Upload Session (including files)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUserNarrationProfiles(System.Guid)">
+            <summary>
+            Get User Profiles
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUserProfileValidationError(RMuseum.Models.GanjoorAudio.UserRecitationProfile)">
+            <summary>
+            validating narration profile
+            </summary>
+            <param name="p"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel)">
+            <summary>
+            Add a narration profile
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.UpdateUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel)">
+            <summary>
+            Update a narration profile 
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.DeleteUserNarrationProfiles(System.Guid,System.Guid)">
+            <summary>
+            Delete a narration profile 
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+            <summary>
+            Get uploads descending by upload time
+            </summary>
+            <param name="paging"></param>
+            <param name="userId">if userId is empty all user uploads would be returned</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
+            <summary>
+            publishing tracker data
+            </summary>
+            <param name="paging"></param>
+            <param name="inProgress"></param>
+            <param name="finished"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.RecitationService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.RecitationService._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.RecitationService._backgroundTaskQueue">
+            <summary>
+            Background Task Queue Instance
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.RecitationService._notificationService">
+            <summary>
+            Messaging service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue,RMuseum.Services.IRNotificationService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="configuration"></param>
+            <param name="backgroundTaskQueue"></param>
+            <param name="notificationService"></param>
+        </member>
         <member name="T:RMuseum.Services.Implementation.RNotificationService">
             <summary>
             Internal messaging system implementation
@@ -5406,6 +5267,145 @@
             <summary>
             Image Storage Path
             </summary>
+        </member>
+        <member name="T:RMuseum.Services.IRecitationService">
+            <summary>
+            Audio Narration Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+            <summary>
+            returns list of narrations
+            </summary>
+            <param name="paging"></param>
+            <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
+            <param name="status"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.Get(System.Int32)">
+            <summary>
+            return selected narration information
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetPoemNarrationVerseSyncArray(System.Int32)">
+            <summary>
+            Gets Verse Sync Range Information
+            </summary>
+            <param name="id">narration id</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel)">
+            <summary>
+            updates metadata for narration
+            </summary>
+            <param name="id"></param>
+            <param name="metadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.OneTimeImport(System.Guid)">
+            <summary>
+            imports narration data from ganjoor MySql database
+            </summary>
+            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.BuildProfilesFromExistingData(System.Guid)">
+            <summary>
+            build profiles from exisng narrations data
+            </summary>
+            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
+            <returns>error string if occurs</returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.InitiateNewUploadSession(System.Guid)">
+            <summary>
+            Initiate New Upload Session for audio
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.SaveUploadedFile(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Save uploaded file
+            </summary>
+            <param name="uploadedFile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.UploadSession.UploadSessionFile[])">
+            <summary>
+            finalize upload session (add files)
+            </summary>
+            <param name="session"></param>
+            <param name="files"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.ModeratePoemNarration(System.Int32,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel)">
+            <summary>
+            Moderate pending narration
+            </summary>
+            <param name="id"></param>
+            <param name="moderatorId"></param>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetUploadSession(System.Guid)">
+            <summary>
+            Get Upload Session (including files)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetUserNarrationProfiles(System.Guid)">
+            <summary>
+            Get User Profiles
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel)">
+            <summary>
+            Add a narration profile
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.UpdateUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel)">
+            <summary>
+            Update a narration profile 
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.DeleteUserNarrationProfiles(System.Guid,System.Guid)">
+            <summary>
+            Delete a narration profile 
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+            <summary>
+            Get uploads descending by upload time
+            </summary>
+            <param name="paging"></param>
+            <param name="userId">if userId is empty all user uploads would be returned</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.RetryPublish">
+            <summary>
+            retry publish unpublished narrations
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
+            <summary>
+            publishing tracker data
+            </summary>
+            <param name="paging"></param>
+            <param name="inProgress"></param>
+            <param name="finished"></param>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IRNotificationService">
             <summary>

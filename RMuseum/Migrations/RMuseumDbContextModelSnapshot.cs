@@ -438,47 +438,7 @@ namespace RMuseum.Migrations
                     b.ToTable("GanjoorVerses");
                 });
 
-            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.NarrationPublishingTracker", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("FinishDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Finished")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("FirstDbUpdated")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastException")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Mp3FileCopied")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PoemNarrationId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("SecondDbUpdated")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("XmlFileCopied")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PoemNarrationId");
-
-                    b.ToTable("NarrationPublishingTrackers");
-                });
-
-            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.PoemNarration", b =>
+            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.Recitation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -565,12 +525,50 @@ namespace RMuseum.Migrations
 
                     b.HasIndex("ReviewerId");
 
-                    b.HasIndex("UploadDate");
-
-                    b.ToTable("AudioFiles");
+                    b.ToTable("Recitations");
                 });
 
-            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.UserNarrationProfile", b =>
+            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.RecitationPublishingTracker", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("FinishDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Finished")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("FirstDbUpdated")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastException")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Mp3FileCopied")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PoemNarrationId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("SecondDbUpdated")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("XmlFileCopied")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PoemNarrationId");
+
+                    b.ToTable("RecitationPublishingTrackers");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.UserRecitationProfile", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -604,7 +602,7 @@ namespace RMuseum.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserNarrationProfiles");
+                    b.ToTable("UserRecitationProfiles");
                 });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorIntegration.GanjoorLink", b =>
@@ -1439,16 +1437,7 @@ namespace RMuseum.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.NarrationPublishingTracker", b =>
-                {
-                    b.HasOne("RMuseum.Models.GanjoorAudio.PoemNarration", "PoemNarration")
-                        .WithMany()
-                        .HasForeignKey("PoemNarrationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.PoemNarration", b =>
+            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.Recitation", b =>
                 {
                     b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Owner")
                         .WithMany()
@@ -1461,7 +1450,16 @@ namespace RMuseum.Migrations
                         .HasForeignKey("ReviewerId");
                 });
 
-            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.UserNarrationProfile", b =>
+            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.RecitationPublishingTracker", b =>
+                {
+                    b.HasOne("RMuseum.Models.GanjoorAudio.Recitation", "PoemNarration")
+                        .WithMany()
+                        .HasForeignKey("PoemNarrationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RMuseum.Models.GanjoorAudio.UserRecitationProfile", b =>
                 {
                     b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
                         .WithMany()

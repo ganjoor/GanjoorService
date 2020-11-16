@@ -6,12 +6,12 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
     /// <summary>
     /// UserNarrationProfile View Model
     /// </summary>
-    public class UserNarrationProfileViewModel
+    public class UserRecitationProfileViewModel
     {
         /// <summary>
         /// parameterless constructor
         /// </summary>
-        public UserNarrationProfileViewModel()
+        public UserRecitationProfileViewModel()
         {
 
         }
@@ -19,7 +19,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// constructor
         /// </summary>
         /// <param name="src"></param>
-        public UserNarrationProfileViewModel(UserNarrationProfile src)
+        public UserRecitationProfileViewModel(UserRecitationProfile src)
         {
             Id = src.Id;
             User = src.User == null ? null : new PublicRAppUser(src.User);

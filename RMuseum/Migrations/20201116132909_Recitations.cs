@@ -3,12 +3,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace RMuseum.Migrations
 {
-    public partial class AudioNarrations : Migration
+    public partial class Recitations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AudioFiles",
+                name: "GanjoorPoets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GanjoorPoets", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Recitations",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -40,32 +53,19 @@ namespace RMuseum.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AudioFiles", x => x.Id);
+                    table.PrimaryKey("PK_Recitations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AudioFiles_AspNetUsers_OwnerId",
+                        name: "FK_Recitations_AspNetUsers_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AudioFiles_AspNetUsers_ReviewerId",
+                        name: "FK_Recitations_AspNetUsers_ReviewerId",
                         column: x => x.ReviewerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GanjoorPoets",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GanjoorPoets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,7 +95,7 @@ namespace RMuseum.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserNarrationProfiles",
+                name: "UserRecitationProfiles",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -110,9 +110,9 @@ namespace RMuseum.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserNarrationProfiles", x => x.Id);
+                    table.PrimaryKey("PK_UserRecitationProfiles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserNarrationProfiles_AspNetUsers_UserId",
+                        name: "FK_UserRecitationProfiles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -143,6 +143,32 @@ namespace RMuseum.Migrations
                         name: "FK_GanjoorCategories_GanjoorPoets_PoetId",
                         column: x => x.PoetId,
                         principalTable: "GanjoorPoets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RecitationPublishingTrackers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    PoemNarrationId = table.Column<int>(nullable: false),
+                    StartDate = table.Column<DateTime>(nullable: false),
+                    XmlFileCopied = table.Column<bool>(nullable: false),
+                    Mp3FileCopied = table.Column<bool>(nullable: false),
+                    FirstDbUpdated = table.Column<bool>(nullable: false),
+                    SecondDbUpdated = table.Column<bool>(nullable: false),
+                    Finished = table.Column<bool>(nullable: false),
+                    FinishDate = table.Column<DateTime>(nullable: false),
+                    LastException = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecitationPublishingTrackers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RecitationPublishingTrackers_Recitations_PoemNarrationId",
+                        column: x => x.PoemNarrationId,
+                        principalTable: "Recitations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -219,21 +245,6 @@ namespace RMuseum.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AudioFiles_GanjoorPostId",
-                table: "AudioFiles",
-                column: "GanjoorPostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AudioFiles_OwnerId",
-                table: "AudioFiles",
-                column: "OwnerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AudioFiles_ReviewerId",
-                table: "AudioFiles",
-                column: "ReviewerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GanjoorCategories_FullUrl",
                 table: "GanjoorCategories",
                 column: "FullUrl");
@@ -264,6 +275,26 @@ namespace RMuseum.Migrations
                 column: "PoemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RecitationPublishingTrackers_PoemNarrationId",
+                table: "RecitationPublishingTrackers",
+                column: "PoemNarrationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Recitations_GanjoorPostId",
+                table: "Recitations",
+                column: "GanjoorPostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Recitations_OwnerId",
+                table: "Recitations",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Recitations_ReviewerId",
+                table: "Recitations",
+                column: "ReviewerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UploadedFiles_UploadSessionId",
                 table: "UploadedFiles",
                 column: "UploadSessionId");
@@ -274,27 +305,30 @@ namespace RMuseum.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserNarrationProfiles_UserId",
-                table: "UserNarrationProfiles",
+                name: "IX_UserRecitationProfiles_UserId",
+                table: "UserRecitationProfiles",
                 column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AudioFiles");
+                name: "GanjoorVerses");
 
             migrationBuilder.DropTable(
-                name: "GanjoorVerses");
+                name: "RecitationPublishingTrackers");
 
             migrationBuilder.DropTable(
                 name: "UploadedFiles");
 
             migrationBuilder.DropTable(
-                name: "UserNarrationProfiles");
+                name: "UserRecitationProfiles");
 
             migrationBuilder.DropTable(
                 name: "GanjoorPoems");
+
+            migrationBuilder.DropTable(
+                name: "Recitations");
 
             migrationBuilder.DropTable(
                 name: "UploadSessions");

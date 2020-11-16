@@ -28,7 +28,7 @@ namespace RMuseum.Services.Implementation
     /// <summary>
     /// Audio Narration Service Implementation
     /// </summary>
-    public class AudioNarrationService : IAudioNarrationService
+    public class RecitationService : IRecitationService
     {
 
         
@@ -41,13 +41,13 @@ namespace RMuseum.Services.Implementation
         /// <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
         /// <param name="status"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status)
         {
             try
             {
                 //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
                 var source =
-                     from audio in _context.AudioFiles
+                     from audio in _context.Recitations
                      .Include(a => a.Owner)
                      .Where(a =>
                             (filteredUserId == Guid.Empty || a.OwnerId == filteredUserId)
@@ -57,16 +57,16 @@ namespace RMuseum.Services.Implementation
                     .OrderByDescending(a => a.UploadDate)
                      join poem in _context.GanjoorPoems
                      on audio.GanjoorPostId equals poem.Id
-                     select new PoemNarrationViewModel(audio, audio.Owner, poem);
+                     select new RecitationViewModel(audio, audio.Owner, poem);
 
-                (PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items) paginatedResult =
-                    await QueryablePaginator<PoemNarrationViewModel>.Paginate(source, paging);
+                (PaginationMetadata PagingMeta, RecitationViewModel[] Items) paginatedResult =
+                    await QueryablePaginator<RecitationViewModel>.Paginate(source, paging);
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>(paginatedResult);
+                return new RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>(paginatedResult);
             }
             catch (Exception exp)
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+                return new RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
             }
         }
 
@@ -75,25 +75,25 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PoemNarrationViewModel>> Get(int id)
+        public async Task<RServiceResult<RecitationViewModel>> Get(int id)
         {
             try
             {
                 //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
                 var source =
-                     from audio in _context.AudioFiles
+                     from audio in _context.Recitations
                      .Include(a => a.Owner)
                      .Where(a => a.Id == id)
                      join poem in _context.GanjoorPoems
                      on audio.GanjoorPostId equals poem.Id
-                     select new PoemNarrationViewModel(audio, audio.Owner, poem);
+                     select new RecitationViewModel(audio, audio.Owner, poem);
 
                 var narration = await source.SingleOrDefaultAsync();
-                return new RServiceResult<PoemNarrationViewModel>(narration);
+                return new RServiceResult<RecitationViewModel>(narration);
             }
             catch (Exception exp)
             {
-                return new RServiceResult<PoemNarrationViewModel>(null, exp.ToString());
+                return new RServiceResult<RecitationViewModel>(null, exp.ToString());
             }
         }
 
@@ -102,16 +102,16 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id">narration id</param>
         /// <returns></returns>
-        public async Task<RServiceResult<NarrationVerseSync[]>> GetPoemNarrationVerseSyncArray(int id)
+        public async Task<RServiceResult<RecitationVerseSync[]>> GetPoemNarrationVerseSyncArray(int id)
         {
             try
             {
-                var narration = await _context.AudioFiles.Where(a => a.Id == id).SingleOrDefaultAsync();
+                var narration = await _context.Recitations.Where(a => a.Id == id).SingleOrDefaultAsync();
                 var verses = await _context.GanjoorVerses.Where(v => v.PoemId == narration.GanjoorPostId).OrderBy(v => v.VOrder).ToListAsync();
 
                 string xml = File.ReadAllText(narration.LocalXmlFilePath);
 
-                List<NarrationVerseSync> verseSyncs = new List<NarrationVerseSync>();
+                List<RecitationVerseSync> verseSyncs = new List<RecitationVerseSync>();
 
                 XElement elObject = XDocument.Parse(xml).Root;
                 foreach (var syncInfo in elObject.Element("PoemAudio").Element("SyncArray").Elements("SyncInfo"))
@@ -123,7 +123,7 @@ namespace RMuseum.Services.Implementation
                     var verse = verses.Where(v => v.VOrder == verseOrder).SingleOrDefault();
                     if(verse != null)
                     {
-                        verseSyncs.Add(new NarrationVerseSync()
+                        verseSyncs.Add(new RecitationVerseSync()
                         {
                             VerseOrder = verseOrder,
                             VerseText = verse.Text,
@@ -132,11 +132,11 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                return new RServiceResult<NarrationVerseSync[]>(verseSyncs.ToArray());
+                return new RServiceResult<RecitationVerseSync[]>(verseSyncs.ToArray());
             }
             catch (Exception exp)
             {
-                return new RServiceResult<NarrationVerseSync[]>(null, exp.ToString());
+                return new RServiceResult<RecitationVerseSync[]>(null, exp.ToString());
             }
         }
 
@@ -145,7 +145,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        private static string GetPoemNarrationValidationError(PoemNarrationViewModel p)
+        private static string GetPoemNarrationValidationError(RecitationViewModel p)
         {
             if (p.AudioArtist.Length < 3)
             {
@@ -190,7 +190,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="id"></param>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PoemNarrationViewModel>> UpdatePoemNarration(int id, PoemNarrationViewModel metadata)
+        public async Task<RServiceResult<RecitationViewModel>> UpdatePoemNarration(int id, RecitationViewModel metadata)
         {
             try
             {
@@ -204,25 +204,25 @@ namespace RMuseum.Services.Implementation
                 string err = GetPoemNarrationValidationError(metadata);
                 if(!string.IsNullOrEmpty(err))
                 {
-                    return new RServiceResult<PoemNarrationViewModel>(null, err);
+                    return new RServiceResult<RecitationViewModel>(null, err);
                 }
 
-                PoemNarration narration =  await _context.AudioFiles.Include(a => a.Owner).Where(a => a.Id == id).SingleOrDefaultAsync();
+                Recitation narration =  await _context.Recitations.Include(a => a.Owner).Where(a => a.Id == id).SingleOrDefaultAsync();
                 if(narration == null)
-                    return new RServiceResult<PoemNarrationViewModel>(null, "404");
+                    return new RServiceResult<RecitationViewModel>(null, "404");
                 narration.AudioTitle = metadata.AudioTitle;
                 narration.AudioArtist = metadata.AudioArtist;
                 narration.AudioArtistUrl = metadata.AudioArtistUrl;
                 narration.AudioSrc = metadata.AudioSrc;
                 narration.AudioSrcUrl = metadata.AudioSrcUrl;
                 narration.ReviewStatus = metadata.ReviewStatus;
-                _context.AudioFiles.Update(narration);
+                _context.Recitations.Update(narration);
                 await _context.SaveChangesAsync();
-                return new RServiceResult<PoemNarrationViewModel>(new PoemNarrationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
+                return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
             }
             catch (Exception exp)
             {
-                return new RServiceResult<PoemNarrationViewModel>(null, exp.ToString());
+                return new RServiceResult<RecitationViewModel>(null, exp.ToString());
             }
         }
 
@@ -235,7 +235,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                PoemNarration sampleCheck = await _context.AudioFiles.FirstOrDefaultAsync();
+                Recitation sampleCheck = await _context.Recitations.FirstOrDefaultAsync();
                 if(sampleCheck != null)
                 {
                     return new RServiceResult<bool>(false, "OneTimeImport is a one time operation and cannot be called multiple times.");
@@ -267,7 +267,7 @@ namespace RMuseum.Services.Implementation
 
                             foreach (DataRow row in srcData.Rows)
                             {
-                                PoemNarration newRecord = new PoemNarration()
+                                Recitation newRecord = new Recitation()
                                 {
                                     OwnerId = ownerRAppUserId,
                                     GanjoorAudioId = int.Parse(row["audio_ID"].ToString()),
@@ -299,7 +299,7 @@ namespace RMuseum.Services.Implementation
                                 newRecord.LocalMp3FilePath = Path.Combine(targetForAudioFile, $"{newRecord.FileNameWithoutExtension}.mp3");
                                 newRecord.LocalXmlFilePath = Path.Combine(targetForXmlAudioFile, $"{newRecord.FileNameWithoutExtension}.xml");
 
-                                _context.AudioFiles.Add(newRecord);
+                                _context.Recitations.Add(newRecord);
                                 await _context.SaveChangesAsync(); //this logically should be outside this loop, 
                                                                    //but it messes with the order of records so I decided 
                                                                    //to wait a little longer and have an ordered set of records
@@ -328,11 +328,11 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                List<UserNarrationProfile> profiles =
-                     await _context.AudioFiles
+                List<UserRecitationProfile> profiles =
+                     await _context.Recitations
                      .GroupBy(audio => new { audio.AudioArtist, audio.AudioArtistUrl, audio.AudioSrc, audio.AudioSrcUrl })
                      .OrderByDescending(g => g.Count())
-                     .Select(g => new UserNarrationProfile()
+                     .Select(g => new UserRecitationProfile()
                      {
                          UserId = ownerRAppUserId,
                          ArtistName = g.Key.AudioArtist,
@@ -342,10 +342,10 @@ namespace RMuseum.Services.Implementation
                          IsDefault = false
                      }
                      ).ToListAsync();
-                foreach(UserNarrationProfile profile in profiles)
+                foreach(UserRecitationProfile profile in profiles)
                 {
-                    PoemNarration narration = 
-                        await _context.AudioFiles.Where(audio =>
+                    Recitation narration = 
+                        await _context.Recitations.Where(audio =>
                                                 audio.AudioArtist == profile.ArtistName
                                                 &&
                                                 audio.AudioArtistUrl == profile.ArtistUrl
@@ -384,12 +384,12 @@ namespace RMuseum.Services.Implementation
                     profile.FileSuffixWithoutDash = ext;
                     profile.Name = profile.ArtistName;
                     int pIndex = 1;
-                    while((await _context.UserNarrationProfiles.Where(p => p.UserId == ownerRAppUserId && p.Name == profile.Name).SingleOrDefaultAsync())!=null)
+                    while((await _context.UserRecitationProfiles.Where(p => p.UserId == ownerRAppUserId && p.Name == profile.Name).SingleOrDefaultAsync())!=null)
                     {
                         pIndex++;
                         profile.Name = $"{profile.ArtistName} {GPersianTextSync.Sync(pIndex.ToString())}";
                     }
-                    _context.UserNarrationProfiles.Add(profile);
+                    _context.UserRecitationProfiles.Add(profile);
                     await _context.SaveChangesAsync(); //this logically should be outside this loop, 
                                                        //but it messes with the order of records so I decided 
                                                        //to wait a little longer and have an ordered set of records
@@ -411,7 +411,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                UserNarrationProfile defProfile = await _context.UserNarrationProfiles.Where(p => p.UserId == userId && p.IsDefault == true).FirstOrDefaultAsync();
+                UserRecitationProfile defProfile = await _context.UserRecitationProfiles.Where(p => p.UserId == userId && p.IsDefault == true).FirstOrDefaultAsync();
                 if (defProfile == null)
                 {
                     return new RServiceResult<UploadSession>(null, "نمایهٔ پیش‌فرض شما مشخص نیست. لطفا پیش از ارسال خوانش نمایهٔ پیش‌فرض خود را تعریف کنید.");
@@ -541,7 +541,7 @@ namespace RMuseum.Services.Implementation
                                 }
                             }
 
-                            UserNarrationProfile defProfile = await context.UserNarrationProfiles.Where(p => p.UserId == session.UseId && p.IsDefault == true).FirstOrDefaultAsync(); //this should not be null
+                            UserRecitationProfile defProfile = await context.UserRecitationProfiles.Where(p => p.UserId == session.UseId && p.IsDefault == true).FirstOrDefaultAsync(); //this should not be null
 
                             foreach (UploadSessionFile file in session.UploadedFiles.Where(file => Path.GetExtension(file.FilePath) == ".xml").ToList())
                             {
@@ -553,7 +553,7 @@ namespace RMuseum.Services.Implementation
                                     //the code would fail!
                                     foreach (PoemAudio audio in PoemAudioListProcessor.Load(file.FilePath)) 
                                     {
-                                        if( await context.AudioFiles.Where(a => a.Mp3FileCheckSum == audio.FileCheckSum).SingleOrDefaultAsync() != null)
+                                        if( await context.Recitations.Where(a => a.Mp3FileCheckSum == audio.FileCheckSum).SingleOrDefaultAsync() != null)
                                         {
                                             session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "فایل صوتیی همسان با فایل ارسالی پیشتر آپلود شده است.";
                                             context.UploadSessions.Update(session);
@@ -608,19 +608,19 @@ namespace RMuseum.Services.Implementation
 
                                                 Guid legacyAudioGuid = audio.SyncGuid;
                                                 while (
-                                                    (await context.AudioFiles.Where(a => a.LegacyAudioGuid == legacyAudioGuid).FirstOrDefaultAsync()) != null
+                                                    (await context.Recitations.Where(a => a.LegacyAudioGuid == legacyAudioGuid).FirstOrDefaultAsync()) != null
                                                     )
                                                 {
                                                     legacyAudioGuid = Guid.NewGuid();
                                                 }
 
 
-                                                PoemNarration narration = new PoemNarration()
+                                                Recitation narration = new Recitation()
                                                 {
                                                     GanjoorPostId = audio.PoemId,
                                                     OwnerId = session.UseId,
-                                                    GanjoorAudioId = 1 + await context.AudioFiles.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
-                                                    AudioOrder = 1 + await context.AudioFiles.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
+                                                    GanjoorAudioId = 1 + await context.Recitations.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
+                                                    AudioOrder = 1 + await context.Recitations.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
                                                     FileNameWithoutExtension = fileNameWithoutExtension,
                                                     SoundFilesFolder = currentTargetFolder,
                                                     AudioTitle = string.IsNullOrEmpty(audio.PoemTitle) ? audio.Description : audio.PoemTitle,
@@ -652,7 +652,7 @@ namespace RMuseum.Services.Implementation
 
                                                 
 
-                                                context.AudioFiles.Add(narration);
+                                                context.Recitations.Add(narration);
 
 
                                                 session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "";
@@ -731,15 +731,15 @@ namespace RMuseum.Services.Implementation
         /// <param name="moderatorId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PoemNarrationViewModel>> ModeratePoemNarration(int id, Guid moderatorId, PoemNarrationModerateViewModel model)
+        public async Task<RServiceResult<RecitationViewModel>> ModeratePoemNarration(int id, Guid moderatorId, RecitationModerateViewModel model)
         {
             try
             {
-                PoemNarration narration = await _context.AudioFiles.Include(a => a.Owner).Where(a => a.Id == id).SingleOrDefaultAsync();
+                Recitation narration = await _context.Recitations.Include(a => a.Owner).Where(a => a.Id == id).SingleOrDefaultAsync();
                 if (narration == null)
-                    return new RServiceResult<PoemNarrationViewModel>(null, "404");
+                    return new RServiceResult<RecitationViewModel>(null, "404");
                 if (narration.ReviewStatus != AudioReviewStatus.Draft && narration.ReviewStatus != AudioReviewStatus.Pending)
-                    return new RServiceResult<PoemNarrationViewModel>(null, "خوانش می‌بایست در وضعیت پیش‌نویس یا در انتظار بازبینی باشد.");
+                    return new RServiceResult<RecitationViewModel>(null, "خوانش می‌بایست در وضعیت پیش‌نویس یا در انتظار بازبینی باشد.");
                 narration.ReviewDate = DateTime.Now;
                 narration.ReviewerId = moderatorId;
                 if(model.Result != PoemNarrationModerationResult.MetadataNeedsFixation)
@@ -752,7 +752,7 @@ namespace RMuseum.Services.Implementation
                     //TODO: delete rejected items files passed a certain period of time in a maintenance job
                 }
                 narration.ReviewMsg = model.Message;
-                _context.AudioFiles.Update(narration);
+                _context.Recitations.Update(narration);
                 await _context.SaveChangesAsync();
 
                 if (model.Result == PoemNarrationModerationResult.MetadataNeedsFixation)
@@ -792,19 +792,19 @@ namespace RMuseum.Services.Implementation
                 
 
 
-                return new RServiceResult<PoemNarrationViewModel>(new PoemNarrationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
+                return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
             }
             catch (Exception exp)
             {
-                return new RServiceResult<PoemNarrationViewModel>(null, exp.ToString());
+                return new RServiceResult<RecitationViewModel>(null, exp.ToString());
             }
         }
 
        
 
-        private async Task _PublishNarration(PoemNarration narration, RMuseumDbContext context)
+        private async Task _PublishNarration(Recitation narration, RMuseumDbContext context)
         {
-            NarrationPublishingTracker tracker = new NarrationPublishingTracker()
+            RecitationPublishingTracker tracker = new RecitationPublishingTracker()
             {
                 PoemNarrationId = narration.Id,
                 StartDate = DateTime.Now,
@@ -813,7 +813,7 @@ namespace RMuseum.Services.Implementation
                 FirstDbUpdated = false,
                 SecondDbUpdated = false,
             };
-            context.NarrationPublishingTrackers.Add(tracker);
+            context.RecitationPublishingTrackers.Add(tracker);
             await context.SaveChangesAsync();
            
             using var client = new SftpClient
@@ -831,14 +831,14 @@ namespace RMuseum.Services.Implementation
                 client.UploadFile(x, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}", true);
 
                 tracker.XmlFileCopied = true;
-                context.NarrationPublishingTrackers.Update(tracker);
+                context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
 
                 using var s = File.OpenRead(narration.LocalMp3FilePath);
                 client.UploadFile(s, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}", true);
 
                 tracker.Mp3FileCopied = true;
-                context.NarrationPublishingTrackers.Update(tracker);
+                context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
 
                 string sql = $"INSERT INTO ganja_gaudio (audio_post_ID,audio_order,audio_xml,audio_ogg,audio_mp3,audio_title,audio_artist," +
@@ -856,7 +856,7 @@ namespace RMuseum.Services.Implementation
                 }
 
                 tracker.FirstDbUpdated = true;
-                context.NarrationPublishingTrackers.Update(tracker);
+                context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
 
                 //We are using two database for different purposes on the remote
@@ -870,11 +870,11 @@ namespace RMuseum.Services.Implementation
                 }
 
                 tracker.SecondDbUpdated = true;
-                context.NarrationPublishingTrackers.Update(tracker);
+                context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
 
                 narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
-                context.AudioFiles.Update(narration);
+                context.Recitations.Update(narration);
                 await context.SaveChangesAsync();
 
 
@@ -889,7 +889,7 @@ namespace RMuseum.Services.Implementation
 
                 tracker.Finished = true;
                 tracker.FinishDate = DateTime.Now;
-                context.NarrationPublishingTrackers.Update(tracker);
+                context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
 
 
@@ -898,7 +898,7 @@ namespace RMuseum.Services.Implementation
             {
                 //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
                 tracker.LastException = exp.ToString();
-                context.NarrationPublishingTrackers.Update(tracker);
+                context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
             }
             finally
@@ -918,8 +918,8 @@ namespace RMuseum.Services.Implementation
                     {
                         using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
                         {
-                            var list = await context.AudioFiles.Where(a => a.ReviewStatus == AudioReviewStatus.Approved && a.AudioSyncStatus != (int)AudioSyncStatus.SynchronizedOrRejected).ToListAsync();
-                            foreach (PoemNarration narration in list)
+                            var list = await context.Recitations.Where(a => a.ReviewStatus == AudioReviewStatus.Approved && a.AudioSyncStatus != (int)AudioSyncStatus.SynchronizedOrRejected).ToListAsync();
+                            foreach (Recitation narration in list)
                             {
                                 await _PublishNarration(narration, context);
                             }
@@ -954,22 +954,22 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<UserNarrationProfileViewModel[]>> GetUserNarrationProfiles(Guid userId)
+        public async Task<RServiceResult<UserRecitationProfileViewModel[]>> GetUserNarrationProfiles(Guid userId)
         {
             try
             {
-                List<UserNarrationProfileViewModel> profiles = new List<UserNarrationProfileViewModel>();
+                List<UserRecitationProfileViewModel> profiles = new List<UserRecitationProfileViewModel>();
                 
-                foreach(UserNarrationProfile p in (await _context.UserNarrationProfiles.Include(p => p.User).Where(p => p.UserId == userId).ToArrayAsync()))
+                foreach(UserRecitationProfile p in (await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId).ToArrayAsync()))
                 {
-                    profiles.Add(new UserNarrationProfileViewModel(p));
+                    profiles.Add(new UserRecitationProfileViewModel(p));
                 }
-                return new RServiceResult<UserNarrationProfileViewModel[]>(profiles.ToArray());
+                return new RServiceResult<UserRecitationProfileViewModel[]>(profiles.ToArray());
 
             }
             catch (Exception exp)
             {
-                return new RServiceResult<UserNarrationProfileViewModel[]>(null, exp.ToString());
+                return new RServiceResult<UserRecitationProfileViewModel[]>(null, exp.ToString());
             }
         }
 
@@ -978,7 +978,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        private static string GetUserProfileValidationError(UserNarrationProfile p)
+        private static string GetUserProfileValidationError(UserRecitationProfile p)
         {
             if(string.IsNullOrEmpty(p.Name))
             {
@@ -1048,11 +1048,11 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<UserNarrationProfileViewModel>> AddUserNarrationProfiles(UserNarrationProfileViewModel profile)
+        public async Task<RServiceResult<UserRecitationProfileViewModel>> AddUserNarrationProfiles(UserRecitationProfileViewModel profile)
         {
             try
             {
-                var p = new UserNarrationProfile()
+                var p = new UserRecitationProfile()
                 {
                     UserId = profile.UserId,
                     Name = profile.Name.Trim(),
@@ -1067,31 +1067,31 @@ namespace RMuseum.Services.Implementation
                 string error = GetUserProfileValidationError(p);
                 if(error != "")
                 {
-                    return new RServiceResult<UserNarrationProfileViewModel>(null, error);
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, error);
                 }
 
-                if((await _context.UserNarrationProfiles.Where(e => e.UserId == p.Id && e.Name == p.Name).SingleOrDefaultAsync())!=null)
+                if((await _context.UserRecitationProfiles.Where(e => e.UserId == p.Id && e.Name == p.Name).SingleOrDefaultAsync())!=null)
                 {
-                    return new RServiceResult<UserNarrationProfileViewModel>(null, "شما نمایهٔ دیگری با همین نام دارید.");
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, "شما نمایهٔ دیگری با همین نام دارید.");
                 }
 
-                await _context.UserNarrationProfiles.AddAsync(p);
+                await _context.UserRecitationProfiles.AddAsync(p);
                    
                 await _context.SaveChangesAsync();
                 if(p.IsDefault)
                 {
-                    foreach(var o in _context.UserNarrationProfiles.Where(o => o.Id != p.Id && o.IsDefault).Select(o => o))
+                    foreach(var o in _context.UserRecitationProfiles.Where(o => o.Id != p.Id && o.IsDefault).Select(o => o))
                     {
                         o.IsDefault = false;
-                        _context.UserNarrationProfiles.Update(o);
+                        _context.UserRecitationProfiles.Update(o);
                     }
                     await _context.SaveChangesAsync();
                 }
-                return new RServiceResult<UserNarrationProfileViewModel>(new UserNarrationProfileViewModel(p));
+                return new RServiceResult<UserRecitationProfileViewModel>(new UserRecitationProfileViewModel(p));
             }
             catch (Exception exp)
             {
-                return new RServiceResult<UserNarrationProfileViewModel>(null, exp.ToString());
+                return new RServiceResult<UserRecitationProfileViewModel>(null, exp.ToString());
             }
         }
 
@@ -1100,15 +1100,15 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<UserNarrationProfileViewModel>> UpdateUserNarrationProfiles(UserNarrationProfileViewModel profile)
+        public async Task<RServiceResult<UserRecitationProfileViewModel>> UpdateUserNarrationProfiles(UserRecitationProfileViewModel profile)
         {
             try
             {
 
-                var p = await _context.UserNarrationProfiles.Where(p => p.Id == profile.Id).SingleOrDefaultAsync();
+                var p = await _context.UserRecitationProfiles.Where(p => p.Id == profile.Id).SingleOrDefaultAsync();
 
                 if (p.UserId != profile.UserId)
-                    return new RServiceResult<UserNarrationProfileViewModel>(null, "permission error");
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, "permission error");
 
                 p.Name = profile.Name.Trim();
                 p.ArtistName = profile.ArtistName.Trim();
@@ -1121,31 +1121,31 @@ namespace RMuseum.Services.Implementation
                 string error = GetUserProfileValidationError(p);
                 if (error != "")
                 {
-                    return new RServiceResult<UserNarrationProfileViewModel>(null, error);
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, error);
                 }
 
-                if ((await _context.UserNarrationProfiles.Where(e => e.UserId == p.Id && e.Name == p.Name && e.Id != p.Id).SingleOrDefaultAsync()) != null)
+                if ((await _context.UserRecitationProfiles.Where(e => e.UserId == p.Id && e.Name == p.Name && e.Id != p.Id).SingleOrDefaultAsync()) != null)
                 {
-                    return new RServiceResult<UserNarrationProfileViewModel>(null, "شما نمایهٔ دیگری با همین نام دارید.");
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, "شما نمایهٔ دیگری با همین نام دارید.");
                 }
 
-                _context.UserNarrationProfiles.Update(p);
+                _context.UserRecitationProfiles.Update(p);
 
                 await _context.SaveChangesAsync();
                 if (p.IsDefault)
                 {
-                    foreach (var o in _context.UserNarrationProfiles.Where(o => o.Id != p.Id && o.IsDefault).Select(o => o))
+                    foreach (var o in _context.UserRecitationProfiles.Where(o => o.Id != p.Id && o.IsDefault).Select(o => o))
                     {
                         o.IsDefault = false;
-                        _context.UserNarrationProfiles.Update(o);
+                        _context.UserRecitationProfiles.Update(o);
                     }
                     await _context.SaveChangesAsync();
                 }
-                return new RServiceResult<UserNarrationProfileViewModel>(new UserNarrationProfileViewModel(p));
+                return new RServiceResult<UserRecitationProfileViewModel>(new UserRecitationProfileViewModel(p));
             }
             catch (Exception exp)
             {
-                return new RServiceResult<UserNarrationProfileViewModel>(null, exp.ToString());
+                return new RServiceResult<UserRecitationProfileViewModel>(null, exp.ToString());
             }
         }
 
@@ -1160,12 +1160,12 @@ namespace RMuseum.Services.Implementation
             try
             {
 
-                var p = await _context.UserNarrationProfiles.Where(p => p.Id == id).SingleOrDefaultAsync();
+                var p = await _context.UserRecitationProfiles.Where(p => p.Id == id).SingleOrDefaultAsync();
 
                 if (p.UserId != userId)
                     return new RServiceResult<bool>(false);
 
-                _context.UserNarrationProfiles.Remove(p);
+                _context.UserRecitationProfiles.Remove(p);
 
                 await _context.SaveChangesAsync();
                 
@@ -1218,12 +1218,12 @@ namespace RMuseum.Services.Implementation
         /// <param name="inProgress"></param>
         /// <param name="finished"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, NarrationPublishingTracker[] Items)>> GetPublishingQueueStatus(PagingParameterModel paging, bool inProgress, bool finished)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTracker[] Items)>> GetPublishingQueueStatus(PagingParameterModel paging, bool inProgress, bool finished)
         {
             try
             {
                 var source =
-                     from tracker in _context.NarrationPublishingTrackers
+                     from tracker in _context.RecitationPublishingTrackers
                      .Include(t => t.PoemNarration)
                      .Where(a =>
                             (inProgress && !a.Finished)
@@ -1233,14 +1233,14 @@ namespace RMuseum.Services.Implementation
                     .OrderByDescending(a => a.StartDate)
                      select tracker;
 
-                (PaginationMetadata PagingMeta, NarrationPublishingTracker[] Items) paginatedResult =
-                    await QueryablePaginator<NarrationPublishingTracker>.Paginate(source, paging);
+                (PaginationMetadata PagingMeta, RecitationPublishingTracker[] Items) paginatedResult =
+                    await QueryablePaginator<RecitationPublishingTracker>.Paginate(source, paging);
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, NarrationPublishingTracker[] Items)>(paginatedResult);
+                return new RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTracker[] Items)>(paginatedResult);
             }
             catch (Exception exp)
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, NarrationPublishingTracker[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+                return new RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTracker[] Items)>((PagingMeta: null, Items: null), exp.ToString());
             }
         }
 
@@ -1272,7 +1272,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="configuration"></param>
         /// <param name="backgroundTaskQueue"></param>
         /// <param name="notificationService"></param>
-        public AudioNarrationService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IRNotificationService notificationService)
+        public RecitationService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IRNotificationService notificationService)
         {
             _context = context;
             Configuration = configuration;

@@ -3,7 +3,7 @@
     /// <summary>
     /// Verse Sync Range
     /// </summary>
-    public class NarrationVerseSync
+    public class RecitationVerseSync
     {
         /// <summary>
         /// Verse Order

@@ -6,7 +6,7 @@ namespace RMuseum.Models.GanjoorAudio
     /// <summary>
     /// Narration Profiles for users
     /// </summary>
-    public class UserNarrationProfile
+    public class UserRecitationProfile
     {
         /// <summary>
         /// Id

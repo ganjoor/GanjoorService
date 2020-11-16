@@ -5,7 +5,7 @@ namespace RMuseum.Models.GanjoorAudio
     /// <summary>
     /// Narration Publishing Tracker
     /// </summary>
-    public class NarrationPublishingTracker
+    public class RecitationPublishingTracker
     {
         /// <summary>
         /// Id
@@ -20,7 +20,7 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// Poem Narration
         /// </summary>
-        public PoemNarration PoemNarration { get; set; }
+        public Recitation PoemNarration { get; set; }
 
         /// <summary>
         /// Start Date

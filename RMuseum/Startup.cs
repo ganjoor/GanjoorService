@@ -253,7 +253,7 @@ namespace RMuseum
             services.AddTransient<IArtifactService, ArtifactService>();
 
             //audio service
-            services.AddTransient<IAudioNarrationService, AudioNarrationService>();
+            services.AddTransient<IRecitationService, RecitationService>();
 
             //ganjoor service
             services.AddTransient<IGanjoorService, GanjoorService>();

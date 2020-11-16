@@ -21,7 +21,7 @@ namespace RMuseum.Controllers
 {
     [Produces("application/json")]
     [Route("api/audio")]
-    public class AudioNarrationController : Controller
+    public class RecitationController : Controller
     {
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PoemNarrationViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RecitationViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
 
@@ -87,7 +87,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetMp3File(int id)
         {
-            RServiceResult<PoemNarrationViewModel> narration =
+            RServiceResult<RecitationViewModel> narration =
                 await _audioService.Get(id);
 
             if (!string.IsNullOrEmpty(narration.ExceptionString))
@@ -123,7 +123,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetXMLFile(int id)
         {
-            RServiceResult<PoemNarrationViewModel> narration =
+            RServiceResult<RecitationViewModel> narration =
                 await _audioService.Get(id);
 
             if (!string.IsNullOrEmpty(narration.ExceptionString))
@@ -155,7 +155,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetPoemNarrationVerseSyncArray(int id)
         {
-            RServiceResult<NarrationVerseSync[]> verses =
+            RServiceResult<RecitationVerseSync[]> verses =
                 await _audioService.GetPoemNarrationVerseSyncArray(id);
             if (!string.IsNullOrEmpty(verses.ExceptionString))
                 return BadRequest(verses.ExceptionString);
@@ -176,10 +176,10 @@ namespace RMuseum.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemNarrationViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RecitationViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
-        public async Task<IActionResult> UpdatePoemNarration(int id, [FromBody] PoemNarrationViewModel metadata)
+        public async Task<IActionResult> UpdatePoemNarration(int id, [FromBody] RecitationViewModel metadata)
         {
            
 
@@ -237,10 +237,10 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPut("moderate/{id}")]
         [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemNarrationViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RecitationViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
-        public async Task<IActionResult> ModeratePoemNarration(int id, [FromBody] PoemNarrationModerateViewModel model)
+        public async Task<IActionResult> ModeratePoemNarration(int id, [FromBody] RecitationModerateViewModel model)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -392,7 +392,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet("profile")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<UserNarrationProfileViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<UserRecitationProfileViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
 
@@ -414,11 +414,11 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPost("profile")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserNarrationProfileViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserRecitationProfileViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
 
-        public async Task<IActionResult> AddUserNarrationProfiles([FromBody]UserNarrationProfileViewModel profile)
+        public async Task<IActionResult> AddUserNarrationProfiles([FromBody]UserRecitationProfileViewModel profile)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -440,11 +440,11 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPut("profile")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserNarrationProfileViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserRecitationProfileViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
 
-        public async Task<IActionResult> UpdateUserNarrationProfiles([FromBody] UserNarrationProfileViewModel profile)
+        public async Task<IActionResult> UpdateUserNarrationProfiles([FromBody] UserRecitationProfileViewModel profile)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -490,7 +490,7 @@ namespace RMuseum.Controllers
 
         [HttpGet("publishqueue")]
         [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<NarrationPublishingTracker>))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RecitationPublishingTracker>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
         public async Task<IActionResult> GetPublishingQueueStatus([FromQuery] PagingParameterModel paging, bool inProgress = true, bool finished = true)
@@ -509,7 +509,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="audioService"></param>
         /// <param name="userPermissionChecker"></param>
-        public AudioNarrationController(IAudioNarrationService audioService, IUserPermissionChecker userPermissionChecker)
+        public RecitationController(IRecitationService audioService, IUserPermissionChecker userPermissionChecker)
         {
             _audioService = audioService;
             _userPermissionChecker = userPermissionChecker;
@@ -518,7 +518,7 @@ namespace RMuseum.Controllers
         /// <summary>
         /// Artifact Service
         /// </summary>
-        protected readonly IAudioNarrationService _audioService;
+        protected readonly IRecitationService _audioService;
 
         /// <summary>
         /// IUserPermissionChecker instance

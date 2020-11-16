@@ -12,7 +12,7 @@ namespace RMuseum.Services
     /// <summary>
     /// Audio Narration Service
     /// </summary>
-    public interface IAudioNarrationService
+    public interface IRecitationService
     {
         /// <summary>
         /// returns list of narrations
@@ -21,21 +21,21 @@ namespace RMuseum.Services
         /// <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
         /// <param name="status"></param>
         /// <returns></returns>
-        public Task<RServiceResult<(PaginationMetadata PagingMeta, PoemNarrationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status);
+        public Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status);
 
         /// <summary>
         /// return selected narration information
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RServiceResult<PoemNarrationViewModel>> Get(int id);
+        Task<RServiceResult<RecitationViewModel>> Get(int id);
 
         /// <summary>
         /// Gets Verse Sync Range Information
         /// </summary>
         /// <param name="id">narration id</param>
         /// <returns></returns>
-        Task<RServiceResult<NarrationVerseSync[]>> GetPoemNarrationVerseSyncArray(int id);
+        Task<RServiceResult<RecitationVerseSync[]>> GetPoemNarrationVerseSyncArray(int id);
 
         /// <summary>
         /// updates metadata for narration
@@ -43,7 +43,7 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        Task<RServiceResult<PoemNarrationViewModel>> UpdatePoemNarration(int id, PoemNarrationViewModel metadata);
+        Task<RServiceResult<RecitationViewModel>> UpdatePoemNarration(int id, RecitationViewModel metadata);
 
         /// <summary>
         /// imports narration data from ganjoor MySql database
@@ -88,7 +88,7 @@ namespace RMuseum.Services
         /// <param name="moderatorId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<RServiceResult<PoemNarrationViewModel>> ModeratePoemNarration(int id, Guid moderatorId, PoemNarrationModerateViewModel model);
+        Task<RServiceResult<RecitationViewModel>> ModeratePoemNarration(int id, Guid moderatorId, RecitationModerateViewModel model);
 
         /// <summary>
         /// Get Upload Session (including files)
@@ -102,21 +102,21 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<UserNarrationProfileViewModel[]>> GetUserNarrationProfiles(Guid userId);
+        Task<RServiceResult<UserRecitationProfileViewModel[]>> GetUserNarrationProfiles(Guid userId);
 
         /// <summary>
         /// Add a narration profile
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
-        Task<RServiceResult<UserNarrationProfileViewModel>> AddUserNarrationProfiles(UserNarrationProfileViewModel profile);
+        Task<RServiceResult<UserRecitationProfileViewModel>> AddUserNarrationProfiles(UserRecitationProfileViewModel profile);
 
         /// <summary>
         /// Update a narration profile 
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
-        Task<RServiceResult<UserNarrationProfileViewModel>> UpdateUserNarrationProfiles(UserNarrationProfileViewModel profile);
+        Task<RServiceResult<UserRecitationProfileViewModel>> UpdateUserNarrationProfiles(UserRecitationProfileViewModel profile);
 
         /// <summary>
         /// Delete a narration profile 
@@ -146,6 +146,6 @@ namespace RMuseum.Services
         /// <param name="inProgress"></param>
         /// <param name="finished"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, NarrationPublishingTracker[] Items)>> GetPublishingQueueStatus(PagingParameterModel paging, bool inProgress, bool finished);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTracker[] Items)>> GetPublishingQueueStatus(PagingParameterModel paging, bool inProgress, bool finished);
     }
 }

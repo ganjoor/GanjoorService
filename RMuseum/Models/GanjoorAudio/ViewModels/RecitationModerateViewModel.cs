@@ -22,7 +22,7 @@
     /// <summary>
     /// Poem Narration Moderation View Model
     /// </summary>
-    public class PoemNarrationModerateViewModel
+    public class RecitationModerateViewModel
     {
         /// <summary>
         /// Moderation Result

@@ -9,12 +9,12 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
     /// <summary>
     ///  Poem Narration view model
     /// </summary>
-    public class PoemNarrationViewModel
+    public class RecitationViewModel
     {
         /// <summary>
         /// parameterless constructor for deserialization support
         /// </summary>
-        public PoemNarrationViewModel()
+        public RecitationViewModel()
         {
 
         }
@@ -24,7 +24,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// <param name="src"></param>
         /// <param name="owner"></param>
         /// <param name="poem"></param>
-        public PoemNarrationViewModel(PoemNarration src, RAppUser owner, GanjoorPoem poem)
+        public RecitationViewModel(Recitation src, RAppUser owner, GanjoorPoem poem)
         {
             Id = src.Id;
             Owner = new PublicRAppUser(owner);
