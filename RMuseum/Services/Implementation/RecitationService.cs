@@ -1120,8 +1120,13 @@ namespace RMuseum.Services.Implementation
             try
             {
                 List<UserRecitationProfileViewModel> profiles = new List<UserRecitationProfileViewModel>();
-                
-                foreach(UserRecitationProfile p in (await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId).ToArrayAsync()))
+
+                foreach (UserRecitationProfile p in (await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == true).ToArrayAsync()))
+                {
+                    profiles.Add(new UserRecitationProfileViewModel(p));
+                }
+
+                foreach (UserRecitationProfile p in (await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == false).ToArrayAsync()))
                 {
                     profiles.Add(new UserRecitationProfileViewModel(p));
                 }
