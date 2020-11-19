@@ -31,6 +31,14 @@ namespace RMuseum.Services
         Task<RServiceResult<RecitationViewModel>> Get(int id);
 
         /// <summary>
+        /// Delete recitation (recitation should belong to userId)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> Delete(int id, Guid userId);
+
+        /// <summary>
         /// Gets Verse Sync Range Information
         /// </summary>
         /// <param name="id">narration id</param>

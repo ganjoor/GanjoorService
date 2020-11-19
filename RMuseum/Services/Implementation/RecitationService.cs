@@ -98,6 +98,77 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// Delete recitation
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> Delete(int id, Guid userId)
+        {
+            try
+            {
+                Recitation recitation = await _context.Recitations.Where(a => a.Id == id && a.OwnerId == userId).FirstOrDefaultAsync();
+                if(recitation == null)
+                {
+                    return new RServiceResult<bool>(false, "404");
+                }
+
+               
+
+                if (recitation.ReviewStatus == AudioReviewStatus.Approved)
+                {
+                    recitation.AudioSyncStatus = (int)AudioSyncStatus.Deleted;
+                    _context.Recitations.Update(recitation);
+                    await _context.SaveChangesAsync();
+
+                    _backgroundTaskQueue.QueueBackgroundWorkItem
+                  (
+                  async token =>
+                  {
+                      using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
+                      {
+                          await _DeleteNarrationFromRemote(recitation, context);
+                      }
+
+                      
+                  });
+                }
+                else
+                {
+                    await _FinalizeDelete(_context, recitation);
+                }
+
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        private async Task<string> _FinalizeDelete(RMuseumDbContext context, Recitation recitation)
+        {
+            try
+            {
+                string mp3 = recitation.LocalMp3FilePath;
+                string xml = recitation.LocalXmlFilePath;
+                context.Recitations.Remove(recitation);
+                await context.SaveChangesAsync();
+
+                File.Delete(mp3);
+                File.Delete(xml);
+
+                return "";
+            }
+            catch(Exception exp)
+            {
+                return exp.ToString();
+            }
+        }
+
+
+        /// <summary>
         /// Gets Verse Sync Range Information
         /// </summary>
         /// <param name="id">narration id</param>
@@ -938,6 +1009,58 @@ namespace RMuseum.Services.Implementation
                 tracker.LastException = exp.ToString();
                 context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
+            }
+            finally
+            {
+                client.Disconnect();
+            }
+        }
+
+        private async Task _DeleteNarrationFromRemote(Recitation narration, RMuseumDbContext context)
+        {
+            using var client = new SftpClient
+                        (
+                            Configuration.GetSection("AudioSFPServer")["Host"],
+                            int.Parse(Configuration.GetSection("AudioSFPServer")["Port"]),
+                            Configuration.GetSection("AudioSFPServer")["Username"],
+                            Configuration.GetSection("AudioSFPServer")["Password"]
+                            );
+            try
+            {
+                client.Connect();
+                client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}");
+
+
+
+                string sql = $"DELETE FROM ganja_gaudio WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_order = {narration.AudioOrder} AND audio_guid = '{narration.LegacyAudioGuid}'";
+
+                using (MySqlConnection connection = new MySqlConnection
+                (
+                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
+                ))
+                {
+                    await connection.OpenAsync();
+                    await connection.ExecuteAsync(sql);
+                }
+
+                //We are using two database for different purposes on the remote
+                using (MySqlConnection connection = new MySqlConnection
+                (
+                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
+                ))
+                {
+                    await connection.OpenAsync();
+                    await connection.ExecuteAsync(sql);
+                }
+
+                await _FinalizeDelete(context, narration);
+
+
+            }
+            catch
+            {
+                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
             }
             finally
             {

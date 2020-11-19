@@ -258,6 +258,27 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// Delete a recitation
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> DeleteRecitation(int id)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<bool> res = await _audioService.Delete(id, loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok(res.Result);
+        }
+
 
 
         /// <summary>
@@ -319,7 +340,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
-        public async Task<IActionResult> ReciationNarrations(bool replace = false)
+        public async Task<IActionResult> UploadReciation(bool replace = false)
         {
             try
             {
@@ -469,6 +490,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
 
         [HttpDelete("profile/{id}")]
+        [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]

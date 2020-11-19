@@ -753,6 +753,13 @@
             <param name="model"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.DeleteRecitation(System.Int32)">
+            <summary>
+            Delete a recitation
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean)">
             <summary>
             Get User Uploads
@@ -761,7 +768,7 @@
             <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users uploads</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.ReciationNarrations(System.Boolean)">
+        <member name="M:RMuseum.Controllers.RecitationController.UploadReciation(System.Boolean)">
             <summary>
             Reciation Upload
             </summary>
@@ -4973,6 +4980,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.Delete(System.Int32,System.Guid)">
+            <summary>
+            Delete recitation
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.RecitationService.GetPoemNarrationVerseSyncArray(System.Int32)">
             <summary>
             Gets Verse Sync Range Information
@@ -5297,6 +5312,14 @@
             return selected narration information
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.Delete(System.Int32,System.Guid)">
+            <summary>
+            Delete recitation (recitation should belong to userId)
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.GetPoemNarrationVerseSyncArray(System.Int32)">
