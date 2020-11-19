@@ -761,10 +761,14 @@
             <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users uploads</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.UploadNarrations">
+        <member name="M:RMuseum.Controllers.RecitationController.ReciationNarrations(System.Boolean)">
             <summary>
-            Narration Upload
+            Reciation Upload
             </summary>
+            <param name="replace">
+            if you send true to replace parameter, if there is an existing recitation for the poem from the user with the same Audio Artist name
+            corresponding mp3+xml files are replaced an no other changes is applied (no new post, preserving recitation position)
+            </param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.MysqlonetimeImport">
@@ -3500,9 +3504,14 @@
             Generic
             </summary>
         </member>
-        <member name="F:RMuseum.Models.UploadSession.UploadSessionType.Audio">
+        <member name="F:RMuseum.Models.UploadSession.UploadSessionType.NewAudio">
             <summary>
-            Audio
+            New Audio
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.UploadSession.UploadSessionType.ReplaceAudio">
+            <summary>
+            New or replace audio
             </summary>
         </member>
         <member name="T:RMuseum.Models.UploadSession.ViewModels.UploadedItemViewModel">
@@ -4999,11 +5008,12 @@
             <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
             <returns>error string if occurs</returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.InitiateNewUploadSession(System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.RecitationService.InitiateNewUploadSession(System.Guid,System.Boolean)">
             <summary>
             Initiate New Upload Session for audio
             </summary>
             <param name="userId"></param>
+            <param name="replace"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.RecitationService.SaveUploadedFile(Microsoft.AspNetCore.Http.IFormFile)">
@@ -5318,11 +5328,12 @@
             <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
             <returns>error string if occurs</returns>
         </member>
-        <member name="M:RMuseum.Services.IRecitationService.InitiateNewUploadSession(System.Guid)">
+        <member name="M:RMuseum.Services.IRecitationService.InitiateNewUploadSession(System.Guid,System.Boolean)">
             <summary>
             Initiate New Upload Session for audio
             </summary>
             <param name="userId"></param>
+            <param name="replace"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.SaveUploadedFile(Microsoft.AspNetCore.Http.IFormFile)">

@@ -63,8 +63,9 @@ namespace RMuseum.Services
         /// Initiate New Upload Session for audio
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="replace"></param>
         /// <returns></returns>
-        Task<RServiceResult<UploadSession>> InitiateNewUploadSession(Guid userId);
+        Task<RServiceResult<UploadSession>> InitiateNewUploadSession(Guid userId, bool replace);
 
         /// <summary>
         /// Save uploaded file

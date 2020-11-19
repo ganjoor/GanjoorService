@@ -406,8 +406,9 @@ namespace RMuseum.Services.Implementation
         /// Initiate New Upload Session for audio
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="replace"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<UploadSession>> InitiateNewUploadSession(Guid userId)
+        public async Task<RServiceResult<UploadSession>> InitiateNewUploadSession(Guid userId, bool replace)
         {
             try
             {
@@ -419,7 +420,7 @@ namespace RMuseum.Services.Implementation
 
                 UploadSession session = new UploadSession()
                 {
-                    SessionType = UploadSessionType.Audio,
+                    SessionType = UploadSessionType.NewAudio,
                     UseId = userId,
                     UploadStartTime = DateTime.Now,
                     Status = UploadSessionProcessStatus.NotStarted,
@@ -604,56 +605,85 @@ namespace RMuseum.Services.Implementation
                                                 File.Move(mp3file.FilePath, localMp3FilePath);
                                                 int mp3fileSize = File.ReadAllBytes(localMp3FilePath).Length;
 
-
-
-                                                Guid legacyAudioGuid = audio.SyncGuid;
-                                                while (
-                                                    (await context.Recitations.Where(a => a.LegacyAudioGuid == legacyAudioGuid).FirstOrDefaultAsync()) != null
-                                                    )
+                                                bool replace = false;
+                                                if(session.SessionType == UploadSessionType.ReplaceAudio)
                                                 {
-                                                    legacyAudioGuid = Guid.NewGuid();
-                                                }
-
-
-                                                Recitation narration = new Recitation()
-                                                {
-                                                    GanjoorPostId = audio.PoemId,
-                                                    OwnerId = session.UseId,
-                                                    GanjoorAudioId = 1 + await context.Recitations.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
-                                                    AudioOrder = 1 + await context.Recitations.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
-                                                    FileNameWithoutExtension = fileNameWithoutExtension,
-                                                    SoundFilesFolder = currentTargetFolder,
-                                                    AudioTitle = string.IsNullOrEmpty(audio.PoemTitle) ? audio.Description : audio.PoemTitle,
-                                                    AudioArtist = defProfile.ArtistName,
-                                                    AudioArtistUrl = defProfile.ArtistUrl,
-                                                    AudioSrc = defProfile.AudioSrc,
-                                                    AudioSrcUrl = defProfile.AudioSrcUrl,
-                                                    LegacyAudioGuid = legacyAudioGuid,
-                                                    Mp3FileCheckSum = audio.FileCheckSum,
-                                                    Mp3SizeInBytes = mp3fileSize,
-                                                    OggSizeInBytes = 0,
-                                                    UploadDate = session.UploadEndTime,
-                                                    FileLastUpdated = session.UploadEndTime,
-                                                    LocalMp3FilePath = localMp3FilePath,
-                                                    LocalXmlFilePath = localXmlFilePath,
-                                                    AudioSyncStatus = (int)AudioSyncStatus.NewItem,
-                                                    ReviewStatus = AudioReviewStatus.Draft
-                                                };
-
-                                                if (narration.AudioTitle.IndexOf("فایل صوتی") == 0) //no modification on title
-                                                {
-                                                    GanjoorPoem poem = await context.GanjoorPoems.Where(p => p.Id == audio.PoemId).SingleOrDefaultAsync();
-                                                    if (poem != null)
+                                                    Recitation existing =  await context.Recitations.Where(r => r.OwnerId == session.UseId && r.GanjoorPostId == audio.PoemId && r.AudioArtist == defProfile.ArtistName).FirstOrDefaultAsync();
+                                                    if(existing != null)
                                                     {
-                                                        narration.AudioTitle = poem.Title;
+                                                        replace = true;
+
+                                                        File.Move(localXmlFilePath, existing.LocalXmlFilePath, true);
+                                                        File.Move(localMp3FilePath, existing.LocalMp3FilePath, true);
+                                                        existing.Mp3FileCheckSum = audio.FileCheckSum;
+                                                        existing.Mp3SizeInBytes = mp3fileSize;
+                                                        existing.FileLastUpdated = session.UploadEndTime;
+                                                        existing.AudioSyncStatus = (int)AudioSyncStatus.SoundFilesChanged;
+
+                                                        context.Recitations.Update(existing);
+
+                                                        await context.SaveChangesAsync();
+
+                                                        _backgroundTaskQueue.QueueBackgroundWorkItem
+                                                            (
+                                                            async token =>
+                                                            {
+                                                            using (RMuseumDbContext publishcontext = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
+                                                                                    {
+                                                               await _PublishNarration(existing, publishcontext, true);
+                                                            }
+                                                            });
+
                                                     }
                                                 }
 
 
-                                                
+                                                if(!replace)
+                                                {
+                                                    Guid legacyAudioGuid = audio.SyncGuid;
+                                                    while (
+                                                        (await context.Recitations.Where(a => a.LegacyAudioGuid == legacyAudioGuid).FirstOrDefaultAsync()) != null
+                                                        )
+                                                    {
+                                                        legacyAudioGuid = Guid.NewGuid();
+                                                    }
 
-                                                context.Recitations.Add(narration);
 
+                                                    Recitation narration = new Recitation()
+                                                    {
+                                                        GanjoorPostId = audio.PoemId,
+                                                        OwnerId = session.UseId,
+                                                        GanjoorAudioId = 1 + await context.Recitations.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
+                                                        AudioOrder = 1 + await context.Recitations.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
+                                                        FileNameWithoutExtension = fileNameWithoutExtension,
+                                                        SoundFilesFolder = currentTargetFolder,
+                                                        AudioTitle = string.IsNullOrEmpty(audio.PoemTitle) ? audio.Description : audio.PoemTitle,
+                                                        AudioArtist = defProfile.ArtistName,
+                                                        AudioArtistUrl = defProfile.ArtistUrl,
+                                                        AudioSrc = defProfile.AudioSrc,
+                                                        AudioSrcUrl = defProfile.AudioSrcUrl,
+                                                        LegacyAudioGuid = legacyAudioGuid,
+                                                        Mp3FileCheckSum = audio.FileCheckSum,
+                                                        Mp3SizeInBytes = mp3fileSize,
+                                                        OggSizeInBytes = 0,
+                                                        UploadDate = session.UploadEndTime,
+                                                        FileLastUpdated = session.UploadEndTime,
+                                                        LocalMp3FilePath = localMp3FilePath,
+                                                        LocalXmlFilePath = localXmlFilePath,
+                                                        AudioSyncStatus = (int)AudioSyncStatus.NewItem,
+                                                        ReviewStatus = AudioReviewStatus.Draft
+                                                    };
+
+                                                    if (narration.AudioTitle.IndexOf("فایل صوتی") == 0) //no modification on title
+                                                    {
+                                                        GanjoorPoem poem = await context.GanjoorPoems.Where(p => p.Id == audio.PoemId).SingleOrDefaultAsync();
+                                                        if (poem != null)
+                                                        {
+                                                            narration.AudioTitle = poem.Title;
+                                                        }
+                                                    }
+                                                    context.Recitations.Add(narration);
+                                                }
 
                                                 session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "";
                                                 session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResult = true;
@@ -663,6 +693,8 @@ namespace RMuseum.Services.Implementation
                                         }
                                         
                                         await context.SaveChangesAsync();
+
+                                      
                                     }
                                 }
                                 catch (Exception exp)
@@ -784,7 +816,7 @@ namespace RMuseum.Services.Implementation
                     {
                         using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
                         {
-                            await _PublishNarration(narration, context);
+                            await _PublishNarration(narration, context, false);
                         }
                     });
                 }
@@ -802,7 +834,7 @@ namespace RMuseum.Services.Implementation
 
        
 
-        private async Task _PublishNarration(Recitation narration, RMuseumDbContext context)
+        private async Task _PublishNarration(Recitation narration, RMuseumDbContext context, bool replace)
         {
             RecitationPublishingTracker tracker = new RecitationPublishingTracker()
             {
@@ -841,37 +873,43 @@ namespace RMuseum.Services.Implementation
                 context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
 
-                string sql = $"INSERT INTO ganja_gaudio (audio_post_ID,audio_order,audio_xml,audio_ogg,audio_mp3,audio_title,audio_artist," +
-                        $"audio_artist_url,audio_src,audio_src_url, audio_guid, audio_fchecksum, audio_mp3bsize, audio_oggbsize, audio_date) VALUES " +
-                        $"({narration.GanjoorPostId},{narration.AudioOrder},'{narration.RemoteXMLFilePath}', '', '{narration.Mp3Url}', '{narration.AudioTitle}', '{narration.AudioArtist}', " +
-                        $"'{narration.AudioArtistUrl}', '{narration.AudioSrc}', '{narration.AudioSrcUrl}', '{narration.LegacyAudioGuid}', '{narration.Mp3FileCheckSum}', {narration.Mp3SizeInBytes}, 0, NOW())";
 
-                using (MySqlConnection connection = new MySqlConnection
-                (
-                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
-                ))
+                if(!replace)
                 {
-                    await connection.OpenAsync();
-                    await connection.ExecuteAsync(sql);
+                    string sql = $"INSERT INTO ganja_gaudio (audio_post_ID,audio_order,audio_xml,audio_ogg,audio_mp3,audio_title,audio_artist," +
+                    $"audio_artist_url,audio_src,audio_src_url, audio_guid, audio_fchecksum, audio_mp3bsize, audio_oggbsize, audio_date) VALUES " +
+                    $"({narration.GanjoorPostId},{narration.AudioOrder},'{narration.RemoteXMLFilePath}', '', '{narration.Mp3Url}', '{narration.AudioTitle}', '{narration.AudioArtist}', " +
+                    $"'{narration.AudioArtistUrl}', '{narration.AudioSrc}', '{narration.AudioSrcUrl}', '{narration.LegacyAudioGuid}', '{narration.Mp3FileCheckSum}', {narration.Mp3SizeInBytes}, 0, NOW())";
+
+                    using (MySqlConnection connection = new MySqlConnection
+                    (
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
+                    ))
+                    {
+                        await connection.OpenAsync();
+                        await connection.ExecuteAsync(sql);
+                    }
+
+                    tracker.FirstDbUpdated = true;
+                    context.RecitationPublishingTrackers.Update(tracker);
+                    await context.SaveChangesAsync();
+
+                    //We are using two database for different purposes on the remote
+                    using (MySqlConnection connection = new MySqlConnection
+                    (
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
+                    ))
+                    {
+                        await connection.OpenAsync();
+                        await connection.ExecuteAsync(sql);
+                    }
+
+                    tracker.SecondDbUpdated = true;
+                    context.RecitationPublishingTrackers.Update(tracker);
+                    await context.SaveChangesAsync();
                 }
 
-                tracker.FirstDbUpdated = true;
-                context.RecitationPublishingTrackers.Update(tracker);
-                await context.SaveChangesAsync();
-
-                //We are using two database for different purposes on the remote
-                using (MySqlConnection connection = new MySqlConnection
-                (
-                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
-                ))
-                {
-                    await connection.OpenAsync();
-                    await connection.ExecuteAsync(sql);
-                }
-
-                tracker.SecondDbUpdated = true;
-                context.RecitationPublishingTrackers.Update(tracker);
-                await context.SaveChangesAsync();
+               
 
                 narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
                 context.Recitations.Update(narration);
@@ -921,7 +959,7 @@ namespace RMuseum.Services.Implementation
                             var list = await context.Recitations.Where(a => a.ReviewStatus == AudioReviewStatus.Approved && a.AudioSyncStatus != (int)AudioSyncStatus.SynchronizedOrRejected).ToListAsync();
                             foreach (Recitation narration in list)
                             {
-                                await _PublishNarration(narration, context);
+                                await _PublishNarration(narration, context, false);
                             }
                         }
                     });

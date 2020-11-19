@@ -306,8 +306,12 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// Narration Upload
+        /// Reciation Upload
         /// </summary>
+        /// <param name="replace">
+        /// if you send true to replace parameter, if there is an existing recitation for the poem from the user with the same Audio Artist name
+        /// corresponding mp3+xml files are replaced an no other changes is applied (no new post, preserving recitation position)
+        /// </param>
         /// <returns></returns>
         [HttpPost]
         [Authorize]
@@ -315,12 +319,12 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
-        public async Task<IActionResult> UploadNarrations()
+        public async Task<IActionResult> ReciationNarrations(bool replace = false)
         {
             try
             {
                 Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-                RServiceResult<UploadSession> resSession = await _audioService.InitiateNewUploadSession(loggedOnUserId);
+                RServiceResult<UploadSession> resSession = await _audioService.InitiateNewUploadSession(loggedOnUserId, replace);
                 if (!string.IsNullOrEmpty(resSession.ExceptionString))
                     return BadRequest(resSession.ExceptionString);
                 List<UploadSessionFile> files = new List<UploadSessionFile>();

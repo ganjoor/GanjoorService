@@ -12,9 +12,14 @@ namespace RMuseum.Models.UploadSession
         Generic = 0,
 
         /// <summary>
-        /// Audio
+        /// New Audio
         /// </summary>
-        Audio = 1
+        NewAudio = 1,
+
+        /// <summary>
+        /// New or replace audio
+        /// </summary>
+        ReplaceAudio = 2,
 
     }
 }
