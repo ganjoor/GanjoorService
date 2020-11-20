@@ -155,9 +155,11 @@ namespace RMuseum.Services.Implementation
                 string xml = recitation.LocalXmlFilePath;
                 context.Recitations.Remove(recitation);
                 await context.SaveChangesAsync();
-
-                File.Delete(mp3);
-                File.Delete(xml);
+                
+                if(File.Exists(mp3))
+                    File.Delete(mp3);
+                if (File.Exists(xml))
+                    File.Delete(xml);
 
                 return "";
             }
@@ -852,7 +854,8 @@ namespace RMuseum.Services.Implementation
                 if (narration.ReviewStatus == AudioReviewStatus.Rejected)
                 {
                     narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
-                    //TODO: delete rejected items files passed a certain period of time in a maintenance job
+                    File.Delete(narration.LocalMp3FilePath);
+                    File.Delete(narration.LocalXmlFilePath);
                 }
                 narration.ReviewMsg = model.Message;
                 _context.Recitations.Update(narration);

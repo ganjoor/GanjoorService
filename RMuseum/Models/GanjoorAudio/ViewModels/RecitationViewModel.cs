@@ -74,6 +74,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
                 }               
             }
             AudioSyncStatusArray = lst.ToArray();
+            ReviewMsg = src.ReviewMsg;
         }
 
         /// <summary>
@@ -246,5 +247,10 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// Review Status
         /// </summary>
         public AudioReviewStatus ReviewStatus { get; set; }
+
+        /// <summary>
+        /// Review Message
+        /// </summary>
+        public string ReviewMsg { get; set; }
     }
 }
