@@ -796,6 +796,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetUserDefProfile">
+            <summary>
+            Get User Default Profile
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel)">
             <summary>
             Add a narration profile
@@ -5074,6 +5080,13 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUserDefProfile(System.Guid)">
+            <summary>
+            Get User Default Profile
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.RecitationService.GetUserProfileValidationError(RMuseum.Models.GanjoorAudio.UserRecitationProfile)">
             <summary>
             validating narration profile
@@ -5393,6 +5406,13 @@
         <member name="M:RMuseum.Services.IRecitationService.GetUserNarrationProfiles(System.Guid)">
             <summary>
             Get User Profiles
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetUserDefProfile(System.Guid)">
+            <summary>
+            Get User Default Profile
             </summary>
             <param name="userId"></param>
             <returns></returns>

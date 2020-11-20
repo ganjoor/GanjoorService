@@ -1140,6 +1140,23 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// Get User Default Profile
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<UserRecitationProfileViewModel>> GetUserDefProfile(Guid userId)
+        {
+            try
+            {
+                return new RServiceResult<UserRecitationProfileViewModel>(new UserRecitationProfileViewModel(await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == true).FirstOrDefaultAsync()));
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<UserRecitationProfileViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// validating narration profile
         /// </summary>
         /// <param name="p"></param>

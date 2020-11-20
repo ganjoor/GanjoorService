@@ -433,6 +433,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Get User Default Profile
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("profile/def")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserRecitationProfileViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+
+        public async Task<IActionResult> GetUserDefProfile()
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = await _audioService.GetUserDefProfile(loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// Add a narration profile
         /// </summary>
         /// <param name="profile"></param>
