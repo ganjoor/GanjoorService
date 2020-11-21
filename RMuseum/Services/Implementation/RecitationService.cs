@@ -493,7 +493,7 @@ namespace RMuseum.Services.Implementation
 
                 UploadSession session = new UploadSession()
                 {
-                    SessionType = UploadSessionType.NewAudio,
+                    SessionType = replace ? UploadSessionType.ReplaceAudio : UploadSessionType.NewAudio,
                     UseId = userId,
                     UploadStartTime = DateTime.Now,
                     Status = UploadSessionProcessStatus.NotStarted,
@@ -811,7 +811,7 @@ namespace RMuseum.Services.Implementation
                                 session.UseId,
                                 "پایان پردازش خوانش بارگذاری شده",
                                 $"پردازش خوانشهای بارگذاری شدهٔ اخیر شما تکمیل شده است.{Environment.NewLine}" +
-                                $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آنها را بررسی و ذر صورت عدم وجود خطا تقاضای بررسی آنها توسط ناظران را ثبت کنید."
+                                $"می‌توانید با مراجعه به بارگذاری‌ها وضعیت آنها را بررسی و در صورت عدم وجود خطا تقاضای بررسی آنها توسط ناظران را ثبت کنید."
                             );
                         }
                        
@@ -868,7 +868,7 @@ namespace RMuseum.Services.Implementation
                              narration.OwnerId,
                              "نیاز به بررسی خوانش ارسالی",
                              $"خوانش شما بررسی شده و نیاز به اعمال تغییرات دارد.{Environment.NewLine}" +
-                             $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
+                             $"می‌توانید با مراجعه به خوانش‌هایتان وضعیت آن را بررسی کنید."
                          );
                 }
                 else
@@ -879,7 +879,7 @@ namespace RMuseum.Services.Implementation
                              narration.OwnerId,
                              "عدم پذیرش خوانش ارسالی",
                              $"خوانش ارسالی شما قابل پذیرش نبود.{Environment.NewLine}" +
-                             $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
+                             $"می‌توانید با مراجعه به  خوانش‌هایتان وضعیت آن را بررسی کنید."
                          );
                 }
                 else //approved:
@@ -996,7 +996,7 @@ namespace RMuseum.Services.Implementation
                     narration.OwnerId,
                     "انتشار خوانش ارسالی",
                     $"خوانش ارسالی شما منتشر شد.{Environment.NewLine}" +
-                    $"می‌توانید با مراجعه به این صفحه TODO: client url وضعیت آن را بررسی کنید."
+                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
                 );
 
                 tracker.Finished = true;
