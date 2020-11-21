@@ -2043,6 +2043,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.FindUserByEmail(System.String)">
+            <summary>
+            Find User By Email
+            </summary>
+            <param name="email"></param>
+            <returns></returns>
+        </member>
         <member name="P:RSecurityBackend.Services.IAppUserService.AdministratorRoleName">
             <summary>
             Administrator role name
@@ -2353,6 +2360,13 @@
             <param name="secret"></param>
             <param name="password"></param>
             <param name="clientIPAddress"></param>       
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.FindUserByEmail(System.String)">
+            <summary>
+            Find User By Email
+            </summary>
+            <param name="email"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.AppUserService.DeleteTenant">

@@ -239,6 +239,13 @@ namespace RSecurityBackend.Services
         /// <returns></returns>
         RServiceResult<bool> DeleteTenant();
 
+        /// <summary>
+        /// Find User By Email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PublicRAppUser>> FindUserByEmail(string email);
+
 
         /// <summary>
         /// Administrator role name

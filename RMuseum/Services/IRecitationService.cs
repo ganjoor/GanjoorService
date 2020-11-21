@@ -143,6 +143,15 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> DeleteUserNarrationProfiles(Guid id, Guid userId);
 
         /// <summary>
+        /// Transfer Recitations Ownership
+        /// </summary>
+        /// <param name="currentOwenerId"></param>
+        /// <param name="newOwnerId"></param>
+        /// <param name="artistName"></param>
+        /// <returns></returns>
+        Task<RServiceResult<int>> TransferRecitationsOwnership(Guid currentOwenerId, Guid newOwnerId, string artistName);
+
+        /// <summary>
         /// Get uploads descending by upload time
         /// </summary>
         /// <param name="paging"></param>

@@ -551,14 +551,45 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Transfer Recitations Ownership
+        /// </summary>
+        /// <param name="targetEmailAddress"></param>
+        /// <param name="artistName"></param>
+        /// <returns>number of transfered items</returns>
+
+        [HttpPut("chown")]
+        [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        public async Task<IActionResult> TransferRecitationsOwnership(string targetEmailAddress, string artistName)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var userSearchResult = await _appUserService.FindUserByEmail(targetEmailAddress);
+            if (!string.IsNullOrEmpty(userSearchResult.ExceptionString))
+                return BadRequest(userSearchResult);
+            if (userSearchResult.Result == null)
+                return NotFound();
+
+            var resExec = await _audioService.TransferRecitationsOwnership(loggedOnUserId, (Guid)userSearchResult.Result.Id, artistName);
+            if (!string.IsNullOrEmpty(resExec.ExceptionString))
+                return BadRequest(resExec.ExceptionString);
+
+            return Ok(resExec.Result);
+
+        }
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="audioService"></param>
         /// <param name="userPermissionChecker"></param>
-        public RecitationController(IRecitationService audioService, IUserPermissionChecker userPermissionChecker)
+        /// <param name="appUserService"></param>
+        public RecitationController(IRecitationService audioService, IUserPermissionChecker userPermissionChecker, IAppUserService appUserService)
         {
             _audioService = audioService;
             _userPermissionChecker = userPermissionChecker;
+            _appUserService = appUserService;
         }
 
         /// <summary>
@@ -570,6 +601,11 @@ namespace RMuseum.Controllers
         /// IUserPermissionChecker instance
         /// </summary>
         protected IUserPermissionChecker _userPermissionChecker;
+
+        /// <summary>
+        /// IAppUserService instance
+        /// </summary>
+        protected IAppUserService _appUserService;
 
     }
 }

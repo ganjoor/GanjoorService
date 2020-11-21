@@ -833,12 +833,21 @@
             <param name="finished"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.#ctor(RMuseum.Services.IRecitationService,RSecurityBackend.Services.IUserPermissionChecker)">
+        <member name="M:RMuseum.Controllers.RecitationController.TransferRecitationsOwnership(System.String,System.String)">
+            <summary>
+            Transfer Recitations Ownership
+            </summary>
+            <param name="targetEmailAddress"></param>
+            <param name="artistName"></param>
+            <returns>number of transfered items</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.#ctor(RMuseum.Services.IRecitationService,RSecurityBackend.Services.IUserPermissionChecker,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
             </summary>
             <param name="audioService"></param>
             <param name="userPermissionChecker"></param>
+            <param name="appUserService"></param>
         </member>
         <member name="F:RMuseum.Controllers.RecitationController._audioService">
             <summary>
@@ -848,6 +857,11 @@
         <member name="F:RMuseum.Controllers.RecitationController._userPermissionChecker">
             <summary>
             IUserPermissionChecker instance
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.RecitationController._appUserService">
+            <summary>
+            IAppUserService instance
             </summary>
         </member>
         <member name="T:RMuseum.Controllers.RImageController">
@@ -5138,6 +5152,15 @@
             <param name="finished"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.TransferRecitationsOwnership(System.Guid,System.Guid,System.String)">
+            <summary>
+            Transfer Recitations Ownership
+            </summary>
+            <param name="currentOwenerId"></param>
+            <param name="newOwnerId"></param>
+            <param name="artistName"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementation.RecitationService.Configuration">
             <summary>
             Configuration
@@ -5442,6 +5465,15 @@
             </summary>
             <param name="id"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.TransferRecitationsOwnership(System.Guid,System.Guid,System.String)">
+            <summary>
+            Transfer Recitations Ownership
+            </summary>
+            <param name="currentOwenerId"></param>
+            <param name="newOwnerId"></param>
+            <param name="artistName"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">

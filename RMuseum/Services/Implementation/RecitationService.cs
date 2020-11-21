@@ -1431,6 +1431,32 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// Transfer Recitations Ownership
+        /// </summary>
+        /// <param name="currentOwenerId"></param>
+        /// <param name="newOwnerId"></param>
+        /// <param name="artistName"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> TransferRecitationsOwnership(Guid currentOwenerId, Guid newOwnerId, string artistName)
+        {
+            try
+            {
+                var recitations = await _context.Recitations.Where(r => r.OwnerId == currentOwenerId && r.AudioArtist == artistName).ToListAsync();
+                foreach(Recitation recitation in recitations)
+                {
+                    recitation.OwnerId = newOwnerId;
+                }
+                _context.Recitations.UpdateRange(recitations);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<int>(recitations.Count);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<int>(0, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Configuration
         /// </summary>
         protected IConfiguration Configuration { get; }

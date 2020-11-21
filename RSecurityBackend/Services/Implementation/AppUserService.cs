@@ -1245,6 +1245,26 @@ namespace RSecurityBackend.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// Find User By Email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PublicRAppUser>> FindUserByEmail(string email)
+        {
+            try
+            {
+                RAppUser user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                    return new RServiceResult<PublicRAppUser>(null);
+                return new RServiceResult<PublicRAppUser>(new PublicRAppUser(user));
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<PublicRAppUser>(null, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// delete tenant
