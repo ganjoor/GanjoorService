@@ -627,7 +627,7 @@ namespace RMuseum.Services.Implementation
                                     //the code would fail!
                                     foreach (PoemAudio audio in PoemAudioListProcessor.Load(file.FilePath)) 
                                     {
-                                        if( await context.Recitations.Where(a => a.Mp3FileCheckSum == audio.FileCheckSum).SingleOrDefaultAsync() != null)
+                                        if( await context.Recitations.Where(a => a.Mp3FileCheckSum == audio.FileCheckSum && a.ReviewStatus != AudioReviewStatus.Rejected).SingleOrDefaultAsync() != null)
                                         {
                                             session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "فایل صوتیی همسان با فایل ارسالی پیشتر آپلود شده است.";
                                             context.UploadSessions.Update(session);
