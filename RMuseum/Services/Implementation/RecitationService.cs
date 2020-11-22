@@ -187,22 +187,39 @@ namespace RMuseum.Services.Implementation
                 List<RecitationVerseSync> verseSyncs = new List<RecitationVerseSync>();
 
                 XElement elObject = XDocument.Parse(xml).Root;
+                float oneSecond = 1;
+                if(elObject.Element("PoemAudio").Elements("OneSecondBugFix").Count() == 0)
+                {
+                    oneSecond = 0.5f;
+                }
                 foreach (var syncInfo in elObject.Element("PoemAudio").Element("SyncArray").Elements("SyncInfo"))
                 {
                     int verseOrder = int.Parse(syncInfo.Element("VerseOrder").Value);
                     if (verseOrder < 0) //this happens, seems to be a bug, I did not trace it yet
                         verseOrder = 0;
-                    verseOrder++;
-                    var verse = verses.Where(v => v.VOrder == verseOrder).SingleOrDefault();
-                    if(verse != null)
+                    if(verseOrder == 0)
                     {
                         verseSyncs.Add(new RecitationVerseSync()
                         {
-                            VerseOrder = verseOrder,
-                            VerseText = verse.Text,
-                            AudioStartMilliseconds = int.Parse(syncInfo.Element("AudioMiliseconds").Value)
+                            VerseOrder = 0,
+                            VerseText = (await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).FirstOrDefaultAsync()).Title,
+                            AudioStartMilliseconds = (int)(oneSecond * int.Parse(syncInfo.Element("AudioMiliseconds").Value))
                         });
                     }
+                    else
+                    {
+                        var verse = verses.Where(v => v.VOrder == verseOrder).SingleOrDefault();
+                        if (verse != null)
+                        {
+                            verseSyncs.Add(new RecitationVerseSync()
+                            {
+                                VerseOrder = verseOrder,
+                                VerseText = verse.Text,
+                                AudioStartMilliseconds = (int)(oneSecond * int.Parse(syncInfo.Element("AudioMiliseconds").Value))
+                            });
+                        }
+                    }
+                    
                 }
 
                 return new RServiceResult<RecitationVerseSync[]>(verseSyncs.ToArray());
