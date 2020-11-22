@@ -291,6 +291,26 @@ namespace RMuseum.Services.Implementation
                 narration.ReviewStatus = metadata.ReviewStatus;
                 _context.Recitations.Update(narration);
                 await _context.SaveChangesAsync();
+
+                if(narration.ReviewStatus == AudioReviewStatus.Approved)
+                {
+                    narration.AudioSyncStatus = (int)AudioSyncStatus.MetadataChanged;
+                    _context.Recitations.Update(narration);
+                    await _context.SaveChangesAsync();
+
+                    _backgroundTaskQueue.QueueBackgroundWorkItem
+                   (
+                   async token =>
+                   {
+                       using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
+                          {
+                           await _UpdateRemoteRecitations(narration, context);
+                       }
+
+
+                   });
+
+                }
                 return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
             }
             catch (Exception exp)
@@ -299,7 +319,52 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        
+        private async Task _UpdateRemoteRecitations(Recitation narration, RMuseumDbContext context)
+        {
+          
+            try
+            {
+
+
+
+                string sql = $"UPDATE ganja_gaudio SET audio_title = '{narration.AudioTitle}',audio_artist = '{narration.AudioArtist}', " +
+                     $"audio_artist_url = '{narration.AudioArtistUrl}',audio_src = '{narration.AudioSrc}',audio_src_url = '{narration.AudioSrcUrl}' " +
+                     $" WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_order = {narration.AudioOrder} AND audio_guid = '{narration.LegacyAudioGuid}'";
+
+
+                using (MySqlConnection connection = new MySqlConnection
+                (
+                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
+                ))
+                {
+                    await connection.OpenAsync();
+                    await connection.ExecuteAsync(sql);
+                }
+
+                //We are using two database for different purposes on the remote
+                using (MySqlConnection connection = new MySqlConnection
+                (
+                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
+                ))
+                {
+                    await connection.OpenAsync();
+                    await connection.ExecuteAsync(sql);
+                }
+
+
+                narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
+                context.Recitations.Update(narration);
+                await context.SaveChangesAsync();
+
+            }
+            catch
+            {
+                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
+            }
+            
+        }
+
+
         /// <summary>
         /// imports data from ganjoor MySql database
         /// </summary>
