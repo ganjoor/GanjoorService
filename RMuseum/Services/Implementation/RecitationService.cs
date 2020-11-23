@@ -30,18 +30,15 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public class RecitationService : IRecitationService
     {
-
-        
-
-
         /// <summary>
         /// returns list of narrations
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
         /// <param name="status"></param>
+        /// <param name="searchTerm"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm)
         {
             try
             {
@@ -53,6 +50,8 @@ namespace RMuseum.Services.Implementation
                             (filteredUserId == Guid.Empty || a.OwnerId == filteredUserId)
                             &&
                             (status == AudioReviewStatus.All || a.ReviewStatus == status)
+                            &&
+                            (string.IsNullOrEmpty(searchTerm) || (!string.IsNullOrEmpty(searchTerm) && (a.AudioArtist.Contains(searchTerm) || a.AudioTitle.Contains(searchTerm) )))
                      )
                     .OrderByDescending(a => a.UploadDate)
                      join poem in _context.GanjoorPoems

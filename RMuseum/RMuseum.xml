@@ -694,13 +694,14 @@
             Artifact Service
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+        <member name="M:RMuseum.Controllers.RecitationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
             <summary>
             Gets audio narrations, user must have narration::moderate permission to be able to see all users narrations
             </summary>
             <param name="paging"></param>
             <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users narrations</param>
             <param name="status">default: -1, unfiltered</param>
+            <param name="searchTerm"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetMp3File(System.Int32)">
@@ -4989,13 +4990,14 @@
             Audio Narration Service Implementation
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
             <summary>
             returns list of narrations
             </summary>
             <param name="paging"></param>
             <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
             <param name="status"></param>
+            <param name="searchTerm"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.RecitationService.Get(System.Int32)">
@@ -5339,13 +5341,14 @@
             Audio Narration Service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.IRecitationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus)">
+        <member name="M:RMuseum.Services.IRecitationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
             <summary>
             returns list of narrations
             </summary>
             <param name="paging"></param>
             <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
             <param name="status"></param>
+            <param name="searchTerm"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.Get(System.Int32)">

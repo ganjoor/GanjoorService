@@ -20,8 +20,9 @@ namespace RMuseum.Services
         /// <param name="paging"></param>
         /// <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
         /// <param name="status"></param>
+        /// <param name="searchTerm"></param>
         /// <returns></returns>
-        public Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status);
+        public Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm);
 
         /// <summary>
         /// return selected narration information

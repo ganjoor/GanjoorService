@@ -30,6 +30,7 @@ namespace RMuseum.Controllers
         /// <param name="paging"></param>
         /// <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users narrations</param>
         /// <param name="status">default: -1, unfiltered</param>
+        /// <param name="searchTerm"></param>
         /// <returns></returns>
         [HttpGet]
         [Authorize]
@@ -37,7 +38,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
 
-        public async Task<IActionResult> Get([FromQuery] PagingParameterModel paging, bool allUsers = false, AudioReviewStatus status = AudioReviewStatus.All )
+        public async Task<IActionResult> Get([FromQuery] PagingParameterModel paging, bool allUsers = false, AudioReviewStatus status = AudioReviewStatus.All, string searchTerm = "")
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
@@ -60,7 +61,7 @@ namespace RMuseum.Controllers
                     return StatusCode((int)HttpStatusCode.Forbidden);
             }
 
-            var res = await _audioService.GetAll(paging, allUsers ? Guid.Empty : loggedOnUserId, status);
+            var res = await _audioService.GetAll(paging, allUsers ? Guid.Empty : loggedOnUserId, status, searchTerm);
             if(!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 
