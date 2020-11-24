@@ -44,18 +44,18 @@ namespace RMuseum.Services.Implementation
             {
                 //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
                 var source =
-                     from audio in _context.Recitations
-                     .Include(a => a.Owner)
-                     .Where(a =>
-                            (filteredUserId == Guid.Empty || a.OwnerId == filteredUserId)
-                            &&
-                            (status == AudioReviewStatus.All || a.ReviewStatus == status)
-                            &&
-                            (string.IsNullOrEmpty(searchTerm) || (!string.IsNullOrEmpty(searchTerm) && (a.AudioArtist.Contains(searchTerm) || a.AudioTitle.Contains(searchTerm) )))
-                     )
-                    .OrderByDescending(a => a.UploadDate)
+                     from audio in _context.Recitations.Include(a => a.Owner)
                      join poem in _context.GanjoorPoems
                      on audio.GanjoorPostId equals poem.Id
+                     where 
+                     (filteredUserId == Guid.Empty || audio.OwnerId == filteredUserId)
+                     &&
+                     (status == AudioReviewStatus.All || audio.ReviewStatus == status)
+                     &&
+                     (string.IsNullOrEmpty(searchTerm) ||
+                     (!string.IsNullOrEmpty(searchTerm) && (audio.AudioArtist.Contains(searchTerm) || audio.AudioTitle.Contains(searchTerm) || poem.FullTitle.Contains(searchTerm) ))
+                     )
+                     orderby audio.UploadDate descending
                      select new RecitationViewModel(audio, audio.Owner, poem);
 
                 (PaginationMetadata PagingMeta, RecitationViewModel[] Items) paginatedResult =
@@ -191,35 +191,32 @@ namespace RMuseum.Services.Implementation
                 {
                     oneSecond = 0.5f;
                 }
+                verseSyncs.Add(new RecitationVerseSync()
+                {
+                    VerseOrder = 0,
+                    VerseText = (await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).FirstOrDefaultAsync()).Title,
+                    AudioStartMilliseconds = 0
+                });
                 foreach (var syncInfo in elObject.Element("PoemAudio").Element("SyncArray").Elements("SyncInfo"))
                 {
                     int verseOrder = int.Parse(syncInfo.Element("VerseOrder").Value);
                     if (verseOrder < 0) //this happens, seems to be a bug, I did not trace it yet
-                        verseOrder = 0;
-                    if(verseOrder == 0)
+                        continue;
+                    verseOrder++;
+                    var verse = verses.Where(v => v.VOrder == verseOrder).SingleOrDefault();
+                    if (verse != null)
                     {
                         verseSyncs.Add(new RecitationVerseSync()
                         {
-                            VerseOrder = 0,
-                            VerseText = (await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).FirstOrDefaultAsync()).Title,
+                            VerseOrder = verseOrder,
+                            VerseText = verse.Text,
                             AudioStartMilliseconds = (int)(oneSecond * int.Parse(syncInfo.Element("AudioMiliseconds").Value))
                         });
                     }
-                    else
-                    {
-                        var verse = verses.Where(v => v.VOrder == verseOrder).SingleOrDefault();
-                        if (verse != null)
-                        {
-                            verseSyncs.Add(new RecitationVerseSync()
-                            {
-                                VerseOrder = verseOrder,
-                                VerseText = verse.Text,
-                                AudioStartMilliseconds = (int)(oneSecond * int.Parse(syncInfo.Element("AudioMiliseconds").Value))
-                            });
-                        }
-                    }
-                    
+
                 }
+
+                verseSyncs.Sort((a, b) => a.AudioStartMilliseconds.CompareTo(b.AudioStartMilliseconds));
 
                 return new RServiceResult<RecitationVerseSync[]>(verseSyncs.ToArray());
             }
