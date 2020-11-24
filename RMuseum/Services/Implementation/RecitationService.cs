@@ -150,15 +150,19 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                bool rejected = recitation.ReviewStatus == AudioReviewStatus.Rejected;
                 string mp3 = recitation.LocalMp3FilePath;
                 string xml = recitation.LocalXmlFilePath;
                 context.Recitations.Remove(recitation);
                 await context.SaveChangesAsync();
                 
-                if(File.Exists(mp3))
-                    File.Delete(mp3);
-                if (File.Exists(xml))
-                    File.Delete(xml);
+                if(!rejected)
+                {
+                    if (File.Exists(mp3))
+                        File.Delete(mp3);
+                    if (File.Exists(xml))
+                        File.Delete(xml);
+                }
 
                 return "";
             }
@@ -1195,19 +1199,29 @@ namespace RMuseum.Services.Implementation
         /// Get User Profiles
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="artistName"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<UserRecitationProfileViewModel[]>> GetUserNarrationProfiles(Guid userId)
+        public async Task<RServiceResult<UserRecitationProfileViewModel[]>> GetUserNarrationProfiles(Guid userId, string artistName)
         {
             try
             {
                 List<UserRecitationProfileViewModel> profiles = new List<UserRecitationProfileViewModel>();
 
-                foreach (UserRecitationProfile p in (await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == true).ToArrayAsync()))
+                foreach (UserRecitationProfile p in 
+                    (
+                    await _context.UserRecitationProfiles.Include(p => p.User)
+                    .Where(p => p.UserId == userId && p.IsDefault == true && 
+                    (string.IsNullOrEmpty(artistName) || (!string.IsNullOrEmpty(artistName) && p.ArtistName.Contains(artistName)))
+                    ).ToArrayAsync())
+                    )
                 {
                     profiles.Add(new UserRecitationProfileViewModel(p));
                 }
 
-                foreach (UserRecitationProfile p in (await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == false).ToArrayAsync()))
+                foreach (UserRecitationProfile p in (await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == false
+                &&
+                    (string.IsNullOrEmpty(artistName) || (!string.IsNullOrEmpty(artistName) && p.ArtistName.Contains(artistName)))
+                ).ToArrayAsync()))
                 {
                     profiles.Add(new UserRecitationProfileViewModel(p));
                 }

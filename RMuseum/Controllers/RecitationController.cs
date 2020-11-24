@@ -415,6 +415,7 @@ namespace RMuseum.Controllers
         /// <summary>
         /// Get User Profiles
         /// </summary>
+        /// <param name="artistName"></param>
         /// <returns></returns>
         [HttpGet("profile")]
         [Authorize]
@@ -422,10 +423,10 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
 
-        public async Task<IActionResult> GetUserNarrationProfiles()
+        public async Task<IActionResult> GetUserNarrationProfiles(string artistName)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            var res = await _audioService.GetUserNarrationProfiles(loggedOnUserId);
+            var res = await _audioService.GetUserNarrationProfiles(loggedOnUserId, artistName);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 

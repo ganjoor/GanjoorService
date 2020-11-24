@@ -111,8 +111,9 @@ namespace RMuseum.Services
         /// Get User Profiles
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="artistName"></param>
         /// <returns></returns>
-        Task<RServiceResult<UserRecitationProfileViewModel[]>> GetUserNarrationProfiles(Guid userId);
+        Task<RServiceResult<UserRecitationProfileViewModel[]>> GetUserNarrationProfiles(Guid userId, string artistName);
 
         /// <summary>
         /// Get User Default Profile

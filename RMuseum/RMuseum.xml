@@ -791,10 +791,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.GetUserNarrationProfiles">
+        <member name="M:RMuseum.Controllers.RecitationController.GetUserNarrationProfiles(System.String)">
             <summary>
             Get User Profiles
             </summary>
+            <param name="artistName"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetUserDefProfile">
@@ -5094,11 +5095,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUserNarrationProfiles(System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUserNarrationProfiles(System.Guid,System.String)">
             <summary>
             Get User Profiles
             </summary>
             <param name="userId"></param>
+            <param name="artistName"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.RecitationService.GetUserDefProfile(System.Guid)">
@@ -5434,11 +5436,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IRecitationService.GetUserNarrationProfiles(System.Guid)">
+        <member name="M:RMuseum.Services.IRecitationService.GetUserNarrationProfiles(System.Guid,System.String)">
             <summary>
             Get User Profiles
             </summary>
             <param name="userId"></param>
+            <param name="artistName"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.GetUserDefProfile(System.Guid)">
