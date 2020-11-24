@@ -25,10 +25,10 @@ namespace RMuseum.Controllers
     {
 
         /// <summary>
-        /// Gets audio narrations, user must have narration::moderate permission to be able to see all users narrations
+        /// Gets audio narrations, user must have recitation::moderate permission to be able to see all users narrations
         /// </summary>
         /// <param name="paging"></param>
-        /// <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users narrations</param>
+        /// <param name="allUsers">default: false, user must have recitation::moderate permission to be able to see all users narrations</param>
         /// <param name="status">default: -1, unfiltered</param>
         /// <param name="searchTerm"></param>
         /// <returns></returns>
@@ -51,7 +51,7 @@ namespace RMuseum.Controllers
                      (
                          loggedOnUserId,
                          sessionId,
-                         RMuseumSecurableItem.AudioNarrationEntityShortName,
+                         RMuseumSecurableItem.AudioRecitationEntityShortName,
                          RMuseumSecurableItem.ModerateOperationShortName
                          );
                 if (!string.IsNullOrEmpty(canView.ExceptionString))
@@ -204,7 +204,7 @@ namespace RMuseum.Controllers
                      (
                          loggedOnUserId,
                          sessionId,
-                         RMuseumSecurableItem.AudioNarrationEntityShortName,
+                         RMuseumSecurableItem.AudioRecitationEntityShortName,
                          RMuseumSecurableItem.ModerateOperationShortName
                          );
                 if (!string.IsNullOrEmpty(serviceResult.ExceptionString))
@@ -237,7 +237,7 @@ namespace RMuseum.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("moderate/{id}")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RecitationViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
@@ -286,7 +286,7 @@ namespace RMuseum.Controllers
         /// Get User Uploads
         /// </summary>
         /// <param name="paging"></param>
-        /// <param name="allUsers">default: false, user must have narration::moderate permission to be able to see all users uploads</param>
+        /// <param name="allUsers">default: false, user must have recitation::moderate permission to be able to see all users uploads</param>
         /// <returns></returns>
         [HttpGet("uploads")]
         [Authorize]
@@ -307,7 +307,7 @@ namespace RMuseum.Controllers
                      (
                          loggedOnUserId,
                          sessionId,
-                         RMuseumSecurableItem.AudioNarrationEntityShortName,
+                         RMuseumSecurableItem.AudioRecitationEntityShortName,
                          RMuseumSecurableItem.ModerateOperationShortName
                          );
                 if (!string.IsNullOrEmpty(canView.ExceptionString))
@@ -376,7 +376,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("mysqlonetimeimport")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> MysqlonetimeImport()
@@ -395,7 +395,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("retrypublish")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public IActionResult RetryPublish()
@@ -537,7 +537,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
 
         [HttpGet("publishqueue")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RecitationPublishingTracker>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
@@ -560,7 +560,7 @@ namespace RMuseum.Controllers
         /// <returns>number of transfered items</returns>
 
         [HttpPut("chown")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioNarrationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]

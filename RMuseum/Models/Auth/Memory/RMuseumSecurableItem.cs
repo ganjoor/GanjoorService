@@ -61,7 +61,7 @@ namespace RMuseum.Models.Auth.Memory
         /// <summary>
         /// audio narrations
         /// </summary>
-        public const string AudioNarrationEntityShortName = "narration";
+        public const string AudioRecitationEntityShortName = "recitation";
 
         /// <summary>
         /// ganjoor contents
@@ -118,7 +118,7 @@ namespace RMuseum.Models.Auth.Memory
                     },
                     new SecurableItem()
                     {
-                        ShortName = AudioNarrationEntityShortName,
+                        ShortName = AudioRecitationEntityShortName,
                         Description = "خوانشها",
                         Operations = new SecurableItemOperation[]
                         {
