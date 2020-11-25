@@ -398,11 +398,11 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult RetryPublish()
+        public async Task<IActionResult> RetryPublish()
         {
             try
             {
-                _audioService.RetryPublish();
+                await _audioService.RetryPublish();
                 return Ok();
             }
             catch(Exception exp)

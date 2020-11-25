@@ -1156,8 +1156,15 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// retry publish unpublished narrations
         /// </summary>
-        public void RetryPublish()
+        public async Task RetryPublish()
         {
+            var unpublishedQueue =  await _context.RecitationPublishingTrackers.Where(r => r.Finished == false).ToArrayAsync();
+            if (unpublishedQueue.Length > 0)
+            {
+                _context.RecitationPublishingTrackers.RemoveRange(unpublishedQueue);
+                await _context.SaveChangesAsync();
+            }
+
             _backgroundTaskQueue.QueueBackgroundWorkItem
                     (
                     async token =>

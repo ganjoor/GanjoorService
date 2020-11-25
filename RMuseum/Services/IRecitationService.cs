@@ -164,7 +164,7 @@ namespace RMuseum.Services
         /// <summary>
         /// retry publish unpublished narrations
         /// </summary>
-        public void RetryPublish();
+        Task RetryPublish();
 
         /// <summary>
         /// publishing tracker data
