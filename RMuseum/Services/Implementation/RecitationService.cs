@@ -1568,6 +1568,46 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// move recitaions of an artist to the first position
+        /// </summary>
+        /// <param name="artistName"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> MakeArtistRecitationsFirst(string artistName)
+        {
+            try
+            {
+                var recitations = await _context.Recitations.Where(r => r.AudioArtist == artistName && r.AudioOrder != 1).ToListAsync();
+                foreach (Recitation recitation in recitations)
+                {
+                    var otherRecitaions = await _context.Recitations.Where(r => r.GanjoorPostId == recitation.GanjoorPostId && r.AudioArtist != artistName).ToListAsync();
+
+                    foreach(Recitation other in otherRecitaions)
+                    {
+                        other.AudioOrder = other.AudioOrder + 1;
+                        other.AudioSyncStatus = (int)AudioSyncStatus.MetadataChanged;
+                        _context.Recitations.Update(other);
+                        await _context.SaveChangesAsync();
+
+                        await _UpdateRemoteRecitations(other, _context);
+                    }
+
+                    recitation.AudioOrder = 1;
+                    recitation.AudioSyncStatus = (int)AudioSyncStatus.MetadataChanged;
+                    _context.Recitations.Update(recitation);
+
+                    await _UpdateRemoteRecitations(recitation, _context);
+                }
+                
+
+                return new RServiceResult<int>(recitations.Count);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<int>(0, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Configuration
         /// </summary>
         protected IConfiguration Configuration { get; }

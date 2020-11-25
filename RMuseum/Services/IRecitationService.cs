@@ -174,5 +174,12 @@ namespace RMuseum.Services
         /// <param name="finished"></param>
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTracker[] Items)>> GetPublishingQueueStatus(PagingParameterModel paging, bool inProgress, bool finished);
+
+        /// <summary>
+        /// move recitaions of an artist to the first position
+        /// </summary>
+        /// <param name="artistName"></param>
+        /// <returns></returns>
+        Task<RServiceResult<int>> MakeArtistRecitationsFirst(string artistName);
     }
 }
