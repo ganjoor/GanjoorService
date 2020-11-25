@@ -1539,7 +1539,26 @@ namespace RMuseum.Services.Implementation
                     recitation.OwnerId = newOwnerId;
                 }
                 _context.Recitations.UpdateRange(recitations);
+                var profiles = await _context.UserRecitationProfiles.Where(r => r.UserId == currentOwenerId && r.ArtistName == artistName).ToListAsync();
+                foreach(UserRecitationProfile profile in profiles)
+                {
+                    profile.UserId = newOwnerId;
+                }
+                _context.UserRecitationProfiles.UpdateRange(profiles);
                 await _context.SaveChangesAsync();
+
+                var defProfile = await _context.UserRecitationProfiles.Where(r => r.UserId == newOwnerId && r.IsDefault == true).FirstOrDefaultAsync();
+                if(defProfile == null)
+                {
+                    var firstProfile = await _context.UserRecitationProfiles.Where(r => r.UserId == newOwnerId).FirstOrDefaultAsync();
+                    if(firstProfile != null)
+                    {
+                        firstProfile.IsDefault = true;
+                        _context.UserRecitationProfiles.Update(firstProfile);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
                 return new RServiceResult<int>(recitations.Count);
             }
             catch(Exception exp)
