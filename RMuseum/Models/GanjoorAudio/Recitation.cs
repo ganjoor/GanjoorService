@@ -169,9 +169,9 @@ namespace RMuseum.Models.GanjoorAudio
         public string LocalXmlFilePath { get; set; }
 
         /// <summary>
-        /// Value is one or a combination of <see cref="RMuseum.Models.GanjoorAudio.AudioSyncStatus"/>
+        /// AudioSyncStatus
         /// </summary>
-        public int AudioSyncStatus { get; set; }
+        public AudioSyncStatus AudioSyncStatus { get; set; }
 
         /// <summary>
         /// Review Status

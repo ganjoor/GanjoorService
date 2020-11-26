@@ -53,26 +53,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
                 PoemFullTitle = poem.FullTitle;
                 PoemFullUrl = poem.FullUrl;
             }
-            
-            List<AudioSyncStatus> lst = new List<AudioSyncStatus>();
-            foreach(AudioSyncStatus status in 
-                new AudioSyncStatus[] 
-                {
-                    AudioSyncStatus.SynchronizedOrRejected,
-                    AudioSyncStatus.NewItem,
-                    AudioSyncStatus.MetadataChanged,
-                    AudioSyncStatus.SoundFilesChanged,
-                    AudioSyncStatus.Deleted
-                })
-            {
-                if(
-                    src.AudioSyncStatus == (( (int)status )| src.AudioSyncStatus)
-                   )
-                {
-                    lst.Add(status);
-                }               
-            }
-            AudioSyncStatusArray = lst.ToArray();
+            AudioSyncStatus = src.AudioSyncStatus;
             ReviewMsg = src.ReviewMsg;
         }
 
@@ -240,7 +221,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// <summary>
         /// Value is one or a combination of <see cref="RMuseum.Models.GanjoorAudio.AudioSyncStatus"/>
         /// </summary>
-        public AudioSyncStatus[] AudioSyncStatusArray { get; set; }
+        public AudioSyncStatus AudioSyncStatus { get; set; }
 
         /// <summary>
         /// Review Status

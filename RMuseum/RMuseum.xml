@@ -849,6 +849,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetSynchronizationQueue">
+            <summary>
+            Synchronization Queue
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.#ctor(RMuseum.Services.IRecitationService,RSecurityBackend.Services.IUserPermissionChecker,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
@@ -1801,7 +1807,7 @@
             meta data should be updated
             </summary>
         </member>
-        <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.SoundFilesChanged">
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.SoundOrXMLFilesChanged">
             <summary>
             sound files should be reuploaded (this means xml file is also needs to reuploaded)
             </summary>
@@ -1976,7 +1982,7 @@
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.Recitation.AudioSyncStatus">
             <summary>
-            Value is one or a combination of <see cref="T:RMuseum.Models.GanjoorAudio.AudioSyncStatus"/>
+            AudioSyncStatus
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.Recitation.ReviewStatus">
@@ -2348,7 +2354,7 @@
             XML File local path on Windows Server (if item is not rejected probably it is not valid and it is deleted)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.AudioSyncStatusArray">
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.AudioSyncStatus">
             <summary>
             Value is one or a combination of <see cref="T:RMuseum.Models.GanjoorAudio.AudioSyncStatus"/>
             </summary>
@@ -5173,6 +5179,13 @@
             <param name="artistName"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationService.GetSynchronizationQueue(System.Guid)">
+            <summary>
+            Synchronization Queue
+            </summary>
+            <param name="filteredUserId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementation.RecitationService.Configuration">
             <summary>
             Configuration
@@ -5517,6 +5530,13 @@
             move recitaions of an artist to the first position
             </summary>
             <param name="artistName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetSynchronizationQueue(System.Guid)">
+            <summary>
+            Synchronization Queue
+            </summary>
+            <param name="filteredUserId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IRNotificationService">

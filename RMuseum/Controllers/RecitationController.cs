@@ -601,6 +601,25 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Synchronization Queue
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("syncqueue")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RecitationViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+        public async Task<IActionResult> GetSynchronizationQueue()
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = await _audioService.GetSynchronizationQueue(loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+           
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="audioService"></param>

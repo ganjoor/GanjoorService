@@ -23,7 +23,7 @@
         /// <summary>
         /// sound files should be reuploaded (this means xml file is also needs to reuploaded)
         /// </summary>
-        SoundFilesChanged = 4,
+        SoundOrXMLFilesChanged = 4,
 
         /// <summary>
         /// Xml file should be reuploaded

@@ -181,5 +181,12 @@ namespace RMuseum.Services
         /// <param name="artistName"></param>
         /// <returns></returns>
         Task<RServiceResult<int>> MakeArtistRecitationsFirst(string artistName);
+
+        /// <summary>
+        /// Synchronization Queue
+        /// </summary>
+        /// <param name="filteredUserId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RecitationViewModel[]>> GetSynchronizationQueue(Guid filteredUserId);
     }
 }

@@ -116,7 +116,7 @@ namespace RMuseum.Services.Implementation
 
                 if (recitation.ReviewStatus == AudioReviewStatus.Approved)
                 {
-                    recitation.AudioSyncStatus = (int)AudioSyncStatus.Deleted;
+                    recitation.AudioSyncStatus = AudioSyncStatus.Deleted;
                     _context.Recitations.Update(recitation);
                     await _context.SaveChangesAsync();
 
@@ -311,7 +311,7 @@ namespace RMuseum.Services.Implementation
 
                 if(narration.ReviewStatus == AudioReviewStatus.Approved)
                 {
-                    narration.AudioSyncStatus = (int)AudioSyncStatus.MetadataChanged;
+                    narration.AudioSyncStatus = AudioSyncStatus.MetadataChanged;
                     _context.Recitations.Update(narration);
                     await _context.SaveChangesAsync();
 
@@ -366,7 +366,7 @@ namespace RMuseum.Services.Implementation
                 }
 
 
-                narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
+                narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
                 context.Recitations.Update(narration);
                 await context.SaveChangesAsync();
 
@@ -413,9 +413,6 @@ namespace RMuseum.Services.Implementation
                         {
                             await src.FillAsync(srcData);
 
-                            int audioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
-
-                            
 
                             foreach (DataRow row in srcData.Rows)
                             {
@@ -435,7 +432,7 @@ namespace RMuseum.Services.Implementation
                                     Mp3SizeInBytes = (int)row["audio_mp3bsize"],
                                     OggSizeInBytes = (int)row["audio_oggbsize"],
                                     UploadDate = (DateTime)row["audio_date"],
-                                    AudioSyncStatus = audioSyncStatus,
+                                    AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected,
                                     ReviewStatus = AudioReviewStatus.Approved
                                 };
                                 newRecord.FileLastUpdated = newRecord.UploadDate;
@@ -770,7 +767,7 @@ namespace RMuseum.Services.Implementation
                                                         existing.Mp3FileCheckSum = audio.FileCheckSum;
                                                         existing.Mp3SizeInBytes = mp3fileSize;
                                                         existing.FileLastUpdated = session.UploadEndTime;
-                                                        existing.AudioSyncStatus = (int)AudioSyncStatus.SoundFilesChanged;
+                                                        existing.AudioSyncStatus = AudioSyncStatus.SoundOrXMLFilesChanged;
 
                                                         context.Recitations.Update(existing);
 
@@ -834,7 +831,7 @@ namespace RMuseum.Services.Implementation
                                                         FileLastUpdated = session.UploadEndTime,
                                                         LocalMp3FilePath = localMp3FilePath,
                                                         LocalXmlFilePath = localXmlFilePath,
-                                                        AudioSyncStatus = (int)AudioSyncStatus.NewItem,
+                                                        AudioSyncStatus = AudioSyncStatus.NewItem,
                                                         ReviewStatus = AudioReviewStatus.Draft
                                                     };
 
@@ -944,7 +941,7 @@ namespace RMuseum.Services.Implementation
                 }
                 if (narration.ReviewStatus == AudioReviewStatus.Rejected)
                 {
-                    narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
+                    narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
                     File.Delete(narration.LocalMp3FilePath);
                     File.Delete(narration.LocalXmlFilePath);
                 }
@@ -1013,7 +1010,7 @@ namespace RMuseum.Services.Implementation
 
         private async Task _PublishNarration(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context)
         {
-            bool replace = narration.AudioSyncStatus == (int)AudioSyncStatus.SoundFilesChanged;
+            bool replace = narration.AudioSyncStatus == AudioSyncStatus.SoundOrXMLFilesChanged;
             
            
             using var client = new SftpClient
@@ -1086,7 +1083,7 @@ namespace RMuseum.Services.Implementation
 
                
 
-                narration.AudioSyncStatus = (int)AudioSyncStatus.SynchronizedOrRejected;
+                narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
                 context.Recitations.Update(narration);
                 await context.SaveChangesAsync();
 
@@ -1193,13 +1190,13 @@ namespace RMuseum.Services.Implementation
                     {
                         using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
                         {
-                            var list = await context.Recitations.Where(a => a.ReviewStatus == AudioReviewStatus.Approved && a.AudioSyncStatus != (int)AudioSyncStatus.SynchronizedOrRejected).ToListAsync();
+                            var list = await context.Recitations.Where(a => a.ReviewStatus == AudioReviewStatus.Approved && a.AudioSyncStatus != AudioSyncStatus.SynchronizedOrRejected).ToListAsync();
                             foreach (Recitation narration in list)
                             {
                                 switch(narration.AudioSyncStatus)
                                 {
-                                    case (int)AudioSyncStatus.NewItem:
-                                    case (int)AudioSyncStatus.SoundFilesChanged:
+                                    case AudioSyncStatus.NewItem:
+                                    case AudioSyncStatus.SoundOrXMLFilesChanged:
                                         {
                                             RecitationPublishingTracker tracker = new RecitationPublishingTracker()
                                             {
@@ -1215,10 +1212,10 @@ namespace RMuseum.Services.Implementation
                                             await _PublishNarration(narration, tracker, context);
                                         }
                                         break;
-                                    case (int)AudioSyncStatus.MetadataChanged:
+                                    case AudioSyncStatus.MetadataChanged:
                                         await _UpdateRemoteRecitations(narration, context);
                                         break;
-                                    case (int)AudioSyncStatus.Deleted:
+                                    case AudioSyncStatus.Deleted:
                                         await _DeleteNarrationFromRemote(narration, context);
                                         break;
                                 }                              
@@ -1639,7 +1636,7 @@ namespace RMuseum.Services.Implementation
                     foreach(Recitation other in otherRecitaions)
                     {
                         other.AudioOrder = other.AudioOrder + 1;
-                        other.AudioSyncStatus = (int)AudioSyncStatus.MetadataChanged;
+                        other.AudioSyncStatus = AudioSyncStatus.MetadataChanged;
                         _context.Recitations.Update(other);
                         await _context.SaveChangesAsync();
 
@@ -1647,7 +1644,7 @@ namespace RMuseum.Services.Implementation
                     }
 
                     recitation.AudioOrder = 1;
-                    recitation.AudioSyncStatus = (int)AudioSyncStatus.MetadataChanged;
+                    recitation.AudioSyncStatus = AudioSyncStatus.MetadataChanged;
                     _context.Recitations.Update(recitation);
 
                     await _UpdateRemoteRecitations(recitation, _context);
@@ -1659,6 +1656,36 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<int>(0, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Synchronization Queue
+        /// </summary>
+        /// <param name="filteredUserId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RecitationViewModel[]>> GetSynchronizationQueue(Guid filteredUserId)
+        {
+            try
+            {
+                var source =
+                     from audio in _context.Recitations.Include(a => a.Owner)
+                     join poem in _context.GanjoorPoems
+                     on audio.GanjoorPostId equals poem.Id
+                     where
+                     (filteredUserId == Guid.Empty || audio.OwnerId == filteredUserId)
+                     &&
+                     audio.ReviewStatus == AudioReviewStatus.Approved
+                     &&
+                     audio.AudioSyncStatus != AudioSyncStatus.SynchronizedOrRejected
+                     orderby audio.UploadDate descending
+                     select new RecitationViewModel(audio, audio.Owner, poem);
+
+                return new RServiceResult<RecitationViewModel[]>(await source.ToArrayAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<RecitationViewModel[]>(null, exp.ToString());
             }
         }
 
