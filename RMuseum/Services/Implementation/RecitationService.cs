@@ -1006,136 +1006,135 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        private SftpClient _client = null;
 
+        private void _ensureSftpClientConnection()
+        {
+            if (_client == null)
+            {
+                _client = new SftpClient
+                            (
+                                Configuration.GetSection("AudioSFPServer")["Host"],
+                                int.Parse(Configuration.GetSection("AudioSFPServer")["Port"]),
+                                Configuration.GetSection("AudioSFPServer")["Username"],
+                                Configuration.GetSection("AudioSFPServer")["Password"]
+                                );
+                _client.Connect();
+            }
+            else
+            if(!_client.IsConnected)
+            {
+                _client.Connect();
+            }
+        }
 
         private async Task _PublishNarration(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context)
         {
-            bool replace = narration.AudioSyncStatus == AudioSyncStatus.SoundOrXMLFilesChanged;
-
-
-            using (SftpClient client = new SftpClient
-                        (
-                            Configuration.GetSection("AudioSFPServer")["Host"],
-                            int.Parse(Configuration.GetSection("AudioSFPServer")["Port"]),
-                            Configuration.GetSection("AudioSFPServer")["Username"],
-                            Configuration.GetSection("AudioSFPServer")["Password"]
-                            ))
+            
+            try
             {
-                try
+                bool replace = narration.AudioSyncStatus == AudioSyncStatus.SoundOrXMLFilesChanged;
+
+                _ensureSftpClientConnection();
+
+                using var x = File.OpenRead(narration.LocalXmlFilePath);
+                _client.UploadFile(x, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}", true);
+
+                tracker.XmlFileCopied = true;
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
+                using var s = File.OpenRead(narration.LocalMp3FilePath);
+                _client.UploadFile(s, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}", true);
+
+                tracker.Mp3FileCopied = true;
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
+
+                if (!replace)
                 {
-                    client.Connect();
+                    string sql = $"INSERT INTO ganja_gaudio (audio_post_ID,audio_order,audio_xml,audio_ogg,audio_mp3,audio_title,audio_artist," +
+                    $"audio_artist_url,audio_src,audio_src_url, audio_guid, audio_fchecksum, audio_mp3bsize, audio_oggbsize, audio_date) VALUES " +
+                    $"({narration.GanjoorPostId},{narration.AudioOrder},'{narration.RemoteXMLFilePath}', '', '{narration.Mp3Url}', '{narration.AudioTitle}', '{narration.AudioArtist}', " +
+                    $"'{narration.AudioArtistUrl}', '{narration.AudioSrc}', '{narration.AudioSrcUrl}', '{narration.LegacyAudioGuid}', '{narration.Mp3FileCheckSum}', {narration.Mp3SizeInBytes}, 0, NOW())";
 
-                    using var x = File.OpenRead(narration.LocalXmlFilePath);
-                    client.UploadFile(x, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}", true);
-
-                    tracker.XmlFileCopied = true;
-                    context.RecitationPublishingTrackers.Update(tracker);
-                    await context.SaveChangesAsync();
-
-                    using var s = File.OpenRead(narration.LocalMp3FilePath);
-                    client.UploadFile(s, $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}", true);
-
-                    tracker.Mp3FileCopied = true;
-                    context.RecitationPublishingTrackers.Update(tracker);
-                    await context.SaveChangesAsync();
-
-
-                    if (!replace)
+                    using (MySqlConnection connection = new MySqlConnection
+                    (
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
+                    ))
                     {
-                        string sql = $"INSERT INTO ganja_gaudio (audio_post_ID,audio_order,audio_xml,audio_ogg,audio_mp3,audio_title,audio_artist," +
-                        $"audio_artist_url,audio_src,audio_src_url, audio_guid, audio_fchecksum, audio_mp3bsize, audio_oggbsize, audio_date) VALUES " +
-                        $"({narration.GanjoorPostId},{narration.AudioOrder},'{narration.RemoteXMLFilePath}', '', '{narration.Mp3Url}', '{narration.AudioTitle}', '{narration.AudioArtist}', " +
-                        $"'{narration.AudioArtistUrl}', '{narration.AudioSrc}', '{narration.AudioSrcUrl}', '{narration.LegacyAudioGuid}', '{narration.Mp3FileCheckSum}', {narration.Mp3SizeInBytes}, 0, NOW())";
-
-                        using (MySqlConnection connection = new MySqlConnection
-                        (
-                        $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
-                        ))
+                        await connection.OpenAsync();
+                        using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                         {
-                            await connection.OpenAsync();
-                            using (MySqlCommand cmd = new MySqlCommand(sql, connection))
-                            {
-                                await cmd.ExecuteNonQueryAsync();
-                                int AudioId = (int)cmd.LastInsertedId;
-                                narration.GanjoorAudioId = AudioId;
-                                context.Recitations.Update(narration);
-                                await context.SaveChangesAsync();
-                            }
+                            await cmd.ExecuteNonQueryAsync();
+                            int AudioId = (int)cmd.LastInsertedId;
+                            narration.GanjoorAudioId = AudioId;
+                            context.Recitations.Update(narration);
+                            await context.SaveChangesAsync();
                         }
-
-                        tracker.FirstDbUpdated = true;
-                        context.RecitationPublishingTrackers.Update(tracker);
-                        await context.SaveChangesAsync();
-
-                        //We are using two database for different purposes on the remote
-                        using (MySqlConnection connection = new MySqlConnection
-                        (
-                        $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
-                        ))
-                        {
-                            await connection.OpenAsync();
-                            await connection.ExecuteAsync(sql);
-                        }
-
-                        tracker.SecondDbUpdated = true;
-                        context.RecitationPublishingTrackers.Update(tracker);
-                        await context.SaveChangesAsync();
                     }
 
-
-
-                    narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
-                    context.Recitations.Update(narration);
+                    tracker.FirstDbUpdated = true;
+                    context.RecitationPublishingTrackers.Update(tracker);
                     await context.SaveChangesAsync();
 
-
-
-                    await _notificationService.PushNotification
+                    //We are using two database for different purposes on the remote
+                    using (MySqlConnection connection = new MySqlConnection
                     (
-                        narration.OwnerId,
-                        "انتشار خوانش ارسالی",
-                        $"خوانش ارسالی شما منتشر شد.{Environment.NewLine}" +
-                        $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
-                    );
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
+                    ))
+                    {
+                        await connection.OpenAsync();
+                        await connection.ExecuteAsync(sql);
+                    }
 
-                    tracker.Finished = true;
-                    tracker.FinishDate = DateTime.Now;
-                    context.RecitationPublishingTrackers.Update(tracker);
-                    await context.SaveChangesAsync();
-
-
-                }
-                catch (Exception exp)
-                {
-                    //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
-                    tracker.LastException = exp.ToString();
+                    tracker.SecondDbUpdated = true;
                     context.RecitationPublishingTrackers.Update(tracker);
                     await context.SaveChangesAsync();
                 }
-                finally
-                {
-                    client.Disconnect();
-                }
+
+
+
+                narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
+                context.Recitations.Update(narration);
+                await context.SaveChangesAsync();
+
+
+
+                await _notificationService.PushNotification
+                (
+                    narration.OwnerId,
+                    "انتشار خوانش ارسالی",
+                    $"خوانش ارسالی شما منتشر شد.{Environment.NewLine}" +
+                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                );
+
+                tracker.Finished = true;
+                tracker.FinishDate = DateTime.Now;
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
+
             }
+            catch (Exception exp)
+            {
+                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
+                tracker.LastException = exp.ToString();
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+            }
+
         }
 
         private async Task _DeleteNarrationFromRemote(Recitation narration, RMuseumDbContext context)
         {
-            using (SftpClient client = new SftpClient
-                        (
-                            Configuration.GetSection("AudioSFPServer")["Host"],
-                            int.Parse(Configuration.GetSection("AudioSFPServer")["Port"]),
-                            Configuration.GetSection("AudioSFPServer")["Username"],
-                            Configuration.GetSection("AudioSFPServer")["Password"]
-                            ))
-            {
+
                 try
                 {
-                    client.Connect();
-                    client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
-                    client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}");
-
-
+                    _ensureSftpClientConnection();
+                    _client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                    _client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}");
 
                     string sql = $"DELETE FROM ganja_gaudio WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_order = {narration.AudioOrder} AND audio_guid = '{narration.LegacyAudioGuid}'";
 
@@ -1166,11 +1165,7 @@ namespace RMuseum.Services.Implementation
                 {
                     //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
                 }
-                finally
-                {
-                    client.Disconnect();
-                }
-            }
+                
         }
 
         /// <summary>
