@@ -4998,228 +4998,6 @@
             <param name="configuration"></param>
             <param name="simpleImageStorage"></param>
         </member>
-        <member name="T:RMuseum.Services.Implementation.RecitationService">
-            <summary>
-            Audio Narration Service Implementation
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
-            <summary>
-            returns list of narrations
-            </summary>
-            <param name="paging"></param>
-            <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
-            <param name="status"></param>
-            <param name="searchTerm"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.Get(System.Int32)">
-            <summary>
-            return selected narration information
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.Delete(System.Int32,System.Guid)">
-            <summary>
-            Delete recitation
-            </summary>
-            <param name="id"></param>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetPoemNarrationVerseSyncArray(System.Int32)">
-            <summary>
-            Gets Verse Sync Range Information
-            </summary>
-            <param name="id">narration id</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetPoemNarrationValidationError(RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel)">
-            <summary>
-            validate PoemNarrationViewModel
-            </summary>
-            <param name="p"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel)">
-            <summary>
-            updates metadata for narration
-            </summary>
-            <param name="id"></param>
-            <param name="metadata"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.OneTimeImport(System.Guid)">
-            <summary>
-            imports data from ganjoor MySql database
-            </summary>
-            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.BuildProfilesFromExistingData(System.Guid)">
-            <summary>
-            build profiles from exisng narrations data
-            </summary>
-            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
-            <returns>error string if occurs</returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.InitiateNewUploadSession(System.Guid,System.Boolean)">
-            <summary>
-            Initiate New Upload Session for audio
-            </summary>
-            <param name="userId"></param>
-            <param name="replace"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.SaveUploadedFile(Microsoft.AspNetCore.Http.IFormFile)">
-            <summary>
-            Save uploaded file
-            </summary>
-            <param name="uploadedFile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.UploadSession.UploadSessionFile[])">
-            <summary>
-            finalize upload session (add files)
-            </summary>
-            <param name="session"></param>
-            <param name="files"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.ModeratePoemNarration(System.Int32,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel)">
-            <summary>
-            Moderate pending narration
-            </summary>
-            <param name="id"></param>
-            <param name="moderatorId"></param>
-            <param name="model"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.RetryPublish">
-            <summary>
-            retry publish unpublished narrations
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUploadSession(System.Guid)">
-            <summary>
-            Get Upload Session (including files)
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUserNarrationProfiles(System.Guid,System.String)">
-            <summary>
-            Get User Profiles
-            </summary>
-            <param name="userId"></param>
-            <param name="artistName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUserDefProfile(System.Guid)">
-            <summary>
-            Get User Default Profile
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUserProfileValidationError(RMuseum.Models.GanjoorAudio.UserRecitationProfile)">
-            <summary>
-            validating narration profile
-            </summary>
-            <param name="p"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel)">
-            <summary>
-            Add a narration profile
-            </summary>
-            <param name="profile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.UpdateUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel)">
-            <summary>
-            Update a narration profile 
-            </summary>
-            <param name="profile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.DeleteUserNarrationProfiles(System.Guid,System.Guid)">
-            <summary>
-            Delete a narration profile 
-            </summary>
-            <param name="id"></param>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
-            <summary>
-            Get uploads descending by upload time
-            </summary>
-            <param name="paging"></param>
-            <param name="userId">if userId is empty all user uploads would be returned</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
-            <summary>
-            publishing tracker data
-            </summary>
-            <param name="paging"></param>
-            <param name="inProgress"></param>
-            <param name="finished"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.TransferRecitationsOwnership(System.Guid,System.Guid,System.String)">
-            <summary>
-            Transfer Recitations Ownership
-            </summary>
-            <param name="currentOwenerId"></param>
-            <param name="newOwnerId"></param>
-            <param name="artistName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.MakeArtistRecitationsFirst(System.String)">
-            <summary>
-            move recitaions of an artist to the first position
-            </summary>
-            <param name="artistName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.GetSynchronizationQueue(System.Guid)">
-            <summary>
-            Synchronization Queue
-            </summary>
-            <param name="filteredUserId"></param>
-            <returns></returns>
-        </member>
-        <member name="P:RMuseum.Services.Implementation.RecitationService.Configuration">
-            <summary>
-            Configuration
-            </summary>
-        </member>
-        <member name="F:RMuseum.Services.Implementation.RecitationService._context">
-            <summary>
-            Database Contetxt
-            </summary>
-        </member>
-        <member name="F:RMuseum.Services.Implementation.RecitationService._backgroundTaskQueue">
-            <summary>
-            Background Task Queue Instance
-            </summary>
-        </member>
-        <member name="F:RMuseum.Services.Implementation.RecitationService._notificationService">
-            <summary>
-            Messaging service
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue,RMuseum.Services.IRNotificationService)">
-            <summary>
-            constructor
-            </summary>
-            <param name="context"></param>
-            <param name="configuration"></param>
-            <param name="backgroundTaskQueue"></param>
-            <param name="notificationService"></param>
-        </member>
         <member name="T:RMuseum.Services.Implementation.RNotificationService">
             <summary>
             Internal messaging system implementation
@@ -5283,6 +5061,228 @@
             constructor
             </summary>
             <param name="roleManager"></param>       
+        </member>
+        <member name="T:RMuseum.Services.Implementationa.RecitationService">
+            <summary>
+            Audio Narration Service Implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
+            <summary>
+            returns list of narrations
+            </summary>
+            <param name="paging"></param>
+            <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
+            <param name="status"></param>
+            <param name="searchTerm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.Get(System.Int32)">
+            <summary>
+            return selected narration information
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.Delete(System.Int32,System.Guid)">
+            <summary>
+            Delete recitation
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPoemNarrationVerseSyncArray(System.Int32)">
+            <summary>
+            Gets Verse Sync Range Information
+            </summary>
+            <param name="id">narration id</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPoemNarrationValidationError(RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel)">
+            <summary>
+            validate PoemNarrationViewModel
+            </summary>
+            <param name="p"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.UpdatePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel)">
+            <summary>
+            updates metadata for narration
+            </summary>
+            <param name="id"></param>
+            <param name="metadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.OneTimeImport(System.Guid)">
+            <summary>
+            imports data from ganjoor MySql database
+            </summary>
+            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.BuildProfilesFromExistingData(System.Guid)">
+            <summary>
+            build profiles from exisng narrations data
+            </summary>
+            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
+            <returns>error string if occurs</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.InitiateNewUploadSession(System.Guid,System.Boolean)">
+            <summary>
+            Initiate New Upload Session for audio
+            </summary>
+            <param name="userId"></param>
+            <param name="replace"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.SaveUploadedFile(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Save uploaded file
+            </summary>
+            <param name="uploadedFile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.UploadSession.UploadSessionFile[])">
+            <summary>
+            finalize upload session (add files)
+            </summary>
+            <param name="session"></param>
+            <param name="files"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.ModeratePoemNarration(System.Int32,System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel)">
+            <summary>
+            Moderate pending narration
+            </summary>
+            <param name="id"></param>
+            <param name="moderatorId"></param>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.RetryPublish">
+            <summary>
+            retry publish unpublished narrations
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetUploadSession(System.Guid)">
+            <summary>
+            Get Upload Session (including files)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetUserNarrationProfiles(System.Guid,System.String)">
+            <summary>
+            Get User Profiles
+            </summary>
+            <param name="userId"></param>
+            <param name="artistName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetUserDefProfile(System.Guid)">
+            <summary>
+            Get User Default Profile
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetUserProfileValidationError(RMuseum.Models.GanjoorAudio.UserRecitationProfile)">
+            <summary>
+            validating narration profile
+            </summary>
+            <param name="p"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.AddUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel)">
+            <summary>
+            Add a narration profile
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.UpdateUserNarrationProfiles(RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel)">
+            <summary>
+            Update a narration profile 
+            </summary>
+            <param name="profile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.DeleteUserNarrationProfiles(System.Guid,System.Guid)">
+            <summary>
+            Delete a narration profile 
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+            <summary>
+            Get uploads descending by upload time
+            </summary>
+            <param name="paging"></param>
+            <param name="userId">if userId is empty all user uploads would be returned</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
+            <summary>
+            publishing tracker data
+            </summary>
+            <param name="paging"></param>
+            <param name="inProgress"></param>
+            <param name="finished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.TransferRecitationsOwnership(System.Guid,System.Guid,System.String)">
+            <summary>
+            Transfer Recitations Ownership
+            </summary>
+            <param name="currentOwenerId"></param>
+            <param name="newOwnerId"></param>
+            <param name="artistName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.MakeArtistRecitationsFirst(System.String)">
+            <summary>
+            move recitaions of an artist to the first position
+            </summary>
+            <param name="artistName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetSynchronizationQueue(System.Guid)">
+            <summary>
+            Synchronization Queue
+            </summary>
+            <param name="filteredUserId"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RMuseum.Services.Implementationa.RecitationService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementationa.RecitationService._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementationa.RecitationService._backgroundTaskQueue">
+            <summary>
+            Background Task Queue Instance
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementationa.RecitationService._notificationService">
+            <summary>
+            Messaging service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue,RMuseum.Services.IRNotificationService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="configuration"></param>
+            <param name="backgroundTaskQueue"></param>
+            <param name="notificationService"></param>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">
             <summary>

@@ -11,6 +11,7 @@ using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
 using RMuseum.Models.UploadSession.ViewModels;
+using RMuseum.Services.Implementation;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
@@ -1593,6 +1594,7 @@ namespace RMuseum.Services.Implementationa
                 var profiles = await _context.UserRecitationProfiles.Where(r => r.UserId == currentOwenerId && r.ArtistName == artistName).ToListAsync();
                 foreach(UserRecitationProfile profile in profiles)
                 {
+                    profile.IsDefault = false;
                     profile.UserId = newOwnerId;
                 }
                 _context.UserRecitationProfiles.UpdateRange(profiles);
