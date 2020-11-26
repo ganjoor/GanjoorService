@@ -28,7 +28,7 @@
         /// <summary>
         /// Xml file should be reuploaded
         /// </summary>
-        XmlFileChanged = 8,
+        //XmlFileChanged = 8,
 
         /// <summary>
         /// Item should be deleted

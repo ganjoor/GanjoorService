@@ -1806,11 +1806,6 @@
             sound files should be reuploaded (this means xml file is also needs to reuploaded)
             </summary>
         </member>
-        <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.XmlFileChanged">
-            <summary>
-            Xml file should be reuploaded
-            </summary>
-        </member>
         <member name="F:RMuseum.Models.GanjoorAudio.AudioSyncStatus.Deleted">
             <summary>
             Item should be deleted

@@ -341,12 +341,9 @@ namespace RMuseum.Services.Implementation
           
             try
             {
-
-
-
                 string sql = $"UPDATE ganja_gaudio SET audio_title = '{narration.AudioTitle}',audio_artist = '{narration.AudioArtist}', " +
-                     $"audio_artist_url = '{narration.AudioArtistUrl}',audio_src = '{narration.AudioSrc}',audio_src_url = '{narration.AudioSrcUrl}' " +
-                     $" WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_order = {narration.AudioOrder} AND audio_guid = '{narration.LegacyAudioGuid}'";
+                     $"audio_artist_url = '{narration.AudioArtistUrl}',audio_src = '{narration.AudioSrc}',audio_src_url = '{narration.AudioSrcUrl}', audio_order = {narration.AudioOrder} " +
+                     $" WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_guid = '{narration.LegacyAudioGuid}'";
 
 
                 using (MySqlConnection connection = new MySqlConnection
@@ -784,8 +781,20 @@ namespace RMuseum.Services.Implementation
                                                             async token =>
                                                             {
                                                             using (RMuseumDbContext publishcontext = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
-                                                                                    {
-                                                               await _PublishNarration(existing, publishcontext, true);
+                                                            {
+                                                                    RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                                                                    {
+                                                                        PoemNarrationId = existing.Id,
+                                                                        StartDate = DateTime.Now,
+                                                                        XmlFileCopied = false,
+                                                                        Mp3FileCopied = false,
+                                                                        FirstDbUpdated = false,
+                                                                        SecondDbUpdated = false,
+                                                                    };
+                                                                    publishcontext.RecitationPublishingTrackers.Add(tracker);
+                                                                    await publishcontext.SaveChangesAsync();
+
+                                                                    await _PublishNarration(existing, tracker, publishcontext);
                                                             }
                                                             });
 
@@ -972,7 +981,19 @@ namespace RMuseum.Services.Implementation
                     {
                         using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
                         {
-                            await _PublishNarration(narration, context, false);
+                            RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                            {
+                                PoemNarrationId = narration.Id,
+                                StartDate = DateTime.Now,
+                                XmlFileCopied = false,
+                                Mp3FileCopied = false,
+                                FirstDbUpdated = false,
+                                SecondDbUpdated = false,
+                            };
+                            context.RecitationPublishingTrackers.Add(tracker);
+                            await context.SaveChangesAsync();
+
+                            await _PublishNarration(narration, tracker, context);
                         }
                     });
                 }
@@ -990,19 +1011,10 @@ namespace RMuseum.Services.Implementation
 
        
 
-        private async Task _PublishNarration(Recitation narration, RMuseumDbContext context, bool replace)
+        private async Task _PublishNarration(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context)
         {
-            RecitationPublishingTracker tracker = new RecitationPublishingTracker()
-            {
-                PoemNarrationId = narration.Id,
-                StartDate = DateTime.Now,
-                XmlFileCopied = false,
-                Mp3FileCopied = false,
-                FirstDbUpdated = false,
-                SecondDbUpdated = false,
-            };
-            context.RecitationPublishingTrackers.Add(tracker);
-            await context.SaveChangesAsync();
+            bool replace = narration.AudioSyncStatus == (int)AudioSyncStatus.SoundFilesChanged;
+            
            
             using var client = new SftpClient
                         (
@@ -1158,6 +1170,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         public async Task RetryPublish()
         {
+            if (_backgroundTaskQueue.Count > 0)
+                return;
+
             var unpublishedQueue =  await _context.RecitationPublishingTrackers.Where(r => r.Finished == false).ToArrayAsync();
             if (unpublishedQueue.Length > 0)
             {
@@ -1174,7 +1189,33 @@ namespace RMuseum.Services.Implementation
                             var list = await context.Recitations.Where(a => a.ReviewStatus == AudioReviewStatus.Approved && a.AudioSyncStatus != (int)AudioSyncStatus.SynchronizedOrRejected).ToListAsync();
                             foreach (Recitation narration in list)
                             {
-                                await _PublishNarration(narration, context, false);
+                                switch(narration.AudioSyncStatus)
+                                {
+                                    case (int)AudioSyncStatus.NewItem:
+                                    case (int)AudioSyncStatus.SoundFilesChanged:
+                                        {
+                                            RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                                            {
+                                                PoemNarrationId = narration.Id,
+                                                StartDate = DateTime.Now,
+                                                XmlFileCopied = false,
+                                                Mp3FileCopied = false,
+                                                FirstDbUpdated = false,
+                                                SecondDbUpdated = false,
+                                            };
+                                            context.RecitationPublishingTrackers.Add(tracker);
+                                            await context.SaveChangesAsync();
+                                            await _PublishNarration(narration, tracker, context);
+                                        }
+                                        break;
+                                    case (int)AudioSyncStatus.MetadataChanged:
+                                        await _UpdateRemoteRecitations(narration, context);
+                                        break;
+                                    case (int)AudioSyncStatus.Deleted:
+                                        await _DeleteNarrationFromRemote(narration, context);
+                                        break;
+                                }                              
+                                
                             }
                         }
                     });

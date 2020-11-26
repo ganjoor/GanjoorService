@@ -31,5 +31,13 @@ namespace RMuseum.Services.Implementation
 
             return workItem;
         }
+
+        public int Count
+        {
+            get
+            {
+                return _workItems.Count;
+            }
+        }
     }
 }

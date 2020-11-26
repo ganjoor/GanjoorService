@@ -10,5 +10,7 @@ namespace RMuseum.Services
 
         Task<Func<CancellationToken, Task>> DequeueAsync(
             CancellationToken cancellationToken);
+
+        int Count { get; }
     }
 }

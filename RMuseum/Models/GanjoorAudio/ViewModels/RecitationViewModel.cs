@@ -62,7 +62,6 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
                     AudioSyncStatus.NewItem,
                     AudioSyncStatus.MetadataChanged,
                     AudioSyncStatus.SoundFilesChanged,
-                    AudioSyncStatus.XmlFileChanged,
                     AudioSyncStatus.Deleted
                 })
             {
