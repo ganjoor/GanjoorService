@@ -1055,7 +1055,14 @@ namespace RMuseum.Services.Implementation
                     ))
                     {
                         await connection.OpenAsync();
-                        await connection.ExecuteAsync(sql);
+                        using(MySqlCommand cmd = new MySqlCommand(sql, connection))
+                        {
+                            await cmd.ExecuteNonQueryAsync();
+                            int AudioId = (int)cmd.LastInsertedId;
+                            narration.GanjoorAudioId = AudioId;
+                            context.Recitations.Update(narration);
+                            await context.SaveChangesAsync();
+                        }
                     }
 
                     tracker.FirstDbUpdated = true;
