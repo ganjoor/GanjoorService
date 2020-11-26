@@ -68,6 +68,11 @@ namespace RMuseum.Models.Auth.Memory
         /// </summary>
         public const string GanjoorEntityShortName = "ganjoor";
 
+        ///<summary>
+        /// reorder
+        /// </summary>
+        public const string ReOrderOperationShortName = "reorder";
+
         /// <summary>
         /// list of forms and their permissions
         /// </summary>
@@ -86,7 +91,7 @@ namespace RMuseum.Models.Auth.Memory
                         Operations = new SecurableItemOperation[]
                         {                            
                             new SecurableItemOperation(AddOperationShortName, "ایجاد", false),
-                            new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات", false),
+                            new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات از منابع خارجی", false),
                             new SecurableItemOperation(ModifyOperationShortName, "اصلاح", false),
                             new SecurableItemOperation(DeleteOperationShortName, "حذف", false),
                             new SecurableItemOperation(ViewDraftOperationShortName, "مشاهدهٔ پیش‌نویس‌ها", false),
@@ -122,8 +127,9 @@ namespace RMuseum.Models.Auth.Memory
                         Description = "خوانشها",
                         Operations = new SecurableItemOperation[]
                         {
-                            new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات", false),
-                            new SecurableItemOperation(ModerateOperationShortName, "بررسی", false)
+                            new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات از منابع خارجی", false),
+                            new SecurableItemOperation(ModerateOperationShortName, "بررسی", false),
+                            new SecurableItemOperation(ReOrderOperationShortName, "تغییر ترتیب", false),
                         }
                     },
                     new SecurableItem()
@@ -132,7 +138,7 @@ namespace RMuseum.Models.Auth.Memory
                         Description = "محتوای گنجور",
                         Operations = new SecurableItemOperation[]
                         {
-                            new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات", false),
+                            new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات از منابع خارجی", false),
                         }
                     },
 

@@ -560,7 +560,7 @@ namespace RMuseum.Controllers
         /// <returns>number of transfered items</returns>
 
         [HttpPut("chown")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
@@ -586,7 +586,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("ff")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ReOrderOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
@@ -612,7 +612,21 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> GetSynchronizationQueue()
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            var res = await _audioService.GetSynchronizationQueue(loggedOnUserId);
+            Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+            RServiceResult<bool>
+                 canViewAll =
+                 await _userPermissionChecker.Check
+                     (
+                         loggedOnUserId,
+                         sessionId,
+                         RMuseumSecurableItem.AudioRecitationEntityShortName,
+                         RMuseumSecurableItem.ModerateOperationShortName
+                         );
+            if (!string.IsNullOrEmpty(canViewAll.ExceptionString))
+                return BadRequest(canViewAll.ExceptionString);
+
+
+            var res = await _audioService.GetSynchronizationQueue(canViewAll.Result ? Guid.Empty : loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
            
