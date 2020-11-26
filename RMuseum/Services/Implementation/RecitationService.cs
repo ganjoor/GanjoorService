@@ -818,7 +818,7 @@ namespace RMuseum.Services.Implementation
                                                         GanjoorPostId = audio.PoemId,
                                                         OwnerId = session.UseId,
                                                         GanjoorAudioId = 1 + await context.Recitations.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
-                                                        AudioOrder = 1 + await context.Recitations.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
+                                                        AudioOrder = 1 + await context.Recitations.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.GanjoorAudioId).Select(a => a.AudioOrder).FirstOrDefaultAsync(),
                                                         FileNameWithoutExtension = fileNameWithoutExtension,
                                                         SoundFilesFolder = currentTargetFolder,
                                                         AudioTitle = string.IsNullOrEmpty(audio.PoemTitle) ? audio.Description : audio.PoemTitle,
