@@ -127,7 +127,19 @@ namespace RMuseum.Services.Implementationa
                   {
                       using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
                       {
-                          await _DeleteNarrationFromRemote(recitation, context);
+                          RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                          {
+                              PoemNarrationId = recitation.Id,
+                              StartDate = DateTime.Now,
+                              XmlFileCopied = false,
+                              Mp3FileCopied = false,
+                              FirstDbUpdated = false,
+                              SecondDbUpdated = false,
+                          };
+                          context.RecitationPublishingTrackers.Add(tracker);
+                          await context.SaveChangesAsync();
+
+                          await _DeleteNarrationFromRemote(recitation, tracker, context);
                       }
 
                       
@@ -322,8 +334,20 @@ namespace RMuseum.Services.Implementationa
                    {
                        using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
                           {
-                           await _UpdateRemoteRecitations(narration, context);
-                       }
+                           RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                           {
+                               PoemNarrationId = narration.Id,
+                               StartDate = DateTime.Now,
+                               XmlFileCopied = false,
+                               Mp3FileCopied = false,
+                               FirstDbUpdated = false,
+                               SecondDbUpdated = false,
+                           };
+                           context.RecitationPublishingTrackers.Add(tracker);
+                           await context.SaveChangesAsync();
+
+                           await _UpdateRemoteRecitations(narration, tracker, context);
+                            }
 
 
                    });
@@ -337,47 +361,7 @@ namespace RMuseum.Services.Implementationa
             }
         }
 
-        private async Task _UpdateRemoteRecitations(Recitation narration, RMuseumDbContext context)
-        {
-          
-            try
-            {
-                string sql = $"UPDATE ganja_gaudio SET audio_title = '{narration.AudioTitle}',audio_artist = '{narration.AudioArtist}', " +
-                     $"audio_artist_url = '{narration.AudioArtistUrl}',audio_src = '{narration.AudioSrc}',audio_src_url = '{narration.AudioSrcUrl}', audio_order = {narration.AudioOrder} " +
-                     $" WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_guid = '{narration.LegacyAudioGuid}'";
-
-
-                using (MySqlConnection connection = new MySqlConnection
-                (
-                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
-                ))
-                {
-                    await connection.OpenAsync();
-                    await connection.ExecuteAsync(sql);
-                }
-
-                //We are using two database for different purposes on the remote
-                using (MySqlConnection connection = new MySqlConnection
-                (
-                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
-                ))
-                {
-                    await connection.OpenAsync();
-                    await connection.ExecuteAsync(sql);
-                }
-
-
-                narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
-                context.Recitations.Update(narration);
-                await context.SaveChangesAsync();
-
-            }
-            catch
-            {
-                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
-            }
-            
-        }
+ 
 
 
         /// <summary>
@@ -1029,6 +1013,7 @@ namespace RMuseum.Services.Implementationa
             }
         }
 
+        #region Remote Update
         private async Task _PublishNarration(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context)
         {
             
@@ -1066,14 +1051,29 @@ namespace RMuseum.Services.Implementationa
                     ))
                     {
                         await connection.OpenAsync();
-                        using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+
+                        using (MySqlDataAdapter src = new MySqlDataAdapter(
+                        $"SELECT * FROM ganja_gaudio WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_guid = '{narration.LegacyAudioGuid}'",
+                        connection
+                        ))
                         {
-                            await cmd.ExecuteNonQueryAsync();
-                            int AudioId = (int)cmd.LastInsertedId;
-                            narration.GanjoorAudioId = AudioId;
-                            context.Recitations.Update(narration);
-                            await context.SaveChangesAsync();
+                            using (DataTable srcData = new DataTable())
+                            {
+                                await src.FillAsync(srcData);
+                                if(srcData.Rows.Count == 0)//prevent duplicated insertions (this process might have caused an exception previously and caused the record to become existing prior)
+                                {
+                                    using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+                                    {
+                                        await cmd.ExecuteNonQueryAsync();
+                                        int AudioId = (int)cmd.LastInsertedId;
+                                        narration.GanjoorAudioId = AudioId;
+                                        context.Recitations.Update(narration);
+                                        await context.SaveChangesAsync();
+                                    }
+                                }
+                            }
                         }
+                        
                     }
 
                     tracker.FirstDbUpdated = true;
@@ -1087,7 +1087,21 @@ namespace RMuseum.Services.Implementationa
                     ))
                     {
                         await connection.OpenAsync();
-                        await connection.ExecuteAsync(sql);
+
+                        using (MySqlDataAdapter src = new MySqlDataAdapter(
+                        $"SELECT * FROM ganja_gaudio WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_guid = '{narration.LegacyAudioGuid}'",
+                        connection
+                        ))
+                        {
+                            using (DataTable srcData = new DataTable())
+                            {
+                                await src.FillAsync(srcData);
+                                if (srcData.Rows.Count == 0)//prevent duplicated insertions
+                                {
+                                    await connection.ExecuteAsync(sql);
+                                }
+                            }
+                        }
                     }
 
                     tracker.SecondDbUpdated = true;
@@ -1128,46 +1142,108 @@ namespace RMuseum.Services.Implementationa
 
         }
 
-        private async Task _DeleteNarrationFromRemote(Recitation narration, RMuseumDbContext context)
+        private async Task _DeleteNarrationFromRemote(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context)
         {
 
-                try
+            try
+            {
+                _ensureSftpClientConnection();
+                _client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                _client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}");
+
+                string sql = $"DELETE FROM ganja_gaudio WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_guid = '{narration.LegacyAudioGuid}'";
+
+                using (MySqlConnection connection = new MySqlConnection
+                (
+                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
+                ))
                 {
-                    _ensureSftpClientConnection();
-                    _client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
-                    _client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}");
-
-                    string sql = $"DELETE FROM ganja_gaudio WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_order = {narration.AudioOrder} AND audio_guid = '{narration.LegacyAudioGuid}'";
-
-                    using (MySqlConnection connection = new MySqlConnection
-                    (
-                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
-                    ))
-                    {
-                        await connection.OpenAsync();
-                        await connection.ExecuteAsync(sql);
-                    }
-
-                    //We are using two database for different purposes on the remote
-                    using (MySqlConnection connection = new MySqlConnection
-                    (
-                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
-                    ))
-                    {
-                        await connection.OpenAsync();
-                        await connection.ExecuteAsync(sql);
-                    }
-
-                    await _FinalizeDelete(context, narration);
-
-
+                    await connection.OpenAsync();
+                    await connection.ExecuteAsync(sql);
                 }
-                catch
+
+                //We are using two database for different purposes on the remote
+                using (MySqlConnection connection = new MySqlConnection
+                (
+                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
+                ))
                 {
-                    //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
+                    await connection.OpenAsync();
+                    await connection.ExecuteAsync(sql);
                 }
-                
+
+                await _FinalizeDelete(context, narration);
+
+                tracker.Finished = true;
+                tracker.FinishDate = DateTime.Now;
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
+
+            }
+            catch (Exception exp)
+            {
+                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
+                tracker.LastException = exp.ToString();
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+            }
+
         }
+
+        private async Task _UpdateRemoteRecitations(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context)
+        {
+
+            try
+            {
+                string sql = $"UPDATE ganja_gaudio SET audio_title = '{narration.AudioTitle}',audio_artist = '{narration.AudioArtist}', " +
+                     $"audio_artist_url = '{narration.AudioArtistUrl}',audio_src = '{narration.AudioSrc}',audio_src_url = '{narration.AudioSrcUrl}', audio_order = {narration.AudioOrder} " +
+                     $" WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_guid = '{narration.LegacyAudioGuid}'";
+
+
+                using (MySqlConnection connection = new MySqlConnection
+                (
+                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
+                ))
+                {
+                    await connection.OpenAsync();
+                    await connection.ExecuteAsync(sql);
+                }
+
+                //We are using two database for different purposes on the remote
+                using (MySqlConnection connection = new MySqlConnection
+                (
+                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["2ndUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["2ndPassword"]};database={Configuration.GetSection("AudioMySqlServer")["2ndDatabase"]};charset=utf8"
+                ))
+                {
+                    await connection.OpenAsync();
+                    await connection.ExecuteAsync(sql);
+                }
+
+
+                narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
+                context.Recitations.Update(narration);
+                await context.SaveChangesAsync();
+
+                tracker.Finished = true;
+                tracker.FinishDate = DateTime.Now;
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
+            }
+            catch (Exception exp)
+            {
+                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
+                tracker.LastException = exp.ToString();
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+            }
+
+        }
+
+        #endregion
+
+
 
         /// <summary>
         /// retry publish unpublished narrations
@@ -1193,30 +1269,31 @@ namespace RMuseum.Services.Implementationa
                             var list = await context.Recitations.Where(a => a.ReviewStatus == AudioReviewStatus.Approved && a.AudioSyncStatus != AudioSyncStatus.SynchronizedOrRejected).ToListAsync();
                             foreach (Recitation narration in list)
                             {
-                                switch(narration.AudioSyncStatus)
+                                RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                                {
+                                    PoemNarrationId = narration.Id,
+                                    StartDate = DateTime.Now,
+                                    XmlFileCopied = false,
+                                    Mp3FileCopied = false,
+                                    FirstDbUpdated = false,
+                                    SecondDbUpdated = false,
+                                };
+                                context.RecitationPublishingTrackers.Add(tracker);
+                                await context.SaveChangesAsync();
+                                switch (narration.AudioSyncStatus)
                                 {
                                     case AudioSyncStatus.NewItem:
                                     case AudioSyncStatus.SoundOrXMLFilesChanged:
                                         {
-                                            RecitationPublishingTracker tracker = new RecitationPublishingTracker()
-                                            {
-                                                PoemNarrationId = narration.Id,
-                                                StartDate = DateTime.Now,
-                                                XmlFileCopied = false,
-                                                Mp3FileCopied = false,
-                                                FirstDbUpdated = false,
-                                                SecondDbUpdated = false,
-                                            };
-                                            context.RecitationPublishingTrackers.Add(tracker);
-                                            await context.SaveChangesAsync();
+                                           
                                             await _PublishNarration(narration, tracker, context);
                                         }
                                         break;
                                     case AudioSyncStatus.MetadataChanged:
-                                        await _UpdateRemoteRecitations(narration, context);
+                                        await _UpdateRemoteRecitations(narration, tracker, context);
                                         break;
                                     case AudioSyncStatus.Deleted:
-                                        await _DeleteNarrationFromRemote(narration, context);
+                                        await _DeleteNarrationFromRemote(narration, tracker, context);
                                         break;
                                 }                              
                                 
@@ -1639,16 +1716,42 @@ namespace RMuseum.Services.Implementationa
                         other.AudioOrder = other.AudioOrder + 1;
                         other.AudioSyncStatus = AudioSyncStatus.MetadataChanged;
                         _context.Recitations.Update(other);
+
+                        RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                        {
+                            PoemNarrationId = other.Id,
+                            StartDate = DateTime.Now,
+                            XmlFileCopied = false,
+                            Mp3FileCopied = false,
+                            FirstDbUpdated = false,
+                            SecondDbUpdated = false,
+                        };
+                        _context.RecitationPublishingTrackers.Add(tracker);
+
                         await _context.SaveChangesAsync();
 
-                        await _UpdateRemoteRecitations(other, _context);
+
+                        await _UpdateRemoteRecitations(other, tracker, _context);
                     }
 
                     recitation.AudioOrder = 1;
                     recitation.AudioSyncStatus = AudioSyncStatus.MetadataChanged;
                     _context.Recitations.Update(recitation);
 
-                    await _UpdateRemoteRecitations(recitation, _context);
+                    RecitationPublishingTracker trackerMain = new RecitationPublishingTracker()
+                    {
+                        PoemNarrationId = recitation.Id,
+                        StartDate = DateTime.Now,
+                        XmlFileCopied = false,
+                        Mp3FileCopied = false,
+                        FirstDbUpdated = false,
+                        SecondDbUpdated = false,
+                    };
+                    _context.RecitationPublishingTrackers.Add(trackerMain);
+
+                    await _context.SaveChangesAsync();
+
+                    await _UpdateRemoteRecitations(recitation, trackerMain, _context);
                 }
                 
 
