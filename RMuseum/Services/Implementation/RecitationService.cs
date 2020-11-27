@@ -878,14 +878,6 @@ namespace RMuseum.Services.Implementationa
                                 }
                             }
                             await context.SaveChangesAsync();
-
-                            await _notificationService.PushNotification
-                            (
-                                session.UseId,
-                                "پایان پردازش خوانش بارگذاری شده",
-                                $"پردازش خوانشهای بارگذاری شدهٔ اخیر شما تکمیل شده است.{Environment.NewLine}" +
-                                $"می‌توانید با مراجعه به بارگذاری‌ها وضعیت آنها را بررسی و در صورت عدم وجود خطا تقاضای بررسی آنها توسط ناظران را ثبت کنید."
-                            );
                         }
                        
                     }
@@ -940,7 +932,7 @@ namespace RMuseum.Services.Implementationa
                          (
                              narration.OwnerId,
                              "نیاز به بررسی خوانش ارسالی",
-                             $"خوانش شما بررسی شده و نیاز به اعمال تغییرات دارد.{Environment.NewLine}" +
+                             $"خوانش {narration.AudioTitle} بررسی شده و نیاز به اعمال تغییرات دارد.{Environment.NewLine}" +
                              $"می‌توانید با مراجعه به خوانش‌هایتان وضعیت آن را بررسی کنید."
                          );
                 }
@@ -951,7 +943,7 @@ namespace RMuseum.Services.Implementationa
                          (
                              narration.OwnerId,
                              "عدم پذیرش خوانش ارسالی",
-                             $"خوانش ارسالی شما قابل پذیرش نبود.{Environment.NewLine}" +
+                             $"خوانش ارسالی {narration.AudioTitle} قابل پذیرش نبود.{Environment.NewLine}" +
                              $"می‌توانید با مراجعه به  خوانش‌هایتان وضعیت آن را بررسی کنید."
                          );
                 }
@@ -1117,18 +1109,20 @@ namespace RMuseum.Services.Implementationa
 
 
 
-                await _notificationService.PushNotification
-                (
-                    narration.OwnerId,
-                    "انتشار خوانش ارسالی",
-                    $"خوانش ارسالی شما منتشر شد.{Environment.NewLine}" +
-                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
-                );
+                
 
                 tracker.Finished = true;
                 tracker.FinishDate = DateTime.Now;
                 context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
+
+                await new RNotificationService(context).PushNotification
+                (
+                    narration.OwnerId,
+                    "انتشار نهایی خوانش ارسالی",
+                    $"خوانش ارسالی {narration.AudioTitle} منتشر شد.{Environment.NewLine}" +
+                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                );
 
 
             }
@@ -1172,12 +1166,24 @@ namespace RMuseum.Services.Implementationa
                     await connection.ExecuteAsync(sql);
                 }
 
+                string audioTitle = narration.AudioTitle;
+                int GanjoorPostId = narration.GanjoorPostId;
+                Guid userId = narration.OwnerId;
+
                 await _FinalizeDelete(context, narration);
 
                 tracker.Finished = true;
                 tracker.FinishDate = DateTime.Now;
                 context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
+
+                await new RNotificationService(context).PushNotification
+                (
+                    userId,
+                    "حذف نهایی خوانش ارسالی",
+                    $"خوانش ارسالی {audioTitle} حذف شد.{Environment.NewLine}" +
+                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                );
 
 
             }
@@ -1229,6 +1235,14 @@ namespace RMuseum.Services.Implementationa
                 tracker.FinishDate = DateTime.Now;
                 context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
+
+                await new RNotificationService(context).PushNotification
+                (
+                    narration.OwnerId,
+                    "به‌روزآوری نهایی اطلاعات خوانش ارسالی",
+                    $"اطلاعات خوانش ارسالی {narration.AudioTitle} به‌روز شد.{Environment.NewLine}" +
+                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                );
 
             }
             catch (Exception exp)
