@@ -530,20 +530,32 @@ namespace RMuseum.Controllers
         /// <summary>
         /// publishing tracker data
         /// </summary>
-        /// <remarks>TODO: Poem Narration Data is not purified yet (includes sensitive information), so it needs a very special permission</remarks>
         /// <param name="paging"></param>
-        /// <param name="inProgress"></param>
-        /// <param name="finished"></param>
+        /// <param name="unfinished"></param>
         /// <returns></returns>
 
         [HttpGet("publishqueue")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RecitationPublishingTracker>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
-        public async Task<IActionResult> GetPublishingQueueStatus([FromQuery] PagingParameterModel paging, bool inProgress = true, bool finished = true)
+        public async Task<IActionResult> GetPublishingQueueStatus([FromQuery] PagingParameterModel paging, bool unfinished)
         {
-            var res = await _audioService.GetPublishingQueueStatus(paging, inProgress, finished);
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+            RServiceResult<bool>
+                 canViewAll =
+                 await _userPermissionChecker.Check
+                     (
+                         loggedOnUserId,
+                         sessionId,
+                         RMuseumSecurableItem.AudioRecitationEntityShortName,
+                         RMuseumSecurableItem.ModerateOperationShortName
+                         );
+            if (!string.IsNullOrEmpty(canViewAll.ExceptionString))
+                return BadRequest(canViewAll.ExceptionString);
+
+            var res = await _audioService.GetPublishingQueueStatus(paging, unfinished, canViewAll.Result ? Guid.Empty : loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             // Paging Header

@@ -170,10 +170,10 @@ namespace RMuseum.Services
         /// publishing tracker data
         /// </summary>
         /// <param name="paging"></param>
-        /// <param name="inProgress"></param>
-        /// <param name="finished"></param>
+        /// <param name="unfinished"></param>
+        /// <param name="filteredUserId"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTracker[] Items)>> GetPublishingQueueStatus(PagingParameterModel paging, bool inProgress, bool finished);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTrackerViewModel[] Items)>> GetPublishingQueueStatus(PagingParameterModel paging, bool unfinished, Guid filteredUserId);
 
         /// <summary>
         /// move recitaions of an artist to the first position

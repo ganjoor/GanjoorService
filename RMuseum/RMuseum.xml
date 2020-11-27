@@ -825,14 +825,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Controllers.RecitationController.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean)">
             <summary>
             publishing tracker data
             </summary>
-            <remarks>TODO: Poem Narration Data is not purified yet (includes sensitive information), so it needs a very special permission</remarks>
             <param name="paging"></param>
-            <param name="inProgress"></param>
-            <param name="finished"></param>
+            <param name="unfinished"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.TransferRecitationsOwnership(System.String,System.String)">
@@ -2160,6 +2158,89 @@
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel.Message">
             <summary>
             Rejection Message
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel">
+            <summary>
+            RecitationPublishingTracker View Model
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.#ctor(RMuseum.Models.GanjoorAudio.RecitationPublishingTracker,RMuseum.Models.Ganjoor.GanjoorPoem,RSecurityBackend.Models.Auth.Db.RAppUser,RMuseum.Models.GanjoorAudio.Recitation)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="tracker"></param>
+            <param name="poem"></param>
+            <param name="user"></param>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.UserEmail">
+            <summary>
+            user email
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.PoemFullTitle">
+            <summary>
+            Poem Full Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.ArtistName">
+            <summary>
+            Artist Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.Operation">
+            <summary>
+            Operation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.InProgress">
+            <summary>
+            In Progress
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.XmlFileCopied">
+            <summary>
+            XML File Copied
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.Mp3FileCopied">
+            <summary>
+            MP3 File Copied
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.FirstDbUpdated">
+            <summary>
+            First MySql DB Updated
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.SecondDbUpdated">
+            <summary>
+            Second DB Updated
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.Succeeded">
+            <summary>
+            Succeeded
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.Error">
+            <summary>
+            Error
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.LastException">
+            <summary>
+            Exception
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.StartDate">
+            <summary>
+            Start Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.FinishDate">
+            <summary>
+            Finish Date
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationVerseSync">
@@ -5223,13 +5304,13 @@
             <param name="userId">if userId is empty all user uploads would be returned</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Guid)">
             <summary>
             publishing tracker data
             </summary>
             <param name="paging"></param>
-            <param name="inProgress"></param>
-            <param name="finished"></param>
+            <param name="unfinished"></param>
+            <param name="filteredUserId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.TransferRecitationsOwnership(System.Guid,System.Guid,System.String)">
@@ -5521,13 +5602,13 @@
             retry publish unpublished narrations
             </summary>
         </member>
-        <member name="M:RMuseum.Services.IRecitationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.IRecitationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Guid)">
             <summary>
             publishing tracker data
             </summary>
             <param name="paging"></param>
-            <param name="inProgress"></param>
-            <param name="finished"></param>
+            <param name="unfinished"></param>
+            <param name="filteredUserId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.MakeArtistRecitationsFirst(System.String)">

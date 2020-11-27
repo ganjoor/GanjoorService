@@ -1253,7 +1253,7 @@ namespace RMuseum.Services.Implementationa
             if (_backgroundTaskQueue.Count > 0)
                 return;
 
-            var unpublishedQueue =  await _context.RecitationPublishingTrackers.Where(r => r.Finished == false).ToArrayAsync();
+            var unpublishedQueue =  await _context.RecitationPublishingTrackers.ToArrayAsync();
             if (unpublishedQueue.Length > 0)
             {
                 _context.RecitationPublishingTrackers.RemoveRange(unpublishedQueue);
@@ -1622,32 +1622,35 @@ namespace RMuseum.Services.Implementationa
         /// publishing tracker data
         /// </summary>
         /// <param name="paging"></param>
-        /// <param name="inProgress"></param>
-        /// <param name="finished"></param>
+        /// <param name="unfinished"></param>
+        /// <param name="filteredUserId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTracker[] Items)>> GetPublishingQueueStatus(PagingParameterModel paging, bool inProgress, bool finished)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTrackerViewModel[] Items)>> GetPublishingQueueStatus(PagingParameterModel paging, bool unfinished, Guid filteredUserId)
         {
             try
             {
                 var source =
-                     from tracker in _context.RecitationPublishingTrackers
-                     .Include(t => t.PoemNarration)
-                     .Where(a =>
-                            (inProgress && !a.Finished)
-                            ||
-                            (finished && a.Finished)
-                            )
-                    .OrderByDescending(a => a.StartDate)
-                     select tracker;
+                      from tracker in _context.RecitationPublishingTrackers
+                      join recitation in _context.Recitations.Include(a => a.Owner)
+                     on tracker.PoemNarrationId equals recitation.Id
+                      join poem in _context.GanjoorPoems
+                     on recitation.GanjoorPostId equals poem.Id
+                      where
+                      (filteredUserId == Guid.Empty || recitation.OwnerId == filteredUserId)
+                      &&
+                      (!unfinished || (unfinished && !tracker.Finished))
+                      orderby tracker.StartDate descending
+                      select new RecitationPublishingTrackerViewModel(tracker, poem, recitation.Owner, recitation);
 
-                (PaginationMetadata PagingMeta, RecitationPublishingTracker[] Items) paginatedResult =
-                    await QueryablePaginator<RecitationPublishingTracker>.Paginate(source, paging);
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTracker[] Items)>(paginatedResult);
+                (PaginationMetadata PagingMeta, RecitationPublishingTrackerViewModel[] Items) paginatedResult =
+                    await QueryablePaginator<RecitationPublishingTrackerViewModel>.Paginate(source, paging);
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTrackerViewModel[] Items)>(paginatedResult);
             }
             catch (Exception exp)
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTracker[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+                return new RServiceResult<(PaginationMetadata PagingMeta, RecitationPublishingTrackerViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
             }
         }
 
