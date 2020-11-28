@@ -96,7 +96,7 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// Delete Notification
         /// </summary>
-        /// <param name="notificationId">if empty deletes all</param>
+        /// <param name="notificationId">if empty deletes all read notifications</param>
         /// <param name="userId"></param>    
         /// <returns></returns>
         public async Task<RServiceResult<bool>> DeleteNotification(Guid notificationId, Guid userId)
@@ -105,7 +105,7 @@ namespace RMuseum.Services.Implementation
             {
                 if (notificationId == Guid.Empty)
                 {
-                    var notifications = await _context.Notifications.Where(n => n.UserId == userId).ToListAsync();
+                    var notifications = await _context.Notifications.Where(n => n.UserId == userId && n.Status == NotificationStatus.Read).ToListAsync();
                     _context.Notifications.RemoveRange(notifications);
                     await _context.SaveChangesAsync();
                 }

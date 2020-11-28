@@ -52,7 +52,7 @@ namespace RMuseum.Services
         /// <summary>
         /// Delete Notification
         /// </summary>
-        /// <param name="notificationId">if empty deletes all</param>
+        /// <param name="notificationId">if empty deletes all read notifications</param>
         /// <param name="userId"></param>    
         /// <returns></returns>
         Task<RServiceResult<bool>> DeleteNotification(Guid notificationId, Guid userId);

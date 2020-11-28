@@ -700,6 +700,12 @@
             <param name="notificationId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.NoificationController.DeleteAllReadNotification">
+            <summary>
+            Delete All Read Notifications
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.NoificationController._notificationService">
             <summary>
             Notification Service
@@ -5130,7 +5136,7 @@
             <summary>
             Delete Notification
             </summary>
-            <param name="notificationId">if empty deletes all</param>
+            <param name="notificationId">if empty deletes all read notifications</param>
             <param name="userId"></param>    
             <returns></returns>
         </member>
@@ -5700,7 +5706,7 @@
             <summary>
             Delete Notification
             </summary>
-            <param name="notificationId">if empty deletes all</param>
+            <param name="notificationId">if empty deletes all read notifications</param>
             <param name="userId"></param>    
             <returns></returns>
         </member>

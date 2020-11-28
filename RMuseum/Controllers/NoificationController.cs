@@ -120,6 +120,23 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Delete All Read Notifications
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteAllReadNotification()
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<bool> res = await _notificationService.DeleteNotification(Guid.Empty, loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// Notification Service
         /// </summary>
         protected readonly IRNotificationService _notificationService;
