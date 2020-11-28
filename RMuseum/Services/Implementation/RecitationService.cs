@@ -590,7 +590,7 @@ namespace RMuseum.Services.Implementationa
                     Length = uploadedFile.Length,
                     Name = uploadedFile.Name,
                     ProcessResult = false,
-                    ProcessResultMsg = "پردازش نشده (فایلهای mp3‌ که مشخصات آنها در فایلهای xml ارسالی یافت نشود پردازش نمی‌شوند)."
+                    ProcessResultMsg = "در حال پردازش ..."
                 };
 
                 string ext = Path.GetExtension(file.FileName).ToLower();
