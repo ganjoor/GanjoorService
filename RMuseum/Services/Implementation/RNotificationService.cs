@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Notification;
+using RMuseum.Models.Notification.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="subject"></param>
         /// <param name="htmlText"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<RUserNotification>> PushNotification(Guid userId, string subject, string htmlText)
+        public async Task<RServiceResult<RUserNotificationViewModel>> PushNotification(Guid userId, string subject, string htmlText)
         {
             try
             {
@@ -36,11 +37,11 @@ namespace RMuseum.Services.Implementation
                             };
                 _context.Notifications.Add(notification);
                 await _context.SaveChangesAsync();
-                return new RServiceResult<RUserNotification>(notification);
+                return new RServiceResult<RUserNotificationViewModel>(new RUserNotificationViewModel(notification));
             }
             catch (Exception exp)
             {
-                return new RServiceResult<RUserNotification>(null, exp.ToString());
+                return new RServiceResult<RUserNotificationViewModel>(null, exp.ToString());
             }
         }
 
@@ -50,7 +51,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="notificationId"></param>
         /// <param name="userId"></param>    
         /// <returns>updated notification object</returns>
-        public async Task<RServiceResult<RUserNotification>> SwitchNotificationStatus(Guid notificationId, Guid userId)
+        public async Task<RServiceResult<RUserNotificationViewModel>> SwitchNotificationStatus(Guid notificationId, Guid userId)
         {
             try
             {
@@ -59,11 +60,11 @@ namespace RMuseum.Services.Implementation
                 notification.Status = notification.Status == NotificationStatus.Unread ? NotificationStatus.Read : NotificationStatus.Unread;
                 _context.Notifications.Update(notification);
                 await _context.SaveChangesAsync();
-                return new RServiceResult<RUserNotification>(notification);
+                return new RServiceResult<RUserNotificationViewModel>(new RUserNotificationViewModel(notification));
             }
             catch (Exception exp)
             {
-                return new RServiceResult<RUserNotification>(null, exp.ToString());
+                return new RServiceResult<RUserNotificationViewModel>(null, exp.ToString());
             }
         }
 
@@ -130,21 +131,22 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<RUserNotification[]>> GetUserNotifications(Guid userId)
+        public async Task<RServiceResult<RUserNotificationViewModel[]>> GetUserNotifications(Guid userId)
         {
             try
             {
-                return new RServiceResult<RUserNotification[]>
+                return new RServiceResult<RUserNotificationViewModel[]>
                     (
                     await _context.Notifications
                     .Where(n => n.UserId == userId)
                     .OrderByDescending(n => n.DateTime)
+                    .Select(n => new RUserNotificationViewModel(n))
                     .ToArrayAsync()
                     );
             }
             catch (Exception exp)
             {
-                return new RServiceResult<RUserNotification[]>(null, exp.ToString());
+                return new RServiceResult<RUserNotificationViewModel[]>(null, exp.ToString());
             }
         }
 

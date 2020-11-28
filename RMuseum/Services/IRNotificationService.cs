@@ -1,4 +1,5 @@
 ﻿using RMuseum.Models.Notification;
+using RMuseum.Models.Notification.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Threading.Tasks;
@@ -17,14 +18,14 @@ namespace RMuseum.Services
         /// <param name="subject"></param>
         /// <param name="htmlText"></param>
         /// <returns></returns>
-        Task<RServiceResult<RUserNotification>> PushNotification(Guid userId, string subject, string htmlText);
+        Task<RServiceResult<RUserNotificationViewModel>> PushNotification(Guid userId, string subject, string htmlText);
 
         /// <summary>
         /// Get User Notifications
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<RUserNotification[]>> GetUserNotifications(Guid userId);
+        Task<RServiceResult<RUserNotificationViewModel[]>> GetUserNotifications(Guid userId);
 
         /// <summary>
         /// Get Unread User Notifications Count
@@ -39,7 +40,7 @@ namespace RMuseum.Services
         /// <param name="notificationId"></param>
         /// <param name="userId"></param>    
         /// <returns>updated notification object</returns>
-        Task<RServiceResult<RUserNotification>> SwitchNotificationStatus(Guid notificationId, Guid userId);
+        Task<RServiceResult<RUserNotificationViewModel>> SwitchNotificationStatus(Guid notificationId, Guid userId);
 
         /// <summary>
         /// Set All User Notifications Status

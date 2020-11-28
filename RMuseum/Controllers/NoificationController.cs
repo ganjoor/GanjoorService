@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RMuseum.Models.Notification;
+using RMuseum.Models.Notification.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
 using System;
@@ -21,12 +22,12 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNotification[]))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNotificationViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetUserNotifications()
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<RUserNotification[]> res = await _notificationService.GetUserNotifications(loggedOnUserId);
+            RServiceResult<RUserNotificationViewModel[]> res = await _notificationService.GetUserNotifications(loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -54,12 +55,12 @@ namespace RMuseum.Controllers
         [HttpPut]
         [Route("{notificationId}")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNotification))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNotificationViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> SwitchNotificationStatus(Guid notificationId)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<RUserNotification> res = await _notificationService.SwitchNotificationStatus(notificationId, loggedOnUserId);
+            RServiceResult<RUserNotificationViewModel> res = await _notificationService.SwitchNotificationStatus(notificationId, loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -72,7 +73,7 @@ namespace RMuseum.Controllers
         [HttpPut]
         [Route("allread")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> SetAllNotificationsStatusRead()
         {
@@ -80,7 +81,7 @@ namespace RMuseum.Controllers
             RServiceResult<bool> res = await _notificationService.SetAllNotificationsStatus(loggedOnUserId, NotificationStatus.Read);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
+            return Ok();
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace RMuseum.Controllers
         [HttpPut]
         [Route("allunread")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> SetAllNotificationsStatusUnread()
         {
@@ -97,7 +98,7 @@ namespace RMuseum.Controllers
             RServiceResult<bool> res = await _notificationService.SetAllNotificationsStatus(loggedOnUserId, NotificationStatus.Unread);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
+            return Ok();
         }
 
         /// <summary>

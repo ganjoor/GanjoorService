@@ -3504,6 +3504,42 @@
             Text
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel">
+            <summary>
+            User Notification
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.#ctor(RMuseum.Models.Notification.RUserNotification)">
+            <summary>
+            constructor
+            </summary>
+            <param name="src"></param>
+        </member>
+        <member name="P:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.Subject">
+            <summary>
+            Subject
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.HtmlText">
+            <summary>
+            Text
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.UploadSession.UploadSession">
             <summary>
             Upload Session
