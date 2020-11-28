@@ -1132,6 +1132,14 @@ namespace RMuseum.Services.Implementationa
                 tracker.LastException = exp.ToString();
                 context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
+
+                await new RNotificationService(context).PushNotification
+               (
+                   narration.OwnerId,
+                   "خطا انتشار نهایی خوانش ارسالی",
+                   $"انتشار خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد..{Environment.NewLine}" +
+                   $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
+               );
             }
 
         }
@@ -1193,6 +1201,14 @@ namespace RMuseum.Services.Implementationa
                 tracker.LastException = exp.ToString();
                 context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
+
+                await new RNotificationService(context).PushNotification
+               (
+                   narration.OwnerId,
+                   "خطا در حذف نهایی خوانش ارسالی",
+                   $"حذف نهایی خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
+                   $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
+               );
             }
 
         }
@@ -1251,6 +1267,14 @@ namespace RMuseum.Services.Implementationa
                 tracker.LastException = exp.ToString();
                 context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
+
+                await new RNotificationService(context).PushNotification
+                (
+                    narration.OwnerId,
+                    "خطا در به‌روزآوری نهایی اطلاعات خوانش ارسالی",
+                    $"به‌روزآوری اطلاعات خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
+                    $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
+                );
             }
 
         }
