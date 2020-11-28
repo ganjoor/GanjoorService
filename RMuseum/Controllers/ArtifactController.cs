@@ -13,7 +13,6 @@ using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Models.ImportJob;
 using RMuseum.Models.Note;
 using RMuseum.Models.Note.ViewModels;
-using RMuseum.Models.Notification;
 using RMuseum.Services;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Generic;
@@ -1810,73 +1809,7 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
-        /// <summary>
-        /// Get User Notifications
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("notifications")]
-        [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNotification[]))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetUserNotifications()
-        {
-            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<RUserNotification[]> res = await _notificationService.GetUserNotifications(loggedOnUserId);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
-        }
-
-        [HttpGet]
-        [Route("notifications/unread/count")]
-        [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetUnreadUserNotificationsCount()
-        {
-            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<int> res = await _notificationService.GetUnreadUserNotificationsCount(loggedOnUserId);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
-        }
-
-        /// <summary>
-        /// Switch Notification Status
-        /// </summary>
-        /// <param name="notificationId"></param>
-        /// <returns></returns>
-        [HttpPut]
-        [Route("notifications/{notificationId}")]
-        [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNotification))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> SwitchNotificationStatus(Guid notificationId)
-        {
-            RServiceResult<RUserNotification> res = await _notificationService.SwitchNotificationStatus(notificationId);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
-        }
-
-        /// <summary>
-        /// Delete Notification
-        /// </summary>
-        /// <param name="notificationId"></param>
-        /// <returns></returns>
-        [HttpDelete]
-        [Route("notifications/{notificationId}")]
-        [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> DeleteNotification(Guid notificationId)
-        {
-            RServiceResult<bool> res = await _notificationService.DeleteNotification(notificationId);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok();
-        }
+        
 
         /// <summary>
         /// constructor
@@ -1893,7 +1826,6 @@ namespace RMuseum.Controllers
             _userPermissionChecker = userPermissionChecker;
             _memoryCache = memoryCache;
             _captchaService = captchaService;
-            _notificationService = notificationService;
         }
 
         /// <summary>
@@ -1916,9 +1848,6 @@ namespace RMuseum.Controllers
         /// </summary>
         protected readonly ICaptchaService _captchaService;
 
-        /// <summary>
-        /// Notification Service
-        /// </summary>
-        protected readonly IRNotificationService _notificationService;
+        
     }
 }

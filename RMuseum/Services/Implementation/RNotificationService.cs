@@ -47,14 +47,15 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// Switch Notification Status
         /// </summary>
-        /// <param name="notificationId"></param>    
+        /// <param name="notificationId"></param>
+        /// <param name="userId"></param>    
         /// <returns>updated notification object</returns>
-        public async Task<RServiceResult<RUserNotification>> SwitchNotificationStatus(Guid notificationId)
+        public async Task<RServiceResult<RUserNotification>> SwitchNotificationStatus(Guid notificationId, Guid userId)
         {
             try
             {
                 RUserNotification notification =
-                            await _context.Notifications.Where(n => n.Id == notificationId).SingleAsync();
+                            await _context.Notifications.Where(n => n.Id == notificationId && n.UserId == userId).SingleAsync();
                 notification.Status = notification.Status == NotificationStatus.Unread ? NotificationStatus.Read : NotificationStatus.Unread;
                 _context.Notifications.Update(notification);
                 await _context.SaveChangesAsync();
@@ -66,20 +67,56 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// Set All User Notifications Status
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>>SetAllNotificationsStatus(Guid userId, NotificationStatus status)
+        {
+            try
+            {
+                var notifications = await _context.Notifications.Where(n => n.UserId == userId).ToListAsync();
+                foreach(var notification in notifications)
+                {
+                    notification.Status = status;
+                }
+                _context.UpdateRange(notifications);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// Delete Notification
         /// </summary>
-        /// <param name="notificationId"></param>    
+        /// <param name="notificationId">if empty deletes all</param>
+        /// <param name="userId"></param>    
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> DeleteNotification(Guid notificationId)
+        public async Task<RServiceResult<bool>> DeleteNotification(Guid notificationId, Guid userId)
         {
             try
             {
-                RUserNotification notification =
-                            await _context.Notifications.Where(n => n.Id == notificationId).SingleAsync();
-                _context.Notifications.Remove(notification);
-                await _context.SaveChangesAsync();
+                if (notificationId == Guid.Empty)
+                {
+                    var notifications = await _context.Notifications.Where(n => n.UserId == userId).ToListAsync();
+                    _context.Notifications.RemoveRange(notifications);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    RUserNotification notification =
+                                await _context.Notifications.Where(n => n.Id == notificationId && n.UserId == userId).SingleAsync();
+                    _context.Notifications.Remove(notification);
+                    await _context.SaveChangesAsync();
+                    
+                }
                 return new RServiceResult<bool>(true);
             }
             catch (Exception exp)

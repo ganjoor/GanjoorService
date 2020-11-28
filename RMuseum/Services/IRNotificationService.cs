@@ -36,15 +36,25 @@ namespace RMuseum.Services
         /// <summary>
         /// Switch Notification Status
         /// </summary>
-        /// <param name="notificationId"></param>    
+        /// <param name="notificationId"></param>
+        /// <param name="userId"></param>    
         /// <returns>updated notification object</returns>
-        Task<RServiceResult<RUserNotification>> SwitchNotificationStatus(Guid notificationId);
+        Task<RServiceResult<RUserNotification>> SwitchNotificationStatus(Guid notificationId, Guid userId);
+
+        /// <summary>
+        /// Set All User Notifications Status
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> SetAllNotificationsStatus(Guid userId, NotificationStatus status);
 
         /// <summary>
         /// Delete Notification
         /// </summary>
-        /// <param name="notificationId"></param>    
+        /// <param name="notificationId">if empty deletes all</param>
+        /// <param name="userId"></param>    
         /// <returns></returns>
-        Task<RServiceResult<bool>> DeleteNotification(Guid notificationId);
+        Task<RServiceResult<bool>> DeleteNotification(Guid notificationId, Guid userId);
     }
 }
