@@ -1410,7 +1410,10 @@ namespace RMuseum.Services.Implementationa
         {
             try
             {
-                return new RServiceResult<UserRecitationProfileViewModel>(new UserRecitationProfileViewModel(await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == true).FirstOrDefaultAsync()));
+                var defProfile = await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == true).FirstOrDefaultAsync();
+                if (defProfile == null)
+                    return new RServiceResult<UserRecitationProfileViewModel>(null);
+                return new RServiceResult<UserRecitationProfileViewModel>(new UserRecitationProfileViewModel(defProfile));
             }
             catch (Exception exp)
             {
