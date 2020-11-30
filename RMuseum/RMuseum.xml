@@ -30,11 +30,12 @@
             </returns>
             <param name="secretCode"></param>
         </member>
-        <member name="M:RMuseum.Controllers.AppUserController.GetSignUpEmailHtmlContent(System.String)">
+        <member name="M:RMuseum.Controllers.AppUserController.GetSignUpEmailHtmlContent(System.String,System.String)">
             <summary>
             Sign Up Email Html Content
             </summary>
             <param name="secretCode"></param>
+            <param name="signupCallbackUrl"></param>
             <returns>html content</returns>
         </member>
         <member name="M:RMuseum.Controllers.AppUserController.GetForgotPasswordEmailSubject(System.String)">
@@ -46,11 +47,12 @@
             </returns>
             <param name="secretCode"></param>
         </member>
-        <member name="M:RMuseum.Controllers.AppUserController.GetForgotPasswordEmailHtmlContent(System.String)">
+        <member name="M:RMuseum.Controllers.AppUserController.GetForgotPasswordEmailHtmlContent(System.String,System.String)">
             <summary>
             Forgot Password Email Html Content
             </summary>
             <param name="secretCode"></param>
+            <param name="forgotPasswordCallbackUrl"></param>
             <returns>html content</returns>
         </member>
         <member name="M:RMuseum.Controllers.AppUserController.IsSignupEnabled">

@@ -793,7 +793,7 @@ namespace RSecurityBackend.Controllers
                     (
                     signUpViewModel.Email,
                     GetSignUpEmailSubject(res.Result.Secret),
-                    GetSignUpEmailHtmlContent(res.Result.Secret)
+                    GetSignUpEmailHtmlContent(res.Result.Secret, signUpViewModel.CallbackUrl)
                     );
             }
             catch (Exception exp)
@@ -820,10 +820,11 @@ namespace RSecurityBackend.Controllers
         /// Sign Up Email Html Content
         /// </summary>
         /// <param name="secretCode"></param>
+        /// <param name="signupCallbackUrl"></param>
         /// <returns>html content</returns>
-        protected virtual string GetSignUpEmailHtmlContent(string secretCode)
+        protected virtual string GetSignUpEmailHtmlContent(string secretCode, string signupCallbackUrl)
         {
-            return $"{SignupCallbackUrl}?secret={secretCode}";
+            return $"{signupCallbackUrl}?secret={secretCode}";
         }
 
         /// <summary>
@@ -909,7 +910,7 @@ namespace RSecurityBackend.Controllers
                     (
                     fpwdViewModel.Email,
                     GetForgotPasswordEmailSubject(res.Result.Secret),
-                    GetForgotPasswordEmailHtmlContent(res.Result.Secret)
+                    GetForgotPasswordEmailHtmlContent(res.Result.Secret, fpwdViewModel.CallbackUrl)
                     );
             }
             catch (Exception exp)
@@ -936,10 +937,11 @@ namespace RSecurityBackend.Controllers
         /// Forgot Password Email Html Content
         /// </summary>
         /// <param name="secretCode"></param>
+        /// <param name="forgotPasswordCallbackUrl"></param>
         /// <returns>html content</returns>
-        protected virtual string GetForgotPasswordEmailHtmlContent(string secretCode)
+        protected virtual string GetForgotPasswordEmailHtmlContent(string secretCode, string forgotPasswordCallbackUrl)
         {
-            return $"{ForgotPasswordCallbackUrl}?secret={secretCode}";
+            return $"{forgotPasswordCallbackUrl}?secret={secretCode}";
         }
 
         /// <summary>
@@ -970,34 +972,6 @@ namespace RSecurityBackend.Controllers
                 return BadRequest(result.ExceptionString);
             return Ok(true);
         }
-
-
-
-
-        /// <summary>
-        /// signup callback url
-        /// </summary>
-        protected string SignupCallbackUrl
-        {
-            get
-            {
-                return $"{Configuration.GetSection("UserSignupClientCallBack")["Url"]}";
-            }
-        }
-
-        /// <summary>
-        /// forgot password call back url
-        /// </summary>
-        protected string ForgotPasswordCallbackUrl
-        {
-            get
-            {
-                return $"{Configuration.GetSection("ForgotPasswordClientCallBack")["Url"]}";
-            }
-        }
-
-
-
 
         /// <summary>
         /// IAppUserService instance

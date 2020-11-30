@@ -45,15 +45,16 @@ namespace RMuseum.Controllers
         /// <param name="secretCode"></param>
         protected override string GetSignUpEmailSubject(string secretCode)
         {
-            return $"{secretCode} کد ثبت نام شما در گنجینهٔ گنجور";
+            return $"{secretCode} کد ثبت نام شما در گنجور";
         }
 
         /// <summary>
         /// Sign Up Email Html Content
         /// </summary>
         /// <param name="secretCode"></param>
+        /// <param name="signupCallbackUrl"></param>
         /// <returns>html content</returns>
-        protected override string GetSignUpEmailHtmlContent(string secretCode)
+        protected override string GetSignUpEmailHtmlContent(string secretCode, string signupCallbackUrl)
         {
             string content =
                "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
@@ -64,7 +65,7 @@ namespace RMuseum.Controllers
                +
                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />"
                +
-               $"<title>کد ثبت نام شما در گنجینهٔ گنجور: {secretCode}</title>"
+               $"<title>کد ثبت نام شما در گنجور: {secretCode}</title>"
                +
                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>"
                +
@@ -78,7 +79,7 @@ namespace RMuseum.Controllers
                 +
                 "<td align=\"center\" style=\"padding: 40px 0 30px 0;\">"
                 +
-                "<img src=\"https://i.ganjoor.net/gm.gif\" alt=\"گنجینهٔ گنجور\" width=\"150\" height=\"150\" style=\"display: block;\" />"
+                "<img src=\"https://i.ganjoor.net/gm.gif\" alt=\"گنجور\" width=\"150\" height=\"150\" style=\"display: block;\" />"
                 +
                 "</td>"
                 +
@@ -86,13 +87,13 @@ namespace RMuseum.Controllers
                 +
                 "<tr><td>"
                 +
-                $"<p style=\"font:normal 12px tahoma;direction:rtl\">لطفاً جهت تکمیل ثبت نام در گنجینهٔ گنجور <a href=\"{SignupCallbackUrl}?secret={secretCode}\">اینجا</a> کلیک کنید یا اگر صفحهٔ ثبت نام هنوز باز است کد <strong>{secretCode}</strong> را در آن وارد کنید.</p>"
+                $"<p style=\"font:normal 12px tahoma;direction:rtl\">لطفاً جهت تکمیل ثبت نام در گنجور <a href=\"{signupCallbackUrl}?secret={secretCode}\">اینجا</a> کلیک کنید یا اگر صفحهٔ ثبت نام هنوز باز است کد <strong>{secretCode}</strong> را در آن وارد کنید.</p>"
                 +
                 "</td></tr>"
                 +
                 "<tr><td>"
                 +
-                "<p style=\"font:normal 12px tahoma;direction:rtl\">اگر در گنجینهٔ گنجور ثبت نام نکرده‌اید لطفاً این نامه را نادیده بگیرید. به این نامه پاسخ ندهید، کسی پاسخگوی شما نخواهد بود.</p>"
+                "<p style=\"font:normal 12px tahoma;direction:rtl\">اگر در گنجور ثبت نام نکرده‌اید لطفاً این نامه را نادیده بگیرید. به این نامه پاسخ ندهید، کسی پاسخگوی شما نخواهد بود.</p>"
                 +
                 "</td></tr>"
                 +
@@ -115,15 +116,16 @@ namespace RMuseum.Controllers
         /// <param name="secretCode"></param>
         protected override string GetForgotPasswordEmailSubject(string secretCode)
         {
-            return $"{secretCode} کد بازیابی کلمهٔ عبور شما در گنجینهٔ گنجور";
+            return $"{secretCode} کد بازیابی کلمهٔ عبور شما در گنجور";
         }
 
         /// <summary>
         /// Forgot Password Email Html Content
         /// </summary>
         /// <param name="secretCode"></param>
+        /// <param name="forgotPasswordCallbackUrl"></param>
         /// <returns>html content</returns>
-        protected override string GetForgotPasswordEmailHtmlContent(string secretCode)
+        protected override string GetForgotPasswordEmailHtmlContent(string secretCode, string forgotPasswordCallbackUrl)
         { 
             string content =
               "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
@@ -134,7 +136,7 @@ namespace RMuseum.Controllers
               +
               "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />"
               +
-              $"<title>کد تغییر گذرواژهٔ شما در گنجینهٔ گنجور: {secretCode}</title>"
+              $"<title>کد تغییر گذرواژهٔ شما در گنجور: {secretCode}</title>"
               +
               "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>"
               +
@@ -148,7 +150,7 @@ namespace RMuseum.Controllers
                +
                "<td align=\"center\" style=\"padding: 40px 0 30px 0;\">"
                +
-               "<img src=\"https://i.ganjoor.net/gm.gif\" alt=\"گنجینهٔ گنجور\" width=\"150\" height=\"150\" style=\"display: block;\" />"
+               "<img src=\"https://i.ganjoor.net/gm.gif\" alt=\"گنجور\" width=\"150\" height=\"150\" style=\"display: block;\" />"
                +
                "</td>"
                +
@@ -156,13 +158,13 @@ namespace RMuseum.Controllers
                +
                "<tr><td>"
                +
-               $"<p style=\"font:normal 12px tahoma;direction:rtl\">لطفاً جهت تکمیل فرایند فراموشی گذرواژه در گنجینهٔ گنجور <a href=\"{ForgotPasswordCallbackUrl}?secret={secretCode}\">اینجا</a> کلیک کنید یا اگر صفحهٔ فراموشی گذرواژه هنوز باز است کد <strong>{secretCode}</strong> را در آن وارد کنید.</p>"
+               $"<p style=\"font:normal 12px tahoma;direction:rtl\">لطفاً جهت تکمیل فرایند فراموشی گذرواژه در گنجور <a href=\"{forgotPasswordCallbackUrl}?secret={secretCode}\">اینجا</a> کلیک کنید یا اگر صفحهٔ فراموشی گذرواژه هنوز باز است کد <strong>{secretCode}</strong> را در آن وارد کنید.</p>"
                +
                "</td></tr>"
                +
                "<tr><td>"
                +
-               "<p style=\"font:normal 12px tahoma;direction:rtl\">اگر در گنجینهٔ گنجور فراموشی گذرواژه را نزده‌اید یا گذرواژه‌تان را به خاطر آوردید لطفاً این نامه را نادیده بگیرید. به این نامه پاسخ ندهید، کسی پاسخگوی شما نخواهد بود.</p>"
+               "<p style=\"font:normal 12px tahoma;direction:rtl\">اگر در گنجور فراموشی گذرواژه را نزده‌اید یا گذرواژه‌تان را به خاطر آوردید لطفاً این نامه را نادیده بگیرید. به این نامه پاسخ ندهید، کسی پاسخگوی شما نخواهد بود.</p>"
                +
                "</td></tr>"
                +

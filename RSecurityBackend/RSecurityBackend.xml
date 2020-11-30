@@ -216,11 +216,12 @@
             </returns>
             <param name="secretCode"></param>
         </member>
-        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetSignUpEmailHtmlContent(System.String)">
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetSignUpEmailHtmlContent(System.String,System.String)">
             <summary>
             Sign Up Email Html Content
             </summary>
             <param name="secretCode"></param>
+            <param name="signupCallbackUrl"></param>
             <returns>html content</returns>
         </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.VerifySignUp(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String)">
@@ -254,11 +255,12 @@
             </returns>
             <param name="secretCode"></param>
         </member>
-        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetForgotPasswordEmailHtmlContent(System.String)">
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetForgotPasswordEmailHtmlContent(System.String,System.String)">
             <summary>
             Forgot Password Email Html Content
             </summary>
             <param name="secretCode"></param>
+            <param name="forgotPasswordCallbackUrl"></param>
             <returns>html content</returns>
         </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.IsSignupEnabled">
@@ -273,16 +275,6 @@
             </summary>
             <param name="pwd"></param>
             <returns></returns>
-        </member>
-        <member name="P:RSecurityBackend.Controllers.AppUserControllerBase.SignupCallbackUrl">
-            <summary>
-            signup callback url
-            </summary>
-        </member>
-        <member name="P:RSecurityBackend.Controllers.AppUserControllerBase.ForgotPasswordCallbackUrl">
-            <summary>
-            forgot password call back url
-            </summary>
         </member>
         <member name="F:RSecurityBackend.Controllers.AppUserControllerBase._appUserService">
             <summary>
@@ -1341,6 +1333,11 @@
             <summary>
             Captcha Value
             </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.UnverifiedSignUpViewModel.CallbackUrl">
+             <summary>
+            CallbackUrl
+             </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel">
             <summary>

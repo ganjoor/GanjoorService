@@ -40,5 +40,10 @@ namespace RSecurityBackend.Models.Auth.ViewModels
         /// Captcha Value
         /// </summary>
         public string CaptchaValue { get; set; }
+
+        /// <summary>
+        ///CallbackUrl
+        /// </summary>
+        public string CallbackUrl { get; set; }
     }
 }
