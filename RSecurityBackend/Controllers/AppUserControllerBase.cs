@@ -824,7 +824,9 @@ namespace RSecurityBackend.Controllers
         /// <returns>html content</returns>
         protected virtual string GetSignUpEmailHtmlContent(string secretCode, string signupCallbackUrl)
         {
-            return $"{signupCallbackUrl}?secret={secretCode}";
+            if(string.IsNullOrEmpty(signupCallbackUrl))
+                return $"{signupCallbackUrl}?secret={secretCode}";
+            return $"لطفا {secretCode} را در صفحهٔ ثبت نام وارد کنید.";
         }
 
         /// <summary>

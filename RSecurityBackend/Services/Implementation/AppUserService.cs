@@ -1025,6 +1025,7 @@ namespace RSecurityBackend.Services.Implementation
         {
             try
             {
+                secret = secret.Trim();
                 RVerifyQueueItem item = await _context.VerifyQueueItems.Where(i => i.QueueType == verifyQueueType && i.Secret == secret).SingleOrDefaultAsync();
                 if(item == null)
                 {
@@ -1074,7 +1075,7 @@ namespace RSecurityBackend.Services.Implementation
                     return new RServiceResult<bool>(false, "کلمه عبور اشتباه وارد شده است");
                 }
 
-                secret = secret.Replace(" ", "");//TODO: check this
+                secret = secret.Trim();
 
                 RegisterRAppUser newUserInfo = new RegisterRAppUser()
                 {

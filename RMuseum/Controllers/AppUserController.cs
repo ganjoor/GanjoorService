@@ -87,7 +87,12 @@ namespace RMuseum.Controllers
                 +
                 "<tr><td>"
                 +
+                (
+                string.IsNullOrEmpty(signupCallbackUrl) ?
+                $"<p style=\"font:normal 12px tahoma;direction:rtl\">لطفاً جهت تکمیل ثبت نام در گنجور کد <strong>{secretCode}</strong> را به عنوان رمز دریافتی در صفحهٔ ثبت نام وارد کنید.</p>"
+                :
                 $"<p style=\"font:normal 12px tahoma;direction:rtl\">لطفاً جهت تکمیل ثبت نام در گنجور <a href=\"{signupCallbackUrl}?secret={secretCode}\">اینجا</a> کلیک کنید یا اگر صفحهٔ ثبت نام هنوز باز است کد <strong>{secretCode}</strong> را در آن وارد کنید.</p>"
+                )
                 +
                 "</td></tr>"
                 +
@@ -158,7 +163,12 @@ namespace RMuseum.Controllers
                +
                "<tr><td>"
                +
+               (
+               string.IsNullOrEmpty(forgotPasswordCallbackUrl) ?
+               $"<p style=\"font:normal 12px tahoma;direction:rtl\">لطفاً جهت تکمیل فرایند فراموشی گذرواژه در گنجور کد <strong>{secretCode}</strong> را به عنوان رمز دریافتی در صفحهٔ بازیابی گذرواژه وارد کنید.</p>"
+               :
                $"<p style=\"font:normal 12px tahoma;direction:rtl\">لطفاً جهت تکمیل فرایند فراموشی گذرواژه در گنجور <a href=\"{forgotPasswordCallbackUrl}?secret={secretCode}\">اینجا</a> کلیک کنید یا اگر صفحهٔ فراموشی گذرواژه هنوز باز است کد <strong>{secretCode}</strong> را در آن وارد کنید.</p>"
+               )
                +
                "</td></tr>"
                +
