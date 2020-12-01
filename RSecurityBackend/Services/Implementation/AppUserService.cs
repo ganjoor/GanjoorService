@@ -972,7 +972,7 @@ namespace RSecurityBackend.Services.Implementation
                 RAppUser existingUser = await _userManager.FindByEmailAsync(email);
                 if (existingUser != null)
                 {
-                    return new RServiceResult<RVerifyQueueItem>(null, "این آدرس ایمیل قبلا استفاده شده است");
+                    return new RServiceResult<RVerifyQueueItem>(null, "شما قبلا ثبت نام کرده‌اید. توجه بفرمایید که کاربران گنجینهٔ گنجور و پیشخان خوانشگران یکسانند و می‌توانید با همان نام کاربری اینجا وارد شوید.");
                 }
 
                 existingUser = await _userManager.FindByNameAsync(email);
