@@ -1150,8 +1150,15 @@ namespace RMuseum.Services.Implementationa
             try
             {
                 _ensureSftpClientConnection();
-                _client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
-                _client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}");
+                if(_client.Exists($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}"))
+                {
+                    _client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                }
+                
+                if(_client.Exists($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}"))
+                {
+                    _client.DeleteFile($"{Configuration.GetSection("AudioSFPServer")["RootPath"]}{narration.RemoteMp3FilePath}");
+                }
 
                 string sql = $"DELETE FROM ganja_gaudio WHERE audio_post_ID = {narration.GanjoorPostId} AND audio_guid = '{narration.LegacyAudioGuid}'";
 
