@@ -153,6 +153,7 @@ namespace RMuseum.Services.Implementation
                     using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
                     {
                         var poems = await context.GanjoorPoems.Where(p => p.PlainText == null).ToListAsync();
+                        int n = 0;
                         foreach (GanjoorPoem poem in poems)
                         {
                             var verses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
@@ -216,11 +217,20 @@ namespace RMuseum.Services.Implementation
 
                                 context.Update(poem);
 
-                                await context.SaveChangesAsync();
+                                n++;
+
+                                if(n >= 100)
+                                {
+                                    await context.SaveChangesAsync();
+                                    n = 0;
+                                }                                
 
                             }
                         }
-                        
+
+                        if(n > 0)
+                            await context.SaveChangesAsync();
+
 
                     }
 
