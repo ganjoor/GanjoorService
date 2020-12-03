@@ -211,20 +211,19 @@ namespace RMuseum.Services.Implementation
                                         }
                                         break;
                                 }
+                            }
 
-                                poem.PlainText = plainText;
-                                poem.HtmlText = htmlText;
+                            poem.PlainText = plainText;
+                            poem.HtmlText = htmlText;
 
-                                context.Update(poem);
+                            context.Update(poem);
 
-                                n++;
+                            n++;
 
-                                if(n >= 100)
-                                {
-                                    await context.SaveChangesAsync();
-                                    n = 0;
-                                }                                
-
+                            if (n >= 1000)
+                            {
+                                await context.SaveChangesAsync();
+                                n = 0;
                             }
                         }
 
