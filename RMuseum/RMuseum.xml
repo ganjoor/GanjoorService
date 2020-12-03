@@ -621,6 +621,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.UpdatePoemsText">
+            <summary>
+            updates poems text and html
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
             <summary>
             Ganjoor Service
@@ -2239,6 +2245,16 @@
             Xml Url
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.PlainText">
+            <summary>
+            Poem Plain Text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.HtmlText">
+            <summary>
+            Poem Html Text
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult">
             <summary>
             Moderation Result
@@ -3213,6 +3229,16 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.FullUrl">
             <summary>
             sample: /hafez/ghazal/sh1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.PlainText">
+            <summary>
+            verses text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.HtmlText">
+            <summary>
+            verses text as html (ganjoor.net format)
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">
@@ -4325,6 +4351,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.UpdatePoemsText">
+            <summary>
+            updates poems text
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -5030,6 +5062,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoemsText">
+            <summary>
+            updates poems text
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._context">
             <summary>
             Database Contetxt
@@ -5040,12 +5078,18 @@
             Configuration
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="F:RMuseum.Services.Implementation.GanjoorService._backgroundTaskQueue">
+            <summary>
+            Background Task Queue Instance
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue)">
             <summary>
             constructor
             </summary>
             <param name="context"></param>
             <param name="configuration"></param>
+            <param name="backgroundTaskQueue"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync">
             <summary>

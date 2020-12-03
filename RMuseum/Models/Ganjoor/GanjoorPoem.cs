@@ -43,5 +43,15 @@ namespace RMuseum.Models.Ganjoor
         /// sample: /hafez/ghazal/sh1
         /// </summary>
         public string FullUrl { get; set; }
+
+        /// <summary>
+        /// verses text
+        /// </summary>
+        public string PlainText { get; set; }
+
+        /// <summary>
+        /// verses text as html (ganjoor.net format)
+        /// </summary>
+        public string HtmlText { get; set; }
     }
 }

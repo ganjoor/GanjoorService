@@ -87,5 +87,15 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// </summary>
         public string XmlText { get; set; }
 
+        /// <summary>
+        /// Poem Plain Text
+        /// </summary>
+        public string PlainText { get; set; }
+
+        /// <summary>
+        /// Poem Html Text
+        /// </summary>
+        public string HtmlText { get; set; }
+
     }
 }

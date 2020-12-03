@@ -98,6 +98,8 @@ namespace RMuseum.Services.Implementationa
                      audio.AudioTitle.Contains(searchTerm)
                      || 
                      poem.FullTitle.Contains(searchTerm)
+                     ||
+                     poem.PlainText.Contains(searchTerm)
                      ))
                      )
                      orderby audio.ReviewDate descending
@@ -119,6 +121,8 @@ namespace RMuseum.Services.Implementationa
                          FileLastUpdated = audio.FileLastUpdated,
                          Mp3Url = $"https://ganjgah.ir/api/audio/file/{audio.Id}.mp3",
                          XmlText = $"https://ganjgah.ir/api/audio/xml/{audio.Id}",
+                         PlainText = poem.PlainText,
+                         HtmlText = poem.HtmlText
                      };
 
                 (PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items) paginatedResult =

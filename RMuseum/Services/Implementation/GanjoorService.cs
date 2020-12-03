@@ -137,6 +137,106 @@ namespace RMuseum.Services.Implementation
             return slug;
         }
 
+
+        /// <summary>
+        /// updates poems text
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> UpdatePoemsText()
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                (
+                async token =>
+                {
+                    using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
+                    {
+                        var poems = await context.GanjoorPoems.Where(p => p.PlainText == null).ToListAsync();
+                        foreach (GanjoorPoem poem in poems)
+                        {
+                            var verses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
+                            string plainText = "";
+                            string htmlText = "";
+                            for (int vIndex = 0; vIndex < verses.Count; vIndex++)
+                            {
+                                GanjoorVerse v = verses[vIndex];
+
+                                if (string.IsNullOrEmpty(plainText))
+                                    plainText = v.Text;
+                                else
+                                {
+                                    plainText += $" {v.Text}";
+                                }
+
+                                switch (v.VersePosition)
+                                {
+                                    case VersePosition.CenteredVerse1:
+                                        if (((vIndex + 1) < verses.Count) && (verses[vIndex + 1].VersePosition == VersePosition.CenteredVerse2))
+                                        {
+                                            htmlText += $"<div class=\"b2\"><p>{v.Text.Replace("ـ", "").Trim()}</p>{Environment.NewLine}"; //div is not closed
+                                        }
+                                        else
+                                        {
+                                            htmlText += $"<div class=\"b2\"><p>{v.Text.Replace("ـ", "").Trim()}</p></div>{Environment.NewLine}";
+                                        }
+                                        break;
+                                    case VersePosition.CenteredVerse2:
+                                        htmlText += $"<p>{v.Text.Replace("ـ", "").Trim()}</p></div>{Environment.NewLine}";
+                                        break;
+                                    case VersePosition.Right:
+                                        htmlText += $"<div class=\"b\"><div class=\"m1\"><p>{v.Text.Replace("ـ", "").Trim()}</p></div>{Environment.NewLine}";
+                                        break;
+                                    case VersePosition.Left:
+                                        htmlText += $"<div class=\"m2\"><p>{v.Text.Replace("ـ", "").Trim()}</p></div></div>{Environment.NewLine}";
+                                        break;
+                                    case VersePosition.Paragraph:
+                                    case VersePosition.Single:
+                                        {
+                                            string[] lines = v.Text.Replace("ـ", "").Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                                            if (lines.Length != 0)
+                                            {
+                                                if (v.Text.Replace("ـ", "").Length / lines.Length < 150)
+                                                {
+                                                    htmlText += $"<div class=\"n\"><p>{v.Text.Replace("ـ", "").Replace("\r\n", " ")}</p></div>{Environment.NewLine}";
+                                                }
+                                                else
+                                                {
+                                                    foreach (string line in lines)
+                                                        htmlText += $"<div class=\"n\"><p>{line}</p></div>{Environment.NewLine}";
+                                                }
+                                            }
+                                        }
+                                        break;
+                                }
+
+                                poem.PlainText = plainText;
+                                poem.HtmlText = htmlText;
+
+                                context.Update(poem);
+
+                                await context.SaveChangesAsync();
+
+                            }
+                        }
+                        
+
+                    }
+
+
+                });
+
+
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+
+        }
+
         /// <summary>
         /// Database Contetxt
         /// </summary>
@@ -148,13 +248,20 @@ namespace RMuseum.Services.Implementation
         protected IConfiguration Configuration { get; }
 
         /// <summary>
+        /// Background Task Queue Instance
+        /// </summary>
+        protected readonly IBackgroundTaskQueue _backgroundTaskQueue;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="configuration"></param>
-        public GanjoorService(RMuseumDbContext context, IConfiguration configuration)
+        /// <param name="backgroundTaskQueue"></param>
+        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue)
         {
             _context = context;
+            _backgroundTaskQueue = backgroundTaskQueue;
             Configuration = configuration;
         }
     }
