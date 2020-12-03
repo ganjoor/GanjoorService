@@ -22,7 +22,15 @@ namespace RMuseum.Services
         /// <param name="status"></param>
         /// <param name="searchTerm"></param>
         /// <returns></returns>
-        public Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm);
+        public Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> SecureGetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm);
+
+        /// <summary>
+        /// returns list of publish narrations
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="searchTerm"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>> GetPublishedRecitations(PagingParameterModel paging, string searchTerm);
 
         /// <summary>
         /// return selected narration information

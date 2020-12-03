@@ -39,7 +39,7 @@ namespace RMuseum.Services.Implementationa
         /// <param name="status"></param>
         /// <param name="searchTerm"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> GetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> SecureGetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm)
         {
             try
             {
@@ -67,6 +67,68 @@ namespace RMuseum.Services.Implementationa
             catch (Exception exp)
             {
                 return new RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// returns list of publish narrations
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="searchTerm"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>> GetPublishedRecitations(PagingParameterModel paging, string searchTerm)
+        {
+            try
+            {
+                var source =
+                     from audio in _context.Recitations
+                     join poem in _context.GanjoorPoems
+                     on audio.GanjoorPostId equals poem.Id
+                     where
+                     audio.ReviewStatus == AudioReviewStatus.Approved
+                     &&
+                     (
+                     string.IsNullOrEmpty(searchTerm) ||
+                     (
+                     !string.IsNullOrEmpty(searchTerm) 
+                     && 
+                     (
+                     audio.AudioArtist.Contains(searchTerm)
+                     || 
+                     audio.AudioTitle.Contains(searchTerm)
+                     || 
+                     poem.FullTitle.Contains(searchTerm)
+                     ))
+                     )
+                     orderby audio.ReviewDate descending
+                     select new PublicRecitationViewModel()
+                     {
+                         Id = audio.Id,
+                         PoemId = audio.GanjoorPostId,
+                         PoemFullTitle = poem.FullTitle,
+                         PoemFullUrl = poem.FullUrl,
+                         AudioTitle = audio.AudioTitle,
+                         AudioArtist = audio.AudioArtist,
+                         AudioArtistUrl = audio.AudioArtistUrl,
+                         AudioSrc = audio.AudioSrc,
+                         AudioSrcUrl = audio.AudioSrcUrl,
+                         LegacyAudioGuid = audio.LegacyAudioGuid,
+                         Mp3FileCheckSum = audio.Mp3FileCheckSum,
+                         Mp3SizeInBytes = audio.Mp3SizeInBytes,
+                         PublishDate = audio.ReviewDate,
+                         FileLastUpdated = audio.FileLastUpdated,
+                         Mp3Url = $"https://ganjgah.ir/api/audio/file/{audio.Id}.mp3",
+                         XmlText = $"https://ganjgah.ir/api/audio/xml/{audio.Id}",
+                     };
+
+                (PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items) paginatedResult =
+                    await QueryablePaginator<PublicRecitationViewModel>.Paginate(source, paging);
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
             }
         }
 

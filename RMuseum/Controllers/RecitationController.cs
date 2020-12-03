@@ -23,6 +23,28 @@ namespace RMuseum.Controllers
     [Route("api/audio")]
     public class RecitationController : Controller
     {
+        /// <summary>
+        /// returns paginated published recitations, ordered by publish date descending
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="searchTerm"></param>
+        /// <returns></returns>
+        [HttpGet("published")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PublicRecitationViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPublished([FromQuery] PagingParameterModel paging, string searchTerm = "")
+        {
+           
+            var res = await _audioService.GetPublishedRecitations(paging, searchTerm);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            return Ok(res.Result.Items);
+        }
 
         /// <summary>
         /// Gets audio narrations, user must have recitation::moderate permission to be able to see all users narrations
@@ -61,7 +83,7 @@ namespace RMuseum.Controllers
                     return StatusCode((int)HttpStatusCode.Forbidden);
             }
 
-            var res = await _audioService.GetAll(paging, allUsers ? Guid.Empty : loggedOnUserId, status, searchTerm);
+            var res = await _audioService.SecureGetAll(paging, allUsers ? Guid.Empty : loggedOnUserId, status, searchTerm);
             if(!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 
@@ -152,7 +174,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet("verses/{id}")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RecitationVerseSync[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetPoemNarrationVerseSyncArray(int id)
         {

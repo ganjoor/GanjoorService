@@ -719,6 +719,14 @@
             </summary>
             <param name="notificationService"></param>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetPublished(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            returns paginated published recitations, ordered by publish date descending
+            </summary>
+            <param name="paging"></param>
+            <param name="searchTerm"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
             <summary>
             Gets audio narrations, user must have recitation::moderate permission to be able to see all users narrations
@@ -2148,6 +2156,87 @@
         <member name="P:RMuseum.Models.GanjoorAudio.UserRecitationProfile.IsDefault">
             <summary>
             is default
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel">
+            <summary>
+            Public (no user specific data) for publish recitations
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.Id">
+            <summary>
+            Audio Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.PoemId">
+            <summary>
+            Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.PoemFullTitle">
+            <summary>
+            Poem Full Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.PoemFullUrl">
+            <summary>
+            Poem Full Url (without domain name)
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.AudioTitle" -->
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.AudioArtist">
+            <summary>
+            Audio Artist
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.AudioArtistUrl">
+            <summary>
+            Audio Artist Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.AudioSrc">
+            <summary>
+            Audio Source
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.AudioSrcUrl">
+            <summary>
+            Audio Src Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.LegacyAudioGuid">
+            <summary>
+            Legacy Audio Guid
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.Mp3FileCheckSum">
+            <summary>
+            Audio File CheckSum
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.Mp3SizeInBytes">
+            <summary>
+            mp3 size in bytes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.PublishDate">
+            <summary>
+            Publish Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.FileLastUpdated">
+            <summary>
+            File Last Updated
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.Mp3Url">
+            <summary>
+            Mp3 Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.XmlText">
+            <summary>
+            Xml Url
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult">
@@ -5219,13 +5308,21 @@
             Audio Narration Service Implementation
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.SecureGetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
             <summary>
             returns list of narrations
             </summary>
             <param name="paging"></param>
             <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
             <param name="status"></param>
+            <param name="searchTerm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishedRecitations(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            returns list of publish narrations
+            </summary>
+            <param name="paging"></param>
             <param name="searchTerm"></param>
             <returns></returns>
         </member>
@@ -5521,13 +5618,21 @@
             Audio Narration Service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.IRecitationService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
+        <member name="M:RMuseum.Services.IRecitationService.SecureGetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
             <summary>
             returns list of narrations
             </summary>
             <param name="paging"></param>
             <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
             <param name="status"></param>
+            <param name="searchTerm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetPublishedRecitations(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            returns list of publish narrations
+            </summary>
+            <param name="paging"></param>
             <param name="searchTerm"></param>
             <returns></returns>
         </member>
