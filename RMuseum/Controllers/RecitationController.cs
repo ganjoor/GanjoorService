@@ -144,7 +144,7 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetXMLFile(int id)
+        public async Task<IActionResult> GetXMLContent(int id)
         {
             RServiceResult<RecitationViewModel> narration =
                 await _audioService.Get(id);

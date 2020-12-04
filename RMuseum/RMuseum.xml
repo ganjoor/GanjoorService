@@ -754,7 +754,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.GetXMLFile(System.Int32)">
+        <member name="M:RMuseum.Controllers.RecitationController.GetXMLContent(System.Int32)">
             <summary>
             get the corresponding xml file contemnts (xml) for the narration
             </summary>
