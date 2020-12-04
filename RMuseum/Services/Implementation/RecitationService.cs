@@ -758,6 +758,14 @@ namespace RMuseum.Services.Implementationa
                                         {
                                             session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "فایل صوتیی همسان با فایل ارسالی پیشتر آپلود شده است.";
                                             context.UploadSessions.Update(session);
+
+                                            await new RNotificationService(context).PushNotification
+                                             (
+                                                 session.UseId,
+                                                 "خطا در پردازش فایل ارسالی",
+                                                 $"فایل صوتیی همسان با فایل ارسالی پیشتر آپلود شده است.{ Environment.NewLine}" +
+                                                 $"{file.FileName}"
+                                             );
                                         }
                                         else
                                         {
@@ -914,6 +922,14 @@ namespace RMuseum.Services.Implementationa
                                     session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "خطا در پس پردازش فایل. اطلاعات بیشتر: " + exp.ToString();
                                     context.UploadSessions.Update(session);
                                     await context.SaveChangesAsync();
+
+                                    await new RNotificationService(context).PushNotification
+                                             (
+                                                 session.UseId,
+                                                 "خطا در پردازش فایل ارسالی",
+                                                 $"{exp}{ Environment.NewLine}" +
+                                                 $"{file.FileName}"
+                                             );
                                 }
                                 processFilesCount++;
                                 session.ProcessProgress = (int)(processFilesCount / fileCount * 100.0);
@@ -929,7 +945,15 @@ namespace RMuseum.Services.Implementationa
                                 {
                                     file.ProcessResultMsg = "فایل xml یا mp3 متناظر این فایل یافت نشد.";
                                     context.Update(file);
-                                   
+
+                                    await new RNotificationService(context).PushNotification
+                                             (
+                                                 session.UseId,
+                                                 "خطا در پردازش فایل ارسالی",
+                                                 $"فایل mp3 متناظر یافت نشد(توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است.اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).{ Environment.NewLine}" +
+                                                 $"{file.FileName}"
+                                             );
+
                                 }
                                 if(File.Exists(file.FilePath))
                                 {
@@ -1202,8 +1226,8 @@ namespace RMuseum.Services.Implementationa
                 await new RNotificationService(context).PushNotification
                (
                    narration.OwnerId,
-                   "خطا انتشار نهایی خوانش ارسالی",
-                   $"انتشار خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد..{Environment.NewLine}" +
+                   "خطا در انتشار نهایی خوانش ارسالی",
+                   $"انتشار خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
                    $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
                );
             }
