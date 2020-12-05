@@ -1219,6 +1219,7 @@ namespace RMuseum.Services.Implementationa
                     narration.OwnerId,
                     "انتشار نهایی خوانش ارسالی",
                     $"خوانش ارسالی {narration.AudioTitle} منتشر شد.{Environment.NewLine}" +
+                    $"لطفا توجه فرمایید که ممکن است ظاهر شدن تأثیر تغییرات روی سایت به دلیل تنظیمات حفظ کارایی گنجور تا یک روز طول بکشد.{Environment.NewLine}" + 
                     $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
                 );
 
@@ -1295,6 +1296,7 @@ namespace RMuseum.Services.Implementationa
                     userId,
                     "حذف نهایی خوانش ارسالی",
                     $"خوانش ارسالی {audioTitle} حذف شد.{Environment.NewLine}" +
+                    $"لطفا توجه فرمایید که ممکن است ظاهر شدن تأثیر تغییرات روی سایت به دلیل تنظیمات حفظ کارایی گنجور تا یک روز طول بکشد.{Environment.NewLine}" +
                     $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
                 );
 
@@ -1362,6 +1364,7 @@ namespace RMuseum.Services.Implementationa
                     narration.OwnerId,
                     "به‌روزآوری نهایی اطلاعات خوانش ارسالی",
                     $"اطلاعات خوانش ارسالی {narration.AudioTitle} به‌روز شد.{Environment.NewLine}" +
+                    $"لطفا توجه فرمایید که ممکن است ظاهر شدن تأثیر تغییرات روی سایت به دلیل تنظیمات حفظ کارایی گنجور تا یک روز طول بکشد.{Environment.NewLine}" +
                     $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
                 );
 
