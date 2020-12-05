@@ -8,6 +8,7 @@ using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.UploadSession;
 using RMuseum.Models.UploadSession.ViewModels;
 using RMuseum.Services;
+using RMuseum.Services.Implementation;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
 using System;
@@ -44,6 +45,31 @@ namespace RMuseum.Controllers
             HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             return Ok(res.Result.Items);
+        }
+
+        /// <summary>
+        /// create an RSS file from recent published recitations
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        [HttpGet("published/rss/{count}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetRssFeed(int count = 200)
+        {
+            var res = await _audioService.GetPublishedRecitations(new PagingParameterModel() { PageNumber = 1, PageSize = count}, "");
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            string rss = await RecitationsRssBuilder.Build(res.Result.Items);
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(rss);
+            writer.Flush();
+            stream.Position = 0;
+
+            return new FileStreamResult(stream, "application/rss+xml");
         }
 
         /// <summary>
@@ -130,6 +156,8 @@ namespace RMuseum.Controllers
 
             return new FileStreamResult(new FileStream(narration.Result.LocalMp3FilePath, FileMode.Open, FileAccess.Read), "audio/mpeg");
         }
+
+        
 
         /// <summary>
         /// get the corresponding xml file contemnts (xml) for the narration

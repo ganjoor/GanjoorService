@@ -733,6 +733,13 @@
             <param name="searchTerm"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetRssFeed(System.Int32)">
+            <summary>
+            create an RSS file from recent published recitations
+            </summary>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
             <summary>
             Gets audio narrations, user must have recitation::moderate permission to be able to see all users narrations
@@ -5272,6 +5279,18 @@
             <param name="context"></param>
             <param name="configuration"></param>
             <param name="simpleImageStorage"></param>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.RecitationsRssBuilder">
+            <summary>
+            creates an RSS feed from recitations
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.RecitationsRssBuilder.Build(RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel[])">
+            <summary>
+            build rss
+            </summary>
+            <param name="recitations"></param>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.RNotificationService">
             <summary>

@@ -19,6 +19,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.SyndicationFeed.ReaderWriter" Version="1.0.2" />
     <PackageReference Include="MySql.Data" Version="8.0.21" />
     <PackageReference Include="NAudio" Version="1.10.0" />
     <PackageReference Include="SSH.NET" Version="2020.0.0-beta1" />
