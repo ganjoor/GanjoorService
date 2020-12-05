@@ -807,6 +807,14 @@ namespace RMuseum.Services.Implementationa
                                             {
                                                 session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "فایل mp3 متناظر یافت نشد (توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است. اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).";
                                                 context.UploadSessions.Update(session);
+
+                                                await new RNotificationService(context).PushNotification
+                                             (
+                                                 session.UseId,
+                                                 "خطا در پردازش فایل ارسالی",
+                                                 $"فایل mp3 متناظر یافت نشد(توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است.اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).{ Environment.NewLine}" +
+                                                 $"{file.FileName}"
+                                             );
                                             }
                                             else
                                             {
