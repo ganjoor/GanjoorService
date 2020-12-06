@@ -15,6 +15,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// <param name="tracker"></param>
         /// <param name="poem"></param>
         /// <param name="user"></param>
+        /// <param name="recitation"></param>
         public RecitationPublishingTrackerViewModel(RecitationPublishingTracker tracker, GanjoorPoem poem, RAppUser user, Recitation recitation)
         {
             UserEmail = user.Email;

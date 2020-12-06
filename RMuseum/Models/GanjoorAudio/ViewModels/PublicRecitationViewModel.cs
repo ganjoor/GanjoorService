@@ -27,7 +27,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// </summary>
         public string PoemFullUrl { get; set; }
 
-        // <summary>
+        /// <summary>
         /// Audio Title
         /// </summary>
         public string AudioTitle { get; set; }

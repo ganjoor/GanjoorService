@@ -26,11 +26,6 @@
         SoundOrXMLFilesChanged = 4,
 
         /// <summary>
-        /// Xml file should be reuploaded
-        /// </summary>
-        //XmlFileChanged = 8,
-
-        /// <summary>
         /// Item should be deleted
         /// </summary>
         Deleted = 16

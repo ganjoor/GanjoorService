@@ -27,7 +27,7 @@ namespace RMuseum.Controllers
         /// <summary>
         /// returns paginated published recitations, ordered by publish date descending
         /// </summary>
-        /// <param name="paging"></param>
+        /// <param name="paging">if PageSize is -1 or is more than 100 it resets to 100</param>
         /// <param name="searchTerm"></param>
         /// <returns></returns>
         [HttpGet("published")]
@@ -36,7 +36,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetPublished([FromQuery] PagingParameterModel paging, string searchTerm = "")
         {
-           
+
+            if (paging.PageSize == -1 || paging.PageSize > 100)
+                paging.PageSize = 100;
             var res = await _audioService.GetPublishedRecitations(paging, searchTerm);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -56,13 +58,13 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetRssFeed(int count = 200)
+        public async Task<IActionResult> GetRssFeed(int count = 100)
         {
             var res = await _audioService.GetPublishedRecitations(new PagingParameterModel() { PageNumber = 1, PageSize = count}, "");
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 
-            string rss = await RecitationsRssBuilder.Build(res.Result.Items);
+            string rss = RecitationsRssBuilder.Build(res.Result.Items);
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
             writer.Write(rss);

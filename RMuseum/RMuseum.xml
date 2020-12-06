@@ -729,7 +729,7 @@
             <summary>
             returns paginated published recitations, ordered by publish date descending
             </summary>
-            <param name="paging"></param>
+            <param name="paging">if PageSize is -1 or is more than 100 it resets to 100</param>
             <param name="searchTerm"></param>
             <returns></returns>
         </member>
@@ -2196,7 +2196,11 @@
             Poem Full Url (without domain name)
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.AudioTitle" -->
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.AudioTitle">
+            <summary>
+            Audio Title
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.AudioArtist">
             <summary>
             Audio Artist
@@ -2309,6 +2313,7 @@
             <param name="tracker"></param>
             <param name="poem"></param>
             <param name="user"></param>
+            <param name="recitation"></param>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.UserEmail">
             <summary>
