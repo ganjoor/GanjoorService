@@ -61,21 +61,39 @@ namespace RMuseum.Services.Implementation
 
             foreach (PublicRecitationViewModel recitation in recitations)
             {
+                string poemDescription = recitation.PoemFullTitle;
+                if (recitation.PoemFullTitle.IndexOf("»") != -1)
+                {
+                    string poemCat = recitation.PoemFullTitle.Substring(0, recitation.PoemFullTitle.LastIndexOf("»")).Trim();
+                    string poemTitle = recitation.PoemFullTitle.Substring(recitation.PoemFullTitle.LastIndexOf("»") + 1).Trim();
+
+                    poemDescription = $"{poemTitle} از ({poemCat})";
+                }
+
+                string artist = recitation.AudioArtist;
+                if(!string.IsNullOrEmpty(recitation.AudioArtistUrl))
+                {
+                    artist = $"<a href=\"{recitation.AudioArtistUrl}\">{recitation.AudioArtist}</a>";
+                }
+
                 builder.AppendLine("    <item>");
                 builder.AppendLine($"       <title>{recitation.PoemFullTitle} با خوانش {recitation.AudioArtist}</title>");
                 builder.AppendLine($"       <link>https://ganjoor.net{recitation.PoemFullUrl}</link>");
                 builder.AppendLine($"       <pubDate>{recitation.PublishDate:r}</pubDate>");
                 builder.AppendLine($"       <guid isPermaLink=\"false\">{recitation.LegacyAudioGuid}</guid>");
                 builder.AppendLine($"       <dc:creator>{recitation.AudioArtist}</dc:creator>");
-                builder.AppendLine($"       <description><![CDATA[{recitation.PoemFullTitle} را با خوانش {recitation.AudioArtist} بشنوید.]]></description>");
+                builder.AppendLine($"       <description><![CDATA[{poemDescription} را با خوانش {recitation.AudioArtist} بشنوید.]]></description>");
                 string htmlText = recitation.HtmlText == null ? "" : recitation.HtmlText
-                                                    .Replace("</div>", "")
+                                                    .Replace("</div>", $"{Environment.NewLine}")
                                                     .Replace("<div class=\"b\">", "")
                                                     .Replace("<div class=\"b2\">", "")
                                                     .Replace("<div class=\"m1\">", "")
                                                     .Replace("<div class=\"m2\">", "")
                                                     .Replace("<div class=\"n\">", "");
-                builder.AppendLine($"       <content:encoded><![CDATA[{htmlText}]]></content:encoded>");
+                builder.AppendLine($"       <content:encoded><![CDATA[<p><a href=\"{recitation.PoemFullUrl}\">{poemDescription}</a> را با خوانش {artist} بشنوید.</p>{Environment.NewLine}" +
+                                   $"           <p>فایل صوتی متناظر را می‌توانید در قالب mp3 از <a href=\"{recitation.Mp3Url}\">این نشانی</a> (اندازه {(recitation.Mp3SizeInBytes / (1024 * 1024.0f)) : 0.00} مگابایت) دریافت کنید.</p>{Environment.NewLine}" +
+                                   $"           <p>متن خوانش:</p>{Environment.NewLine}" +
+                                   $"           {htmlText}]]></content:encoded>");
                 builder.AppendLine($"       <enclosure url=\"{recitation.Mp3Url}\" length=\"{recitation.Mp3SizeInBytes}\" type=\"audio/mpeg\" />");
                 builder.AppendLine("    </item>");
             }

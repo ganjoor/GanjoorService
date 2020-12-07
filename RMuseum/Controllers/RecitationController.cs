@@ -50,7 +50,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// create an RSS file from recent published recitations
+        /// creates an RSS file from recent published recitations
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
