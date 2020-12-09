@@ -58,7 +58,7 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetRssFeed(int count = 100)
+        public async Task<IActionResult> GetRssFeed(int count)
         {
             var res = await _audioService.GetPublishedRecitations(new PagingParameterModel() { PageNumber = 1, PageSize = count}, "");
             if (!string.IsNullOrEmpty(res.ExceptionString))

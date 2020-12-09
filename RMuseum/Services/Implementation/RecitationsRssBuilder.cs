@@ -16,9 +16,10 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// build rss
         /// </summary>
+        /// <param name="requestCount"></param>
         /// <param name="recitations"></param>
         /// <returns></returns>
-        public static string Build(PublicRecitationViewModel[] recitations)
+        public static string Build(int requestCount, PublicRecitationViewModel[] recitations)
         {
 
             StringBuilder builder = new StringBuilder();
@@ -38,7 +39,7 @@ namespace RMuseum.Services.Implementation
             builder.AppendLine("<channel>");
 
             builder.AppendLine("    <title>خوانش‌های گنجور</title>");
-            builder.AppendLine("    <atom:link href=\"https://ganjgah.ir/api/audio/published/rss\" rel=\"self\" type=\"application/rss+xml\" />");
+            builder.AppendLine($"    <atom:link href=\"https://ganjgah.ir/api/audio/published/rss/{requestCount}\" rel=\"self\" type=\"application/rss+xml\" />");
             builder.AppendLine("    <link>https://ganjoor.net</link>");
             builder.AppendLine("    <description>دکلمه‌های صوتی اشعار گنجور</description>");
 
@@ -90,7 +91,7 @@ namespace RMuseum.Services.Implementation
                                                     .Replace("<div class=\"m1\">", "")
                                                     .Replace("<div class=\"m2\">", "")
                                                     .Replace("<div class=\"n\">", "");
-                builder.AppendLine($"       <content:encoded><![CDATA[<p><a href=\"{recitation.PoemFullUrl}\">{poemDescription}</a> را با خوانش {artist} بشنوید.</p>{Environment.NewLine}" +
+                builder.AppendLine($"       <content:encoded><![CDATA[<p><a href=\"https://ganjoor.net{recitation.PoemFullUrl}\">{poemDescription}</a> را با خوانش {artist} بشنوید.</p>{Environment.NewLine}" +
                                    $"           <p>فایل صوتی متناظر را می‌توانید در قالب mp3 از <a href=\"{recitation.Mp3Url}\">این نشانی</a> (اندازه {(recitation.Mp3SizeInBytes / (1024 * 1024.0f)) : 0.00} مگابایت) دریافت کنید.</p>{Environment.NewLine}" +
                                    $"           <p>متن خوانش:</p>{Environment.NewLine}" +
                                    $"           {htmlText}]]></content:encoded>");
