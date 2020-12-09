@@ -64,7 +64,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 
-            string rss = RecitationsRssBuilder.Build(res.Result.Items);
+            string rss = RecitationsRssBuilder.Build(count, res.Result.Items);
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
             writer.Write(rss);
