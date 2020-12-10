@@ -1,10 +1,7 @@
 ﻿
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using System;
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace RMuseum.Services.Implementation
 {
@@ -39,7 +36,7 @@ namespace RMuseum.Services.Implementation
 
             builder.AppendLine("    <title>خوانش‌های گنجور</title>");
             builder.AppendLine($"    <atom:link href=\"https://ganjgah.ir/api/audio/published/rss\" rel=\"self\" type=\"application/rss+xml\" />");
-            builder.AppendLine("    <link>https://ganjoor.net</link>");
+            builder.AppendLine("    <link>https://ava.ganjoor.net</link>");
             builder.AppendLine("    <description>دکلمه‌های صوتی اشعار گنجور</description>");
 
             DateTime dtLastUpdate = recitations.Length > 0 ? recitations[0].PublishDate : DateTime.Now;
@@ -51,13 +48,13 @@ namespace RMuseum.Services.Implementation
             builder.AppendLine("    <image>");
             builder.AppendLine("        <url>https://i.ganjoor.net/gm.gif</url>");
             builder.AppendLine("        <title>خوانش‌های گنجور</title>");
-            builder.AppendLine("        <link>https://ganjoor.net</link>");
+            builder.AppendLine("        <link>https://ava.ganjoor.net</link>");
             builder.AppendLine("    </image>");
             builder.AppendLine("    <itunes:category text=\"Arts\">");
             builder.AppendLine("        <itunes:category text=\"Books\"/>");
             builder.AppendLine("    </itunes:category>");
             builder.AppendLine("    <itunes:explicit>clean</itunes:explicit>");
-            builder.AppendLine("    <itunes:owner><itunes:name>گنجور</itunes:name><itunes:email>ganjoor+alog@ganjoor.net</itunes:email></itunes:owner>");
+            builder.AppendLine("    <itunes:owner><itunes:name>گنجور</itunes:name><itunes:email>ganjoor+avarss@ganjoor.net</itunes:email></itunes:owner>");
 
             foreach (PublicRecitationViewModel recitation in recitations)
             {
@@ -78,7 +75,7 @@ namespace RMuseum.Services.Implementation
 
                 builder.AppendLine("    <item>");
                 builder.AppendLine($"       <title>{recitation.PoemFullTitle} با خوانش {recitation.AudioArtist}</title>");
-                builder.AppendLine($"       <link>https://ganjoor.net{recitation.PoemFullUrl}</link>");
+                builder.AppendLine($"       <link>https://ava.ganjoor.net/#/{recitation.Id}</link>");
                 builder.AppendLine($"       <pubDate>{recitation.PublishDate:r}</pubDate>");
                 builder.AppendLine($"       <guid isPermaLink=\"false\">{recitation.LegacyAudioGuid}</guid>");
                 builder.AppendLine($"       <dc:creator>{recitation.AudioArtist}</dc:creator>");
