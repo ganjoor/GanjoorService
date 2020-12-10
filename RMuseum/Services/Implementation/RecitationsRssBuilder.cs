@@ -16,10 +16,9 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// build rss
         /// </summary>
-        /// <param name="requestCount"></param>
         /// <param name="recitations"></param>
         /// <returns></returns>
-        public static string Build(int requestCount, PublicRecitationViewModel[] recitations)
+        public static string Build(PublicRecitationViewModel[] recitations)
         {
 
             StringBuilder builder = new StringBuilder();
@@ -39,7 +38,7 @@ namespace RMuseum.Services.Implementation
             builder.AppendLine("<channel>");
 
             builder.AppendLine("    <title>خوانش‌های گنجور</title>");
-            builder.AppendLine($"    <atom:link href=\"https://ganjgah.ir/api/audio/published/rss/{requestCount}\" rel=\"self\" type=\"application/rss+xml\" />");
+            builder.AppendLine($"    <atom:link href=\"https://ganjgah.ir/api/audio/published/rss\" rel=\"self\" type=\"application/rss+xml\" />");
             builder.AppendLine("    <link>https://ganjoor.net</link>");
             builder.AppendLine("    <description>دکلمه‌های صوتی اشعار گنجور</description>");
 

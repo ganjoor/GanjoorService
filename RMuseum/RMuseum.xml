@@ -733,11 +733,10 @@
             <param name="searchTerm"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.GetRssFeed(System.Int32)">
+        <member name="M:RMuseum.Controllers.RecitationController.GetRssFeed">
             <summary>
             creates an RSS file from recent published recitations
             </summary>
-            <param name="count"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
@@ -5290,11 +5289,10 @@
             creates an RSS feed from recitations
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.RecitationsRssBuilder.Build(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel[])">
+        <member name="M:RMuseum.Services.Implementation.RecitationsRssBuilder.Build(RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel[])">
             <summary>
             build rss
             </summary>
-            <param name="requestCount"></param>
             <param name="recitations"></param>
             <returns></returns>
         </member>

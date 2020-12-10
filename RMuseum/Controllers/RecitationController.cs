@@ -52,19 +52,19 @@ namespace RMuseum.Controllers
         /// <summary>
         /// creates an RSS file from recent published recitations
         /// </summary>
-        /// <param name="count"></param>
         /// <returns></returns>
-        [HttpGet("published/rss/{count}")]
+        [HttpGet("published/rss")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetRssFeed(int count)
+        public async Task<IActionResult> GetRssFeed()
         {
+            int count = 200;
             var res = await _audioService.GetPublishedRecitations(new PagingParameterModel() { PageNumber = 1, PageSize = count}, "");
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 
-            string rss = RecitationsRssBuilder.Build(count, res.Result.Items);
+            string rss = RecitationsRssBuilder.Build(res.Result.Items);
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
             writer.Write(rss);
