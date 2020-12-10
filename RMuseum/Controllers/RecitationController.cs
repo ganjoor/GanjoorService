@@ -50,6 +50,30 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get published recitation by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("published/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PublicRecitationViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        public async Task<IActionResult> GetPublishedRecitationById(int id)
+        {
+
+
+            var res = await _audioService.GetPublishedRecitationById(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            if (res.Result == null)
+                return NotFound();
+          
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// creates an RSS file from recent published recitations
         /// </summary>
         /// <returns></returns>
@@ -136,6 +160,7 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
         public async Task<IActionResult> GetMp3File(int id)
         {
             RServiceResult<RecitationViewModel> narration =
@@ -174,6 +199,7 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
         public async Task<IActionResult> GetXMLContent(int id)
         {
             RServiceResult<RecitationViewModel> narration =
@@ -232,6 +258,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RecitationViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
         public async Task<IActionResult> UpdatePoemNarration(int id, [FromBody] RecitationViewModel metadata)
         {
            
@@ -293,6 +320,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RecitationViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
         public async Task<IActionResult> ModeratePoemNarration(int id, [FromBody] RecitationModerateViewModel model)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
@@ -653,7 +681,6 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ReOrderOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
         public async Task<IActionResult> MakeFFRecitationsFirst()
         {
             var resExec = await _audioService.MakeArtistRecitationsFirst("فریدون فرح‌اندوز");

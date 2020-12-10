@@ -733,6 +733,13 @@
             <param name="searchTerm"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetPublishedRecitationById(System.Int32)">
+            <summary>
+            get published recitation by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetRssFeed">
             <summary>
             creates an RSS file from recent published recitations
@@ -5387,10 +5394,17 @@
         </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishedRecitations(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
             <summary>
-            returns list of publish narrations
+            returns list of publish recitations
             </summary>
             <param name="paging"></param>
             <param name="searchTerm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishedRecitationById(System.Int32)">
+            <summary>
+            get published recitation by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.Get(System.Int32)">
@@ -5701,6 +5715,13 @@
             </summary>
             <param name="paging"></param>
             <param name="searchTerm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetPublishedRecitationById(System.Int32)">
+            <summary>
+            get published recitation by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.Get(System.Int32)">

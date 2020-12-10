@@ -33,6 +33,13 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>> GetPublishedRecitations(PagingParameterModel paging, string searchTerm);
 
         /// <summary>
+        /// get published recitation by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PublicRecitationViewModel>> GetPublishedRecitationById(int id);
+
+        /// <summary>
         /// return selected narration information
         /// </summary>
         /// <param name="id"></param>

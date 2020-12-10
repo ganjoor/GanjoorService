@@ -71,7 +71,7 @@ namespace RMuseum.Services.Implementationa
         }
 
         /// <summary>
-        /// returns list of publish narrations
+        /// returns list of publish recitations
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="searchTerm"></param>
@@ -133,6 +133,51 @@ namespace RMuseum.Services.Implementationa
             catch (Exception exp)
             {
                 return new RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get published recitation by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PublicRecitationViewModel>> GetPublishedRecitationById(int id)
+        {
+            try
+            {
+                var source =
+                     from audio in _context.Recitations
+                     join poem in _context.GanjoorPoems
+                     on audio.GanjoorPostId equals poem.Id
+                     where
+                     audio.ReviewStatus == AudioReviewStatus.Approved && audio.Id == id
+                     select new PublicRecitationViewModel()
+                     {
+                         Id = audio.Id,
+                         PoemId = audio.GanjoorPostId,
+                         PoemFullTitle = poem.FullTitle,
+                         PoemFullUrl = poem.FullUrl,
+                         AudioTitle = audio.AudioTitle,
+                         AudioArtist = audio.AudioArtist,
+                         AudioArtistUrl = audio.AudioArtistUrl,
+                         AudioSrc = audio.AudioSrc,
+                         AudioSrcUrl = audio.AudioSrcUrl,
+                         LegacyAudioGuid = audio.LegacyAudioGuid,
+                         Mp3FileCheckSum = audio.Mp3FileCheckSum,
+                         Mp3SizeInBytes = audio.Mp3SizeInBytes,
+                         PublishDate = audio.ReviewDate,
+                         FileLastUpdated = audio.FileLastUpdated,
+                         Mp3Url = $"https://ganjgah.ir/api/audio/file/{audio.Id}.mp3",
+                         XmlText = $"https://ganjgah.ir/api/audio/xml/{audio.Id}",
+                         PlainText = poem.PlainText,
+                         HtmlText = poem.HtmlText
+                     };
+
+                return new RServiceResult<PublicRecitationViewModel>(await source.SingleOrDefaultAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PublicRecitationViewModel>(null, exp.ToString());
             }
         }
 
