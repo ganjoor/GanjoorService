@@ -1991,6 +1991,24 @@ namespace RMuseum.Services.Implementationa
         }
 
         /// <summary>
+        /// Upload Enabled (temporary switch off/on for upload)
+        /// </summary>
+        public bool UploadEnabled
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration.GetSection("AudioUploadService")["Enabled"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
         /// Configuration
         /// </summary>
         protected IConfiguration Configuration { get; }

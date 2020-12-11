@@ -36,7 +36,6 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetPublished([FromQuery] PagingParameterModel paging, string searchTerm = "")
         {
-
             if (paging.PageSize == -1 || paging.PageSize > 100)
                 paging.PageSize = 100;
             var res = await _audioService.GetPublishedRecitations(paging, searchTerm);
@@ -61,8 +60,6 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
         public async Task<IActionResult> GetPublishedRecitationById(int id)
         {
-
-
             var res = await _audioService.GetPublishedRecitationById(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -111,7 +108,6 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RecitationViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
-
         public async Task<IActionResult> Get([FromQuery] PagingParameterModel paging, bool allUsers = false, AudioReviewStatus status = AudioReviewStatus.All, string searchTerm = "")
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
@@ -261,7 +257,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
         public async Task<IActionResult> UpdatePoemNarration(int id, [FromBody] RecitationViewModel metadata)
         {
-           
+            if (!_audioService.UploadEnabled)
+                return BadRequest("این قابلیت به دلیل تغییرات فنی سایت موقتاً غیرفعال است.");
 
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -323,6 +320,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
         public async Task<IActionResult> ModeratePoemNarration(int id, [FromBody] RecitationModerateViewModel model)
         {
+            if (!_audioService.UploadEnabled)
+                return BadRequest("این قابلیت به دلیل تغییرات فنی سایت موقتاً غیرفعال است.");
+
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
 
@@ -351,6 +351,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> DeleteRecitation(int id)
         {
+            if (!_audioService.UploadEnabled)
+                return BadRequest("این قابلیت به دلیل تغییرات فنی سایت موقتاً غیرفعال است.");
+
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<bool> res = await _audioService.Delete(id, loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -408,6 +411,20 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// upload, update, moderate and delete operations on recitations might temporarily become disabled,
+        /// this method gets the current status
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet("uploadenabled")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        public IActionResult IsUploadEnabled()
+        {
+            return Ok(_audioService.UploadEnabled);
+        }
+
+        /// <summary>
         /// Reciation Upload
         /// </summary>
         /// <param name="replace">
@@ -425,6 +442,8 @@ namespace RMuseum.Controllers
         {
             try
             {
+                if (!_audioService.UploadEnabled)
+                    return BadRequest("ارسال خوانش جدید به دلیل تغییرات فنی سایت موقتاً غیرفعال است.");
                 Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
                 RServiceResult<UploadSession> resSession = await _audioService.InitiateNewUploadSession(loggedOnUserId, replace);
                 if (!string.IsNullOrEmpty(resSession.ExceptionString))
@@ -482,6 +501,9 @@ namespace RMuseum.Controllers
         {
             try
             {
+                if (!_audioService.UploadEnabled)
+                    return BadRequest("این قابلیت به دلیل تغییرات فنی سایت موقتاً غیرفعال است.");
+
                 await _audioService.RetryPublish();
                 return Ok();
             }
@@ -683,6 +705,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> MakeFFRecitationsFirst()
         {
+            if (!_audioService.UploadEnabled)
+                return BadRequest("این قابلیت به دلیل تغییرات فنی سایت موقتاً غیرفعال است.");
+
             var resExec = await _audioService.MakeArtistRecitationsFirst("فریدون فرح‌اندوز");
             if (!string.IsNullOrEmpty(resExec.ExceptionString))
                 return BadRequest(resExec.ExceptionString);
@@ -715,14 +740,13 @@ namespace RMuseum.Controllers
                          );
             if (!string.IsNullOrEmpty(canViewAll.ExceptionString))
                 return BadRequest(canViewAll.ExceptionString);
-
-
             var res = await _audioService.GetSynchronizationQueue(canViewAll.Result ? Guid.Empty : loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
            
             return Ok(res.Result);
         }
+
 
         /// <summary>
         /// constructor

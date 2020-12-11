@@ -203,5 +203,10 @@ namespace RMuseum.Services
         /// <param name="filteredUserId"></param>
         /// <returns></returns>
         Task<RServiceResult<RecitationViewModel[]>> GetSynchronizationQueue(Guid filteredUserId);
+
+        /// <summary>
+        /// Upload Enabled (temporary switch off/on for upload)
+        /// </summary>
+        bool UploadEnabled { get; }
     }
 }

@@ -821,6 +821,13 @@
             <param name="allUsers">default: false, user must have recitation::moderate permission to be able to see all users uploads</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.IsUploadEnabled">
+            <summary>
+            upload, update, moderate and delete operations on recitations might temporarily become disabled,
+            this method gets the current status
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.UploadReciation(System.Boolean)">
             <summary>
             Reciation Upload
@@ -5585,6 +5592,11 @@
             <param name="filteredUserId"></param>
             <returns></returns>
         </member>
+        <member name="P:RMuseum.Services.Implementationa.RecitationService.UploadEnabled">
+            <summary>
+            Upload Enabled (temporary switch off/on for upload)
+            </summary>
+        </member>
         <member name="P:RMuseum.Services.Implementationa.RecitationService.Configuration">
             <summary>
             Configuration
@@ -5888,6 +5900,11 @@
             </summary>
             <param name="filteredUserId"></param>
             <returns></returns>
+        </member>
+        <member name="P:RMuseum.Services.IRecitationService.UploadEnabled">
+            <summary>
+            Upload Enabled (temporary switch off/on for upload)
+            </summary>
         </member>
         <member name="T:RMuseum.Services.IRNotificationService">
             <summary>
