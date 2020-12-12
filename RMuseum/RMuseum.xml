@@ -754,6 +754,7 @@
             <param name="allUsers">default: false, user must have recitation::moderate permission to be able to see all users narrations</param>
             <param name="status">default: -1, unfiltered</param>
             <param name="searchTerm"></param>
+            <remarks>additional headers: paging-headers, audio-upload-enabled</remarks>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetMp3File(System.Int32)">
@@ -820,11 +821,14 @@
             <param name="paging"></param>
             <param name="allUsers">default: false, user must have recitation::moderate permission to be able to see all users uploads</param>
             <returns></returns>
+            <remarks>additional headers: paging-headers, audio-upload-enabled</remarks>
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.IsUploadEnabled">
             <summary>
             upload, update, moderate and delete operations on recitations might temporarily become disabled,
             this method gets the current status
+            remarks: the value of this flag is provided as a custom header called audio-upload-enabled in some common GET methods
+            in order to reduce the need for a separate query
             </summary>
             <returns></returns>
         </member>

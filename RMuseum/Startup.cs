@@ -56,7 +56,7 @@ namespace RMuseum
                     builder => builder.SetIsOriginAllowed(_ => true)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .WithExposedHeaders("paging-headers")
+                    .WithExposedHeaders("paging-headers", "audio-upload-enabled")
                     .AllowCredentials()
                     );
             });

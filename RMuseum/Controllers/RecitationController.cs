@@ -102,6 +102,7 @@ namespace RMuseum.Controllers
         /// <param name="allUsers">default: false, user must have recitation::moderate permission to be able to see all users narrations</param>
         /// <param name="status">default: -1, unfiltered</param>
         /// <param name="searchTerm"></param>
+        /// <remarks>additional headers: paging-headers, audio-upload-enabled</remarks>
         /// <returns></returns>
         [HttpGet]
         [Authorize]
@@ -137,6 +138,9 @@ namespace RMuseum.Controllers
 
             // Paging Header
             HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            //adding audio upload enabled header to reduce need for a separate query
+            HttpContext.Response.Headers.Add("audio-upload-enabled", JsonConvert.SerializeObject(_audioService.UploadEnabled));
 
             return Ok(res.Result.Items);
         }
@@ -371,6 +375,7 @@ namespace RMuseum.Controllers
         /// <param name="paging"></param>
         /// <param name="allUsers">default: false, user must have recitation::moderate permission to be able to see all users uploads</param>
         /// <returns></returns>
+        /// <remarks>additional headers: paging-headers, audio-upload-enabled</remarks>
         [HttpGet("uploads")]
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<UploadedItemViewModel>))]
@@ -407,12 +412,17 @@ namespace RMuseum.Controllers
             // Paging Header
             HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
+            //adding audio upload enabled header to reduce need for a separate query
+            HttpContext.Response.Headers.Add("audio-upload-enabled", JsonConvert.SerializeObject(_audioService.UploadEnabled));
+
             return Ok(res.Result.Items);
         }
 
         /// <summary>
         /// upload, update, moderate and delete operations on recitations might temporarily become disabled,
         /// this method gets the current status
+        /// remarks: the value of this flag is provided as a custom header called audio-upload-enabled in some common GET methods
+        /// in order to reduce the need for a separate query
         /// </summary>
         /// <returns></returns>
 
