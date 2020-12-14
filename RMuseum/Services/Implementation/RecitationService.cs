@@ -1681,7 +1681,7 @@ namespace RMuseum.Services.Implementationa
                 await _context.SaveChangesAsync();
                 if(p.IsDefault)
                 {
-                    foreach(var o in _context.UserRecitationProfiles.Where(o => o.Id != p.Id && o.IsDefault).Select(o => o))
+                    foreach(var o in _context.UserRecitationProfiles.Where(o => o.Id != p.Id && o.UserId == p.UserId && o.IsDefault).Select(o => o))
                     {
                         o.IsDefault = false;
                         _context.UserRecitationProfiles.Update(o);
@@ -1735,7 +1735,7 @@ namespace RMuseum.Services.Implementationa
                 await _context.SaveChangesAsync();
                 if (p.IsDefault)
                 {
-                    foreach (var o in _context.UserRecitationProfiles.Where(o => o.Id != p.Id && o.IsDefault).Select(o => o))
+                    foreach (var o in _context.UserRecitationProfiles.Where(o => o.Id != p.Id && o.UserId == p.UserId && o.IsDefault).Select(o => o))
                     {
                         o.IsDefault = false;
                         _context.UserRecitationProfiles.Update(o);
