@@ -1,4 +1,5 @@
 ﻿using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -32,6 +33,12 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorLinkViewModel[]>> GetPoemImages(int id);
+
+        /// <summary>
+        /// get a random poem from hafez
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemCompleteViewModel>> Faal();
 
         /// <summary>
         /// imports unimported poem data from a locally accessible ganjoor SqlLite database

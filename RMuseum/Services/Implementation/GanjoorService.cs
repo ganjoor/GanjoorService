@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration.ViewModels;
@@ -31,7 +32,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var poem = await _context.GanjoorPoems.Include(p => p.Cat).ThenInclude(c => c.Poet).Where(p => p.Id == id).SingleOrDefaultAsync();
+                var poem = await _context.GanjoorPoems.Include(p => p.Cat).Where(p => p.Id == id).SingleOrDefaultAsync();
                 var cat = poem.Cat;
                 while(cat != null)
                 {
@@ -131,6 +132,39 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorLinkViewModel[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get a random poem from hafez
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> Faal()
+        {
+            try
+            {
+                //this is magic number based method!
+                int startPoemId = 2130;
+                int endPoemId = 2634 + 1; //one is added for مژده ای دل که مسیحا نفسی می‌آید
+                Random r = new Random(DateTime.Now.Millisecond);
+                int poemId = r.Next(startPoemId, endPoemId);
+                if(poemId == endPoemId)
+                {
+                    poemId = 33179;//مژده ای دل که مسیحا نفسی می‌آید
+                }
+                return new RServiceResult<GanjoorPoemCompleteViewModel>
+                    (
+                    new GanjoorPoemCompleteViewModel()
+                    {
+                        Poem = (await GetPoemById(poemId)).Result,
+                        Recitations = (await GetPoemRecitations(poemId)).Result,
+                        Images = (await GetPoemImages(poemId)).Result
+                    }
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoemCompleteViewModel>(null, exp.ToString());
             }
         }
 

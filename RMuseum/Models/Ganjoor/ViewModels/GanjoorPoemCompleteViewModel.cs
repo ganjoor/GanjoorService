@@ -1,8 +1,5 @@
 ﻿using RMuseum.Models.GanjoorAudio.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using RMuseum.Models.GanjoorIntegration.ViewModels;
 
 namespace RMuseum.Models.Ganjoor.ViewModels
 {
@@ -20,5 +17,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// Recitations
         /// </summary>
         public PublicRecitationViewModel[] Recitations { get; set; }
+
+        /// <summary>
+        /// Images
+        /// </summary>
+        public GanjoorLinkViewModel[] Images { get; set; }
     }
 }

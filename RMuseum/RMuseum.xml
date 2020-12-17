@@ -636,6 +636,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.Faal">
+            <summary>
+             get a random poem from hafez
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ImportLocalSQLiteDb">
             <summary>
             imports data from ganjoor SQLite database
@@ -3418,6 +3424,11 @@
             Recitations
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Images">
+            <summary>
+            Images
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.ImportJob.ImportJob">
             <summary>
             Import Job
@@ -4446,6 +4457,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.Faal">
+            <summary>
+            get a random poem from hafez
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.ImportLocalSQLiteDb">
             <summary>
             imports unimported poem data from a locally accessible ganjoor SqlLite database
@@ -5177,6 +5194,12 @@
             EntityImageId : the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg or https://ganjgah.ir/api/images/norm/{EntityImageId}.jpg
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal">
+            <summary>
+            get a random poem from hafez
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportLocalSQLiteDb">

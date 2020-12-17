@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Services;
@@ -67,6 +68,24 @@ namespace RMuseum.Controllers
         {
             RServiceResult<GanjoorLinkViewModel[]> res =
                 await _ganjoorService.GetPoemImages(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        ///  get a random poem from hafez
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("hafez/faal")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> Faal()
+        {
+            RServiceResult<GanjoorPoemCompleteViewModel> res =
+                await _ganjoorService.Faal();
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
