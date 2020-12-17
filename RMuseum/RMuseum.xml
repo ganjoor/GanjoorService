@@ -622,6 +622,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemRecitations(System.Int32)">
+            <summary>
+             get poem recitations  (PlainText/HtmlText are intentionally empty)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ImportLocalSQLiteDb">
             <summary>
             imports data from ganjoor SQLite database
@@ -4388,6 +4395,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemRecitations(System.Int32)">
+            <summary>
+            get poem recitations (PlainText/HtmlText are intentionally empty)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.ImportLocalSQLiteDb">
             <summary>
             imports unimported poem data from a locally accessible ganjoor SqlLite database
@@ -5102,6 +5116,13 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32)">
             <summary>
             get poem by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemRecitations(System.Int32)">
+            <summary>
+            get poem recitations  (PlainText/HtmlText are intentionally empty)
             </summary>
             <param name="id"></param>
             <returns></returns>

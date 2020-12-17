@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.GanjoorAudio;
+using RMuseum.Models.GanjoorAudio.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Data;
@@ -41,6 +43,53 @@ namespace RMuseum.Services.Implementation
             catch(Exception exp)
             {
                 return new RServiceResult<GanjoorPoem>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get poem recitations  (PlainText/HtmlText are intentionally empty)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemRecitations(int id)
+        {
+            try
+            {
+                var source =
+                     from audio in _context.Recitations
+                     join poem in _context.GanjoorPoems
+                     on audio.GanjoorPostId equals poem.Id
+                     where
+                     audio.ReviewStatus == AudioReviewStatus.Approved
+                     &&
+                     poem.Id == id
+                     orderby audio.AudioOrder
+                     select new PublicRecitationViewModel()
+                     {
+                         Id = audio.Id,
+                         PoemId = audio.GanjoorPostId,
+                         PoemFullTitle = poem.FullTitle,
+                         PoemFullUrl = poem.FullUrl,
+                         AudioTitle = audio.AudioTitle,
+                         AudioArtist = audio.AudioArtist,
+                         AudioArtistUrl = audio.AudioArtistUrl,
+                         AudioSrc = audio.AudioSrc,
+                         AudioSrcUrl = audio.AudioSrcUrl,
+                         LegacyAudioGuid = audio.LegacyAudioGuid,
+                         Mp3FileCheckSum = audio.Mp3FileCheckSum,
+                         Mp3SizeInBytes = audio.Mp3SizeInBytes,
+                         PublishDate = audio.ReviewDate,
+                         FileLastUpdated = audio.FileLastUpdated,
+                         Mp3Url = $"https://ganjgah.ir/api/audio/file/{audio.Id}.mp3",
+                         XmlText = $"https://ganjgah.ir/api/audio/xml/{audio.Id}",
+                         PlainText = "", //poem.PlainText 
+                         HtmlText = "",//poem.HtmlText
+                     };
+                return new RServiceResult<PublicRecitationViewModel[]>(await source.ToArrayAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PublicRecitationViewModel[]>(null, exp.ToString());
             }
         }
 
