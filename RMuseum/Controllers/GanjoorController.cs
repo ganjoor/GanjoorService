@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
 using System.Net;
@@ -47,6 +48,25 @@ namespace RMuseum.Controllers
         {
             RServiceResult<PublicRecitationViewModel[]> res =
                 await _ganjoorService.GetPoemRecitations(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        ///  get poem images  (PlainText/HtmlText are intentionally empty)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/{id}/images")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorLinkViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemImages(int id)
+        {
+            RServiceResult<GanjoorLinkViewModel[]> res =
+                await _ganjoorService.GetPoemImages(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

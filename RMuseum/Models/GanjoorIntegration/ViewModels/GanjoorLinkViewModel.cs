@@ -8,6 +8,21 @@ namespace RMuseum.Models.GanjoorIntegration.ViewModels
     /// </summary>
     public class GanjoorLinkViewModel
     {
+        /// <summary>
+        /// default constructor
+        /// </summary>
+        public GanjoorLinkViewModel()
+        {
+
+        }
+
+        /// <summary>
+        /// parameterized constructor
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="entityName"></param>
+        /// <param name="entityFriendlyUrl"></param>
+        /// <param name="entityImageId"></param>
         public GanjoorLinkViewModel(GanjoorLink src, string entityName, string entityFriendlyUrl, Guid entityImageId)
         {
             Id = src.Id;

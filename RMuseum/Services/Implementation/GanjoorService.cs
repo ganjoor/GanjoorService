@@ -6,6 +6,7 @@ using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Data;
@@ -93,6 +94,45 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// get poem images by id (some fields are intentionally field with blank or null),
+        /// EntityImageId : the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg or https://ganjgah.ir/api/images/norm/{EntityImageId}.jpg
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorLinkViewModel[]>> GetPoemImages(int id)
+        {
+            try
+            {
+                var source =
+                     from link in _context.GanjoorLinks.Include(l => l.Item).ThenInclude(i => i.Images)
+                     join poem in _context.GanjoorPoems
+                     on link.GanjoorPostId equals poem.Id
+                     where
+                     link.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                     &&
+                     poem.Id == id
+                     orderby link.ReviewDate
+                     select new GanjoorLinkViewModel()
+                     {
+                         Id = link.Id,
+                         GanjoorPostId = link.GanjoorPostId,
+                         GanjoorUrl = $"https://ganjoor.net{poem.FullUrl}",
+                         GanjoorTitle = poem.FullTitle,
+                         EntityName = "", //intentional
+                         EntityFriendlyUrl = "", //intentional
+                         EntityImageId = link.Item.Images.First().Id,//the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg
+                         ReviewResult = link.ReviewResult,
+                         Synchronized = link.Synchronized,
+                         SuggestedBy = null //intentional (this is going to be used in an anonymous method)
+                     };
+                return new RServiceResult<GanjoorLinkViewModel[]>(await source.ToArrayAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorLinkViewModel[]>(null, exp.ToString());
+            }
+        }
 
         #region Date import / modifications
         /// <summary>

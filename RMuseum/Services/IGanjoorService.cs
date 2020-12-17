@@ -1,5 +1,6 @@
 ﻿using RMuseum.Models.Ganjoor;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System.Threading.Tasks;
 
@@ -23,6 +24,14 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemRecitations(int id);
+
+        /// <summary>
+        /// get poem images by id (some fields are intentionally field with blank or null),
+        /// EntityImageId : the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg or https://ganjgah.ir/api/images/norm/{EntityImageId}.jpg
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorLinkViewModel[]>> GetPoemImages(int id);
 
         /// <summary>
         /// imports unimported poem data from a locally accessible ganjoor SqlLite database

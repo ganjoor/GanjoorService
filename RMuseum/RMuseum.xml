@@ -629,6 +629,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemImages(System.Int32)">
+            <summary>
+             get poem images  (PlainText/HtmlText are intentionally empty)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ImportLocalSQLiteDb">
             <summary>
             imports data from ganjoor SQLite database
@@ -2950,6 +2957,20 @@
             Ganjoor Link View Model
             </summary>
         </member>
+        <member name="M:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.#ctor">
+            <summary>
+            default constructor
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.#ctor(RMuseum.Models.GanjoorIntegration.GanjoorLink,System.String,System.String,System.Guid)">
+            <summary>
+            parameterized constructor
+            </summary>
+            <param name="src"></param>
+            <param name="entityName"></param>
+            <param name="entityFriendlyUrl"></param>
+            <param name="entityImageId"></param>
+        </member>
         <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.Id">
             <summary>
             Id
@@ -4402,6 +4423,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemImages(System.Int32)">
+            <summary>
+            get poem images by id (some fields are intentionally field with blank or null),
+            EntityImageId : the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg or https://ganjgah.ir/api/images/norm/{EntityImageId}.jpg
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.ImportLocalSQLiteDb">
             <summary>
             imports unimported poem data from a locally accessible ganjoor SqlLite database
@@ -5123,6 +5152,14 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemRecitations(System.Int32)">
             <summary>
             get poem recitations  (PlainText/HtmlText are intentionally empty)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemImages(System.Int32)">
+            <summary>
+            get poem images by id (some fields are intentionally field with blank or null),
+            EntityImageId : the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg or https://ganjgah.ir/api/images/norm/{EntityImageId}.jpg
             </summary>
             <param name="id"></param>
             <returns></returns>
