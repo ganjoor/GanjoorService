@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RMuseum.Models.Auth.Memory;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
 using System.Net;
@@ -12,6 +13,25 @@ namespace RMuseum.Controllers
     [Route("api/ganjoor")]
     public class GanjoorController : Controller
     {
+        /// <summary>
+        /// get poem by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoem))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemById(int id)
+        {
+            RServiceResult<GanjoorPoem> res =
+                await _ganjoorService.GetPoemById(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
         /// <summary>
         /// imports data from ganjoor SQLite database
         /// </summary>

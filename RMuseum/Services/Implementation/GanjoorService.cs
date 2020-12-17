@@ -18,7 +18,34 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public class GanjoorService : IGanjoorService
     {
-        #region SQLite import
+
+        /// <summary>
+        /// get poem by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoem>> GetPoemById(int id)
+        {
+            try
+            {
+                var poem = await _context.GanjoorPoems.Include(p => p.Cat).ThenInclude(c => c.Poet).Where(p => p.Id == id).SingleOrDefaultAsync();
+                var cat = poem.Cat;
+                while(cat != null)
+                {
+                    cat.Parent = await _context.GanjoorCategories.Where(c => c.Id == cat.ParentId).SingleOrDefaultAsync();
+                    cat = cat.Parent;
+                }
+
+                return new RServiceResult<GanjoorPoem>(poem);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorPoem>(null, exp.ToString());
+            }
+        }
+
+
+        #region Date import / modifications
         /// <summary>
         /// imports unimported poem data from a locally accessible ganjoor SqlLite database
         /// </summary>
@@ -76,9 +103,6 @@ namespace RMuseum.Services.Implementation
             }
             return new RServiceResult<bool>(true);
         }
-
-        
-
         private async Task _ImportSQLiteCatChildren(DbCommand command, IDbConnection dapper, int poetId, int catId, string itemFullTitle, string itemFullSlug)
         {
            
@@ -120,9 +144,6 @@ namespace RMuseum.Services.Implementation
 
             }
         }
-
-        #endregion
-
         private static string _ExtractUrlSlug(string slug)
         {
             if (!string.IsNullOrEmpty(slug))
@@ -136,7 +157,6 @@ namespace RMuseum.Services.Implementation
             }
             return slug;
         }
-
 
         /// <summary>
         /// updates poems text
@@ -245,6 +265,7 @@ namespace RMuseum.Services.Implementation
             }
 
         }
+        #endregion
 
         /// <summary>
         /// Database Contetxt

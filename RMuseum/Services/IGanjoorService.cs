@@ -1,4 +1,5 @@
-﻿using RSecurityBackend.Models.Generic;
+﻿using RMuseum.Models.Ganjoor;
+using RSecurityBackend.Models.Generic;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services
@@ -8,6 +9,13 @@ namespace RMuseum.Services
     /// </summary>
     public interface IGanjoorService
     {
+        /// <summary>
+        /// get poem by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoem>> GetPoemById(int id);
+
         /// <summary>
         /// imports unimported poem data from a locally accessible ganjoor SqlLite database
         /// </summary>
