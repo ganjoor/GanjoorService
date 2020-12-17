@@ -3403,6 +3403,21 @@
             Non-poem paragraph
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel">
+            <summary>
+            a more complete GanjoorPoem View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Poem">
+            <summary>
+            basic poem info
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Recitations">
+            <summary>
+            Recitations
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.ImportJob.ImportJob">
             <summary>
             Import Job

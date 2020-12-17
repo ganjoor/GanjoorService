@@ -105,7 +105,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var source =
-                     from link in _context.GanjoorLinks.Include(l => l.Item).ThenInclude(i => i.Images)
+                     from link in _context.GanjoorLinks.Include(l => l.Artifact).Include(l => l.Item).ThenInclude(i => i.Images)
                      join poem in _context.GanjoorPoems
                      on link.GanjoorPostId equals poem.Id
                      where
@@ -119,8 +119,8 @@ namespace RMuseum.Services.Implementation
                          GanjoorPostId = link.GanjoorPostId,
                          GanjoorUrl = $"https://ganjoor.net{poem.FullUrl}",
                          GanjoorTitle = poem.FullTitle,
-                         EntityName = "", //intentional
-                         EntityFriendlyUrl = "", //intentional
+                         EntityName = $"{link.Artifact.Name} » {link.Item.Name}", 
+                         EntityFriendlyUrl = $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
                          EntityImageId = link.Item.Images.First().Id,//the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg
                          ReviewResult = link.ReviewResult,
                          Synchronized = link.Synchronized,
