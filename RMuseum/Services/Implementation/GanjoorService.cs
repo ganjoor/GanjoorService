@@ -33,6 +33,8 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var poem = await _context.GanjoorPoems.Include(p => p.Cat).Where(p => p.Id == id).SingleOrDefaultAsync();
+                if (poem == null)
+                    return new RServiceResult<GanjoorPoem>(null);
                 var cat = poem.Cat;
                 while(cat != null)
                 {
@@ -135,6 +137,20 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        private int _GetRandomPoemId()
+        {
+            //this is magic number based method!
+            int startPoemId = 2130;
+            int endPoemId = 2634 + 1; //one is added for مژده ای دل که مسیحا نفسی می‌آید
+            Random r = new Random(DateTime.Now.Millisecond);
+            int poemId = r.Next(startPoemId, endPoemId);
+            if (poemId == endPoemId)
+            {
+                poemId = 33179;//مژده ای دل که مسیحا نفسی می‌آید
+            }
+            return poemId;
+        }
+
         /// <summary>
         /// get a random poem from hafez
         /// </summary>
@@ -143,22 +159,26 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                //this is magic number based method!
-                int startPoemId = 2130;
-                int endPoemId = 2634 + 1; //one is added for مژده ای دل که مسیحا نفسی می‌آید
-                Random r = new Random(DateTime.Now.Millisecond);
-                int poemId = r.Next(startPoemId, endPoemId);
-                if(poemId == endPoemId)
+                int poemId = _GetRandomPoemId();
+                var poem = (await GetPoemById(poemId)).Result;
+                PublicRecitationViewModel[] recitations = poem == null ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
+                int loopPreventer = 0;
+                while (poem == null || recitations.Length == 0)
                 {
-                    poemId = 33179;//مژده ای دل که مسیحا نفسی می‌آید
+                    poem = (await GetPoemById(poemId)).Result;
+                    recitations = poem == null ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
+                    loopPreventer++;
+                    if (loopPreventer > 5)
+                        break;
                 }
+
                 return new RServiceResult<GanjoorPoemCompleteViewModel>
                     (
                     new GanjoorPoemCompleteViewModel()
                     {
-                        Poem = (await GetPoemById(poemId)).Result,
-                        Recitations = (await GetPoemRecitations(poemId)).Result,
-                        Images = (await GetPoemImages(poemId)).Result
+                        Poem = poem,
+                        Recitations = recitations,
+                        Images = null //no usage for now, so do not waste resources
                     }
                     );
             }
