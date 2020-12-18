@@ -141,7 +141,7 @@ namespace RMuseum.Services.Implementation
         {
             //this is magic number based method!
             int startPoemId = 2130;
-            int endPoemId = 2634 + 1; //one is added for مژده ای دل که مسیحا نفسی می‌آید
+            int endPoemId = 2624 + 1; //one is added for مژده ای دل که مسیحا نفسی می‌آید
             Random r = new Random(DateTime.Now.Millisecond);
             int poemId = r.Next(startPoemId, endPoemId);
             if (poemId == endPoemId)
