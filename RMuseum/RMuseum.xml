@@ -828,7 +828,7 @@
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.ModeratePoemNarration(System.Int32,RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel)">
             <summary>
-            Moderate pending narration
+            Moderate pending narration (for moderating other users' recitations you also need recitation:moderate permission)
             </summary>
             <param name="id"></param>
             <param name="model"></param>
@@ -925,7 +925,7 @@
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.TransferRecitationsOwnership(System.String,System.String)">
             <summary>
-            Transfer Recitations Ownership
+            Transfer Recitations Ownership (for recitations owned by current user)
             </summary>
             <param name="targetEmailAddress"></param>
             <param name="artistName"></param>

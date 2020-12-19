@@ -311,13 +311,13 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// Moderate pending narration
+        /// Moderate pending narration (for moderating other users' recitations you also need recitation:moderate permission)
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("moderate/{id}")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.PublishOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RecitationViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
@@ -329,6 +329,34 @@ namespace RMuseum.Controllers
 
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
+            var narration = await _audioService.Get(id);
+            if (!string.IsNullOrEmpty(narration.ExceptionString))
+            {
+                return BadRequest(narration.ExceptionString);
+            }
+
+            if (narration.Result == null)
+                return NotFound();
+
+            if (narration.Result.Owner.Id != loggedOnUserId)
+            {
+                Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+                RServiceResult<bool>
+                 serviceResult =
+                 await _userPermissionChecker.Check
+                     (
+                         loggedOnUserId,
+                         sessionId,
+                         RMuseumSecurableItem.AudioRecitationEntityShortName,
+                         RMuseumSecurableItem.ModerateOperationShortName
+                         );
+                if (!string.IsNullOrEmpty(serviceResult.ExceptionString))
+                    return BadRequest(serviceResult.ExceptionString);
+
+                if (!serviceResult.Result)
+                    return StatusCode((int)HttpStatusCode.Forbidden);
+
+            }
 
             var res = await _audioService.ModeratePoemNarration(id, loggedOnUserId, model);
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -504,7 +532,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("retrypublish")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.PublishOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> RetryPublish()
@@ -677,7 +705,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// Transfer Recitations Ownership
+        /// Transfer Recitations Ownership (for recitations owned by current user)
         /// </summary>
         /// <param name="targetEmailAddress"></param>
         /// <param name="artistName"></param>

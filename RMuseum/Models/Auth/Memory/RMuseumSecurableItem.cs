@@ -127,9 +127,10 @@ namespace RMuseum.Models.Auth.Memory
                         Description = "خوانشها",
                         Operations = new SecurableItemOperation[]
                         {
+                            new SecurableItemOperation(PublishOperationShortName, "انتشار خوانش خود", false),
+                            new SecurableItemOperation(ModerateOperationShortName, "بررسی خوانش کاربران دیگر", false),
+                            new SecurableItemOperation(ReOrderOperationShortName, "تغییر ترتیب خوانش‌ها", false),
                             new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات از منابع خارجی", false),
-                            new SecurableItemOperation(ModerateOperationShortName, "بررسی", false),
-                            new SecurableItemOperation(ReOrderOperationShortName, "تغییر ترتیب", false),
                         }
                     },
                     new SecurableItem()
