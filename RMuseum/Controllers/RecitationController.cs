@@ -712,7 +712,7 @@ namespace RMuseum.Controllers
         /// <returns>number of transfered items</returns>
 
         [HttpPut("chown")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
