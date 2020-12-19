@@ -33,6 +33,7 @@ namespace RSecurityBackend.Services.Implementation
             }
         }
 
+        
         /// <summary>
         /// returns user role information
         /// </summary>       
@@ -181,6 +182,28 @@ namespace RSecurityBackend.Services.Implementation
             catch(Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// roles having specific permission
+        /// </summary>
+        /// <param name="securableItemShortName"></param>
+        /// <param name="operationShortName"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RAppRole[]>> GetRolesHavingPermission(string securableItemShortName, string operationShortName)
+        {
+            try
+            {
+                RAppRole[] rolesInfo = await _roleManager.Roles
+                                                            .Include(r => r.Permissions)
+                                                            .Where(r => r.Permissions.Any(p => p.SecurableItemShortName == securableItemShortName && p.OperationShortName == operationShortName) )
+                                                            .ToArrayAsync();
+                return new RServiceResult<RAppRole[]>(rolesInfo);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<RAppRole[]>(null, exp.ToString());
             }
         }
 

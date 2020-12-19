@@ -1924,6 +1924,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetUsersHavingPermission(System.String,System.String)">
+            <summary>
+            all users having a certain permission
+            </summary>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Services.IAppUserService.AddUser(RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser)">
             <summary>
             add a new user
@@ -2261,6 +2269,14 @@
             Has user specified permission
             </summary>
             <param name="userId"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetUsersHavingPermission(System.String,System.String)">
+            <summary>
+            all users having a certain permission
+            </summary>
             <param name="securableItemShortName"></param>
             <param name="operationShortName"></param>
             <returns></returns>
@@ -2795,6 +2811,14 @@
             <param name="operationShortName"></param>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.GetRolesHavingPermission(System.String,System.String)">
+            <summary>
+            roles having specific permission
+            </summary>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.GetSecurableItems">
             <summary>
             gets list of SecurableItem, should be reimplemented in end user applications
@@ -2935,6 +2959,14 @@
             Has role specified permission
             </summary>
             <param name="roleName"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IUserRoleService.GetRolesHavingPermission(System.String,System.String)">
+            <summary>
+            roles having specific permission
+            </summary>
             <param name="securableItemShortName"></param>
             <param name="operationShortName"></param>
             <returns></returns>

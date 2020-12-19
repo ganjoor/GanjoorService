@@ -5738,7 +5738,12 @@
             Messaging service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue,RMuseum.Services.IRNotificationService)">
+        <member name="F:RMuseum.Services.Implementationa.RecitationService._userService">
+            <summary>
+            Users service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue,RMuseum.Services.IRNotificationService,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
             </summary>
@@ -5746,6 +5751,7 @@
             <param name="configuration"></param>
             <param name="backgroundTaskQueue"></param>
             <param name="notificationService"></param>
+            <param name="userService"></param>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">
             <summary>

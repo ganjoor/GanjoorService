@@ -122,6 +122,14 @@ namespace RSecurityBackend.Services
         Task<RServiceResult<PublicRAppUser[]>> GetAllUsersInformation();
 
         /// <summary>
+        /// all users having a certain permission
+        /// </summary>
+        /// <param name="securableItemShortName"></param>
+        /// <param name="operationShortName"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PublicRAppUser[]>> GetUsersHavingPermission(string securableItemShortName, string operationShortName);
+
+        /// <summary>
         /// add a new user
         /// </summary>
         /// <param name="newUserInfo"></param>

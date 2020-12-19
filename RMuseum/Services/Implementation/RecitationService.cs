@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using Renci.SshNet;
 using RMuseum.DbContext;
+using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
@@ -14,6 +15,7 @@ using RMuseum.Models.UploadSession.ViewModels;
 using RMuseum.Services.Implementation;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Services;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
@@ -421,9 +423,14 @@ namespace RMuseum.Services.Implementationa
                     return new RServiceResult<RecitationViewModel>(null, err);
                 }
 
+                
+
                 Recitation narration =  await _context.Recitations.Include(a => a.Owner).Where(a => a.Id == id).SingleOrDefaultAsync();
                 if(narration == null)
                     return new RServiceResult<RecitationViewModel>(null, "404");
+
+                bool bNewPendingRequest = narration.ReviewStatus == AudioReviewStatus.Draft && metadata.ReviewStatus == AudioReviewStatus.Pending;
+
                 narration.AudioTitle = metadata.AudioTitle;
                 narration.AudioArtist = metadata.AudioArtist;
                 narration.AudioArtistUrl = metadata.AudioArtistUrl;
@@ -432,6 +439,25 @@ namespace RMuseum.Services.Implementationa
                 narration.ReviewStatus = metadata.ReviewStatus;
                 _context.Recitations.Update(narration);
                 await _context.SaveChangesAsync();
+
+                if(bNewPendingRequest)
+                {
+                    var moderators = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ModerateOperationShortName);
+                    if(string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+                    {
+                        foreach(var moderator in moderators.Result)
+                        {
+                            await new RNotificationService(_context).PushNotification
+                                            (
+                                                (Guid)moderator.Id ,
+                                                "درخواست بررسی خوانش",
+                                                $"درخواستی برای بررسی خوانشی از «{narration.AudioArtist}» ثبت شده است. در صورت تمایل صورت تمایل به بررسی بخش «خوانش‌های در انتظار تأیید» را ببینید.{ Environment.NewLine}" +
+                                                $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی خوانش‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                            );
+                        }
+                    }
+                }
+
 
                 if(narration.ReviewStatus == AudioReviewStatus.Approved)
                 {
@@ -2028,6 +2054,11 @@ namespace RMuseum.Services.Implementationa
         /// </summary>
         protected readonly IRNotificationService _notificationService;
 
+        /// <summary>
+        /// Users service
+        /// </summary>
+        protected readonly IAppUserService _userService;
+
 
         /// <summary>
         /// constructor
@@ -2036,12 +2067,14 @@ namespace RMuseum.Services.Implementationa
         /// <param name="configuration"></param>
         /// <param name="backgroundTaskQueue"></param>
         /// <param name="notificationService"></param>
-        public RecitationService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IRNotificationService notificationService)
+        /// <param name="userService"></param>
+        public RecitationService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IRNotificationService notificationService, IAppUserService userService)
         {
             _context = context;
             Configuration = configuration;
             _backgroundTaskQueue = backgroundTaskQueue;
             _notificationService = notificationService;
+            _userService = userService;
         }
     }
 }

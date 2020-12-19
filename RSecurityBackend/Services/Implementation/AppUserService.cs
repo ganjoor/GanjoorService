@@ -592,6 +592,47 @@ namespace RSecurityBackend.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// all users having a certain permission
+        /// </summary>
+        /// <param name="securableItemShortName"></param>
+        /// <param name="operationShortName"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PublicRAppUser[]>> GetUsersHavingPermission(string securableItemShortName, string operationShortName)
+        {
+            try
+            {
+                var rolesResult = await _userRoleService.GetRolesHavingPermission(securableItemShortName, operationShortName);
+                if(!string.IsNullOrEmpty(rolesResult.ExceptionString))
+                {
+                    return new RServiceResult<PublicRAppUser[]>(null, rolesResult.ExceptionString);
+                }
+
+
+
+                List<PublicRAppUser> lstPublicUsersInfo = new List<PublicRAppUser>();
+
+                RAppRole[] roles = rolesResult.Result;
+                foreach(RAppRole role in roles)
+                {
+                    var usersInRole = _userManager.GetUsersInRoleAsync(role.Name);
+                    foreach(var user in usersInRole.Result)
+                    {
+                        if(lstPublicUsersInfo.Where(u => u.Id == user.Id).FirstOrDefault() == null )
+                        {
+                            lstPublicUsersInfo.Add(new PublicRAppUser(user));
+                        }
+                    }
+                }
+                
+                return new RServiceResult<PublicRAppUser[]>(lstPublicUsersInfo.ToArray());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PublicRAppUser[]>(null, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// add a new user

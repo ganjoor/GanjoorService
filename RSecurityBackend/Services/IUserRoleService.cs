@@ -57,6 +57,14 @@ namespace RSecurityBackend.Services
         Task<RServiceResult<bool>> HasPermission(string roleName, string securableItemShortName, string operationShortName);
 
         /// <summary>
+        /// roles having specific permission
+        /// </summary>
+        /// <param name="securableItemShortName"></param>
+        /// <param name="operationShortName"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RAppRole[]>> GetRolesHavingPermission(string securableItemShortName, string operationShortName);
+
+        /// <summary>
         /// gets list of SecurableItem, should be reimplemented in end user applications
         /// </summary>
         /// <returns></returns>
