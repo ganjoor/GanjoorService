@@ -1885,7 +1885,7 @@ namespace RMuseum.Services.Implementationa
         {
             try
             {
-                var recitations = await _context.Recitations.Where(r => r.OwnerId == currentOwenerId && r.AudioArtist == artistName).ToListAsync();
+                var recitations = await _context.Recitations.Where(r => r.OwnerId == currentOwenerId && r.AudioArtist == artistName && r.ReviewStatus == AudioReviewStatus.Approved).ToListAsync();
                 foreach(Recitation recitation in recitations)
                 {
                     recitation.OwnerId = newOwnerId;
@@ -1911,6 +1911,15 @@ namespace RMuseum.Services.Implementationa
                         await _context.SaveChangesAsync();
                     }
                 }
+
+                var user = await _userService.GetUserInformation(currentOwenerId);
+
+                await new RNotificationService(_context).PushNotification
+                                            (
+                                                newOwnerId,
+                                                "انتقال مالکیت خوانش‌ها به شما",
+                                                $"مالکیت {recitations.Count} خوانش تأیید شده از خوانشگری به نام «{artistName}» توسط کاربری با پست الکترونیکی «{user.Result.Email}» به شما منتقل شد.{ Environment.NewLine}"
+                                            );
 
                 return new RServiceResult<int>(recitations.Count);
             }
