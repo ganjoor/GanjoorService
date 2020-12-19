@@ -17,6 +17,11 @@ namespace RSecurityBackend.Services.Implementation
     public class RoleServiceBase : IUserRoleService
     {
         /// <summary>
+        /// Administrator role name
+        /// </summary>
+        public string AdministratorRoleName { get { return "Administrator"; } }
+
+        /// <summary>
         /// returns all user roles
         /// </summary>
         /// <returns></returns>
@@ -197,7 +202,7 @@ namespace RSecurityBackend.Services.Implementation
             {
                 RAppRole[] rolesInfo = await _roleManager.Roles
                                                             .Include(r => r.Permissions)
-                                                            .Where(r => r.Permissions.Any(p => p.SecurableItemShortName == securableItemShortName && p.OperationShortName == operationShortName) )
+                                                            .Where(r => r.Name == AdministratorRoleName || r.Permissions.Any(p => p.SecurableItemShortName == securableItemShortName && p.OperationShortName == operationShortName) )
                                                             .ToArrayAsync();
                 return new RServiceResult<RAppRole[]>(rolesInfo);
             }

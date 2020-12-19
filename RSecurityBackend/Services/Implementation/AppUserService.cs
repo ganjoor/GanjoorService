@@ -387,7 +387,7 @@ namespace RSecurityBackend.Services.Implementation
                     return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
                 }
           
-                bool res = await _userManager.IsInRoleAsync(dbUserInfo, AdministratorRoleName);
+                bool res = await _userManager.IsInRoleAsync(dbUserInfo, _userRoleService.AdministratorRoleName);
                 return new RServiceResult<bool>(res);
             }
             catch(Exception exp)
@@ -689,9 +689,9 @@ namespace RSecurityBackend.Services.Implementation
                 if(newUserInfo.IsAdmin)
                 {
 
-                    if (!await _roleManager.RoleExistsAsync(AdministratorRoleName))
+                    if (!await _roleManager.RoleExistsAsync(_userRoleService.AdministratorRoleName))
                     {
-                        var roleCheckResult = await _roleManager.CreateAsync(new RAppRole(AdministratorRoleName));
+                        var roleCheckResult = await _roleManager.CreateAsync(new RAppRole(_userRoleService.AdministratorRoleName));
                         if (!roleCheckResult.Succeeded)
                         {
                             return new RServiceResult<RAppUser>(null, "Error creating Administrator role : " + ErrorsToString(roleCheckResult.Errors));
@@ -699,7 +699,7 @@ namespace RSecurityBackend.Services.Implementation
                     }
 
 
-                    var addToAdminRoleResult = await _userManager.AddToRoleAsync(newDbUser, AdministratorRoleName);
+                    var addToAdminRoleResult = await _userManager.AddToRoleAsync(newDbUser, _userRoleService.AdministratorRoleName);
                     if (!addToAdminRoleResult.Succeeded)
                     {
                         return new RServiceResult<RAppUser>(null, $"Error adding {newDbUser.UserName} to Administrator role : " + ErrorsToString(addToAdminRoleResult.Errors));
@@ -740,7 +740,7 @@ namespace RSecurityBackend.Services.Implementation
 
                 if(isAdmin.Result && !updateUserInfo.IsAdmin)
                 {
-                    List<RAppUser> adminUsers = new List<RAppUser>(await _userManager.GetUsersInRoleAsync(AdministratorRoleName));
+                    List<RAppUser> adminUsers = new List<RAppUser>(await _userManager.GetUsersInRoleAsync(_userRoleService.AdministratorRoleName));
                     int nActiveAdminUsers = 0;
                     foreach(RAppUser adminUser in adminUsers)
                     {
@@ -1355,16 +1355,16 @@ namespace RSecurityBackend.Services.Implementation
                         return new RServiceResult<bool>(false, "Error creating default user : " + ErrorsToString(identityResult.Errors));
                     }
 
-                    if (!await _roleManager.RoleExistsAsync(AdministratorRoleName))
+                    if (!await _roleManager.RoleExistsAsync(_userRoleService.AdministratorRoleName))
                     {
-                        identityResult = await _roleManager.CreateAsync(new RAppRole(AdministratorRoleName));
+                        identityResult = await _roleManager.CreateAsync(new RAppRole(_userRoleService.AdministratorRoleName));
                         if (!identityResult.Succeeded)
                         {
                             return new RServiceResult<bool>(false, "Error creating Administrator role : " + ErrorsToString(identityResult.Errors));
                         }
                     }
 
-                    identityResult = await _userManager.AddToRoleAsync(admin, AdministratorRoleName);
+                    identityResult = await _userManager.AddToRoleAsync(admin, _userRoleService.AdministratorRoleName);
                     if (!identityResult.Succeeded)
                     {
                         return new RServiceResult<bool>(false, "Error adding admin to Administrator role : " + ErrorsToString(identityResult.Errors));
@@ -1379,10 +1379,7 @@ namespace RSecurityBackend.Services.Implementation
         }
 
 
-        /// <summary>
-        /// Administrator role name
-        /// </summary>
-        public string AdministratorRoleName { get { return "Administrator"; } }
+       
 
 
         /// <summary>

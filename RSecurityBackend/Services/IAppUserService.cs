@@ -255,10 +255,7 @@ namespace RSecurityBackend.Services
         Task<RServiceResult<PublicRAppUser>> FindUserByEmail(string email);
 
 
-        /// <summary>
-        /// Administrator role name
-        /// </summary>
-        string AdministratorRoleName { get; }  
+        
 
         /// <summary>
         /// secret used for generating Jwt token

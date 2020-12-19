@@ -2055,11 +2055,6 @@
             <param name="email"></param>
             <returns></returns>
         </member>
-        <member name="P:RSecurityBackend.Services.IAppUserService.AdministratorRoleName">
-            <summary>
-            Administrator role name
-            </summary>
-        </member>
         <member name="P:RSecurityBackend.Services.IAppUserService.TokenSecret">
             <summary>
             secret used for generating Jwt token
@@ -2393,11 +2388,6 @@
             EnsureDefaultUserExists
             </summary>
             <returns></returns>
-        </member>
-        <member name="P:RSecurityBackend.Services.Implementation.AppUserService.AdministratorRoleName">
-            <summary>
-            Administrator role name
-            </summary>
         </member>
         <member name="P:RSecurityBackend.Services.Implementation.AppUserService.TokenSecret">
             <summary>
@@ -2767,6 +2757,11 @@
             User Roles Service Implementation
             </summary>
         </member>
+        <member name="P:RSecurityBackend.Services.Implementation.RoleServiceBase.AdministratorRoleName">
+            <summary>
+            Administrator role name
+            </summary>
+        </member>
         <member name="M:RSecurityBackend.Services.Implementation.RoleServiceBase.GetAllRoles">
             <summary>
             returns all user roles
@@ -2917,6 +2912,11 @@
         <member name="T:RSecurityBackend.Services.IUserRoleService">
             <summary>
             User Groups Service
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.IUserRoleService.AdministratorRoleName">
+            <summary>
+            Administrator role name
             </summary>
         </member>
         <member name="M:RSecurityBackend.Services.IUserRoleService.GetAllRoles">

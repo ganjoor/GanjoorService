@@ -12,6 +12,11 @@ namespace RSecurityBackend.Services
     public interface IUserRoleService
     {
         /// <summary>
+        /// Administrator role name
+        /// </summary>
+        string AdministratorRoleName { get; }
+
+        /// <summary>
         /// returns all user roles
         /// </summary>
         /// <returns></returns>
