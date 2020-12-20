@@ -24,6 +24,29 @@ namespace RMuseum.Services.Implementation
     {
 
         /// <summary>
+        /// Get List of poets
+        /// </summary>
+        /// <param name="websitePoets"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoet[]>> GetPoets(bool websitePoets)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorPoet[]>
+                    (
+                    await _context.GanjoorPoets
+                                    .Where(p => !websitePoets || p.Id < 200)
+                                    .OrderBy(p => p.Name)
+                                    .ToArrayAsync()
+                    );
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorPoet[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get poem by id
         /// </summary>
         /// <param name="id"></param>

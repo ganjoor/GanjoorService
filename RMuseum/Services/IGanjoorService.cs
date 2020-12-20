@@ -13,6 +13,13 @@ namespace RMuseum.Services
     public interface IGanjoorService
     {
         /// <summary>
+        /// Get List of poets
+        /// </summary>
+        /// <param name="websitePoets"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoet[]>> GetPoets(bool websitePoets);
+
+        /// <summary>
         /// get poem by id
         /// </summary>
         /// <param name="id"></param>

@@ -615,6 +615,13 @@
             <param name="auditLogService">
             </param>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoets(System.Boolean)">
+            <summary>
+            get list of poets
+            </summary>
+            <param name="websitePoets"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32)">
             <summary>
             get poem by id
@@ -4435,6 +4442,13 @@
             Ganjoor Poems Content Privider Service
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoets(System.Boolean)">
+            <summary>
+            Get List of poets
+            </summary>
+            <param name="websitePoets"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32)">
             <summary>
             get poem by id
@@ -5173,6 +5187,13 @@
             <summary>
             IGanjoorService implementation
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean)">
+            <summary>
+            Get List of poets
+            </summary>
+            <param name="websitePoets"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32)">
             <summary>

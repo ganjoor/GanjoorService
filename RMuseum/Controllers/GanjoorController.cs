@@ -17,6 +17,25 @@ namespace RMuseum.Controllers
     public class GanjoorController : Controller
     {
         /// <summary>
+        /// get list of poets
+        /// </summary>
+        /// <param name="websitePoets"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poets")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoet[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoets(bool websitePoets = true)
+        {
+            RServiceResult<GanjoorPoet[]> res =
+                await _ganjoorService.GetPoets(websitePoets);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// get poem by id
         /// </summary>
         /// <param name="id"></param>
