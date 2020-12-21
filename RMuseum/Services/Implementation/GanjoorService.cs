@@ -91,6 +91,16 @@ namespace RMuseum.Services.Implementation
                 if (cat == null)
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
 
+                if(cat.Parent != null)
+                {
+                    var parent = cat.Parent;
+                    while(parent.ParentId != null)
+                    {
+                        parent.Parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).FirstOrDefaultAsync();
+                        parent = parent.Parent;
+                    }
+                }
+
                 return new RServiceResult<GanjoorPoetCompleteViewModel>
                     (
                     new GanjoorPoetCompleteViewModel()
