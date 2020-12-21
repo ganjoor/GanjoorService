@@ -26,6 +26,13 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetById(int id);
 
+        /// <summary>
+        /// get cat by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id);
+
 
         /// <summary>
         /// get poem by id

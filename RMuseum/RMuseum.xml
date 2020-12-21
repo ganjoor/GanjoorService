@@ -629,6 +629,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCatById(System.Int32)">
+            <summary>
+            cat by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32)">
             <summary>
             get poem by id
@@ -4488,6 +4495,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatById(System.Int32)">
+            <summary>
+            get cat by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32)">
             <summary>
             get poem by id
@@ -5241,11 +5255,11 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetByUrl(System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatById(System.Int32)">
             <summary>
-            get poet by url
+            get cat by id
             </summary>
-            <param name="url">base web site address should be removed: hafez or /hafez and not https://ganjoor.net/hafez </param>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32)">

@@ -78,25 +78,36 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// get poet by url
+        /// get cat by id
         /// </summary>
-        /// <param name="url">base web site address should be removed: hafez or /hafez and not https://ganjoor.net/hafez </param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetByUrl(string url)
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id)
         {
             try
             {
-                url = url.Replace("/", "");
-                var cat = await _context.GanjoorCategories.Where(c => c.UrlSlug == url).SingleOrDefaultAsync();
+               
+                var cat = await _context.GanjoorCategories.Include(c => c.Poet).Include(c => c.Parent).Where(c => c.Id == id).FirstOrDefaultAsync();
                 if (cat == null)
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
-                return await GetPoetById(cat.PoetId);
+
+                return new RServiceResult<GanjoorPoetCompleteViewModel>
+                    (
+                    new GanjoorPoetCompleteViewModel()
+                    {
+                        Poet = cat.Poet,
+                        Cat = cat,
+                        Children = await _context.GanjoorCategories.Where(c => c.ParentId == cat.Id).ToListAsync(),
+                        Poems = await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).ToListAsync()
+                    }
+                    );
             }
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
             }
         }
+
 
         /// <summary>
         /// get poem by id
