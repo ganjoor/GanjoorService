@@ -622,6 +622,13 @@
             <param name="websitePoets"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoetById(System.Int32)">
+            <summary>
+            poet by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32)">
             <summary>
             get poem by id
@@ -3436,6 +3443,31 @@
             Images
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel">
+            <summary>
+            Poet Complete Information 
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel.Poet">
+            <summary>
+            poet info
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel.Cat">
+            <summary>
+            poet cat info
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel.Children">
+            <summary>
+            poet cat children
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel.Poems">
+            <summary>
+            poems
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.ImportJob.ImportJob">
             <summary>
             Import Job
@@ -4449,6 +4481,13 @@
             <param name="websitePoets"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoetById(System.Int32)">
+            <summary>
+            get poet by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32)">
             <summary>
             get poem by id
@@ -5193,6 +5232,20 @@
             Get List of poets
             </summary>
             <param name="websitePoets"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetById(System.Int32)">
+            <summary>
+            get poet by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetByUrl(System.String)">
+            <summary>
+            get poet by url
+            </summary>
+            <param name="url">base web site address should be removed: hafez or /hafez and not https://ganjoor.net/hafez </param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32)">

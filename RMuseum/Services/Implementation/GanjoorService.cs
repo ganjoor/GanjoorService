@@ -40,9 +40,61 @@ namespace RMuseum.Services.Implementation
                                     .ToArrayAsync()
                     );
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<GanjoorPoet[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get poet by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetById(int id)
+        {
+            try
+            {
+                var poet = await _context.GanjoorPoets.Where(p => p.Id == id).FirstOrDefaultAsync();
+                if (poet == null)
+                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
+                var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).FirstOrDefaultAsync();
+
+                return new RServiceResult<GanjoorPoetCompleteViewModel>
+                    (
+                    new GanjoorPoetCompleteViewModel()
+                    {
+                        Poet = poet,
+                        Cat = cat,
+                        Children = await _context.GanjoorCategories.Where(c => c.ParentId == cat.Id).ToListAsync(),
+                        Poems = await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).ToListAsync()
+                    }
+                    );
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get poet by url
+        /// </summary>
+        /// <param name="url">base web site address should be removed: hafez or /hafez and not https://ganjoor.net/hafez </param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetByUrl(string url)
+        {
+            try
+            {
+                url = url.Replace("/", "");
+                var cat = await _context.GanjoorCategories.Where(c => c.UrlSlug == url).SingleOrDefaultAsync();
+                if (cat == null)
+                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
+                return await GetPoetById(cat.PoetId);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
             }
         }
 
