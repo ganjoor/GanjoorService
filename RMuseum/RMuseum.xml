@@ -3430,6 +3430,41 @@
             Non-poem paragraph
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel">
+            <summary>
+            cat view model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Title">
+            <summary>
+            text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.UrlSlug">
+            <summary>
+            url => slug
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Ancestors">
+            <summary>
+            ancestors
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Children">
+            <summary>
+            cat children
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Poems">
+            <summary>
+            poems
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel">
             <summary>
             a more complete GanjoorPoem View Model
@@ -3450,6 +3485,31 @@
             Images
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel">
+            <summary>
+            poem summary
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.UrlSlug">
+            <summary>
+            url => slug
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.Excerpt">
+            <summary>
+            excerpt text
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel">
             <summary>
             Poet Complete Information 
@@ -3463,16 +3523,6 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel.Cat">
             <summary>
             poet cat info
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel.Children">
-            <summary>
-            poet cat children
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel.Poems">
-            <summary>
-            poems
             </summary>
         </member>
         <member name="T:RMuseum.Models.ImportJob.ImportJob">

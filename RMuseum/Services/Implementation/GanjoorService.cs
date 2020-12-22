@@ -10,6 +10,7 @@ using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
@@ -59,17 +60,7 @@ namespace RMuseum.Services.Implementation
                 if (poet == null)
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
                 var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).FirstOrDefaultAsync();
-
-                return new RServiceResult<GanjoorPoetCompleteViewModel>
-                    (
-                    new GanjoorPoetCompleteViewModel()
-                    {
-                        Poet = poet,
-                        Cat = cat,
-                        Children = await _context.GanjoorCategories.Where(c => c.ParentId == cat.Id).ToListAsync(),
-                        Poems = await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).ToListAsync()
-                    }
-                    );
+                return await GetCatById(cat.Id);
             }
             catch(Exception exp)
             {
@@ -91,26 +82,57 @@ namespace RMuseum.Services.Implementation
                 if (cat == null)
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
 
-                if(cat.Parent != null)
+                List<GanjoorCatViewModel> ancetors = new List<GanjoorCatViewModel>();
+
+                var parent = cat.Parent;
+                while (parent != null)
                 {
-                    var parent = cat.Parent;
-                    while(parent.ParentId != null)
+                    ancetors.Insert(0, new GanjoorCatViewModel()
                     {
-                        parent.Parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).FirstOrDefaultAsync();
-                        parent = parent.Parent;
-                    }
+                        Id = parent.Id,
+                        Title = parent.Title,
+                        UrlSlug = parent.UrlSlug
+                    });
+
+                    parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).FirstOrDefaultAsync();
                 }
 
+                GanjoorCatViewModel catViewModel = new GanjoorCatViewModel()
+                {
+                    Id = cat.Id,
+                    Title = cat.Title,
+                    UrlSlug = cat.UrlSlug,
+                    Ancestors = ancetors,
+                    Children = await _context.GanjoorCategories.Where(c => c.ParentId == cat.Id).Select
+                     (
+                     c => new GanjoorCatViewModel()
+                     {
+                         Id = c.Id,
+                         Title = c.Title,
+                         UrlSlug = c.UrlSlug
+                     }
+                     ).ToListAsync(),
+                    Poems = await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).Select
+                     (
+                         p => new GanjoorPoemSummaryViewModel()
+                         {
+                             Id = p.Id,
+                             Title = p.Title,
+                             UrlSlug = p.UrlSlug,
+                             Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
+                         }
+                     ).ToListAsync()
+                };
+
                 return new RServiceResult<GanjoorPoetCompleteViewModel>
-                    (
-                    new GanjoorPoetCompleteViewModel()
-                    {
-                        Poet = cat.Poet,
-                        Cat = cat,
-                        Children = await _context.GanjoorCategories.Where(c => c.ParentId == cat.Id).ToListAsync(),
-                        Poems = await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).ToListAsync()
-                    }
-                    );
+                   (
+                   new GanjoorPoetCompleteViewModel()
+                   {
+                       Poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId).FirstOrDefaultAsync(),
+                       Cat = catViewModel
+                   }
+                   );
+
             }
             catch (Exception exp)
             {
