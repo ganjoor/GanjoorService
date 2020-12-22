@@ -368,7 +368,7 @@ namespace RMuseum.Services.Implementationa
                 return "نام خوانشگر باید حداقل شامل سه نویسه باشد.";
             }
 
-            string s = LanguageUtils.GetFirstNotMatchingCharacter(p.AudioArtist, LanguageUtils.PersianAlphabet, " ‌");
+            string s = LanguageUtils.GetFirstNotMatchingCharacter(p.AudioArtist, LanguageUtils.PersianAlphabet, " .‌");
             if (s != "")
             {
                 return $"نام فقط باید شامل حروف فارسی و فاصله باشد. اولین حرف غیرمجاز = {s}";
@@ -1626,7 +1626,7 @@ namespace RMuseum.Services.Implementationa
                 return "طول پسوند قابل پذیرش حداکثر چهار کاراکتر است.";
             }
 
-            string s = LanguageUtils.GetFirstNotMatchingCharacter(p.ArtistName, LanguageUtils.PersianAlphabet, " ‌");
+            string s = LanguageUtils.GetFirstNotMatchingCharacter(p.ArtistName, LanguageUtils.PersianAlphabet, " .‌");
             if (s != "")
             {
                 return  $"نام خوانشگر فقط باید شامل حروف فارسی و فاصله باشد. اولین حرف غیرمجاز = {s}";
