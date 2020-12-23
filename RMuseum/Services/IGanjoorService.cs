@@ -17,7 +17,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="websitePoets"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoet[]>> GetPoets(bool websitePoets);
+        Task<RServiceResult<GanjoorPoetViewModel[]>> GetPoets(bool websitePoets);
 
         /// <summary>
         /// get poet by id

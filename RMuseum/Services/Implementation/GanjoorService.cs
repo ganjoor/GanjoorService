@@ -29,21 +29,31 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="websitePoets"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoet[]>> GetPoets(bool websitePoets)
+        public async Task<RServiceResult<GanjoorPoetViewModel[]>> GetPoets(bool websitePoets)
         {
             try
             {
-                return new RServiceResult<GanjoorPoet[]>
+                return new RServiceResult<GanjoorPoetViewModel[]>
                     (
                     await _context.GanjoorPoets
                                     .Where(p => !websitePoets || p.Id < 200)
                                     .OrderBy(p => p.Name)
+                                    .Select
+                                    (
+                                        p => new GanjoorPoetViewModel()
+                                        {
+                                            Id = p.Id,
+                                            Name = p.Name,
+                                            Description = p.Description,
+                                            FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl
+                                        }
+                                    )
                                     .ToArrayAsync()
                     );
             }
             catch (Exception exp)
             {
-                return new RServiceResult<GanjoorPoet[]>(null, exp.ToString());
+                return new RServiceResult<GanjoorPoetViewModel[]>(null, exp.ToString());
             }
         }
 
@@ -128,7 +138,14 @@ namespace RMuseum.Services.Implementation
                    (
                    new GanjoorPoetCompleteViewModel()
                    {
-                       Poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId).FirstOrDefaultAsync(),
+                       Poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId)
+                                            .Select(p => new GanjoorPoetViewModel()
+                                            {
+                                                Id = p.Id,
+                                                Name = p.Name,
+                                                Description = p.Description,
+                                                FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl
+                                            }) .FirstOrDefaultAsync(),
                        Cat = catViewModel
                    }
                    );

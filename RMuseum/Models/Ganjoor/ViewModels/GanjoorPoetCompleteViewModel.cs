@@ -8,7 +8,7 @@
         /// <summary>
         /// poet info
         /// </summary>
-        public GanjoorPoet Poet { get; set; }
+        public GanjoorPoetViewModel Poet { get; set; }
 
         /// <summary>
         /// poet cat info

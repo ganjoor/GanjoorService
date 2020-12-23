@@ -24,11 +24,11 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("poets")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoet[]))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetPoets(bool websitePoets = true)
         {
-            RServiceResult<GanjoorPoet[]> res =
+            RServiceResult<GanjoorPoetViewModel[]> res =
                 await _ganjoorService.GetPoets(websitePoets);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
