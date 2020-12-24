@@ -295,6 +295,7 @@ namespace RMuseum.Services.Implementation
                     {
                         return new RServiceResult<GanjoorPoemCompleteViewModel>(null, catRes.ExceptionString);
                     }
+                    cat = catRes.Result;
                 }
                 PublicRecitationViewModel[] rc = null;
                 if(recitations)
