@@ -301,7 +301,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 int poemId = _GetRandomPoemId();
-                var poem = (await GetPoemById(poemId)).Result;
+                var poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).SingleOrDefaultAsync();
                 PublicRecitationViewModel[] recitations = poem == null ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
                 int loopPreventer = 0;
                 while (poem == null || recitations.Length == 0)
@@ -317,7 +317,14 @@ namespace RMuseum.Services.Implementation
                     (
                     new GanjoorPoemCompleteViewModel()
                     {
-                        Poem = poem,
+                        Id = poem.Id,
+                        Title = poem.Title,
+                        FullTitle = poem.FullTitle,
+                        FullUrl = poem.FullUrl,
+                        UrlSlug = poem.UrlSlug,
+                        HtmlText = poem.HtmlText,
+                        PlainText = poem.PlainText,
+                        Category = null,//no usage for now, so do not waste resources
                         Recitations = recitations,
                         Images = null //no usage for now, so do not waste resources
                     }

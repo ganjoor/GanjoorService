@@ -9,9 +9,44 @@ namespace RMuseum.Models.Ganjoor.ViewModels
     public class GanjoorPoemCompleteViewModel
     {
         /// <summary>
-        /// basic poem info
+        /// Id
         /// </summary>
-        public GanjoorPoem Poem { get; set; }
+        public int Id { get; set; }
+
+        /// <summary>
+        /// title
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// cat + parent cats title + title
+        /// </summary>
+        public string FullTitle { get; set; }
+
+        /// <summary>
+        /// url => slug
+        /// </summary>
+        public string UrlSlug { get; set; }
+
+        /// <summary>
+        /// sample: /hafez/ghazal/sh1
+        /// </summary>
+        public string FullUrl { get; set; }
+
+        /// <summary>
+        /// verses text
+        /// </summary>
+        public string PlainText { get; set; }
+
+        /// <summary>
+        /// verses text as html (ganjoor.net format)
+        /// </summary>
+        public string HtmlText { get; set; }
+
+        /// <summary>
+        /// category
+        /// </summary>
+        public GanjoorPoetCompleteViewModel Category { get; set; }
 
         /// <summary>
         /// Recitations
