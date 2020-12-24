@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,11 +34,10 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                return new RServiceResult<GanjoorPoetViewModel[]>
-                    (
-                    await _context.GanjoorPoets
+                
+                var res = await _context.GanjoorPoets
                                     .Where(p => !websitePoets || p.Id < 200)
-                                    .OrderBy(p => p.Name)
+                                    .OrderBy(p => p.Name) //it seems that current version of ef core does not handle this => OrderBy(p => p.Name, StringComparer.Create(new CultureInfo("fa-IR"), true))
                                     .Select
                                     (
                                         p => new GanjoorPoetViewModel()
@@ -48,8 +48,14 @@ namespace RMuseum.Services.Implementation
                                             FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl
                                         }
                                     )
-                                    .ToArrayAsync()
-                    );
+                                    .ToListAsync();
+                StringComparer fa = StringComparer.Create(new CultureInfo("fa-IR"), true);
+                res.Sort((a, b) => fa.Compare(a.Name, b.Name));
+
+                return new RServiceResult<GanjoorPoetViewModel[]>
+                    (
+                        res.ToArray()
+                    ); ;
             }
             catch (Exception exp)
             {
@@ -113,7 +119,7 @@ namespace RMuseum.Services.Implementation
                     Title = cat.Title,
                     UrlSlug = cat.UrlSlug,
                     Ancestors = ancetors,
-                    Children = await _context.GanjoorCategories.Where(c => c.ParentId == cat.Id).Select
+                    Children = await _context.GanjoorCategories.Where(c => c.ParentId == cat.Id).OrderBy(cat => cat.Id).Select
                      (
                      c => new GanjoorCatViewModel()
                      {
@@ -122,7 +128,7 @@ namespace RMuseum.Services.Implementation
                          UrlSlug = c.UrlSlug
                      }
                      ).ToListAsync(),
-                    Poems = await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).Select
+                    Poems = await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).OrderBy(p => p.Id).Select
                      (
                          p => new GanjoorPoemSummaryViewModel()
                          {
