@@ -636,11 +636,17 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get poem by id
             </summary>
             <param name="id"></param>
+            <param name="catInfo"></param>
+            <param name="rhymes">not implemented yet</param>
+            <param name="recitations"></param>
+            <param name="images"></param>
+            <param name="songs">not implemented yet</param>
+            <param name="comments">not implemented yet</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemRecitations(System.Int32)">
@@ -4612,11 +4618,17 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
-            get poem by id
+            Get Poem By Id
             </summary>
             <param name="id"></param>
+            <param name="catInfo"></param>
+            <param name="rhymes"></param>
+            <param name="recitations"></param>
+            <param name="images"></param>
+            <param name="songs"></param>
+            <param name="comments"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemRecitations(System.Int32)">
@@ -5372,13 +5384,6 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32)">
-            <summary>
-            get poem by id
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemRecitations(System.Int32)">
             <summary>
             get poem recitations  (PlainText/HtmlText are intentionally empty)
@@ -5392,6 +5397,19 @@
             EntityImageId : the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg or https://ganjgah.ir/api/images/norm/{EntityImageId}.jpg
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Get Poem By Id
+            </summary>
+            <param name="id"></param>
+            <param name="catInfo"></param>
+            <param name="rhymes"></param>
+            <param name="recitations"></param>
+            <param name="images"></param>
+            <param name="songs"></param>
+            <param name="comments"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal">

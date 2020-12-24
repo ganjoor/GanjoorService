@@ -164,33 +164,7 @@ namespace RMuseum.Services.Implementation
         }
 
 
-        /// <summary>
-        /// get poem by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoem>> GetPoemById(int id)
-        {
-            try
-            {
-                var poem = await _context.GanjoorPoems.Include(p => p.Cat).Where(p => p.Id == id).SingleOrDefaultAsync();
-                if (poem == null)
-                    return new RServiceResult<GanjoorPoem>(null);
-                var cat = poem.Cat;
-                while(cat != null)
-                {
-                    cat.Parent = await _context.GanjoorCategories.Where(c => c.Id == cat.ParentId).SingleOrDefaultAsync();
-                    cat = cat.Parent;
-                }
-
-                return new RServiceResult<GanjoorPoem>(poem);
-            }
-            catch(Exception exp)
-            {
-                return new RServiceResult<GanjoorPoem>(null, exp.ToString());
-            }
-        }
-
+       
         /// <summary>
         /// get poem recitations  (PlainText/HtmlText are intentionally empty)
         /// </summary>
@@ -293,6 +267,78 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// Get Poem By Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="catInfo"></param>
+        /// <param name="rhymes"></param>
+        /// <param name="recitations"></param>
+        /// <param name="images"></param>
+        /// <param name="songs"></param>
+        /// <param name="comments"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true)
+        {
+            try
+            {
+                var poem = await _context.GanjoorPoems.Where(p => p.Id == id).SingleOrDefaultAsync();
+                if(poem == null)
+                {
+                    return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
+                }
+                GanjoorPoetCompleteViewModel cat = null;
+                if(catInfo)
+                {
+                    var catRes = await GetCatById(poem.CatId);
+                    if(!string.IsNullOrEmpty(catRes.ExceptionString))
+                    {
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, catRes.ExceptionString);
+                    }
+                }
+                PublicRecitationViewModel[] rc = null;
+                if(recitations)
+                {
+                    var rcRes = await GetPoemRecitations(id);
+                    if (!string.IsNullOrEmpty(rcRes.ExceptionString))
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, rcRes.ExceptionString);
+                    rc = rcRes.Result;
+                }
+
+                GanjoorLinkViewModel[] imgs = null;
+                if(images)
+                {
+                    var imgsRes = await GetPoemImages(id);
+                    if (!string.IsNullOrEmpty(imgsRes.ExceptionString))
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, imgsRes.ExceptionString);
+                    imgs = imgsRes.Result;
+                }
+
+
+
+                return new RServiceResult<GanjoorPoemCompleteViewModel>
+                    (
+                    new GanjoorPoemCompleteViewModel()
+                    {
+                        Id = poem.Id,
+                        Title = poem.Title,
+                        FullTitle = poem.FullTitle,
+                        FullUrl = poem.FullUrl,
+                        UrlSlug = poem.UrlSlug,
+                        HtmlText = poem.HtmlText,
+                        PlainText = poem.PlainText,
+                        Category = cat,
+                        Recitations = rc,
+                        Images = imgs
+                    }
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoemCompleteViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get a random poem from hafez
         /// </summary>
         /// <returns></returns>
@@ -306,29 +352,14 @@ namespace RMuseum.Services.Implementation
                 int loopPreventer = 0;
                 while (poem == null || recitations.Length == 0)
                 {
-                    poem = (await GetPoemById(poemId)).Result;
+                    poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).SingleOrDefaultAsync();
                     recitations = poem == null ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
                     loopPreventer++;
                     if (loopPreventer > 5)
                         break;
                 }
 
-                return new RServiceResult<GanjoorPoemCompleteViewModel>
-                    (
-                    new GanjoorPoemCompleteViewModel()
-                    {
-                        Id = poem.Id,
-                        Title = poem.Title,
-                        FullTitle = poem.FullTitle,
-                        FullUrl = poem.FullUrl,
-                        UrlSlug = poem.UrlSlug,
-                        HtmlText = poem.HtmlText,
-                        PlainText = poem.PlainText,
-                        Category = null,//no usage for now, so do not waste resources
-                        Recitations = recitations,
-                        Images = null //no usage for now, so do not waste resources
-                    }
-                    );
+                return await GetPoemById(poemId, false, false, true, false, false, false);
             }
             catch (Exception exp)
             {
