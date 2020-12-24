@@ -324,7 +324,10 @@ namespace RMuseum.Services.Implementation
                                                     (
                                                         v => new GanjoorVerseViewModel()
                                                         {
-                                                            Id = v.Id
+                                                            Id = v.Id,
+                                                            VOrder = v.VOrder,
+                                                            VersePosition = v.VersePosition,
+                                                            Text = v.Text
                                                         }
                                                     ).ToArrayAsync();
                 };
