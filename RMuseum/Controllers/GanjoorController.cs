@@ -89,18 +89,22 @@ namespace RMuseum.Controllers
         /// <param name="images"></param>
         /// <param name="songs">not implemented yet</param>
         /// <param name="comments">not implemented yet</param>
+        /// <param name="verseDetails"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("poem/{id}")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPoemById(int id, bool catInfo = true, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true)
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPoemById(int id, bool catInfo = true, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true)
         {
             RServiceResult<GanjoorPoemCompleteViewModel> res =
-                await _ganjoorService.GetPoemById(id, catInfo, rhymes, recitations, images, songs, comments);
+                await _ganjoorService.GetPoemById(id, catInfo, rhymes, recitations, images, songs, comments, verseDetails);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
             return Ok(res.Result);
         }
 

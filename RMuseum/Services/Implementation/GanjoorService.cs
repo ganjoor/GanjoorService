@@ -276,8 +276,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="images"></param>
         /// <param name="songs"></param>
         /// <param name="comments"></param>
+        /// <param name="verseDetails"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true)
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true)
         {
             try
             {
@@ -313,6 +314,20 @@ namespace RMuseum.Services.Implementation
                     imgs = imgsRes.Result;
                 }
 
+                GanjoorVerseViewModel[] verses = null;
+                if(verseDetails)
+                {
+                    verses = await _context.GanjoorVerses
+                                                    .Where(v => v.PoemId == id)
+                                                    .OrderBy(v => v.VOrder)
+                                                    .Select
+                                                    (
+                                                        v => new GanjoorVerseViewModel()
+                                                        {
+                                                            Id = v.Id
+                                                        }
+                                                    ).ToArrayAsync();
+                };
 
 
                 return new RServiceResult<GanjoorPoemCompleteViewModel>
@@ -328,7 +343,8 @@ namespace RMuseum.Services.Implementation
                         PlainText = poem.PlainText,
                         Category = cat,
                         Recitations = rc,
-                        Images = imgs
+                        Images = imgs,
+                        Verses = verses
                     }
                     );
             }
@@ -359,7 +375,7 @@ namespace RMuseum.Services.Implementation
                         break;
                 }
 
-                return await GetPoemById(poemId, false, false, true, false, false, false);
+                return await GetPoemById(poemId, false, false, true, false, false, false, false);
             }
             catch (Exception exp)
             {

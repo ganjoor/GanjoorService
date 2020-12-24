@@ -44,8 +44,9 @@ namespace RMuseum.Services
         /// <param name="images"></param>
         /// <param name="songs"></param>
         /// <param name="comments"></param>
+        /// <param name="verseDetails"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true);
+        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true);
 
         /// <summary>
         /// get poem recitations (PlainText/HtmlText are intentionally empty)

@@ -636,7 +636,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get poem by id
             </summary>
@@ -647,6 +647,7 @@
             <param name="images"></param>
             <param name="songs">not implemented yet</param>
             <param name="comments">not implemented yet</param>
+            <param name="verseDetails"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemRecitations(System.Int32)">
@@ -3516,6 +3517,11 @@
             category
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Verses">
+            <summary>
+            verses
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Recitations">
             <summary>
             Recitations
@@ -3589,6 +3595,31 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.FullUrl">
             <summary>
             urlslug
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel">
+            <summary>
+            Ganjoor Verse View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.Id">
+            <summary>
+            global id, auto generated (missing in Ganjoor Desktop database)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.VOrder">
+            <summary>
+            vorder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.VersePosition">
+            <summary>
+            position
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.Text">
+            <summary>
+            text
             </summary>
         </member>
         <member name="T:RMuseum.Models.ImportJob.ImportJob">
@@ -4618,7 +4649,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
             </summary>
@@ -4629,6 +4660,7 @@
             <param name="images"></param>
             <param name="songs"></param>
             <param name="comments"></param>
+            <param name="verseDetails"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemRecitations(System.Int32)">
@@ -5399,7 +5431,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
             </summary>
@@ -5410,6 +5442,7 @@
             <param name="images"></param>
             <param name="songs"></param>
             <param name="comments"></param>
+            <param name="verseDetails"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal">
