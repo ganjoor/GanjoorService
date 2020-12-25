@@ -91,8 +91,9 @@ namespace RMuseum.Services.Implementation
         /// get cat by id
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="poems"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id)
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = true)
         {
             try
             {
@@ -131,7 +132,7 @@ namespace RMuseum.Services.Implementation
                          UrlSlug = c.UrlSlug
                      }
                      ).ToListAsync(),
-                    Poems = await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).OrderBy(p => p.Id).Select
+                    Poems = poems ? await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).OrderBy(p => p.Id).Select
                      (
                          p => new GanjoorPoemSummaryViewModel()
                          {
@@ -141,6 +142,8 @@ namespace RMuseum.Services.Implementation
                              Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
                          }
                      ).ToListAsync()
+                     :
+                     null
                 };
 
                 return new RServiceResult<GanjoorPoetCompleteViewModel>
@@ -275,14 +278,16 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <param name="catInfo"></param>
+        /// <param name="catPoems"></param>
         /// <param name="rhymes"></param>
         /// <param name="recitations"></param>
         /// <param name="images"></param>
         /// <param name="songs"></param>
         /// <param name="comments"></param>
         /// <param name="verseDetails"></param>
+        /// <param name="navigation"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true)
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false , bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true)
         {
             try
             {
@@ -294,13 +299,60 @@ namespace RMuseum.Services.Implementation
                 GanjoorPoetCompleteViewModel cat = null;
                 if(catInfo)
                 {
-                    var catRes = await GetCatById(poem.CatId);
+                    var catRes = await GetCatById(poem.CatId, catPoems);
                     if(!string.IsNullOrEmpty(catRes.ExceptionString))
                     {
                         return new RServiceResult<GanjoorPoemCompleteViewModel>(null, catRes.ExceptionString);
                     }
                     cat = catRes.Result;
                 }
+
+                GanjoorPoemSummaryViewModel next = null;
+                if(navigation)
+                {
+                    int? nextId = await _context.GanjoorPoems
+                                                       .Where(p => p.CatId == poem.CatId && p.Id > poem.Id)
+                                                       .MinAsync(p => p.Id);
+                    if(nextId != null)
+                    {
+                        next = await _context.GanjoorPoems.Where(p => p.Id == nextId).Select
+                            (
+                            p =>
+                            new GanjoorPoemSummaryViewModel()
+                            {
+                                Id = p.Id,
+                                Title = p.Title,
+                                UrlSlug = p.UrlSlug,
+                                Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
+                            }
+                            ).SingleAsync();
+                    }
+                                                       
+                }
+
+                GanjoorPoemSummaryViewModel previous = null;
+                if (navigation)
+                {
+                    int? preId = await _context.GanjoorPoems
+                                                       .Where(p => p.CatId == poem.CatId && p.Id < poem.Id)
+                                                       .MaxAsync(p => p.Id);
+                    if (preId != null)
+                    {
+                        previous = await _context.GanjoorPoems.Where(p => p.Id == preId).Select
+                            (
+                            p =>
+                            new GanjoorPoemSummaryViewModel()
+                            {
+                                Id = p.Id,
+                                Title = p.Title,
+                                UrlSlug = p.UrlSlug,
+                                Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
+                            }
+                            ).SingleAsync();
+                    }
+
+                }
+
                 PublicRecitationViewModel[] rc = null;
                 if(recitations)
                 {
@@ -350,6 +402,8 @@ namespace RMuseum.Services.Implementation
                         HtmlText = poem.HtmlText,
                         PlainText = poem.PlainText,
                         Category = cat,
+                        Next = next,
+                        Previous = previous,
                         Recitations = rc,
                         Images = imgs,
                         Verses = verses
@@ -383,7 +437,7 @@ namespace RMuseum.Services.Implementation
                         break;
                 }
 
-                return await GetPoemById(poemId, false, false, true, false, false, false, false);
+                return await GetPoemById(poemId, false, false, true, false, false, false, false, false);
             }
             catch (Exception exp)
             {

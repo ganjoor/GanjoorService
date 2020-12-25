@@ -49,6 +49,16 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public GanjoorPoetCompleteViewModel Category { get; set; }
 
         /// <summary>
+        /// Next Poem
+        /// </summary>
+        public GanjoorPoemSummaryViewModel Next { get; set; }
+
+        /// <summary>
+        /// Previous Poem
+        /// </summary>
+        public GanjoorPoemSummaryViewModel Previous { get; set; }
+
+        /// <summary>
         /// verses
         /// </summary>
         public GanjoorVerseViewModel[] Verses { get; set; }

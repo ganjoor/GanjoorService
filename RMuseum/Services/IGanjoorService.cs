@@ -31,7 +31,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id);
+        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = true);
 
 
         /// <summary>
@@ -39,14 +39,16 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="id"></param>
         /// <param name="catInfo"></param>
+        /// <param name="catPoems"></param>
         /// <param name="rhymes"></param>
         /// <param name="recitations"></param>
         /// <param name="images"></param>
         /// <param name="songs"></param>
         /// <param name="comments"></param>
         /// <param name="verseDetails"></param>
+        /// <param name="navigation"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true);
+        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true);
 
         /// <summary>
         /// get poem recitations (PlainText/HtmlText are intentionally empty)

@@ -629,25 +629,28 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetCatById(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCatById(System.Int32,System.Boolean)">
             <summary>
             cat by id
             </summary>
             <param name="id"></param>
+            <param name="poems"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get poem by id
             </summary>
             <param name="id"></param>
             <param name="catInfo"></param>
+            <param name="catPoems"></param>
             <param name="rhymes">not implemented yet</param>
             <param name="recitations"></param>
             <param name="images"></param>
             <param name="songs">not implemented yet</param>
             <param name="comments">not implemented yet</param>
             <param name="verseDetails"></param>
+            <param name="navigation">next/previous</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemRecitations(System.Int32)">
@@ -3517,6 +3520,16 @@
             category
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Next">
+            <summary>
+            Next Poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Previous">
+            <summary>
+            Previous Poem
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Verses">
             <summary>
             verses
@@ -4647,25 +4660,27 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetCatById(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatById(System.Int32,System.Boolean)">
             <summary>
             get cat by id
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
             </summary>
             <param name="id"></param>
             <param name="catInfo"></param>
+            <param name="catPoems"></param>
             <param name="rhymes"></param>
             <param name="recitations"></param>
             <param name="images"></param>
             <param name="songs"></param>
             <param name="comments"></param>
             <param name="verseDetails"></param>
+            <param name="navigation"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemRecitations(System.Int32)">
@@ -5414,11 +5429,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatById(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatById(System.Int32,System.Boolean)">
             <summary>
             get cat by id
             </summary>
             <param name="id"></param>
+            <param name="poems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemRecitations(System.Int32)">
@@ -5436,18 +5452,20 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
             </summary>
             <param name="id"></param>
             <param name="catInfo"></param>
+            <param name="catPoems"></param>
             <param name="rhymes"></param>
             <param name="recitations"></param>
             <param name="images"></param>
             <param name="songs"></param>
             <param name="comments"></param>
             <param name="verseDetails"></param>
+            <param name="navigation"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal">

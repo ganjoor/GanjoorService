@@ -61,6 +61,7 @@ namespace RMuseum.Controllers
         /// cat by id
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="poems"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("cat/{id}")]
@@ -68,10 +69,10 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetCatById(int id)
+        public async Task<IActionResult> GetCatById(int id, bool poems = true)
         {
             RServiceResult<GanjoorPoetCompleteViewModel> res =
-                await _ganjoorService.GetCatById(id);
+                await _ganjoorService.GetCatById(id, poems);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             if (res.Result == null)
@@ -84,12 +85,14 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="catInfo"></param>
+        /// <param name="catPoems"></param>
         /// <param name="rhymes">not implemented yet</param>
         /// <param name="recitations"></param>
         /// <param name="images"></param>
         /// <param name="songs">not implemented yet</param>
         /// <param name="comments">not implemented yet</param>
         /// <param name="verseDetails"></param>
+        /// <param name="navigation">next/previous</param>
         /// <returns></returns>
         [HttpGet]
         [Route("poem/{id}")]
@@ -97,10 +100,10 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPoemById(int id, bool catInfo = true, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true)
+        public async Task<IActionResult> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true)
         {
             RServiceResult<GanjoorPoemCompleteViewModel> res =
-                await _ganjoorService.GetPoemById(id, catInfo, rhymes, recitations, images, songs, comments, verseDetails);
+                await _ganjoorService.GetPoemById(id, catInfo, catPoems, rhymes, recitations, images, songs, comments, verseDetails, navigation);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             if (res.Result == null)
