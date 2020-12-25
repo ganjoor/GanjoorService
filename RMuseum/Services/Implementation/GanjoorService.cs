@@ -494,7 +494,7 @@ namespace RMuseum.Services.Implementation
                         break;
                 }
 
-                return await GetPoemById(poemId, false, false, true, false, false, false, false, false);
+                return await GetPoemById(poemId, false, false, false, true, false, false, false, false, false);
             }
             catch (Exception exp)
             {
