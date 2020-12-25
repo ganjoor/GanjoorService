@@ -3460,6 +3460,16 @@
             url => slug
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Next">
+            <summary>
+            Next Category without Ancestors/Children/Poems info
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Previous">
+            <summary>
+            Previous Category without Ancestors/Children/Poems info
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Ancestors">
             <summary>
             ancestors

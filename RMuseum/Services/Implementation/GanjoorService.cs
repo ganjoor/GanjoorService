@@ -117,11 +117,54 @@ namespace RMuseum.Services.Implementation
                     parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).FirstOrDefaultAsync();
                 }
 
+
+                int nextCatId =
+                    await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id > id).AnyAsync() ?
+                    await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id > id).MinAsync(c => c.Id)
+                    :
+                    0;
+                var nextCat = nextCatId == 0 ? null : await _context
+                                            .GanjoorCategories
+                                            .Where(c => c.Id == nextCatId)
+                                            .Select
+                                            (
+                                                c =>
+                                                    new GanjoorCatViewModel() 
+                                                    {
+                                                        Id = c.Id,
+                                                        Title = c.Title,
+                                                        UrlSlug = c.UrlSlug
+                                                        //other fields null
+                                                    }
+                                            ).SingleOrDefaultAsync();
+
+                int preCatId =
+                     await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id < id).AnyAsync() ?
+                    await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id < id).MaxAsync(c => c.Id)
+                    :
+                    0;
+                var preCat = preCatId == 0 ? null : await _context
+                                            .GanjoorCategories
+                                            .Where(c => c.Id == preCatId)
+                                            .Select
+                                            (
+                                                c =>
+                                                    new GanjoorCatViewModel()
+                                                    {
+                                                        Id = c.Id,
+                                                        Title = c.Title,
+                                                        UrlSlug = c.UrlSlug
+                                                        //other fields null
+                                                    }
+                                            ).SingleOrDefaultAsync();
+
                 GanjoorCatViewModel catViewModel = new GanjoorCatViewModel()
                 {
                     Id = cat.Id,
                     Title = cat.Title,
                     UrlSlug = cat.UrlSlug,
+                    Next = nextCat,
+                    Previous = preCat,
                     Ancestors = ancetors,
                     Children = await _context.GanjoorCategories.Where(c => c.ParentId == cat.Id).OrderBy(cat => cat.Id).Select
                      (
@@ -310,10 +353,17 @@ namespace RMuseum.Services.Implementation
                 GanjoorPoemSummaryViewModel next = null;
                 if(navigation)
                 {
-                    int? nextId = await _context.GanjoorPoems
+                    int nextId =
+                        await _context.GanjoorPoems
                                                        .Where(p => p.CatId == poem.CatId && p.Id > poem.Id)
-                                                       .MinAsync(p => p.Id);
-                    if(nextId != null)
+                                                       .AnyAsync()
+                                                       ?
+                        await _context.GanjoorPoems
+                                                       .Where(p => p.CatId == poem.CatId && p.Id > poem.Id)
+                                                       .MinAsync(p => p.Id)
+                                                       :
+                                                       0;
+                    if(nextId != 0)
                     {
                         next = await _context.GanjoorPoems.Where(p => p.Id == nextId).Select
                             (
@@ -333,10 +383,17 @@ namespace RMuseum.Services.Implementation
                 GanjoorPoemSummaryViewModel previous = null;
                 if (navigation)
                 {
-                    int? preId = await _context.GanjoorPoems
+                    int preId =
+                        await _context.GanjoorPoems
                                                        .Where(p => p.CatId == poem.CatId && p.Id < poem.Id)
-                                                       .MaxAsync(p => p.Id);
-                    if (preId != null)
+                                                       .AnyAsync()
+                                                       ?
+                        await _context.GanjoorPoems
+                                                       .Where(p => p.CatId == poem.CatId && p.Id < poem.Id)
+                                                       .MaxAsync(p => p.Id)
+                                                       :
+                                                       0;
+                    if (preId != 0)
                     {
                         previous = await _context.GanjoorPoems.Where(p => p.Id == preId).Select
                             (
