@@ -1310,6 +1310,21 @@ namespace RMuseum.Services.Implementationa
                    $"انتشار خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
                    $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
                );
+
+                //I mean admins!
+                var importers = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ImportOperationShortName);
+                if (string.IsNullOrEmpty(importers.ExceptionString)) //if not, do nothing!
+                {
+                    foreach (var moderator in importers.Result)
+                    {
+                        await new RNotificationService(_context).PushNotification
+                                        (
+                                            (Guid)moderator.Id,
+                                            "خطا در انتشار نهایی خوانش ارسالی",
+                                            $"لطفا صف انتظار را بررسی کنید.{ Environment.NewLine}"
+                                        );
+                    }
+                }
             }
 
         }
@@ -1387,6 +1402,21 @@ namespace RMuseum.Services.Implementationa
                    $"حذف نهایی خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
                    $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
                );
+
+                //I mean admins!
+                var importers = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ImportOperationShortName);
+                if (string.IsNullOrEmpty(importers.ExceptionString)) //if not, do nothing!
+                {
+                    foreach (var moderator in importers.Result)
+                    {
+                        await new RNotificationService(_context).PushNotification
+                                        (
+                                            (Guid)moderator.Id,
+                                            "خطا در حذف نهایی خوانش ارسالی",
+                                            $"لطفا صف انتظار را بررسی کنید.{ Environment.NewLine}"
+                                        );
+                    }
+                }
             }
 
         }
@@ -1435,7 +1465,7 @@ namespace RMuseum.Services.Implementationa
                     narration.OwnerId,
                     "به‌روزآوری نهایی اطلاعات خوانش ارسالی",
                     $"اطلاعات خوانش ارسالی {narration.AudioTitle} به‌روز شد.{Environment.NewLine}" +
-                    $"لطفا توجه فرمایید که ممکن است ظاهر شدن تأثیر تغییرات روی سایت به دلیل تنظیمات حفظ کارایی گنجور تا یک روز طول بکشد.{Environment.NewLine}" +
+                    $"لطفا توجه فرمایید که فایل‌های صوتی معمولاً روی مرورگرها کَش می‌شوند. جهت اطمینان از جایگزینی فایل می‌بایست با مرورگری که تا به حال شعر را با آن ندیده‌اید بررسی بفرمایید.{Environment.NewLine}" +
                     $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
                 );
 
@@ -1454,6 +1484,21 @@ namespace RMuseum.Services.Implementationa
                     $"به‌روزآوری اطلاعات خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
                     $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
                 );
+
+                //I mean admins!
+                var importers = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ImportOperationShortName);
+                if (string.IsNullOrEmpty(importers.ExceptionString)) //if not, do nothing!
+                {
+                    foreach (var moderator in importers.Result)
+                    {
+                        await new RNotificationService(_context).PushNotification
+                                        (
+                                            (Guid)moderator.Id,
+                                            "خطا در به روزآوری نهایی خوانش ارسالی",
+                                            $"لطفا صف انتظار را بررسی کنید.{ Environment.NewLine}"
+                                        );
+                    }
+                }
             }
 
         }
