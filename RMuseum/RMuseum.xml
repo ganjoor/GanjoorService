@@ -3597,6 +3597,11 @@
             urlslug
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.RootCatId">
+            <summary>
+            root cat id
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel">
             <summary>
             Ganjoor Verse View Model

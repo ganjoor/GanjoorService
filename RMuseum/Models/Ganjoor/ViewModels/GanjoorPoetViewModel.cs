@@ -24,5 +24,10 @@
         /// urlslug
         /// </summary>
         public string FullUrl { get; set; }
+
+        /// <summary>
+        /// root cat id
+        /// </summary>
+        public int RootCatId { get; set; }
     }
 }

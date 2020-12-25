@@ -34,21 +34,24 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                
-                var res = await _context.GanjoorPoets
-                                    .Where(p => !websitePoets || p.Id < 200)
-                                    .OrderBy(p => p.Name) //it seems that current version of ef core does not handle this => OrderBy(p => p.Name, StringComparer.Create(new CultureInfo("fa-IR"), true))
-                                    .Select
-                                    (
-                                        p => new GanjoorPoetViewModel()
-                                        {
-                                            Id = p.Id,
-                                            Name = p.Name,
-                                            Description = p.Description,
-                                            FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl
-                                        }
-                                    )
-                                    .ToListAsync();
+                var res =
+                     await
+                     (from poet in _context.GanjoorPoets
+                      join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
+                      on poet.Id equals cat.PoetId
+                      where !websitePoets || poet.Id < 200
+                      orderby poet.Name descending
+                      select new GanjoorPoetViewModel()
+                      {
+                          Id = poet.Id,
+                          Name = poet.Name,
+                          Description = poet.Description,
+                          FullUrl = cat.FullUrl,
+                          RootCatId = cat.Id
+                      }
+                      )
+                     .ToListAsync();
+
                 StringComparer fa = StringComparer.Create(new CultureInfo("fa-IR"), true);
                 res.Sort((a, b) => fa.Compare(a.Name, b.Name));
 
@@ -150,7 +153,8 @@ namespace RMuseum.Services.Implementation
                                                 Id = p.Id,
                                                 Name = p.Name,
                                                 Description = p.Description,
-                                                FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl
+                                                FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl,
+                                                RootCatId = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().Id
                                             }) .FirstOrDefaultAsync(),
                        Cat = catViewModel
                    }
