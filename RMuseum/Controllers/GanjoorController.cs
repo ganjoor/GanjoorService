@@ -59,6 +59,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// poet by url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poet")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPoetByUrl(string url)
+        {
+            RServiceResult<GanjoorPoetCompleteViewModel> res =
+                await _ganjoorService.GetPoetByUrl(url);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// cat by id
         /// </summary>
         /// <param name="id"></param>

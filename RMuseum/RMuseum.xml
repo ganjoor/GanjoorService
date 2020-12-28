@@ -630,6 +630,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoetByUrl(System.String)">
+            <summary>
+            poet by url
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetCatById(System.Int32,System.Boolean)">
             <summary>
             cat by id
@@ -4672,11 +4679,19 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoetByUrl(System.String)">
+            <summary>
+            get poet by url
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetCatById(System.Int32,System.Boolean)">
             <summary>
             get cat by id
             </summary>
             <param name="id"></param>
+            <param name="poems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
@@ -5440,6 +5455,13 @@
             get poet by id
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetByUrl(System.String)">
+            <summary>
+            get poet by url
+            </summary>
+            <param name="url"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatById(System.Int32,System.Boolean)">
