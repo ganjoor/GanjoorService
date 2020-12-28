@@ -29,8 +29,9 @@ namespace RMuseum.Services.Implementation
         /// Get List of poets
         /// </summary>
         /// <param name="websitePoets"></param>
+        /// <param name="includeBio"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetViewModel[]>> GetPoets(bool websitePoets)
+        public async Task<RServiceResult<GanjoorPoetViewModel[]>> GetPoets(bool websitePoets, bool includeBio = true)
         {
             try
             {
@@ -45,7 +46,7 @@ namespace RMuseum.Services.Implementation
                       {
                           Id = poet.Id,
                           Name = poet.Name,
-                          Description = poet.Description,
+                          Description = includeBio ? poet.Description : null,
                           FullUrl = cat.FullUrl,
                           RootCatId = cat.Id
                       }

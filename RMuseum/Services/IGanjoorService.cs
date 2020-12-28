@@ -16,8 +16,9 @@ namespace RMuseum.Services
         /// Get List of poets
         /// </summary>
         /// <param name="websitePoets"></param>
+        /// <param name="includeBio"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoetViewModel[]>> GetPoets(bool websitePoets);
+        Task<RServiceResult<GanjoorPoetViewModel[]>> GetPoets(bool websitePoets, bool includeBio = true);
 
         /// <summary>
         /// get poet by id
