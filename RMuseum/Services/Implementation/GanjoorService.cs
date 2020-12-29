@@ -163,7 +163,8 @@ namespace RMuseum.Services.Implementation
                     {
                         Id = parent.Id,
                         Title = parent.Title,
-                        UrlSlug = parent.UrlSlug
+                        UrlSlug = parent.UrlSlug,
+                        FullUrl = parent.FullUrl
                     });
 
                     parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).FirstOrDefaultAsync();
@@ -185,7 +186,8 @@ namespace RMuseum.Services.Implementation
                                                     {
                                                         Id = c.Id,
                                                         Title = c.Title,
-                                                        UrlSlug = c.UrlSlug
+                                                        UrlSlug = c.UrlSlug,
+                                                        FullUrl = c.FullUrl
                                                         //other fields null
                                                     }
                                             ).SingleOrDefaultAsync();
@@ -205,7 +207,8 @@ namespace RMuseum.Services.Implementation
                                                     {
                                                         Id = c.Id,
                                                         Title = c.Title,
-                                                        UrlSlug = c.UrlSlug
+                                                        UrlSlug = c.UrlSlug,
+                                                        FullUrl = c.FullUrl
                                                         //other fields null
                                                     }
                                             ).SingleOrDefaultAsync();
@@ -215,6 +218,7 @@ namespace RMuseum.Services.Implementation
                     Id = cat.Id,
                     Title = cat.Title,
                     UrlSlug = cat.UrlSlug,
+                    FullUrl = cat.FullUrl,
                     Next = nextCat,
                     Previous = preCat,
                     Ancestors = ancetors,
@@ -224,7 +228,8 @@ namespace RMuseum.Services.Implementation
                      {
                          Id = c.Id,
                          Title = c.Title,
-                         UrlSlug = c.UrlSlug
+                         UrlSlug = c.UrlSlug,
+                         FullUrl = c.FullUrl
                      }
                      ).ToListAsync(),
                     Poems = poems ? await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).OrderBy(p => p.Id).Select

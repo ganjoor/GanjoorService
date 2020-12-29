@@ -23,6 +23,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public string UrlSlug { get; set; }
 
         /// <summary>
+        /// full url
+        /// </summary>
+        public string FullUrl { get; set; }
+
+        /// <summary>
         /// Next Category without Ancestors/Children/Poems info
         /// </summary>
         public GanjoorCatViewModel Next { get; set; }
