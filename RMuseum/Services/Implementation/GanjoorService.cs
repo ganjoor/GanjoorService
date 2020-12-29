@@ -114,6 +114,32 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get cat by url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="poems"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = true)
+        {
+            try
+            {
+                // /hafez/ => /hafez :
+                if (url.LastIndexOf('/') == url.Length - 1)
+                {
+                    url = url.Substring(0, url.Length - 1);
+                }
+                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url).SingleOrDefaultAsync();
+                if (cat == null)
+                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
+                return await GetCatById(cat.Id);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get cat by id
         /// </summary>
         /// <param name="id"></param>

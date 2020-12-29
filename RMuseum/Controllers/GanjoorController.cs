@@ -104,6 +104,29 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// cat by url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="poems"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("cat")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetCatByUrl(string url, bool poems = true)
+        {
+            RServiceResult<GanjoorPoetCompleteViewModel> res =
+                await _ganjoorService.GetCatByUrl(url, poems);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// get poem by id
         /// </summary>
         /// <param name="id"></param>
