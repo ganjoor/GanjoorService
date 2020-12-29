@@ -374,6 +374,42 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// Get Poem By Url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="catInfo"></param>
+        /// <param name="catPoems"></param>
+        /// <param name="rhymes"></param>
+        /// <param name="recitations"></param>
+        /// <param name="images"></param>
+        /// <param name="songs"></param>
+        /// <param name="comments"></param>
+        /// <param name="verseDetails"></param>
+        /// <param name="navigation"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemByUrl(string url, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true)
+        {
+            try
+            {
+                // /hafez/ => /hafez :
+                if (url.LastIndexOf('/') == url.Length - 1)
+                {
+                    url = url.Substring(0, url.Length - 1);
+                }
+                var poem = await _context.GanjoorPoems.Where(p => p.FullUrl == url).SingleOrDefaultAsync();
+                if (poem == null)
+                {
+                    return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
+                }
+                return await GetPoemById(poem.Id, catInfo, catPoems, rhymes, recitations, images, songs, comments, verseDetails, navigation);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorPoemCompleteViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Get Poem By Id
         /// </summary>
         /// <param name="id"></param>

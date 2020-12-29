@@ -158,6 +158,37 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get poem by url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="catInfo"></param>
+        /// <param name="catPoems"></param>
+        /// <param name="rhymes">not implemented yet</param>
+        /// <param name="recitations"></param>
+        /// <param name="images"></param>
+        /// <param name="songs">not implemented yet</param>
+        /// <param name="comments">not implemented yet</param>
+        /// <param name="verseDetails"></param>
+        /// <param name="navigation">next/previous</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPoemByUrl(string url, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true)
+        {
+            RServiceResult<GanjoorPoemCompleteViewModel> res =
+                await _ganjoorService.GetPoemByUrl(url, catInfo, catPoems, rhymes, recitations, images, songs, comments, verseDetails, navigation);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         ///  get poem recitations  (PlainText/HtmlText are intentionally empty)
         /// </summary>
         /// <param name="id"></param>
