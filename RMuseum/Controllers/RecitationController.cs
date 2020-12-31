@@ -187,7 +187,7 @@ namespace RMuseum.Controllers
         
 
         /// <summary>
-        /// get the corresponding xml file contemnts (xml) for the narration
+        /// get the corresponding xml file contents (xml) for the narration
         /// </summary>
         /// <remarks>
         /// it could be protected (Authorized), but I guess I would have problems with available client components support,
@@ -221,6 +221,42 @@ namespace RMuseum.Controllers
             }
 
             return Ok(System.IO.File.ReadAllText(narration.Result.LocalXmlFilePath));
+        }
+
+        /// <summary>
+        /// get the corresponding xml file for the recitation
+        /// </summary>
+        /// <remarks>
+        /// it could be protected (Authorized), but I guess I would have problems with available client components support,
+        /// so I preferred it to be anonymous, as it does not harm anybody I guess 
+        /// </remarks>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("file/{id}.xml")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetXMLFile(int id)
+        {
+            RServiceResult<RecitationViewModel> narration =
+                await _audioService.Get(id);
+
+            if (!string.IsNullOrEmpty(narration.ExceptionString))
+                return BadRequest(narration.ExceptionString);
+
+            if (narration.Result == null)
+                return NotFound();
+
+            Response.GetTypedHeaders().LastModified = narration.Result.UploadDate;//TODO: Add a FileLastUpdated field to narrations to indicate the last time the mp3/xml files have been updated
+
+            var requestHeaders = Request.GetTypedHeaders();
+            if (requestHeaders.IfModifiedSince.HasValue &&
+                requestHeaders.IfModifiedSince.Value >= narration.Result.UploadDate)
+            {
+                return StatusCode(StatusCodes.Status304NotModified);
+            }
+
+            return new FileStreamResult(new FileStream(narration.Result.LocalXmlFilePath, FileMode.Open, FileAccess.Read), "text/xml");
         }
 
         /// <summary>
