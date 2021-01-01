@@ -96,7 +96,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorLinkViewModel[]>> GetPoemImages(int id);
+        Task<RServiceResult<PoemRelatedImage[]>> GetPoemImages(int id);
 
         /// <summary>
         /// get a random poem from hafez

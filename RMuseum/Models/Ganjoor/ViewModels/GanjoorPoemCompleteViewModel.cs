@@ -71,6 +71,6 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// <summary>
         /// Images
         /// </summary>
-        public GanjoorLinkViewModel[] Images { get; set; }
+        public PoemRelatedImage[] Images { get; set; }
     }
 }

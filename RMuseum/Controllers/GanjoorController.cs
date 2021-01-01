@@ -215,11 +215,11 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("poem/{id}/images")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorLinkViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemRelatedImage[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetPoemImages(int id)
         {
-            RServiceResult<GanjoorLinkViewModel[]> res =
+            RServiceResult<PoemRelatedImage[]> res =
                 await _ganjoorService.GetPoemImages(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);

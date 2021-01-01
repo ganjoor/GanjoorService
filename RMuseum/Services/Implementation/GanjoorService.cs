@@ -325,11 +325,11 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorLinkViewModel[]>> GetPoemImages(int id)
+        public async Task<RServiceResult<PoemRelatedImage[]>> GetPoemImages(int id)
         {
             try
             {
-                var source =
+                var museumSrc =
                      from link in _context.GanjoorLinks.Include(l => l.Artifact).Include(l => l.Item).ThenInclude(i => i.Images)
                      join poem in _context.GanjoorPoems
                      on link.GanjoorPostId equals poem.Id
@@ -338,24 +338,45 @@ namespace RMuseum.Services.Implementation
                      &&
                      poem.Id == id
                      orderby link.ReviewDate
-                     select new GanjoorLinkViewModel()
+                     select new PoemRelatedImage()
                      {
-                         Id = link.Id,
-                         GanjoorPostId = link.GanjoorPostId,
-                         GanjoorUrl = $"https://ganjoor.net{poem.FullUrl}",
-                         GanjoorTitle = poem.FullTitle,
-                         EntityName = $"{link.Artifact.Name} » {link.Item.Name}", 
-                         EntityFriendlyUrl = $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
-                         EntityImageId = link.Item.Images.First().Id,//the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg
-                         ReviewResult = link.ReviewResult,
-                         Synchronized = link.Synchronized,
-                         SuggestedBy = null //intentional (this is going to be used in an anonymous method)
+                         PoemRelatedImageType = PoemRelatedImageType.MuseumLink,
+                         ThumbnailImageUrl = $"https://ganjgah.ir/api/images/thumb/{link.Item.Images.First().Id}.jpg",
+                         TargetPageUrl = $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                         AltText = $"{link.Artifact.Name} » {link.Item.Name}",
                      };
-                return new RServiceResult<GanjoorLinkViewModel[]>(await source.ToArrayAsync());
+                List<PoemRelatedImage> museumImages = await museumSrc.ToListAsync();
+
+                var externalSrc =
+                     from link in _context.PinterestLinks
+                     join poem in _context.GanjoorPoems
+                     on link.GanjoorPostId equals poem.Id
+                     where
+                     link.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                     &&
+                     poem.Id == id
+                     orderby link.ReviewDate
+                     select new PoemRelatedImage()
+                     {
+                         PoemRelatedImageType = PoemRelatedImageType.ExternalLink,
+                         ThumbnailImageUrl = $"https://ganjgah.ir/api/images/thumb/{link.Item.Images.First().Id}.jpg",
+                         TargetPageUrl = $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                         AltText = link.AltText,
+                     };
+
+                museumImages.AddRange(await externalSrc.ToListAsync());
+
+                for(int i=0; i<museumImages.Count; i++)
+                {
+                    museumImages[i].ImageOrder = 0;
+                }
+
+
+                return new RServiceResult<PoemRelatedImage[]>(museumImages.ToArray());
             }
             catch (Exception exp)
             {
-                return new RServiceResult<GanjoorLinkViewModel[]>(null, exp.ToString());
+                return new RServiceResult<PoemRelatedImage[]>(null, exp.ToString());
             }
         }
 
@@ -512,7 +533,7 @@ namespace RMuseum.Services.Implementation
                     rc = rcRes.Result;
                 }
 
-                GanjoorLinkViewModel[] imgs = null;
+                PoemRelatedImage[] imgs = null;
                 if(images)
                 {
                     var imgsRes = await GetPoemImages(id);

@@ -860,7 +860,18 @@
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetXMLContent(System.Int32)">
             <summary>
-            get the corresponding xml file contemnts (xml) for the narration
+            get the corresponding xml file contents (xml) for the narration
+            </summary>
+            <remarks>
+            it could be protected (Authorized), but I guess I would have problems with available client components support,
+            so I preferred it to be anonymous, as it does not harm anybody I guess 
+            </remarks>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetXMLFile(System.Int32)">
+            <summary>
+            get the corresponding xml file for the recitation
             </summary>
             <remarks>
             it could be protected (Authorized), but I guess I would have problems with available client components support,
@@ -2360,7 +2371,7 @@
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.XmlText">
             <summary>
-            Xml Url
+            Xml Text, xml file url is https://ganjgah.ir/api/audio/file/{audio.Id}.xml
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.PlainText">
@@ -3685,6 +3696,51 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.Text">
             <summary>
             text
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImageType">
+            <summary>
+            Related Image Type
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImageType.MuseumLink">
+            <summary>
+            musueum.ganjoor.net link
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImageType.ExternalLink">
+            <summary>
+            external link
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImage">
+            <summary>
+            Poem Related Images
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImage.ImageOrder">
+            <summary>
+            Image Order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImage.PoemRelatedImageType">
+            <summary>
+            poem related image type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImage.ThumbnailImageUrl">
+            <summary>
+            thumbnail image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImage.TargetPageUrl">
+            <summary>
+            target page url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImage.AltText">
+            <summary>
+            alternate text
             </summary>
         </member>
         <member name="T:RMuseum.Models.ImportJob.ImportJob">
