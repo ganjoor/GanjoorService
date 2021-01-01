@@ -360,7 +360,7 @@ namespace RMuseum.Services.Implementation
                      {
                          PoemRelatedImageType = PoemRelatedImageType.ExternalLink,
                          ThumbnailImageUrl = $"https://ganjgah.ir/api/images/thumb/{link.Item.Images.First().Id}.jpg",
-                         TargetPageUrl = $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                         TargetPageUrl = link.PinterestUrl,
                          AltText = link.AltText,
                      };
 
