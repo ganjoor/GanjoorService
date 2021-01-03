@@ -2,6 +2,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MySql.Data.MySqlClient;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
@@ -835,6 +836,73 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
 
+        }
+
+
+        public async Task<RServiceResult<bool>> ImportFromMySql()
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection
+                    (
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
+                    ))
+                {
+                    connection.Open();
+                    using(MySqlDataAdapter src = new MySqlDataAdapter(
+                        "SELECT *, " +
+                        "COALESCE((SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='_wp_page_template'), '') AS template," +
+                        "(SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='otherpoetid') AS other_poet_id " +
+                        "FROM ganja_posts",
+                        connection))
+                    {
+                        using (DataTable srcData = new DataTable())
+                        {
+                            await src.FillAsync(srcData);
+                            foreach (DataRow row in srcData.Rows)
+                            {
+                                GanjoorPageType pageType =
+                                    row["post_type"].ToString() == "post" ?
+                                            GanjoorPageType.PoemPage
+                                            :
+                                            row["template"].ToString() == "comspage.php" ?
+                                            GanjoorPageType.AllComments
+                                            :
+                                            row["template"].ToString() == "relations.php" ?
+                                            GanjoorPageType.ProsodySimilars
+                                            :
+                                            row["template"].ToString() == "vazn.php" ?
+                                            GanjoorPageType.ProsodyAndStats
+                                            :
+                                            GanjoorPageType.None;
+
+                                GanjoorPage page = new GanjoorPage()
+                                {
+                                    Id = (int)row["ID"],
+                                    GanjoorPageType = pageType,
+                                    Published = true,
+                                    PageOrder = -1,
+                                    Title = row["post_title"].ToString(),
+                                    UrlSlug = row["post_name"].ToString(),
+                                    HtmlText = row["post_content"].ToString(),
+                                    ParentId = (int)row["post_parent"] == 0 ? (int?)null : (int)row["post_parent"],
+                                    PoetId = (int)row["post_author"] == 0 ? (int?)null : (int)row["post_author"],
+                                    SecondPoetId = (int?)row["other_poet_id"],
+                                    PostDate = (DateTime)row["post_date"]
+                                };
+
+                                _context.GanjoorPages.Add(page);
+                            }
+                        }
+                    }
+                }
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
         }
         #endregion
 

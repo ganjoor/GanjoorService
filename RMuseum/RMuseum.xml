@@ -1190,6 +1190,11 @@
             Narration Publishing Tracker
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPages">
+            <summary>
+            Ganjoor Pages
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status
@@ -3373,6 +3378,11 @@
         <member name="F:RMuseum.Models.Ganjoor.GanjoorPageType.TwoPoetsSimilarPoems">
             <summary>
             Similar Poems of two poets
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPageType.ProsodyAndStats">
+            <summary>
+            Prosody and Statistics
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPage">

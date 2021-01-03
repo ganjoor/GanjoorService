@@ -43,6 +43,11 @@ namespace RMuseum.Models.Ganjoor
         /// Similar Poems of two poets
         /// </summary>
         TwoPoetsSimilarPoems = 6,
+
+        /// <summary>
+        /// Prosody and Statistics
+        /// </summary>
+        ProsodyAndStats = 7
     }
 
     /// <summary>
