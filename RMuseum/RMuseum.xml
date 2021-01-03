@@ -3335,6 +3335,151 @@
             sample: /hafez/ghazal
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPageType">
+            <summary>
+            Ganjoor Page Type
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPageType.None">
+            <summary>
+            None
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPageType.PoetPage">
+            <summary>
+            Poet Page
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPageType.CatPage">
+            <summary>
+            Cat Page
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPageType.PoemPage">
+            <summary>
+            Poem Page
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPageType.ProsodySimilars">
+            <summary>
+            Prosody Similars
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPageType.AllComments">
+            <summary>
+            Hashieha Page
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPageType.TwoPoetsSimilarPoems">
+            <summary>
+            Similar Poems of two poets
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPage">
+            <summary>
+            Ganjoor Page
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.GanjoorPageType">
+            <summary>
+            Page Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.Published">
+            <summary>
+            Published
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.PageOrder">
+            <summary>
+            page order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.FullTitle">
+            <summary>
+            cat + parent cats title + title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.UrlSlug">
+            <summary>
+            url => slug
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.FullUrl">
+            <summary>
+            sample: /hafez/ghazal/sh1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.HtmlText">
+            <summary>
+            Html Text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.ParentId">
+            <summary>
+            parent id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.Parent">
+            <summary>
+            parent
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.PoetId">
+            <summary>
+            related poet id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.Poet">
+            <summary>
+            related poet
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.CatId">
+            <summary>
+            related category id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.Cat">
+            <summary>
+            related category
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.PoemId">
+            <summary>
+            related poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.Poem">
+            <summary>
+            related poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.SecondPoetId">
+            <summary>
+            second poet id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.SecondPoet">
+            <summary>
+            second poet
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.PostDate">
+            <summary>
+            post date
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoem">
             <summary>
             Ganjoor Poem
