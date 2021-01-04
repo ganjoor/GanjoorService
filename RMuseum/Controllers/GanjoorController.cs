@@ -281,6 +281,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// imports data from ganjoor MySql database
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("mysqlimport")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ImportFromMySql()
+        {
+            RServiceResult<bool> res =
+                await _ganjoorService.ImportFromMySql();
+            if (res.Result)
+                return Ok();
+            return BadRequest(res.ExceptionString);
+        }
+
+        /// <summary>
         /// Ganjoor Service
         /// </summary>
 

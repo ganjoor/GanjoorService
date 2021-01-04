@@ -717,6 +717,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ImportFromMySql">
+            <summary>
+            imports data from ganjoor MySql database
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
             <summary>
             Ganjoor Service
@@ -5007,6 +5013,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ImportFromMySql">
+            <summary>
+            import GanjoorPage entity data from MySql
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -5806,6 +5818,12 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoemsText">
             <summary>
             updates poems text
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportFromMySql">
+            <summary>
+            import GanjoorPage entity data from MySql
             </summary>
             <returns></returns>
         </member>

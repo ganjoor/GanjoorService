@@ -839,18 +839,22 @@ namespace RMuseum.Services.Implementation
         }
 
 
+        /// <summary>
+        /// import GanjoorPage entity data from MySql
+        /// </summary>
+        /// <returns></returns>
         public async Task<RServiceResult<bool>> ImportFromMySql()
         {
             try
             {
                 using (MySqlConnection connection = new MySqlConnection
                     (
-                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
                     ))
                 {
                     connection.Open();
                     using(MySqlDataAdapter src = new MySqlDataAdapter(
-                        "SELECT *, " +
+                        "SELECT ID, post_author, post_date, post_date_gmt, post_content, post_title, post_category, post_excerpt, post_status, comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, post_content_filtered, post_parent, guid, menu_order, post_type, post_mime_type, comment_count, " +
                         "COALESCE((SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='_wp_page_template'), '') AS template," +
                         "(SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='otherpoetid') AS other_poet_id " +
                         "FROM ganja_posts",
@@ -876,20 +880,65 @@ namespace RMuseum.Services.Implementation
                                             :
                                             GanjoorPageType.None;
 
+                                int? poetId = row["post_author"].ToString() == "0" ? (int?)null : int.Parse(row["post_author"].ToString());
+                                if(poetId == 36)//رشحه
+                                {
+                                    continue;
+                                }
+
+                                if(poetId != null)
+                                {
+                                    if(!await _context.GanjoorPoets.Where(poet => poet.Id == poetId).AnyAsync())
+                                    {
+                                        continue;
+                                    }
+                                }
+
                                 GanjoorPage page = new GanjoorPage()
                                 {
-                                    Id = (int)row["ID"],
+                                    Id = int.Parse(row["ID"].ToString()),
                                     GanjoorPageType = pageType,
                                     Published = true,
                                     PageOrder = -1,
                                     Title = row["post_title"].ToString(),
                                     UrlSlug = row["post_name"].ToString(),
                                     HtmlText = row["post_content"].ToString(),
-                                    ParentId = (int)row["post_parent"] == 0 ? (int?)null : (int)row["post_parent"],
-                                    PoetId = (int)row["post_author"] == 0 ? (int?)null : (int)row["post_author"],
-                                    SecondPoetId = (int?)row["other_poet_id"],
+                                    ParentId = row["post_parent"].ToString() == "0" ? (int?)null : int.Parse(row["post_parent"].ToString()),
+                                    PoetId = row["post_author"].ToString() == "0" ? (int?)null : int.Parse(row["post_author"].ToString()),
+                                    SecondPoetId = row["other_poet_id"] == DBNull.Value ? (int?)null : int.Parse(row["other_poet_id"].ToString()),
                                     PostDate = (DateTime)row["post_date"]
                                 };
+
+                                
+
+                                if(pageType == GanjoorPageType.PoemPage)
+                                {
+                                    var poem = await _context.GanjoorPoems.Where(p => p.Id == page.Id).FirstOrDefaultAsync();
+                                    if (poem == null)
+                                        continue;
+                                    page.PoemId = poem.Id;
+                                }
+                                if(poetId != null && pageType == GanjoorPageType.None)
+                                {
+                                    if(page.ParentId == null)//check to see if it is a poet page
+                                    {
+                                        GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId == null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                                        if(cat != null)
+                                        {
+                                            page.GanjoorPageType = GanjoorPageType.PoetPage;
+                                            page.CatId = cat.Id;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId != null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                                        if(cat != null)
+                                        {
+                                            page.GanjoorPageType = GanjoorPageType.CatPage;
+                                            page.CatId = cat.Id;
+                                        }
+                                    }
+                                }
 
                                 _context.GanjoorPages.Add(page);
                             }
@@ -897,6 +946,29 @@ namespace RMuseum.Services.Implementation
                     }
                 }
                 await _context.SaveChangesAsync();
+
+                var orphanPages = await _context.GanjoorPages.Where(p => p.ParentId != null && p.FullUrl == null).ToListAsync();
+                foreach(var page in orphanPages)
+                {
+                    string fullUrl = page.UrlSlug;
+                    string fullTitle = page.Title;
+
+                    GanjoorPage parent = await _context.GanjoorPages.Where(p => p.Id == page.ParentId).SingleAsync();
+                    while(parent != null)
+                    {
+                        fullUrl = parent.UrlSlug + "/" + fullUrl;
+                        fullTitle = parent.Title + " » " + fullTitle;
+                        parent = parent.ParentId == null ? null : await _context.GanjoorPages.Where(p => p.Id == parent.ParentId).SingleAsync();
+                    }
+
+                    page.FullUrl = fullUrl;
+                    page.FullTitle = fullTitle;
+
+                    _context.Update(page);
+                }
+
+                await _context.SaveChangesAsync();
+
                 return new RServiceResult<bool>(true);
             }
             catch(Exception exp)

@@ -115,5 +115,11 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         RServiceResult<bool> UpdatePoemsText();
+
+        /// <summary>
+        /// import GanjoorPage entity data from MySql
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ImportFromMySql();
     }
 }
