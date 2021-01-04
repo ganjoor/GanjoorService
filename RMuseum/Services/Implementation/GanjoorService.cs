@@ -946,21 +946,30 @@ namespace RMuseum.Services.Implementation
                     }
                 }
                 await _context.SaveChangesAsync();
+                
 
-                var orphanPages = await _context.GanjoorPages.Where(p => p.ParentId != null && p.FullUrl == null).ToListAsync();
+                var orphanPages = await _context.GanjoorPages.Include(p => p.Poem).Where(p => p.FullUrl == null).ToListAsync();
                 foreach(var page in orphanPages)
                 {
                     string fullUrl = page.UrlSlug;
                     string fullTitle = page.Title;
 
-                    GanjoorPage parent = await _context.GanjoorPages.Where(p => p.Id == page.ParentId).SingleAsync();
-                    while(parent != null)
+                    if(page.GanjoorPageType == GanjoorPageType.PoemPage)
                     {
-                        fullUrl = parent.UrlSlug + "/" + fullUrl;
-                        fullTitle = parent.Title + " » " + fullTitle;
-                        parent = parent.ParentId == null ? null : await _context.GanjoorPages.Where(p => p.Id == parent.ParentId).SingleAsync();
+                        fullTitle = page.Poem.FullTitle;
+                        fullUrl = page.Poem.FullUrl;
                     }
-
+                    else
+                    if(page.ParentId != null)
+                    {
+                        GanjoorPage parent = await _context.GanjoorPages.Where(p => p.Id == page.ParentId).SingleAsync();
+                        while (parent != null)
+                        {
+                            fullUrl = parent.UrlSlug + "/" + fullUrl;
+                            fullTitle = parent.Title + " » " + fullTitle;
+                            parent = parent.ParentId == null ? null : await _context.GanjoorPages.Where(p => p.Id == parent.ParentId).SingleAsync();
+                        }
+                    }
                     page.FullUrl = fullUrl;
                     page.FullTitle = fullTitle;
 
