@@ -866,7 +866,7 @@ namespace RMuseum.Services.Implementation
                             foreach (DataRow row in srcData.Rows)
                             {
                                 GanjoorPageType pageType =
-                                    row["post_type"].ToString() == "post" ?
+                                    row["post_type"].ToString() == "post" && row["comment_status"].ToString() != "closed" ?
                                             GanjoorPageType.PoemPage
                                             :
                                             row["template"].ToString() == "comspage.php" ?
