@@ -904,7 +904,7 @@ namespace RMuseum.Services.Implementation
                                     UrlSlug = row["post_name"].ToString(),
                                     HtmlText = row["post_content"].ToString(),
                                     ParentId = row["post_parent"].ToString() == "0" ? (int?)null : int.Parse(row["post_parent"].ToString()),
-                                    PoetId = row["post_author"].ToString() == "0" ? (int?)null : int.Parse(row["post_author"].ToString()),
+                                    PoetId = row["post_author"].ToString() == "1" ? (int?)null : int.Parse(row["post_author"].ToString()),
                                     SecondPoetId = row["other_poet_id"] == DBNull.Value ? (int?)null : int.Parse(row["other_poet_id"].ToString()),
                                     PostDate = (DateTime)row["post_date"]
                                 };
@@ -920,19 +920,16 @@ namespace RMuseum.Services.Implementation
                                 }
                                 if(poetId != null && pageType == GanjoorPageType.None)
                                 {
-                                    if(page.ParentId == null)//check to see if it is a poet page
+                                    GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId == null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                                    if (cat != null)
                                     {
-                                        GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId == null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
-                                        if(cat != null)
-                                        {
-                                            page.GanjoorPageType = GanjoorPageType.PoetPage;
-                                            page.CatId = cat.Id;
-                                        }
+                                        page.GanjoorPageType = GanjoorPageType.PoetPage;
+                                        page.CatId = cat.Id;
                                     }
                                     else
                                     {
-                                        GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId != null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
-                                        if(cat != null)
+                                        cat = await _context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId != null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                                        if (cat != null)
                                         {
                                             page.GanjoorPageType = GanjoorPageType.CatPage;
                                             page.CatId = cat.Id;
@@ -960,15 +957,34 @@ namespace RMuseum.Services.Implementation
                         fullUrl = page.Poem.FullUrl;
                     }
                     else
-                    if(page.ParentId != null)
                     {
-                        GanjoorPage parent = await _context.GanjoorPages.Where(p => p.Id == page.ParentId).SingleAsync();
-                        while (parent != null)
+                        if(page.ParentId != null)
                         {
-                            fullUrl = parent.UrlSlug + "/" + fullUrl;
-                            fullTitle = parent.Title + " » " + fullTitle;
-                            parent = parent.ParentId == null ? null : await _context.GanjoorPages.Where(p => p.Id == parent.ParentId).SingleAsync();
+                            GanjoorPage parent = await _context.GanjoorPages.Where(p => p.Id == page.ParentId).SingleAsync();
+                            while (parent != null)
+                            {
+                                fullUrl = parent.UrlSlug + "/" + fullUrl;
+                                fullTitle = parent.Title + " » " + fullTitle;
+                                parent = parent.ParentId == null ? null : await _context.GanjoorPages.Where(p => p.Id == parent.ParentId).SingleAsync();
+                            }
                         }
+                        else
+                        {
+                            GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                            if(cat != null)
+                            {
+                                fullUrl = cat.FullUrl;
+                                while(cat.ParentId != null)
+                                {
+                                    cat = await _context.GanjoorCategories.Where(c => c.Id == cat.Id).SingleOrDefaultAsync();
+                                    if(cat != null)
+                                    {
+                                        fullTitle = cat.Title + " » " + fullTitle;
+                                    }
+                                }
+                            }
+                        }
+                        
                     }
                     page.FullUrl = fullUrl;
                     page.FullTitle = fullTitle;
