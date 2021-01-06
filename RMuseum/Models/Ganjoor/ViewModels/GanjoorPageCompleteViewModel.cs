@@ -6,6 +6,10 @@
     public class GanjoorPageCompleteViewModel
     {
         /// <summary>
+        /// id
+        /// </summary>
+        public int Id { get; set; }
+        /// <summary>
         /// Ganjoor Page Type
         /// </summary>
         public GanjoorPageType GanjoorPageType { get; set; }

@@ -653,6 +653,14 @@
             <param name="poems"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPageByUrl(System.String,System.Boolean)">
+            <summary>
+            page by url
+            </summary>
+            <param name="url"></param>
+            <param name="poems"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get poem by id
@@ -3699,6 +3707,11 @@
             Ganjoor Page View Model
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPageCompleteViewModel.Id">
+            <summary>
+            id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPageCompleteViewModel.GanjoorPageType">
             <summary>
             Ganjoor Page Type
@@ -4998,6 +5011,14 @@
             <param name="poems"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPageByUrl(System.String,System.Boolean)">
+            <summary>
+            get page by url
+            </summary>
+            <param name="url"></param>
+            <param name="catPoems"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
@@ -5804,6 +5825,14 @@
             </summary>
             <param name="id"></param>
             <param name="poems"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPageByUrl(System.String,System.Boolean)">
+            <summary>
+            get page by url
+            </summary>
+            <param name="url"></param>
+            <param name="catPoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemRecitations(System.Int32)">

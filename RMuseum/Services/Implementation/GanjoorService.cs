@@ -271,6 +271,98 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// get page by url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="catPoems"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = true)
+        {
+            try
+            {
+                if(url.IndexOf('?') != -1)
+                {
+                    url = url.Substring(0, url.IndexOf('?'));
+                }
+
+                // /hafez/ => /hafez :
+                if (url.LastIndexOf('/') == url.Length - 1)
+                {
+                    url = url.Substring(0, url.Length - 1);
+                }
+
+                var dbPage = await _context.GanjoorPages.Where(p => p.FullUrl == url).SingleOrDefaultAsync();
+                if (dbPage == null)
+                    return new RServiceResult<GanjoorPageCompleteViewModel>(null); //not found
+                var secondPoet = dbPage.SecondPoetId == null ? null :
+                     await
+                     (from poet in _context.GanjoorPoets
+                      join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
+                      on poet.Id equals cat.PoetId
+                      where poet.Id == (int)dbPage.SecondPoetId
+                      orderby poet.Name descending
+                      select new GanjoorPoetViewModel()
+                      {
+                          Id = poet.Id,
+                          Name = poet.Name,
+                          FullUrl = cat.FullUrl,
+                          RootCatId = cat.Id
+                      }
+                      )
+                     .SingleAsync();
+                GanjoorPageCompleteViewModel page = new GanjoorPageCompleteViewModel()
+                {
+                    Id = dbPage.Id,
+                    GanjoorPageType = dbPage.GanjoorPageType,
+                    Title = dbPage.Title,
+                    FullTitle = dbPage.FullTitle,
+                    UrlSlug = dbPage.UrlSlug,
+                    FullUrl = dbPage.FullUrl,
+                    HtmlText = dbPage.HtmlText,
+                    SecondPoet = secondPoet
+
+                };
+                switch (page.GanjoorPageType)
+                {
+                    case GanjoorPageType.PoemPage:
+                        {
+                            var poemRes = await GetPoemById((int)dbPage.PoemId);
+                            if(!string.IsNullOrEmpty(poemRes.ExceptionString))
+                            {
+                                return new RServiceResult<GanjoorPageCompleteViewModel>(null, poemRes.ExceptionString);
+                            }
+                            page.Poem = poemRes.Result;
+                        }
+                        break;
+                    case GanjoorPageType.PoetPage:
+                        {
+                            var poetRes = await GetPoetById((int)dbPage.PoetId);
+                            if(!string.IsNullOrEmpty(poetRes.ExceptionString))
+                            {
+                                return new RServiceResult<GanjoorPageCompleteViewModel>(null, poetRes.ExceptionString);
+                            }
+                        }
+                        break;
+                    case GanjoorPageType.CatPage:
+                        {
+                            var catRes = await GetCatById((int)dbPage.CatId);
+                            if(!string.IsNullOrEmpty(catRes.ExceptionString))
+                            {
+                                return new RServiceResult<GanjoorPageCompleteViewModel>(null, catRes.ExceptionString);
+                            }
+                        }
+                        break;
+                }
+                return new RServiceResult<GanjoorPageCompleteViewModel>(page);
+
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorPageCompleteViewModel>(null, exp.ToString());
+            }
+        }
+
 
        
         /// <summary>
