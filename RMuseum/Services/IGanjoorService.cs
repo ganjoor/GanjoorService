@@ -127,6 +127,6 @@ namespace RMuseum.Services
         /// import GanjoorPage entity data from MySql
         /// </summary>
         /// <returns></returns>
-        Task<RServiceResult<bool>> ImportFromMySql();
+        RServiceResult<bool> ImportFromMySql();
     }
 }

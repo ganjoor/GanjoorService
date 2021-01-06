@@ -1629,6 +1629,51 @@
             Amount
             </summary>
         </member>
+        <member name="T:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus">
+            <summary>
+            Long Running Job Status
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.Progress">
+            <summary>
+            progress value (percent of custom value)
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.StartTime">
+            <summary>
+            Start Time
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.EndTime">
+            <summary>
+            End Time
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.Step">
+            <summary>
+            Current Step
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.Exception">
+            <summary>
+            Exception
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.Finished">
+            <summary>
+            finished
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Models.Generic.PaginationMetadata">
             <summary>
             pagination metadat

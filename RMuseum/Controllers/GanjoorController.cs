@@ -312,10 +312,10 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> ImportFromMySql()
+        public IActionResult ImportFromMySql()
         {
             RServiceResult<bool> res =
-                await _ganjoorService.ImportFromMySql();
+                 _ganjoorService.ImportFromMySql();
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);

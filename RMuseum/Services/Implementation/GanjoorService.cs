@@ -935,156 +935,165 @@ namespace RMuseum.Services.Implementation
         /// import GanjoorPage entity data from MySql
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ImportFromMySql()
+        public RServiceResult<bool> ImportFromMySql()
         {
             try
             {
-                using (MySqlConnection connection = new MySqlConnection
-                    (
-                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
-                    ))
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                (
+                async token =>
                 {
-                    connection.Open();
-                    using(MySqlDataAdapter src = new MySqlDataAdapter(
-                        "SELECT ID, post_author, post_date, post_date_gmt, post_content, post_title, post_category, post_excerpt, post_status, comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, post_content_filtered, post_parent, guid, menu_order, post_type, post_mime_type, comment_count, " +
-                        "COALESCE((SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='_wp_page_template'), '') AS template," +
-                        "(SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='otherpoetid') AS other_poet_id " +
-                        "FROM ganja_posts",
-                        connection))
+                    using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
                     {
-                        using (DataTable srcData = new DataTable())
+                        using (MySqlConnection connection = new MySqlConnection
+                                        (
+                                        $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                        ))
                         {
-                            await src.FillAsync(srcData);
-                            foreach (DataRow row in srcData.Rows)
+                            connection.Open();
+                            using (MySqlDataAdapter src = new MySqlDataAdapter(
+                                "SELECT ID, post_author, post_date, post_date_gmt, post_content, post_title, post_category, post_excerpt, post_status, comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, post_content_filtered, post_parent, guid, menu_order, post_type, post_mime_type, comment_count, " +
+                                "COALESCE((SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='_wp_page_template'), '') AS template," +
+                                "(SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='otherpoetid') AS other_poet_id " +
+                                "FROM ganja_posts",
+                                connection))
                             {
-                                GanjoorPageType pageType =
-                                    row["post_type"].ToString() == "post" && row["comment_status"].ToString() != "closed" ?
-                                            GanjoorPageType.PoemPage
-                                            :
-                                            row["template"].ToString() == "comspage.php" ?
-                                            GanjoorPageType.AllComments
-                                            :
-                                            row["template"].ToString() == "relations.php" ?
-                                            GanjoorPageType.ProsodySimilars
-                                            :
-                                            row["template"].ToString() == "vazn.php" ?
-                                            GanjoorPageType.ProsodyAndStats
-                                            :
-                                            GanjoorPageType.None;
-
-                                int? poetId = row["post_author"].ToString() == "0" ? (int?)null : int.Parse(row["post_author"].ToString());
-                                if(poetId == 36)//رشحه
+                                using (DataTable srcData = new DataTable())
                                 {
-                                    continue;
-                                }
-
-                                if(poetId != null)
-                                {
-                                    if(!await _context.GanjoorPoets.Where(poet => poet.Id == poetId).AnyAsync())
+                                    await src.FillAsync(srcData);
+                                    foreach (DataRow row in srcData.Rows)
                                     {
-                                        continue;
+                                        GanjoorPageType pageType =
+                                            row["post_type"].ToString() == "post" && row["comment_status"].ToString() != "closed" ?
+                                                    GanjoorPageType.PoemPage
+                                                    :
+                                                    row["template"].ToString() == "comspage.php" ?
+                                                    GanjoorPageType.AllComments
+                                                    :
+                                                    row["template"].ToString() == "relations.php" ?
+                                                    GanjoorPageType.ProsodySimilars
+                                                    :
+                                                    row["template"].ToString() == "vazn.php" ?
+                                                    GanjoorPageType.ProsodyAndStats
+                                                    :
+                                                    GanjoorPageType.None;
+
+                                        int? poetId = row["post_author"].ToString() == "0" ? (int?)null : int.Parse(row["post_author"].ToString());
+                                        if (poetId == 36)//رشحه
+                                        {
+                                            continue;
+                                        }
+
+                                        if (poetId != null)
+                                        {
+                                            if (!await context.GanjoorPoets.Where(poet => poet.Id == poetId).AnyAsync())
+                                            {
+                                                continue;
+                                            }
+                                        }
+
+                                        GanjoorPage page = new GanjoorPage()
+                                        {
+                                            Id = int.Parse(row["ID"].ToString()),
+                                            GanjoorPageType = pageType,
+                                            Published = true,
+                                            PageOrder = -1,
+                                            Title = row["post_title"].ToString(),
+                                            UrlSlug = row["post_name"].ToString(),
+                                            HtmlText = row["post_content"].ToString(),
+                                            ParentId = row["post_parent"].ToString() == "0" ? (int?)null : int.Parse(row["post_parent"].ToString()),
+                                            PoetId = row["post_author"].ToString() == "1" ? (int?)null : int.Parse(row["post_author"].ToString()),
+                                            SecondPoetId = row["other_poet_id"] == DBNull.Value ? (int?)null : int.Parse(row["other_poet_id"].ToString()),
+                                            PostDate = (DateTime)row["post_date"]
+                                        };
+
+
+
+                                        if (pageType == GanjoorPageType.PoemPage)
+                                        {
+                                            var poem = await context.GanjoorPoems.Where(p => p.Id == page.Id).FirstOrDefaultAsync();
+                                            if (poem == null)
+                                                continue;
+                                            page.PoemId = poem.Id;
+                                        }
+                                        if (poetId != null && pageType == GanjoorPageType.None)
+                                        {
+                                            GanjoorCat cat = await context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId == null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                                            if (cat != null)
+                                            {
+                                                page.GanjoorPageType = GanjoorPageType.PoetPage;
+                                                page.CatId = cat.Id;
+                                            }
+                                            else
+                                            {
+                                                cat = await context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId != null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                                                if (cat != null)
+                                                {
+                                                    page.GanjoorPageType = GanjoorPageType.CatPage;
+                                                    page.CatId = cat.Id;
+                                                }
+                                            }
+                                        }
+
+                                        context.GanjoorPages.Add(page);
                                     }
                                 }
+                            }
+                        }
+                        await context.SaveChangesAsync();
 
-                                GanjoorPage page = new GanjoorPage()
+
+                        var orphanPages = await context.GanjoorPages.Include(p => p.Poem).Where(p => p.FullUrl == null).ToListAsync();
+                        foreach (var page in orphanPages)
+                        {
+                            string fullUrl = page.UrlSlug;
+                            string fullTitle = page.Title;
+
+                            if (page.GanjoorPageType == GanjoorPageType.PoemPage)
+                            {
+                                fullTitle = page.Poem.FullTitle;
+                                fullUrl = page.Poem.FullUrl;
+                            }
+                            else
+                            {
+                                if (page.ParentId != null)
                                 {
-                                    Id = int.Parse(row["ID"].ToString()),
-                                    GanjoorPageType = pageType,
-                                    Published = true,
-                                    PageOrder = -1,
-                                    Title = row["post_title"].ToString(),
-                                    UrlSlug = row["post_name"].ToString(),
-                                    HtmlText = row["post_content"].ToString(),
-                                    ParentId = row["post_parent"].ToString() == "0" ? (int?)null : int.Parse(row["post_parent"].ToString()),
-                                    PoetId = row["post_author"].ToString() == "1" ? (int?)null : int.Parse(row["post_author"].ToString()),
-                                    SecondPoetId = row["other_poet_id"] == DBNull.Value ? (int?)null : int.Parse(row["other_poet_id"].ToString()),
-                                    PostDate = (DateTime)row["post_date"]
-                                };
-
-                                
-
-                                if(pageType == GanjoorPageType.PoemPage)
-                                {
-                                    var poem = await _context.GanjoorPoems.Where(p => p.Id == page.Id).FirstOrDefaultAsync();
-                                    if (poem == null)
-                                        continue;
-                                    page.PoemId = poem.Id;
+                                    GanjoorPage parent = await context.GanjoorPages.Where(p => p.Id == page.ParentId).SingleAsync();
+                                    while (parent != null)
+                                    {
+                                        fullUrl = parent.UrlSlug + "/" + fullUrl;
+                                        fullTitle = parent.Title + " » " + fullTitle;
+                                        parent = parent.ParentId == null ? null : await context.GanjoorPages.Where(p => p.Id == parent.ParentId).SingleAsync();
+                                    }
                                 }
-                                if(poetId != null && pageType == GanjoorPageType.None)
+                                else
                                 {
-                                    GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId == null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                                    GanjoorCat cat = await context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
                                     if (cat != null)
                                     {
-                                        page.GanjoorPageType = GanjoorPageType.PoetPage;
-                                        page.CatId = cat.Id;
-                                    }
-                                    else
-                                    {
-                                        cat = await _context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId != null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
-                                        if (cat != null)
+                                        fullUrl = cat.FullUrl;
+                                        while (cat.ParentId != null)
                                         {
-                                            page.GanjoorPageType = GanjoorPageType.CatPage;
-                                            page.CatId = cat.Id;
+                                            cat = await context.GanjoorCategories.Where(c => c.Id == cat.Id).SingleOrDefaultAsync();
+                                            if (cat != null)
+                                            {
+                                                fullTitle = cat.Title + " » " + fullTitle;
+                                            }
                                         }
                                     }
                                 }
 
-                                _context.GanjoorPages.Add(page);
                             }
+                            page.FullUrl = fullUrl;
+                            page.FullTitle = fullTitle;
+
+                            context.Update(page);
                         }
+
+                        await context.SaveChangesAsync();
                     }
-                }
-                await _context.SaveChangesAsync();
-                
-
-                var orphanPages = await _context.GanjoorPages.Include(p => p.Poem).Where(p => p.FullUrl == null).ToListAsync();
-                foreach(var page in orphanPages)
-                {
-                    string fullUrl = page.UrlSlug;
-                    string fullTitle = page.Title;
-
-                    if(page.GanjoorPageType == GanjoorPageType.PoemPage)
-                    {
-                        fullTitle = page.Poem.FullTitle;
-                        fullUrl = page.Poem.FullUrl;
-                    }
-                    else
-                    {
-                        if(page.ParentId != null)
-                        {
-                            GanjoorPage parent = await _context.GanjoorPages.Where(p => p.Id == page.ParentId).SingleAsync();
-                            while (parent != null)
-                            {
-                                fullUrl = parent.UrlSlug + "/" + fullUrl;
-                                fullTitle = parent.Title + " » " + fullTitle;
-                                parent = parent.ParentId == null ? null : await _context.GanjoorPages.Where(p => p.Id == parent.ParentId).SingleAsync();
-                            }
-                        }
-                        else
-                        {
-                            GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
-                            if(cat != null)
-                            {
-                                fullUrl = cat.FullUrl;
-                                while(cat.ParentId != null)
-                                {
-                                    cat = await _context.GanjoorCategories.Where(c => c.Id == cat.Id).SingleOrDefaultAsync();
-                                    if(cat != null)
-                                    {
-                                        fullTitle = cat.Title + " » " + fullTitle;
-                                    }
-                                }
-                            }
-                        }
-                        
-                    }
-                    page.FullUrl = fullUrl;
-                    page.FullTitle = fullTitle;
-
-                    _context.Update(page);
-                }
-
-                await _context.SaveChangesAsync();
+                });
+    
 
                 return new RServiceResult<bool>(true);
             }
