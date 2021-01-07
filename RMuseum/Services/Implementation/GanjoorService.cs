@@ -344,6 +344,7 @@ namespace RMuseum.Services.Implementation
                             {
                                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, poetRes.ExceptionString);
                             }
+                            page.PoetOrCat = poetRes.Result;
                         }
                         break;
                     case GanjoorPageType.CatPage:
@@ -353,6 +354,7 @@ namespace RMuseum.Services.Implementation
                             {
                                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, catRes.ExceptionString);
                             }
+                            page.PoetOrCat = catRes.Result;
                         }
                         break;
                 }
