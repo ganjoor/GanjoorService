@@ -44,6 +44,6 @@ namespace RSecurityBackend.Models.Generic.Db
         /// <summary>
         /// finished
         /// </summary>
-        public bool Finished { get; set; }
+        public bool Succeeded { get; set; }
     }
 }

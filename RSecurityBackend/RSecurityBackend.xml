@@ -546,6 +546,11 @@
             Audit Logs Events
             </summary>
         </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.LongRunningJobs">
+            <summary>
+            long running jobs
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Models.Audit.Db.REvent">
             <summary>
             Audit Event
@@ -1669,7 +1674,7 @@
             Exception
             </summary>
         </member>
-        <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.Finished">
+        <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.Succeeded">
             <summary>
             finished
             </summary>
@@ -2191,6 +2196,52 @@
             Image Storage Path
             </summary>
         </member>
+        <member name="T:RSecurityBackend.Services.ILongRunningJobProgressService">
+            <summary>
+            Long Running Job Progress Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.ILongRunningJobProgressService.NewJob(System.String,System.String)">
+            <summary>
+            new job
+            </summary>
+            <param name="name"></param>
+            <param name="step"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.ILongRunningJobProgressService.GetJob(System.Guid)">
+            <summary>
+            Get Job By Id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.ILongRunningJobProgressService.UpdateJob(System.Guid,System.Double,System.String,System.Boolean,System.String)">
+            <summary>
+            update job
+            </summary>
+            <param name="id"></param>
+            <param name="progress"></param>
+            <param name="step"></param>
+            <param name="succeeded"></param>
+            <param name="exception"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.ILongRunningJobProgressService.DeleteJob(System.Guid)">
+            <summary>
+            delete job
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.ILongRunningJobProgressService.CleanUp(System.Boolean,System.Boolean)">
+            <summary>
+            clean up finished jobs
+            </summary>
+            <param name="succeededJobs"></param>
+            <param name="failedJobs"></param>
+            <returns></returns>
+        </member>
         <member name="T:RSecurityBackend.Services.Implementation.AppUserService">
             <summary>
             Authentication Service
@@ -2661,6 +2712,63 @@
             </summary>
             <param name="context"></param>
             <param name="configuration"></param>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF">
+            <summary>
+            Long Running Job Progress Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF.NewJob(System.String,System.String)">
+            <summary>
+            new job
+            </summary>
+            <param name="name"></param>
+            <param name="step"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF.GetJob(System.Guid)">
+            <summary>
+            Get Job By Id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF.UpdateJob(System.Guid,System.Double,System.String,System.Boolean,System.String)">
+            <summary>
+            update job
+            </summary>
+            <param name="id"></param>
+            <param name="progress"></param>
+            <param name="step"></param>
+            <param name="succeeded"></param>
+            <param name="exception"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF.DeleteJob(System.Guid)">
+            <summary>
+            delete job
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF.CleanUp(System.Boolean,System.Boolean)">
+            <summary>
+            clean up finished jobs
+            </summary>
+            <param name="succeededJobs"></param>
+            <param name="failedJobs"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF.#ctor(RSecurityBackend.DbContext.RSecurityDbContext{RSecurityBackend.Models.Auth.Db.RAppUser,RSecurityBackend.Models.Auth.Db.RAppRole,System.Guid})">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
         </member>
         <member name="T:RSecurityBackend.Services.Implementation.MailKitEmailSender">
             <summary>

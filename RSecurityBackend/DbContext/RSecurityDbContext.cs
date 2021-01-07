@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RSecurityBackend.Models.Audit.Db;
 using RSecurityBackend.Models.Auth.Db;
+using RSecurityBackend.Models.Generic.Db;
 using RSecurityBackend.Models.Image;
 using System;
 
@@ -81,6 +82,13 @@ namespace RSecurityBackend.DbContext
         /// Audit Logs Events
         /// </summary>
         public DbSet<REvent> AuditLogs { get; set; }
+        #endregion
+
+        #region
+        /// <summary>
+        /// long running jobs
+        /// </summary>
+        public DbSet<RLongRunningJobStatus> LongRunningJobs { get; set; }
         #endregion
     }
 }
