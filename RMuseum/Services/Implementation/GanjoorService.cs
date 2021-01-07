@@ -1055,7 +1055,7 @@ namespace RMuseum.Services.Implementation
                             }
                             await context.SaveChangesAsync();
 
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 50, "phase 2")).Result;
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 2")).Result;
 
 
                             var orphanPages = await context.GanjoorPages.Include(p => p.Poem).Where(p => p.FullUrl == null).ToListAsync();
@@ -1064,7 +1064,7 @@ namespace RMuseum.Services.Implementation
                             foreach (var page in orphanPages)
                             {
 
-                                job = (await jobProgressServiceEF.UpdateJob(job.Id, 50 + i / count * 100, "phase 2")).Result;
+                                job = (await jobProgressServiceEF.UpdateJob(job.Id, i++, "phase 2")).Result;
 
                                 string fullUrl = page.UrlSlug;
                                 string fullTitle = page.Title;
@@ -1094,7 +1094,7 @@ namespace RMuseum.Services.Implementation
                                             fullUrl = cat.FullUrl;
                                             while (cat.ParentId != null)
                                             {
-                                                cat = await context.GanjoorCategories.Where(c => c.Id == cat.Id).SingleOrDefaultAsync();
+                                                cat = await context.GanjoorCategories.Where(c => c.Id == cat.ParentId).SingleOrDefaultAsync();
                                                 if (cat != null)
                                                 {
                                                     fullTitle = cat.Title + " » " + fullTitle;
