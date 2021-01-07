@@ -337,16 +337,7 @@ namespace RMuseum.Services.Implementation
                             page.Poem = poemRes.Result;
                         }
                         break;
-                    case GanjoorPageType.PoetPage:
-                        {
-                            var poetRes = await GetPoetById((int)dbPage.PoetId);
-                            if(!string.IsNullOrEmpty(poetRes.ExceptionString))
-                            {
-                                return new RServiceResult<GanjoorPageCompleteViewModel>(null, poetRes.ExceptionString);
-                            }
-                            page.PoetOrCat = poetRes.Result;
-                        }
-                        break;
+                    
                     case GanjoorPageType.CatPage:
                         {
                             var catRes = await GetCatById((int)dbPage.CatId);
@@ -355,6 +346,19 @@ namespace RMuseum.Services.Implementation
                                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, catRes.ExceptionString);
                             }
                             page.PoetOrCat = catRes.Result;
+                        }
+                        break;
+                    default:
+                        {
+                            if (dbPage.PoetId != null)
+                            {
+                                var poetRes = await GetPoetById((int)dbPage.PoetId);
+                                if (!string.IsNullOrEmpty(poetRes.ExceptionString))
+                                {
+                                    return new RServiceResult<GanjoorPageCompleteViewModel>(null, poetRes.ExceptionString);
+                                }
+                                page.PoetOrCat = poetRes.Result;
+                            }
                         }
                         break;
                 }
@@ -993,7 +997,7 @@ namespace RMuseum.Services.Implementation
                                                         :
                                                         GanjoorPageType.None;
 
-                                            int? poetId = row["post_author"].ToString() == "0" ? (int?)null : int.Parse(row["post_author"].ToString());
+                                            int? poetId = row["post_author"].ToString() == "1" ? (int?)null : int.Parse(row["post_author"].ToString());
                                             if (poetId == 36)//رشحه
                                             {
                                                 continue;
@@ -1017,7 +1021,7 @@ namespace RMuseum.Services.Implementation
                                                 UrlSlug = row["post_name"].ToString(),
                                                 HtmlText = row["post_content"].ToString(),
                                                 ParentId = row["post_parent"].ToString() == "0" ? (int?)null : int.Parse(row["post_parent"].ToString()),
-                                                PoetId = row["post_author"].ToString() == "1" ? (int?)null : int.Parse(row["post_author"].ToString()),
+                                                PoetId = poetId,
                                                 SecondPoetId = row["other_poet_id"] == DBNull.Value ? (int?)null : int.Parse(row["other_poet_id"].ToString()),
                                                 PostDate = (DateTime)row["post_date"]
                                             };
