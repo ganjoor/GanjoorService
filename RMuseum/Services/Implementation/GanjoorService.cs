@@ -1103,9 +1103,19 @@ namespace RMuseum.Services.Implementation
                                                 }
                                             }
                                         }
+                                        else
+                                        {
+                                            cat = await context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.ParentId == null).SingleOrDefaultAsync();
+                                            if(cat != null)
+                                            {
+                                                fullUrl = $"{cat.UrlSlug}/{page.UrlSlug}";
+                                            }
+                                        }
                                     }
 
                                 }
+                                if (!string.IsNullOrEmpty(fullUrl) && fullUrl.IndexOf('/') != 0)
+                                    fullUrl = $"/{fullUrl}";
                                 page.FullUrl = fullUrl;
                                 page.FullTitle = fullTitle;
 
@@ -1114,7 +1124,7 @@ namespace RMuseum.Services.Implementation
 
                             await context.SaveChangesAsync();
 
-                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "Finised", true);
+                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "Finished", true);
                         }
                         catch(Exception jobExp)
                         {
