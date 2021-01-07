@@ -54,7 +54,7 @@ namespace RSecurityBackend.Services.Implementation
         {
             try
             {
-                var jobs = await _context.LongRunningJobs.Where(j => (succeeded && j.Succeeded == true) || (failed && j.Exception != "")).OrderByDescending(j => j.StartTime).ToArrayAsync();
+                var jobs = await _context.LongRunningJobs.Where(j => (succeeded || (!succeeded && j.Succeeded == false)) && (failed || (!failed && j.Exception != ""))).OrderByDescending(j => j.StartTime).ToArrayAsync();
                
                 return new RServiceResult<RLongRunningJobStatus[]>(jobs);
             }
