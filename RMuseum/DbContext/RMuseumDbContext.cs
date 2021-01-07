@@ -80,6 +80,9 @@ namespace RMuseum.DbContext
             builder.Entity<GanjoorPoem>()
                 .HasIndex(c => c.FullUrl);
 
+            builder.Entity<GanjoorPage>()
+                 .HasIndex(c => c.FullUrl);
+
         }
 
 

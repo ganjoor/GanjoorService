@@ -658,7 +658,7 @@
             page by url
             </summary>
             <param name="url"></param>
-            <param name="poems"></param>
+            <param name="catPoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">

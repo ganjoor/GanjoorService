@@ -130,7 +130,7 @@ namespace RMuseum.Controllers
         /// page by url
         /// </summary>
         /// <param name="url"></param>
-        /// <param name="poems"></param>
+        /// <param name="catPoems"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("page")]
@@ -138,7 +138,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPageByUrl(string url, bool catPoems = true)
+        public async Task<IActionResult> GetPageByUrl(string url, bool catPoems = false)
         {
             RServiceResult<GanjoorPageCompleteViewModel> res =
                 await _ganjoorService.GetPageByUrl(url, catPoems);
