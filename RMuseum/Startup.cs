@@ -259,6 +259,9 @@ namespace RMuseum
             //ganjoor service
             services.AddTransient<IGanjoorService, GanjoorService>();
 
+            //long running job service
+            services.AddTransient<ILongRunningJobProgressService, LongRunningJobProgressServiceEF>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {

@@ -4,6 +4,7 @@ using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Generic.Db;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace RSecurityBackend.Services.Implementation
     /// <summary>
     /// Long Running Job Progress Service
     /// </summary>
-    public class LongRunningJobProgressServiceEF
+    public class LongRunningJobProgressServiceEF : ILongRunningJobProgressService
     {
         /// <summary>
         /// new job
@@ -40,6 +41,26 @@ namespace RSecurityBackend.Services.Implementation
             catch(Exception exp)
             {
                 return new RServiceResult<RLongRunningJobStatus>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Get Jobs
+        /// </summary>
+        /// <param name="succeeded"></param>
+        /// <param name="failed"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RLongRunningJobStatus[]>> GetJobs(bool succeeded = true, bool failed = true)
+        {
+            try
+            {
+                var jobs = await _context.LongRunningJobs.Where(j => (succeeded && j.Succeeded == true) || (failed && j.Exception != "")).OrderByDescending(j => j.StartTime).ToArrayAsync();
+               
+                return new RServiceResult<RLongRunningJobStatus[]>(jobs);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<RLongRunningJobStatus[]> (null, exp.ToString());
             }
         }
 

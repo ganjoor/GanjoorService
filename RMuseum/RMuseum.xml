@@ -1066,6 +1066,18 @@
             <param name="pictureFileService">
             </param>
         </member>
+        <member name="T:RMuseum.Controllers.RLongRunningJobsController">
+            <summary>
+            Long Running Jobs
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.RLongRunningJobsController.#ctor(RSecurityBackend.Services.ILongRunningJobProgressService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="jobService">
+            </param>
+        </member>
         <member name="T:RMuseum.Controllers.RoleController">
              <summary>
             roles

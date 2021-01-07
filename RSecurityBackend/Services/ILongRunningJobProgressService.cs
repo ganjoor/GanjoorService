@@ -26,6 +26,15 @@ namespace RSecurityBackend.Services
         Task<RServiceResult<RLongRunningJobStatus>> GetJob(Guid id);
 
         /// <summary>
+        /// Get Jobs
+        /// </summary>
+        /// <param name="succeeded"></param>
+        /// <param name="failed"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RLongRunningJobStatus[]>> GetJobs(bool succeeded = true, bool failed = true);
+
+
+        /// <summary>
         /// update job
         /// </summary>
         /// <param name="id"></param>

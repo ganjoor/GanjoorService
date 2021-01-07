@@ -379,6 +379,31 @@
             Artifact Service
             </summary>
         </member>
+        <member name="T:RSecurityBackend.Controllers.RLongRunningJobsControllerBase">
+            <summary>
+            Long Running Jobs
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RLongRunningJobsControllerBase.Get(System.Boolean,System.Boolean)">
+            <summary>
+            get long running jobs
+            </summary>
+            <param name="succeeded"></param>
+            <param name="failed"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RLongRunningJobsControllerBase.#ctor(RSecurityBackend.Services.ILongRunningJobProgressService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="jobService">
+            </param>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.RLongRunningJobsControllerBase._jobService">
+            <summary>
+            Artifact Service
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Controllers.RoleControllerBase">
             <summary>
             User roles
@@ -2216,6 +2241,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Services.ILongRunningJobProgressService.GetJobs(System.Boolean,System.Boolean)">
+            <summary>
+            Get Jobs
+            </summary>
+            <param name="succeeded"></param>
+            <param name="failed"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Services.ILongRunningJobProgressService.UpdateJob(System.Guid,System.Double,System.String,System.Boolean,System.String)">
             <summary>
             update job
@@ -2724,6 +2757,14 @@
             </summary>
             <param name="name"></param>
             <param name="step"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF.GetJobs(System.Boolean,System.Boolean)">
+            <summary>
+            Get Jobs
+            </summary>
+            <param name="succeeded"></param>
+            <param name="failed"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF.GetJob(System.Guid)">
