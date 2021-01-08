@@ -192,5 +192,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorPage> GanjoorPages { get; set; }
 
+        /// <summary>
+        /// Ganjoor Metres
+        /// </summary>
+        public DbSet<GanjoorMetre> GanjoorMetres { get; set; }
+
     }
 }

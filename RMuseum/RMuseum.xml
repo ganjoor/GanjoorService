@@ -1221,6 +1221,11 @@
             Ganjoor Pages
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorMetres">
+            <summary>
+            Ganjoor Metres
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status
@@ -3366,6 +3371,40 @@
             sample: /hafez/ghazal
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorMetre">
+            <summary>
+            Poem prosodic Metre
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorMetre.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorMetre.UrlSlug">
+            <summary>
+            Url Slug
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorMetre.Rhythm">
+            <summary>
+            Rythm
+            </summary>
+            <example>مفاعیلن مفاعیلن فعولن</example>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorMetre.Name">
+            <summary>
+            Name
+            </summary>
+            <example>
+            هزج مسدس محذوف
+            </example>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorMetre.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPageType">
             <summary>
             Ganjoor Page Type
@@ -3564,6 +3603,21 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.HtmlText">
             <summary>
             verses text as html (ganjoor.net format)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.GanjoorMetreId">
+            <summary>
+            prosody information
+            </summary>
+            <remarks>
+            in fact this should be a many-to-many relationship, but our current dataset lacks such a relationship instance and
+            because in fact it is actuallay this relationship should exists between a non-existant entity called block of poem
+            I ignored this relationship to take care of it whenever the block entity would be added to the data structure
+            </remarks>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.GanjoorMetre">
+            <summary>
+            metre
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">

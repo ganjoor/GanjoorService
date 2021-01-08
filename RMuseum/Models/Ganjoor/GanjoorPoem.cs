@@ -53,5 +53,20 @@ namespace RMuseum.Models.Ganjoor
         /// verses text as html (ganjoor.net format)
         /// </summary>
         public string HtmlText { get; set; }
+
+        /// <summary>
+        /// prosody information
+        /// </summary>
+        /// <remarks>
+        /// in fact this should be a many-to-many relationship, but our current dataset lacks such a relationship instance and
+        /// because in fact it is actuallay this relationship should exists between a non-existant entity called block of poem
+        /// I ignored this relationship to take care of it whenever the block entity would be added to the data structure
+        /// </remarks>
+        public int? GanjoorMetreId { get; set; }
+
+        /// <summary>
+        /// metre
+        /// </summary>
+        public virtual GanjoorMetre GanjoorMetre { get; set; }
     }
 }
