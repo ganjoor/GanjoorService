@@ -975,9 +975,11 @@ namespace RMuseum.Services.Implementation
                                 {
                                     using (DataTable srcData = new DataTable())
                                     {
+                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 1 - mysql 1")).Result;
+
                                         await src.FillAsync(srcData);
 
-                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 1")).Result;
+                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 1 - processing mysql data")).Result;
 
 
                                         foreach (DataRow row in srcData.Rows)
@@ -1059,12 +1061,16 @@ namespace RMuseum.Services.Implementation
                                     }
                                 }
                             }
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 1 - finalizing")).Result;
+
                             await context.SaveChangesAsync();
 
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 2")).Result;
-
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 2 - pre fetch data")).Result;
 
                             var orphanPages = await context.GanjoorPages.Include(p => p.Poem).Where(p => p.FullUrl == null).ToListAsync();
+
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 2 - post fetch data")).Result;
+
                             double count = orphanPages.Count;
                             int i = 0;
                             foreach (var page in orphanPages)
@@ -1126,7 +1132,81 @@ namespace RMuseum.Services.Implementation
                                 context.Update(page);
                             }
 
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "phase 2 - finalizing")).Result;
+
                             await context.SaveChangesAsync();
+
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - pre mysql data fetch")).Result;
+
+                            using (MySqlConnection connection = new MySqlConnection
+                                            (
+                                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                            ))
+                            {
+                                connection.Open();
+                                using (MySqlDataAdapter src = new MySqlDataAdapter(
+                                    "SELECT meta_key, post_id, meta_value FROM ganja_postmeta WHERE meta_key IN ( 'vazn', 'ravi', 'src', 'srcslug' )",
+                                    connection))
+                                {
+                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - mysql 2")).Result;
+                                    using (DataTable srcData = new DataTable())
+                                    {
+                                        await src.FillAsync(srcData);
+
+                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - processing meta data")).Result;
+
+                                        int r = 0;
+                                        foreach(DataRow row in srcData.Rows)
+                                        {
+                                            job = (await jobProgressServiceEF.UpdateJob(job.Id, r++, "phase 3 - processing meta data")).Result;
+
+                                            int poemId = int.Parse(row["post_id"].ToString());
+                                            var poem = await context.GanjoorPoems.Where(p => p.Id == poemId).FirstOrDefaultAsync();
+                                            if (poem == null)
+                                                continue;
+
+                                            string metaKey = row["meta_key"].ToString();
+                                            string metaValue = row["meta_value"].ToString();
+                                            switch (metaKey)
+                                            {
+                                                case "vazn":
+                                                    {
+                                                        GanjoorMetre metre = await context.GanjoorMetres.Where(m => m.Rhythm == metaValue).SingleOrDefaultAsync();
+                                                        if (metre == null)
+                                                        {
+                                                            metre = new GanjoorMetre()
+                                                            {
+                                                                Rhythm = metaValue,
+                                                                VerseCount = 0
+                                                            };
+                                                            context.GanjoorMetres.Add(metre);
+                                                            await context.SaveChangesAsync();
+                                                        }
+
+                                                        poem.GanjoorMetreId = metre.Id;
+                                                    }
+                                                    break;
+                                                case "ravi":
+                                                    poem.RhymeLetters = metaValue;
+                                                    break;
+                                                case "src":
+                                                    poem.SourceName = metaValue;
+                                                    break;
+                                                case "srcslug":
+                                                    poem.SourceUrlSlug = metaValue;
+                                                    break;
+                                            }
+
+                                            context.GanjoorPoems.Update(poem);
+                                        }
+                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - finalizing meta data")).Result;
+
+                                        await context.SaveChangesAsync();
+
+                                    }
+                                       
+                                }
+                            }
 
                             await jobProgressServiceEF.UpdateJob(job.Id, 100, "Finished", true);
                         }
