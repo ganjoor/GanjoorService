@@ -68,5 +68,20 @@ namespace RMuseum.Models.Ganjoor
         /// metre
         /// </summary>
         public virtual GanjoorMetre GanjoorMetre { get; set; }
+
+        /// <summary>
+        /// rhyme letters
+        /// </summary>
+        public string RhymeLetters { get; set; }
+
+        /// <summary>
+        /// source name
+        /// </summary>
+        public string SourceName { get; set; }
+
+        /// <summary>
+        /// source url slug
+        /// </summary>
+        public string SourceUrlSlug { get; set; }
     }
 }

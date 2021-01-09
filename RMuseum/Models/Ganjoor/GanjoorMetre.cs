@@ -33,5 +33,10 @@
         /// Description
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Total Verse Count
+        /// </summary>
+        public int VerseCount { get; set; }
     }
 }
