@@ -3883,6 +3883,26 @@
             verses text as html (ganjoor.net format)
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.GanjoorMetre">
+            <summary>
+            metre
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.RhymeLetters">
+            <summary>
+            rhyme letters
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.SourceName">
+            <summary>
+            source name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.SourceUrlSlug">
+            <summary>
+            source url slug
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Category">
             <summary>
             category

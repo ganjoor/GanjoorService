@@ -549,7 +549,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var poem = await _context.GanjoorPoems.Where(p => p.Id == id).SingleOrDefaultAsync();
+                var poem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).SingleOrDefaultAsync();
                 if(poem == null)
                 {
                     return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
@@ -673,6 +673,10 @@ namespace RMuseum.Services.Implementation
                         UrlSlug = poem.UrlSlug,
                         HtmlText = poem.HtmlText,
                         PlainText = poem.PlainText,
+                        GanjoorMetre = poem.GanjoorMetre,
+                        RhymeLetters = poem.RhymeLetters,
+                        SourceName = poem.SourceName,
+                        SourceUrlSlug = poem.SourceUrlSlug,
                         Category = cat,
                         Next = next,
                         Previous = previous,

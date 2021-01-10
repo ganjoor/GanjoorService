@@ -1,5 +1,4 @@
 ﻿using RMuseum.Models.GanjoorAudio.ViewModels;
-using RMuseum.Models.GanjoorIntegration.ViewModels;
 
 namespace RMuseum.Models.Ganjoor.ViewModels
 {
@@ -42,6 +41,27 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// verses text as html (ganjoor.net format)
         /// </summary>
         public string HtmlText { get; set; }
+
+
+        /// <summary>
+        /// metre
+        /// </summary>
+        public GanjoorMetre GanjoorMetre { get; set; }
+
+        /// <summary>
+        /// rhyme letters
+        /// </summary>
+        public string RhymeLetters { get; set; }
+
+        /// <summary>
+        /// source name
+        /// </summary>
+        public string SourceName { get; set; }
+
+        /// <summary>
+        /// source url slug
+        /// </summary>
+        public string SourceUrlSlug { get; set; }
 
         /// <summary>
         /// category
