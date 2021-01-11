@@ -21,7 +21,7 @@ namespace RMuseum.Models.MusicCatalogue
         /// url
         /// </summary>
         public string Url { get; set; }
-
+                
         /// <summary>
         /// albums
         /// </summary>

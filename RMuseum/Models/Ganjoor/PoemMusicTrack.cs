@@ -1,4 +1,6 @@
 ﻿using RMuseum.Models.MusicCatalogue;
+using RSecurityBackend.Models.Auth.Db;
+using System;
 
 namespace RMuseum.Models.Ganjoor
 {
@@ -63,6 +65,16 @@ namespace RMuseum.Models.Ganjoor
         public int? GanjoorTrackId { get; set; }
 
         /// <summary>
+        /// singer
+        /// </summary>
+        public virtual GanjoorSinger Singer { get; set; }
+
+        /// <summary>
+        /// singer id
+        /// </summary>
+        public int? SingerId { get; set; }
+
+        /// <summary>
         /// GanjoorTrack
         /// </summary>
         public virtual GanjoorTrack GanjoorTrack { get; set; }
@@ -81,6 +93,29 @@ namespace RMuseum.Models.Ganjoor
         /// description
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// approved
+        /// </summary>
+        public bool Approved { get; set; }
+
+        /// <summary>
+        /// Suggested by user id
+        /// </summary>
+        public Guid? SuggestedById { get; set; }
+
+        /// <summary>
+        /// Suggested by user
+        /// </summary>
+        /// <remarks>
+        /// approval user would be extractable from AuditLogs
+        /// </remarks>
+        public virtual RAppUser SuggestedBy { get; set; }
+
+        /// <summary>
+        /// approval date
+        /// </summary>
+        public DateTime ApprovalDate { get; set; }
 
         /// <summary>
         /// broken link
