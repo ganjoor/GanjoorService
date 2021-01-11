@@ -1226,6 +1226,26 @@
             Ganjoor Metres
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.Singers">
+            <summary>
+            singers
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.MusicTracks">
+            <summary>
+            music tracks
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GolhaCollections">
+            <summary>
+            GolhaCollection 
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.PoemMusicTracks">
+            <summary>
+            PoemMusicTracks
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status
@@ -3700,6 +3720,116 @@
             text
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.PoemMusicTrack">
+            <summary>
+            poem related track
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.Poem">
+            <summary>
+            poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.TrackType">
+            <summary>
+            track type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.ArtistName">
+            <summary>
+            artist name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.ArtistUrl">
+            <summary>
+            artist url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.AlbumName">
+            <summary>
+            album name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.AlbumUrl">
+            <summary>
+            album url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.TrackName">
+            <summary>
+            track name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.TrackUrl">
+            <summary>
+            track url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.GanjoorTrackId">
+            <summary>
+            GanjoorTrack Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.GanjoorTrack">
+            <summary>
+            GanjoorTrack
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.GolhaTrackId">
+            <summary>
+            GolhaTrack Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.GolhaTrack">
+            <summary>
+            GolhaTrack
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.BrokenLink">
+            <summary>
+            broken link
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PoemMusicTrackType">
+            <summary>
+            poem music track type
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemMusicTrackType.BeepTunesOrKhosousi">
+            <summary>
+            https://beeptunes.com/or http://khosousi.com
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemMusicTrackType.Golha">
+            <summary>
+            http://www.golha.co.uk
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemMusicTrackType.iTunes">
+            <summary>
+            itunes.com
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify">
+            <summary>
+            https://open.spotify.com/
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.VersePosition">
             <summary>
             معنی فیلد position در جدول verse با توجه به مقادیر این ساختار داده مشخص می شود.
@@ -4082,6 +4212,227 @@
             <summary>
             Job Type
             </summary>
+        </member>
+        <member name="T:RMuseum.Models.MusicCatalogue.GanjoorAlbum">
+            <summary>
+            music catalogue album
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorAlbum.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorAlbum.SingerId">
+            <summary>
+            singer id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorAlbum.Singer">
+            <summary>
+            singer
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorAlbum.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorAlbum.Url">
+            <summary>
+            url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorAlbum.Tracks">
+            <summary>
+            tracks
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.MusicCatalogue.GanjoorSinger">
+            <summary>
+            music catalogue singer
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorSinger.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorSinger.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorSinger.Url">
+            <summary>
+            url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorSinger.Albums">
+            <summary>
+            albums
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.MusicCatalogue.GanjoorTrack">
+            <summary>
+            music catalogue track
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorTrack.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorTrack.AlbumId">
+            <summary>
+            album id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorTrack.Album">
+            <summary>
+            album
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorTrack.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorTrack.Url">
+            <summary>
+            url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorTrack.Blocked">
+            <summary>
+            blocked from suggestion
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorTrack.BlockReason">
+            <summary>
+            reason
+            </summary>
+            <example>
+            track is purely music and no singing is done through it
+            </example>
+        </member>
+        <member name="T:RMuseum.Models.MusicCatalogue.GolhaCollection">
+            <summary>
+            http://www.golha.co.uk offline catalogue
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaCollection.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaCollection.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaCollection.Url">
+            <summary>
+            url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaCollection.Programs">
+            <summary>
+            programs
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaProgram.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaProgram.GolhaCollectionId">
+            <summary>
+            GolhaCollection Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaProgram.GolhaCollection">
+            <summary>
+            GolhaCollection
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaProgram.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaProgram.ProgramOrder">
+            <summary>
+            program order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaProgram.Url">
+            <summary>
+            url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaProgram.Mp3">
+            <summary>
+            mp3
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaProgram.Tracks">
+            <summary>
+            tracks
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaTrack.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaTrack.GolhaProgramId">
+            <summary>
+            GolhaProgram Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaTrack.GolhaProgram">
+            <summary>
+            GolhaProgram
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaTrack.TrackNo">
+            <summary>
+            track no
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaTrack.Timing">
+            <summary>
+            timing
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaTrack.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaTrack.SingerId">
+            <summary>
+            singer id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaTrack.Singer">
+            <summary>
+            singer
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaTrack.Blocked">
+            <summary>
+            blocked from suggestion
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GolhaTrack.BlockReason">
+            <summary>
+            reason
+            </summary>
+            <example>
+            track is purely music and no singing is done through it
+            </example>
         </member>
         <member name="T:RMuseum.Models.Note.RNoteType">
             <summary>

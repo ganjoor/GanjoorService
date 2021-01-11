@@ -1,6 +1,9 @@
 ﻿namespace RMuseum.Models.MusicCatalogue
 {
-    public class GolhaTrack
+    /// <summary>
+    /// music catalogue track
+    /// </summary>
+    public class GanjoorTrack
     {
         /// <summary>
         /// id
@@ -8,39 +11,24 @@
         public int Id { get; set; }
 
         /// <summary>
-        /// GolhaProgram Id
+        /// album id
         /// </summary>
-        public int GolhaProgramId { get; set; }
+        public int AlbumId { get; set; }
 
         /// <summary>
-        /// GolhaProgram
+        /// album
         /// </summary>
-        public GolhaProgram GolhaProgram { get; set; }
+        public GanjoorAlbum Album { get; set; }
 
         /// <summary>
-        /// track no
+        /// name
         /// </summary>
-        public int TrackNo { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
-        /// timing
+        /// url
         /// </summary>
-        public string Timing { get; set; }
-
-        /// <summary>
-        /// title
-        /// </summary>
-        public string Title { get; set; }
-
-        /// <summary>
-        /// singer id
-        /// </summary>
-        public int? SingerId { get; set; }
-
-        /// <summary>
-        /// singer
-        /// </summary>
-        public virtual GanjoorSinger Singer { get; set; }
+        public string Url { get; set; }
 
         /// <summary>
         /// blocked from suggestion

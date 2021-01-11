@@ -13,6 +13,7 @@ using RSecurityBackend.Models.Auth.Db;
 using System;
 using Dapper;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.MusicCatalogue;
 
 namespace RMuseum.DbContext
 {
@@ -82,6 +83,12 @@ namespace RMuseum.DbContext
 
             builder.Entity<GanjoorPage>()
                  .HasIndex(c => c.FullUrl);
+
+            builder.Entity<GanjoorSinger>()
+                .HasIndex(c => c.Name);
+
+            builder.Entity<GanjoorTrack>()
+                .HasIndex(c => c.Name);
 
         }
 
@@ -196,6 +203,26 @@ namespace RMuseum.DbContext
         /// Ganjoor Metres
         /// </summary>
         public DbSet<GanjoorMetre> GanjoorMetres { get; set; }
+
+        /// <summary>
+        /// singers
+        /// </summary>
+        public DbSet<GanjoorSinger> Singers { get; set; }
+
+        /// <summary>
+        /// music tracks
+        /// </summary>
+        public DbSet<GanjoorTrack> MusicTracks { get; set; }
+
+        /// <summary>
+        /// GolhaCollection 
+        /// </summary>
+        public DbSet<GolhaCollection> GolhaCollections { get; set; }
+
+        /// <summary>
+        /// PoemMusicTracks
+        /// </summary>
+        public DbSet<PoemMusicTrack> PoemMusicTracks { get; set; }
 
     }
 }

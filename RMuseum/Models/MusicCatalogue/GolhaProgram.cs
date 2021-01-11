@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RMuseum.Models.MusicCatalogue
@@ -40,5 +41,10 @@ namespace RMuseum.Models.MusicCatalogue
         /// mp3
         /// </summary>
         public string Mp3 { get; set; }
+
+        /// <summary>
+        /// tracks
+        /// </summary>
+        public ICollection<GolhaTrack> Tracks { get; set; }
     }
 }

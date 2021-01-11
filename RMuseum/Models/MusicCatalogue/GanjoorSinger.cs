@@ -1,18 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RMuseum.Models.MusicCatalogue
 {
     /// <summary>
-    /// http://www.golha.co.uk offline catalogue
+    /// music catalogue singer
     /// </summary>
-    public class GolhaCollection
+    public class GanjoorSinger
     {
         /// <summary>
         /// id
         /// </summary>
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         /// <summary>
@@ -23,11 +20,11 @@ namespace RMuseum.Models.MusicCatalogue
         /// <summary>
         /// url
         /// </summary>
-        public string Url { get { return $"http://www.golha.co.uk/fa/search_basic/{Id}"; } }
+        public string Url { get; set; }
 
         /// <summary>
-        /// programs
+        /// albums
         /// </summary>
-        public ICollection<GolhaProgram> Programs { get; set; }
+        public ICollection<GanjoorAlbum> Albums { get; set; }
     }
 }
