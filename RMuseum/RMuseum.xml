@@ -3780,6 +3780,16 @@
             GanjoorTrack Id
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.Singer">
+            <summary>
+            singer
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.SingerId">
+            <summary>
+            singer id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.GanjoorTrack">
             <summary>
             GanjoorTrack
@@ -3798,6 +3808,29 @@
         <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.Description">
             <summary>
             description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.Approved">
+            <summary>
+            approved
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.SuggestedById">
+            <summary>
+            Suggested by user id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.SuggestedBy">
+            <summary>
+            Suggested by user
+            </summary>
+            <remarks>
+            approval user would be extractable from AuditLogs
+            </remarks>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.ApprovalDate">
+            <summary>
+            approval date
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.BrokenLink">
@@ -6438,6 +6471,28 @@
             <param name="specfics"></param>
             <param name="additional"></param>
             <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.MusicCatalogueService">
+            <summary>
+            Music Catalgue Service Implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.MusicCatalogueService.ImportFromMySql(RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF,RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus)">
+            <summary>
+            import catalogue from ganjoor.net MySql db
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.MusicCatalogueService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.MusicCatalogueService.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            constructor
+            </summary>
+            <param name="configuration"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.PictureFileService">
             <summary>

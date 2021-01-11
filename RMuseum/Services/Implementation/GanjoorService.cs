@@ -964,6 +964,7 @@ namespace RMuseum.Services.Implementation
 
                         try
                         {
+                           
                             using (MySqlConnection connection = new MySqlConnection
                                             (
                                             $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
@@ -1211,6 +1212,10 @@ namespace RMuseum.Services.Implementation
                                        
                                 }
                             }
+
+
+                            MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration);
+                            await catalogueService.ImportFromMySql(jobProgressServiceEF, job);
 
                             await jobProgressServiceEF.UpdateJob(job.Id, 100, "Finished", true);
                         }
