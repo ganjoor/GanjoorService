@@ -10,7 +10,7 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20210111084102_GanjoorMusicCatalogue")]
+    [Migration("20210112141927_GanjoorMusicCatalogue")]
     partial class GanjoorMusicCatalogue
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -618,7 +618,7 @@ namespace RMuseum.Migrations
 
                     b.HasIndex("SuggestedById");
 
-                    b.ToTable("PoemMusicTracks");
+                    b.ToTable("GanjoorPoemMusicTracks");
                 });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.Recitation", b =>
@@ -996,7 +996,7 @@ namespace RMuseum.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Singers");
+                    b.ToTable("GanjoorSingers");
                 });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GanjoorTrack", b =>
@@ -1027,7 +1027,7 @@ namespace RMuseum.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("MusicTracks");
+                    b.ToTable("GanjoorMusicCatalogueTracks");
                 });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GolhaCollection", b =>
@@ -1073,9 +1073,7 @@ namespace RMuseum.Migrations
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GolhaTrack", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<string>("BlockReason")
                         .HasColumnType("nvarchar(max)");
@@ -1104,7 +1102,7 @@ namespace RMuseum.Migrations
 
                     b.HasIndex("SingerId");
 
-                    b.ToTable("GolhaTrack");
+                    b.ToTable("GolhaTracks");
                 });
 
             modelBuilder.Entity("RMuseum.Models.Note.RUserNote", b =>

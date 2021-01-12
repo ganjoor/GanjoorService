@@ -8,6 +8,20 @@ namespace RMuseum.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "GanjoorSingers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(nullable: true),
+                    Url = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GanjoorSingers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GolhaCollections",
                 columns: table => new
                 {
@@ -20,17 +34,24 @@ namespace RMuseum.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Singers",
+                name: "GanjoorAlbum",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    SingerId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Url = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Singers", x => x.Id);
+                    table.PrimaryKey("PK_GanjoorAlbum", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GanjoorAlbum_GanjoorSingers_SingerId",
+                        column: x => x.SingerId,
+                        principalTable: "GanjoorSingers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,59 +77,7 @@ namespace RMuseum.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GanjoorAlbum",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SingerId = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    Url = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GanjoorAlbum", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GanjoorAlbum_Singers_SingerId",
-                        column: x => x.SingerId,
-                        principalTable: "Singers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GolhaTrack",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    GolhaProgramId = table.Column<int>(nullable: false),
-                    TrackNo = table.Column<int>(nullable: false),
-                    Timing = table.Column<string>(nullable: true),
-                    Title = table.Column<string>(nullable: true),
-                    SingerId = table.Column<int>(nullable: true),
-                    Blocked = table.Column<bool>(nullable: false),
-                    BlockReason = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GolhaTrack", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GolhaTrack_GolhaProgram_GolhaProgramId",
-                        column: x => x.GolhaProgramId,
-                        principalTable: "GolhaProgram",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GolhaTrack_Singers_SingerId",
-                        column: x => x.SingerId,
-                        principalTable: "Singers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MusicTracks",
+                name: "GanjoorMusicCatalogueTracks",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -121,9 +90,9 @@ namespace RMuseum.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MusicTracks", x => x.Id);
+                    table.PrimaryKey("PK_GanjoorMusicCatalogueTracks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MusicTracks_GanjoorAlbum_AlbumId",
+                        name: "FK_GanjoorMusicCatalogueTracks_GanjoorAlbum_AlbumId",
                         column: x => x.AlbumId,
                         principalTable: "GanjoorAlbum",
                         principalColumn: "Id",
@@ -131,7 +100,37 @@ namespace RMuseum.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PoemMusicTracks",
+                name: "GolhaTracks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false),
+                    GolhaProgramId = table.Column<int>(nullable: false),
+                    TrackNo = table.Column<int>(nullable: false),
+                    Timing = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
+                    SingerId = table.Column<int>(nullable: true),
+                    Blocked = table.Column<bool>(nullable: false),
+                    BlockReason = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GolhaTracks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GolhaTracks_GolhaProgram_GolhaProgramId",
+                        column: x => x.GolhaProgramId,
+                        principalTable: "GolhaProgram",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GolhaTracks_GanjoorSingers_SingerId",
+                        column: x => x.SingerId,
+                        principalTable: "GanjoorSingers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GanjoorPoemMusicTracks",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -155,33 +154,33 @@ namespace RMuseum.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PoemMusicTracks", x => x.Id);
+                    table.PrimaryKey("PK_GanjoorPoemMusicTracks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PoemMusicTracks_MusicTracks_GanjoorTrackId",
+                        name: "FK_GanjoorPoemMusicTracks_GanjoorMusicCatalogueTracks_GanjoorTrackId",
                         column: x => x.GanjoorTrackId,
-                        principalTable: "MusicTracks",
+                        principalTable: "GanjoorMusicCatalogueTracks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PoemMusicTracks_GolhaTrack_GolhaTrackId",
+                        name: "FK_GanjoorPoemMusicTracks_GolhaTracks_GolhaTrackId",
                         column: x => x.GolhaTrackId,
-                        principalTable: "GolhaTrack",
+                        principalTable: "GolhaTracks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PoemMusicTracks_GanjoorPoems_PoemId",
+                        name: "FK_GanjoorPoemMusicTracks_GanjoorPoems_PoemId",
                         column: x => x.PoemId,
                         principalTable: "GanjoorPoems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PoemMusicTracks_Singers_SingerId",
+                        name: "FK_GanjoorPoemMusicTracks_GanjoorSingers_SingerId",
                         column: x => x.SingerId,
-                        principalTable: "Singers",
+                        principalTable: "GanjoorSingers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PoemMusicTracks_AspNetUsers_SuggestedById",
+                        name: "FK_GanjoorPoemMusicTracks_AspNetUsers_SuggestedById",
                         column: x => x.SuggestedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -194,71 +193,71 @@ namespace RMuseum.Migrations
                 column: "SingerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GanjoorMusicCatalogueTracks_AlbumId",
+                table: "GanjoorMusicCatalogueTracks",
+                column: "AlbumId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GanjoorMusicCatalogueTracks_Name",
+                table: "GanjoorMusicCatalogueTracks",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GanjoorPoemMusicTracks_GanjoorTrackId",
+                table: "GanjoorPoemMusicTracks",
+                column: "GanjoorTrackId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GanjoorPoemMusicTracks_GolhaTrackId",
+                table: "GanjoorPoemMusicTracks",
+                column: "GolhaTrackId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GanjoorPoemMusicTracks_PoemId",
+                table: "GanjoorPoemMusicTracks",
+                column: "PoemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GanjoorPoemMusicTracks_SingerId",
+                table: "GanjoorPoemMusicTracks",
+                column: "SingerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GanjoorPoemMusicTracks_SuggestedById",
+                table: "GanjoorPoemMusicTracks",
+                column: "SuggestedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GanjoorSingers_Name",
+                table: "GanjoorSingers",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GolhaProgram_GolhaCollectionId",
                 table: "GolhaProgram",
                 column: "GolhaCollectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GolhaTrack_GolhaProgramId",
-                table: "GolhaTrack",
+                name: "IX_GolhaTracks_GolhaProgramId",
+                table: "GolhaTracks",
                 column: "GolhaProgramId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GolhaTrack_SingerId",
-                table: "GolhaTrack",
+                name: "IX_GolhaTracks_SingerId",
+                table: "GolhaTracks",
                 column: "SingerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MusicTracks_AlbumId",
-                table: "MusicTracks",
-                column: "AlbumId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MusicTracks_Name",
-                table: "MusicTracks",
-                column: "Name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PoemMusicTracks_GanjoorTrackId",
-                table: "PoemMusicTracks",
-                column: "GanjoorTrackId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PoemMusicTracks_GolhaTrackId",
-                table: "PoemMusicTracks",
-                column: "GolhaTrackId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PoemMusicTracks_PoemId",
-                table: "PoemMusicTracks",
-                column: "PoemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PoemMusicTracks_SingerId",
-                table: "PoemMusicTracks",
-                column: "SingerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PoemMusicTracks_SuggestedById",
-                table: "PoemMusicTracks",
-                column: "SuggestedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Singers_Name",
-                table: "Singers",
-                column: "Name");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "PoemMusicTracks");
+                name: "GanjoorPoemMusicTracks");
 
             migrationBuilder.DropTable(
-                name: "MusicTracks");
+                name: "GanjoorMusicCatalogueTracks");
 
             migrationBuilder.DropTable(
-                name: "GolhaTrack");
+                name: "GolhaTracks");
 
             migrationBuilder.DropTable(
                 name: "GanjoorAlbum");
@@ -267,7 +266,7 @@ namespace RMuseum.Migrations
                 name: "GolhaProgram");
 
             migrationBuilder.DropTable(
-                name: "Singers");
+                name: "GanjoorSingers");
 
             migrationBuilder.DropTable(
                 name: "GolhaCollections");

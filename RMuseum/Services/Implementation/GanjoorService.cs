@@ -9,7 +9,9 @@ using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration.ViewModels;
+using RMuseum.Models.MusicCatalogue;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Models.Generic.Db;
 using RSecurityBackend.Services;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -960,7 +962,17 @@ namespace RMuseum.Services.Implementation
                     using (RMuseumDbContext contextReport = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
                     {
                         LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(contextReport);
+
                         var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", "pre open connection")).Result;
+
+                        
+
+                        MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration);
+                        RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql(jobProgressServiceEF, job);
+
+                        if (!musicCatalogueRes.Result)
+                            return;
+                        
 
                         try
                         {
@@ -1062,13 +1074,14 @@ namespace RMuseum.Services.Implementation
                                             }
 
                                             context.GanjoorPages.Add(page);
+                                            await context.SaveChangesAsync();
                                         }
                                     }
                                 }
                             }
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 1 - finalizing")).Result;
+                           
 
-                            await context.SaveChangesAsync();
+                           
 
                             job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 2 - pre fetch data")).Result;
 
@@ -1135,11 +1148,11 @@ namespace RMuseum.Services.Implementation
                                 page.FullTitle = fullTitle;
 
                                 context.Update(page);
+                                await context.SaveChangesAsync();
                             }
 
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "phase 2 - finalizing")).Result;
-
-                            await context.SaveChangesAsync();
+                           
+                           
 
                             job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - pre mysql data fetch")).Result;
 
@@ -1214,8 +1227,10 @@ namespace RMuseum.Services.Implementation
                             }
 
 
-                            MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration);
-                            await catalogueService.ImportFromMySql(jobProgressServiceEF, job);
+                            await _ImportPoemSongsDataFromMySql(context, jobProgressServiceEF, job);
+
+
+
 
                             await jobProgressServiceEF.UpdateJob(job.Id, 100, "Finished", true);
                         }
@@ -1233,6 +1248,91 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
+        }
+
+        private async Task<RServiceResult<bool>> _ImportPoemSongsDataFromMySql(RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        {
+            try
+            {
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 5 - pre mysql data fetch")).Result;
+
+                using (MySqlConnection connection = new MySqlConnection
+                                (
+                                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                ))
+                {
+                    connection.Open();
+                    using (MySqlDataAdapter src = new MySqlDataAdapter(
+                        "SELECT poem_id, artist_name, artist_beeptunesurl, album_name, album_beeptunesurl, track_name, track_beeptunesurl, ptrack_typeid FROM ganja_ptracks ORDER BY id",
+                        connection))
+                    {
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 5 - mysql")).Result;
+                        using (DataTable data = new DataTable())
+                        {
+                            await src.FillAsync(data);
+
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 5 - processing approved poem songs")).Result;
+
+                            foreach (DataRow row in data.Rows)
+                            {
+                                PoemMusicTrack track = new PoemMusicTrack()
+                                {
+                                    TrackType = (PoemMusicTrackType)int.Parse(row["ptrack_typeid"].ToString()),
+                                    PoemId = int.Parse(row["poem_id"].ToString()),
+                                    ArtistName = row["artist_name"].ToString(),
+                                    ArtistUrl = row["artist_beeptunesurl"].ToString(),
+                                    AlbumName = row["album_name"].ToString(),
+                                    AlbumUrl = row["album_beeptunesurl"].ToString(),
+                                    TrackName = row["track_name"].ToString(),
+                                    TrackUrl = row["track_beeptunesurl"].ToString()
+                                };
+
+                                switch(track.TrackType)
+                                {
+                                    case PoemMusicTrackType.BeepTunesOrKhosousi:
+                                    case PoemMusicTrackType.iTunes:
+                                        {
+                                            GanjoorTrack catalogueTrack = await context.GanjoorMusicCatalogueTracks.Where(m => m.Url == track.TrackUrl).SingleOrDefaultAsync();
+                                            if(catalogueTrack != null)
+                                            {
+                                                track.GanjoorTrackId = catalogueTrack.Id;
+                                            }
+                                        }
+                                        break;
+                                    case PoemMusicTrackType.Golha:
+                                        {
+                                            track.AlbumName = $"{track.ArtistName} » {track.AlbumName}";
+                                            track.ArtistName = "";
+
+                                            int golhaTrackId = int.Parse(track.AlbumUrl);
+                                            GolhaTrack golhaTrack = await context.GolhaTracks.Where(g => g.Id == golhaTrackId).SingleOrDefaultAsync();
+                                            if(golhaTrack != null)
+                                            {
+                                                track.GolhaTrackId = golhaTrack.Id;
+                                                track.AlbumUrl = "";
+                                            }
+                                        }
+                                        break;
+                                }
+
+                                context.GanjoorPoemMusicTracks.Add(track);
+
+                            }
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 5 - finalizing approved poem songs data")).Result;
+
+                            await context.SaveChangesAsync();
+
+                        }
+
+                    }
+                }
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+            
         }
 
         private List<GanjoorVerse> _extractVersesFromPoemHtmlText(string poemtext)

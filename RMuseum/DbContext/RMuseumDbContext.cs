@@ -204,15 +204,21 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorMetre> GanjoorMetres { get; set; }
 
+        
         /// <summary>
         /// singers
         /// </summary>
-        public DbSet<GanjoorSinger> Singers { get; set; }
+        public DbSet<GanjoorSinger> GanjoorSingers { get; set; }
 
         /// <summary>
         /// music tracks
         /// </summary>
-        public DbSet<GanjoorTrack> MusicTracks { get; set; }
+        public DbSet<GanjoorTrack> GanjoorMusicCatalogueTracks { get; set; }
+
+        /// <summary>
+        /// golha tracks
+        /// </summary>
+        public DbSet<GolhaTrack> GolhaTracks { get; set; }
 
         /// <summary>
         /// GolhaCollection 
@@ -222,7 +228,8 @@ namespace RMuseum.DbContext
         /// <summary>
         /// PoemMusicTracks
         /// </summary>
-        public DbSet<PoemMusicTrack> PoemMusicTracks { get; set; }
+        public DbSet<PoemMusicTrack> GanjoorPoemMusicTracks { get; set; }
+        
 
     }
 }

@@ -1226,14 +1226,19 @@
             Ganjoor Metres
             </summary>
         </member>
-        <member name="P:RMuseum.DbContext.RMuseumDbContext.Singers">
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorSingers">
             <summary>
             singers
             </summary>
         </member>
-        <member name="P:RMuseum.DbContext.RMuseumDbContext.MusicTracks">
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorMusicCatalogueTracks">
             <summary>
             music tracks
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GolhaTracks">
+            <summary>
+            golha tracks
             </summary>
         </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GolhaCollections">
@@ -1241,7 +1246,7 @@
             GolhaCollection 
             </summary>
         </member>
-        <member name="P:RMuseum.DbContext.RMuseumDbContext.PoemMusicTracks">
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoemMusicTracks">
             <summary>
             PoemMusicTracks
             </summary>

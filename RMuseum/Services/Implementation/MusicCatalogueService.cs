@@ -82,7 +82,7 @@ namespace RMuseum.Services.Implementation
                                                 };
 
                                                 using (MySqlDataAdapter srcTracks = new MySqlDataAdapter(
-                                               $"SELECT track_no, timing, title FROM golha_tracks WHERE program_id = {program.Id} ORDER BY track_no",
+                                               $"SELECT track_id, track_no, timing, title FROM golha_tracks WHERE program_id = {program.Id} ORDER BY track_no",
                                                connection))
                                                 {
                                                     using (DataTable trackData = new DataTable())
@@ -95,6 +95,7 @@ namespace RMuseum.Services.Implementation
                                                                 (
                                                                 new GolhaTrack()
                                                                 {
+                                                                    Id = int.Parse(golhaTrack["track_id"].ToString()),
                                                                     TrackNo = int.Parse(golhaTrack["track_no"].ToString()),
                                                                     Timing = golhaTrack["timing"].ToString(),
                                                                     Title = golhaTrack["title"].ToString(),
@@ -194,7 +195,7 @@ namespace RMuseum.Services.Implementation
 
 
 
-                                    context.Singers.Add(singer);
+                                    context.GanjoorSingers.Add(singer);
 
                                     job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"phase 4 - import singers data - {singer.Name}")).Result;
 

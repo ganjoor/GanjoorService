@@ -1,7 +1,14 @@
-﻿namespace RMuseum.Models.MusicCatalogue
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RMuseum.Models.MusicCatalogue
 {
     public class GolhaTrack
     {
+        /// <summary>
+        /// id
+        /// </summary>
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         /// <summary>
         /// id
         /// </summary>
