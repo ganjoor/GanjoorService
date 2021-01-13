@@ -965,8 +965,6 @@ namespace RMuseum.Services.Implementation
 
                         var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", "pre open connection")).Result;
 
-                        
-
                         MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration);
                         RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql(jobProgressServiceEF, job);
 
@@ -1074,14 +1072,15 @@ namespace RMuseum.Services.Implementation
                                             }
 
                                             context.GanjoorPages.Add(page);
-                                            await context.SaveChangesAsync();
+                                             
                                         }
                                     }
                                 }
                             }
-                           
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 1 - finalizing")).Result;
+                            await context.SaveChangesAsync();
 
-                           
+
 
                             job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 2 - pre fetch data")).Result;
 
@@ -1148,11 +1147,11 @@ namespace RMuseum.Services.Implementation
                                 page.FullTitle = fullTitle;
 
                                 context.Update(page);
-                                await context.SaveChangesAsync();
                             }
 
-                           
-                           
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "phase 2 - finalizing")).Result;
+
+                            await context.SaveChangesAsync();
 
                             job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - pre mysql data fetch")).Result;
 
@@ -1217,20 +1216,17 @@ namespace RMuseum.Services.Implementation
 
                                             context.GanjoorPoems.Update(poem);
                                         }
-                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - finalizing meta data")).Result;
-
-                                        await context.SaveChangesAsync();
-
                                     }
-                                       
                                 }
                             }
-
-
-                            await _ImportPoemSongsDataFromMySql(context, jobProgressServiceEF, job);
-
-
-
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - finalizing meta data")).Result;
+                            await context.SaveChangesAsync();
+                            
+                            var resPoemSongs = await _ImportPoemSongsDataFromMySql(context, jobProgressServiceEF, job);
+                            if(!resPoemSongs.Result)
+                            {
+                                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, resPoemSongs.ExceptionString);
+                            }
 
                             await jobProgressServiceEF.UpdateJob(job.Id, 100, "Finished", true);
                         }
@@ -1284,18 +1280,31 @@ namespace RMuseum.Services.Implementation
                                     AlbumName = row["album_name"].ToString(),
                                     AlbumUrl = row["album_beeptunesurl"].ToString(),
                                     TrackName = row["track_name"].ToString(),
-                                    TrackUrl = row["track_beeptunesurl"].ToString()
+                                    TrackUrl = row["track_beeptunesurl"].ToString(),
+                                    ApprovalDate = DateTime.Now,
+                                    Description = "",
+                                    Approved = true
                                 };
+
+                                var poem = await context.GanjoorPoems.Where(p => p.Id == track.PoemId).SingleOrDefaultAsync();
+                                if (poem == null)
+                                    continue;
 
                                 switch(track.TrackType)
                                 {
                                     case PoemMusicTrackType.BeepTunesOrKhosousi:
                                     case PoemMusicTrackType.iTunes:
                                         {
-                                            GanjoorTrack catalogueTrack = await context.GanjoorMusicCatalogueTracks.Where(m => m.Url == track.TrackUrl).SingleOrDefaultAsync();
+                                            GanjoorTrack catalogueTrack = await context.GanjoorMusicCatalogueTracks.Where(m => m.Url == track.TrackUrl).FirstOrDefaultAsync();
                                             if(catalogueTrack != null)
                                             {
                                                 track.GanjoorTrackId = catalogueTrack.Id;
+                                            }
+
+                                            GanjoorSinger singer = await context.GanjoorSingers.Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
+                                            if(singer != null)
+                                            {
+                                                track.SingerId = singer.Id;
                                             }
                                         }
                                         break;
@@ -1304,13 +1313,8 @@ namespace RMuseum.Services.Implementation
                                             track.AlbumName = $"{track.ArtistName} » {track.AlbumName}";
                                             track.ArtistName = "";
 
-                                            int golhaTrackId = int.Parse(track.AlbumUrl);
-                                            GolhaTrack golhaTrack = await context.GolhaTracks.Where(g => g.Id == golhaTrackId).SingleOrDefaultAsync();
-                                            if(golhaTrack != null)
-                                            {
-                                                track.GolhaTrackId = golhaTrack.Id;
-                                                track.AlbumUrl = "";
-                                            }
+                                            track.GolhaTrackId = int.Parse(track.ArtistUrl);
+                                            track.ArtistUrl = "";
                                         }
                                         break;
                                 }

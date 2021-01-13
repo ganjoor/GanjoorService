@@ -9,9 +9,6 @@ namespace RMuseum.Models.MusicCatalogue
         /// id
         /// </summary>
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
-        /// <summary>
-        /// id
-        /// </summary>
         public int Id { get; set; }
 
         /// <summary>
