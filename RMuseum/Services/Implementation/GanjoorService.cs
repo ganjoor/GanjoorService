@@ -965,6 +965,7 @@ namespace RMuseum.Services.Implementation
 
                         var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", "pre open connection")).Result;
 
+
                         MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration);
                         RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql(jobProgressServiceEF, job);
 
@@ -1222,10 +1223,16 @@ namespace RMuseum.Services.Implementation
                             job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - finalizing meta data")).Result;
                             await context.SaveChangesAsync();
                             
-                            var resPoemSongs = await _ImportPoemSongsDataFromMySql(context, jobProgressServiceEF, job);
-                            if(!resPoemSongs.Result)
+                            var resApprovedPoemSongs = await _ImportPoemSongsDataFromMySql(context, jobProgressServiceEF, job, true);
+                            if(!resApprovedPoemSongs.Result)
                             {
-                                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, resPoemSongs.ExceptionString);
+                                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, resApprovedPoemSongs.ExceptionString);
+                            }
+
+                            var resPendingPoemSongs = await _ImportPoemSongsDataFromMySql(context, jobProgressServiceEF, job, false);
+                            if (!resPendingPoemSongs.Result)
+                            {
+                                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, resPendingPoemSongs.ExceptionString);
                             }
 
                             await jobProgressServiceEF.UpdateJob(job.Id, 100, "Finished", true);
@@ -1246,15 +1253,21 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task<RServiceResult<bool>> _ImportPoemSongsDataFromMySql(RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        private async Task<RServiceResult<bool>> _ImportPoemSongsDataFromMySql(RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, bool approved)
         {
             try
             {
                 job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 5 - pre mysql data fetch")).Result;
 
+                string connectionString =
+                    approved ?
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                    :
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["SongsUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["SongsPassword"]};database={Configuration.GetSection("AudioMySqlServer")["SongsDatabase"]};charset=utf8;convert zero datetime=True";
+
                 using (MySqlConnection connection = new MySqlConnection
                                 (
-                                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                connectionString
                                 ))
                 {
                     connection.Open();
@@ -1283,7 +1296,7 @@ namespace RMuseum.Services.Implementation
                                     TrackUrl = row["track_beeptunesurl"].ToString(),
                                     ApprovalDate = DateTime.Now,
                                     Description = "",
-                                    Approved = true
+                                    Approved = approved
                                 };
 
                                 var poem = await context.GanjoorPoems.Where(p => p.Id == track.PoemId).SingleOrDefaultAsync();
