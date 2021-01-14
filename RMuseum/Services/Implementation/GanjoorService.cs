@@ -664,6 +664,32 @@ namespace RMuseum.Services.Implementation
                 };
 
 
+                PoemMusicTrackViewModel[] tracks = null;
+                if(songs)
+                {
+                    tracks = await _context.GanjoorPoemMusicTracks
+                                                    .Where(t => t.PoemId == id && t.Approved)
+                                                    .OrderBy(t => t.Id)
+                                                    .Select
+                                                    (
+                                                     t => new PoemMusicTrackViewModel()
+                                                     {
+                                                         Id = t.Id,
+                                                         TrackType = t.TrackType,
+                                                         ArtistName = t.ArtistName,
+                                                         ArtistUrl = t.ArtistUrl,
+                                                         AlbumName = t.AlbumName,
+                                                         AlbumUrl = t.AlbumUrl,
+                                                         TrackName = t.TrackName,
+                                                         TrackUrl = t.TrackUrl,
+                                                         Description = t.Description,
+                                                         BrokenLink = t.BrokenLink
+
+                                                     }
+                                                    ).ToArrayAsync();
+                }
+
+
                 return new RServiceResult<GanjoorPoemCompleteViewModel>
                     (
                     new GanjoorPoemCompleteViewModel()
@@ -684,7 +710,8 @@ namespace RMuseum.Services.Implementation
                         Previous = previous,
                         Recitations = rc,
                         Images = imgs,
-                        Verses = verses
+                        Verses = verses,
+                        Songs = tracks
                     }
                     );
             }

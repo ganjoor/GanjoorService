@@ -42,7 +42,6 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// </summary>
         public string HtmlText { get; set; }
 
-
         /// <summary>
         /// metre
         /// </summary>
@@ -92,5 +91,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// Images
         /// </summary>
         public PoemRelatedImage[] Images { get; set; }
+
+        /// <summary>
+        /// Songs
+        /// </summary>
+        public PoemMusicTrackViewModel[] Songs { get; set; }
     }
 }

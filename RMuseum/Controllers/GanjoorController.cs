@@ -155,10 +155,10 @@ namespace RMuseum.Controllers
         /// <param name="id"></param>
         /// <param name="catInfo"></param>
         /// <param name="catPoems"></param>
-        /// <param name="rhymes">not implemented yet</param>
+        /// <param name="rhymes"></param>
         /// <param name="recitations"></param>
         /// <param name="images"></param>
-        /// <param name="songs">not implemented yet</param>
+        /// <param name="songs"></param>
         /// <param name="comments">not implemented yet</param>
         /// <param name="verseDetails"></param>
         /// <param name="navigation">next/previous</param>
