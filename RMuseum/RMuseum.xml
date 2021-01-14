@@ -4256,6 +4256,12 @@
             broken link
             </summary>
         </member>
+        <member name="M:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.ToString">
+            <summary>
+            to string
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImageType">
             <summary>
             Related Image Type

@@ -54,5 +54,14 @@
         /// broken link
         /// </summary>
         public bool BrokenLink { get; set; }
+
+        /// <summary>
+        /// to string
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return TrackType == PoemMusicTrackType.Golha ? $"{AlbumName} » {TrackName}" : $"{ArtistName} » {AlbumName} » {TrackName}";
+        }
     }
 }
