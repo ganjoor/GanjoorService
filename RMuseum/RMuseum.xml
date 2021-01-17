@@ -707,6 +707,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SuggestSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            suggest song for poem
+            </summary>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.Faal">
             <summary>
              get a random poem from hafez
@@ -736,11 +743,17 @@
             Ganjoor Service
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService)">
+        <member name="F:RMuseum.Controllers.GanjoorController._appUserService">
+            <summary>
+            IAppUserService instance
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
             </summary>
             <param name="ganjoorService"></param>
+            <param name="appUserService"></param>
         </member>
         <member name="M:RMuseum.Controllers.ImageController.Get(System.Guid,System.String)">
             <summary>
@@ -4172,7 +4185,7 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.PoemId">
             <summary>
             poem id
-            </summary>
+            </summary>a
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.TrackType">
             <summary>
@@ -5509,6 +5522,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            suggest song
+            </summary>
+            <param name="userId"></param>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.Faal">
             <summary>
             get a random poem from hafez
@@ -6323,6 +6344,14 @@
             <param name="comments"></param>
             <param name="verseDetails"></param>
             <param name="navigation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            suggest song
+            </summary>
+            <param name="userId"></param>
+            <param name="song"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal">

@@ -3,6 +3,7 @@ using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RSecurityBackend.Models.Generic;
+using System;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services
@@ -104,6 +105,14 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<PoemRelatedImage[]>> GetPoemImages(int id);
+
+        /// <summary>
+        /// suggest song
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemMusicTrackViewModel>> SuggestSong(Guid userId, PoemMusicTrackViewModel song);
 
         /// <summary>
         /// get a random poem from hafez

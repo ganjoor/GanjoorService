@@ -7,6 +7,9 @@ using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Services;
+using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -250,6 +253,37 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// suggest song for poem
+        /// </summary>
+        /// <param name="song"></param>
+        /// <returns></returns>
+
+        [HttpPost]
+        [Route("song")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemMusicTrackViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> SuggestSong([FromBody] PoemMusicTrackViewModel song)
+        {
+            Guid userId =
+                 new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId =
+                new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+            RServiceResult<bool> sessionCheckResult = await _appUserService.SessionExists(userId, sessionId);
+            if (!string.IsNullOrEmpty(sessionCheckResult.ExceptionString))
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
+            var res =
+                await _ganjoorService.SuggestSong(userId, song);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         ///  get a random poem from hafez
         /// </summary>
         /// <returns></returns>
@@ -328,12 +362,19 @@ namespace RMuseum.Controllers
         protected readonly IGanjoorService _ganjoorService;
 
         /// <summary>
+        /// IAppUserService instance
+        /// </summary>
+        protected IAppUserService _appUserService;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="ganjoorService"></param>
-        public GanjoorController(IGanjoorService ganjoorService)
+        /// <param name="appUserService"></param>
+        public GanjoorController(IGanjoorService ganjoorService, IAppUserService appUserService)
         {
             _ganjoorService = ganjoorService;
+            _appUserService = appUserService;
         }
     }
 }

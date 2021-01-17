@@ -722,6 +722,59 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// suggest song
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PoemMusicTrackViewModel>> SuggestSong(Guid userId, PoemMusicTrackViewModel song)
+        {
+            try
+            {
+                var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && t.TrackUrl == song.TrackUrl).FirstOrDefaultAsync();
+                if(alreadySuggestedSong != null)
+                {
+                    return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر پیشنهاد داده شده است.");
+                }
+
+                
+
+                var sug =
+                    new PoemMusicTrack()
+                    {
+                        TrackType = song.TrackType,
+                        PoemId = song.PoemId,
+                        ArtistName = song.ArtistName,
+                        ArtistUrl = song.ArtistUrl,
+                        AlbumName = song.AlbumName,
+                        AlbumUrl = song.AlbumUrl,
+                        TrackName = song.TrackName,
+                        TrackUrl = song.TrackUrl,
+                        SuggestedById = userId
+                    };
+
+                GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == song.ArtistUrl).FirstOrDefaultAsync();
+                if (singer != null)
+                {
+                    sug.SingerId = singer.Id;
+                }
+
+                _context.GanjoorPoemMusicTracks.Add
+                    (
+                    sug
+                    );
+
+                await _context.SaveChangesAsync();
+                song.Id = sug.Id;
+                return new RServiceResult<PoemMusicTrackViewModel>(song);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<PoemMusicTrackViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get a random poem from hafez
         /// </summary>
         /// <returns></returns>
@@ -1518,6 +1571,7 @@ namespace RMuseum.Services.Implementation
         /// Background Task Queue Instance
         /// </summary>
         protected readonly IBackgroundTaskQueue _backgroundTaskQueue;
+
 
         
         /// <summary>
