@@ -667,26 +667,10 @@ namespace RMuseum.Services.Implementation
                 PoemMusicTrackViewModel[] tracks = null;
                 if(songs)
                 {
-                    tracks = await _context.GanjoorPoemMusicTracks
-                                                    .Where(t => t.PoemId == id && t.Approved)
-                                                    .OrderBy(t => t.Id)
-                                                    .Select
-                                                    (
-                                                     t => new PoemMusicTrackViewModel()
-                                                     {
-                                                         Id = t.Id,
-                                                         TrackType = t.TrackType,
-                                                         ArtistName = t.ArtistName,
-                                                         ArtistUrl = t.ArtistUrl,
-                                                         AlbumName = t.AlbumName,
-                                                         AlbumUrl = t.AlbumUrl,
-                                                         TrackName = t.TrackName,
-                                                         TrackUrl = t.TrackUrl,
-                                                         Description = t.Description,
-                                                         BrokenLink = t.BrokenLink
-
-                                                     }
-                                                    ).ToArrayAsync();
+                    var songsRes = await GetPoemSongs(id, true, PoemMusicTrackType.All);
+                    if(!string.IsNullOrEmpty(songsRes.ExceptionString))
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, songsRes.ExceptionString);
+                    tracks = songsRes.Result;
                 }
 
 
@@ -721,6 +705,57 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+
+        /// <summary>
+        /// get poem related songs
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="approved"></param>
+        /// <param name="trackType"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PoemMusicTrackViewModel[]>> GetPoemSongs(int id, bool approved, PoemMusicTrackType trackType)
+        {
+            try
+            {
+                return new RServiceResult<PoemMusicTrackViewModel[]>
+                    (
+                    await _context.GanjoorPoemMusicTracks
+                                                    .Where
+                                                    (
+                                                        t => t.PoemId == id
+                                                        &&
+                                                        t.Approved == approved
+                                                        &&
+                                                        (trackType == PoemMusicTrackType.All || t.TrackType == trackType)
+                                                    )
+                                                    .OrderBy(t => t.Id)
+                                                    .Select
+                                                    (
+                                                     t => new PoemMusicTrackViewModel()
+                                                     {
+                                                         Id = t.Id,
+                                                         PoemId = t.PoemId,
+                                                         TrackType = t.TrackType,
+                                                         ArtistName = t.ArtistName,
+                                                         ArtistUrl = t.ArtistUrl,
+                                                         AlbumName = t.AlbumName,
+                                                         AlbumUrl = t.AlbumUrl,
+                                                         TrackName = t.TrackName,
+                                                         TrackUrl = t.TrackUrl,
+                                                         Description = t.Description,
+                                                         BrokenLink = t.BrokenLink,
+                                                         GolhaTrackId = t.GolhaTrackId == null ? 0 : (int)t.GolhaTrackId
+
+                                                     }
+                                                    ).ToArrayAsync()
+                    );
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<PoemMusicTrackViewModel[]>(null, exp.ToString());
+            }
+        }
+
         /// <summary>
         /// suggest song
         /// </summary>
@@ -737,8 +772,6 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر پیشنهاد داده شده است.");
                 }
 
-                
-
                 var sug =
                     new PoemMusicTrack()
                     {
@@ -750,7 +783,8 @@ namespace RMuseum.Services.Implementation
                         AlbumUrl = song.AlbumUrl,
                         TrackName = song.TrackName,
                         TrackUrl = song.TrackUrl,
-                        SuggestedById = userId
+                        SuggestedById = userId,
+                        GolhaTrackId = song.TrackType == PoemMusicTrackType.Golha ? song.GolhaTrackId : (int?)null
                     };
 
                 GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == song.ArtistUrl).FirstOrDefaultAsync();

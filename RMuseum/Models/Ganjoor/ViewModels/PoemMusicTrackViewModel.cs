@@ -61,6 +61,11 @@
         public bool BrokenLink { get; set; }
 
         /// <summary>
+        /// golha id
+        /// </summary>
+        public int GolhaTrackId { get; set; }
+
+        /// <summary>
         /// to string
         /// </summary>
         /// <returns></returns>

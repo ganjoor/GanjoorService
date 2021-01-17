@@ -707,6 +707,15 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemSongs(System.Int32,System.Boolean,RMuseum.Models.Ganjoor.PoemMusicTrackType)">
+            <summary>
+            get poem songs
+            </summary>
+            <param name="id"></param>
+            <param name="approved"></param>
+            <param name="trackType"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SuggestSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             suggest song for poem
@@ -3819,6 +3828,11 @@
             poem music track type
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemMusicTrackType.All">
+            <summary>
+            all
+            </summary>
+        </member>
         <member name="F:RMuseum.Models.Ganjoor.PoemMusicTrackType.BeepTunesOrKhosousi">
             <summary>
             https://beeptunes.com/or http://khosousi.com
@@ -4230,6 +4244,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.BrokenLink">
             <summary>
             broken link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.GolhaTrackId">
+            <summary>
+            golha id
             </summary>
         </member>
         <member name="M:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.ToString">
@@ -5522,6 +5541,15 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemSongs(System.Int32,System.Boolean,RMuseum.Models.Ganjoor.PoemMusicTrackType)">
+            <summary>
+            get poem related songs
+            </summary>
+            <param name="id"></param>
+            <param name="approved"></param>
+            <param name="trackType"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             suggest song
@@ -6344,6 +6372,15 @@
             <param name="comments"></param>
             <param name="verseDetails"></param>
             <param name="navigation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemSongs(System.Int32,System.Boolean,RMuseum.Models.Ganjoor.PoemMusicTrackType)">
+            <summary>
+            get poem related songs
+            </summary>
+            <param name="id"></param>
+            <param name="approved"></param>
+            <param name="trackType"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">

@@ -107,12 +107,24 @@ namespace RMuseum.Services
         Task<RServiceResult<PoemRelatedImage[]>> GetPoemImages(int id);
 
         /// <summary>
+        /// get poem related songs
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="approved"></param>
+        /// <param name="trackType"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemMusicTrackViewModel[]>> GetPoemSongs(int id, bool approved, PoemMusicTrackType trackType = PoemMusicTrackType.All);
+
+        /// <summary>
         /// suggest song
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="song"></param>
         /// <returns></returns>
         Task<RServiceResult<PoemMusicTrackViewModel>> SuggestSong(Guid userId, PoemMusicTrackViewModel song);
+
+
+
 
         /// <summary>
         /// get a random poem from hafez

@@ -6,6 +6,10 @@
     public enum PoemMusicTrackType
     {
         /// <summary>
+        /// all
+        /// </summary>
+        All = -1,
+        /// <summary>
         /// https://beeptunes.com/or http://khosousi.com
         /// </summary>
         BeepTunesOrKhosousi = 0,

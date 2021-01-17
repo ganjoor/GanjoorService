@@ -253,6 +253,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get poem songs
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="approved"></param>
+        /// <param name="trackType"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/{id}/songs")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemMusicTrackViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemSongs(int id, bool approved, PoemMusicTrackType trackType = PoemMusicTrackType.All)
+        {
+            RServiceResult<PoemMusicTrackViewModel[]> res =
+                await _ganjoorService.GetPoemSongs(id, approved, trackType);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// suggest song for poem
         /// </summary>
         /// <param name="song"></param>
