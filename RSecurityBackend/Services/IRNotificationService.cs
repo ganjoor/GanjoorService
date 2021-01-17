@@ -1,10 +1,10 @@
-﻿using RMuseum.Models.Notification;
-using RMuseum.Models.Notification.ViewModels;
+﻿using RSecurityBackend.Models.Notification;
+using RSecurityBackend.Models.Notification.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Threading.Tasks;
 
-namespace RMuseum.Services
+namespace RSecurityBackend.Services
 {
     /// <summary>
     /// Internal messaging system interface

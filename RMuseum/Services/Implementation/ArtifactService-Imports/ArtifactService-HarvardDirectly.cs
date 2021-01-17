@@ -1,35 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
+﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
-using RMuseum.Models.Artifact.ViewModels;
-using RMuseum.Models.Bookmark;
-using RMuseum.Models.Bookmark.ViewModels;
-using RMuseum.Models.GanjoorIntegration;
-using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Models.ImportJob;
-using RMuseum.Models.Note;
-using RMuseum.Models.Note.ViewModels;
-using RMuseum.Models.Notification;
-using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
-using RSecurityBackend.Services;
-using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace RMuseum.Services.Implementation
 {

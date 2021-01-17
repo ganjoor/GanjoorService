@@ -572,7 +572,7 @@
             <param name="linkId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.#ctor(RMuseum.Services.IArtifactService,RSecurityBackend.Services.IUserPermissionChecker,Microsoft.Extensions.Caching.Memory.IMemoryCache,RSecurityBackend.Services.ICaptchaService,RMuseum.Services.IRNotificationService)">
+        <member name="M:RMuseum.Controllers.ArtifactController.#ctor(RMuseum.Services.IArtifactService,RSecurityBackend.Services.IUserPermissionChecker,Microsoft.Extensions.Caching.Memory.IMemoryCache,RSecurityBackend.Services.ICaptchaService,RSecurityBackend.Services.IRNotificationService)">
             <summary>
             constructor
             </summary>
@@ -781,49 +781,12 @@
             Artifact Service
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.NoificationController.GetUserNotifications">
+        <member name="T:RMuseum.Controllers.NoificationController">
             <summary>
-            Get User Notifications
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.NoificationController.SwitchNotificationStatus(System.Guid)">
-            <summary>
-            Switch Notification Status
-            </summary>
-            <param name="notificationId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.NoificationController.SetAllNotificationsStatusRead">
-            <summary>
-            Set All User Notifications Status Read
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.NoificationController.SetAllNotificationsStatusUnread">
-            <summary>
-            Set All User Notifications Status Unread
+            Notifications controller
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.NoificationController.DeleteNotification(System.Guid)">
-            <summary>
-            Delete Notification
-            </summary>
-            <param name="notificationId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.NoificationController.DeleteAllReadNotification">
-            <summary>
-            Delete All Read Notifications
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="F:RMuseum.Controllers.NoificationController._notificationService">
-            <summary>
-            Notification Service
-            </summary>
-        </member>
-        <member name="M:RMuseum.Controllers.NoificationController.#ctor(RMuseum.Services.IRNotificationService)">
+        <member name="M:RMuseum.Controllers.NoificationController.#ctor(RSecurityBackend.Services.IRNotificationService)">
             <summary>
             constructor
             </summary>
@@ -1159,11 +1122,6 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorLinks">
             <summary>
             Ganjoor Links
-            </summary>
-        </member>
-        <member name="P:RMuseum.DbContext.RMuseumDbContext.Notifications">
-            <summary>
-            Notifications
             </summary>
         </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.PinterestLinks">
@@ -4765,87 +4723,6 @@
             It os set only in certain cases
             </remarks>
         </member>
-        <member name="T:RMuseum.Models.Notification.NotificationStatus">
-            <summary>
-            Notifaction Status
-            </summary>
-        </member>
-        <member name="T:RMuseum.Models.Notification.RUserNotification">
-            <summary>
-            User Notification
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Notification.RUserNotification.Id">
-            <summary>
-            Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Notification.RUserNotification.UserId">
-            <summary>
-            User Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Notification.RUserNotification.User">
-            <summary>
-            User
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Notification.RUserNotification.DateTime">
-            <summary>
-            DateTime
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Notification.RUserNotification.Status">
-            <summary>
-            Status
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Notification.RUserNotification.Subject">
-            <summary>
-            Subject
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Notification.RUserNotification.HtmlText">
-            <summary>
-            Text
-            </summary>
-        </member>
-        <member name="T:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel">
-            <summary>
-            User Notification
-            </summary>
-        </member>
-        <member name="M:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.#ctor(RMuseum.Models.Notification.RUserNotification)">
-            <summary>
-            constructor
-            </summary>
-            <param name="src"></param>
-        </member>
-        <member name="P:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.Id">
-            <summary>
-            Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.DateTime">
-            <summary>
-            DateTime
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.Status">
-            <summary>
-            Status
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.Subject">
-            <summary>
-            Subject
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Notification.ViewModels.RUserNotificationViewModel.HtmlText">
-            <summary>
-            Text
-            </summary>
-        </member>
         <member name="T:RMuseum.Models.UploadSession.UploadSession">
             <summary>
             Upload Session
@@ -6317,7 +6194,7 @@
             Messaging service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IPictureFileService,RMuseum.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService,RMuseum.Services.IRNotificationService)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IPictureFileService,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IRNotificationService)">
             <summary>
             constructor
             </summary>
@@ -6482,7 +6359,7 @@
             Background Task Queue Instance
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue)">
             <summary>
             constructor
             </summary>
@@ -6705,63 +6582,6 @@
             </summary>
             <param name="recitations"></param>
             <returns></returns>
-        </member>
-        <member name="T:RMuseum.Services.Implementation.RNotificationService">
-            <summary>
-            Internal messaging system implementation
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RNotificationService.PushNotification(System.Guid,System.String,System.String)">
-            <summary>
-            Add Notification
-            </summary>
-            <param name="userId"></param>
-            <param name="subject"></param>
-            <param name="htmlText"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RNotificationService.SwitchNotificationStatus(System.Guid,System.Guid)">
-            <summary>
-            Switch Notification Status
-            </summary>
-            <param name="notificationId"></param>
-            <param name="userId"></param>    
-            <returns>updated notification object</returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RNotificationService.SetAllNotificationsStatus(System.Guid,RMuseum.Models.Notification.NotificationStatus)">
-            <summary>
-            Set All User Notifications Status
-            </summary>
-            <param name="userId"></param>
-            <param name="status"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RNotificationService.DeleteNotification(System.Guid,System.Guid)">
-            <summary>
-            Delete Notification
-            </summary>
-            <param name="notificationId">if empty deletes all read notifications</param>
-            <param name="userId"></param>    
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RNotificationService.GetUserNotifications(System.Guid)">
-            <summary>
-            Get User Notifications
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.RNotificationService.GetUnreadUserNotificationsCount(System.Guid)">
-            <summary>
-            Get Unread User Notifications Count
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="F:RMuseum.Services.Implementation.RNotificationService._context">
-            <summary>
-            Database Contetxt
-            </summary>
         </member>
         <member name="T:RMuseum.Services.Implementation.RoleService">
             <summary>
@@ -7018,7 +6838,7 @@
             Users service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IBackgroundTaskQueue,RMuseum.Services.IRNotificationService,RSecurityBackend.Services.IAppUserService)">
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
             </summary>
@@ -7307,58 +7127,6 @@
             <summary>
             Upload Enabled (temporary switch off/on for upload)
             </summary>
-        </member>
-        <member name="T:RMuseum.Services.IRNotificationService">
-            <summary>
-            Internal messaging system interface
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.IRNotificationService.PushNotification(System.Guid,System.String,System.String)">
-            <summary>
-            Add Notification
-            </summary>
-            <param name="userId"></param>
-            <param name="subject"></param>
-            <param name="htmlText"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IRNotificationService.GetUserNotifications(System.Guid)">
-            <summary>
-            Get User Notifications
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IRNotificationService.GetUnreadUserNotificationsCount(System.Guid)">
-            <summary>
-            Get Unread User Notifications Count
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IRNotificationService.SwitchNotificationStatus(System.Guid,System.Guid)">
-            <summary>
-            Switch Notification Status
-            </summary>
-            <param name="notificationId"></param>
-            <param name="userId"></param>    
-            <returns>updated notification object</returns>
-        </member>
-        <member name="M:RMuseum.Services.IRNotificationService.SetAllNotificationsStatus(System.Guid,RMuseum.Models.Notification.NotificationStatus)">
-            <summary>
-            Set All User Notifications Status
-            </summary>
-            <param name="userId"></param>
-            <param name="status"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IRNotificationService.DeleteNotification(System.Guid,System.Guid)">
-            <summary>
-            Delete Notification
-            </summary>
-            <param name="notificationId">if empty deletes all read notifications</param>
-            <param name="userId"></param>    
-            <returns></returns>
         </member>
         <member name="T:RMuseum.Swashbuckle.SecurityRequirementsOperationFilter">
             <summary>

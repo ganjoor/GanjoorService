@@ -5,6 +5,7 @@ using RSecurityBackend.Models.Audit.Db;
 using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Generic.Db;
 using RSecurityBackend.Models.Image;
+using RSecurityBackend.Models.Notification;
 using System;
 
 namespace RSecurityBackend.DbContext
@@ -89,6 +90,13 @@ namespace RSecurityBackend.DbContext
         /// long running jobs
         /// </summary>
         public DbSet<RLongRunningJobStatus> LongRunningJobs { get; set; }
+        #endregion
+
+        #region Notifications
+        /// <summary>
+        /// Notifications
+        /// </summary>
+        public DbSet<RUserNotification> Notifications { get; set; }
         #endregion
     }
 }

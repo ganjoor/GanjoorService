@@ -7,7 +7,6 @@ using RMuseum.Models.UploadSession;
 using RMuseum.Models.GanjoorIntegration;
 using RMuseum.Models.ImportJob;
 using RMuseum.Models.Note;
-using RMuseum.Models.Notification;
 using RSecurityBackend.DbContext;
 using RSecurityBackend.Models.Auth.Db;
 using System;
@@ -139,10 +138,7 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorLink> GanjoorLinks { get; set; }
 
-        /// <summary>
-        /// Notifications
-        /// </summary>
-        public DbSet<RUserNotification> Notifications { get; set; }
+        
 
         /// <summary>
         /// Pinterest Links

@@ -1,7 +1,7 @@
 ﻿using RSecurityBackend.Models.Auth.Db;
 using System;
 
-namespace RMuseum.Models.Notification
+namespace RSecurityBackend.Models.Notification
 {
     /// <summary>
     /// User Notification

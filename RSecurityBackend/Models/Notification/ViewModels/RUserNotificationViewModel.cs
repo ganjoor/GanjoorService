@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RMuseum.Models.Notification.ViewModels
+namespace RSecurityBackend.Models.Notification.ViewModels
 {
     /// <summary>
     /// User Notification

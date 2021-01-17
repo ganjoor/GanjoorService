@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RMuseum.DbContext;
-using RMuseum.Models.Notification;
-using RMuseum.Models.Notification.ViewModels;
+using RSecurityBackend.DbContext;
+using RSecurityBackend.Models.Notification;
+using RSecurityBackend.Models.Notification.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using RSecurityBackend.Models.Auth.Db;
 
-namespace RMuseum.Services.Implementation
+namespace RSecurityBackend.Services.Implementation
 {
 
     /// <summary>
@@ -175,10 +176,14 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// Database Contetxt
         /// </summary>
-        protected readonly RMuseumDbContext _context;
+        protected readonly RSecurityDbContext<RAppUser, RAppRole, Guid> _context;
 
 
-        public RNotificationService(RMuseumDbContext context)
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="context"></param>
+        public RNotificationService(RSecurityDbContext<RAppUser, RAppRole, Guid> context)
         {
             _context = context;
         }

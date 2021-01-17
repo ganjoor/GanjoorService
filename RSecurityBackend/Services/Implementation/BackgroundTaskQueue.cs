@@ -3,14 +3,21 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RMuseum.Services.Implementation
+namespace RSecurityBackend.Services.Implementation
 {
-    internal class BackgroundTaskQueue : IBackgroundTaskQueue
+    /// <summary>
+    /// IBackgroundTaskQueue implementation
+    /// </summary>
+    public class BackgroundTaskQueue : IBackgroundTaskQueue
     {
         private ConcurrentQueue<Func<CancellationToken, Task>> _workItems =
                 new ConcurrentQueue<Func<CancellationToken, Task>>();
         private SemaphoreSlim _signal = new SemaphoreSlim(0);
 
+        /// <summary>
+        /// new task
+        /// </summary>
+        /// <param name="workItem"></param>
         public void QueueBackgroundWorkItem(
             Func<CancellationToken, Task> workItem)
         {
@@ -23,6 +30,11 @@ namespace RMuseum.Services.Implementation
             _signal.Release();
         }
 
+        /// <summary>
+        /// dequeue task
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<Func<CancellationToken, Task>> DequeueAsync(
             CancellationToken cancellationToken)
         {
@@ -32,6 +44,9 @@ namespace RMuseum.Services.Implementation
             return workItem;
         }
 
+        /// <summary>
+        /// task count
+        /// </summary>
         public int Count
         {
             get

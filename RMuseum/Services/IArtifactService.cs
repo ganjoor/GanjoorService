@@ -8,7 +8,6 @@ using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Models.ImportJob;
 using RMuseum.Models.Note;
 using RMuseum.Models.Note.ViewModels;
-using RMuseum.Models.Notification;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.IO;

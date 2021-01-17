@@ -349,6 +349,65 @@
             Artifact Service
             </summary>
         </member>
+        <member name="T:RSecurityBackend.Controllers.NoificationControllerBase">
+            <summary>
+            Notifications controller
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.GetUserNotifications">
+            <summary>
+            Get User Notifications
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.GetUnreadUserNotificationsCount">
+            <summary>
+            Get unread user notifications count
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.SwitchNotificationStatus(System.Guid)">
+            <summary>
+            Switch Notification Status
+            </summary>
+            <param name="notificationId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.SetAllNotificationsStatusRead">
+            <summary>
+            Set All User Notifications Status Read
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.SetAllNotificationsStatusUnread">
+            <summary>
+            Set All User Notifications Status Unread
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.DeleteNotification(System.Guid)">
+            <summary>
+            Delete Notification
+            </summary>
+            <param name="notificationId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.DeleteAllReadNotification">
+            <summary>
+            Delete All Read Notifications
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.NoificationControllerBase._notificationService">
+            <summary>
+            Notification Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.#ctor(RSecurityBackend.Services.IRNotificationService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="notificationService"></param>
+        </member>
         <member name="T:RSecurityBackend.Controllers.RImageControllerBase">
             <summary>
             Generic Image Provider
@@ -574,6 +633,11 @@
         <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.LongRunningJobs">
             <summary>
             long running jobs
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.Notifications">
+            <summary>
+            Notifications
             </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Audit.Db.REvent">
@@ -1892,6 +1956,107 @@
             use ssl
             </summary>
         </member>
+        <member name="T:RSecurityBackend.Models.Notification.NotificationStatus">
+            <summary>
+            Notifaction Status
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Notification.NotificationStatus.Unread">
+            <summary>
+            Unread
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Notification.NotificationStatus.Read">
+            <summary>
+            Read
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Notification.NotificationStatus.Archived">
+            <summary>
+            Archived
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Notification.NotificationStatus.Deleted">
+            <summary>
+            Deleted
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Notification.RUserNotification">
+            <summary>
+            User Notification
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.RUserNotification.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.RUserNotification.UserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.RUserNotification.User">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.RUserNotification.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.RUserNotification.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.RUserNotification.Subject">
+            <summary>
+            Subject
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.RUserNotification.HtmlText">
+            <summary>
+            Text
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel">
+            <summary>
+            User Notification
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel.#ctor(RSecurityBackend.Models.Notification.RUserNotification)">
+            <summary>
+            constructor
+            </summary>
+            <param name="src"></param>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel.Subject">
+            <summary>
+            Subject
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel.HtmlText">
+            <summary>
+            Text
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Services.IAppUserService">
             <summary>
             Authentication Service
@@ -2153,6 +2318,29 @@
             <param name="userName">empty means unfiltered</param>
             <param name="orderByTimeDescending"></param>
             <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Services.IBackgroundTaskQueue">
+            <summary>
+            background task queue
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.IBackgroundTaskQueue.QueueBackgroundWorkItem(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task})">
+            <summary>
+            queue new task
+            </summary>
+            <param name="workItem"></param>
+        </member>
+        <member name="M:RSecurityBackend.Services.IBackgroundTaskQueue.DequeueAsync(System.Threading.CancellationToken)">
+            <summary>
+            get task from que
+            </summary>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RSecurityBackend.Services.IBackgroundTaskQueue.Count">
+            <summary>
+            number of tasks
+            </summary>
         </member>
         <member name="T:RSecurityBackend.Services.ICaptchaService">
             <summary>
@@ -2645,6 +2833,29 @@
             </summary>
             <param name="context"></param>
         </member>
+        <member name="T:RSecurityBackend.Services.Implementation.BackgroundTaskQueue">
+            <summary>
+            IBackgroundTaskQueue implementation
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.BackgroundTaskQueue.QueueBackgroundWorkItem(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task})">
+            <summary>
+            new task
+            </summary>
+            <param name="workItem"></param>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.BackgroundTaskQueue.DequeueAsync(System.Threading.CancellationToken)">
+            <summary>
+            dequeue task
+            </summary>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.BackgroundTaskQueue.Count">
+            <summary>
+            task count
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Services.Implementation.CaptchaServiceEF">
             <summary>
             Captcha Service
@@ -2869,6 +3080,29 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="T:RSecurityBackend.Services.Implementation.QueuedHostedService">
+            <summary>
+            BackgroundService implementation
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.QueuedHostedService.#ctor(RSecurityBackend.Services.IBackgroundTaskQueue)">
+            <summary>
+            constructor
+            </summary>
+            <param name="taskQueue"></param>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.QueuedHostedService.TaskQueue">
+            <summary>
+            task queue
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.QueuedHostedService.ExecuteAsync(System.Threading.CancellationToken)">
+            <summary>
+            execute
+            </summary>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
         <member name="T:RSecurityBackend.Services.Implementation.RAuditDataProvider">
             <summary>
             Custom Audit Data Provider
@@ -2945,6 +3179,69 @@
             constructor
             </summary>
             <param name="connectionString"></param>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.RNotificationService">
+            <summary>
+            Internal messaging system implementation
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.PushNotification(System.Guid,System.String,System.String)">
+            <summary>
+            Add Notification
+            </summary>
+            <param name="userId"></param>
+            <param name="subject"></param>
+            <param name="htmlText"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.SwitchNotificationStatus(System.Guid,System.Guid)">
+            <summary>
+            Switch Notification Status
+            </summary>
+            <param name="notificationId"></param>
+            <param name="userId"></param>    
+            <returns>updated notification object</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.SetAllNotificationsStatus(System.Guid,RSecurityBackend.Models.Notification.NotificationStatus)">
+            <summary>
+            Set All User Notifications Status
+            </summary>
+            <param name="userId"></param>
+            <param name="status"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.DeleteNotification(System.Guid,System.Guid)">
+            <summary>
+            Delete Notification
+            </summary>
+            <param name="notificationId">if empty deletes all read notifications</param>
+            <param name="userId"></param>    
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.GetUserNotifications(System.Guid)">
+            <summary>
+            Get User Notifications
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.GetUnreadUserNotificationsCount(System.Guid)">
+            <summary>
+            Get Unread User Notifications Count
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.RNotificationService._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.#ctor(RSecurityBackend.DbContext.RSecurityDbContext{RSecurityBackend.Models.Auth.Db.RAppUser,RSecurityBackend.Models.Auth.Db.RAppRole,System.Guid})">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
         </member>
         <member name="T:RSecurityBackend.Services.Implementation.RoleServiceBase">
             <summary>
@@ -3077,6 +3374,58 @@
             </summary>
             <param name="appUserService"></param>
         </member>
+        <member name="T:RSecurityBackend.Services.IRNotificationService">
+            <summary>
+            Internal messaging system interface
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.IRNotificationService.PushNotification(System.Guid,System.String,System.String)">
+            <summary>
+            Add Notification
+            </summary>
+            <param name="userId"></param>
+            <param name="subject"></param>
+            <param name="htmlText"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IRNotificationService.GetUserNotifications(System.Guid)">
+            <summary>
+            Get User Notifications
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IRNotificationService.GetUnreadUserNotificationsCount(System.Guid)">
+            <summary>
+            Get Unread User Notifications Count
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IRNotificationService.SwitchNotificationStatus(System.Guid,System.Guid)">
+            <summary>
+            Switch Notification Status
+            </summary>
+            <param name="notificationId"></param>
+            <param name="userId"></param>    
+            <returns>updated notification object</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IRNotificationService.SetAllNotificationsStatus(System.Guid,RSecurityBackend.Models.Notification.NotificationStatus)">
+            <summary>
+            Set All User Notifications Status
+            </summary>
+            <param name="userId"></param>
+            <param name="status"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IRNotificationService.DeleteNotification(System.Guid,System.Guid)">
+            <summary>
+            Delete Notification
+            </summary>
+            <param name="notificationId">if empty deletes all read notifications</param>
+            <param name="userId"></param>    
+            <returns></returns>
+        </member>
         <member name="T:RSecurityBackend.Services.ISecretGenerator">
             <summary>
             Secret Generator
@@ -3203,6 +3552,153 @@
             </summary>
             <param name="member"></param>
             <param name="memberSerialization"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Utilities.PersianIdentityErrorDescriber">
+            <summary>
+            PersianIdentityErrorDescriber 
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.DefaultError">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.ConcurrencyFailure">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.PasswordMismatch">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.InvalidToken">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.LoginAlreadyAssociated">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.InvalidUserName(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="userName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.InvalidEmail(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="email"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.DuplicateUserName(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="userName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.DuplicateEmail(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="email"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.InvalidRoleName(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.DuplicateRoleName(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.UserAlreadyHasPassword">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.UserLockoutNotEnabled">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.UserAlreadyInRole(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.UserNotInRole(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.PasswordTooShort(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.PasswordRequiresNonAlphanumeric">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.PasswordRequiresDigit">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.PasswordRequiresLower">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.PasswordRequiresUpper">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.RecoveryCodeRedemptionFailed">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Utilities.PersianIdentityErrorDescriber.PasswordRequiresUniqueChars(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="uniqueChars"></param>
             <returns></returns>
         </member>
         <member name="T:RBilling.Models.Tenant.Db.RChargableFeatureType">
