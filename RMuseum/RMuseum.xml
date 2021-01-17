@@ -4169,6 +4169,11 @@
             id
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.TrackType">
             <summary>
             track type

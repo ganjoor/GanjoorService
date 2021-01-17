@@ -11,6 +11,11 @@
         public int Id { get; set; }
 
         /// <summary>
+        /// poem id
+        /// </summary>a
+        public int PoemId { get; set; }
+
+        /// <summary>
         /// track type
         /// </summary>
         public PoemMusicTrackType TrackType { get; set; }
