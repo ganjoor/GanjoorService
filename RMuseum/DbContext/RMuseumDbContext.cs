@@ -222,6 +222,11 @@ namespace RMuseum.DbContext
         public DbSet<GolhaCollection> GolhaCollections { get; set; }
 
         /// <summary>
+        /// GolhaPrograms 
+        /// </summary>
+        public DbSet<GolhaProgram> GolhaPrograms { get; set; }
+
+        /// <summary>
         /// PoemMusicTracks
         /// </summary>
         public DbSet<PoemMusicTrack> GanjoorPoemMusicTracks { get; set; }

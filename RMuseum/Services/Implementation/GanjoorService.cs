@@ -1080,7 +1080,7 @@ namespace RMuseum.Services.Implementation
                         var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", "pre open connection")).Result;
 
 
-                        MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration);
+                        MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration, context);
                         RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql(jobProgressServiceEF, job);
 
                         if (!musicCatalogueRes.Result)

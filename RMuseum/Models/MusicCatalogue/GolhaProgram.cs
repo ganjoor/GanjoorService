@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RMuseum.Models.MusicCatalogue
 {
+    /// <summary>
+    /// Golha Program
+    /// </summary>
     public class GolhaProgram
     {
         /// <summary>

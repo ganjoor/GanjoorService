@@ -803,6 +803,31 @@
             Artifact Service
             </summary>
         </member>
+        <member name="M:RMuseum.Controllers.MusicCatalogueController.GetGolhaCollectionPrograms(System.Int32)">
+            <summary>
+            golha collection programs
+            </summary>
+            <param name="id">collection id</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.MusicCatalogueController.GetGolhaProgramTracks(System.Int32)">
+            <summary>
+            program tracks
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Controllers.MusicCatalogueController._catalogueService">
+            <summary>
+            Catalogue Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.MusicCatalogueController.#ctor(RMuseum.Services.IMusicCatalogueService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="catalogueService"></param>
+        </member>
         <member name="T:RMuseum.Controllers.NoificationController">
             <summary>
             Notifications controller
@@ -1224,6 +1249,11 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GolhaCollections">
             <summary>
             GolhaCollection 
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GolhaPrograms">
+            <summary>
+            GolhaPrograms 
             </summary>
         </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoemMusicTracks">
@@ -4440,6 +4470,11 @@
             programs
             </summary>
         </member>
+        <member name="T:RMuseum.Models.MusicCatalogue.GolhaProgram">
+            <summary>
+            Golha Program
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.MusicCatalogue.GolhaProgram.Id">
             <summary>
             id
@@ -4532,6 +4567,61 @@
             <example>
             track is purely music and no singing is done through it
             </example>
+        </member>
+        <member name="T:RMuseum.Models.MusicCatalogue.ViewModels.GolhaProgramViewModel">
+            <summary>
+            Golha Program View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.ViewModels.GolhaProgramViewModel.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.ViewModels.GolhaProgramViewModel.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.ViewModels.GolhaProgramViewModel.ProgramOrder">
+            <summary>
+            program order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.ViewModels.GolhaProgramViewModel.Url">
+            <summary>
+            url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.ViewModels.GolhaProgramViewModel.Mp3">
+            <summary>
+            mp3
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.MusicCatalogue.ViewModels.GolhaTrackViewModel">
+            <summary>
+            Golha Track View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.ViewModels.GolhaTrackViewModel.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.ViewModels.GolhaTrackViewModel.TrackNo">
+            <summary>
+            track no
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.ViewModels.GolhaTrackViewModel.Timing">
+            <summary>
+            timing
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.ViewModels.GolhaTrackViewModel.Title">
+            <summary>
+            title
+            </summary>
         </member>
         <member name="T:RMuseum.Models.Note.RNoteType">
             <summary>
@@ -6496,6 +6586,20 @@
             Music Catalgue Service Implementation
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.MusicCatalogueService.GetGolhaCollectionPrograms(System.Int32)">
+            <summary>
+            get golha collection programs
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.MusicCatalogueService.GetGolhaProgramTracks(System.Int32)">
+            <summary>
+            get golha program tracks
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.MusicCatalogueService.ImportFromMySql(RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF,RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus)">
             <summary>
             import catalogue from ganjoor.net MySql db
@@ -6507,11 +6611,17 @@
             Configuration
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.MusicCatalogueService.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="F:RMuseum.Services.Implementation.MusicCatalogueService._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.MusicCatalogueService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,RMuseum.DbContext.RMuseumDbContext)">
             <summary>
             constructor
             </summary>
             <param name="configuration"></param>
+            <param name="context"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.PictureFileService">
             <summary>
@@ -6918,6 +7028,25 @@
             <param name="backgroundTaskQueue"></param>
             <param name="notificationService"></param>
             <param name="userService"></param>
+        </member>
+        <member name="T:RMuseum.Services.IMusicCatalogueService">
+            <summary>
+            Music Catalogue Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IMusicCatalogueService.GetGolhaCollectionPrograms(System.Int32)">
+            <summary>
+            get golha collection programs
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IMusicCatalogueService.GetGolhaProgramTracks(System.Int32)">
+            <summary>
+            get golha program tracks
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">
             <summary>
