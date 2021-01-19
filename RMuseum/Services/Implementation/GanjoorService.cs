@@ -8,7 +8,6 @@ using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
-using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Models.MusicCatalogue;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Generic.Db;
@@ -21,6 +20,7 @@ using System.Data.Common;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 
 namespace RMuseum.Services.Implementation
 {
@@ -766,12 +766,35 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && t.TrackUrl == song.TrackUrl).FirstOrDefaultAsync();
-                if(alreadySuggestedSong != null)
+                if(song.TrackType == PoemMusicTrackType.Golha)
                 {
-                    return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر پیشنهاد داده شده است.");
-                }
+                    var golhaTrack = await _context.GolhaTracks.Include(g => g.GolhaProgram).ThenInclude(p => p.GolhaCollection).Where(g => g.Id == song.GolhaTrackId).FirstOrDefaultAsync();
+                    if (golhaTrack == null)
+                    {
+                        return new RServiceResult<PoemMusicTrackViewModel>(null, "مشخصات قطعهٔ گلها درست نیست.");
+                    }
+                    var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && t.GolhaTrackId == song.GolhaTrackId).FirstOrDefaultAsync();
+                    if (alreadySuggestedSong != null)
+                    {
+                        return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر پیشنهاد داده شده است.");
+                    }
 
+                    song.ArtistName = "";
+                    song.ArtistUrl = "";
+                    song.AlbumName = $"{golhaTrack.GolhaProgram.GolhaCollection.Name} » شمارهٔ {GPersianTextSync.Sync(golhaTrack.GolhaProgram.Title)}";
+                    song.AlbumUrl = "";
+                    song.TrackName = $"{GPersianTextSync.Sync(golhaTrack.Timing)} {golhaTrack.Title}";
+                    song.TrackUrl = golhaTrack.GolhaProgram.Url;
+                }
+                else
+                {
+                    var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && t.TrackUrl == song.TrackUrl).FirstOrDefaultAsync();
+                    if (alreadySuggestedSong != null)
+                    {
+                        return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر پیشنهاد داده شده است.");
+                    }
+
+                }
                 var sug =
                     new PoemMusicTrack()
                     {
@@ -784,6 +807,7 @@ namespace RMuseum.Services.Implementation
                         TrackName = song.TrackName,
                         TrackUrl = song.TrackUrl,
                         SuggestedById = userId,
+                        Description = song.Description,
                         GolhaTrackId = song.TrackType == PoemMusicTrackType.Golha ? song.GolhaTrackId : (int?)null
                     };
 
