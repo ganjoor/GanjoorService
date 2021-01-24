@@ -483,7 +483,7 @@ namespace RMuseum.Services.Implementationa
                            context.RecitationPublishingTrackers.Add(tracker);
                            await context.SaveChangesAsync();
 
-                           await _UpdateRemoteRecitations(narration, tracker, context);
+                           await _UpdateRemoteRecitations(narration, tracker, context, true);
                             }
 
 
@@ -1421,7 +1421,7 @@ namespace RMuseum.Services.Implementationa
 
         }
 
-        private async Task _UpdateRemoteRecitations(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context)
+        private async Task _UpdateRemoteRecitations(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context, bool notify)
         {
 
             try
@@ -1460,7 +1460,9 @@ namespace RMuseum.Services.Implementationa
                 context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
 
-                await new RNotificationService(context).PushNotification
+                if(notify)
+                {
+                    await new RNotificationService(context).PushNotification
                 (
                     narration.OwnerId,
                     "به‌روزآوری نهایی اطلاعات خوانش ارسالی",
@@ -1468,6 +1470,8 @@ namespace RMuseum.Services.Implementationa
                     $"لطفا توجه فرمایید که فایل‌های صوتی معمولاً روی مرورگرها کَش می‌شوند. جهت اطمینان از جایگزینی فایل می‌بایست با مرورگری که تا به حال شعر را با آن ندیده‌اید بررسی بفرمایید.{Environment.NewLine}" +
                     $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
                 );
+                }
+                
 
             }
             catch (Exception exp)
@@ -1477,13 +1481,17 @@ namespace RMuseum.Services.Implementationa
                 context.RecitationPublishingTrackers.Update(tracker);
                 await context.SaveChangesAsync();
 
-                await new RNotificationService(context).PushNotification
-                (
-                    narration.OwnerId,
-                    "خطا در به‌روزآوری نهایی اطلاعات خوانش ارسالی",
-                    $"به‌روزآوری اطلاعات خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
-                    $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
-                );
+                if(notify)
+                {
+                    await new RNotificationService(context).PushNotification
+                   (
+                       narration.OwnerId,
+                       "خطا در به‌روزآوری نهایی اطلاعات خوانش ارسالی",
+                       $"به‌روزآوری اطلاعات خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
+                       $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
+                   );
+                }
+               
 
                 //I mean admins!
                 var importers = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ImportOperationShortName);
@@ -1552,7 +1560,7 @@ namespace RMuseum.Services.Implementationa
                                         }
                                         break;
                                     case AudioSyncStatus.MetadataChanged:
-                                        await _UpdateRemoteRecitations(narration, tracker, context);
+                                        await _UpdateRemoteRecitations(narration, tracker, context, true);//this might send unexpected notications for users not expecting it in case of reordering recitations
                                         break;
                                     case AudioSyncStatus.Deleted:
                                         await _DeleteNarrationFromRemote(narration, tracker, context);
@@ -2007,8 +2015,7 @@ namespace RMuseum.Services.Implementationa
 
                         await _context.SaveChangesAsync();
 
-
-                        await _UpdateRemoteRecitations(other, tracker, _context);
+                        await _UpdateRemoteRecitations(other, tracker, _context, false /* owner of this recitation did nothing to expect any notifications*/);
                     }
 
                     recitation.AudioOrder = 1;
@@ -2028,7 +2035,7 @@ namespace RMuseum.Services.Implementationa
 
                     await _context.SaveChangesAsync();
 
-                    await _UpdateRemoteRecitations(recitation, trackerMain, _context);
+                    await _UpdateRemoteRecitations(recitation, trackerMain, _context, true);
                 }
                 
 
