@@ -88,5 +88,10 @@ namespace RMuseum.Models.GanjoorIntegration
         /// Synchronized with ganjoor
         /// </summary>
         public bool Synchronized { get; set; }
+
+        /// <summary>
+        /// display this image on poem page
+        /// </summary>
+        public bool DisplayOnPage { get; set; }
     }
 }

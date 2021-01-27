@@ -437,6 +437,8 @@ namespace RMuseum.Services.Implementation
                      join poem in _context.GanjoorPoems
                      on link.GanjoorPostId equals poem.Id
                      where
+                     link.DisplayOnPage == true
+                     &&
                      link.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
                      &&
                      poem.Id == id
@@ -1372,6 +1374,47 @@ namespace RMuseum.Services.Implementation
                             {
                                 await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, resPendingPoemSongs.ExceptionString);
                             }
+
+                            using (MySqlConnection connection = new MySqlConnection
+                                            (
+                                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                            ))
+                            {
+                                connection.Open();
+                                using (MySqlDataAdapter src = new MySqlDataAdapter(
+                                    "SELECT poem_id, mimage_id FROM ganja_mimages",
+                                    connection))
+                                {
+                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase N - mysql N")).Result;
+                                    using (DataTable srcData = new DataTable())
+                                    {
+                                        await src.FillAsync(srcData);
+
+                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase N - processing meta data")).Result;
+
+                                        int r = 0;
+                                        foreach (DataRow row in srcData.Rows)
+                                        {
+                                            job = (await jobProgressServiceEF.UpdateJob(job.Id, r++, "phase N - processing meta data")).Result;
+
+                                            int poemId = int.Parse(row["poem_id"].ToString());
+                                            Guid imageId = Guid.Parse(row["mimage_id"].ToString());
+
+                                            var link = await context.GanjoorLinks.Include(l => l.Item).ThenInclude(i => i.Images).
+                                                    Where(l => l.GanjoorPostId == poemId && l.Item.Images.First().Id == imageId)
+                                                    .FirstOrDefaultAsync();
+                                            if(link != null)
+                                            {
+                                                link.DisplayOnPage = true;
+                                                context.GanjoorLinks.Update(link);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase N - finalizing meta data")).Result;
+                            await context.SaveChangesAsync();
+
 
                             await jobProgressServiceEF.UpdateJob(job.Id, 100, "Finished", true);
                         }

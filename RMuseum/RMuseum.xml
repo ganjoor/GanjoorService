@@ -2948,6 +2948,11 @@
             Synchronized with ganjoor
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.DisplayOnPage">
+            <summary>
+            display this image on poem page
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.LinkType">
             <summary>
             Link Type

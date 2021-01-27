@@ -138,7 +138,6 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorLink> GanjoorLinks { get; set; }
 
-        
 
         /// <summary>
         /// Pinterest Links
