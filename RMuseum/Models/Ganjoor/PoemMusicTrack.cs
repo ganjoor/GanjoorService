@@ -121,5 +121,15 @@ namespace RMuseum.Models.Ganjoor
         /// broken link
         /// </summary>
         public bool BrokenLink { get; set; }
+
+        /// <summary>
+        /// instead of deleting rejected songs keep track of them
+        /// </summary>
+        public bool Rejected { get; set; }
+
+        /// <summary>
+        /// rejection cause
+        /// </summary>
+        public string RejectionCause { get; set; }
     }
 }

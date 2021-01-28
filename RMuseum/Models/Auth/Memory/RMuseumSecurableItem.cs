@@ -144,7 +144,7 @@ namespace RMuseum.Models.Auth.Memory
                         Description = "محتوای گنجور",
                         Operations = new SecurableItemOperation[]
                         {
-                            new SecurableItemOperation(ReviewSongs, "بازبینی آهنگهای مرتبط", false),
+                            new SecurableItemOperation(ReviewSongs, "بازبینی آهنگ‌های پیشنهادی", false),
                             new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات از منابع خارجی", false),
                         }
                     },

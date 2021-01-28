@@ -728,6 +728,8 @@ namespace RMuseum.Services.Implementation
                                                         &&
                                                         t.Approved == approved
                                                         &&
+                                                        t.Rejected == false
+                                                        &&
                                                         (trackType == PoemMusicTrackType.All || t.TrackType == trackType)
                                                     )
                                                     .OrderBy(t => t.Id)
@@ -829,6 +831,46 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<PoemMusicTrackViewModel>(song);
             }
             catch(Exception exp)
+            {
+                return new RServiceResult<PoemMusicTrackViewModel>(null, exp.ToString());
+            }
+        }
+
+
+        /// <summary>
+        /// next unreviewed track
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PoemMusicTrackViewModel>> GetNextUnreviewedSong(int skip)
+        {
+            try
+            {
+                var song = await _context.GanjoorPoemMusicTracks.Where(p => p.Approved == false && p.Rejected == false).OrderBy(p => p.Id).Skip(skip).FirstOrDefaultAsync();
+                if(song != null)
+                {
+                    return new RServiceResult<PoemMusicTrackViewModel>
+                        (
+                        new PoemMusicTrackViewModel()
+                        {
+                            Id = song.Id,
+                            TrackType = song.TrackType,
+                            PoemId = song.PoemId,
+                            ArtistName = song.ArtistName,
+                            ArtistUrl = song.ArtistUrl,
+                            AlbumName = song.AlbumName,
+                            AlbumUrl = song.AlbumUrl,
+                            TrackName = song.TrackName,
+                            TrackUrl = song.TrackUrl,
+                            Description = song.Description,
+                            GolhaTrackId = song.TrackType == PoemMusicTrackType.Golha ? (int)song.GolhaTrackId : 0,
+                            BrokenLink = song.BrokenLink
+                        }
+                        );
+                }
+                return new RServiceResult<PoemMusicTrackViewModel>(null); //not found
+            }
+            catch (Exception exp)
             {
                 return new RServiceResult<PoemMusicTrackViewModel>(null, exp.ToString());
             }

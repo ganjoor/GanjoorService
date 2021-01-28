@@ -3863,6 +3863,16 @@
             broken link
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.Rejected">
+            <summary>
+            instead of deleting rejected songs keep track of them
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemMusicTrack.RejectionCause">
+            <summary>
+            rejection cause
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemMusicTrackType">
             <summary>
             poem music track type
@@ -5650,6 +5660,13 @@
             <param name="trackType"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedSong(System.Int32)">
+            <summary>
+            next unreviewed track
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             suggest song
@@ -6489,6 +6506,13 @@
             </summary>
             <param name="userId"></param>
             <param name="song"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedSong(System.Int32)">
+            <summary>
+            next unreviewed track
+            </summary>
+            <param name="skip"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal">

@@ -116,14 +116,19 @@ namespace RMuseum.Services
         Task<RServiceResult<PoemMusicTrackViewModel[]>> GetPoemSongs(int id, bool approved, PoemMusicTrackType trackType = PoemMusicTrackType.All);
 
         /// <summary>
+        /// next unreviewed track
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemMusicTrackViewModel>> GetNextUnreviewedSong(int skip);
+
+        /// <summary>
         /// suggest song
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="song"></param>
         /// <returns></returns>
         Task<RServiceResult<PoemMusicTrackViewModel>> SuggestSong(Guid userId, PoemMusicTrackViewModel song);
-
-
 
 
         /// <summary>
