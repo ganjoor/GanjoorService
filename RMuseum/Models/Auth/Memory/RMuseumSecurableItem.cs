@@ -74,6 +74,11 @@ namespace RMuseum.Models.Auth.Memory
         public const string ReOrderOperationShortName = "reorder";
 
         /// <summary>
+        /// review suggested songs
+        /// </summary>
+        public const string ReviewSongs = "songrevu";
+
+        /// <summary>
         /// list of forms and their permissions
         /// </summary>
         public new static SecurableItem[] Items
@@ -139,6 +144,7 @@ namespace RMuseum.Models.Auth.Memory
                         Description = "محتوای گنجور",
                         Operations = new SecurableItemOperation[]
                         {
+                            new SecurableItemOperation(ReviewSongs, "بازبینی آهنگهای مرتبط", false),
                             new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات از منابع خارجی", false),
                         }
                     },
