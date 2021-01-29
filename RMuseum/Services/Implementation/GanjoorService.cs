@@ -841,12 +841,15 @@ namespace RMuseum.Services.Implementation
         /// next unreviewed track
         /// </summary>
         /// <param name="skip"></param>
+        /// <param name="suggestedById"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PoemMusicTrackViewModel>> GetNextUnreviewedSong(int skip)
+        public async Task<RServiceResult<PoemMusicTrackViewModel>> GetNextUnreviewedSong(int skip, Guid suggestedById)
         {
             try
             {
-                var song = await _context.GanjoorPoemMusicTracks.Where(p => p.Approved == false && p.Rejected == false).OrderBy(p => p.Id).Skip(skip).FirstOrDefaultAsync();
+                var song = await _context.GanjoorPoemMusicTracks
+                    .Where(p => p.Approved == false && p.Rejected == false && (suggestedById == Guid.Empty || p.SuggestedById == suggestedById))
+                    .OrderBy(p => p.Id).Skip(skip).FirstOrDefaultAsync();
                 if(song != null)
                 {
                     return new RServiceResult<PoemMusicTrackViewModel>

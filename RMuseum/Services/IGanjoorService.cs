@@ -119,8 +119,9 @@ namespace RMuseum.Services
         /// next unreviewed track
         /// </summary>
         /// <param name="skip"></param>
+        /// <param name="suggestedById"></param>
         /// <returns></returns>
-        Task<RServiceResult<PoemMusicTrackViewModel>> GetNextUnreviewedSong(int skip);
+        Task<RServiceResult<PoemMusicTrackViewModel>> GetNextUnreviewedSong(int skip, Guid suggestedById);
 
         /// <summary>
         /// suggest song

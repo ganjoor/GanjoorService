@@ -723,6 +723,14 @@
             <param name="song"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnreviewedSong(System.Int32,System.Boolean)">
+            <summary>
+            get next unreviewed song
+            </summary>
+            <param name="skip"></param>
+            <param name="onlyMine"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.Faal">
             <summary>
              get a random poem from hafez
@@ -5660,11 +5668,12 @@
             <param name="trackType"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedSong(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedSong(System.Int32,System.Guid)">
             <summary>
             next unreviewed track
             </summary>
             <param name="skip"></param>
+            <param name="suggestedById"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
@@ -6508,11 +6517,12 @@
             <param name="song"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedSong(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedSong(System.Int32,System.Guid)">
             <summary>
             next unreviewed track
             </summary>
             <param name="skip"></param>
+            <param name="suggestedById"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal">
