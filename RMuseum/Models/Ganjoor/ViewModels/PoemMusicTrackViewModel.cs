@@ -66,6 +66,21 @@
         public int GolhaTrackId { get; set; }
 
         /// <summary>
+        /// approved
+        /// </summary>
+        public bool Approved { get; set; }
+
+        /// <summary>
+        /// instead of deleting rejected songs keep track of them
+        /// </summary>
+        public bool Rejected { get; set; }
+
+        /// <summary>
+        /// rejection cause
+        /// </summary>
+        public string RejectionCause { get; set; }
+
+        /// <summary>
         /// to string
         /// </summary>
         /// <returns></returns>

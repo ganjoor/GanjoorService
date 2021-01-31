@@ -748,7 +748,10 @@ namespace RMuseum.Services.Implementation
                                                          TrackUrl = t.TrackUrl,
                                                          Description = t.Description,
                                                          BrokenLink = t.BrokenLink,
-                                                         GolhaTrackId = t.GolhaTrackId == null ? 0 : (int)t.GolhaTrackId
+                                                         GolhaTrackId = t.GolhaTrackId == null ? 0 : (int)t.GolhaTrackId,
+                                                         Approved = t.Approved,
+                                                         Rejected = t.Rejected,
+                                                         RejectionCause = t.RejectionCause
 
                                                      }
                                                     ).ToArrayAsync()
@@ -770,6 +773,10 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                song.Approved = false;
+                song.Rejected = false;
+                song.RejectionCause = "";
+                song.BrokenLink = false;
                 if(song.TrackType == PoemMusicTrackType.Golha)
                 {
                     var golhaTrack = await _context.GolhaTracks.Include(g => g.GolhaProgram).ThenInclude(p => p.GolhaCollection).Where(g => g.Id == song.GolhaTrackId).FirstOrDefaultAsync();
@@ -812,7 +819,10 @@ namespace RMuseum.Services.Implementation
                         TrackUrl = song.TrackUrl,
                         SuggestedById = userId,
                         Description = song.Description,
-                        GolhaTrackId = song.TrackType == PoemMusicTrackType.Golha ? song.GolhaTrackId : (int?)null
+                        GolhaTrackId = song.TrackType == PoemMusicTrackType.Golha ? song.GolhaTrackId : (int?)null,
+                        Approved = false,
+                        Rejected = false,
+                        RejectionCause = ""
                     };
 
                 GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == song.ArtistUrl).FirstOrDefaultAsync();
@@ -867,7 +877,10 @@ namespace RMuseum.Services.Implementation
                             TrackUrl = song.TrackUrl,
                             Description = song.Description,
                             GolhaTrackId = song.TrackType == PoemMusicTrackType.Golha ? (int)song.GolhaTrackId : 0,
-                            BrokenLink = song.BrokenLink
+                            BrokenLink = song.BrokenLink,
+                            Approved = song.Approved,
+                            Rejected = song.Rejected,
+                            RejectionCause = song.RejectionCause
                         }
                         );
                 }

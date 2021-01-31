@@ -4309,6 +4309,21 @@
             golha id
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.Approved">
+            <summary>
+            approved
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.Rejected">
+            <summary>
+            instead of deleting rejected songs keep track of them
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.RejectionCause">
+            <summary>
+            rejection cause
+            </summary>
+        </member>
         <member name="M:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.ToString">
             <summary>
             to string
