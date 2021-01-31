@@ -893,6 +893,54 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// review song
+        /// </summary>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PoemMusicTrackViewModel>> ReviewSong(PoemMusicTrackViewModel song)
+        {
+            try
+            {
+                if (song.Approved && song.Rejected)
+                    return new RServiceResult<PoemMusicTrackViewModel>(null, "song.Approved && song.Rejected");
+
+                var track = await _context.GanjoorPoemMusicTracks.Where(t => t.Id == song.Id).SingleOrDefaultAsync();
+
+                track.TrackType = song.TrackType;
+                track.ArtistName = song.ArtistName;
+                track.ArtistUrl = song.ArtistUrl;
+                track.AlbumName = song.AlbumName;
+                track.AlbumUrl = song.AlbumUrl;
+                track.TrackName = song.TrackName;
+                track.TrackUrl = song.TrackUrl;
+                if(!track.Approved && song.Approved)
+                {
+                    track.ApprovalDate = DateTime.Now;
+                }
+                track.Approved = song.Approved;
+                track.Rejected = song.Rejected;
+                track.RejectionCause = song.RejectionCause;
+                track.BrokenLink = song.BrokenLink;
+
+                GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
+                if (singer != null)
+                {
+                    track.SingerId = singer.Id;
+                }
+
+                _context.GanjoorPoemMusicTracks.Update(track);
+
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<PoemMusicTrackViewModel>(song);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PoemMusicTrackViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get a random poem from hafez
         /// </summary>
         /// <returns></returns>

@@ -131,6 +131,13 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<PoemMusicTrackViewModel>> SuggestSong(Guid userId, PoemMusicTrackViewModel song);
 
+        /// <summary>
+        /// review song
+        /// </summary>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemMusicTrackViewModel>> ReviewSong(PoemMusicTrackViewModel song);
+
 
         /// <summary>
         /// get a random poem from hafez

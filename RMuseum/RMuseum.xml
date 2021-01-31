@@ -731,6 +731,13 @@
             <param name="onlyMine"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ReviewSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            review song
+            </summary>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.Faal">
             <summary>
              get a random poem from hafez
@@ -5699,6 +5706,13 @@
             <param name="song"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ReviewSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            review song
+            </summary>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.Faal">
             <summary>
             get a random poem from hafez
@@ -6538,6 +6552,13 @@
             </summary>
             <param name="skip"></param>
             <param name="suggestedById"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ReviewSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            review song
+            </summary>
+            <param name="song"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal">

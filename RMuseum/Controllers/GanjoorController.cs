@@ -336,6 +336,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// review song
+        /// </summary>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("song")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ReviewSongs)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemMusicTrackViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> ReviewSong([FromBody]PoemMusicTrackViewModel song)
+        {
+            var res =
+                await _ganjoorService.ReviewSong(song);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         ///  get a random poem from hafez
         /// </summary>
         /// <returns></returns>
