@@ -5706,6 +5706,13 @@
             <param name="song"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUnreviewedSongsCount(System.Guid)">
+            <summary>
+            get unreviewed count
+            </summary>
+            <param name="suggestedById"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.ReviewSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             review song
@@ -6544,6 +6551,13 @@
             </summary>
             <param name="userId"></param>
             <param name="song"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedSongsCount(System.Guid)">
+            <summary>
+            get unreviewed count
+            </summary>
+            <param name="suggestedById"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedSong(System.Int32,System.Guid)">

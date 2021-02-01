@@ -132,6 +132,13 @@ namespace RMuseum.Services
         Task<RServiceResult<PoemMusicTrackViewModel>> SuggestSong(Guid userId, PoemMusicTrackViewModel song);
 
         /// <summary>
+        /// get unreviewed count
+        /// </summary>
+        /// <param name="suggestedById"></param>
+        /// <returns></returns>
+        Task<RServiceResult<int>> GetUnreviewedSongsCount(Guid suggestedById);
+
+        /// <summary>
         /// review song
         /// </summary>
         /// <param name="song"></param>

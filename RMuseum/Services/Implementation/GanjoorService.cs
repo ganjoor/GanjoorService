@@ -846,6 +846,25 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// get unreviewed count
+        /// </summary>
+        /// <param name="suggestedById"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> GetUnreviewedSongsCount(Guid suggestedById)
+        {
+            try
+            {
+                return new RServiceResult<int>(await _context.GanjoorPoemMusicTracks
+                   .Where(p => p.Approved == false && p.Rejected == false && (suggestedById == Guid.Empty || p.SuggestedById == suggestedById))
+                   .CountAsync());
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<int>(0, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// next unreviewed track
