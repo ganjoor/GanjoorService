@@ -738,6 +738,13 @@
             <param name="song"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DirectInsertSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            directly insert a poem related song
+            </summary>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.Faal">
             <summary>
              get a random poem from hafez
@@ -5725,6 +5732,13 @@
             <param name="song"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DirectInsertSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            direct insert song
+            </summary>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.Faal">
             <summary>
             get a random poem from hafez
@@ -6576,6 +6590,13 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ReviewSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             review song
+            </summary>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DirectInsertSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            direct insert song
             </summary>
             <param name="song"></param>
             <returns></returns>

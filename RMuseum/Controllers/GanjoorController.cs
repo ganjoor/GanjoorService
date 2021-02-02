@@ -380,6 +380,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// directly insert a poem related song
+        /// </summary>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("song/add")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.AddSongs)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemMusicTrackViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> DirectInsertSong([FromBody] PoemMusicTrackViewModel song)
+        {
+            var res =
+                await _ganjoorService.DirectInsertSong(song);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         ///  get a random poem from hafez
         /// </summary>
         /// <returns></returns>

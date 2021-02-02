@@ -960,6 +960,74 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// direct insert song
+        /// </summary>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PoemMusicTrackViewModel>> DirectInsertSong(PoemMusicTrackViewModel song)
+        {
+            try
+            {
+
+                var poem = await _context.GanjoorPoems.Where(p => p.Id == song.PoemId).SingleOrDefaultAsync();
+                if (poem == null)
+                    return new RServiceResult<PoemMusicTrackViewModel>(null, "poem == null");
+
+                if
+                    (
+                    string.IsNullOrEmpty(song.ArtistName)
+                    ||
+                    string.IsNullOrEmpty(song.ArtistUrl)
+                    ||
+                    string.IsNullOrEmpty(song.AlbumName)
+                    ||
+                    string.IsNullOrEmpty(song.AlbumUrl)
+                    ||
+                    string.IsNullOrEmpty(song.TrackName)
+                    ||
+                    string.IsNullOrEmpty(song.TrackUrl)
+                    ||
+                    song.TrackType != PoemMusicTrackType.BeepTunesOrKhosousi
+                    )
+                {
+                    return new RServiceResult<PoemMusicTrackViewModel>(null, "data validation err");
+                }
+
+                PoemMusicTrack track = new PoemMusicTrack();
+
+                track.TrackType = song.TrackType;
+                track.ArtistName = song.ArtistName;
+                track.ArtistUrl = song.ArtistUrl;
+                track.AlbumName = song.AlbumName;
+                track.AlbumUrl = song.AlbumUrl;
+                track.TrackName = song.TrackName;
+                track.TrackUrl = song.TrackUrl;
+                track.ApprovalDate = DateTime.Now;
+                track.Approved = true;
+                track.Rejected = false;
+                track.BrokenLink = song.BrokenLink;
+
+                GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
+                if (singer != null)
+                {
+                    track.SingerId = singer.Id;
+                }
+
+                _context.GanjoorPoemMusicTracks.Add(track);
+
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<PoemMusicTrackViewModel>(song);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PoemMusicTrackViewModel>(null, exp.ToString());
+            }
+        }
+
+
+
+        /// <summary>
         /// get a random poem from hafez
         /// </summary>
         /// <returns></returns>
