@@ -79,6 +79,11 @@ namespace RMuseum.Models.Auth.Memory
         public const string ReviewSongs = "songrevu";
 
         /// <summary>
+        /// add song from any source
+        /// </summary>
+        public const string AddSongs = "songadd";
+
+        /// <summary>
         /// list of forms and their permissions
         /// </summary>
         public new static SecurableItem[] Items
@@ -145,6 +150,7 @@ namespace RMuseum.Models.Auth.Memory
                         Operations = new SecurableItemOperation[]
                         {
                             new SecurableItemOperation(ReviewSongs, "بازبینی آهنگ‌های پیشنهادی", false),
+                            new SecurableItemOperation(AddSongs, "افزودن آهنگ از هر منبع", false),
                             new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات از منابع خارجی", false),
                         }
                     },

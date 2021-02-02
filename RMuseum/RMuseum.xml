@@ -1905,6 +1905,11 @@
             review suggested songs
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.AddSongs">
+            <summary>
+            add song from any source
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.Items">
             <summary>
             list of forms and their permissions
