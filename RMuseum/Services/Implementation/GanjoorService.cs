@@ -993,8 +993,16 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<PoemMusicTrackViewModel>(null, "data validation err");
                 }
 
+                var duplicated = await _context.GanjoorPoemMusicTracks.Where(m => m.PoemId == song.PoemId && m.TrackUrl == song.TrackUrl).FirstOrDefaultAsync();
+                if(duplicated != null)
+                {
+                    return new RServiceResult<PoemMusicTrackViewModel>(null, "duplicated song url for this poem");
+                }
+                
+
                 PoemMusicTrack track = new PoemMusicTrack();
 
+                track.PoemId = song.PoemId;
                 track.TrackType = song.TrackType;
                 track.ArtistName = song.ArtistName;
                 track.ArtistUrl = song.ArtistUrl;
