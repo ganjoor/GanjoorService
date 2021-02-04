@@ -403,7 +403,28 @@ namespace RSecurityBackend.Services.Implementation
                     ;
 
                 foreach (RTemporaryUserSession rUserSession in sessions)
-                    publicRUserSessions.Add(new PublicRUserSession(rUserSession));
+                    publicRUserSessions.Add(
+                        new PublicRUserSession()
+                        {
+                            Id = rUserSession.Id,
+                            RAppUser = new PublicRAppUser()
+                            {
+                                Id = rUserSession.RAppUser.Id,
+                                Username = rUserSession.RAppUser.UserName,
+                                Email = rUserSession.RAppUser.Email,
+                                FirstName = rUserSession.RAppUser.FirstName,
+                                SureName = rUserSession.RAppUser.SureName,
+                                PhoneNumber = rUserSession.RAppUser.PhoneNumber,
+                                RImageId = rUserSession.RAppUser.RImageId,
+                                Status = rUserSession.RAppUser.Status
+                            },
+                            ClientAppName = rUserSession.ClientAppName,
+                            ClientIPAddress = rUserSession.ClientIPAddress,
+                            Language = rUserSession.Language,
+                            LastRenewal = rUserSession.LastRenewal,
+                            LoginTime = rUserSession.LoginTime
+                        }
+                        );
 
                 return new RServiceResult<PublicRUserSession[]>(publicRUserSessions.ToArray());
                 
