@@ -3125,20 +3125,6 @@
             Ganjoor Link View Model
             </summary>
         </member>
-        <member name="M:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.#ctor">
-            <summary>
-            default constructor
-            </summary>
-        </member>
-        <member name="M:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.#ctor(RMuseum.Models.GanjoorIntegration.GanjoorLink,System.String,System.String,System.Guid)">
-            <summary>
-            parameterized constructor
-            </summary>
-            <param name="src"></param>
-            <param name="entityName"></param>
-            <param name="entityFriendlyUrl"></param>
-            <param name="entityImageId"></param>
-        </member>
         <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.Id">
             <summary>
             Id

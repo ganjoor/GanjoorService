@@ -2538,7 +2538,30 @@ namespace RMuseum.Services.Implementation
                     entityImageId = item.Images.First().Id;
                 }
 
-                GanjoorLinkViewModel viewModel = new GanjoorLinkViewModel(suggestion, entityName, entityFriendlyUrl, entityImageId);
+                GanjoorLinkViewModel viewModel 
+                    = new GanjoorLinkViewModel()
+                    {
+                        Id = suggestion.Id,
+                        GanjoorPostId = suggestion.GanjoorPostId,
+                        GanjoorUrl = suggestion.GanjoorUrl,
+                        GanjoorTitle = suggestion.GanjoorTitle,
+                        EntityName = entityName,
+                        EntityFriendlyUrl = entityFriendlyUrl,
+                        EntityImageId = entityImageId,
+                        ReviewResult = suggestion.ReviewResult,
+                        Synchronized = suggestion.Synchronized,
+                        SuggestedBy = new PublicRAppUser()
+                        {
+                            Id = suggestion.SuggestedBy.Id,
+                            Username = suggestion.SuggestedBy.UserName,
+                            Email = suggestion.SuggestedBy.Email,
+                            FirstName = suggestion.SuggestedBy.FirstName,
+                            SureName = suggestion.SuggestedBy.SureName,
+                            PhoneNumber = suggestion.SuggestedBy.PhoneNumber,
+                            RImageId = suggestion.SuggestedBy.RImageId,
+                            Status = suggestion.SuggestedBy.Status
+                        }
+                    };
                 return new RServiceResult<GanjoorLinkViewModel>(viewModel);
             }
             catch(Exception exp)
@@ -2570,13 +2593,29 @@ namespace RMuseum.Services.Implementation
                 {
                     result.Add
                         (
-                        new GanjoorLinkViewModel
-                        (
-                            link,
-                            link.Item == null ? link.Artifact.Name : link.Artifact.Name + " » " + link.Item.Name,
-                            link.Item == null ? $"/items/{link.Artifact.FriendlyUrl}" : $"/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
-                            link.Item == null ? link.Artifact.CoverImageId : link.Item.Images.First().Id
-                        )
+                        new GanjoorLinkViewModel()
+                        {
+                            Id = link.Id,
+                            GanjoorPostId = link.GanjoorPostId,
+                            GanjoorUrl = link.GanjoorUrl,
+                            GanjoorTitle = link.GanjoorTitle,
+                            EntityName = link.Item == null ? link.Artifact.Name : link.Artifact.Name + " » " + link.Item.Name,
+                            EntityFriendlyUrl = link.Item == null ? $"/items/{link.Artifact.FriendlyUrl}" : $"/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                            EntityImageId = link.Item == null ? link.Artifact.CoverImageId : link.Item.Images.First().Id,
+                            ReviewResult = link.ReviewResult,
+                            Synchronized = link.Synchronized,
+                            SuggestedBy = new PublicRAppUser()
+                            {
+                                Id = link.SuggestedBy.Id,
+                                Username = link.SuggestedBy.UserName,
+                                Email = link.SuggestedBy.Email,
+                                FirstName = link.SuggestedBy.FirstName,
+                                SureName = link.SuggestedBy.SureName,
+                                PhoneNumber = link.SuggestedBy.PhoneNumber,
+                                RImageId = link.SuggestedBy.RImageId,
+                                Status = link.SuggestedBy.Status
+                            }
+                        }
                         );
                 }
                 return new RServiceResult<GanjoorLinkViewModel[]>(result.ToArray());

@@ -10,46 +10,6 @@ namespace RMuseum.Models.GanjoorIntegration.ViewModels
     public class GanjoorLinkViewModel
     {
         /// <summary>
-        /// default constructor
-        /// </summary>
-        public GanjoorLinkViewModel()
-        {
-
-        }
-
-        /// <summary>
-        /// parameterized constructor
-        /// </summary>
-        /// <param name="src"></param>
-        /// <param name="entityName"></param>
-        /// <param name="entityFriendlyUrl"></param>
-        /// <param name="entityImageId"></param>
-        public GanjoorLinkViewModel(GanjoorLink src, string entityName, string entityFriendlyUrl, Guid entityImageId)
-        {
-            Id = src.Id;
-            GanjoorPostId = src.GanjoorPostId;
-            GanjoorUrl = src.GanjoorUrl;
-            GanjoorTitle = src.GanjoorTitle;
-            EntityName = entityName;
-            EntityFriendlyUrl = entityFriendlyUrl;
-            EntityImageId = entityImageId;
-            ReviewResult = src.ReviewResult;
-            Synchronized = src.Synchronized;
-            RAppUser appUser = src.SuggestedBy;
-            SuggestedBy =new PublicRAppUser()
-            {
-                Id = appUser.Id,
-                Username = appUser.UserName,
-                Email = appUser.Email,
-                FirstName = appUser.FirstName,
-                SureName = appUser.SureName,
-                PhoneNumber = appUser.PhoneNumber,
-                RImageId = appUser.RImageId,
-                Status = appUser.Status
-            };
-        }
-
-        /// <summary>
         /// Id
         /// </summary>
         public Guid Id { get; set; }
