@@ -1913,8 +1913,27 @@ namespace RMuseum.Services.Implementationa
                       &&
                       (!unfinished || (unfinished && !tracker.Finished))
                       orderby tracker.StartDate descending
-                      select new RecitationPublishingTrackerViewModel(tracker, poem, recitation.Owner, recitation);
-
+                      select new RecitationPublishingTrackerViewModel()
+                      {
+                            UserEmail = recitation.Owner.Email,
+                            PoemFullTitle = poem.FullTitle,
+                            ArtistName = recitation.AudioArtist,
+                            Operation = recitation.AudioSyncStatus == AudioSyncStatus.NewItem ? "جدید" :
+                                recitation.AudioSyncStatus == AudioSyncStatus.SoundOrXMLFilesChanged ? "جایگزینی فایل" :
+                                recitation.AudioSyncStatus == AudioSyncStatus.MetadataChanged ? "تغییر اطلاعات" :
+                                recitation.AudioSyncStatus == AudioSyncStatus.Deleted ? "حذف" :
+                                "نامشخص (انجام شده)",
+                            InProgress = !tracker.Finished && string.IsNullOrEmpty(tracker.LastException),
+                            XmlFileCopied = tracker.XmlFileCopied,
+                            Mp3FileCopied = tracker.Mp3FileCopied,
+                            FirstDbUpdated = tracker.FirstDbUpdated,
+                            SecondDbUpdated = tracker.SecondDbUpdated,
+                            Succeeded = tracker.Finished,
+                            Error = !string.IsNullOrEmpty(tracker.LastException),
+                            LastException = tracker.LastException,
+                            StartDate = tracker.StartDate,
+                            FinishDate = tracker.FinishDate
+                        };
 
                 (PaginationMetadata PagingMeta, RecitationPublishingTrackerViewModel[] Items) paginatedResult =
                     await QueryablePaginator<RecitationPublishingTrackerViewModel>.Paginate(source, paging);

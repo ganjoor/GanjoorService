@@ -1,6 +1,4 @@
-﻿using RMuseum.Models.Ganjoor;
-using RSecurityBackend.Models.Auth.Db;
-using System;
+﻿using System;
 
 namespace RMuseum.Models.GanjoorAudio.ViewModels
 {
@@ -9,36 +7,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
     /// </summary>
     public class RecitationPublishingTrackerViewModel
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="tracker"></param>
-        /// <param name="poem"></param>
-        /// <param name="user"></param>
-        /// <param name="recitation"></param>
-        public RecitationPublishingTrackerViewModel(RecitationPublishingTracker tracker, GanjoorPoem poem, RAppUser user, Recitation recitation)
-        {
-            UserEmail = user.Email;
-            PoemFullTitle = poem.FullTitle;
-            ArtistName = recitation.AudioArtist;
-            Operation = recitation.AudioSyncStatus == AudioSyncStatus.NewItem ? "جدید" : 
-                recitation.AudioSyncStatus == AudioSyncStatus.SoundOrXMLFilesChanged ? "جایگزینی فایل" :
-                recitation.AudioSyncStatus == AudioSyncStatus.MetadataChanged ? "تغییر اطلاعات" : 
-                recitation.AudioSyncStatus == AudioSyncStatus.Deleted ? "حذف" : 
-                "نامشخص (انجام شده)";
-            InProgress = !tracker.Finished && string.IsNullOrEmpty(tracker.LastException);
-            XmlFileCopied = tracker.XmlFileCopied;
-            Mp3FileCopied = tracker.Mp3FileCopied;
-            FirstDbUpdated = tracker.FirstDbUpdated;
-            SecondDbUpdated = tracker.SecondDbUpdated;
-            Succeeded = tracker.Finished;
-            Error = !string.IsNullOrEmpty(tracker.LastException);
-            LastException = tracker.LastException;
-            StartDate = tracker.StartDate;
-            FinishDate = tracker.FinishDate;
-        }
-
-        /// <summary>
+         /// <summary>
         /// user email
         /// </summary>
         public string UserEmail { get; set; }
