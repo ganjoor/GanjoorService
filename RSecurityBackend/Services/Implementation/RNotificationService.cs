@@ -38,7 +38,17 @@ namespace RSecurityBackend.Services.Implementation
                             };
                 _context.Notifications.Add(notification);
                 await _context.SaveChangesAsync();
-                return new RServiceResult<RUserNotificationViewModel>(new RUserNotificationViewModel(notification));
+                return new RServiceResult<RUserNotificationViewModel>
+                    (
+                    new RUserNotificationViewModel()
+                    {
+                        Id = notification.Id,
+                        DateTime = notification.DateTime,
+                        Status = notification.Status,
+                        Subject = notification.Subject,
+                        HtmlText = notification.HtmlText
+                    }
+                    );
             }
             catch (Exception exp)
             {
@@ -61,7 +71,18 @@ namespace RSecurityBackend.Services.Implementation
                 notification.Status = notification.Status == NotificationStatus.Unread ? NotificationStatus.Read : NotificationStatus.Unread;
                 _context.Notifications.Update(notification);
                 await _context.SaveChangesAsync();
-                return new RServiceResult<RUserNotificationViewModel>(new RUserNotificationViewModel(notification));
+                return new RServiceResult<RUserNotificationViewModel>
+                    (
+                     new RUserNotificationViewModel()
+                     {
+                         Id = notification.Id,
+                         DateTime = notification.DateTime,
+                         Status = notification.Status,
+                         Subject = notification.Subject,
+                         HtmlText = notification.HtmlText
+                     }
+
+                    );
             }
             catch (Exception exp)
             {
@@ -139,9 +160,18 @@ namespace RSecurityBackend.Services.Implementation
                 return new RServiceResult<RUserNotificationViewModel[]>
                     (
                     await _context.Notifications
-                    .Where(n => n.UserId == userId)
-                    .OrderByDescending(n => n.DateTime)
-                    .Select(n => new RUserNotificationViewModel(n))
+                    .Where(notification => notification.UserId == userId)
+                    .OrderByDescending(notification => notification.DateTime)
+                    .Select(notification =>
+                     new RUserNotificationViewModel()
+                     {
+                         Id = notification.Id,
+                         DateTime = notification.DateTime,
+                         Status = notification.Status,
+                         Subject = notification.Subject,
+                         HtmlText = notification.HtmlText
+                     }
+                    )
                     .ToArrayAsync()
                     );
             }

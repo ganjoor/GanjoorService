@@ -8,18 +8,6 @@ namespace RSecurityBackend.Models.Notification.ViewModels
     public class RUserNotificationViewModel
     {
         /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="src"></param>
-        public RUserNotificationViewModel(RUserNotification src)
-        {
-            Id = src.Id;
-            DateTime = src.DateTime;
-            Status = src.Status;
-            Subject = src.Subject;
-            HtmlText = src.HtmlText;
-        }
-        /// <summary>
         /// Id
         /// </summary>
         public Guid Id { get; set; }

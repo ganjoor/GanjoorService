@@ -2009,12 +2009,6 @@
             User Notification
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel.#ctor(RSecurityBackend.Models.Notification.RUserNotification)">
-            <summary>
-            constructor
-            </summary>
-            <param name="src"></param>
-        </member>
         <member name="P:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel.Id">
             <summary>
             Id
