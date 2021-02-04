@@ -229,7 +229,12 @@ namespace RMuseum.DbContext
         /// PoemMusicTracks
         /// </summary>
         public DbSet<PoemMusicTrack> GanjoorPoemMusicTracks { get; set; }
-        
+
+        /// <summary>
+        /// Ganjoor Comments
+        /// </summary>
+        public DbSet<GanjoorComment> GanjoorComments { get; set; }
+
 
     }
 }

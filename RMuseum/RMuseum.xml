@@ -1283,6 +1283,11 @@
             PoemMusicTracks
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorComments">
+            <summary>
+            Ganjoor Comments
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status
@@ -3539,12 +3544,12 @@
             Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.GanjoorPoemId">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.PoemId">
             <summary>
             Ganjoor Poem Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.GanjoorPoem">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Poem">
             <summary>
             Ganjoor Poem Id
             </summary>
@@ -3574,7 +3579,7 @@
             author url (MySql imported field)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.AutherIpAddress">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.AuthorIpAddress">
             <summary>
             author IP address (MySql imported field)
             </summary>
@@ -3589,12 +3594,12 @@
             comment
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.ReferenceComment">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.InReplyTo">
             <summary>
             In Reply to Other Comment
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.ReferenceCommentId">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.InReplyToId">
             <summary>
             Reference Comment Id
             </summary>

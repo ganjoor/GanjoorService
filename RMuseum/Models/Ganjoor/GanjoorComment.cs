@@ -17,12 +17,12 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// Ganjoor Poem Id
         /// </summary>
-        public int GanjoorPoemId { get; set; }
+        public int PoemId { get; set; }
 
         /// <summary>
         /// Ganjoor Poem Id
         /// </summary>
-        public GanjoorPoem GanjoorPoem { get; set; }
+        public GanjoorPoem Poem { get; set; }
 
         /// <summary>
         /// user id
@@ -52,7 +52,7 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// author IP address (MySql imported field)
         /// </summary>
-        public string AutherIpAddress { get; set; }
+        public string AuthorIpAddress { get; set; }
 
         /// <summary>
         /// comment date
@@ -67,12 +67,12 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// In Reply to Other Comment
         /// </summary>
-        public virtual GanjoorComment ReferenceComment { get; set; }
+        public virtual GanjoorComment InReplyTo { get; set; }
 
         /// <summary>
         /// Reference Comment Id
         /// </summary>
-        public Guid? ReferenceCommentId { get; set; }
+        public Guid? InReplyToId { get; set; }
 
         /// <summary>
         /// publish status

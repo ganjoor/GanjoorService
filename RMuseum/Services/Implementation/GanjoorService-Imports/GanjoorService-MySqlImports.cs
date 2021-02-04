@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using RMuseum.DbContext;
+using RMuseum.Models.Artifact;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.MusicCatalogue;
 using RSecurityBackend.Models.Generic;
@@ -39,6 +40,12 @@ namespace RMuseum.Services.Implementation
                         LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(contextReport);
 
                         var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", "pre open connection")).Result;
+
+                        var resComments = await _ImportCommentsDataFromMySql(context, jobProgressServiceEF, job);
+                        if(resComments.Result)//temporary
+                        {
+                            return;
+                        }
 
 
                         MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration, context);
@@ -467,6 +474,96 @@ namespace RMuseum.Services.Implementation
             }
 
         }
+
+        private async Task<RServiceResult<bool>> _ImportCommentsDataFromMySql(RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        {
+            try
+            {
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase comments - pre mysql data fetch")).Result;
+
+                string connectionString =
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True";
+
+                using (MySqlConnection connection = new MySqlConnection
+                                (
+                                connectionString
+                                ))
+                {
+                    connection.Open();
+                    using (MySqlDataAdapter src = new MySqlDataAdapter(
+                        "SELECT comment_post_ID, comment_author, comment_author_email, comment_author_url, comment_author_IP, comment_date, comment_content, comment_approved FROM ganja_comments WHERE comment_type <> 'pingback' ORDER BY comment_ID",
+                        connection))
+                    {
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase comments - mysql")).Result;
+                        using (DataTable data = new DataTable())
+                        {
+                            await src.FillAsync(data);
+
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase comments - processing approved poem songs")).Result;
+
+                            int count = data.Rows.Count;
+                            int i = 0;
+
+                            int percent = -1;
+
+                            foreach (DataRow row in data.Rows)
+                            {
+                                GanjoorComment comment = new GanjoorComment()
+                                {
+                                    PoemId = int.Parse(row["comment_post_ID"].ToString()),
+                                    AuthorName = row["comment_author"].ToString(),
+                                    AuthorEmail = row["comment_author_email"].ToString(),
+                                    AuthorUrl = row["comment_author_url"].ToString(),
+                                    AuthorIpAddress = row["comment_author_IP"].ToString(),
+                                    CommentDate = (DateTime)row["comment_date"],
+                                    HtmlComment = row["comment_content"].ToString(),
+                                    Status = row["comment_approved"].ToString() == "1" ? PublishStatus.Published : PublishStatus.Awaiting
+                                };
+
+
+                                context.GanjoorComments.Add(comment);
+
+                                await context.SaveChangesAsync(); //keeping original order of comments by saving things here
+
+                                i++;
+
+                                if(i * 100 / count > percent)
+                                {
+                                    percent = i * 100 / count;
+
+                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"phase comments - {i} of {count}")).Result;
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase comments - assigning comments to users")).Result;
+                foreach (var user in await context.Users.ToListAsync())
+                {
+                    foreach(var comment in await context.GanjoorComments.Where(u => u.AuthorEmail == user.Email).ToListAsync())
+                    {
+                        comment.UserId = user.Id;
+                        context.GanjoorComments.Update(comment);
+                    }
+                }
+                await context.SaveChangesAsync();
+
+
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase comments - finished")).Result;
+
+
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+       
 
         private List<GanjoorVerse> _extractVersesFromPoemHtmlText(string poemtext)
         {
