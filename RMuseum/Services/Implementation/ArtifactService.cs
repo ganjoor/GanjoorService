@@ -113,7 +113,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                RArtifactMasterRecord item =
+                RArtifactMasterRecord artifact =
                      await _context.Artifacts
                      .Include(a => a.CoverImage)
                      .Include(a => a.Items).ThenInclude(i => i.Images)
@@ -123,10 +123,10 @@ namespace RMuseum.Services.Implementation
                      .AsNoTracking()
                     .SingleOrDefaultAsync();
 
-                if(item != null)
+                if(artifact != null)
                 {
                    
-                   return new RServiceResult<RArtifactMasterRecordViewModel>(new RArtifactMasterRecordViewModel(item));
+                   return new RServiceResult<RArtifactMasterRecordViewModel>(RArtifactMasterRecord.ToViewModel(artifact));
                 }
 
 
@@ -180,7 +180,7 @@ namespace RMuseum.Services.Implementation
 
                     artifact.Items = filteredItems;
 
-                    return new RServiceResult<RArtifactMasterRecordViewModel>(new RArtifactMasterRecordViewModel(artifact));
+                    return new RServiceResult<RArtifactMasterRecordViewModel>(RArtifactMasterRecord.ToViewModel(artifact));
                 }
 
 
@@ -599,19 +599,19 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                RArtifactMasterRecord item =
+                RArtifactMasterRecord artifact =
                      await _context.Artifacts
                      .Include(a => a.Tags).ThenInclude(t => t.RTag)
                      .Where(a => a.Id == artifactId)
                      .AsNoTracking()
                     .SingleOrDefaultAsync();
 
-                if (item == null)
+                if (artifact == null)
                 {
                     return new RServiceResult<Guid?>(null, "artifact not found");
                 }
 
-                RArtifactMasterRecordViewModel viewModel = new RArtifactMasterRecordViewModel(item); //tags are sorted in this method
+                RArtifactMasterRecordViewModel viewModel = RArtifactMasterRecord.ToViewModel(artifact); //tags are sorted in this method
 
                 int tagOrder = viewModel.ArtifactTags.Where(tag => tag.Id == tagId).FirstOrDefault().Order;
                 RArtifactTagViewModel otherTagViewModel;
@@ -1101,18 +1101,18 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                RArtifactMasterRecord item =
+                RArtifactMasterRecord artifact =
                      await _context.Artifacts
                      .Include(a => a.Tags).ThenInclude(t => t.RTag)
                      .Where(a => a.Id == artifactId)
                     .SingleOrDefaultAsync();
 
-                if (item == null)
+                if (artifact == null)
                 {
                     return new RServiceResult<Guid?>(null, "artifact not found");
                 }
 
-                RArtifactMasterRecordViewModel viewModel = new RArtifactMasterRecordViewModel(item); //tags are sorted in this method
+                RArtifactMasterRecordViewModel viewModel = RArtifactMasterRecord.ToViewModel(artifact); //tags are sorted in this method
 
                 RArtifactTagViewModel tag = viewModel.ArtifactTags.Where(t => t.Id == tagId).FirstOrDefault();
                 RTagValue value1 = tag.Values.Where(v => v.Id == valueId).FirstOrDefault();
@@ -1138,8 +1138,8 @@ namespace RMuseum.Services.Implementation
 
                 _context.TagValues.UpdateRange(new RTagValue[] { value1, value2 });
 
-                item.LastModified = DateTime.Now;
-                _context.Artifacts.Update(item);
+                artifact.LastModified = DateTime.Now;
+                _context.Artifacts.Update(artifact);
 
                 await _context.SaveChangesAsync();
 

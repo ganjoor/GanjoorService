@@ -1428,6 +1428,13 @@
             Attributes
             </summary>
         </member>
+        <member name="M:RMuseum.Models.Artifact.RArtifactMasterRecord.ToViewModel(RMuseum.Models.Artifact.RArtifactMasterRecord)">
+            <summary>
+            to view model
+            </summary>
+            <param name="src"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Models.Artifact.RPictureFile">
             <summary>
             Artifact Picture Files
@@ -1711,11 +1718,80 @@
             Museum Master Item View Model
             </summary>
         </member>
-        <member name="M:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.#ctor(RMuseum.Models.Artifact.RArtifactMasterRecord)">
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.Id">
             <summary>
-            constructor
+            Id
             </summary>
-            <param name="src"></param>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.FriendlyUrl">
+            <summary>
+            Friendly Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.Status">
+            <summary>
+            Publish Status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.NameInEnglish">
+            <summary>
+            Name In English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.DescriptionInEnglish">
+            <summary>
+            Description In English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.DateTime">
+            <summary>
+            Date/Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.LastModified">
+            <summary>
+            Last Modified for caching purposes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.CoverItemIndex">
+            <summary>
+            Cover Item Index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.CoverImage">
+            <summary>
+            Cover Image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.CoverImageId">
+            <summary>
+            Cover Image Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.Items">
+            <summary>
+            Parts of this item
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.ItemCount">
+            <summary>
+            Item Count (for lists and queries)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.Tags">
+            <summary>
+            Attributes
+            </summary>
         </member>
         <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactMasterRecordViewModel.ArtifactTags">
             <summary>
