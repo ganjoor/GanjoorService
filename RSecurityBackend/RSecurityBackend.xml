@@ -1200,17 +1200,6 @@
             a safe subset of RAppUser
             </remarks>
         </member>
-        <member name="M:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.#ctor(RSecurityBackend.Models.Auth.Db.RAppUser)">
-            <summary>
-            constructor
-            </summary>
-            <param name="dbUserInfo"></param>
-        </member>
-        <member name="M:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.#ctor">
-            <summary>
-            default constructor
-            </summary>
-        </member>
         <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.Id">
             <summary>
             Id

@@ -16,7 +16,17 @@ namespace RSecurityBackend.Models.Auth.ViewModels
         public PublicRUserSession(RTemporaryUserSession src)
         {
             Id = src.Id;
-            RAppUser = new PublicRAppUser(src.RAppUser);
+            RAppUser = new PublicRAppUser()
+            {
+                Id = src.RAppUser.Id,
+                Username = src.RAppUser.UserName,
+                Email = src.RAppUser.Email,
+                FirstName = src.RAppUser.FirstName,
+                SureName = src.RAppUser.SureName,
+                PhoneNumber = src.RAppUser.PhoneNumber,
+                RImageId = src.RAppUser.RImageId,
+                Status = src.RAppUser.Status
+            };
             ClientIPAddress = src.ClientIPAddress;
             ClientAppName = src.ClientAppName;
             Language = src.Language;

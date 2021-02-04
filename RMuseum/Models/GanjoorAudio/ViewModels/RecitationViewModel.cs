@@ -22,12 +22,22 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// constructor
         /// </summary>
         /// <param name="src"></param>
-        /// <param name="owner"></param>
+        /// <param name="appUser"></param>
         /// <param name="poem"></param>
-        public RecitationViewModel(Recitation src, RAppUser owner, GanjoorPoem poem)
+        public RecitationViewModel(Recitation src, RAppUser appUser, GanjoorPoem poem)
         {
             Id = src.Id;
-            Owner = new PublicRAppUser(owner);
+            Owner = new PublicRAppUser()
+            {
+                Id = appUser.Id,
+                Username = appUser.UserName,
+                Email = appUser.Email,
+                FirstName = appUser.FirstName,
+                SureName = appUser.SureName,
+                PhoneNumber = appUser.PhoneNumber,
+                RImageId = appUser.RImageId,
+                Status = appUser.Status
+            };
             GanjoorAudioId = src.GanjoorAudioId;
             GanjoorPostId = src.GanjoorPostId;
             AudioOrder = src.AudioOrder;

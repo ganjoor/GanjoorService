@@ -1,4 +1,5 @@
-﻿using RSecurityBackend.Models.Auth.ViewModels;
+﻿using RSecurityBackend.Models.Auth.Db;
+using RSecurityBackend.Models.Auth.ViewModels;
 using System;
 
 namespace RMuseum.Models.GanjoorIntegration.ViewModels
@@ -34,7 +35,18 @@ namespace RMuseum.Models.GanjoorIntegration.ViewModels
             EntityImageId = entityImageId;
             ReviewResult = src.ReviewResult;
             Synchronized = src.Synchronized;
-            SuggestedBy = new PublicRAppUser(src.SuggestedBy);
+            RAppUser appUser = src.SuggestedBy;
+            SuggestedBy =new PublicRAppUser()
+            {
+                Id = appUser.Id,
+                Username = appUser.UserName,
+                Email = appUser.Email,
+                FirstName = appUser.FirstName,
+                SureName = appUser.SureName,
+                PhoneNumber = appUser.PhoneNumber,
+                RImageId = appUser.RImageId,
+                Status = appUser.Status
+            };
         }
 
         /// <summary>

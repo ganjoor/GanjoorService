@@ -12,6 +12,7 @@ using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Models.ImportJob;
 using RMuseum.Models.Note;
 using RMuseum.Models.Note.ViewModels;
+using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
@@ -2201,7 +2202,18 @@ namespace RMuseum.Services.Implementation
             List<RUserNoteViewModel> res = new List<RUserNoteViewModel>();
             foreach (RUserNote note in notes)
             {
-                RUserNoteViewModel viewModel = new RUserNoteViewModel(note, new PublicRAppUser(note.RAppUser));
+                RAppUser appUser = note.RAppUser;
+                RUserNoteViewModel viewModel = new RUserNoteViewModel(note, new PublicRAppUser()
+                {
+                    Id = appUser.Id,
+                    Username = appUser.UserName,
+                    Email = appUser.Email,
+                    FirstName = appUser.FirstName,
+                    SureName = appUser.SureName,
+                    PhoneNumber = appUser.PhoneNumber,
+                    RImageId = appUser.RImageId,
+                    Status = appUser.Status
+                });
                 viewModel.Notes = await _GetArtifactPublicNotes(artifactId, note.Id);
                 res.Add(viewModel);
             }
@@ -2271,7 +2283,18 @@ namespace RMuseum.Services.Implementation
             List<RUserNoteViewModel> res = new List<RUserNoteViewModel>();
             foreach (RUserNote note in notes)
             {
-                RUserNoteViewModel viewModel = new RUserNoteViewModel(note, new PublicRAppUser(note.RAppUser));
+                RAppUser appUser = note.RAppUser;
+                RUserNoteViewModel viewModel = new RUserNoteViewModel(note, new PublicRAppUser()
+                {
+                    Id = appUser.Id,
+                    Username = appUser.UserName,
+                    Email = appUser.Email,
+                    FirstName = appUser.FirstName,
+                    SureName = appUser.SureName,
+                    PhoneNumber = appUser.PhoneNumber,
+                    RImageId = appUser.RImageId,
+                    Status = appUser.Status
+                });
                 viewModel.Notes = await _GetArtifactItemPublicNotes(itemId, note.Id);
                 res.Add(viewModel);
             }
@@ -2397,7 +2420,19 @@ namespace RMuseum.Services.Implementation
                 List<RUserNoteViewModel> finalList = new List<RUserNoteViewModel>();
                 foreach (RUserNote note in paginatedResult1.Notes)
                 {
-                    RUserNoteViewModel model = new RUserNoteViewModel(note, new PublicRAppUser(note.RAppUser));
+                    RAppUser appUser = note.RAppUser;
+                    RUserNoteViewModel model = new RUserNoteViewModel(note, 
+                        new PublicRAppUser()
+                        {
+                            Id = appUser.Id,
+                            Username = appUser.UserName,
+                            Email = appUser.Email,
+                            FirstName = appUser.FirstName,
+                            SureName = appUser.SureName,
+                            PhoneNumber = appUser.PhoneNumber,
+                            RImageId = appUser.RImageId,
+                            Status = appUser.Status
+                        });
                     if (note.RArtifactMasterRecord != null)
                     {
                         if (note.RArtifactMasterRecord.Status != PublishStatus.Published)

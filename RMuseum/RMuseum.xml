@@ -2641,7 +2641,7 @@
             constructor
             </summary>
             <param name="src"></param>
-            <param name="owner"></param>
+            <param name="appUser"></param>
             <param name="poem"></param>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.Id">

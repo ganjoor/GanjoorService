@@ -117,7 +117,17 @@ namespace RSecurityBackend.Services.Implementation
                     new LoggedOnUserModel()
                     {
                         SessionId = userSession.Id,
-                        User = new PublicRAppUser(appUser),
+                        User = new PublicRAppUser()
+                        {
+                            Id = appUser.Id,
+                            Username = appUser.UserName,
+                            Email = appUser.Email,
+                            FirstName = appUser.FirstName,
+                            SureName = appUser.SureName,
+                            PhoneNumber = appUser.PhoneNumber,
+                            RImageId = appUser.RImageId,
+                            Status = appUser.Status
+                        },
                         Token = userToken.Result,
                         SecurableItem = securableItems.Result
                     }                    
@@ -186,7 +196,17 @@ namespace RSecurityBackend.Services.Implementation
                     new LoggedOnUserModel()
                     {
                         SessionId = newSession.Id,
-                        User = new PublicRAppUser(appUser),
+                        User = new PublicRAppUser()
+                        {
+                            Id = appUser.Id,
+                            Username = appUser.UserName,
+                            Email = appUser.Email,
+                            FirstName = appUser.FirstName,
+                            SureName = appUser.SureName,
+                            PhoneNumber = appUser.PhoneNumber,
+                            RImageId = appUser.RImageId,
+                            Status = appUser.Status
+                        },
                         Token = userToken.Result,
                         SecurableItem = securableItems.Result
                     }
@@ -304,9 +324,20 @@ namespace RSecurityBackend.Services.Implementation
           
             try
             {
-                RAppUser dbUserInfo =
+                RAppUser appUser =
                     await _userManager.Users.Where(u => u.Id == userId).SingleOrDefaultAsync();
-                return new RServiceResult<PublicRAppUser>(new PublicRAppUser(dbUserInfo));              
+                return new RServiceResult<PublicRAppUser>(
+                    new PublicRAppUser()
+                    {
+                        Id = appUser.Id,
+                        Username = appUser.UserName,
+                        Email = appUser.Email,
+                        FirstName = appUser.FirstName,
+                        SureName = appUser.SureName,
+                        PhoneNumber = appUser.PhoneNumber,
+                        RImageId = appUser.RImageId,
+                        Status = appUser.Status
+                    });              
             }
             catch (Exception exp)
             {
@@ -326,13 +357,24 @@ namespace RSecurityBackend.Services.Implementation
             {
 
                 
-                RAppUser[] usersInfo = await _userManager.Users.ToArrayAsync();
+                RAppUser[] appUsers = await _userManager.Users.ToArrayAsync();
                 List<PublicRAppUser> lstPublicUsersInfo = new List<PublicRAppUser>();
 
                 
-                foreach(RAppUser userInfo in usersInfo)
+                foreach(RAppUser appUser in appUsers)
                 {
-                    lstPublicUsersInfo.Add(new PublicRAppUser(userInfo));
+                    lstPublicUsersInfo.Add(
+                        new PublicRAppUser()
+                        {
+                            Id = appUser.Id,
+                            Username = appUser.UserName,
+                            Email = appUser.Email,
+                            FirstName = appUser.FirstName,
+                            SureName = appUser.SureName,
+                            PhoneNumber = appUser.PhoneNumber,
+                            RImageId = appUser.RImageId,
+                            Status = appUser.Status
+                        });
                 }
                 return new RServiceResult<PublicRAppUser[]>(lstPublicUsersInfo.ToArray());
             }
@@ -616,11 +658,22 @@ namespace RSecurityBackend.Services.Implementation
                 foreach(RAppRole role in roles)
                 {
                     var usersInRole = _userManager.GetUsersInRoleAsync(role.Name);
-                    foreach(var user in usersInRole.Result)
+                    foreach(var appUser in usersInRole.Result)
                     {
-                        if(lstPublicUsersInfo.Where(u => u.Id == user.Id).FirstOrDefault() == null )
+                        if(lstPublicUsersInfo.Where(u => u.Id == appUser.Id).FirstOrDefault() == null )
                         {
-                            lstPublicUsersInfo.Add(new PublicRAppUser(user));
+                            lstPublicUsersInfo.Add(
+                                new PublicRAppUser()
+                                {
+                                    Id = appUser.Id,
+                                    Username = appUser.UserName,
+                                    Email = appUser.Email,
+                                    FirstName = appUser.FirstName,
+                                    SureName = appUser.SureName,
+                                    PhoneNumber = appUser.PhoneNumber,
+                                    RImageId = appUser.RImageId,
+                                    Status = appUser.Status
+                                });
                         }
                     }
                 }
@@ -1296,10 +1349,21 @@ namespace RSecurityBackend.Services.Implementation
         {
             try
             {
-                RAppUser user = await _userManager.FindByEmailAsync(email);
-                if (user == null)
+                RAppUser appUser = await _userManager.FindByEmailAsync(email);
+                if (appUser == null)
                     return new RServiceResult<PublicRAppUser>(null);
-                return new RServiceResult<PublicRAppUser>(new PublicRAppUser(user));
+                return new RServiceResult<PublicRAppUser>(
+                    new PublicRAppUser()
+                    {
+                        Id = appUser.Id,
+                        Username = appUser.UserName,
+                        Email = appUser.Email,
+                        FirstName = appUser.FirstName,
+                        SureName = appUser.SureName,
+                        PhoneNumber = appUser.PhoneNumber,
+                        RImageId = appUser.RImageId,
+                        Status = appUser.Status
+                    });
             }
             catch(Exception exp)
             {

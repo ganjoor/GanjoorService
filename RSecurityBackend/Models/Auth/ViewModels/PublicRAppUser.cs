@@ -14,33 +14,6 @@ namespace RSecurityBackend.Models.Auth.ViewModels
     public class PublicRAppUser
     {
         /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="dbUserInfo"></param>
-        public PublicRAppUser(RAppUser dbUserInfo)
-        {
-            if (dbUserInfo == null)
-            {
-                return;
-            }
-            Id = dbUserInfo.Id;
-            Username = dbUserInfo.UserName;
-            FirstName = dbUserInfo.FirstName;
-            SureName = dbUserInfo.SureName;
-            Email = dbUserInfo.Email;
-            PhoneNumber = dbUserInfo.PhoneNumber;
-            Status = dbUserInfo.Status;
-            RImageId = dbUserInfo.RImageId;
-        }
-        /// <summary>
-        /// default constructor
-        /// </summary>
-        public PublicRAppUser()
-        {
-
-        }
-
-        /// <summary>
         /// Id
         /// </summary>
         /// 
