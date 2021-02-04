@@ -741,7 +741,21 @@ namespace RMuseum.Services.Implementation
 
                 if (tag != null)
                 {
-                    RArtifactTagViewModel viewModel = new RArtifactTagViewModel(tag);
+                    RArtifactTagViewModel viewModel
+                        = new RArtifactTagViewModel()
+                        {
+                            Id = tag.Id,
+                            Order = tag.Order,
+                            TagType = tag.TagType,
+                            FriendlyUrl = tag.FriendlyUrl,
+                            Status = tag.Status,
+                            Name = tag.Name,
+                            NameInEnglish = tag.NameInEnglish,
+                            GlobalValue = tag.GlobalValue,
+                            PluralName = tag.PluralName,
+                            PluralNameInEnglish = tag.PluralNameInEnglish
+                        };
+                       
                     viewModel.Values =
                         new RTagValue[]
                         {

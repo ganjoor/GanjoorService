@@ -1737,6 +1737,59 @@
             Artifact Tag (RTag with grouped related RTagValues of Artifact)
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel.Order">
+            <summary>
+            Order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel.TagType">
+            <summary>
+            tag type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel.FriendlyUrl">
+            <summary>
+            Friendly Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel.Status">
+            <summary>
+            Publish Status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel.NameInEnglish">
+            <summary>
+            Name In English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel.PluralName">
+            <summary>
+            Plural Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel.PluralNameInEnglish">
+            <summary>
+            Plural Name In English
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel.GlobalValue">
+            <summary>
+            Value is normally changed globally 
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactTagViewModel.Values">
+            Values
+        </member>
         <member name="T:RMuseum.Models.Artifact.ViewModels.RTagBundleValueViewModel">
             <summary>
             Tag Bundle View Model

@@ -6,7 +6,7 @@ namespace RMuseum.Models.Artifact.ViewModels
     /// <summary>
     /// new artifact view model
     /// </summary>
-    public class NewArtifact
+    internal class NewArtifact
     {
 
         public string Name { get; set; }
