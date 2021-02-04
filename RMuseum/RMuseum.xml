@@ -2392,6 +2392,26 @@
             is default
             </summary>
         </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult">
+            <summary>
+            Moderation Result
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult.MetadataNeedsFixation">
+            <summary>
+            no moderation
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult.Approve">
+            <summary>
+            approve 
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult.Reject">
+            <summary>
+            reject
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel">
             <summary>
             Public (no user specific data) for publish recitations
@@ -2485,26 +2505,6 @@
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.HtmlText">
             <summary>
             Poem Html Text
-            </summary>
-        </member>
-        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult">
-            <summary>
-            Moderation Result
-            </summary>
-        </member>
-        <member name="F:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult.MetadataNeedsFixation">
-            <summary>
-            no moderation
-            </summary>
-        </member>
-        <member name="F:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult.Approve">
-            <summary>
-            approve 
-            </summary>
-        </member>
-        <member name="F:RMuseum.Models.GanjoorAudio.ViewModels.PoemNarrationModerationResult.Reject">
-            <summary>
-            reject
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel">
@@ -2813,17 +2813,6 @@
             <summary>
             UserNarrationProfile View Model
             </summary>
-        </member>
-        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.#ctor">
-            <summary>
-            parameterless constructor
-            </summary>
-        </member>
-        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.#ctor(RMuseum.Models.GanjoorAudio.UserRecitationProfile)">
-            <summary>
-            constructor
-            </summary>
-            <param name="src"></param>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.UserRecitationProfileViewModel.Id">
             <summary>

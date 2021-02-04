@@ -14,6 +14,7 @@ using RMuseum.Models.UploadSession;
 using RMuseum.Models.UploadSession.ViewModels;
 using RMuseum.Services.Implementation;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
+using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
 using RSecurityBackend.Services.Implementation;
@@ -1614,7 +1615,33 @@ namespace RMuseum.Services.Implementationa
                     ).ToArrayAsync())
                     )
                 {
-                    profiles.Add(new UserRecitationProfileViewModel(p));
+                    profiles.Add
+                        (
+                        new UserRecitationProfileViewModel()
+                        {
+                            Id = p.Id,
+                            User = p.User == null ? null : 
+                            new PublicRAppUser()
+                            {
+                                Id = p.User.Id,
+                                Username = p.User.UserName,
+                                Email = p.User.Email,
+                                FirstName = p.User.FirstName,
+                                SureName = p.User.SureName,
+                                PhoneNumber = p.User.PhoneNumber,
+                                RImageId = p.User.RImageId,
+                                Status = p.User.Status
+                            },
+                            UserId = p.UserId,
+                            Name = p.Name,
+                            FileSuffixWithoutDash = p.FileSuffixWithoutDash,
+                            ArtistName = p.ArtistName,
+                            ArtistUrl = p.ArtistUrl,
+                            AudioSrc = p.AudioSrc,
+                            AudioSrcUrl = p.AudioSrcUrl,
+                            IsDefault = p.IsDefault
+                        }
+                        );
                 }
 
                 foreach (UserRecitationProfile p in (await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == false
@@ -1622,7 +1649,33 @@ namespace RMuseum.Services.Implementationa
                     (string.IsNullOrEmpty(artistName) || (!string.IsNullOrEmpty(artistName) && p.ArtistName.Contains(artistName)))
                 ).ToArrayAsync()))
                 {
-                    profiles.Add(new UserRecitationProfileViewModel(p));
+                    profiles.Add
+                        (
+                        new UserRecitationProfileViewModel()
+                        {
+                            Id = p.Id,
+                            User = p.User == null ? null :
+                            new PublicRAppUser()
+                            {
+                                Id = p.User.Id,
+                                Username = p.User.UserName,
+                                Email = p.User.Email,
+                                FirstName = p.User.FirstName,
+                                SureName = p.User.SureName,
+                                PhoneNumber = p.User.PhoneNumber,
+                                RImageId = p.User.RImageId,
+                                Status = p.User.Status
+                            },
+                            UserId = p.UserId,
+                            Name = p.Name,
+                            FileSuffixWithoutDash = p.FileSuffixWithoutDash,
+                            ArtistName = p.ArtistName,
+                            ArtistUrl = p.ArtistUrl,
+                            AudioSrc = p.AudioSrc,
+                            AudioSrcUrl = p.AudioSrcUrl,
+                            IsDefault = p.IsDefault
+                        }
+                        );
                 }
                 return new RServiceResult<UserRecitationProfileViewModel[]>(profiles.ToArray());
 
@@ -1645,7 +1698,33 @@ namespace RMuseum.Services.Implementationa
                 var defProfile = await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == true).FirstOrDefaultAsync();
                 if (defProfile == null)
                     return new RServiceResult<UserRecitationProfileViewModel>(null);
-                return new RServiceResult<UserRecitationProfileViewModel>(new UserRecitationProfileViewModel(defProfile));
+                return new RServiceResult<UserRecitationProfileViewModel>
+                    (
+                     new UserRecitationProfileViewModel()
+                     {
+                         Id = defProfile.Id,
+                         User = defProfile.User == null ? null :
+                            new PublicRAppUser()
+                            {
+                                Id = defProfile.User.Id,
+                                Username = defProfile.User.UserName,
+                                Email = defProfile.User.Email,
+                                FirstName = defProfile.User.FirstName,
+                                SureName = defProfile.User.SureName,
+                                PhoneNumber = defProfile.User.PhoneNumber,
+                                RImageId = defProfile.User.RImageId,
+                                Status = defProfile.User.Status
+                            },
+                         UserId = defProfile.UserId,
+                         Name = defProfile.Name,
+                         FileSuffixWithoutDash = defProfile.FileSuffixWithoutDash,
+                         ArtistName = defProfile.ArtistName,
+                         ArtistUrl = defProfile.ArtistUrl,
+                         AudioSrc = defProfile.AudioSrc,
+                         AudioSrcUrl = defProfile.AudioSrcUrl,
+                         IsDefault = defProfile.IsDefault
+                     }
+                    );
             }
             catch (Exception exp)
             {
@@ -1767,7 +1846,33 @@ namespace RMuseum.Services.Implementationa
                     }
                     await _context.SaveChangesAsync();
                 }
-                return new RServiceResult<UserRecitationProfileViewModel>(new UserRecitationProfileViewModel(p));
+                return new RServiceResult<UserRecitationProfileViewModel>
+                    (
+                    new UserRecitationProfileViewModel()
+                    {
+                        Id = p.Id,
+                        User = p.User == null ? null :
+                            new PublicRAppUser()
+                            {
+                                Id = p.User.Id,
+                                Username = p.User.UserName,
+                                Email = p.User.Email,
+                                FirstName = p.User.FirstName,
+                                SureName = p.User.SureName,
+                                PhoneNumber = p.User.PhoneNumber,
+                                RImageId = p.User.RImageId,
+                                Status = p.User.Status
+                            },
+                        UserId = p.UserId,
+                        Name = p.Name,
+                        FileSuffixWithoutDash = p.FileSuffixWithoutDash,
+                        ArtistName = p.ArtistName,
+                        ArtistUrl = p.ArtistUrl,
+                        AudioSrc = p.AudioSrc,
+                        AudioSrcUrl = p.AudioSrcUrl,
+                        IsDefault = p.IsDefault
+                    }
+                    );
             }
             catch (Exception exp)
             {
@@ -1821,7 +1926,33 @@ namespace RMuseum.Services.Implementationa
                     }
                     await _context.SaveChangesAsync();
                 }
-                return new RServiceResult<UserRecitationProfileViewModel>(new UserRecitationProfileViewModel(p));
+                return new RServiceResult<UserRecitationProfileViewModel>
+                    (
+                    new UserRecitationProfileViewModel()
+                    {
+                        Id = p.Id,
+                        User = p.User == null ? null :
+                            new PublicRAppUser()
+                            {
+                                Id = p.User.Id,
+                                Username = p.User.UserName,
+                                Email = p.User.Email,
+                                FirstName = p.User.FirstName,
+                                SureName = p.User.SureName,
+                                PhoneNumber = p.User.PhoneNumber,
+                                RImageId = p.User.RImageId,
+                                Status = p.User.Status
+                            },
+                        UserId = p.UserId,
+                        Name = p.Name,
+                        FileSuffixWithoutDash = p.FileSuffixWithoutDash,
+                        ArtistName = p.ArtistName,
+                        ArtistUrl = p.ArtistUrl,
+                        AudioSrc = p.AudioSrc,
+                        AudioSrcUrl = p.AudioSrcUrl,
+                        IsDefault = p.IsDefault
+                    }
+                    );
             }
             catch (Exception exp)
             {

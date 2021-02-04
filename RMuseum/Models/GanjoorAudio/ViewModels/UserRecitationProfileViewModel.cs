@@ -1,5 +1,4 @@
-﻿using RSecurityBackend.Models.Auth.Db;
-using RSecurityBackend.Models.Auth.ViewModels;
+﻿using RSecurityBackend.Models.Auth.ViewModels;
 using System;
 
 namespace RMuseum.Models.GanjoorAudio.ViewModels
@@ -9,43 +8,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
     /// </summary>
     public class UserRecitationProfileViewModel
     {
-        /// <summary>
-        /// parameterless constructor
-        /// </summary>
-        public UserRecitationProfileViewModel()
-        {
-
-        }
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="src"></param>
-        public UserRecitationProfileViewModel(UserRecitationProfile src)
-        {
-            RAppUser appUser = src.User;
-            Id = src.Id;
-            User = src.User == null ? null : new PublicRAppUser()
-            {
-                Id = appUser.Id,
-                Username = appUser.UserName,
-                Email = appUser.Email,
-                FirstName = appUser.FirstName,
-                SureName = appUser.SureName,
-                PhoneNumber = appUser.PhoneNumber,
-                RImageId = appUser.RImageId,
-                Status = appUser.Status
-            };
-            UserId = src.UserId;
-            Name = src.Name;
-            FileSuffixWithoutDash = src.FileSuffixWithoutDash;
-            ArtistName = src.ArtistName;
-            ArtistUrl = src.ArtistUrl;
-            AudioSrc = src.AudioSrc;
-            AudioSrcUrl = src.AudioSrcUrl;
-            IsDefault = src.IsDefault;
-
-        }
-        /// <summary>
+         /// <summary>
         /// Id
         /// </summary>
         /// <remarks>
