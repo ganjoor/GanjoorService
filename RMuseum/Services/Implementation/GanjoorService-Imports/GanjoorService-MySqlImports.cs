@@ -42,8 +42,9 @@ namespace RMuseum.Services.Implementation
                         var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", "pre open connection")).Result;
 
                         var resComments = await _ImportCommentsDataFromMySql(context, jobProgressServiceEF, job);
-                        if(resComments.Result)//temporary
+                        if(!resComments.Result)
                         {
+                            await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, resComments.ExceptionString);
                             return;
                         }
 
@@ -519,6 +520,10 @@ namespace RMuseum.Services.Implementation
                                     HtmlComment = row["comment_content"].ToString(),
                                     Status = row["comment_approved"].ToString() == "1" ? PublishStatus.Published : PublishStatus.Awaiting
                                 };
+
+                                var poem = await context.GanjoorPoems.Where(p => p.Id == comment.PoemId).SingleOrDefaultAsync();
+                                if (poem == null)
+                                    continue;
 
 
                                 context.GanjoorComments.Add(comment);

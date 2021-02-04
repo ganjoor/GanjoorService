@@ -1423,7 +1423,7 @@ namespace RSecurityBackend.Services.Implementation
                 {
                     RAppUser admin = new RAppUser()
                     {
-                        UserName = "admin",
+                        UserName = "admin@ganjoor.net",
                         FirstName = "راهبر",
                         SureName = "سیستم",
                         Email = "admin@ganjoor.net",
