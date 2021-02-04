@@ -4767,13 +4767,6 @@
             Safe User Note View Model
             </summary>
         </member>
-        <member name="M:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.#ctor(RMuseum.Models.Note.RUserNote,RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser)">
-            <summary>
-            Constructor
-            </summary>
-            <param name="src"></param>
-            <param name="user"></param>
-        </member>
         <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.Id">
             <summary>
             Id
@@ -4868,6 +4861,13 @@
             <remarks>
             It os set only in certain cases
             </remarks>
+        </member>
+        <member name="M:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.PrepareNoteDateTime(System.DateTime)">
+            <summary>
+            prepare note datetime
+            </summary>
+            <param name="dateTime"></param>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Models.UploadSession.UploadSession">
             <summary>

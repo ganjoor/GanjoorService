@@ -1,5 +1,4 @@
 ﻿using RMuseum.Models.Artifact;
-using RSecurityBackend.Models.Auth.ViewModels;
 using System;
 using System.Globalization;
 
@@ -10,32 +9,6 @@ namespace RMuseum.Models.Note.ViewModels
     /// </summary>
     public class RUserNoteViewModel
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="src"></param>
-        /// <param name="user"></param>
-        public RUserNoteViewModel(RUserNote src, PublicRAppUser user)
-        {
-            Id = src.Id;
-            RAppUserId = src.RAppUserId;
-            UserName = (user.FirstName + " " + user.SureName);
-            RUserImageId = user.RImageId;           
-            Modified = src.Modified;            
-            NoteType = src.NoteType;
-            HtmlContent = src.HtmlContent;
-            ReferenceNoteId = src.ReferenceNoteId;
-            Status = src.Status;
-            Notes = new RUserNoteViewModel[] { };
-
-
-            PersianCalendar pc = new PersianCalendar();
-
-            DateTime = $"{pc.GetYear(src.DateTime)}/{pc.GetMonth(src.DateTime)}/{pc.GetDayOfMonth(src.DateTime)}&nbsp;{pc.GetHour(src.DateTime)}:{pc.GetMinute(src.DateTime)}";
-            LastModified = $"{pc.GetYear(src.LastModified)}/{pc.GetMonth(src.LastModified)}/{pc.GetDayOfMonth(src.LastModified)}&nbsp;{pc.GetHour(src.LastModified)}:{pc.GetMinute(src.LastModified)}";
-
-        }
-
         /// <summary>
         /// Id
         /// </summary>
@@ -130,5 +103,16 @@ namespace RMuseum.Models.Note.ViewModels
         /// It os set only in certain cases
         /// </remarks>
         public RUserNoteViewModel[] Notes { get; set; }
+
+        /// <summary>
+        /// prepare note datetime
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static string PrepareNoteDateTime(DateTime dateTime)
+        {
+            PersianCalendar pc = new PersianCalendar();
+            return $"{pc.GetYear(dateTime)}/{pc.GetMonth(dateTime)}/{pc.GetDayOfMonth(dateTime)}&nbsp;{pc.GetHour(dateTime)}:{pc.GetMinute(dateTime)}";
+        }
     }
 }

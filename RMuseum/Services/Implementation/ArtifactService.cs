@@ -1985,8 +1985,26 @@ namespace RMuseum.Services.Implementation
                             $"<blockquote cite=\"/item/{artificat.FriendlyUrl}#{referenceNote.Id}\">{referenceNote.HtmlContent}</blockquote>"
                             );                       
                     }
-                }            
-                return new RServiceResult<RUserNoteViewModel>(new RUserNoteViewModel(note, userInfo.Result));
+                }         
+                
+                return new RServiceResult<RUserNoteViewModel>
+                    (
+                    new RUserNoteViewModel()
+                    {
+                        Id = note.Id,
+                        RAppUserId = note.RAppUserId,
+                        UserName = userInfo.Result.FirstName + " " + userInfo.Result.SureName,
+                        RUserImageId = userInfo.Result.RImageId,
+                        Modified = note.Modified,
+                        NoteType = note.NoteType,
+                        HtmlContent = note.HtmlContent,
+                        ReferenceNoteId = note.ReferenceNoteId,
+                        Status = note.Status,
+                        Notes = new RUserNoteViewModel[] { },
+                        DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                        LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                    }
+                    );
             }
             catch (Exception exp)
             {
@@ -2055,7 +2073,24 @@ namespace RMuseum.Services.Implementation
                 }
                
 
-                return new RServiceResult<RUserNoteViewModel>(new RUserNoteViewModel(note, userInfo.Result));
+                return new RServiceResult<RUserNoteViewModel>
+                    (
+                    new RUserNoteViewModel()
+                    {
+                        Id = note.Id,
+                        RAppUserId = note.RAppUserId,
+                        UserName = userInfo.Result.FirstName + " " + userInfo.Result.SureName,
+                        RUserImageId = userInfo.Result.RImageId,
+                        Modified = note.Modified,
+                        NoteType = note.NoteType,
+                        HtmlContent = note.HtmlContent,
+                        ReferenceNoteId = note.ReferenceNoteId,
+                        Status = note.Status,
+                        Notes = new RUserNoteViewModel[] { },
+                        DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                        LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                    }
+                    );
             }
             catch (Exception exp)
             {
@@ -2105,7 +2140,24 @@ namespace RMuseum.Services.Implementation
                 await _context.SaveChangesAsync();
                 
 
-                return new RServiceResult<RUserNoteViewModel>(new RUserNoteViewModel(note, userInfo.Result));
+                return new RServiceResult<RUserNoteViewModel>
+                    (
+                    new RUserNoteViewModel()
+                    {
+                        Id = note.Id,
+                        RAppUserId = note.RAppUserId,
+                        UserName = userInfo.Result.FirstName + " " + userInfo.Result.SureName,
+                        RUserImageId = userInfo.Result.RImageId,
+                        Modified = note.Modified,
+                        NoteType = note.NoteType,
+                        HtmlContent = note.HtmlContent,
+                        ReferenceNoteId = note.ReferenceNoteId,
+                        Status = note.Status,
+                        Notes = new RUserNoteViewModel[] { },
+                        DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                        LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                    }
+                    );
             }
             catch (Exception exp)
             {
@@ -2185,7 +2237,24 @@ namespace RMuseum.Services.Implementation
 
                 List<RUserNoteViewModel> res = new List<RUserNoteViewModel>();
                 foreach (RUserNote note in notes)
-                    res.Add(new RUserNoteViewModel(note, userInfo.Result));
+                    res.Add
+                        (
+                        new RUserNoteViewModel()
+                        {
+                            Id = note.Id,
+                            RAppUserId = note.RAppUserId,
+                            UserName = userInfo.Result.FirstName + " " + userInfo.Result.SureName,
+                            RUserImageId = userInfo.Result.RImageId,
+                            Modified = note.Modified,
+                            NoteType = note.NoteType,
+                            HtmlContent = note.HtmlContent,
+                            ReferenceNoteId = note.ReferenceNoteId,
+                            Status = note.Status,
+                            Notes = new RUserNoteViewModel[] { },
+                            DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                            LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                        }
+                        );
 
                 return new RServiceResult<RUserNoteViewModel[]>(res.ToArray());
             }
@@ -2212,17 +2281,38 @@ namespace RMuseum.Services.Implementation
             foreach (RUserNote note in notes)
             {
                 RAppUser appUser = note.RAppUser;
-                RUserNoteViewModel viewModel = new RUserNoteViewModel(note, new PublicRAppUser()
-                {
-                    Id = appUser.Id,
-                    Username = appUser.UserName,
-                    Email = appUser.Email,
-                    FirstName = appUser.FirstName,
-                    SureName = appUser.SureName,
-                    PhoneNumber = appUser.PhoneNumber,
-                    RImageId = appUser.RImageId,
-                    Status = appUser.Status
-                });
+
+                var user =
+                    new PublicRAppUser()
+                    {
+                        Id = appUser.Id,
+                        Username = appUser.UserName,
+                        Email = appUser.Email,
+                        FirstName = appUser.FirstName,
+                        SureName = appUser.SureName,
+                        PhoneNumber = appUser.PhoneNumber,
+                        RImageId = appUser.RImageId,
+                        Status = appUser.Status
+                    };
+
+                RUserNoteViewModel viewModel
+                    =
+                    new RUserNoteViewModel()
+                    {
+                        Id = note.Id,
+                        RAppUserId = note.RAppUserId,
+                        UserName = user.FirstName + " " + user.SureName,
+                        RUserImageId = user.RImageId,
+                        Modified = note.Modified,
+                        NoteType = note.NoteType,
+                        HtmlContent = note.HtmlContent,
+                        ReferenceNoteId = note.ReferenceNoteId,
+                        Status = note.Status,
+                        Notes = new RUserNoteViewModel[] { },
+                        DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                        LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                    };
+                    
                 viewModel.Notes = await _GetArtifactPublicNotes(artifactId, note.Id);
                 res.Add(viewModel);
             }
@@ -2266,7 +2356,24 @@ namespace RMuseum.Services.Implementation
 
                 List<RUserNoteViewModel> res = new List<RUserNoteViewModel>();
                 foreach (RUserNote note in notes)
-                    res.Add(new RUserNoteViewModel(note, userInfo.Result));
+                    res.Add
+                        (
+                        new RUserNoteViewModel()
+                        {
+                            Id = note.Id,
+                            RAppUserId = note.RAppUserId,
+                            UserName = userInfo.Result.FirstName + " " + userInfo.Result.SureName,
+                            RUserImageId = userInfo.Result.RImageId,
+                            Modified = note.Modified,
+                            NoteType = note.NoteType,
+                            HtmlContent = note.HtmlContent,
+                            ReferenceNoteId = note.ReferenceNoteId,
+                            Status = note.Status,
+                            Notes = new RUserNoteViewModel[] { },
+                            DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                            LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                        }
+                        );
 
                 return new RServiceResult<RUserNoteViewModel[]>(res.ToArray());
             }
@@ -2293,17 +2400,38 @@ namespace RMuseum.Services.Implementation
             foreach (RUserNote note in notes)
             {
                 RAppUser appUser = note.RAppUser;
-                RUserNoteViewModel viewModel = new RUserNoteViewModel(note, new PublicRAppUser()
-                {
-                    Id = appUser.Id,
-                    Username = appUser.UserName,
-                    Email = appUser.Email,
-                    FirstName = appUser.FirstName,
-                    SureName = appUser.SureName,
-                    PhoneNumber = appUser.PhoneNumber,
-                    RImageId = appUser.RImageId,
-                    Status = appUser.Status
-                });
+
+                var user =
+                    new PublicRAppUser()
+                    {
+                        Id = appUser.Id,
+                        Username = appUser.UserName,
+                        Email = appUser.Email,
+                        FirstName = appUser.FirstName,
+                        SureName = appUser.SureName,
+                        PhoneNumber = appUser.PhoneNumber,
+                        RImageId = appUser.RImageId,
+                        Status = appUser.Status
+                    };
+
+                RUserNoteViewModel viewModel
+                    =
+                    new RUserNoteViewModel()
+                    {
+                        Id = note.Id,
+                        RAppUserId = note.RAppUserId,
+                        UserName = user.FirstName + " " + user.SureName,
+                        RUserImageId = user.RImageId,
+                        Modified = note.Modified,
+                        NoteType = note.NoteType,
+                        HtmlContent = note.HtmlContent,
+                        ReferenceNoteId = note.ReferenceNoteId,
+                        Status = note.Status,
+                        Notes = new RUserNoteViewModel[] { },
+                        DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                        LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                    };
+                
                 viewModel.Notes = await _GetArtifactItemPublicNotes(itemId, note.Id);
                 res.Add(viewModel);
             }
@@ -2360,8 +2488,23 @@ namespace RMuseum.Services.Implementation
                 List<RUserNoteViewModel> finalList = new List<RUserNoteViewModel>();
                 foreach (RUserNote note in paginatedResult1.Notes)
                 {
-                    RUserNoteViewModel model = new RUserNoteViewModel(note, user);
-                    if (note.RArtifactMasterRecord != null)
+                    RUserNoteViewModel model = 
+                        new RUserNoteViewModel()
+                        {
+                            Id = note.Id,
+                            RAppUserId = note.RAppUserId,
+                            UserName = user.FirstName + " " + user.SureName,
+                            RUserImageId = user.RImageId,
+                            Modified = note.Modified,
+                            NoteType = note.NoteType,
+                            HtmlContent = note.HtmlContent,
+                            ReferenceNoteId = note.ReferenceNoteId,
+                            Status = note.Status,
+                            Notes = new RUserNoteViewModel[] { },
+                            DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                            LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                        };
+                if (note.RArtifactMasterRecord != null)
                     {
                         if (!statusArray.Contains(note.RArtifactMasterRecord.Status))
                             continue; //this may result in paging bugs
@@ -2430,7 +2573,8 @@ namespace RMuseum.Services.Implementation
                 foreach (RUserNote note in paginatedResult1.Notes)
                 {
                     RAppUser appUser = note.RAppUser;
-                    RUserNoteViewModel model = new RUserNoteViewModel(note, 
+
+                    var user =
                         new PublicRAppUser()
                         {
                             Id = appUser.Id,
@@ -2441,7 +2585,26 @@ namespace RMuseum.Services.Implementation
                             PhoneNumber = appUser.PhoneNumber,
                             RImageId = appUser.RImageId,
                             Status = appUser.Status
-                        });
+                        };
+
+                    RUserNoteViewModel model
+                        =
+                        new RUserNoteViewModel()
+                        {
+                            Id = note.Id,
+                            RAppUserId = note.RAppUserId,
+                            UserName = user.FirstName + " " + user.SureName,
+                            RUserImageId = user.RImageId,
+                            Modified = note.Modified,
+                            NoteType = note.NoteType,
+                            HtmlContent = note.HtmlContent,
+                            ReferenceNoteId = note.ReferenceNoteId,
+                            Status = note.Status,
+                            Notes = new RUserNoteViewModel[] { },
+                            DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                            LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                        };
+                    
                     if (note.RArtifactMasterRecord != null)
                     {
                         if (note.RArtifactMasterRecord.Status != PublishStatus.Published)

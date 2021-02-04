@@ -1,5 +1,4 @@
-﻿using RSecurityBackend.Models.Auth.Db;
-using RSecurityBackend.Models.Auth.ViewModels;
+﻿using RSecurityBackend.Models.Auth.ViewModels;
 using System;
 
 namespace RMuseum.Models.GanjoorIntegration.ViewModels
