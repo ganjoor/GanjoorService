@@ -6625,6 +6625,15 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportFromMySql">
+            <summary>
+            import GanjoorPage entity data from MySql
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportLocalSQLiteDb">
             <summary>
@@ -6635,12 +6644,6 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoemsText">
             <summary>
             updates poems text
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportFromMySql">
-            <summary>
-            import GanjoorPage entity data from MySql
             </summary>
             <returns></returns>
         </member>
