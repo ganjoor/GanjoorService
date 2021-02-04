@@ -9,36 +9,6 @@ namespace RMuseum.Models.GanjoorIntegration.ViewModels
     public class PinterestLinkViewModel
     {
         /// <summary>
-        /// cosntructor
-        /// </summary>
-        /// <param name="src"></param>
-        /// <param name="entityFriendlyUrl"></param>
-        /// <param name="entityImageId"></param>
-        /// <param name="entityName"></param>
-        public PinterestLinkViewModel(PinterestLink src, string entityName, string entityFriendlyUrl, Guid entityImageId)
-        {
-            Id = src.Id;
-            GanjoorPostId = src.GanjoorPostId;
-            GanjoorUrl = src.GanjoorUrl;
-            GanjoorTitle = src.GanjoorTitle;
-            AltText = src.AltText;
-            LinkType = src.LinkType;
-            PinterestImageUrl = src.PinterestImageUrl;
-            PinterestUrl = src.PinterestUrl;
-            SuggestionDate = src.SuggestionDate;
-            ReviewerId = src.ReviewerId;
-            ReviewDate = src.ReviewDate;
-            ReviewResult = src.ReviewResult;
-            ReviewDesc = src.ReviewDesc;
-            ArtifactId = src.ArtifactId;
-            ItemId = src.ItemId;
-            Synchronized = src.Synchronized;
-            EntityName = entityName;
-            EntityFriendlyUrl = entityFriendlyUrl;
-            EntityImageId = entityImageId;
-        }
-
-        /// <summary>
         /// Id
         /// </summary>
         public Guid Id { get; set; }

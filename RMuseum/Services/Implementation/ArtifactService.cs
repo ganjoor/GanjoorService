@@ -2823,15 +2823,31 @@ namespace RMuseum.Services.Implementation
                 List<PinterestLinkViewModel> result = new List<PinterestLinkViewModel>();
                 foreach (PinterestLink link in links)
                 {
+
                     result.Add
-                        (
-                        new PinterestLinkViewModel
-                        (
-                            link,
-                            link.Artifact == null? null : link.Artifact.Name + " » " + link.Item.Name,
-                            link.Artifact == null ? null : $"/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
-                            link.Item == null ? Guid.Empty : link.Item.Images.First().Id
-                        )
+                         (
+                        new PinterestLinkViewModel()
+                        {
+                            Id = link.Id,
+                            GanjoorPostId = link.GanjoorPostId,
+                            GanjoorUrl = link.GanjoorUrl,
+                            GanjoorTitle = link.GanjoorTitle,
+                            AltText = link.AltText,
+                            LinkType = link.LinkType,
+                            PinterestImageUrl = link.PinterestImageUrl,
+                            PinterestUrl = link.PinterestUrl,
+                            SuggestionDate = link.SuggestionDate,
+                            ReviewerId = link.ReviewerId,
+                            ReviewDate = link.ReviewDate,
+                            ReviewResult = link.ReviewResult,
+                            ReviewDesc = link.ReviewDesc,
+                            ArtifactId = link.ArtifactId,
+                            ItemId = link.ItemId,
+                            Synchronized = link.Synchronized,
+                            EntityName = link.Artifact == null ? null : link.Artifact.Name + " » " + link.Item.Name,
+                            EntityFriendlyUrl = link.Artifact == null ? null : $"/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                            EntityImageId = link.Item == null ? Guid.Empty : link.Item.Images.First().Id
+                        }
                         );
                 }
                 return new RServiceResult<PinterestLinkViewModel[]>(result.ToArray());
@@ -2880,7 +2896,31 @@ namespace RMuseum.Services.Implementation
                 };
                 _context.PinterestLinks.Add(link);
                 await _context.SaveChangesAsync();
-                return new RServiceResult<PinterestLinkViewModel>(new PinterestLinkViewModel(link, null, null, Guid.Empty) );
+                return new RServiceResult<PinterestLinkViewModel>
+                    (
+                    new PinterestLinkViewModel()
+                    {
+                        Id = link.Id,
+                        GanjoorPostId = link.GanjoorPostId,
+                        GanjoorUrl = link.GanjoorUrl,
+                        GanjoorTitle = link.GanjoorTitle,
+                        AltText = link.AltText,
+                        LinkType = link.LinkType,
+                        PinterestImageUrl = link.PinterestImageUrl,
+                        PinterestUrl = link.PinterestUrl,
+                        SuggestionDate = link.SuggestionDate,
+                        ReviewerId = link.ReviewerId,
+                        ReviewDate = link.ReviewDate,
+                        ReviewResult = link.ReviewResult,
+                        ReviewDesc = link.ReviewDesc,
+                        ArtifactId = link.ArtifactId,
+                        ItemId = link.ItemId,
+                        Synchronized = link.Synchronized,
+                        EntityName = null,
+                        EntityFriendlyUrl = null,
+                        EntityImageId = Guid.Empty
+                    }
+                    );
             }
             catch (Exception exp)
             {

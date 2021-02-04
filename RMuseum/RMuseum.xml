@@ -3224,15 +3224,6 @@
             Safe pinterest link view model
             </summary>
         </member>
-        <member name="M:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.#ctor(RMuseum.Models.GanjoorIntegration.PinterestLink,System.String,System.String,System.Guid)">
-            <summary>
-            cosntructor
-            </summary>
-            <param name="src"></param>
-            <param name="entityFriendlyUrl"></param>
-            <param name="entityImageId"></param>
-            <param name="entityName"></param>
-        </member>
         <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestLinkViewModel.Id">
             <summary>
             Id
