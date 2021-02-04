@@ -6622,6 +6622,27 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportLocalSQLiteDb">
+            <summary>
+            imports unimported poem data from a locally accessible ganjoor SqlLite database
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoemsText">
+            <summary>
+            updates poems text
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportFromMySql">
+            <summary>
+            import GanjoorPage entity data from MySql
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean,System.Boolean)">
             <summary>
@@ -6765,24 +6786,6 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal">
             <summary>
             get a random poem from hafez
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportLocalSQLiteDb">
-            <summary>
-            imports unimported poem data from a locally accessible ganjoor SqlLite database
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoemsText">
-            <summary>
-            updates poems text
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportFromMySql">
-            <summary>
-            import GanjoorPage entity data from MySql
             </summary>
             <returns></returns>
         </member>
