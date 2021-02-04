@@ -3529,6 +3529,81 @@
             sample: /hafez/ghazal
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorComment">
+            <summary>
+            Ganjoor Comment
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.GanjoorPoemId">
+            <summary>
+            Ganjoor Poem Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.GanjoorPoem">
+            <summary>
+            Ganjoor Poem Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.UserId">
+            <summary>
+            user id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.User">
+            <summary>
+            user
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.AuthorName">
+            <summary>
+            author name (MySql imported field)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.AuthorEmail">
+            <summary>
+            author email (MySql imported field)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.AuthorUrl">
+            <summary>
+            author url (MySql imported field)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.AutherIpAddress">
+            <summary>
+            author IP address (MySql imported field)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.CommentDate">
+            <summary>
+            comment date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.HtmlComment">
+            <summary>
+            comment
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.ReferenceComment">
+            <summary>
+            In Reply to Other Comment
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.ReferenceCommentId">
+            <summary>
+            Reference Comment Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Status">
+            <summary>
+            publish status
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorMetre">
             <summary>
             Poem prosodic Metre
