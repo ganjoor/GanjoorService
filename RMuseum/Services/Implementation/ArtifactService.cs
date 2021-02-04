@@ -1883,7 +1883,16 @@ namespace RMuseum.Services.Implementation
                 List<RUserBookmarkViewModel> finalList = new List<RUserBookmarkViewModel>();
                 foreach(RUserBookmark bookmark in paginatedResult1.Bookmarks)
                 {
-                    RUserBookmarkViewModel model = new RUserBookmarkViewModel(bookmark);
+                    RUserBookmarkViewModel model = new RUserBookmarkViewModel()
+                    {
+                        Id = bookmark.Id,
+                        RAppUserId = bookmark.RAppUserId,
+                        RArtifactMasterRecord = bookmark.RArtifactMasterRecord,
+                        RArtifactItemRecord = null,//this should be filled by an external call              
+                        DateTime = bookmark.DateTime,
+                        RBookmarkType = bookmark.RBookmarkType,
+                        Note = bookmark.Note
+                    };
                     if(bookmark.RArtifactMasterRecord != null)
                     {
                         if (!statusArray.Contains(bookmark.RArtifactMasterRecord.Status))

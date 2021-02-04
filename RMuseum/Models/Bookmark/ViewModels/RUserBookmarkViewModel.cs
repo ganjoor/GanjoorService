@@ -6,17 +6,6 @@ namespace RMuseum.Models.Bookmark.ViewModels
 {
     public class RUserBookmarkViewModel
     {
-        public RUserBookmarkViewModel(RUserBookmark src)
-        {
-            Id = src.Id;
-            RAppUserId = src.RAppUserId;
-            RArtifactMasterRecord = src.RArtifactMasterRecord;
-            RArtifactItemRecord = null;//this should be filled by an external call              
-            DateTime = src.DateTime;
-            RBookmarkType = src.RBookmarkType;
-            Note = src.Note;
-        }
-
         /// <summary>
         /// Id
         /// </summary>
