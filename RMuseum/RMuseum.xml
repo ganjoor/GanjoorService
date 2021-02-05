@@ -757,12 +757,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.UpdatePoemsText">
-            <summary>
-            updates poems text and html
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ImportFromMySql">
             <summary>
             imports data from ganjoor MySql database
@@ -5957,12 +5951,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.UpdatePoemsText">
-            <summary>
-            updates poems text
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Services.IGanjoorService.ImportFromMySql">
             <summary>
             import GanjoorPage entity data from MySql
@@ -6683,12 +6671,6 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportLocalSQLiteDb">
             <summary>
             imports unimported poem data from a locally accessible ganjoor SqlLite database
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoemsText">
-            <summary>
-            updates poems text
             </summary>
             <returns></returns>
         </member>

@@ -166,12 +166,6 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> ImportLocalSQLiteDb();
 
         /// <summary>
-        /// updates poems text
-        /// </summary>
-        /// <returns></returns>
-        RServiceResult<bool> UpdatePoemsText();
-
-        /// <summary>
         /// import GanjoorPage entity data from MySql
         /// </summary>
         /// <returns></returns>

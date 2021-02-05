@@ -436,24 +436,6 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// updates poems text and html
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("updatetext")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult UpdatePoemsText()
-        {
-            RServiceResult<bool> res =
-                _ganjoorService.UpdatePoemsText();
-            if (res.Result)
-                return Ok();
-            return BadRequest(res.ExceptionString);
-        }
-
-        /// <summary>
         /// imports data from ganjoor MySql database
         /// </summary>
         /// <returns></returns>
