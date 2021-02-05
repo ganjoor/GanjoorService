@@ -41,16 +41,11 @@ namespace RMuseum.Services.Implementation
 
                         var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", "pre open connection")).Result;
 
-                        var resComments = await _ImportCommentsDataFromMySql(context, jobProgressServiceEF, job);
-                        if(!resComments.Result)
-                        {
-                            await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, resComments.ExceptionString);
-                            return;
-                        }
+                        
 
 
                         MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration, context);
-                        RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql(jobProgressServiceEF, job);
+                        RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql("MusicCatalogueImportFromMySql", jobProgressServiceEF, job);
 
                         if (!musicCatalogueRes.Result)
                             return;
@@ -306,16 +301,16 @@ namespace RMuseum.Services.Implementation
                             job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - finalizing meta data")).Result;
                             await context.SaveChangesAsync();
 
-                            var resApprovedPoemSongs = await _ImportPoemSongsDataFromMySql(context, jobProgressServiceEF, job, true);
+                            var resApprovedPoemSongs = await _ImportPoemSongsDataFromMySql("_ImportPoemSongsDataFromMySql", context, jobProgressServiceEF, job, true);
                             if (!resApprovedPoemSongs.Result)
                             {
-                                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, resApprovedPoemSongs.ExceptionString);
+                                return;
                             }
 
-                            var resPendingPoemSongs = await _ImportPoemSongsDataFromMySql(context, jobProgressServiceEF, job, false);
+                            var resPendingPoemSongs = await _ImportPoemSongsDataFromMySql("_ImportPoemSongsDataFromMySql", context, jobProgressServiceEF, job, false);
                             if (!resPendingPoemSongs.Result)
                             {
-                                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, resPendingPoemSongs.ExceptionString);
+                                return;
                             }
 
                             using (MySqlConnection connection = new MySqlConnection
@@ -365,6 +360,13 @@ namespace RMuseum.Services.Implementation
                         {
                             await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, jobExp.ToString());
                         }
+
+                        var resComments = await _ImportCommentsDataFromMySql("_ImportCommentsDataFromMySql", context, jobProgressServiceEF, job);
+                        if (!resComments.Result)
+                        {
+                           
+                            return;
+                        }
                     }
                 });
 
@@ -377,11 +379,11 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task<RServiceResult<bool>> _ImportPoemSongsDataFromMySql(RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, bool approved)
+        private async Task<RServiceResult<bool>> _ImportPoemSongsDataFromMySql(string jobName, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, bool approved)
         {
             try
             {
-                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 5 - pre mysql data fetch")).Result;
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - pre mysql data fetch")).Result;
 
                 string connectionString =
                     approved ?
@@ -399,12 +401,12 @@ namespace RMuseum.Services.Implementation
                         "SELECT poem_id, artist_name, artist_beeptunesurl, album_name, album_beeptunesurl, track_name, track_beeptunesurl, ptrack_typeid FROM ganja_ptracks ORDER BY id",
                         connection))
                     {
-                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 5 - mysql")).Result;
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - mysql")).Result;
                         using (DataTable data = new DataTable())
                         {
                             await src.FillAsync(data);
 
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 5 - processing approved poem songs")).Result;
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - processing approved poem songs")).Result;
 
                             foreach (DataRow row in data.Rows)
                             {
@@ -459,7 +461,7 @@ namespace RMuseum.Services.Implementation
                                 context.GanjoorPoemMusicTracks.Add(track);
 
                             }
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 5 - finalizing approved poem songs data")).Result;
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - finalizing approved poem songs data")).Result;
 
                             await context.SaveChangesAsync();
 
@@ -471,16 +473,17 @@ namespace RMuseum.Services.Implementation
             }
             catch (Exception exp)
             {
+                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, exp.ToString());
                 return new RServiceResult<bool>(false, exp.ToString());
             }
 
         }
 
-        private async Task<RServiceResult<bool>> _ImportCommentsDataFromMySql(RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        private async Task<RServiceResult<bool>> _ImportCommentsDataFromMySql(string jobName, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
         {
             try
             {
-                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase comments - pre mysql data fetch")).Result;
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - pre mysql data fetch")).Result;
 
                 string connectionString =
                     $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True";
@@ -495,12 +498,12 @@ namespace RMuseum.Services.Implementation
                         "SELECT comment_post_ID, comment_author, comment_author_email, comment_author_url, comment_author_IP, comment_date, comment_content, comment_approved FROM ganja_comments WHERE comment_type <> 'pingback' ORDER BY comment_ID",
                         connection))
                     {
-                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase comments - mysql")).Result;
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - mysql")).Result;
                         using (DataTable data = new DataTable())
                         {
                             await src.FillAsync(data);
 
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase comments - processing approved poem songs")).Result;
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - processing approved poem songs")).Result;
 
                             int count = data.Rows.Count;
                             int i = 0;
@@ -536,7 +539,7 @@ namespace RMuseum.Services.Implementation
                                 {
                                     percent = i * 100 / count;
 
-                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"phase comments - {i} of {count}")).Result;
+                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - {i} of {count}")).Result;
                                 }
                             }
 
@@ -545,7 +548,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase comments - assigning comments to users")).Result;
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - assigning comments to users")).Result;
                 foreach (var user in await context.Users.ToListAsync())
                 {
                     foreach(var comment in await context.GanjoorComments.Where(u => u.AuthorEmail == user.Email).ToListAsync())
@@ -557,13 +560,14 @@ namespace RMuseum.Services.Implementation
                 await context.SaveChangesAsync();
 
 
-                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase comments - finished")).Result;
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - finished")).Result;
 
 
                 return new RServiceResult<bool>(true);
             }
             catch(Exception exp)
             {
+                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, exp.ToString());
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }

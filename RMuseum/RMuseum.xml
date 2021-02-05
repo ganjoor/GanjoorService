@@ -6932,10 +6932,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.MusicCatalogueService.ImportFromMySql(RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF,RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus)">
+        <member name="M:RMuseum.Services.Implementation.MusicCatalogueService.ImportFromMySql(System.String,RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF,RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus)">
             <summary>
             import catalogue from ganjoor.net MySql db
             </summary>
+            <param name="jobName"></param>
+            <param name="jobProgressServiceEF"></param>
+            <param name="job"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.MusicCatalogueService.Configuration">

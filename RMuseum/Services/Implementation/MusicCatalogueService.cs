@@ -79,8 +79,11 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// import catalogue from ganjoor.net MySql db
         /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobProgressServiceEF"></param>
+        /// <param name="job"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ImportFromMySql(LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        public async Task<RServiceResult<bool>> ImportFromMySql(string jobName, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
         {
             try
             {
@@ -93,7 +96,7 @@ namespace RMuseum.Services.Implementation
                                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["SongsUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["SongsPassword"]};database={Configuration.GetSection("AudioMySqlServer")["SongsDatabase"]};charset=utf8;convert zero datetime=True"
                                            ))
                     {
-                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 4 - import golha data - pre open connection")).Result;
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - import golha data - pre open connection")).Result;
 
                         connection.Open();
 
@@ -116,7 +119,7 @@ namespace RMuseum.Services.Implementation
                                         Programs = new List<GolhaProgram>()
                                     };
 
-                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"phase 4 - import golha data - golha_collections: {collection.Id}")).Result;
+                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - import golha data - golha_collections: {collection.Id}")).Result;
 
 
                                     using (MySqlDataAdapter srcPrograms = new MySqlDataAdapter(
@@ -181,7 +184,7 @@ namespace RMuseum.Services.Implementation
                         }
 
 
-                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 4 - import singers data")).Result;
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - import singers data")).Result;
 
                         using (MySqlDataAdapter src = new MySqlDataAdapter(
                             "SELECT artist_id, artist_name, artist_beeptunesurl FROM ganja_artists ORDER BY artist_id",
@@ -256,13 +259,13 @@ namespace RMuseum.Services.Implementation
 
                                     context.GanjoorSingers.Add(singer);
 
-                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"phase 4 - import singers data - {singer.Name}")).Result;
+                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - import singers data - {singer.Name}")).Result;
 
                                 }
                             }
                         }
 
-                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 4 - finalizing singers data")).Result;
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - finalizing singers data")).Result;
 
                         await context.SaveChangesAsync();
                     }
