@@ -4368,6 +4368,11 @@
             Songs
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Comments">
+            <summary>
+            Comments
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel">
             <summary>
             poem summary
@@ -6725,6 +6730,14 @@
             get poem recitations  (PlainText/HtmlText are intentionally empty)
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemComments(System.Int32,System.Guid)">
+            <summary>
+            get poem comments
+            </summary>
+            <param name="poemId"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemImages(System.Int32)">

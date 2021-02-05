@@ -96,5 +96,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// Songs
         /// </summary>
         public PoemMusicTrackViewModel[] Songs { get; set; }
+
+        /// <summary>
+        /// Comments
+        /// </summary>
+        public GanjoorCommentSummaryViewModel[] Comments { get; set; }
     }
 }
