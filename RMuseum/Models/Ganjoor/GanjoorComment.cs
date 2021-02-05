@@ -72,7 +72,7 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// Reference Comment Id
         /// </summary>
-        public Guid? InReplyToId { get; set; }
+        public int? InReplyToId { get; set; }
 
         /// <summary>
         /// publish status

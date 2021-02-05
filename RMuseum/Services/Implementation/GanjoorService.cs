@@ -15,6 +15,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
+using RMuseum.Models.Artifact;
 
 namespace RMuseum.Services.Implementation
 {
@@ -415,6 +416,48 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<PublicRecitationViewModel[]>(null, exp.ToString());
             }
         }
+        /*
+        public async Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int id, Guid userId)
+        {
+            try
+            {
+                var source =
+                     from comment in _context.GanjoorComments
+                     where
+                     (comment.Status == PublishStatus.Published || (userId != Guid.Empty && comment.Status == PublishStatus.Awaiting && comment.UserId == userId))
+                     &&
+                     comment.Id == id
+                     orderby comment.CommentDate
+                     select new GanjoorCommentSummaryViewModel()
+                     {
+                         Id = comment.Id,
+                     };
+                return new RServiceResult<GanjoorCommentSummaryViewModel[]>(await source.ToArrayAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorCommentSummaryViewModel[]>(null, exp.ToString());
+            }
+        }
+
+        private async Task<GanjoorCommentSummaryViewModel[]> _GetPoemComments(int id, Guid userId, int? inReplyToId)
+        {
+            var source =
+                     from comment in _context.GanjoorComments
+                     where
+                     (comment.Status == PublishStatus.Published || (userId != Guid.Empty && comment.Status == PublishStatus.Awaiting && comment.UserId == userId))
+                     &&
+                     comment.Id == id
+                     &&
+                     comment.InReplyToId == inReplyToId
+                     orderby comment.CommentDate
+                     select new GanjoorCommentSummaryViewModel()
+                     {
+                         Id = comment.Id,
+                     };
+            return await source.ToArrayAsync();
+        }
+        */
 
         /// <summary>
         /// get poem images by id (some fields are intentionally field with blank or null),

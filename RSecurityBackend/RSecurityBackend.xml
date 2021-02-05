@@ -1165,7 +1165,7 @@
             username
             </summary>
             <example>
-            admin
+            admin@ganjoor.net
             </example>
         </member>
         <member name="P:RSecurityBackend.Models.Auth.ViewModels.LoginViewModel.Password">

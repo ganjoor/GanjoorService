@@ -392,10 +392,7 @@ namespace RMuseum.Migrations
                     b.Property<string>("HtmlComment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("InReplyToId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("InReplyToId1")
+                    b.Property<int?>("InReplyToId")
                         .HasColumnType("int");
 
                     b.Property<int>("PoemId")
@@ -409,7 +406,7 @@ namespace RMuseum.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InReplyToId1");
+                    b.HasIndex("InReplyToId");
 
                     b.HasIndex("PoemId");
 
@@ -1845,7 +1842,7 @@ namespace RMuseum.Migrations
                 {
                     b.HasOne("RMuseum.Models.Ganjoor.GanjoorComment", "InReplyTo")
                         .WithMany()
-                        .HasForeignKey("InReplyToId1");
+                        .HasForeignKey("InReplyToId");
 
                     b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
                         .WithMany()

@@ -4184,6 +4184,46 @@
             poems
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel">
+            <summary>
+            GanjoorComment Summary View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.AuthorName">
+            <summary>
+            author name (MySql imported field)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.AuthorUrl">
+            <summary>
+            author url (MySql imported field)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.CommentDate">
+            <summary>
+            comment date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.HtmlComment">
+            <summary>
+            comment
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.PublishStatus">
+            <summary>
+            status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.Replies">
+            <summary>
+            replies
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPageCompleteViewModel">
             <summary>
             Ganjoor Page View Model

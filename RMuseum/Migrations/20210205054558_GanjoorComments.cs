@@ -21,16 +21,15 @@ namespace RMuseum.Migrations
                     AuthorIpAddress = table.Column<string>(nullable: true),
                     CommentDate = table.Column<DateTime>(nullable: false),
                     HtmlComment = table.Column<string>(nullable: true),
-                    InReplyToId1 = table.Column<int>(nullable: true),
-                    InReplyToId = table.Column<Guid>(nullable: true),
+                    InReplyToId = table.Column<int>(nullable: true),
                     Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GanjoorComments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GanjoorComments_GanjoorComments_InReplyToId1",
-                        column: x => x.InReplyToId1,
+                        name: "FK_GanjoorComments_GanjoorComments_InReplyToId",
+                        column: x => x.InReplyToId,
                         principalTable: "GanjoorComments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -49,9 +48,9 @@ namespace RMuseum.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_GanjoorComments_InReplyToId1",
+                name: "IX_GanjoorComments_InReplyToId",
                 table: "GanjoorComments",
-                column: "InReplyToId1");
+                column: "InReplyToId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GanjoorComments_PoemId",
