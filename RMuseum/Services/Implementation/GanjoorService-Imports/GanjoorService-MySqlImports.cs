@@ -41,8 +41,6 @@ namespace RMuseum.Services.Implementation
 
                         var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", "pre open connection")).Result;
 
-                        
-
 
                         MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration, context);
                         RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql("MusicCatalogueImportFromMySql", jobProgressServiceEF, job);
@@ -354,19 +352,19 @@ namespace RMuseum.Services.Implementation
                             await context.SaveChangesAsync();
 
 
-                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "Finished", true);
+                           
                         }
                         catch (Exception jobExp)
                         {
                             await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, jobExp.ToString());
                         }
-
                         var resComments = await _ImportCommentsDataFromMySql("_ImportCommentsDataFromMySql", context, jobProgressServiceEF, job);
                         if (!resComments.Result)
                         {
-                           
                             return;
                         }
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "Finished", true);
                     }
                 });
 
@@ -531,7 +529,6 @@ namespace RMuseum.Services.Implementation
 
                                 context.GanjoorComments.Add(comment);
 
-                                await context.SaveChangesAsync(); //keeping original order of comments by saving things here
 
                                 i++;
 
@@ -542,6 +539,8 @@ namespace RMuseum.Services.Implementation
                                     job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - {i} of {count}")).Result;
                                 }
                             }
+
+                            await context.SaveChangesAsync();
 
                         }
 
