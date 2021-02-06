@@ -37,6 +37,12 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// </summary>
         public string PublishStatus { get; set; }
 
+
+        /// <summary>
+        /// in reply to
+        /// </summary>
+        public int? InReplyToId { get; set; }
+
         /// <summary>
         /// replies
         /// </summary>

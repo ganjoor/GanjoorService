@@ -4213,6 +4213,11 @@
             status
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.InReplyToId">
+            <summary>
+            in reply to
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.Replies">
             <summary>
             replies

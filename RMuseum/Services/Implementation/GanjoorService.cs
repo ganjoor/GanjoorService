@@ -427,24 +427,12 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                return new RServiceResult<GanjoorCommentSummaryViewModel[]>(await _GetPoemComments(poemId, userId, null));
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjoorCommentSummaryViewModel[]>(null, exp.ToString());
-            }
-        }
-
-        private async Task<GanjoorCommentSummaryViewModel[]> _GetPoemComments(int poemId, Guid userId, int? inReplyToId)
-        {
-            var source =
+                var source =
                       from comment in _context.GanjoorComments.Include(c => c.User)
                       where
                       (comment.Status == PublishStatus.Published || (userId != Guid.Empty && comment.Status == PublishStatus.Awaiting && comment.UserId == userId))
                       &&
                       comment.PoemId == poemId
-                      &&
-                      comment.InReplyToId == inReplyToId
                       orderby comment.CommentDate
                       select new GanjoorCommentSummaryViewModel()
                       {
@@ -453,15 +441,34 @@ namespace RMuseum.Services.Implementation
                           AuthorUrl = comment.AuthorUrl,
                           CommentDate = comment.CommentDate,
                           HtmlComment = comment.HtmlComment,
-                          PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : ""
+                          PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
+                          InReplyToId = comment.InReplyToId,
                       };
-            var comments = await source.ToArrayAsync();
 
-            foreach(var comment in comments)
-            {
-                comment.Replies = await _GetPoemComments(poemId, userId, comment.Id);
+                GanjoorCommentSummaryViewModel[] allComments = await source.ToArrayAsync();
+
+                GanjoorCommentSummaryViewModel[] rootComments = allComments.Where(c => c.InReplyToId == null).ToArray();
+
+                foreach(GanjoorCommentSummaryViewModel comment in rootComments)
+                {
+                    _FindReplies(comment, allComments);
+                }
+
+                return new RServiceResult<GanjoorCommentSummaryViewModel[]>(rootComments);
             }
-            return comments;
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorCommentSummaryViewModel[]>(null, exp.ToString());
+            }
+        }
+
+        private void _FindReplies(GanjoorCommentSummaryViewModel comment, GanjoorCommentSummaryViewModel[] allComments)
+        {
+            comment.Replies = allComments.Where(c => c.InReplyToId == comment.Id).ToArray();
+            foreach(GanjoorCommentSummaryViewModel reply in comment.Replies)
+            {
+                _FindReplies(reply, allComments);
+            }
         }
         
 
