@@ -473,7 +473,7 @@ namespace RMuseum.Services.Implementation
                 foreach(GanjoorCommentSummaryViewModel comment in allComments)
                 {
                     comment.HtmlComment = _Linkify(comment.HtmlComment);
-                    comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n", "<br />".Replace("ي", "ی"))}</p>";
+                    comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />".Replace("ي", "ی"))}</p>";
                 }
 
                 GanjoorCommentSummaryViewModel[] rootComments = allComments.Where(c => c.InReplyToId == null).ToArray();
