@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RMuseum.Models.Artifact;
+using System.Text.RegularExpressions;
 
 namespace RMuseum.Services.Implementation
 {
@@ -416,7 +417,29 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<PublicRecitationViewModel[]>(null, exp.ToString());
             }
         }
-        
+
+        private string _Linkify(string SearchText)
+        {
+            // this will find links like:
+            // http://www.mysite.com
+            // as well as any links with other characters directly in front of it like:
+            // href="http://www.mysite.com"
+            // you can then use your own logic to determine which links to linkify
+            Regex regx = new Regex(@"\b(((\S+)?)(@|mailto\:|(news|(ht|f)tp(s?))\://)\S+)\b", RegexOptions.IgnoreCase);
+            SearchText = SearchText.Replace("&nbsp;", " ");
+            MatchCollection matches = regx.Matches(SearchText);
+
+            foreach (Match match in matches)
+            {
+                if (match.Value.StartsWith("http"))
+                { // if it starts with anything else then dont linkify -- may already be linked!
+                    SearchText = SearchText.Replace(match.Value, "<a href='" + match.Value + "'>" + match.Value + "</a>");
+                }
+            }
+
+            return SearchText;
+        }
+
         /// <summary>
         /// get poem comments
         /// </summary>
@@ -446,6 +469,12 @@ namespace RMuseum.Services.Implementation
                       };
 
                 GanjoorCommentSummaryViewModel[] allComments = await source.ToArrayAsync();
+
+                foreach(GanjoorCommentSummaryViewModel comment in allComments)
+                {
+                    comment.HtmlComment = _Linkify(comment.HtmlComment);
+                    comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n", "<br />".Replace("ي", "ی"))}</p>";
+                }
 
                 GanjoorCommentSummaryViewModel[] rootComments = allComments.Where(c => c.InReplyToId == null).ToArray();
 
