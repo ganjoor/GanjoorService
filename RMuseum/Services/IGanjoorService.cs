@@ -152,6 +152,13 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<PoemMusicTrackViewModel>> DirectInsertSong(PoemMusicTrackViewModel song);
 
+        /// <summary>
+        /// get recent comments
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging);
+
 
         /// <summary>
         /// get a random poem from hafez

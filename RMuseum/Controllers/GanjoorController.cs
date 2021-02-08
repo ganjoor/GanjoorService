@@ -10,6 +10,7 @@ using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -415,6 +416,31 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// get recent comments
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("comments")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorCommentFullViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> Get([FromQuery] PagingParameterModel paging)
+        {
+            var comments = await _ganjoorService.GetRecentComments(paging);
+            if (!string.IsNullOrEmpty(comments.ExceptionString))
+            {
+                return BadRequest(comments.ExceptionString);
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
+
+            return Ok(comments.Result.Items);
         }
 
         /// <summary>

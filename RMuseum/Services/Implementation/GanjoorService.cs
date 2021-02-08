@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RMuseum.Models.Artifact;
 using System.Text.RegularExpressions;
+using RSecurityBackend.Services.Implementation;
 
 namespace RMuseum.Services.Implementation
 {
@@ -499,7 +500,65 @@ namespace RMuseum.Services.Implementation
                 _FindReplies(reply, allComments);
             }
         }
-        
+
+        /// <summary>
+        /// get recent comments
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging)
+        {
+            try
+            {
+                var source =
+                     from comment in _context.GanjoorComments.Include(c => c.Poem).Include(c => c.User).Include(c => c.InReplyTo).ThenInclude(r => r.User)
+                     where
+                    comment.Status == PublishStatus.Published
+                     orderby comment.CommentDate descending
+                     select new GanjoorCommentFullViewModel()
+                     {
+                         Id = comment.Id,
+                         AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.FirstName} {comment.User.SureName}".Trim(),
+                         AuthorUrl = comment.AuthorUrl,
+                         CommentDate = comment.CommentDate,
+                         HtmlComment = comment.HtmlComment,
+                         InReplayTo = comment.InReplyTo == null ? null :
+                            new GanjoorCommentSummaryViewModel()
+                            {
+                                Id = comment.InReplyTo.Id,
+                                AuthorName = comment.InReplyTo.User == null ? comment.InReplyTo.AuthorName : $"{comment.InReplyTo.User.FirstName} {comment.InReplyTo.User.SureName}".Trim(),
+                                AuthorUrl = comment.InReplyTo.AuthorUrl,
+                                CommentDate = comment.InReplyTo.CommentDate,
+                                HtmlComment = comment.InReplyTo.HtmlComment,
+                                PublishStatus = ""
+                            },
+                         Poem = new GanjoorPoemSummaryViewModel()
+                         {
+                             Id = comment.Poem.Id,
+                             Title = comment.Poem.FullTitle,
+                             UrlSlug = comment.Poem.FullUrl,
+                             Excerpt = ""
+                         }
+                     };
+
+                (PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items) paginatedResult =
+                    await QueryablePaginator<GanjoorCommentFullViewModel>.Paginate(source, paging);
+
+
+                foreach (GanjoorCommentFullViewModel comment in paginatedResult.Items)
+                {
+                    comment.HtmlComment = _Linkify(comment.HtmlComment);
+                    comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />".Replace("ي", "ی"))}</p>";
+                }
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// get poem images by id (some fields are intentionally field with blank or null),
