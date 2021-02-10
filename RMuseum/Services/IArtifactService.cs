@@ -474,9 +474,10 @@ namespace RMuseum.Services
         /// <summary>
         /// suggest pinterest link
         /// </summary>
+        /// <param name="userId"></param>
         /// <param name="suggestion"></param>
         /// <returns></returns>
-        Task<RServiceResult<PinterestLinkViewModel>> SuggestPinterestLink(PinterestSuggestion suggestion);
+        Task<RServiceResult<PinterestLinkViewModel>> SuggestPinterestLink(Guid userId, PinterestSuggestion suggestion);
 
         /// <summary>
         /// Review Suggested Pinterest Link

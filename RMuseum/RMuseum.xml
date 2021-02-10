@@ -3480,16 +3480,6 @@
             pinterest image url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.CaptchaImageId">
-            <summary>
-            Captcha Image Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.CaptchaValue">
-            <summary>
-            Captcha Value
-            </summary>
-        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorCat">
             <summary>
             Ganjoor Category
@@ -5813,10 +5803,11 @@
             <param name="notSynced"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.SuggestPinterestLink(RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion)">
+        <member name="M:RMuseum.Services.IArtifactService.SuggestPinterestLink(System.Guid,RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion)">
             <summary>
             suggest pinterest link
             </summary>
+            <param name="userId"></param>
             <param name="suggestion"></param>
             <returns></returns>
         </member>
@@ -6626,10 +6617,11 @@
             <param name="notSynced"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.SuggestPinterestLink(RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.SuggestPinterestLink(System.Guid,RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion)">
             <summary>
             suggest pinterest link
             </summary>
+            <param name="userId"></param>
             <param name="suggestion"></param>
             <returns></returns>
         </member>

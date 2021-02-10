@@ -3077,9 +3077,10 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// suggest pinterest link
         /// </summary>
+        /// <param name="userId"></param>
         /// <param name="suggestion"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PinterestLinkViewModel>> SuggestPinterestLink(PinterestSuggestion suggestion)
+        public async Task<RServiceResult<PinterestLinkViewModel>> SuggestPinterestLink(Guid userId, PinterestSuggestion suggestion)
         {
             try
             {
@@ -3108,6 +3109,7 @@ namespace RMuseum.Services.Implementation
                     PinterestImageUrl = suggestion.PinterestImageUrl,
                     ReviewResult = ReviewResult.Awaiting,
                     SuggestionDate = DateTime.Now,
+                    SuggestedById = userId,
                     Synchronized = false
                 };
                 _context.PinterestLinks.Add(link);

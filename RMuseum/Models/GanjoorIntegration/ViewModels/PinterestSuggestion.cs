@@ -41,15 +41,5 @@ namespace RMuseum.Models.GanjoorIntegration.ViewModels
         /// pinterest image url
         /// </summary>
         public string PinterestImageUrl { get; set; }
-
-        /// <summary>
-        /// Captcha Image Id
-        /// </summary>
-        public Guid CaptchaImageId { get; set; }
-
-        /// <summary>
-        /// Captcha Value
-        /// </summary>
-        public string CaptchaValue { get; set; }
     }
 }

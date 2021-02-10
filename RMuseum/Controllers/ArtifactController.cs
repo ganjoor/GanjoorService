@@ -1749,19 +1749,13 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("pinterest")]
-        [AllowAnonymous]
+        [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PinterestLinkViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> SuggestPinterestLink([FromBody]PinterestSuggestion suggestion)
         {
-            RServiceResult<bool> captchaRes = await _captchaService.Evaluate(suggestion.CaptchaImageId, suggestion.CaptchaValue);
-            if (!string.IsNullOrEmpty(captchaRes.ExceptionString))
-                return BadRequest(captchaRes.ExceptionString);
-
-            if (!captchaRes.Result)
-                return BadRequest("مقدار تصویر امنیتی درست وارد نشده است.");
-
-            RServiceResult<PinterestLinkViewModel> res = await _artifactService.SuggestPinterestLink(suggestion);
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<PinterestLinkViewModel> res = await _artifactService.SuggestPinterestLink(loggedOnUserId, suggestion);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 
