@@ -155,6 +155,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// page url by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("pageurl")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPageUrlById(int id)
+        {
+            RServiceResult<string> res =
+                await _ganjoorService.GetPageUrlById(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (string.IsNullOrEmpty(res.Result))
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// get poem by id
         /// </summary>
         /// <param name="id"></param>

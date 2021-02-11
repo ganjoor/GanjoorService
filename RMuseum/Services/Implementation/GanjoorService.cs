@@ -273,6 +273,26 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get page url by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<string>> GetPageUrlById(int id)
+        {
+            try
+            {
+                var dbPage = await _context.GanjoorPages.Where(p => p.Id == id).SingleOrDefaultAsync();
+                if (dbPage == null)
+                    return new RServiceResult<string>(null); //not found
+                return new RServiceResult<string>(dbPage.FullUrl);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<string>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get page by url
         /// </summary>
         /// <param name="url"></param>

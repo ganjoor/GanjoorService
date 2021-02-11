@@ -60,6 +60,13 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = true);
 
         /// <summary>
+        /// get page url by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<string>> GetPageUrlById(int id);
+
+        /// <summary>
         /// Get Poem By Id
         /// </summary>
         /// <param name="id"></param>
