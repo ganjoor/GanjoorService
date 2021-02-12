@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DNTPersianUtils.Core;
 using ganjoor;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -659,7 +660,7 @@ namespace RMuseum.Services.Implementationa
                     while((await _context.UserRecitationProfiles.Where(p => p.UserId == ownerRAppUserId && p.Name == profile.Name).SingleOrDefaultAsync())!=null)
                     {
                         pIndex++;
-                        profile.Name = $"{profile.ArtistName} {GPersianTextSync.Sync(pIndex.ToString())}";
+                        profile.Name = $"{profile.ArtistName} {pIndex.ToPersianNumbers()}";
                     }
                     _context.UserRecitationProfiles.Add(profile);
                     await _context.SaveChangesAsync(); //this logically should be outside this loop, 

@@ -14,10 +14,10 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RMuseum.Models.Artifact;
 using System.Text.RegularExpressions;
 using RSecurityBackend.Services.Implementation;
+using DNTPersianUtils.Core;
 
 namespace RMuseum.Services.Implementation
 {
@@ -962,9 +962,9 @@ namespace RMuseum.Services.Implementation
 
                     song.ArtistName = "";
                     song.ArtistUrl = "";
-                    song.AlbumName = $"{golhaTrack.GolhaProgram.GolhaCollection.Name} » شمارهٔ {GPersianTextSync.Sync(golhaTrack.GolhaProgram.Title)}";
+                    song.AlbumName = $"{golhaTrack.GolhaProgram.GolhaCollection.Name} » شمارهٔ {golhaTrack.GolhaProgram.Title.ToPersianNumbers().ApplyCorrectYeKe()}";
                     song.AlbumUrl = "";
-                    song.TrackName = $"{GPersianTextSync.Sync(golhaTrack.Timing)} {golhaTrack.Title}";
+                    song.TrackName = $"{golhaTrack.Timing.ToPersianNumbers().ApplyCorrectYeKe()} {golhaTrack.Title}";
                     song.TrackUrl = golhaTrack.GolhaProgram.Url;
                 }
                 else

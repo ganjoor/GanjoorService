@@ -8,42 +8,6 @@ namespace RMuseum.Services.Implementation.ImportedFromDesktopGanjoor
     public class GPersianTextSync
     {
         /// <summary>
-        /// convert arabic characters to persian equivalents
-        /// </summary>
-        /// <param name="inputStr"></param>
-        /// <returns></returns>
-        public static string Sync(string inputStr)
-        {
-            return
-                inputStr
-                    .Replace('ك', 'ک')
-                    .Replace('ي', 'ی')
-                    .Replace("ۀ", "هٔ")
-                    .Replace("ه‌ی", "هٔ")
-                    .Replace("0", "۰")
-                    .Replace("1", "۱")
-                    .Replace("2", "۲")
-                    .Replace("3", "۳")
-                    .Replace("4", "۴")
-                    .Replace("5", "۵")
-                    .Replace("6", "۶")
-                    .Replace("7", "۷")
-                    .Replace("8", "۸")
-                    .Replace("9", "۹");
-        }
-
-        /// <summary>
-        /// list of persian letters
-        /// </summary>
-        public static string PersianLetters
-        {
-            get
-            {
-                return "اآئأإءبپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی";
-            }
-        }
-
-        /// <summary>
         /// convert persian text to simple pinglish
         /// </summary>
         /// <param name="inputStr"></param>

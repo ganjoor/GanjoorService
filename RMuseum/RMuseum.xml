@@ -6934,18 +6934,6 @@
             Persian specific text utility class
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync.Sync(System.String)">
-            <summary>
-            convert arabic characters to persian equivalents
-            </summary>
-            <param name="inputStr"></param>
-            <returns></returns>
-        </member>
-        <member name="P:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync.PersianLetters">
-            <summary>
-            list of persian letters
-            </summary>
-        </member>
         <member name="M:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync.Farglisize(System.String)">
             <summary>
             convert persian text to simple pinglish
