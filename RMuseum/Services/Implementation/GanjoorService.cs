@@ -496,7 +496,7 @@ namespace RMuseum.Services.Implementation
                     comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
                     comment.HtmlComment = comment.HtmlComment.ToPersianNumbers().ApplyCorrectYeKe();
                     comment.HtmlComment = _Linkify(comment.HtmlComment);
-                    comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />".Replace("ي", "ی"))}</p>";
+                    comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />")}</p>";
                 }
 
                 GanjoorCommentSummaryViewModel[] rootComments = allComments.Where(c => c.InReplyToId == null).ToArray();
@@ -572,7 +572,7 @@ namespace RMuseum.Services.Implementation
                     comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
                     comment.HtmlComment = comment.HtmlComment.ToPersianNumbers().ApplyCorrectYeKe();
                     comment.HtmlComment = _Linkify(comment.HtmlComment);
-                    comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />".Replace("ي", "ی"))}</p>";
+                    comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />")}</p>";
                 }
 
                 return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>(paginatedResult);
