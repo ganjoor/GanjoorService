@@ -44,6 +44,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public int? InReplyToId { get; set; }
 
         /// <summary>
+        /// User Id
+        /// </summary>
+        public Guid? UserId { get; set; }
+
+        /// <summary>
         /// replies
         /// </summary>
 

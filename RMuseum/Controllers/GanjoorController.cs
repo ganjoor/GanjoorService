@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
@@ -466,6 +467,38 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// post new comment
+        /// </summary>
+        /// <param name="comment"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("comment")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCommentSummaryViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> NewComment([FromBody] GanjoorCommentPostViewModel comment)
+        {
+            string clientIPAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+
+            Guid userId =
+                 new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId =
+                new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+            RServiceResult<bool> sessionCheckResult = await _appUserService.SessionExists(userId, sessionId);
+            if (!string.IsNullOrEmpty(sessionCheckResult.ExceptionString))
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
+            var res =
+                await _ganjoorService.NewComment(userId, clientIPAddress, comment.PoemId, comment.HtmlComment, comment.InReplyToId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// imports data from ganjoor SQLite database
         /// </summary>
         /// <returns></returns>
@@ -513,14 +546,21 @@ namespace RMuseum.Controllers
         protected IAppUserService _appUserService;
 
         /// <summary>
+        /// for client IP resolution
+        /// </summary>
+        protected IHttpContextAccessor _httpContextAccessor;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="ganjoorService"></param>
         /// <param name="appUserService"></param>
-        public GanjoorController(IGanjoorService ganjoorService, IAppUserService appUserService)
+        /// <param name="httpContextAccessor"></param>
+        public GanjoorController(IGanjoorService ganjoorService, IAppUserService appUserService, IHttpContextAccessor httpContextAccessor)
         {
             _ganjoorService = ganjoorService;
             _appUserService = appUserService;
+            _httpContextAccessor = httpContextAccessor;
         }
     }
 }

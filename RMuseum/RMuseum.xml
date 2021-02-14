@@ -765,6 +765,13 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.NewComment(RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentPostViewModel)">
+            <summary>
+            post new comment
+            </summary>
+            <param name="comment"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ImportLocalSQLiteDb">
             <summary>
             imports data from ganjoor SQLite database
@@ -787,12 +794,18 @@
             IAppUserService instance
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService,RSecurityBackend.Services.IAppUserService)">
+        <member name="F:RMuseum.Controllers.GanjoorController._httpContextAccessor">
+            <summary>
+            for client IP resolution
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
             <summary>
             constructor
             </summary>
             <param name="ganjoorService"></param>
             <param name="appUserService"></param>
+            <param name="httpContextAccessor"></param>
         </member>
         <member name="M:RMuseum.Controllers.ImageController.Get(System.Guid,System.String)">
             <summary>
@@ -4217,6 +4230,26 @@
             poem
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentPostViewModel">
+            <summary>
+            new comment model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentPostViewModel.PoemId">
+            <summary>
+            Poem Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentPostViewModel.HtmlComment">
+            <summary>
+            comment
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentPostViewModel.InReplyToId">
+            <summary>
+            in reply to
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel">
             <summary>
             GanjoorComment Summary View Model
@@ -4255,6 +4288,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.InReplyToId">
             <summary>
             in reply to
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.UserId">
+            <summary>
+            User Id
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.Replies">
@@ -5996,6 +6034,17 @@
             <param name="song"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.NewComment(System.Guid,System.String,System.Int32,System.String,System.Nullable{System.Int32})">
+            <summary>
+            new comment
+            </summary>
+            <param name="userId"></param>
+            <param name="ip"></param>
+            <param name="poemId"></param>
+            <param name="content"></param>
+            <param name="inReplyTo"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             get recent comments
@@ -6805,6 +6854,17 @@
             </summary>
             <param name="poemId"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.NewComment(System.Guid,System.String,System.Int32,System.String,System.Nullable{System.Int32})">
+            <summary>
+            new comment
+            </summary>
+            <param name="userId"></param>
+            <param name="ip"></param>
+            <param name="poemId"></param>
+            <param name="content"></param>
+            <param name="inReplyTo"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel)">

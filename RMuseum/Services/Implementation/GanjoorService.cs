@@ -487,6 +487,7 @@ namespace RMuseum.Services.Implementation
                           HtmlComment = comment.HtmlComment,
                           PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
                           InReplyToId = comment.InReplyToId,
+                          UserId = comment.UserId
                       };
 
                 GanjoorCommentSummaryViewModel[] allComments = await source.ToArrayAsync();
@@ -522,6 +523,54 @@ namespace RMuseum.Services.Implementation
                 _FindReplies(reply, allComments);
             }
         }
+
+        /// <summary>
+        /// new comment
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="ip"></param>
+        /// <param name="poemId"></param>
+        /// <param name="content"></param>
+        /// <param name="inReplyTo"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorCommentSummaryViewModel>> NewComment(Guid userId, string ip, int poemId, string content, int? inReplyTo)
+        {
+            try
+            {
+                GanjoorComment comment = new GanjoorComment()
+                {
+                    UserId = userId,
+                    AuthorIpAddress = ip,
+                    CommentDate = DateTime.Now,
+                    HtmlComment = content,
+                    InReplyToId = inReplyTo,
+                    PoemId = poemId,
+                    Status = PublishStatus.Published,
+                };
+                _context.GanjoorComments.Add(comment);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<GanjoorCommentSummaryViewModel>
+                    (
+                    new GanjoorCommentSummaryViewModel()
+                    {
+                        Id = comment.Id,
+                        AuthorName = $"{comment.User.FirstName} {comment.User.SureName}".Trim(),
+                        AuthorUrl = comment.AuthorUrl,
+                        CommentDate = comment.CommentDate,
+                        HtmlComment = comment.HtmlComment,
+                        PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
+                        InReplyToId = comment.InReplyToId,
+                        UserId = comment.UserId
+                    }
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorCommentSummaryViewModel>(null, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// get recent comments

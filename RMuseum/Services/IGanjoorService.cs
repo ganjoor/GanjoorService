@@ -160,6 +160,17 @@ namespace RMuseum.Services
         Task<RServiceResult<PoemMusicTrackViewModel>> DirectInsertSong(PoemMusicTrackViewModel song);
 
         /// <summary>
+        /// new comment
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="ip"></param>
+        /// <param name="poemId"></param>
+        /// <param name="content"></param>
+        /// <param name="inReplyTo"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCommentSummaryViewModel>> NewComment(Guid userId, string ip, int poemId, string content, int? inReplyTo);
+
+        /// <summary>
         /// get recent comments
         /// </summary>
         /// <param name="paging"></param>
