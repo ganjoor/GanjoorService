@@ -550,12 +550,19 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorComments.Add(comment);
                 await _context.SaveChangesAsync();
 
+                var userRes = await _appUserService.GetUserInformation(userId);
+
+                comment.HtmlComment = comment.HtmlComment.ToPersianNumbers().ApplyCorrectYeKe();
+                comment.HtmlComment = _Linkify(comment.HtmlComment);
+                comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />")}</p>";
+
+
                 return new RServiceResult<GanjoorCommentSummaryViewModel>
                     (
                     new GanjoorCommentSummaryViewModel()
                     {
                         Id = comment.Id,
-                        AuthorName = $"{comment.User.FirstName} {comment.User.SureName}".Trim(),
+                        AuthorName = $"{userRes.Result.FirstName} {userRes.Result.SureName}".Trim(),
                         AuthorUrl = comment.AuthorUrl,
                         CommentDate = comment.CommentDate,
                         HtmlComment = comment.HtmlComment,
@@ -1304,18 +1311,25 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         protected readonly IBackgroundTaskQueue _backgroundTaskQueue;
 
+        /// <summary>
+        /// IAppUserService instance
+        /// </summary>
+        protected IAppUserService _appUserService;
 
-        
+
+
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="configuration"></param>
         /// <param name="backgroundTaskQueue"></param>
-        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue)
+        /// <param name="appUserService"></param>
+        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService appUserService)
         {
             _context = context;
             _backgroundTaskQueue = backgroundTaskQueue;
+            _appUserService = appUserService;
             Configuration = configuration;
         }
     }

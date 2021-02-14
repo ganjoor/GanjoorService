@@ -6981,13 +6981,19 @@
             Background Task Queue Instance
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue)">
+        <member name="F:RMuseum.Services.Implementation.GanjoorService._appUserService">
+            <summary>
+            IAppUserService instance
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
             </summary>
             <param name="context"></param>
             <param name="configuration"></param>
             <param name="backgroundTaskQueue"></param>
+            <param name="appUserService"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync">
             <summary>
