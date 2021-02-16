@@ -537,6 +537,11 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                if(string.IsNullOrEmpty(content))
+                {
+                    return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه خالی است.");
+                }
+
                 GanjoorComment comment = new GanjoorComment()
                 {
                     UserId = userId,
