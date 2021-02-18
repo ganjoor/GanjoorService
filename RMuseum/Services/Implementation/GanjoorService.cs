@@ -495,9 +495,7 @@ namespace RMuseum.Services.Implementation
                 foreach(GanjoorCommentSummaryViewModel comment in allComments)
                 {
                     comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
-                    comment.HtmlComment = comment.HtmlComment.ToPersianNumbers().ApplyCorrectYeKe();
-                    comment.HtmlComment = _Linkify(comment.HtmlComment);
-                    comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />")}</p>";
+                    comment.HtmlComment = _PrepareCommentHtml(comment.HtmlComment);
                 }
 
                 GanjoorCommentSummaryViewModel[] rootComments = allComments.Where(c => c.InReplyToId == null).ToArray();
@@ -583,6 +581,59 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// delete user own comment
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteMyComment(Guid userId, int commentId)
+        {
+            try
+            {
+                GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == commentId && c.UserId == userId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
+                if(comment == null)
+                {
+                    return new RServiceResult<bool>(false); //not found
+                }
+
+                //if user has got replies, delete them and notify their owners of what happened
+                var replies = await _FindReplies(comment);
+                for(int i = replies.Count - 1; i >= 0; i--)
+                {
+                    if(replies[i].UserId != null)
+                    {
+                        await _notificationService.PushNotification((Guid)replies[i].UserId,
+                                               "حذف پاسخ شما به حاشیه",
+                                               $"پاسخ شما به یکی از حاشیه‌های گنجور به دلیل حذف زنجیرهٔ حاشیه توسط یکی از حاشیه‌گذاران حذف شده است.{Environment.NewLine}" +
+                                               $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
+                                               $"{_PrepareCommentHtml(replies[i].HtmlComment)}"
+                                               );
+                    }
+                    _context.GanjoorComments.Remove(replies[i]);
+                }
+
+                _context.GanjoorComments.Remove(comment);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        private async Task<List<GanjoorComment>> _FindReplies(GanjoorComment comment)
+        {
+            List<GanjoorComment> replies = await _context.GanjoorComments.Where(c => c.InReplyToId == comment.Id).ToListAsync();
+            foreach (GanjoorComment reply in replies)
+            {
+                replies.AddRange(await _FindReplies(reply));
+            }
+            return replies;
+        }
+
 
         /// <summary>
         /// get recent comments
@@ -631,9 +682,7 @@ namespace RMuseum.Services.Implementation
                 foreach (GanjoorCommentFullViewModel comment in paginatedResult.Items)
                 {
                     comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
-                    comment.HtmlComment = comment.HtmlComment.ToPersianNumbers().ApplyCorrectYeKe();
-                    comment.HtmlComment = _Linkify(comment.HtmlComment);
-                    comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />")}</p>";
+                    comment.HtmlComment = _PrepareCommentHtml(comment.HtmlComment);
                 }
 
                 return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>(paginatedResult);
@@ -642,6 +691,15 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
             }
+        }
+
+        private string _PrepareCommentHtml(string comment)
+        {
+            comment = comment.ToPersianNumbers().ApplyCorrectYeKe();
+            comment = _Linkify(comment);
+            comment = $"<p>{comment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />")}</p>";
+
+            return comment;
         }
 
 
@@ -1322,6 +1380,12 @@ namespace RMuseum.Services.Implementation
         protected IAppUserService _appUserService;
 
 
+        /// <summary>
+        /// Messaging service
+        /// </summary>
+        protected readonly IRNotificationService _notificationService;
+
+
 
         /// <summary>
         /// constructor
@@ -1330,11 +1394,13 @@ namespace RMuseum.Services.Implementation
         /// <param name="configuration"></param>
         /// <param name="backgroundTaskQueue"></param>
         /// <param name="appUserService"></param>
-        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService appUserService)
+        /// <param name="notificationService"></param>
+        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService appUserService, IRNotificationService notificationService)
         {
             _context = context;
             _backgroundTaskQueue = backgroundTaskQueue;
             _appUserService = appUserService;
+            _notificationService = notificationService;
             Configuration = configuration;
         }
     }

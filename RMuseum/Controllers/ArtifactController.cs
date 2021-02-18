@@ -1220,7 +1220,7 @@ namespace RMuseum.Controllers
             RServiceResult<bool> res = await _artifactService.DeleteUserBookmark(bookmarkId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
-            return Ok();;
+            return Ok();
         }
 
         /// <summary>
