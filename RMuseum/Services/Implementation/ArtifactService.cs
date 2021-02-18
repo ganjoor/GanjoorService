@@ -2715,6 +2715,8 @@ namespace RMuseum.Services.Implementation
                     entityImageId = item.Images.First().Id;
                 }
 
+                var user = (await _userService.GetUserInformation(userId)).Result;
+
                 GanjoorLinkViewModel viewModel 
                     = new GanjoorLinkViewModel()
                     {
@@ -2729,14 +2731,14 @@ namespace RMuseum.Services.Implementation
                         Synchronized = suggestion.Synchronized,
                         SuggestedBy = new PublicRAppUser()
                         {
-                            Id = suggestion.SuggestedBy.Id,
-                            Username = suggestion.SuggestedBy.UserName,
-                            Email = suggestion.SuggestedBy.Email,
-                            FirstName = suggestion.SuggestedBy.FirstName,
-                            SureName = suggestion.SuggestedBy.SureName,
-                            PhoneNumber = suggestion.SuggestedBy.PhoneNumber,
-                            RImageId = suggestion.SuggestedBy.RImageId,
-                            Status = suggestion.SuggestedBy.Status
+                            Id = user.Id,
+                            Username = user.Username,
+                            Email = user.Email,
+                            FirstName = user.FirstName,
+                            SureName = user.SureName,
+                            PhoneNumber = user.PhoneNumber,
+                            RImageId = user.RImageId,
+                            Status = user.Status
                         }
                     };
                 return new RServiceResult<GanjoorLinkViewModel>(viewModel);
