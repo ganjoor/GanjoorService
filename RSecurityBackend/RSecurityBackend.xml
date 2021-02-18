@@ -1939,6 +1939,11 @@
             use ssl
             </summary>
         </member>
+        <member name="P:RSecurityBackend.Models.Mail.SmptConfig.useTls">
+            <summary>
+            use tls
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Models.Notification.NotificationStatus">
             <summary>
             Notifaction Status

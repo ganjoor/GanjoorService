@@ -30,5 +30,10 @@
         /// use ssl
         /// </summary>
         public bool useSsl { get; set; }
+
+        /// <summary>
+        /// use tls
+        /// </summary>
+        public bool useTls { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
@@ -53,7 +54,8 @@ namespace RSecurityBackend.Services.Implementation
                                 useSsl = bool.Parse($"{Configuration.GetSection("SmptConfig")["UseSsl"]}"),
                                 smtpUsername = $"{ Configuration.GetSection("SmptConfig")["Username"] }",
                                 smtpPassword = $"{Configuration.GetSection("SmptConfig")["Password"]}",
-                                from = $"{ Configuration.GetSection("SmptConfig")["From"] }"
+                                from = $"{ Configuration.GetSection("SmptConfig")["From"] }",
+                                useTls = bool.Parse($"{Configuration.GetSection("SmptConfig")["useTls"]}"),
 
                             };
                 }
@@ -69,9 +71,9 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="subject"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Task SendEmailAsync(string email, string subject, string message)
+        public async Task SendEmailAsync(string email, string subject, string message)
         {
-            return Execute(Options, subject, message, email);
+            await Execute(Options, subject, message, email);
         }
 
         /// <summary>
@@ -82,7 +84,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="message"></param>
         /// <param name="email"></param>
         /// <returns></returns>
-        public Task Execute(SmptConfig options, string subject, string message, string email)
+        public async Task Execute(SmptConfig options, string subject, string message, string email)
         {
             var mimeMessage = new MimeMessage();
             mimeMessage.From.Add(new MailboxAddress(options.from, options.from));
@@ -95,21 +97,19 @@ namespace RSecurityBackend.Services.Implementation
             };
 
 
-            SmtpClient client = new SmtpClient();
+            using (SmtpClient client = new SmtpClient())
+            {
+                // For demo-purposes, accept all SSL certificates (in case the server supports STARTTLS)
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
-            // For demo-purposes, accept all SSL certificates (in case the server supports STARTTLS)
-            client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                await client.ConnectAsync(options.server, options.port, options.useTls ? SecureSocketOptions.StartTls : options.useSsl ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.None );
 
-            client.Connect(options.server, options.port, options.useSsl);
+                // Note: only needed if the SMTP server requires authentication
+                await client.AuthenticateAsync(options.smtpUsername, options.smtpPassword);
 
-            // Note: only needed if the SMTP server requires authentication
-            client.Authenticate(options.smtpUsername, options.smtpPassword);
-
-            client.Send(mimeMessage);
-            client.Disconnect(true);
-            client.Dispose();
-
-            return Task.FromResult(0);
+                await client.SendAsync(mimeMessage);
+                await client.DisconnectAsync(true);
+            }
         }
     }
 }
