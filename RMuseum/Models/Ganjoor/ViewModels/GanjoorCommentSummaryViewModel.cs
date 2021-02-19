@@ -54,6 +54,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
 
         public GanjoorCommentSummaryViewModel[] Replies { get; set; }
 
+        /// <summary>
+        /// this can be used by clients
+        /// </summary>
+        public bool MyComment { get; set; }
+
     }
  
 }

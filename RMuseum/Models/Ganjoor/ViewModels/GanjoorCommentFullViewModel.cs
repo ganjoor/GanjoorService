@@ -39,5 +39,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// poem
         /// </summary>
         public GanjoorPoemSummaryViewModel Poem { get; set; }
+
+
+        /// <summary>
+        /// this can be used by clients
+        /// </summary>
+        public bool MyComment { get; set; }
     }
 }

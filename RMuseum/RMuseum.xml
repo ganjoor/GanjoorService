@@ -4237,6 +4237,11 @@
             poem
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.MyComment">
+            <summary>
+            this can be used by clients
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentPostViewModel">
             <summary>
             new comment model
@@ -4305,6 +4310,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.Replies">
             <summary>
             replies
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.MyComment">
+            <summary>
+            this can be used by clients
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPageCompleteViewModel">
