@@ -499,6 +499,40 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// edit user's own comment
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="comment"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("comment/{id}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> EditMyComment(int id, [FromBody]string comment)
+        {
+
+            Guid userId =
+                 new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId =
+                new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+            RServiceResult<bool> sessionCheckResult = await _appUserService.SessionExists(userId, sessionId);
+            if (!string.IsNullOrEmpty(sessionCheckResult.ExceptionString))
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
+            var res =
+                await _ganjoorService.EditMyComment(userId, id, comment);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (!res.Result)
+                return NotFound();
+            return Ok();
+        }
+
+        /// <summary>
         /// delete user's own comment
         /// </summary>
         /// <param name="id"></param>

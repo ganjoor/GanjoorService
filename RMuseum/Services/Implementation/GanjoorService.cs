@@ -582,6 +582,36 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// update user's own comment
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="commentId"></param>
+        /// <param name="htmlComment"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> EditMyComment(Guid userId, int commentId, string htmlComment)
+        {
+            try
+            {
+                GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == commentId && c.UserId == userId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
+                if (comment == null)
+                {
+                    return new RServiceResult<bool>(false); //not found
+                }
+
+                comment.HtmlComment = htmlComment;
+
+                _context.GanjoorComments.Update(comment);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// delete user own comment
         /// </summary>
         /// <param name="userId"></param>

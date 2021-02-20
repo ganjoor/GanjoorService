@@ -772,6 +772,14 @@
             <param name="comment"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.EditMyComment(System.Int32,System.String)">
+            <summary>
+            edit user's own comment
+            </summary>
+            <param name="id"></param>
+            <param name="comment"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.DeleteMyComment(System.Int32)">
             <summary>
             delete user's own comment
@@ -6062,6 +6070,15 @@
             <param name="inReplyTo"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.EditMyComment(System.Guid,System.Int32,System.String)">
+            <summary>
+            update user's own comment
+            </summary>
+            <param name="userId"></param>
+            <param name="commentId"></param>
+            <param name="htmlComment"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.DeleteMyComment(System.Guid,System.Int32)">
             <summary>
             delete user own comment
@@ -6890,6 +6907,15 @@
             <param name="poemId"></param>
             <param name="content"></param>
             <param name="inReplyTo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.EditMyComment(System.Guid,System.Int32,System.String)">
+            <summary>
+            update user's own comment
+            </summary>
+            <param name="userId"></param>
+            <param name="commentId"></param>
+            <param name="htmlComment"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteMyComment(System.Guid,System.Int32)">

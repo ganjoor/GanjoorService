@@ -171,6 +171,15 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorCommentSummaryViewModel>> NewComment(Guid userId, string ip, int poemId, string content, int? inReplyTo);
 
         /// <summary>
+        /// update user's own comment
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="commentId"></param>
+        /// <param name="htmlComment"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> EditMyComment(Guid userId, int commentId, string htmlComment);
+
+        /// <summary>
         /// delete user own comment
         /// </summary>
         /// <param name="userId"></param>
