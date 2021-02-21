@@ -799,6 +799,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SearchVersesByQuery(System.String,System.Int32)">
+            <summary>
+             Search Verses By query
+            </summary>
+            <param name="query"></param>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
             <summary>
             Ganjoor Service
@@ -4550,6 +4558,31 @@
             root cat id
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorSearchVerseViewModel">
+            <summary>
+            Ganjoor Verse View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorSearchVerseViewModel.Id">
+            <summary>
+            global id, auto generated (missing in Ganjoor Desktop database)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorSearchVerseViewModel.VOrder">
+            <summary>
+            vorder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorSearchVerseViewModel.VersePosition">
+            <summary>
+            position
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorSearchVerseViewModel.Text">
+            <summary>
+            text
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel">
             <summary>
             Ganjoor Verse View Model
@@ -6110,6 +6143,14 @@
             <summary>
             import GanjoorPage entity data from MySql
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SearchVersesByQuery(System.String,System.Int32)">
+            <summary>
+            Search Verses By query
+            </summary>
+            <param name="query"></param>
+            <param name="poetId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">

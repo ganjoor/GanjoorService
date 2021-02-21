@@ -601,6 +601,29 @@ namespace RMuseum.Controllers
             return BadRequest(res.ExceptionString);
         }
 
+        
+          /// <summary>
+        ///  Search Verses By query
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("verse/search")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorSearchVerseViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> SearchVersesByQuery(string query, int poetId = 0)
+        {
+            RServiceResult<GanjoorSearchVerseViewModel[]> res = await _ganjoorService.SearchVersesByQuery(query, poetId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
         /// <summary>
         /// Ganjoor Service
         /// </summary>
