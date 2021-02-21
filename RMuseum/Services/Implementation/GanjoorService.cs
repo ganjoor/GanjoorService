@@ -1386,9 +1386,42 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorPoemCompleteViewModel>(null, exp.ToString());
             }
         }
-
         
+        public async Task<RServiceResult<GanjoorSearchVerseViewModel[]>> SearchVersesByQuery(string query, int poetId = 0)
+        {
+            try
+            {
+                var versesQ = _context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat)
+                    .Where(v => v.Text.Contains(query));
 
+                if (poetId != 0)
+                {
+                    versesQ = versesQ.Where(v => v.Poem.Cat.PoetId == poetId);
+                }
+
+                var verses = await versesQ.Select
+                    (
+                        v => new GanjoorSearchVerseViewModel
+                        {
+                            Id = v.Id,
+                            VOrder = v.VOrder,
+                            VersePosition = v.VersePosition,
+                            Text = v.Text,
+                            PoemId = v.PoemId,
+                            PoetId = v.Poem.Cat.PoetId,
+                            PoemFullTitle = v.Poem.FullTitle,
+                            PoemFullUrl = v.Poem.FullUrl,
+                        }
+                    ).Take(50).ToArrayAsync();
+
+                return new RServiceResult<GanjoorSearchVerseViewModel[]>(verses);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorSearchVerseViewModel[]>(null, exp.ToString());
+            }
+        }
+        
         /// <summary>
         /// Database Contetxt
         /// </summary>

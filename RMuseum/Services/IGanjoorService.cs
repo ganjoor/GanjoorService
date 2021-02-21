@@ -212,5 +212,15 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         RServiceResult<bool> ImportFromMySql();
+
+        /// <summary>
+        /// Search Verses By query
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorSearchVerseViewModel[]>> SearchVersesByQuery(string query, int poetId = 0);
+          
+
     }
 }
