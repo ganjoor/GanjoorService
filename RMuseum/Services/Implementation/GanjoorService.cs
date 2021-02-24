@@ -15,7 +15,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using RMuseum.Models.Artifact;
-using System.Text.RegularExpressions;
 using RSecurityBackend.Services.Implementation;
 using DNTPersianUtils.Core;
 
@@ -439,27 +438,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private string _Linkify(string SearchText)
-        {
-            // this will find links like:
-            // http://www.mysite.com
-            // as well as any links with other characters directly in front of it like:
-            // href="http://www.mysite.com"
-            // you can then use your own logic to determine which links to linkify
-            Regex regx = new Regex(@"\b(((\S+)?)(@|mailto\:|(news|(ht|f)tp(s?))\://)\S+)\b", RegexOptions.IgnoreCase);
-            SearchText = SearchText.Replace("&nbsp;", " ");
-            MatchCollection matches = regx.Matches(SearchText);
-
-            foreach (Match match in matches)
-            {
-                if (match.Value.StartsWith("http"))
-                { // if it starts with anything else then dont linkify -- may already be linked!
-                    SearchText = SearchText.Replace(match.Value, "<a href='" + match.Value + "'>" + match.Value + "</a>");
-                }
-            }
-
-            return SearchText;
-        }
+        
 
         /// <summary>
         /// get poem comments
@@ -495,7 +474,6 @@ namespace RMuseum.Services.Implementation
                 foreach(GanjoorCommentSummaryViewModel comment in allComments)
                 {
                     comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
-                    comment.HtmlComment = _PrepareCommentHtml(comment.HtmlComment);
                 }
 
                 GanjoorCommentSummaryViewModel[] rootComments = allComments.Where(c => c.InReplyToId == null).ToArray();
@@ -556,9 +534,8 @@ namespace RMuseum.Services.Implementation
                 var userRes = await _appUserService.GetUserInformation(userId);
 
                 comment.HtmlComment = comment.HtmlComment.ToPersianNumbers().ApplyCorrectYeKe();
-                comment.HtmlComment = _Linkify(comment.HtmlComment);
-                comment.HtmlComment = $"<p>{comment.HtmlComment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />")}</p>";
 
+               
 
                 return new RServiceResult<GanjoorCommentSummaryViewModel>
                     (
@@ -637,7 +614,7 @@ namespace RMuseum.Services.Implementation
                                                "حذف پاسخ شما به حاشیه",
                                                $"پاسخ شما به یکی از حاشیه‌های گنجور به دلیل حذف زنجیرهٔ حاشیه توسط یکی از حاشیه‌گذاران حذف شده است.{Environment.NewLine}" +
                                                $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
-                                               $"{_PrepareCommentHtml(replies[i].HtmlComment)}"
+                                               $"{replies[i].HtmlComment}"
                                                );
                     }
                     _context.GanjoorComments.Remove(replies[i]);
@@ -712,7 +689,6 @@ namespace RMuseum.Services.Implementation
                 foreach (GanjoorCommentFullViewModel comment in paginatedResult.Items)
                 {
                     comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
-                    comment.HtmlComment = _PrepareCommentHtml(comment.HtmlComment);
                 }
 
                 return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>(paginatedResult);
@@ -723,14 +699,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private string _PrepareCommentHtml(string comment)
-        {
-            comment = comment.ToPersianNumbers().ApplyCorrectYeKe();
-            comment = _Linkify(comment);
-            comment = $"<p>{comment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />")}</p>";
-
-            return comment;
-        }
+       
 
 
         /// <summary>
