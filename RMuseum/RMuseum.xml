@@ -3912,6 +3912,16 @@
             source url slug
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.OldTag">
+            <summary>
+            old collection or book name for Saadi's ghazalyiat (طیبات، خواتیم و ....)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.OldTagPageUrl">
+            <summary>
+            old collection page url e.g /saadi/tayyebat
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">
             <summary>
             Ganjoor Poet
@@ -4446,6 +4456,16 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.SourceUrlSlug">
             <summary>
             source url slug
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.OldTag">
+            <summary>
+            old collection or book name for Saadi's ghazalyiat (طیبات، خواتیم و ....)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.OldTagPageUrl">
+            <summary>
+            old collection page url e.g /saadi/tayyebat
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Category">

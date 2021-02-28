@@ -241,7 +241,7 @@ namespace RMuseum.Services.Implementation
                             {
                                 connection.Open();
                                 using (MySqlDataAdapter src = new MySqlDataAdapter(
-                                    "SELECT meta_key, post_id, meta_value FROM ganja_postmeta WHERE meta_key IN ( 'vazn', 'ravi', 'src', 'srcslug' )",
+                                    "SELECT meta_key, post_id, meta_value FROM ganja_postmeta WHERE meta_key IN ( 'vazn', 'ravi', 'src', 'srcslug', 'oldtag' )",
                                     connection))
                                 {
                                     job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - mysql 2")).Result;
@@ -290,6 +290,27 @@ namespace RMuseum.Services.Implementation
                                                     break;
                                                 case "srcslug":
                                                     poem.SourceUrlSlug = metaValue;
+                                                    break;
+                                                case "oldtag":
+                                                    poem.OldTag = metaValue;
+                                                    switch(poem.OldTag)
+                                                    {
+                                                        case "بدایع":
+                                                            poem.OldTagPageUrl = "/saadi/badaye";
+                                                            break;
+                                                        case "خواتیم":
+                                                            poem.OldTagPageUrl = "/saadi/khavatim";
+                                                            break;
+                                                        case "طیبات":
+                                                            poem.OldTagPageUrl = "/saadi/tayyebat";
+                                                            break;
+                                                        case "غزلیات قدیم":
+                                                            poem.OldTagPageUrl = "/saadi/ghazaliyat-e-ghadim";
+                                                            break;
+                                                        case "ملمعات":
+                                                            poem.OldTagPageUrl = "/saadi/molammaat";
+                                                            break;
+                                                    }
                                                     break;
                                             }
 

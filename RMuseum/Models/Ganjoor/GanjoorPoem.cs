@@ -83,5 +83,15 @@ namespace RMuseum.Models.Ganjoor
         /// source url slug
         /// </summary>
         public string SourceUrlSlug { get; set; }
+
+        /// <summary>
+        /// old collection or book name for Saadi's ghazalyiat (طیبات، خواتیم و ....)
+        /// </summary>
+        public string OldTag { get; set; }
+
+        /// <summary>
+        /// old collection page url e.g /saadi/tayyebat
+        /// </summary>
+        public string OldTagPageUrl { get; set; }
     }
 }

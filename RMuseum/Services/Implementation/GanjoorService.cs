@@ -982,6 +982,8 @@ namespace RMuseum.Services.Implementation
                         RhymeLetters = poem.RhymeLetters,
                         SourceName = poem.SourceName,
                         SourceUrlSlug = poem.SourceUrlSlug,
+                        OldTag = poem.OldTag,
+                        OldTagPageUrl = poem.OldTagPageUrl,
                         Category = cat,
                         Next = next,
                         Previous = previous,
