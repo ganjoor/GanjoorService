@@ -235,6 +235,11 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorComment> GanjoorComments { get; set; }
 
+        /// <summary>
+        /// Ganjoor Reported Comments
+        /// </summary>
+        public DbSet<GanjoorCommentAbuseReport> GanjoorReportedComments { get; set; }
+
 
     }
 }

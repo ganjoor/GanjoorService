@@ -43,6 +43,12 @@ namespace RMuseum.Services.Implementation
 
                         var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", "pre open connection")).Result;
 
+                        if(string.IsNullOrEmpty(Configuration.GetSection("AudioMySqlServer")["ReportedCommentsDatabase"]))
+                        {
+                            await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, "ReportedCommentsDatabase is not set");
+                            return;
+                        }
+
 
                         MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration, context);
                         RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql("MusicCatalogueImportFromMySql", jobProgressServiceEF, job);

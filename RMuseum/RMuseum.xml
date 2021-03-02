@@ -1332,6 +1332,11 @@
             Ganjoor Comments
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorReportedComments">
+            <summary>
+            Ganjoor Reported Comments
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status
@@ -3641,6 +3646,46 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Status">
             <summary>
             publish status
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport">
+            <summary>
+            Comment Abuse Report
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport.GanjoorCommentId">
+            <summary>
+            comment id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport.GanjoorComment">
+            <summary>
+            comment
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport.ReasonCode">
+            <summary>
+            reason code for better grouping: offensive, bogus, other
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport.ReasonText">
+            <summary>
+            some explanotory text provided by reporter
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport.ReportedById">
+            <summary>
+            reported by id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport.ReportedBy">
+            <summary>
+            reported by user
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorMetre">
