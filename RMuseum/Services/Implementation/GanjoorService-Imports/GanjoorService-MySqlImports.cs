@@ -506,10 +506,52 @@ namespace RMuseum.Services.Implementation
 
         }
 
+
+        private async Task<List<GanjoorCommentAbuseReport>> _MySqlImportReportedComments()
+        {
+            List<GanjoorCommentAbuseReport> list = new List<GanjoorCommentAbuseReport>();
+            string connectionString =
+                   $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["ReportedCommentsUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["ReportedCommentsPassword"]};database={Configuration.GetSection("AudioMySqlServer")["ReportedCommentsDatabase"]};charset=utf8;convert zero datetime=True";
+
+            using (MySqlConnection connection = new MySqlConnection
+                            (
+                            connectionString
+                            ))
+            {
+                connection.Open();
+                using (MySqlDataAdapter src = new MySqlDataAdapter(
+                     "SELECT comment_id, reason, reason_text FROM reported_comments ORDER BY comment_id",
+                     connection))
+                {
+                    using (DataTable data = new DataTable())
+                    {
+                        await src.FillAsync(data);
+
+                        foreach (DataRow row in data.Rows)
+                        {
+                            list.Add
+                                (
+                                new GanjoorCommentAbuseReport()
+                                {
+                                    GanjoorCommentId = int.Parse(row["comment_id"].ToString()),
+                                    ReasonCode = row["reason"].ToString(),
+                                    ReasonText = row["reason_text"].ToString()
+                                }
+                                );
+                        }
+                    }
+                }
+            }
+            return list;
+        }
+
         private async Task<RServiceResult<bool>> _ImportCommentsDataFromMySql(string jobName, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
         {
             try
             {
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - processing reported comments")).Result;
+                List<GanjoorCommentAbuseReport> reportedComments = await _MySqlImportReportedComments();
+
                 job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - pre mysql data fetch")).Result;
 
                 string connectionString =
@@ -522,7 +564,7 @@ namespace RMuseum.Services.Implementation
                 {
                     connection.Open();
                     using (MySqlDataAdapter src = new MySqlDataAdapter(
-                        "SELECT comment_post_ID, comment_author, comment_author_email, comment_author_url, comment_author_IP, comment_date, comment_content, comment_approved FROM ganja_comments WHERE comment_type <> 'pingback' ORDER BY comment_ID",
+                        "SELECT comment_ID, comment_post_ID, comment_author, comment_author_email, comment_author_url, comment_author_IP, comment_date, comment_content, comment_approved FROM ganja_comments WHERE comment_type <> 'pingback' ORDER BY comment_ID",
                         connection))
                     {
                         job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - mysql")).Result;
@@ -557,6 +599,27 @@ namespace RMuseum.Services.Implementation
 
 
                                 context.GanjoorComments.Add(comment);
+
+                                int originalCommentId = int.Parse(row["comment_post_ID"].ToString());
+
+                                var complaints = reportedComments.Where(c => c.GanjoorCommentId == originalCommentId).ToList();
+                                if(complaints.Count > 0)
+                                {
+                                    await context.SaveChangesAsync(); //save this comment to make its ID valid
+
+                                    foreach(var complaint in complaints)
+                                    {
+                                        context.GanjoorReportedComments.Add
+                                            (
+                                            new GanjoorCommentAbuseReport()
+                                            {
+                                                GanjoorCommentId = comment.Id,
+                                                ReasonCode = complaint.ReasonCode,
+                                                ReasonText = complaint.ReasonText,
+                                            }
+                                            );
+                                    }
+                                }
 
 
                                 i++;
