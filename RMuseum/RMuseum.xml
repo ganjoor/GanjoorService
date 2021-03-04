@@ -758,9 +758,16 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.Get(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             get recent comments
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetReportedComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get list of reported comments
             </summary>
             <param name="paging"></param>
             <returns></returns>
@@ -4273,6 +4280,31 @@
             poems
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentAbuseReportViewModel">
+            <summary>
+            GanjoorCommentAbuseReport View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentAbuseReportViewModel.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentAbuseReportViewModel.ReasonCode">
+            <summary>
+            reason code for better grouping: offensive, bogus, other
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentAbuseReportViewModel.ReasonText">
+            <summary>
+            some explanotory text provided by reporter
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentAbuseReportViewModel.Comment">
+            <summary>
+            comment
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.Id">
             <summary>
             Id
@@ -6192,6 +6224,13 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetReportedComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            Get list of reported comments
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.Faal">
             <summary>
             get a random poem from hafez
@@ -7035,6 +7074,13 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             get recent comments
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetReportedComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            Get list of reported comments
             </summary>
             <param name="paging"></param>
             <returns></returns>

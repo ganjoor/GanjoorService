@@ -194,6 +194,12 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging);
 
+        /// <summary>
+        /// Get list of reported comments
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items)>> GetReportedComments(PagingParameterModel paging);
 
         /// <summary>
         /// get a random poem from hafez

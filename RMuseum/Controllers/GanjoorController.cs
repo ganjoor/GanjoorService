@@ -452,9 +452,33 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorCommentFullViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> Get([FromQuery] PagingParameterModel paging)
+        public async Task<IActionResult> GetRecentComments([FromQuery] PagingParameterModel paging)
         {
             var comments = await _ganjoorService.GetRecentComments(paging);
+            if (!string.IsNullOrEmpty(comments.ExceptionString))
+            {
+                return BadRequest(comments.ExceptionString);
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
+
+            return Ok(comments.Result.Items);
+        }
+
+        /// <summary>
+        /// get list of reported comments
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("comments/reported")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorCommentFullViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetReportedComments([FromQuery] PagingParameterModel paging)
+        {
+            var comments = await _ganjoorService.GetReportedComments(paging);
             if (!string.IsNullOrEmpty(comments.ExceptionString))
             {
                 return BadRequest(comments.ExceptionString);

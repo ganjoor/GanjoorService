@@ -699,7 +699,69 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-       
+        /// <summary>
+        /// Get list of reported comments
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items)>> GetReportedComments(PagingParameterModel paging)
+        {
+            try
+            {
+                var source =
+                     from report in _context.GanjoorReportedComments
+                     join comment in _context.GanjoorComments.Include(c => c.Poem).Include(c => c.User).Include(c => c.InReplyTo).ThenInclude(r => r.User)
+                     on report.GanjoorCommentId equals comment.Id
+                     orderby report.Id descending
+                     select
+                     new GanjoorCommentAbuseReportViewModel()
+                     {
+                         Id = report.Id,
+                         ReasonCode = report.ReasonCode,
+                         ReasonText = report.ReasonText,
+                         Comment = new GanjoorCommentFullViewModel()
+                         {
+                             Id = comment.Id,
+                             AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.FirstName} {comment.User.SureName}".Trim(),
+                             AuthorUrl = comment.AuthorUrl,
+                             CommentDate = comment.CommentDate,
+                             HtmlComment = comment.HtmlComment,
+                             InReplayTo = comment.InReplyTo == null ? null :
+                            new GanjoorCommentSummaryViewModel()
+                            {
+                                Id = comment.InReplyTo.Id,
+                                AuthorName = comment.InReplyTo.User == null ? comment.InReplyTo.AuthorName : $"{comment.InReplyTo.User.FirstName} {comment.InReplyTo.User.SureName}".Trim(),
+                                AuthorUrl = comment.InReplyTo.AuthorUrl,
+                                CommentDate = comment.InReplyTo.CommentDate,
+                                HtmlComment = comment.InReplyTo.HtmlComment,
+                                PublishStatus = ""
+                            },
+                             Poem = new GanjoorPoemSummaryViewModel()
+                             {
+                                 Id = comment.Poem.Id,
+                                 Title = comment.Poem.FullTitle,
+                                 UrlSlug = comment.Poem.FullUrl,
+                                 Excerpt = ""
+                             }
+                         }
+                     };
+
+                (PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items) paginatedResult =
+                    await QueryablePaginator<GanjoorCommentAbuseReportViewModel>.Paginate(source, paging);
+
+
+                foreach (GanjoorCommentAbuseReportViewModel report in paginatedResult.Items)
+                {
+                    report.Comment.AuthorName = report.Comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
+                }
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+            }
+        }
 
 
         /// <summary>
