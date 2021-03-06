@@ -195,6 +195,14 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging);
 
         /// <summary>
+        /// report a comment
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="report"></param>
+        /// <returns>id of report record</returns>
+        Task<RServiceResult<int>> ReportComment(Guid userId, GanjoorPostReportCommentViewModel report);
+
+        /// <summary>
         /// Get list of reported comments
         /// </summary>
         /// <param name="paging"></param>

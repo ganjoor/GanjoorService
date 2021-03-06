@@ -700,6 +700,33 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// report a comment
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="report"></param>
+        /// <returns>id of report record</returns>
+        public async Task<RServiceResult<int>> ReportComment(Guid userId, GanjoorPostReportCommentViewModel report)
+        {
+            try
+            {
+                GanjoorCommentAbuseReport r = new GanjoorCommentAbuseReport()
+                {
+                    GanjoorCommentId = report.CommentId,
+                    ReportedById = userId,
+                    ReasonCode = report.ReasonCode,
+                    ReasonText = report.ReasonText,
+                };
+                _context.GanjoorReportedComments.Add(r);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<int>(r.GanjoorCommentId);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<int>(0, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Get list of reported comments
         /// </summary>
         /// <param name="paging"></param>

@@ -466,29 +466,7 @@ namespace RMuseum.Controllers
             return Ok(comments.Result.Items);
         }
 
-        /// <summary>
-        /// get list of reported comments
-        /// </summary>
-        /// <param name="paging"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("comments/reported")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorCommentAbuseReportViewModel>))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetReportedComments([FromQuery] PagingParameterModel paging)
-        {
-            var comments = await _ganjoorService.GetReportedComments(paging);
-            if (!string.IsNullOrEmpty(comments.ExceptionString))
-            {
-                return BadRequest(comments.ExceptionString);
-            }
-
-            // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
-
-            return Ok(comments.Result.Items);
-        }
+        
 
         /// <summary>
         /// post new comment
@@ -587,6 +565,61 @@ namespace RMuseum.Controllers
             if (!res.Result)
                 return NotFound();
             return Ok();
+        }
+
+        /// <summary>
+        /// report a comment
+        /// </summary>
+        /// <param name="report"></param>
+        /// <returns>id of reported record</returns>
+        [HttpPost]
+        [Route("comment/report")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> ReportComment([FromBody] GanjoorPostReportCommentViewModel report)
+        {
+            Guid userId =
+                 new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId =
+                new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+            RServiceResult<bool> sessionCheckResult = await _appUserService.SessionExists(userId, sessionId);
+            if (!string.IsNullOrEmpty(sessionCheckResult.ExceptionString))
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
+            RServiceResult<int> res = await _ganjoorService.ReportComment(userId, report);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// get list of reported comments
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("comments/reported")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorCommentAbuseReportViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetReportedComments([FromQuery] PagingParameterModel paging)
+        {
+            var comments = await _ganjoorService.GetReportedComments(paging);
+            if (!string.IsNullOrEmpty(comments.ExceptionString))
+            {
+                return BadRequest(comments.ExceptionString);
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
+
+            return Ok(comments.Result.Items);
         }
 
         /// <summary>
