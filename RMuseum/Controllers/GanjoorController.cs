@@ -394,7 +394,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemMusicTrackViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public async Task<IActionResult> ReviewSong([FromBody]PoemMusicTrackViewModel song)
+        public async Task<IActionResult> ReviewSong([FromBody] PoemMusicTrackViewModel song)
         {
             var res =
                 await _ganjoorService.ReviewSong(song);
@@ -466,7 +466,7 @@ namespace RMuseum.Controllers
             return Ok(comments.Result.Items);
         }
 
-        
+
 
         /// <summary>
         /// post new comment
@@ -512,7 +512,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public async Task<IActionResult> EditMyComment(int id, [FromBody]string comment)
+        public async Task<IActionResult> EditMyComment(int id, [FromBody] string comment)
         {
 
             Guid userId =
@@ -658,27 +658,30 @@ namespace RMuseum.Controllers
             return BadRequest(res.ExceptionString);
         }
 
-        
-          /// <summary>
-        ///  Search Verses By query
+
+        /// <summary>
+        ///  Get Verses By query
         /// </summary>
         /// <param name="query"></param>
         /// <param name="poetId"></param>
+        /// <param name="paging"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("verse/search")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorSearchVerseViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorSearchVerseViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> SearchVersesByQuery(string query, int poetId = 0)
+
+        public async Task<IActionResult> GetVersesByQuery(string query, int poetId, [FromQuery] PagingParameterModel paging)
         {
-            RServiceResult<GanjoorSearchVerseViewModel[]> res = await _ganjoorService.SearchVersesByQuery(query, poetId);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            if (res.Result == null)
-                return NotFound();
-            return Ok(res.Result);
+            var pagedResult = await _ganjoorService.GetVersesByQuery(query, poetId, paging);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.items);
         }
 
         /// <summary>

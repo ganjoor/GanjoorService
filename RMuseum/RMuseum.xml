@@ -813,12 +813,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.SearchVersesByQuery(System.String,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetVersesByQuery(System.String,System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
-             Search Verses By query
+             Get Verses By query
             </summary>
             <param name="query"></param>
             <param name="poetId"></param>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
@@ -6284,12 +6285,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.SearchVersesByQuery(System.String,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetVersesByQuery(System.String,System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
-            Search Verses By query
+            Get Verses By query
             </summary>
             <param name="query"></param>
             <param name="poetId"></param>
+            <param name="pagingParameterModel"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
