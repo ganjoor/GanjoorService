@@ -83,7 +83,7 @@ namespace RMuseum.Services.Implementation
                 var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).FirstOrDefaultAsync();
                 return await GetCatById(cat.Id);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
             }
@@ -99,7 +99,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 // /hafez/ => /hafez :
-                if(url.LastIndexOf('/') == url.Length - 1)
+                if (url.LastIndexOf('/') == url.Length - 1)
                 {
                     url = url.Substring(0, url.Length - 1);
                 }
@@ -150,7 +150,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-               
+
                 var cat = await _context.GanjoorCategories.Include(c => c.Poet).Include(c => c.Parent).Where(c => c.Id == id).FirstOrDefaultAsync();
                 if (cat == null)
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
@@ -183,7 +183,7 @@ namespace RMuseum.Services.Implementation
                                             .Select
                                             (
                                                 c =>
-                                                    new GanjoorCatViewModel() 
+                                                    new GanjoorCatViewModel()
                                                     {
                                                         Id = c.Id,
                                                         Title = c.Title,
@@ -259,7 +259,7 @@ namespace RMuseum.Services.Implementation
                                                 Description = p.Description,
                                                 FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl,
                                                 RootCatId = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().Id
-                                            }) .FirstOrDefaultAsync(),
+                                            }).FirstOrDefaultAsync(),
                        Cat = catViewModel
                    }
                    );
@@ -285,7 +285,7 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<string>(null); //not found
                 return new RServiceResult<string>(dbPage.FullUrl);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<string>(null, exp.ToString());
             }
@@ -301,7 +301,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                if(url.IndexOf('?') != -1)
+                if (url.IndexOf('?') != -1)
                 {
                     url = url.Substring(0, url.IndexOf('?'));
                 }
@@ -348,18 +348,18 @@ namespace RMuseum.Services.Implementation
                     case GanjoorPageType.PoemPage:
                         {
                             var poemRes = await GetPoemById((int)dbPage.PoemId);
-                            if(!string.IsNullOrEmpty(poemRes.ExceptionString))
+                            if (!string.IsNullOrEmpty(poemRes.ExceptionString))
                             {
                                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, poemRes.ExceptionString);
                             }
                             page.Poem = poemRes.Result;
                         }
                         break;
-                    
+
                     case GanjoorPageType.CatPage:
                         {
                             var catRes = await GetCatById((int)dbPage.CatId);
-                            if(!string.IsNullOrEmpty(catRes.ExceptionString))
+                            if (!string.IsNullOrEmpty(catRes.ExceptionString))
                             {
                                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, catRes.ExceptionString);
                             }
@@ -383,14 +383,14 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorPageCompleteViewModel>(page);
 
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, exp.ToString());
             }
         }
 
 
-       
+
         /// <summary>
         /// get poem recitations  (PlainText/HtmlText are intentionally empty)
         /// </summary>
@@ -438,7 +438,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        
+
 
         /// <summary>
         /// get poem comments
@@ -471,14 +471,14 @@ namespace RMuseum.Services.Implementation
 
                 GanjoorCommentSummaryViewModel[] allComments = await source.ToArrayAsync();
 
-                foreach(GanjoorCommentSummaryViewModel comment in allComments)
+                foreach (GanjoorCommentSummaryViewModel comment in allComments)
                 {
                     comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
                 }
 
                 GanjoorCommentSummaryViewModel[] rootComments = allComments.Where(c => c.InReplyToId == null).ToArray();
 
-                foreach(GanjoorCommentSummaryViewModel comment in rootComments)
+                foreach (GanjoorCommentSummaryViewModel comment in rootComments)
                 {
                     _FindReplies(comment, allComments);
                 }
@@ -494,7 +494,7 @@ namespace RMuseum.Services.Implementation
         private void _FindReplies(GanjoorCommentSummaryViewModel comment, GanjoorCommentSummaryViewModel[] allComments)
         {
             comment.Replies = allComments.Where(c => c.InReplyToId == comment.Id).ToArray();
-            foreach(GanjoorCommentSummaryViewModel reply in comment.Replies)
+            foreach (GanjoorCommentSummaryViewModel reply in comment.Replies)
             {
                 _FindReplies(reply, allComments);
             }
@@ -513,7 +513,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                if(string.IsNullOrEmpty(content))
+                if (string.IsNullOrEmpty(content))
                 {
                     return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه خالی است.");
                 }
@@ -535,7 +535,7 @@ namespace RMuseum.Services.Implementation
 
                 comment.HtmlComment = comment.HtmlComment.ToPersianNumbers().ApplyCorrectYeKe();
 
-               
+
 
                 return new RServiceResult<GanjoorCommentSummaryViewModel>
                     (
@@ -599,16 +599,16 @@ namespace RMuseum.Services.Implementation
             try
             {
                 GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == commentId && c.UserId == userId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
-                if(comment == null)
+                if (comment == null)
                 {
                     return new RServiceResult<bool>(false); //not found
                 }
 
                 //if user has got replies, delete them and notify their owners of what happened
                 var replies = await _FindReplies(comment);
-                for(int i = replies.Count - 1; i >= 0; i--)
+                for (int i = replies.Count - 1; i >= 0; i--)
                 {
-                    if(replies[i].UserId != null)
+                    if (replies[i].UserId != null)
                     {
                         await _notificationService.PushNotification((Guid)replies[i].UserId,
                                                "حذف پاسخ شما به حاشیه",
@@ -720,7 +720,7 @@ namespace RMuseum.Services.Implementation
                 await _context.SaveChangesAsync();
                 return new RServiceResult<int>(r.GanjoorCommentId);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<int>(0, exp.ToString());
             }
@@ -840,7 +840,7 @@ namespace RMuseum.Services.Implementation
 
                 museumImages.AddRange(await externalSrc.ToListAsync());
 
-                for(int i=0; i<museumImages.Count; i++)
+                for (int i = 0; i < museumImages.Count; i++)
                 {
                     museumImages[i].ImageOrder = 0;
                 }
@@ -898,7 +898,7 @@ namespace RMuseum.Services.Implementation
                 }
                 return await GetPoemById(poem.Id, catInfo, catPoems, rhymes, recitations, images, songs, comments, verseDetails, navigation);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<GanjoorPoemCompleteViewModel>(null, exp.ToString());
             }
@@ -918,20 +918,20 @@ namespace RMuseum.Services.Implementation
         /// <param name="verseDetails"></param>
         /// <param name="navigation"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false , bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true)
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true)
         {
             try
             {
                 var poem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).SingleOrDefaultAsync();
-                if(poem == null)
+                if (poem == null)
                 {
                     return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
                 }
                 GanjoorPoetCompleteViewModel cat = null;
-                if(catInfo)
+                if (catInfo)
                 {
                     var catRes = await GetCatById(poem.CatId, catPoems);
-                    if(!string.IsNullOrEmpty(catRes.ExceptionString))
+                    if (!string.IsNullOrEmpty(catRes.ExceptionString))
                     {
                         return new RServiceResult<GanjoorPoemCompleteViewModel>(null, catRes.ExceptionString);
                     }
@@ -939,7 +939,7 @@ namespace RMuseum.Services.Implementation
                 }
 
                 GanjoorPoemSummaryViewModel next = null;
-                if(navigation)
+                if (navigation)
                 {
                     int nextId =
                         await _context.GanjoorPoems
@@ -951,7 +951,7 @@ namespace RMuseum.Services.Implementation
                                                        .MinAsync(p => p.Id)
                                                        :
                                                        0;
-                    if(nextId != 0)
+                    if (nextId != 0)
                     {
                         next = await _context.GanjoorPoems.Where(p => p.Id == nextId).Select
                             (
@@ -965,7 +965,7 @@ namespace RMuseum.Services.Implementation
                             }
                             ).SingleAsync();
                     }
-                                                       
+
                 }
 
                 GanjoorPoemSummaryViewModel previous = null;
@@ -999,7 +999,7 @@ namespace RMuseum.Services.Implementation
                 }
 
                 PublicRecitationViewModel[] rc = null;
-                if(recitations)
+                if (recitations)
                 {
                     var rcRes = await GetPoemRecitations(id);
                     if (!string.IsNullOrEmpty(rcRes.ExceptionString))
@@ -1008,7 +1008,7 @@ namespace RMuseum.Services.Implementation
                 }
 
                 PoemRelatedImage[] imgs = null;
-                if(images)
+                if (images)
                 {
                     var imgsRes = await GetPoemImages(id);
                     if (!string.IsNullOrEmpty(imgsRes.ExceptionString))
@@ -1017,7 +1017,7 @@ namespace RMuseum.Services.Implementation
                 }
 
                 GanjoorVerseViewModel[] verses = null;
-                if(verseDetails)
+                if (verseDetails)
                 {
                     verses = await _context.GanjoorVerses
                                                     .Where(v => v.PoemId == id)
@@ -1036,17 +1036,17 @@ namespace RMuseum.Services.Implementation
 
 
                 PoemMusicTrackViewModel[] tracks = null;
-                if(songs)
+                if (songs)
                 {
                     var songsRes = await GetPoemSongs(id, true, PoemMusicTrackType.All);
-                    if(!string.IsNullOrEmpty(songsRes.ExceptionString))
+                    if (!string.IsNullOrEmpty(songsRes.ExceptionString))
                         return new RServiceResult<GanjoorPoemCompleteViewModel>(null, songsRes.ExceptionString);
                     tracks = songsRes.Result;
                 }
 
                 GanjoorCommentSummaryViewModel[] poemComments = null;
 
-                if(comments)
+                if (comments)
                 {
                     var commentsRes = await GetPoemComments(id, Guid.Empty);
                     if (!string.IsNullOrEmpty(commentsRes.ExceptionString))
@@ -1140,7 +1140,7 @@ namespace RMuseum.Services.Implementation
                                                     ).ToArrayAsync()
                     );
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<PoemMusicTrackViewModel[]>(null, exp.ToString());
             }
@@ -1160,7 +1160,7 @@ namespace RMuseum.Services.Implementation
                 song.Rejected = false;
                 song.RejectionCause = "";
                 song.BrokenLink = false;
-                if(song.TrackType == PoemMusicTrackType.Golha)
+                if (song.TrackType == PoemMusicTrackType.Golha)
                 {
                     var golhaTrack = await _context.GolhaTracks.Include(g => g.GolhaProgram).ThenInclude(p => p.GolhaCollection).Where(g => g.Id == song.GolhaTrackId).FirstOrDefaultAsync();
                     if (golhaTrack == null)
@@ -1223,7 +1223,7 @@ namespace RMuseum.Services.Implementation
                 song.Id = sug.Id;
                 return new RServiceResult<PoemMusicTrackViewModel>(song);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<PoemMusicTrackViewModel>(null, exp.ToString());
             }
@@ -1242,7 +1242,7 @@ namespace RMuseum.Services.Implementation
                    .Where(p => p.Approved == false && p.Rejected == false && (suggestedById == Guid.Empty || p.SuggestedById == suggestedById))
                    .CountAsync());
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<int>(0, exp.ToString());
             }
@@ -1262,7 +1262,7 @@ namespace RMuseum.Services.Implementation
                 var song = await _context.GanjoorPoemMusicTracks
                     .Where(p => p.Approved == false && p.Rejected == false && (suggestedById == Guid.Empty || p.SuggestedById == suggestedById))
                     .OrderBy(p => p.Id).Skip(skip).FirstOrDefaultAsync();
-                if(song != null)
+                if (song != null)
                 {
                     return new RServiceResult<PoemMusicTrackViewModel>
                         (
@@ -1315,7 +1315,7 @@ namespace RMuseum.Services.Implementation
                 track.AlbumUrl = song.AlbumUrl;
                 track.TrackName = song.TrackName;
                 track.TrackUrl = song.TrackUrl;
-                if(!track.Approved && song.Approved)
+                if (!track.Approved && song.Approved)
                 {
                     track.ApprovalDate = DateTime.Now;
                 }
@@ -1377,11 +1377,11 @@ namespace RMuseum.Services.Implementation
                 }
 
                 var duplicated = await _context.GanjoorPoemMusicTracks.Where(m => m.PoemId == song.PoemId && m.TrackUrl == song.TrackUrl).FirstOrDefaultAsync();
-                if(duplicated != null)
+                if (duplicated != null)
                 {
                     return new RServiceResult<PoemMusicTrackViewModel>(null, "duplicated song url for this poem");
                 }
-                
+
 
                 PoemMusicTrack track = new PoemMusicTrack();
 
@@ -1446,12 +1446,12 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorPoemCompleteViewModel>(null, exp.ToString());
             }
         }
-        
-        public async Task<RServiceResult<GanjoorSearchVerseViewModel[]>> SearchVersesByQuery(string query, int poetId = 0)
+
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[] items)>> GetVersesByQuery(string query, int poetId, PagingParameterModel paging)
         {
             try
             {
-                var versesQ = _context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat)
+                var versesQ = _context.GanjoorVerses.AsNoTracking().Include(v => v.Poem).ThenInclude(p => p.Cat)
                     .Where(v => v.Text.Contains(query));
 
                 if (poetId != 0)
@@ -1459,8 +1459,7 @@ namespace RMuseum.Services.Implementation
                     versesQ = versesQ.Where(v => v.Poem.Cat.PoetId == poetId);
                 }
 
-                var verses = await versesQ.Select
-                    (
+                var source = versesQ.Select(
                         v => new GanjoorSearchVerseViewModel
                         {
                             Id = v.Id,
@@ -1472,18 +1471,22 @@ namespace RMuseum.Services.Implementation
                             PoemFullTitle = v.Poem.FullTitle,
                             PoemFullUrl = v.Poem.FullUrl,
                         }
-                    ).Take(50).ToArrayAsync();
+                    );
 
-                return new RServiceResult<GanjoorSearchVerseViewModel[]>(verses);
+                (PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[] Items) paginatedResult = 
+                    await QueryablePaginator<GanjoorSearchVerseViewModel>.Paginate(source, paging);
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[])>(paginatedResult);
             }
             catch (Exception exp)
             {
-                return new RServiceResult<GanjoorSearchVerseViewModel[]>(null, exp.ToString());
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+
             }
         }
-        
+
         /// <summary>
-        /// Database Contetxt
+        /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;
 

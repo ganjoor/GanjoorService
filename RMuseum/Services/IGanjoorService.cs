@@ -228,13 +228,13 @@ namespace RMuseum.Services
         RServiceResult<bool> ImportFromMySql();
 
         /// <summary>
-        /// Search Verses By query
+        /// Get Verses By query
         /// </summary>
         /// <param name="query"></param>
         /// <param name="poetId"></param>
+        /// <param name="pagingParameterModel"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorSearchVerseViewModel[]>> SearchVersesByQuery(string query, int poetId = 0);
-          
-
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[] items)>> GetVersesByQuery(string query, int poetId,
+            PagingParameterModel pagingParameterModel);
     }
 }
