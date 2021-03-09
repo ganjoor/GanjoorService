@@ -180,6 +180,14 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> EditMyComment(Guid userId, int commentId, string htmlComment);
 
         /// <summary>
+        /// delete a reported or abusive comment
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteModerateComment(int commentId, string reason);
+
+        /// <summary>
         /// delete user own comment
         /// </summary>
         /// <param name="userId"></param>

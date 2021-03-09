@@ -598,6 +598,7 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+
         /// <summary>
         /// get list of reported comments
         /// </summary>
@@ -620,6 +621,30 @@ namespace RMuseum.Controllers
             HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
 
             return Ok(comments.Result.Items);
+        }
+
+        /// <summary>
+        /// delete other users comment comment
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("comment/moderate")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> DeleteModerateComment(int id, string reason)
+        {
+
+            var res =
+                await _ganjoorService.DeleteModerateComment(id, reason);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (!res.Result)
+                return NotFound();
+            return Ok();
         }
 
         /// <summary>

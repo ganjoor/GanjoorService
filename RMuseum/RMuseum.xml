@@ -801,6 +801,14 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeleteModerateComment(System.Int32,System.String)">
+            <summary>
+            delete other users comment comment
+            </summary>
+            <param name="id"></param>
+            <param name="reason"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ImportLocalSQLiteDb">
             <summary>
             imports data from ganjoor SQLite database
@@ -6237,6 +6245,14 @@
             <param name="htmlComment"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeleteModerateComment(System.Int32,System.String)">
+            <summary>
+            delete a reported or abusive comment
+            </summary>
+            <param name="commentId"></param>
+            <param name="reason"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.DeleteMyComment(System.Guid,System.Int32)">
             <summary>
             delete user own comment
@@ -7098,6 +7114,14 @@
             <param name="userId"></param>
             <param name="commentId"></param>
             <param name="htmlComment"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteModerateComment(System.Int32,System.String)">
+            <summary>
+            delete a reported or abusive comment
+            </summary>
+            <param name="commentId"></param>
+            <param name="reason"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteMyComment(System.Guid,System.Int32)">

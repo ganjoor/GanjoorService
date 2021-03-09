@@ -589,6 +589,62 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// delete a reported or abusive comment
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteModerateComment(int commentId, string reason)
+        {
+            try
+            {
+                GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == commentId).SingleOrDefaultAsync();
+                if (comment == null)
+                {
+                    return new RServiceResult<bool>(false); //not found
+                }
+
+                if (comment.UserId != null)
+                {
+                    await _notificationService.PushNotification((Guid)comment.UserId,
+                                           "حذف حاشیهٔ شما",
+                                           $"حاشیهٔ شما به دلیل ناسازگاری با قوانین حاشیه‌گذاری گنجور و طبق گزارشات دیگر کاربران حذف شده است..{Environment.NewLine}" +
+                                           $"علت ارائه شده برای حذف: {Environment.NewLine}" +
+                                           $"{reason} {Environment.NewLine}" +
+                                           $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
+                                           $"{comment.HtmlComment}"
+                                           );
+                }
+
+                //if user has got replies, delete them and notify their owners of what happened
+                var replies = await _FindReplies(comment);
+                for (int i = replies.Count - 1; i >= 0; i--)
+                {
+                    if (replies[i].UserId != null)
+                    {
+                        await _notificationService.PushNotification((Guid)replies[i].UserId,
+                                               "حذف پاسخ شما به حاشیه",
+                                               $"پاسخ شما به یکی از حاشیه‌های گنجور به دلیل حذف زنجیرهٔ حاشیه توسط یکی از حاشیه‌گذاران حذف شده است.{Environment.NewLine}" +
+                                               $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
+                                               $"{replies[i].HtmlComment}"
+                                               );
+                    }
+                    _context.GanjoorComments.Remove(replies[i]);
+                }
+
+                _context.GanjoorComments.Remove(comment);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+
+        /// <summary>
         /// delete user own comment
         /// </summary>
         /// <param name="userId"></param>
