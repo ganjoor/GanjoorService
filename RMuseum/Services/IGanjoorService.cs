@@ -211,6 +211,13 @@ namespace RMuseum.Services
         Task<RServiceResult<int>> ReportComment(Guid userId, GanjoorPostReportCommentViewModel report);
 
         /// <summary>
+        /// delete a report
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteReport(int id);
+
+        /// <summary>
         /// Get list of reported comments
         /// </summary>
         /// <param name="paging"></param>

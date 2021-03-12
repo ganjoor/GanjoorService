@@ -794,6 +794,13 @@
             <param name="report"></param>
             <returns>id of reported record</returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeleteReport(System.Int32)">
+            <summary>
+            delete a report (without deleting corresponding comment)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetReportedComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             get list of reported comments
@@ -6276,6 +6283,13 @@
             <param name="report"></param>
             <returns>id of report record</returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeleteReport(System.Int32)">
+            <summary>
+            delete a report
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetReportedComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             Get list of reported comments
@@ -7146,6 +7160,13 @@
             <param name="userId"></param>
             <param name="report"></param>
             <returns>id of report record</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteReport(System.Int32)">
+            <summary>
+            delete a report
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetReportedComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>

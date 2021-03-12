@@ -784,6 +784,30 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// delete a report
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteReport(int id)
+        {
+            try
+            {
+                GanjoorCommentAbuseReport report = await _context.GanjoorReportedComments.Where(r => r.Id == id).SingleOrDefaultAsync();
+                if(report == null)
+                {
+                    return new RServiceResult<bool>(false);
+                }
+                _context.GanjoorReportedComments.Remove(report);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Get list of reported comments
         /// </summary>
         /// <param name="paging"></param>
