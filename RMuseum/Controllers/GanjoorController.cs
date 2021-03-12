@@ -629,13 +629,13 @@ namespace RMuseum.Controllers
         /// <param name="id"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        [HttpDelete]
-        [Route("comment/moderate")]
+        [HttpPost]
+        [Route("comment/moderate/{id}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public async Task<IActionResult> DeleteModerateComment(int id, string reason)
+        public async Task<IActionResult> DeleteModerateComment(int id, [FromBody]string reason)
         {
 
             var res =

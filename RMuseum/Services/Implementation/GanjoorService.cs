@@ -606,11 +606,12 @@ namespace RMuseum.Services.Implementation
 
                 if (comment.UserId != null)
                 {
+                    reason = string.IsNullOrEmpty(reason) ? "" : $"علت ارائه شده برای حذف یا متن گزارش کاربر شاکی: {Environment.NewLine}" +
+                                           $"{reason} {Environment.NewLine}";
                     await _notificationService.PushNotification((Guid)comment.UserId,
                                            "حذف حاشیهٔ شما",
                                            $"حاشیهٔ شما به دلیل ناسازگاری با قوانین حاشیه‌گذاری گنجور و طبق گزارشات دیگر کاربران حذف شده است..{Environment.NewLine}" +
-                                           $"علت ارائه شده برای حذف: {Environment.NewLine}" +
-                                           $"{reason} {Environment.NewLine}" +
+                                           $"{reason}" +
                                            $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
                                            $"{comment.HtmlComment}"
                                            );
