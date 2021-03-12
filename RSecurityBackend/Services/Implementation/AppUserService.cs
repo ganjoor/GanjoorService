@@ -35,7 +35,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="loginViewModel"></param>
         /// <param name="clientIPAddress"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<LoggedOnUserModel>> Login(LoginViewModel loginViewModel, string clientIPAddress)
+        public virtual async Task<RServiceResult<LoggedOnUserModel>> Login(LoginViewModel loginViewModel, string clientIPAddress)
         {
             try
             {
@@ -145,7 +145,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="sessionId"></param>
         /// <param name="clientIPAddress"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<LoggedOnUserModel>> ReLogin(Guid sessionId, string clientIPAddress)
+        public virtual async Task<RServiceResult<LoggedOnUserModel>> ReLogin(Guid sessionId, string clientIPAddress)
         {
             try
             {
@@ -224,7 +224,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="userId"></param>
         /// <param name="roleName"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> AddUserToRole(Guid userId, string roleName)
+        public virtual async Task<RServiceResult<bool>> AddUserToRole(Guid userId, string roleName)
         {
             try
             {
@@ -265,7 +265,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="userId"></param>
         /// <param name="sessionId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> Logout(Guid userId, Guid sessionId)
+        public virtual async Task<RServiceResult<bool>> Logout(Guid userId, Guid sessionId)
         {
             try
             {
@@ -293,7 +293,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="userId"></param>
         /// <param name="sessionId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> SessionExists(Guid userId, Guid sessionId)
+        public virtual async Task<RServiceResult<bool>> SessionExists(Guid userId, Guid sessionId)
         {
             try
             {
@@ -319,7 +319,7 @@ namespace RSecurityBackend.Services.Implementation
         /// </remarks>
         /// <param name="userId"></param>        
         /// <returns></returns>
-        public async Task<RServiceResult<PublicRAppUser>> GetUserInformation(Guid userId)
+        public virtual async Task<RServiceResult<PublicRAppUser>> GetUserInformation(Guid userId)
         {
           
             try
@@ -351,7 +351,7 @@ namespace RSecurityBackend.Services.Implementation
         /// all users informations
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<PublicRAppUser[]>> GetAllUsersInformation()
+        public virtual async Task<RServiceResult<PublicRAppUser[]>> GetAllUsersInformation()
         {
             try
             {
@@ -389,7 +389,7 @@ namespace RSecurityBackend.Services.Implementation
         /// </summary>
         /// <param name="userId">if null is passed returns all sessions</param>
         /// <returns></returns>
-        public async Task<RServiceResult<PublicRUserSession[]>> GetUserSessions(Guid? userId)
+        public virtual async Task<RServiceResult<PublicRUserSession[]>> GetUserSessions(Guid? userId)
         {
             try
             {
@@ -440,7 +440,7 @@ namespace RSecurityBackend.Services.Implementation
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> IsAdmin(Guid userId)
+        public virtual async Task<RServiceResult<bool>> IsAdmin(Guid userId)
         {
             try
             {
@@ -465,7 +465,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="userId"></param>
         /// <param name="roleNames"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> IsInRoles(Guid userId, string[] roleNames)
+        public virtual async Task<RServiceResult<bool>> IsInRoles(Guid userId, string[] roleNames)
         {
             try
             {
@@ -496,7 +496,7 @@ namespace RSecurityBackend.Services.Implementation
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<IList<string>>> GetUserRoles(Guid userId)
+        public virtual async Task<RServiceResult<IList<string>>> GetUserRoles(Guid userId)
         {         
 
             try
@@ -522,7 +522,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="id">user id</param>
         /// <param name="role"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> RemoveFromRole(Guid id, string role)
+        public virtual async Task<RServiceResult<bool>> RemoveFromRole(Guid id, string role)
         {
             try
             {
@@ -552,7 +552,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="id">user id</param>
         /// <param name="role"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> AddToRole(Guid id, string role)
+        public virtual async Task<RServiceResult<bool>> AddToRole(Guid id, string role)
         {
             try
             {
@@ -581,7 +581,7 @@ namespace RSecurityBackend.Services.Implementation
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<SecurableItem[]>> GetUserSecurableItemsStatus(Guid userId)
+        public virtual async Task<RServiceResult<SecurableItem[]>> GetUserSecurableItemsStatus(Guid userId)
         {
             try
             {
@@ -623,7 +623,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="securableItemShortName"></param>
         /// <param name="operationShortName"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> HasPermission(Guid userId, string securableItemShortName, string operationShortName)
+        public virtual async Task<RServiceResult<bool>> HasPermission(Guid userId, string securableItemShortName, string operationShortName)
         {
             try
             {
@@ -661,7 +661,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="securableItemShortName"></param>
         /// <param name="operationShortName"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PublicRAppUser[]>> GetUsersHavingPermission(string securableItemShortName, string operationShortName)
+        public virtual async Task<RServiceResult<PublicRAppUser[]>> GetUsersHavingPermission(string securableItemShortName, string operationShortName)
         {
             try
             {
@@ -796,7 +796,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="userId"></param>
         /// <param name="updateUserInfo"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ModifyUser(Guid userId, RegisterRAppUser updateUserInfo)
+        public virtual async Task<RServiceResult<bool>> ModifyUser(Guid userId, RegisterRAppUser updateUserInfo)
         {
             try
             {
@@ -891,7 +891,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="oldPassword"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ChangePassword(Guid userId, string oldPassword, string newPassword)
+        public virtual async Task<RServiceResult<bool>> ChangePassword(Guid userId, string oldPassword, string newPassword)
         {
             RAppUser appUser = await _userManager.FindByIdAsync(userId.ToString());
 
@@ -917,7 +917,7 @@ namespace RSecurityBackend.Services.Implementation
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>true if succeeds</returns>
-        public async Task<RServiceResult<bool>> DeleteUser(Guid userId)
+        public virtual async Task<RServiceResult<bool>> DeleteUser(Guid userId)
         {
             try
             {
@@ -945,7 +945,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="userId"></param>
         /// <param name="files"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<Guid?>> SetUserImage(Guid userId, IFormFileCollection files)
+        public virtual async Task<RServiceResult<Guid?>> SetUserImage(Guid userId, IFormFileCollection files)
         {
             try
             {
@@ -1042,7 +1042,7 @@ namespace RSecurityBackend.Services.Implementation
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<RImage>> GetUserImage(Guid userId)
+        public virtual async Task<RServiceResult<RImage>> GetUserImage(Guid userId)
         {
             try
             {
@@ -1070,7 +1070,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="clientAppName"></param>
         /// <param name="langauge"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<RVerifyQueueItem>> SignUp(string email, string clientIPAddress, string clientAppName, string langauge)
+        public virtual async Task<RServiceResult<RVerifyQueueItem>> SignUp(string email, string clientIPAddress, string clientAppName, string langauge)
         {
             try
             {
@@ -1136,7 +1136,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="verifyQueueType"></param>
         /// <param name="secret"></param>
         /// <returns>associated email</returns>
-        public async Task<RServiceResult<string>> RetrieveEmailFromQueueSecret(RVerifyQueueType verifyQueueType, string secret)
+        public virtual async Task<RServiceResult<string>> RetrieveEmailFromQueueSecret(RVerifyQueueType verifyQueueType, string secret)
         {
             try
             {
@@ -1164,7 +1164,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="firstName"></param>
         /// <param name="sureName"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> FinalizeSignUp(string email, string secret, string password, string firstName, string sureName)
+        public virtual async Task<RServiceResult<bool>> FinalizeSignUp(string email, string secret, string password, string firstName, string sureName)
         {
             try
             {
@@ -1237,7 +1237,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="clientAppName"></param>
         /// <param name="langauge"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<RVerifyQueueItem>> ForgotPassword(string email, string clientIPAddress, string clientAppName, string langauge)
+        public virtual async Task<RServiceResult<RVerifyQueueItem>> ForgotPassword(string email, string clientIPAddress, string clientAppName, string langauge)
         {
             try
             {
@@ -1299,7 +1299,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="password"></param>
         /// <param name="clientIPAddress"></param>       
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ResetPassword(string email, string secret, string password, string clientIPAddress)
+        public virtual async Task<RServiceResult<bool>> ResetPassword(string email, string secret, string password, string clientIPAddress)
         {
             try
             {
@@ -1366,7 +1366,7 @@ namespace RSecurityBackend.Services.Implementation
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PublicRAppUser>> FindUserByEmail(string email)
+        public virtual async Task<RServiceResult<PublicRAppUser>> FindUserByEmail(string email)
         {
             try
             {
