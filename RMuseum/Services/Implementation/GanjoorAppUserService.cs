@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
-using RSecurityBackend.DbContext;
 using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
@@ -49,7 +48,7 @@ namespace RMuseum.Services.Implementation
                 try
                 {
                     RMuseumDbContext context = _context as RMuseumDbContext;
-                    var comments = await context.GanjoorComments.Where(c => c.AuthorEmail.Equals(email, StringComparison.InvariantCultureIgnoreCase)).ToListAsync();
+                    var comments = await context.GanjoorComments.Where(c => c.AuthorEmail == email.ToLower()).ToListAsync();
                     if (comments.Count > 0)
                     {
                         var user = (await FindUserByEmail(email)).Result;

@@ -586,7 +586,7 @@ namespace RMuseum.Services.Implementation
                                     PoemId = int.Parse(row["comment_post_ID"].ToString()),
                                     AuthorName = row["comment_author"].ToString(),
                                     AuthorEmail = row["comment_author_email"].ToString(),
-                                    AuthorUrl = row["comment_author_url"].ToString(),
+                                    AuthorUrl = row["comment_author_url"].ToString().ToLower(),
                                     AuthorIpAddress = row["comment_author_IP"].ToString(),
                                     CommentDate = (DateTime)row["comment_date"],
                                     HtmlComment = _PrepareCommentHtml(row["comment_content"].ToString()),
@@ -642,7 +642,7 @@ namespace RMuseum.Services.Implementation
                 job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - assigning comments to users")).Result;
                 foreach (var user in await context.Users.ToListAsync())
                 {
-                    foreach(var comment in await context.GanjoorComments.Where(u => u.AuthorEmail == user.Email).ToListAsync())
+                    foreach(var comment in await context.GanjoorComments.Where(u => u.AuthorEmail == user.Email.ToLower()).ToListAsync())
                     {
                         comment.UserId = user.Id;
                         context.GanjoorComments.Update(comment);
