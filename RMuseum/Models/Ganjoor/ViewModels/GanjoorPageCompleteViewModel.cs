@@ -53,5 +53,15 @@
         /// Second Poet
         /// </summary>
         public GanjoorPoetViewModel SecondPoet { get; set; }
+
+        /// <summary>
+        /// next normal page
+        /// </summary>
+        public GanjoorPageSummaryViewModel Next { get; set; }
+
+        /// <summary>
+        /// previous normal page
+        /// </summary>
+        public GanjoorPageSummaryViewModel Previous { get; set; }
     }
 }

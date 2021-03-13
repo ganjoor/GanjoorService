@@ -376,6 +376,36 @@ namespace RMuseum.Services.Implementation
                                     return new RServiceResult<GanjoorPageCompleteViewModel>(null, poetRes.ExceptionString);
                                 }
                                 page.PoetOrCat = poetRes.Result;
+
+                                var pre = await _context.GanjoorPages.Where(p => p.GanjoorPageType == page.GanjoorPageType && p.ParentId == dbPage.ParentId && p.PoetId == dbPage.PoetId &&
+                                    ((p.PageOrder < dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id < dbPage.Id)))
+                                    .OrderByDescending(p => p.PageOrder)
+                                    .ThenByDescending(p => p.Id)
+                                    .FirstOrDefaultAsync();
+                                if(pre != null)
+                                {
+                                    page.Previous = new GanjoorPageSummaryViewModel()
+                                    {
+                                        Id = pre.Id,
+                                        Title = pre.Title,
+                                        FullUrl = pre.FullUrl
+                                    };
+                                }
+
+                                var next = await _context.GanjoorPages.Where(p => p.GanjoorPageType == page.GanjoorPageType &&  p.ParentId == dbPage.ParentId && p.PoetId == dbPage.PoetId &&
+                                    ((p.PageOrder > dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id > dbPage.Id)))
+                                    .OrderBy(p => p.PageOrder)
+                                    .ThenBy(p => p.Id)
+                                    .FirstOrDefaultAsync();
+                                if (next != null)
+                                {
+                                    page.Next = new GanjoorPageSummaryViewModel()
+                                    {
+                                        Id = next.Id,
+                                        Title = next.Title,
+                                        FullUrl = next.FullUrl
+                                    };
+                                }
                             }
                         }
                         break;
