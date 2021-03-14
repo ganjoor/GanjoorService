@@ -1338,7 +1338,7 @@
             Email
             </summary>
             <example>
-            mohammadi.hr@gmail.com
+            admin@ganjoor.net
             </example>
         </member>
         <member name="P:RSecurityBackend.Models.Auth.ViewModels.ResetPasswordViewModel.Secret">
@@ -1382,7 +1382,7 @@
             Email
             </summary>
             <example>
-            mohammadi.hr@gmail.com
+            admin@ganjoor.net
             </example>
         </member>
         <member name="P:RSecurityBackend.Models.Auth.ViewModels.UnverifiedSignUpViewModel.ClientAppName">
@@ -1426,7 +1426,7 @@
             Email
             </summary>
             <example>
-            mohammadi.hr@gmail.com
+            admin@ganjoor.net
             </example>
         </member>
         <member name="P:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel.Secret">

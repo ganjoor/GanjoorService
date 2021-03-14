@@ -9,7 +9,7 @@
         /// Email
         /// </summary>
         /// <example>
-        /// mohammadi.hr@gmail.com
+        /// admin@ganjoor.net
         /// </example>
         public string Email { get; set; }
 
