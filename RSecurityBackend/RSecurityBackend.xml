@@ -2707,13 +2707,6 @@
             <param name="sessionId"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.RegenerateToken(System.String)">
-            <summary>
-            Renew Expired token
-            </summary>
-            <param name="token"></param>
-            <returns></returns>
-        </member>
         <member name="M:RSecurityBackend.Services.Implementation.AppUserService.ExtractTokenInfo(System.String,System.String@,System.Guid@,System.Guid@)">
             <summary>
             Extract Information From Token

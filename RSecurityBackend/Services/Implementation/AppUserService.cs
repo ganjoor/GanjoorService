@@ -967,59 +967,45 @@ namespace RSecurityBackend.Services.Implementation
 
 
                     int nImageWidth = 192;
-                    using (Stream stream = file.OpenReadStream())
+                    using Stream stream = file.OpenReadStream();
+                    using Image img = Image.FromStream(stream);
+                    if (img.Width > nImageWidth)
                     {
-                        using (Image img = Image.FromStream(stream))
+                        using Bitmap bmpPhase1 = new Bitmap(nImageWidth, nImageWidth);
+                        using (Graphics g = Graphics.FromImage(bmpPhase1))
                         {
-                            if (img.Width > nImageWidth)
-                            {
-                                using (Bitmap bmpPhase1 = new Bitmap(nImageWidth, nImageWidth))
-                                {
-                                    using (Graphics g = Graphics.FromImage(bmpPhase1))
-                                    {
-                                        g.DrawImage(img, new Rectangle(0, 0, nImageWidth, img.Height * nImageWidth / img.Height));
-                                    }
-
-                                    using (Brush brush = new TextureBrush(bmpPhase1))
-                                    {
-                                        using (Bitmap bmpPhase2 = new Bitmap(nImageWidth, nImageWidth))
-                                        {
-                                            using (Graphics g = Graphics.FromImage(bmpPhase2))
-                                            {
-                                                g.FillEllipse(brush, new Rectangle(0, 0, nImageWidth, nImageWidth));
-                                            }
-                                            bmpPhase2.MakeTransparent();
-
-                                            using (MemoryStream ms = new MemoryStream())
-                                            {
-                                                bmpPhase2.Save(ms, ImageFormat.Png);
-
-                                                ms.Position = 0;
-                                                RServiceResult<RImage> image = await _imageFileService.Add(null, ms, file.FileName, "UserProfiles");
-
-                                                if (!string.IsNullOrEmpty(image.ExceptionString))
-                                                {
-                                                    return new RServiceResult<Guid?>(null, image.ExceptionString);
-                                                }
-                                                user.RImage = image.Result;
-
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                RServiceResult<RImage> image = await _imageFileService.Add(null, stream, file.FileName, "UserProfiles");
-
-                                if (!string.IsNullOrEmpty(image.ExceptionString))
-                                {
-                                    return new RServiceResult<Guid?>(null, image.ExceptionString);
-                                }
-                                user.RImage = image.Result;
-                            }
+                            g.DrawImage(img, new Rectangle(0, 0, nImageWidth, img.Height * nImageWidth / img.Height));
                         }
 
+                        using Brush brush = new TextureBrush(bmpPhase1);
+                        using Bitmap bmpPhase2 = new Bitmap(nImageWidth, nImageWidth);
+                        using (Graphics g = Graphics.FromImage(bmpPhase2))
+                        {
+                            g.FillEllipse(brush, new Rectangle(0, 0, nImageWidth, nImageWidth));
+                        }
+                        bmpPhase2.MakeTransparent();
+
+                        using MemoryStream ms = new MemoryStream();
+                        bmpPhase2.Save(ms, ImageFormat.Png);
+
+                        ms.Position = 0;
+                        RServiceResult<RImage> image = await _imageFileService.Add(null, ms, file.FileName, "UserProfiles");
+
+                        if (!string.IsNullOrEmpty(image.ExceptionString))
+                        {
+                            return new RServiceResult<Guid?>(null, image.ExceptionString);
+                        }
+                        user.RImage = image.Result;
+                    }
+                    else
+                    {
+                        RServiceResult<RImage> image = await _imageFileService.Add(null, stream, file.FileName, "UserProfiles");
+
+                        if (!string.IsNullOrEmpty(image.ExceptionString))
+                        {
+                            return new RServiceResult<Guid?>(null, image.ExceptionString);
+                        }
+                        user.RImage = image.Result;
                     }
                 }               
 
@@ -1534,30 +1520,6 @@ namespace RSecurityBackend.Services.Implementation
 
         }
 
-        /// <summary>
-        /// Renew Expired token
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        private async Task<RServiceResult<string>> RegenerateToken(string token)
-        {
-            try
-            {
-                var principal = GetPrincipalFromExpiredToken(token);
-
-                //check refreshToken here to see if it is valid or not
-                //check user here, if is not valid return BadRequest();
-                ExtractTokenInfo(token, out string username, out Guid userId, out Guid sessionId);
-
-                return await GenerateToken(username, userId, sessionId);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<string>(null, exp.ToString());
-            }
-
-        }
-
 
         /// <summary>
         /// Extract Information From Token
@@ -1598,10 +1560,8 @@ namespace RSecurityBackend.Services.Implementation
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken securityToken;
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
-            var jwtSecurityToken = securityToken as JwtSecurityToken;
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+            if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException("Invalid token");
 
             return principal;
