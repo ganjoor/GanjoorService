@@ -230,33 +230,7 @@ namespace RMuseum.Services.Implementationa
 
                 if (recitation.ReviewStatus == AudioReviewStatus.Approved)
                 {
-                    recitation.AudioSyncStatus = AudioSyncStatus.Deleted;
-                    _context.Recitations.Update(recitation);
-                    await _context.SaveChangesAsync();
-
-                    _backgroundTaskQueue.QueueBackgroundWorkItem
-                  (
-                  async token =>
-                  {
-                      using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
-                      {
-                          RecitationPublishingTracker tracker = new RecitationPublishingTracker()
-                          {
-                              PoemNarrationId = recitation.Id,
-                              StartDate = DateTime.Now,
-                              XmlFileCopied = false,
-                              Mp3FileCopied = false,
-                              FirstDbUpdated = false,
-                              SecondDbUpdated = false,
-                          };
-                          context.RecitationPublishingTrackers.Add(tracker);
-                          await context.SaveChangesAsync();
-
-                          await _DeleteNarrationFromRemote(recitation, tracker, context);
-                      }
-
-                      
-                  });
+                    await _DeleteNarration(recitation, _context);
                 }
                 else
                 {
@@ -1241,7 +1215,7 @@ namespace RMuseum.Services.Implementationa
 
         }
 
-        private async Task _DeleteNarrationFromRemote(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context)
+        private async Task _DeleteNarration(Recitation narration, RMuseumDbContext context)
         {
 
             try
@@ -1251,11 +1225,6 @@ namespace RMuseum.Services.Implementationa
                 Guid userId = narration.OwnerId;
 
                 await _FinalizeDelete(context, narration);
-
-                tracker.Finished = true;
-                tracker.FinishDate = DateTime.Now;
-                context.RecitationPublishingTrackers.Update(tracker);
-                await context.SaveChangesAsync();
 
                 await new RNotificationService(context).PushNotification
                 (
@@ -1269,11 +1238,6 @@ namespace RMuseum.Services.Implementationa
             }
             catch (Exception exp)
             {
-                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
-                tracker.LastException = exp.ToString();
-                context.RecitationPublishingTrackers.Update(tracker);
-                await context.SaveChangesAsync();
-
                 await new RNotificationService(context).PushNotification
                (
                    narration.OwnerId,
@@ -1292,7 +1256,8 @@ namespace RMuseum.Services.Implementationa
                                         (
                                             (Guid)moderator.Id,
                                             "خطا در حذف نهایی خوانش ارسالی",
-                                            $"لطفا صف انتظار را بررسی کنید.{ Environment.NewLine}"
+                                            $"لطفا صف انتظار را بررسی کنید.{ Environment.NewLine}" +
+                                            $"خطا: {exp.ToString()}"
                                         );
                     }
                 }
