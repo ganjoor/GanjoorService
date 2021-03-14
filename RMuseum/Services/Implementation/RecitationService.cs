@@ -450,29 +450,7 @@ namespace RMuseum.Services.Implementationa
                     _context.Recitations.Update(narration);
                     await _context.SaveChangesAsync();
 
-                    _backgroundTaskQueue.QueueBackgroundWorkItem
-                   (
-                   async token =>
-                   {
-                       using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
-                          {
-                           RecitationPublishingTracker tracker = new RecitationPublishingTracker()
-                           {
-                               PoemNarrationId = narration.Id,
-                               StartDate = DateTime.Now,
-                               XmlFileCopied = false,
-                               Mp3FileCopied = false,
-                               FirstDbUpdated = false,
-                               SecondDbUpdated = false,
-                           };
-                           context.RecitationPublishingTrackers.Add(tracker);
-                           await context.SaveChangesAsync();
-
-                           await _UpdateRemoteRecitations(narration, tracker, context, true);
-                            }
-
-
-                   });
+                    await _UpdateRecitation(narration, true);
 
                 }
                 return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
@@ -1225,67 +1203,24 @@ namespace RMuseum.Services.Implementationa
             }
 
         }
-        private async Task _UpdateRemoteRecitations(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context, bool notify)
+        private async Task _UpdateRecitation(Recitation narration, bool notify)
         {
 
-            try
+            narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
+            _context.Recitations.Update(narration);
+            await _context.SaveChangesAsync();
+
+
+            if (notify)
             {
-                narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
-                context.Recitations.Update(narration);
-                await context.SaveChangesAsync();
-
-                tracker.Finished = true;
-                tracker.FinishDate = DateTime.Now;
-                context.RecitationPublishingTrackers.Update(tracker);
-                await context.SaveChangesAsync();
-
-                if(notify)
-                {
-                    await new RNotificationService(context).PushNotification
-                (
-                    narration.OwnerId,
-                    "به‌روزآوری نهایی اطلاعات خوانش ارسالی",
-                    $"اطلاعات خوانش ارسالی {narration.AudioTitle} به‌روز شد.{Environment.NewLine}" +
-                    $"لطفا توجه فرمایید که فایل‌های صوتی معمولاً روی مرورگرها کَش می‌شوند. جهت اطمینان از جایگزینی فایل می‌بایست با مرورگری که تا به حال شعر را با آن ندیده‌اید بررسی بفرمایید.{Environment.NewLine}" +
-                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
-                );
-                }
-                
-
-            }
-            catch (Exception exp)
-            {
-                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
-                tracker.LastException = exp.ToString();
-                context.RecitationPublishingTrackers.Update(tracker);
-                await context.SaveChangesAsync();
-
-                if(notify)
-                {
-                    await new RNotificationService(context).PushNotification
-                   (
-                       narration.OwnerId,
-                       "خطا در به‌روزآوری نهایی اطلاعات خوانش ارسالی",
-                       $"به‌روزآوری اطلاعات خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
-                       $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
-                   );
-                }
-               
-
-                //I mean admins!
-                var importers = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ImportOperationShortName);
-                if (string.IsNullOrEmpty(importers.ExceptionString)) //if not, do nothing!
-                {
-                    foreach (var moderator in importers.Result)
-                    {
-                        await new RNotificationService(_context).PushNotification
-                                        (
-                                            (Guid)moderator.Id,
-                                            "خطا در به روزآوری نهایی خوانش ارسالی",
-                                            $"لطفا صف انتظار را بررسی کنید.{ Environment.NewLine}"
-                                        );
-                    }
-                }
+                await new RNotificationService(_context).PushNotification
+            (
+                narration.OwnerId,
+                "به‌روزآوری نهایی اطلاعات خوانش ارسالی",
+                $"اطلاعات خوانش ارسالی {narration.AudioTitle} به‌روز شد.{Environment.NewLine}" +
+                $"لطفا توجه فرمایید که فایل‌های صوتی معمولاً روی مرورگرها کَش می‌شوند. جهت اطمینان از جایگزینی فایل می‌بایست با مرورگری که تا به حال شعر را با آن ندیده‌اید بررسی بفرمایید.{Environment.NewLine}" +
+                $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+            );
             }
 
         }
@@ -1870,40 +1805,15 @@ namespace RMuseum.Services.Implementationa
                         other.AudioSyncStatus = AudioSyncStatus.MetadataChanged;
                         _context.Recitations.Update(other);
 
-                        RecitationPublishingTracker tracker = new RecitationPublishingTracker()
-                        {
-                            PoemNarrationId = other.Id,
-                            StartDate = DateTime.Now,
-                            XmlFileCopied = false,
-                            Mp3FileCopied = false,
-                            FirstDbUpdated = false,
-                            SecondDbUpdated = false,
-                        };
-                        _context.RecitationPublishingTrackers.Add(tracker);
-
-                        await _context.SaveChangesAsync();
-
-                        await _UpdateRemoteRecitations(other, tracker, _context, false /* owner of this recitation did nothing to expect any notifications*/);
+                        
+                        await _UpdateRecitation(other, false /* owner of this recitation did nothing to expect any notifications*/);
                     }
 
                     recitation.AudioOrder = 1;
                     recitation.AudioSyncStatus = AudioSyncStatus.MetadataChanged;
                     _context.Recitations.Update(recitation);
-
-                    RecitationPublishingTracker trackerMain = new RecitationPublishingTracker()
-                    {
-                        PoemNarrationId = recitation.Id,
-                        StartDate = DateTime.Now,
-                        XmlFileCopied = false,
-                        Mp3FileCopied = false,
-                        FirstDbUpdated = false,
-                        SecondDbUpdated = false,
-                    };
-                    _context.RecitationPublishingTrackers.Add(trackerMain);
-
-                    await _context.SaveChangesAsync();
-
-                    await _UpdateRemoteRecitations(recitation, trackerMain, _context, true);
+                    
+                    await _UpdateRecitation(recitation, true);
                 }
                 
 
