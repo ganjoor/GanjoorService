@@ -22,7 +22,6 @@
     </PackageReference>
     <PackageReference Include="MySql.Data" Version="8.0.21" />
     <PackageReference Include="NAudio" Version="1.10.0" />
-    <PackageReference Include="SSH.NET" Version="2020.0.0-beta1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="5.0.2" />

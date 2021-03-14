@@ -177,11 +177,6 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, UploadedItemViewModel[] Items)>> GetUploads(PagingParameterModel paging, Guid userId);
 
         /// <summary>
-        /// retry publish unpublished narrations
-        /// </summary>
-        Task RetryPublish();
-
-        /// <summary>
         /// publishing tracker data
         /// </summary>
         /// <param name="paging"></param>

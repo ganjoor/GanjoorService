@@ -1069,12 +1069,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.RetryPublish">
-            <summary>
-            retry publish unpublished narrations
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetUserNarrationProfiles(System.String)">
             <summary>
             Get User Profiles
@@ -7704,11 +7698,6 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.RetryPublish">
-            <summary>
-            retry publish unpublished narrations
-            </summary>
-        </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.GetUploadSession(System.Guid)">
             <summary>
             Get Upload Session (including files)
@@ -8105,11 +8094,6 @@
             <param name="paging"></param>
             <param name="userId">if userId is empty all user uploads would be returned</param>
             <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IRecitationService.RetryPublish">
-            <summary>
-            retry publish unpublished narrations
-            </summary>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.GetPublishingQueueStatus(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,System.Guid)">
             <summary>

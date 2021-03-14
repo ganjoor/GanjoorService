@@ -563,32 +563,6 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// retry publish unpublished narrations
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("retrypublish")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.PublishOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> RetryPublish()
-        {
-            try
-            {
-                if (!_audioService.UploadEnabled)
-                    return BadRequest("این قابلیت به دلیل تغییرات فنی سایت موقتاً غیرفعال است.");
-
-                await _audioService.RetryPublish();
-                return Ok();
-            }
-            catch(Exception exp)
-            {
-                return BadRequest(exp.ToString());
-            }     
-            
-        }
-
-        /// <summary>
         /// Get User Profiles
         /// </summary>
         /// <param name="artistName"></param>
