@@ -235,7 +235,7 @@ namespace RMuseum.Services.Implementationa
 
                     await _FinalizeDelete(recitation);
 
-                    await new RNotificationService(_context).PushNotification
+                    await _notificationService.PushNotification
                     (
                         userId,
                         "حذف نهایی خوانش ارسالی",
@@ -432,7 +432,7 @@ namespace RMuseum.Services.Implementationa
                     {
                         foreach(var moderator in moderators.Result)
                         {
-                            await new RNotificationService(_context).PushNotification
+                            await _notificationService.PushNotification
                                             (
                                                 (Guid)moderator.Id ,
                                                 "درخواست بررسی خوانش",
@@ -874,27 +874,7 @@ namespace RMuseum.Services.Implementationa
 
                                                         await context.SaveChangesAsync();
 
-                                                        _backgroundTaskQueue.QueueBackgroundWorkItem
-                                                            (
-                                                            async token =>
-                                                            {
-                                                            using (RMuseumDbContext publishcontext = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
-                                                            {
-                                                                    RecitationPublishingTracker tracker = new RecitationPublishingTracker()
-                                                                    {
-                                                                        PoemNarrationId = existing.Id,
-                                                                        StartDate = DateTime.Now,
-                                                                        XmlFileCopied = false,
-                                                                        Mp3FileCopied = false,
-                                                                        FirstDbUpdated = false,
-                                                                        SecondDbUpdated = false,
-                                                                    };
-                                                                    publishcontext.RecitationPublishingTrackers.Add(tracker);
-                                                                    await publishcontext.SaveChangesAsync();
-
-                                                                    await _PublishNarration(existing, tracker, publishcontext);
-                                                            }
-                                                            });
+                                                        await _PublishNarration(existing);
 
                                                     }
                                                 }
@@ -1081,31 +1061,8 @@ namespace RMuseum.Services.Implementationa
                 }
                 else //approved:
                 {
-                    _backgroundTaskQueue.QueueBackgroundWorkItem
-                    (
-                    async token =>
-                    {
-                        using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
-                        {
-                            RecitationPublishingTracker tracker = new RecitationPublishingTracker()
-                            {
-                                PoemNarrationId = narration.Id,
-                                StartDate = DateTime.Now,
-                                XmlFileCopied = false,
-                                Mp3FileCopied = false,
-                                FirstDbUpdated = false,
-                                SecondDbUpdated = false,
-                            };
-                            context.RecitationPublishingTrackers.Add(tracker);
-                            await context.SaveChangesAsync();
-
-                            await _PublishNarration(narration, tracker, context);
-                        }
-                    });
+                    await _PublishNarration(narration);
                 }
-
-                
-
 
                 return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
             }
@@ -1115,92 +1072,21 @@ namespace RMuseum.Services.Implementationa
             }
         }
 
-       
-        #region Remote Update
-        private async Task _PublishNarration(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context)
+
+        #region Old Remote Update Codes (now contains segments of reusable codes)
+        private async Task _PublishNarration(Recitation narration)
         {
-            
-            try
-            {
-                bool replace = narration.AudioSyncStatus == AudioSyncStatus.SoundOrXMLFilesChanged;
+            narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
+            _context.Recitations.Update(narration);
+            await _context.SaveChangesAsync();
 
-
-
-                tracker.XmlFileCopied = true;
-                context.RecitationPublishingTrackers.Update(tracker);
-                await context.SaveChangesAsync();
-
-                tracker.Mp3FileCopied = true;
-                context.RecitationPublishingTrackers.Update(tracker);
-                await context.SaveChangesAsync();
-
-
-                if (!replace)
-                {
-                    tracker.FirstDbUpdated = true;
-                    context.RecitationPublishingTrackers.Update(tracker);
-                    await context.SaveChangesAsync();
-
-                    tracker.SecondDbUpdated = true;
-                    context.RecitationPublishingTrackers.Update(tracker);
-                    await context.SaveChangesAsync();
-                }
-
-
-
-                narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
-                context.Recitations.Update(narration);
-                await context.SaveChangesAsync();
-
-
-
-                
-
-                tracker.Finished = true;
-                tracker.FinishDate = DateTime.Now;
-                context.RecitationPublishingTrackers.Update(tracker);
-                await context.SaveChangesAsync();
-
-                await new RNotificationService(context).PushNotification
-                (
-                    narration.OwnerId,
-                    "انتشار نهایی خوانش ارسالی",
-                    $"خوانش ارسالی {narration.AudioTitle} منتشر شد.{Environment.NewLine}" +
-                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
-                );
-
-
-            }
-            catch (Exception exp)
-            {
-                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
-                tracker.LastException = exp.ToString();
-                context.RecitationPublishingTrackers.Update(tracker);
-                await context.SaveChangesAsync();
-
-                await new RNotificationService(context).PushNotification
-               (
-                   narration.OwnerId,
-                   "خطا در انتشار نهایی خوانش ارسالی",
-                   $"انتشار خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
-                   $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
-               );
-
-                //I mean admins!
-                var importers = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ImportOperationShortName);
-                if (string.IsNullOrEmpty(importers.ExceptionString)) //if not, do nothing!
-                {
-                    foreach (var moderator in importers.Result)
-                    {
-                        await new RNotificationService(_context).PushNotification
-                                        (
-                                            (Guid)moderator.Id,
-                                            "خطا در انتشار نهایی خوانش ارسالی",
-                                            $"لطفا صف انتظار را بررسی کنید.{ Environment.NewLine}"
-                                        );
-                    }
-                }
-            }
+            await _notificationService.PushNotification
+            (
+                narration.OwnerId,
+                "انتشار نهایی خوانش ارسالی",
+                $"خوانش ارسالی {narration.AudioTitle} منتشر شد.{Environment.NewLine}" +
+                $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+            );
 
         }
         private async Task _UpdateRecitation(Recitation narration, bool notify)
@@ -1213,7 +1099,7 @@ namespace RMuseum.Services.Implementationa
 
             if (notify)
             {
-                await new RNotificationService(_context).PushNotification
+                await _notificationService.PushNotification
             (
                 narration.OwnerId,
                 "به‌روزآوری نهایی اطلاعات خوانش ارسالی",
@@ -1770,7 +1656,7 @@ namespace RMuseum.Services.Implementationa
 
                 var user = await _userService.GetUserInformation(currentOwenerId);
 
-                await new RNotificationService(_context).PushNotification
+                await _notificationService.PushNotification
                                             (
                                                 newOwnerId,
                                                 "انتقال مالکیت خوانش‌ها به شما",
