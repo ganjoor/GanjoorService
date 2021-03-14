@@ -862,13 +862,17 @@ namespace RMuseum.Services.Implementationa
                                                     existing.Mp3FileCheckSum = audio.FileCheckSum;
                                                     existing.Mp3SizeInBytes = mp3fileSize;
                                                     existing.FileLastUpdated = session.UploadEndTime;
-                                                    existing.AudioSyncStatus = AudioSyncStatus.SoundOrXMLFilesChanged;
-
+                                                    existing.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
                                                     context.Recitations.Update(existing);
-
                                                     await context.SaveChangesAsync();
 
-                                                    await PublishNarration(existing);
+                                                    await new RNotificationService(context).PushNotification
+                                                    (
+                                                        existing.OwnerId,
+                                                        "انتشار نهایی خوانش ارسالی",
+                                                        $"خوانش ارسالی {existing.AudioTitle} منتشر شد.{Environment.NewLine}" +
+                                                        $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={existing.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                                                    );
 
                                                 }
                                             }
@@ -1054,7 +1058,18 @@ namespace RMuseum.Services.Implementationa
                 }
                 else //approved:
                 {
-                    await PublishNarration(narration);
+
+                    narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
+                    _context.Recitations.Update(narration);
+                    await _context.SaveChangesAsync();
+
+                    await _notificationService.PushNotification
+                    (
+                        narration.OwnerId,
+                        "انتشار نهایی خوانش ارسالی",
+                        $"خوانش ارسالی {narration.AudioTitle} منتشر شد.{Environment.NewLine}" +
+                        $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                    );
                 }
 
                 return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
@@ -1067,21 +1082,6 @@ namespace RMuseum.Services.Implementationa
 
 
         #region Old Remote Update Codes (now contains segments of reusable codes)
-        private async Task PublishNarration(Recitation narration)
-        {
-            narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
-            _context.Recitations.Update(narration);
-            await _context.SaveChangesAsync();
-
-            await _notificationService.PushNotification
-            (
-                narration.OwnerId,
-                "انتشار نهایی خوانش ارسالی",
-                $"خوانش ارسالی {narration.AudioTitle} منتشر شد.{Environment.NewLine}" +
-                $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
-            );
-
-        }
         private async Task UpdateRecitation(Recitation narration, bool notify)
         {
 
