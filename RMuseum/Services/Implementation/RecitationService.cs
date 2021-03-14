@@ -230,11 +230,22 @@ namespace RMuseum.Services.Implementationa
 
                 if (recitation.ReviewStatus == AudioReviewStatus.Approved)
                 {
-                    await _DeleteNarration(recitation, _context);
+                    string audioTitle = recitation.AudioTitle;
+                    int GanjoorPostId = recitation.GanjoorPostId;
+
+                    await _FinalizeDelete(recitation);
+
+                    await new RNotificationService(_context).PushNotification
+                    (
+                        userId,
+                        "حذف نهایی خوانش ارسالی",
+                        $"خوانش ارسالی {audioTitle} حذف شد.{Environment.NewLine}" +
+                        $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                    );
                 }
                 else
                 {
-                    await _FinalizeDelete(_context, recitation);
+                    await _FinalizeDelete(recitation);
                 }
 
 
@@ -246,15 +257,15 @@ namespace RMuseum.Services.Implementationa
             }
         }
 
-        private async Task<string> _FinalizeDelete(RMuseumDbContext context, Recitation recitation)
+        private async Task<string> _FinalizeDelete(Recitation recitation)
         {
             try
             {
                 bool rejected = recitation.ReviewStatus == AudioReviewStatus.Rejected;
                 string mp3 = recitation.LocalMp3FilePath;
                 string xml = recitation.LocalXmlFilePath;
-                context.Recitations.Remove(recitation);
-                await context.SaveChangesAsync();
+                _context.Recitations.Remove(recitation);
+                await _context.SaveChangesAsync();
                 
                 if(!rejected)
                 {
@@ -1214,57 +1225,6 @@ namespace RMuseum.Services.Implementationa
             }
 
         }
-
-        private async Task _DeleteNarration(Recitation narration, RMuseumDbContext context)
-        {
-
-            try
-            {
-                string audioTitle = narration.AudioTitle;
-                int GanjoorPostId = narration.GanjoorPostId;
-                Guid userId = narration.OwnerId;
-
-                await _FinalizeDelete(context, narration);
-
-                await new RNotificationService(context).PushNotification
-                (
-                    userId,
-                    "حذف نهایی خوانش ارسالی",
-                    $"خوانش ارسالی {audioTitle} حذف شد.{Environment.NewLine}" +
-                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
-                );
-
-
-            }
-            catch (Exception exp)
-            {
-                await new RNotificationService(context).PushNotification
-               (
-                   narration.OwnerId,
-                   "خطا در حذف نهایی خوانش ارسالی",
-                   $"حذف نهایی خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
-                   $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
-               );
-
-                //I mean admins!
-                var importers = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ImportOperationShortName);
-                if (string.IsNullOrEmpty(importers.ExceptionString)) //if not, do nothing!
-                {
-                    foreach (var moderator in importers.Result)
-                    {
-                        await new RNotificationService(_context).PushNotification
-                                        (
-                                            (Guid)moderator.Id,
-                                            "خطا در حذف نهایی خوانش ارسالی",
-                                            $"لطفا صف انتظار را بررسی کنید.{ Environment.NewLine}" +
-                                            $"خطا: {exp.ToString()}"
-                                        );
-                    }
-                }
-            }
-
-        }
-
         private async Task _UpdateRemoteRecitations(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context, bool notify)
         {
 
