@@ -126,7 +126,10 @@ namespace RSecurityBackend.Services.Implementation
                             SureName = appUser.SureName,
                             PhoneNumber = appUser.PhoneNumber,
                             RImageId = appUser.RImageId,
-                            Status = appUser.Status
+                            Status = appUser.Status,
+                            NickName = appUser.NickName,
+                            Website = appUser.Website,
+                            Bio = appUser.Bio
                         },
                         Token = userToken.Result,
                         SecurableItem = securableItems.Result
@@ -205,7 +208,10 @@ namespace RSecurityBackend.Services.Implementation
                             SureName = appUser.SureName,
                             PhoneNumber = appUser.PhoneNumber,
                             RImageId = appUser.RImageId,
-                            Status = appUser.Status
+                            Status = appUser.Status,
+                            NickName = appUser.NickName,
+                            Website = appUser.Website,
+                            Bio = appUser.Bio
                         },
                         Token = userToken.Result,
                         SecurableItem = securableItems.Result
@@ -336,7 +342,10 @@ namespace RSecurityBackend.Services.Implementation
                         SureName = appUser.SureName,
                         PhoneNumber = appUser.PhoneNumber,
                         RImageId = appUser.RImageId,
-                        Status = appUser.Status
+                        Status = appUser.Status,
+                        NickName = appUser.NickName,
+                        Website = appUser.Website,
+                        Bio = appUser.Bio
                     });              
             }
             catch (Exception exp)
@@ -373,7 +382,10 @@ namespace RSecurityBackend.Services.Implementation
                             SureName = appUser.SureName,
                             PhoneNumber = appUser.PhoneNumber,
                             RImageId = appUser.RImageId,
-                            Status = appUser.Status
+                            Status = appUser.Status,
+                            NickName = appUser.NickName,
+                            Website = appUser.Website,
+                            Bio = appUser.Bio
                         });
                 }
                 return new RServiceResult<PublicRAppUser[]>(lstPublicUsersInfo.ToArray());
@@ -416,7 +428,10 @@ namespace RSecurityBackend.Services.Implementation
                                 SureName = rUserSession.RAppUser.SureName,
                                 PhoneNumber = rUserSession.RAppUser.PhoneNumber,
                                 RImageId = rUserSession.RAppUser.RImageId,
-                                Status = rUserSession.RAppUser.Status
+                                Status = rUserSession.RAppUser.Status,
+                                NickName = rUserSession.RAppUser.NickName,
+                                Website = rUserSession.RAppUser.Website,
+                                Bio = rUserSession.RAppUser.Bio
                             },
                             ClientAppName = rUserSession.ClientAppName,
                             ClientIPAddress = rUserSession.ClientIPAddress,
@@ -693,7 +708,10 @@ namespace RSecurityBackend.Services.Implementation
                                     SureName = appUser.SureName,
                                     PhoneNumber = appUser.PhoneNumber,
                                     RImageId = appUser.RImageId,
-                                    Status = appUser.Status
+                                    Status = appUser.Status,
+                                    NickName = appUser.NickName,
+                                    Website = appUser.Website,
+                                    Bio = appUser.Bio
                                 });
                         }
                     }
@@ -1369,7 +1387,10 @@ namespace RSecurityBackend.Services.Implementation
                         SureName = appUser.SureName,
                         PhoneNumber = appUser.PhoneNumber,
                         RImageId = appUser.RImageId,
-                        Status = appUser.Status
+                        Status = appUser.Status,
+                        NickName = appUser.NickName,
+                        Website = appUser.Website,
+                        Bio = appUser.Bio
                     });
             }
             catch(Exception exp)

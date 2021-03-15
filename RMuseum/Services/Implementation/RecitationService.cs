@@ -1162,7 +1162,10 @@ namespace RMuseum.Services.Implementationa
                                 SureName = p.User.SureName,
                                 PhoneNumber = p.User.PhoneNumber,
                                 RImageId = p.User.RImageId,
-                                Status = p.User.Status
+                                Status = p.User.Status,
+                                NickName = p.User.NickName,
+                                Website = p.User.Website,
+                                Bio = p.User.Bio
                             },
                             UserId = p.UserId,
                             Name = p.Name,
@@ -1196,7 +1199,10 @@ namespace RMuseum.Services.Implementationa
                                 SureName = p.User.SureName,
                                 PhoneNumber = p.User.PhoneNumber,
                                 RImageId = p.User.RImageId,
-                                Status = p.User.Status
+                                Status = p.User.Status,
+                                NickName = p.User.NickName,
+                                Website = p.User.Website,
+                                Bio = p.User.Bio
                             },
                             UserId = p.UserId,
                             Name = p.Name,
@@ -1245,7 +1251,10 @@ namespace RMuseum.Services.Implementationa
                                 SureName = defProfile.User.SureName,
                                 PhoneNumber = defProfile.User.PhoneNumber,
                                 RImageId = defProfile.User.RImageId,
-                                Status = defProfile.User.Status
+                                Status = defProfile.User.Status,
+                                NickName = defProfile.User.NickName,
+                                Website = defProfile.User.Website,
+                                Bio = defProfile.User.Bio
                             },
                          UserId = defProfile.UserId,
                          Name = defProfile.Name,
@@ -1402,7 +1411,10 @@ namespace RMuseum.Services.Implementationa
                                 SureName = p.User.SureName,
                                 PhoneNumber = p.User.PhoneNumber,
                                 RImageId = p.User.RImageId,
-                                Status = p.User.Status
+                                Status = p.User.Status,
+                                NickName = p.User.NickName,
+                                Website = p.User.Website,
+                                Bio = p.User.Bio
                             },
                         UserId = p.UserId,
                         Name = p.Name,
@@ -1482,7 +1494,10 @@ namespace RMuseum.Services.Implementationa
                                 SureName = p.User.SureName,
                                 PhoneNumber = p.User.PhoneNumber,
                                 RImageId = p.User.RImageId,
-                                Status = p.User.Status
+                                Status = p.User.Status,
+                                NickName = p.User.NickName,
+                                Website = p.User.Website,
+                                Bio = p.User.Bio
                             },
                         UserId = p.UserId,
                         Name = p.Name,

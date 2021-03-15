@@ -2306,7 +2306,11 @@ namespace RMuseum.Services.Implementation
                         SureName = appUser.SureName,
                         PhoneNumber = appUser.PhoneNumber,
                         RImageId = appUser.RImageId,
-                        Status = appUser.Status
+                        Status = appUser.Status,
+                        NickName = appUser.NickName,
+                        Website = appUser.Website,
+                        Bio = appUser.Bio
+
                     };
 
                 RUserNoteViewModel viewModel
@@ -2425,7 +2429,10 @@ namespace RMuseum.Services.Implementation
                         SureName = appUser.SureName,
                         PhoneNumber = appUser.PhoneNumber,
                         RImageId = appUser.RImageId,
-                        Status = appUser.Status
+                        Status = appUser.Status,
+                        NickName = appUser.NickName,
+                        Website = appUser.Website,
+                        Bio = appUser.Bio
                     };
 
                 RUserNoteViewModel viewModel
@@ -2598,7 +2605,10 @@ namespace RMuseum.Services.Implementation
                             SureName = appUser.SureName,
                             PhoneNumber = appUser.PhoneNumber,
                             RImageId = appUser.RImageId,
-                            Status = appUser.Status
+                            Status = appUser.Status,
+                            NickName = appUser.NickName,
+                            Website = appUser.Website,
+                            Bio = appUser.Bio
                         };
 
                     RUserNoteViewModel model
@@ -2738,7 +2748,10 @@ namespace RMuseum.Services.Implementation
                             SureName = user.SureName,
                             PhoneNumber = user.PhoneNumber,
                             RImageId = user.RImageId,
-                            Status = user.Status
+                            Status = user.Status,
+                            NickName = user.NickName,
+                            Website = user.Website,
+                            Bio = user.Bio
                         }
                     };
                 return new RServiceResult<GanjoorLinkViewModel>(viewModel);
@@ -2792,7 +2805,10 @@ namespace RMuseum.Services.Implementation
                                 SureName = link.SuggestedBy.SureName,
                                 PhoneNumber = link.SuggestedBy.PhoneNumber,
                                 RImageId = link.SuggestedBy.RImageId,
-                                Status = link.SuggestedBy.Status
+                                Status = link.SuggestedBy.Status,
+                                NickName = link.SuggestedBy.NickName,
+                                Website = link.SuggestedBy.Website,
+                                Bio = link.SuggestedBy.Bio
                             }
                         }
                         );

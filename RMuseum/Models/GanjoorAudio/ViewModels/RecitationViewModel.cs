@@ -2,7 +2,6 @@
 using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.ViewModels;
 using System;
-using System.Collections.Generic;
 
 namespace RMuseum.Models.GanjoorAudio.ViewModels
 {
@@ -36,7 +35,10 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
                 SureName = appUser.SureName,
                 PhoneNumber = appUser.PhoneNumber,
                 RImageId = appUser.RImageId,
-                Status = appUser.Status
+                Status = appUser.Status,
+                NickName = appUser.NickName,
+                Website = appUser.Website,
+                Bio = appUser.Bio
             };
             GanjoorAudioId = src.GanjoorAudioId;
             GanjoorPostId = src.GanjoorPostId;
