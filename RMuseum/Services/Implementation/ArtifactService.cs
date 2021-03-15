@@ -1991,7 +1991,7 @@ namespace RMuseum.Services.Implementation
                         await _notificationService.PushNotification
                             (
                             referenceNote.RAppUserId,
-                            $"پاسخگویی {userInfo.Result.FirstName} {userInfo.Result.SureName} به یادداشت شما دربارهٔ {artificat.Name}",
+                            $"پاسخگویی {userInfo.Result.NickName} به یادداشت شما دربارهٔ {artificat.Name}",
                             $"برای مشاهدهٔ پاسخ ارائه شده <a href=\"/items/{artificat.FriendlyUrl}#{note.Id}\">اینجا</a> را ببینید.<br />" +
                             $"پاسخ داده شده: <br />" +
                             $"<blockquote cite=\"/item/{artificat.FriendlyUrl}#{note.Id}\">{note.HtmlContent}</blockquote><br />" +
@@ -2007,7 +2007,7 @@ namespace RMuseum.Services.Implementation
                     {
                         Id = note.Id,
                         RAppUserId = note.RAppUserId,
-                        UserName = userInfo.Result.FirstName + " " + userInfo.Result.SureName,
+                        UserName = userInfo.Result.NickName,
                         RUserImageId = userInfo.Result.RImageId,
                         Modified = note.Modified,
                         NoteType = note.NoteType,
@@ -2076,7 +2076,7 @@ namespace RMuseum.Services.Implementation
                         await _notificationService.PushNotification
                             (
                             referenceNote.RAppUserId,
-                            $"پاسخگویی {userInfo.Result.FirstName} {userInfo.Result.SureName} به یادداشت شما دربارهٔ {artificat.Name} « {item.Name}",
+                            $"پاسخگویی {userInfo.Result.NickName} به یادداشت شما دربارهٔ {artificat.Name} « {item.Name}",
                             $"برای مشاهدهٔ پاسخ ارائه شده <a href=\"/items/{artificat.FriendlyUrl}/{item.FriendlyUrl}#{note.Id}\">اینجا</a> را ببینید.<br />" +
                             $"پاسخ داده شده: <br />" +
                             $"<blockquote cite=\"/item/{artificat.FriendlyUrl}/{item.FriendlyUrl}#{note.Id}\">{note.HtmlContent}</blockquote><br />" +
@@ -2093,7 +2093,7 @@ namespace RMuseum.Services.Implementation
                     {
                         Id = note.Id,
                         RAppUserId = note.RAppUserId,
-                        UserName = userInfo.Result.FirstName + " " + userInfo.Result.SureName,
+                        UserName = userInfo.Result.NickName,
                         RUserImageId = userInfo.Result.RImageId,
                         Modified = note.Modified,
                         NoteType = note.NoteType,
@@ -2160,7 +2160,7 @@ namespace RMuseum.Services.Implementation
                     {
                         Id = note.Id,
                         RAppUserId = note.RAppUserId,
-                        UserName = userInfo.Result.FirstName + " " + userInfo.Result.SureName,
+                        UserName = userInfo.Result.NickName,
                         RUserImageId = userInfo.Result.RImageId,
                         Modified = note.Modified,
                         NoteType = note.NoteType,
@@ -2257,7 +2257,7 @@ namespace RMuseum.Services.Implementation
                         {
                             Id = note.Id,
                             RAppUserId = note.RAppUserId,
-                            UserName = userInfo.Result.FirstName + " " + userInfo.Result.SureName,
+                            UserName = userInfo.Result.NickName,
                             RUserImageId = userInfo.Result.RImageId,
                             Modified = note.Modified,
                             NoteType = note.NoteType,
@@ -2319,7 +2319,7 @@ namespace RMuseum.Services.Implementation
                     {
                         Id = note.Id,
                         RAppUserId = note.RAppUserId,
-                        UserName = user.FirstName + " " + user.SureName,
+                        UserName = user.NickName,
                         RUserImageId = user.RImageId,
                         Modified = note.Modified,
                         NoteType = note.NoteType,
@@ -2380,7 +2380,7 @@ namespace RMuseum.Services.Implementation
                         {
                             Id = note.Id,
                             RAppUserId = note.RAppUserId,
-                            UserName = userInfo.Result.FirstName + " " + userInfo.Result.SureName,
+                            UserName = userInfo.Result.NickName,
                             RUserImageId = userInfo.Result.RImageId,
                             Modified = note.Modified,
                             NoteType = note.NoteType,
@@ -2441,7 +2441,7 @@ namespace RMuseum.Services.Implementation
                     {
                         Id = note.Id,
                         RAppUserId = note.RAppUserId,
-                        UserName = user.FirstName + " " + user.SureName,
+                        UserName = user.NickName,
                         RUserImageId = user.RImageId,
                         Modified = note.Modified,
                         NoteType = note.NoteType,
@@ -2514,7 +2514,7 @@ namespace RMuseum.Services.Implementation
                         {
                             Id = note.Id,
                             RAppUserId = note.RAppUserId,
-                            UserName = user.FirstName + " " + user.SureName,
+                            UserName = user.NickName,
                             RUserImageId = user.RImageId,
                             Modified = note.Modified,
                             NoteType = note.NoteType,
@@ -2617,7 +2617,7 @@ namespace RMuseum.Services.Implementation
                         {
                             Id = note.Id,
                             RAppUserId = note.RAppUserId,
-                            UserName = user.FirstName + " " + user.SureName,
+                            UserName = user.NickName,
                             RUserImageId = user.RImageId,
                             Modified = note.Modified,
                             NoteType = note.NoteType,

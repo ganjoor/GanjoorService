@@ -490,7 +490,7 @@ namespace RMuseum.Services.Implementation
                       select new GanjoorCommentSummaryViewModel()
                       {
                           Id = comment.Id,
-                          AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.FirstName} {comment.User.SureName}".Trim(),
+                          AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.NickName}",
                           AuthorUrl = comment.AuthorUrl,
                           CommentDate = comment.CommentDate,
                           HtmlComment = comment.HtmlComment,
@@ -572,7 +572,7 @@ namespace RMuseum.Services.Implementation
                     new GanjoorCommentSummaryViewModel()
                     {
                         Id = comment.Id,
-                        AuthorName = $"{userRes.Result.FirstName} {userRes.Result.SureName}".Trim(),
+                        AuthorName = $"{userRes.Result.NickName}",
                         AuthorUrl = comment.AuthorUrl,
                         CommentDate = comment.CommentDate,
                         HtmlComment = comment.HtmlComment,
@@ -746,7 +746,7 @@ namespace RMuseum.Services.Implementation
                      select new GanjoorCommentFullViewModel()
                      {
                          Id = comment.Id,
-                         AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.FirstName} {comment.User.SureName}".Trim(),
+                         AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.NickName}",
                          AuthorUrl = comment.AuthorUrl,
                          CommentDate = comment.CommentDate,
                          HtmlComment = comment.HtmlComment,
@@ -754,7 +754,7 @@ namespace RMuseum.Services.Implementation
                             new GanjoorCommentSummaryViewModel()
                             {
                                 Id = comment.InReplyTo.Id,
-                                AuthorName = comment.InReplyTo.User == null ? comment.InReplyTo.AuthorName : $"{comment.InReplyTo.User.FirstName} {comment.InReplyTo.User.SureName}".Trim(),
+                                AuthorName = comment.InReplyTo.User == null ? comment.InReplyTo.AuthorName : $"{comment.InReplyTo.User.NickName}",
                                 AuthorUrl = comment.InReplyTo.AuthorUrl,
                                 CommentDate = comment.InReplyTo.CommentDate,
                                 HtmlComment = comment.InReplyTo.HtmlComment,
@@ -860,7 +860,7 @@ namespace RMuseum.Services.Implementation
                          Comment = new GanjoorCommentFullViewModel()
                          {
                              Id = comment.Id,
-                             AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.FirstName} {comment.User.SureName}".Trim(),
+                             AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.NickName}",
                              AuthorUrl = comment.AuthorUrl,
                              CommentDate = comment.CommentDate,
                              HtmlComment = comment.HtmlComment,
@@ -868,7 +868,7 @@ namespace RMuseum.Services.Implementation
                             new GanjoorCommentSummaryViewModel()
                             {
                                 Id = comment.InReplyTo.Id,
-                                AuthorName = comment.InReplyTo.User == null ? comment.InReplyTo.AuthorName : $"{comment.InReplyTo.User.FirstName} {comment.InReplyTo.User.SureName}".Trim(),
+                                AuthorName = comment.InReplyTo.User == null ? comment.InReplyTo.AuthorName : $"{comment.InReplyTo.User.NickName}",
                                 AuthorUrl = comment.InReplyTo.AuthorUrl,
                                 CommentDate = comment.InReplyTo.CommentDate,
                                 HtmlComment = comment.InReplyTo.HtmlComment,
