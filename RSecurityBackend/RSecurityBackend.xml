@@ -756,6 +756,21 @@
             user image id
             </summary>
         </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.NickName">
+            <summary>
+            nick name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.Bio">
+            <summary>
+            biography
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.Website">
+            <summary>
+            web site
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Models.Auth.Db.RAppUserStatus">
             <summary>
             User Status
