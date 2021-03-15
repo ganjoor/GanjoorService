@@ -29,5 +29,20 @@
         /// root cat id
         /// </summary>
         public int RootCatId { get; set; }
+
+        /// <summary>
+        /// short name
+        /// </summary>
+        public string Nickname { get; set; }
+
+        /// <summary>
+        /// published on website
+        /// </summary>
+        public bool Published { get; set; }
+
+        /// <summary>
+        /// image url
+        /// </summary>
+        public string ImageUrl { get; set; }
     }
 }

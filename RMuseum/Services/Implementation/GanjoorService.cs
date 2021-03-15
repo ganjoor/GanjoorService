@@ -49,7 +49,10 @@ namespace RMuseum.Services.Implementation
                           Name = poet.Name,
                           Description = includeBio ? poet.Description : null,
                           FullUrl = cat.FullUrl,
-                          RootCatId = cat.Id
+                          RootCatId = cat.Id,
+                          Nickname = poet.Nickname,
+                          Published = poet.Published,
+                          ImageUrl = poet.RImageId == null ? "" : $"/api/rimages/{poet.RImageId}.jpg"
                       }
                       )
                      .ToListAsync();
@@ -258,7 +261,10 @@ namespace RMuseum.Services.Implementation
                                                 Name = p.Name,
                                                 Description = p.Description,
                                                 FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl,
-                                                RootCatId = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().Id
+                                                RootCatId = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().Id,
+                                                Nickname = p.Nickname,
+                                                Published = p.Published,
+                                                ImageUrl = p.RImageId == null ? "" : $"/api/rimages/{p.RImageId}.jpg"
                                             }).FirstOrDefaultAsync(),
                        Cat = catViewModel
                    }
@@ -327,7 +333,10 @@ namespace RMuseum.Services.Implementation
                           Id = poet.Id,
                           Name = poet.Name,
                           FullUrl = cat.FullUrl,
-                          RootCatId = cat.Id
+                          RootCatId = cat.Id,
+                          Nickname = poet.Nickname,
+                          Published = poet.Published,
+                          ImageUrl = poet.RImageId == null ? "" : $"/api/rimages/{poet.RImageId}.jpg"
                       }
                       )
                      .SingleAsync();

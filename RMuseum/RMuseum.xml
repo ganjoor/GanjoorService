@@ -4016,6 +4016,26 @@
             description
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.Nickname">
+            <summary>
+            short name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.RImage">
+            <summary>
+            poet image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.RImageId">
+            <summary>
+            user image id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.Published">
+            <summary>
+            published on website
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorVerse">
             <summary>
             Ganjoor Verse
@@ -4700,6 +4720,21 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.RootCatId">
             <summary>
             root cat id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.Nickname">
+            <summary>
+            short name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.Published">
+            <summary>
+            published on website
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.ImageUrl">
+            <summary>
+            image url
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPostReportCommentViewModel">
