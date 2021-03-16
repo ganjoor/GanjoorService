@@ -14,6 +14,9 @@ using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Dapper;
+using System.IO;
+using RSecurityBackend.Models.Image;
 
 namespace RMuseum.Services.Implementation
 {
@@ -41,7 +44,9 @@ namespace RMuseum.Services.Implementation
                     {
                         LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(contextReport);
 
-                        var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", "pre open connection")).Result;
+                        int stepCount = 0;
+
+                        var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", $"{stepCount} - start")).Result;
 
                         if(string.IsNullOrEmpty(Configuration.GetSection("AudioMySqlServer")["ReportedCommentsDatabase"]))
                         {
@@ -49,9 +54,22 @@ namespace RMuseum.Services.Implementation
                             return;
                         }
 
+                        if (string.IsNullOrEmpty(Configuration.GetSection("AudioMySqlServer")["PoetImagesImportPath"]))
+                        {
+                            await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, "PoetImagesImportPath is not set");
+                            return;
+                        }
+
+                        stepCount++;
+
+                        RServiceResult<bool> poetsResult = await _ImportPoetsFromMySql($"{stepCount} ImportPoetsFromMySql", context, jobProgressServiceEF, job);
+                        if (!poetsResult.Result)
+                            return;
+
+                        stepCount++;
 
                         MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration, context);
-                        RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql("MusicCatalogueImportFromMySql", jobProgressServiceEF, job);
+                        RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql($"{stepCount} MusicCatalogueImportFromMySql", jobProgressServiceEF, job);
 
                         if (!musicCatalogueRes.Result)
                             return;
@@ -506,7 +524,6 @@ namespace RMuseum.Services.Implementation
 
         }
 
-
         private async Task<List<GanjoorCommentAbuseReport>> _MySqlImportReportedComments()
         {
             List<GanjoorCommentAbuseReport> list = new List<GanjoorCommentAbuseReport>();
@@ -818,6 +835,115 @@ namespace RMuseum.Services.Implementation
             comment = $"<p>{comment.Replace("\r\n", "\n").Replace("\n\n", "\n").Replace("\n", "<br />")}</p>";
 
             return comment;
+        }
+
+        private async Task<RServiceResult<bool>> _ImportPoetsFromMySql(string jobName, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        {
+            try
+            {
+
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - pre mysql data fetch")).Result;
+
+                string connectionString =
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True";
+
+                using (MySqlConnection connection = new MySqlConnection
+                                (
+                                connectionString
+                                ))
+                {
+                    await connection.OpenAsync();
+                    using (MySqlDataAdapter src = new MySqlDataAdapter(
+                        "SELECT ID, user_login, display_name," +
+                        "COALESCE(CONCAT(CONCAT((SELECT meta_value FROM ganja_usermeta WHERE user_id = ID AND meta_key = 'first_name') , ' ')," +
+                        "(SELECT meta_value FROM ganja_usermeta WHERE user_id = ID AND meta_key = 'last_name')), display_name) AS full_name " +
+                        "FROM ganja_users WHERE ID > 0 ORDER BY Id",
+                        connection))
+                    {
+                        IDbConnection dapper = connection;
+
+
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - mysql")).Result;
+                        using (DataTable data = new DataTable())
+                        {
+                            await src.FillAsync(data);
+
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - removing existing poets data")).Result;
+
+                            var poets = await context.GanjoorPoets.ToArrayAsync();
+                            context.GanjoorPoets.RemoveRange(poets);
+                            await context.SaveChangesAsync();
+
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - processing poets")).Result;
+
+                            int poetsCount = data.Rows.Count;
+                            int curPoet = 0;
+
+                            foreach (DataRow row in data.Rows)
+                            {
+                                curPoet++;
+                                GanjoorPoet poet = new GanjoorPoet()
+                                {
+                                    Id = int.Parse(row["ID"].ToString()),
+                                    Name = row["full_name"].ToString(),
+                                    Nickname = row["display_name"].ToString(),
+                                    Published = true
+                                };
+
+                                string poet_root_url = row["user_login"].ToString();
+
+                                //poet bio:
+                                poet.Description = await dapper.QueryFirstOrDefaultAsync<string>($"SELECT post_content FROM ganja_posts WHERE post_author = {poet.Id} AND post_name = '{poet_root_url}' AND post_parent = 0");
+
+
+                                //poet image
+
+                                string imagePath = Path.Combine(Configuration.GetSection("AudioMySqlServer")["PoetImagesImportPath"], $"{poet.Id}.png");
+                                if (!File.Exists(imagePath))
+                                {
+                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, curPoet, $"{jobName} - {poet.Name} - {poet.Id}.png not found")).Result;
+                                    return new RServiceResult<bool>(false);
+                                }
+
+
+                                ImageFileServiceEF imageFileService = new ImageFileServiceEF(context, Configuration);
+
+                                using(FileStream fs = File.OpenRead(imagePath))
+                                {
+                                    RServiceResult<RImage> image = await imageFileService.Add(null, fs, imagePath, "PoetImages");
+
+                                    if (!string.IsNullOrEmpty(image.ExceptionString))
+                                    {
+                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, curPoet, $"{jobName} - {poet.Name} - imageFileService: {image.ExceptionString}")).Result;
+                                        return new RServiceResult<bool>(false);
+                                    }
+                                    var poetImage = await imageFileService.Store(image.Result);
+
+                                    poet.RImageId = poetImage.Result.Id;
+                                }
+
+                                context.GanjoorPoets.Add(poet);
+                                await context.SaveChangesAsync();
+
+
+
+                                
+
+                            }
+
+
+                        }
+
+                    }
+
+                }
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, exp.ToString());
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
         }
     }
 }
