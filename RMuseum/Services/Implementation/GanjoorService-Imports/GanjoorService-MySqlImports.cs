@@ -682,7 +682,7 @@ namespace RMuseum.Services.Implementation
 
        
 
-        private List<GanjoorVerse> _extractVersesFromPoemHtmlText(string poemtext)
+        private List<GanjoorVerse> _extractVersesFromPoemHtmlText(int poemId, string poemtext)
         {
             List<GanjoorVerse> verses = new List<GanjoorVerse>();
 
@@ -764,6 +764,7 @@ namespace RMuseum.Services.Implementation
                 while (idx != -1)
                 {
                     GanjoorVerse verse = new GanjoorVerse();
+                    verse.PoemId = poemId;
                     verse.VOrder = verses.Count + 1;
                     switch (poemtext[idx])
                     {
@@ -857,7 +858,7 @@ namespace RMuseum.Services.Implementation
                         "SELECT ID, user_login, display_name," +
                         "COALESCE(CONCAT(CONCAT((SELECT meta_value FROM ganja_usermeta WHERE user_id = ID AND meta_key = 'first_name') , ' ')," +
                         "(SELECT meta_value FROM ganja_usermeta WHERE user_id = ID AND meta_key = 'last_name')), display_name) AS full_name " +
-                        "FROM ganja_users WHERE ID > 0 ORDER BY Id",
+                        "FROM ganja_users WHERE ID > 1 ORDER BY Id",
                         connection))
                     {
                         IDbConnection dapper = connection;
@@ -870,9 +871,10 @@ namespace RMuseum.Services.Implementation
 
                             job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - removing existing poets data")).Result;
 
-                            var poets = await context.GanjoorPoets.ToArrayAsync();
-                            context.GanjoorPoets.RemoveRange(poets);
-                            await context.SaveChangesAsync();
+                            await context.Database.ExecuteSqlRawAsync("DELETE FROM GanjoorPages");
+
+                            await context.Database.ExecuteSqlRawAsync("DELETE FROM GanjoorPoets");
+
 
                             job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - processing poets")).Result;
 
@@ -926,8 +928,10 @@ namespace RMuseum.Services.Implementation
                                 await context.SaveChangesAsync();
 
 
-
-                                
+                                if(!(await _ImportPoemsFromMySql($"{jobName} - {poet.Name} - poems", context, jobProgressServiceEF, job, connection, poet)).Result)
+                                {
+                                    return new RServiceResult<bool>(false);
+                                }
 
                             }
 
@@ -943,6 +947,185 @@ namespace RMuseum.Services.Implementation
             {
                 await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, exp.ToString());
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        private async Task<RServiceResult<bool>> _ImportPoemsFromMySql(string jobName, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, MySqlConnection connection, GanjoorPoet poet)
+        {
+            try
+            {
+                using (MySqlDataAdapter src = new MySqlDataAdapter(
+                       $"SELECT post_title, post_content, post_name, ID FROM ganja_posts WHERE (post_type='post' AND comment_status = 'open') AND post_author={poet.Id} ORDER BY ID",
+                       connection))
+                {
+                    using (DataTable data = new DataTable())
+                    {
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - querings poems")).Result;
+
+                        await src.FillAsync(data);
+
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - processing poems")).Result;
+
+                        foreach(DataRow row in data.Rows)
+                        {
+
+                            List<CatInfo> lstCatInfo = new List<CatInfo>();
+                            GetCatsFullInfo(row.ItemArray[3].ToString(), lstCatInfo, connection);
+                            if (lstCatInfo.Count == 0)
+                                continue;
+
+                            GanjoorCat poemCat = null;
+                            string catFullTitle = "";
+
+                            foreach (CatInfo catInfo in lstCatInfo)
+                            {
+                                var cat = await context.GanjoorCategories.Where(c => c.Id == catInfo.ID).SingleOrDefaultAsync();
+                                if(cat == null)
+                                {
+                                    GanjoorCat ganjoorCat = new GanjoorCat()
+                                    {
+                                        Id = catInfo.ID,
+                                        PoetId = poet.Id,
+                                        Title = catInfo.Title,
+                                        UrlSlug = catInfo.Slug,
+                                        FullUrl = catInfo.FullUrl,
+                                        ParentId = catInfo.ParentID == 0 ? (int?)null : catInfo.ParentID
+                                    };
+
+                                    context.GanjoorCategories.Add(ganjoorCat);
+                                    await context.SaveChangesAsync();
+
+                                    cat = ganjoorCat;
+                                }
+
+                                poemCat = cat;
+                                catFullTitle = catInfo.FullTitle;
+
+                            }
+
+                            GanjoorPoem poem = new GanjoorPoem()
+                            {
+                                Id = int.Parse(row["ID"].ToString()),
+                                CatId = poemCat.Id,
+                                Title = row["post_title"].ToString(),
+                                UrlSlug = row["post_name"].ToString(),
+                                FullTitle = $"{catFullTitle} » {row["post_title"]}",
+                                FullUrl = $"{poemCat.FullUrl}/{row["post_name"]}",
+                                HtmlText = row["post_content"].ToString(),
+                            };
+
+                            List<GanjoorVerse> verses = _extractVersesFromPoemHtmlText(poem.Id, poem.HtmlText);
+
+                            string plainText = "";
+                            foreach(GanjoorVerse verse in verses)
+                            {
+                                plainText += $"{verse.Text} ";
+                            }
+
+                            poem.PlainText = plainText.Trim();
+
+                            context.GanjoorPoems.Add(poem);
+
+                            context.GanjoorVerses.AddRange(verses);
+
+
+
+                        }
+
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - finalizing poems")).Result;
+
+
+                        await context.SaveChangesAsync();
+                    }
+
+                }
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, exp.ToString());
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        class CatInfo
+        {
+            public int ID;
+            public int ParentID;
+            public string Title;
+            public string Slug;
+            public string FullUrl;
+            public string FullTitle;
+            public CatInfo(int id, int pid, string title, string slug)
+            {
+                ID = id;
+                ParentID = pid;
+                Title = title;
+                Slug = slug;
+            }
+        }
+
+        private void GetCatsFullInfo(string ID, List<CatInfo> lstCatInfo, MySqlConnection newconn)
+        {
+            using (DataTable datausers = new DataTable())
+            {
+                using (MySqlDataAdapter dausers = new MySqlDataAdapter("SELECT ganja_term_taxonomy.term_id, ganja_terms.name, ganja_term_taxonomy.parent, ganja_terms.slug FROM ganja_terms INNER JOIN (ganja_term_relationships INNER JOIN ganja_term_taxonomy ON ganja_term_relationships.term_taxonomy_id = ganja_term_taxonomy.term_taxonomy_id) ON ganja_terms.term_id = ganja_term_taxonomy.term_id WHERE ganja_term_taxonomy.taxonomy='category' AND ganja_term_relationships.object_id=" + ID, newconn))
+                {
+                    dausers.Fill(datausers);
+                    foreach (DataRow rowauthor in datausers.Rows)
+                    {
+
+                        var cat = new CatInfo(Convert.ToInt32(rowauthor.ItemArray[0]), Convert.ToInt32(rowauthor.ItemArray[2]), rowauthor.ItemArray[1].ToString(), rowauthor.ItemArray[3].ToString());
+
+
+
+                        if (rowauthor.ItemArray[2].ToString() != "0")
+                        {
+                            GetCatFullCatInfoName(newconn, lstCatInfo, rowauthor.ItemArray[2].ToString());
+
+                            var parent = lstCatInfo.Where(c => c.ID == cat.ParentID).FirstOrDefault();
+                            cat.FullUrl = $"{parent.FullUrl}/{cat.Slug}";
+                            cat.FullTitle = $"{parent.FullTitle} » {cat.Title}";
+                        }
+                        else
+                        {
+                            cat.FullUrl = $"/{cat.Slug}";
+                            cat.FullTitle = $"{cat.Title}";
+                        }
+
+                        lstCatInfo.Add(cat);
+                    }
+                }
+            }
+
+        }
+
+        private void GetCatFullCatInfoName(MySqlConnection newconn, List<CatInfo> lstCatInfo, string ID)
+        {
+            using (DataTable datausers = new DataTable())
+            {
+                using (MySqlDataAdapter dausers = new MySqlDataAdapter("SELECT ganja_term_taxonomy.term_id, ganja_terms.name, ganja_term_taxonomy.parent, ganja_terms.slug FROM ganja_terms INNER JOIN ganja_term_taxonomy ON ganja_terms.term_id = ganja_term_taxonomy.term_id WHERE ganja_term_taxonomy.term_id=" + ID, newconn))
+                {
+                    dausers.Fill(datausers);
+                    foreach (DataRow rowauthor in datausers.Rows)
+                    {
+                        var cat = new CatInfo(Convert.ToInt32(rowauthor.ItemArray[0]), Convert.ToInt32(rowauthor.ItemArray[2]), rowauthor.ItemArray[1].ToString(), rowauthor.ItemArray[3].ToString());
+                        lstCatInfo.Add(cat);
+                        if (rowauthor.ItemArray[2].ToString() != "0")
+                        {
+                            GetCatFullCatInfoName(newconn, lstCatInfo, rowauthor.ItemArray[2].ToString());
+
+                            var parent = lstCatInfo.Where(c => c.ID == cat.ParentID).FirstOrDefault();
+                            cat.FullUrl = $"{parent.FullUrl}/{cat.Slug}";
+                            cat.FullTitle = $"{parent.FullTitle} » {cat.Title}";
+                        }
+                        else
+                        {
+                            cat.FullUrl = $"/{cat.Slug}";
+                            cat.FullTitle = $"{cat.Title}";
+                        }
+                    }
+                }
             }
         }
     }
