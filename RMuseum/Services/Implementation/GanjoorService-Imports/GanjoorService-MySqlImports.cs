@@ -505,10 +505,12 @@ namespace RMuseum.Services.Implementation
 
                                 context.GanjoorPoemMusicTracks.Add(track);
 
+                                await context.SaveChangesAsync(); //preserve order of poems
+
                             }
                             job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - finalizing approved poem songs data")).Result;
 
-                            await context.SaveChangesAsync();
+                           
 
                         }
 
