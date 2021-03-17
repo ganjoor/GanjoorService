@@ -970,9 +970,11 @@ namespace RMuseum.Services.Implementation
                         {
 
                             List<CatInfo> lstCatInfo = new List<CatInfo>();
-                            GetCatsFullInfo(row.ItemArray[3].ToString(), lstCatInfo, connection);
-                            if (lstCatInfo.Count == 0)
+                            int catId = GetCatsFullInfo(row["ID"].ToString(), lstCatInfo, connection);
+                            if (catId == 0)
                                 continue;
+
+                            lstCatInfo.Sort((a, b) => a.ID.CompareTo(b.ID));
 
                             GanjoorCat poemCat = null;
                             string catFullTitle = "";
@@ -998,8 +1000,14 @@ namespace RMuseum.Services.Implementation
                                     cat = ganjoorCat;
                                 }
 
-                                poemCat = cat;
-                                catFullTitle = catInfo.FullTitle;
+                                if(catInfo.ID == catId)
+                                {
+                                    poemCat = cat;
+                                    catFullTitle = catInfo.FullTitle;
+                                }
+
+                                
+
 
                             }
 
@@ -1065,7 +1073,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private void GetCatsFullInfo(string ID, List<CatInfo> lstCatInfo, MySqlConnection newconn)
+        private int GetCatsFullInfo(string ID, List<CatInfo> lstCatInfo, MySqlConnection newconn)
         {
             using (DataTable datausers = new DataTable())
             {
@@ -1075,13 +1083,13 @@ namespace RMuseum.Services.Implementation
                     foreach (DataRow rowauthor in datausers.Rows)
                     {
 
-                        var cat = new CatInfo(Convert.ToInt32(rowauthor.ItemArray[0]), Convert.ToInt32(rowauthor.ItemArray[2]), rowauthor.ItemArray[1].ToString(), rowauthor.ItemArray[3].ToString());
+                        var cat = new CatInfo(Convert.ToInt32(rowauthor["term_id"]), Convert.ToInt32(rowauthor["parent"]), rowauthor["name"].ToString(), rowauthor["slug"].ToString());
 
+                       
 
-
-                        if (rowauthor.ItemArray[2].ToString() != "0")
+                        if (cat.ParentID != 0)
                         {
-                            GetCatFullCatInfoName(newconn, lstCatInfo, rowauthor.ItemArray[2].ToString());
+                            GetCatFullCatInfoName(newconn, lstCatInfo, cat.ParentID.ToString());
 
                             var parent = lstCatInfo.Where(c => c.ID == cat.ParentID).FirstOrDefault();
                             cat.FullUrl = $"{parent.FullUrl}/{cat.Slug}";
@@ -1094,9 +1102,17 @@ namespace RMuseum.Services.Implementation
                         }
 
                         lstCatInfo.Add(cat);
+
+                        return cat.ID;
+
+                        
                     }
+
+                     
                 }
             }
+
+            return 0;
 
         }
 
