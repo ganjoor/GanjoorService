@@ -974,7 +974,7 @@ namespace RMuseum.Services.Implementation
                             if (catId == 0)
                                 continue;
 
-                            lstCatInfo.Sort((a, b) => a.ID.CompareTo(b.ID));
+                            lstCatInfo.Sort((a, b) => a.ParentID.CompareTo(b.ParentID));
 
                             GanjoorCat poemCat = null;
                             string catFullTitle = "";
@@ -984,6 +984,17 @@ namespace RMuseum.Services.Implementation
                                 var cat = await context.GanjoorCategories.Where(c => c.Id == catInfo.ID).SingleOrDefaultAsync();
                                 if(cat == null)
                                 {
+
+                                    if(catInfo.ParentID != 0)
+                                    {
+                                        var parentCat = await context.GanjoorCategories.Where(c => c.Id == catInfo.ParentID).SingleOrDefaultAsync();
+                                        if(parentCat == null)
+                                        {
+                                            await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, $"{catInfo.Title} parent not exists");
+                                            return new RServiceResult<bool>(false);
+                                        }
+                                    }
+
                                     GanjoorCat ganjoorCat = new GanjoorCat()
                                     {
                                         Id = catInfo.ID,
@@ -1005,10 +1016,6 @@ namespace RMuseum.Services.Implementation
                                     poemCat = cat;
                                     catFullTitle = catInfo.FullTitle;
                                 }
-
-                                
-
-
                             }
 
                             GanjoorPoem poem = new GanjoorPoem()
@@ -1071,7 +1078,10 @@ namespace RMuseum.Services.Implementation
                 Title = title;
                 Slug = slug;
             }
+
         }
+
+      
 
         private int GetCatsFullInfo(string ID, List<CatInfo> lstCatInfo, MySqlConnection newconn)
         {
@@ -1113,6 +1123,7 @@ namespace RMuseum.Services.Implementation
             }
 
             return 0;
+
 
         }
 
