@@ -52,7 +52,7 @@ namespace RMuseum.Services.Implementation
                           RootCatId = cat.Id,
                           Nickname = poet.Nickname,
                           Published = poet.Published,
-                          ImageUrl = poet.RImageId == null ? "" : $"/api/rimages/{poet.RImageId}.jpg"
+                          ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.png"
                       }
                       )
                      .ToListAsync();
@@ -114,6 +114,32 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// poet image id by url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<Guid>> GetPoetImageIdByUrl(string url)
+        {
+            try
+            {
+                // /hafez/ => /hafez :
+                if (url.LastIndexOf('/') == url.Length - 1)
+                {
+                    url = url.Substring(0, url.Length - 1);
+                }
+                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url && c.ParentId == null).SingleOrDefaultAsync();
+                if (cat == null)
+                    return new RServiceResult<Guid>(Guid.Empty);
+                var poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId).SingleOrDefaultAsync();
+                return new RServiceResult<Guid>((Guid)poet.RImageId);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<Guid>(Guid.Empty, exp.ToString());
             }
         }
 
@@ -264,7 +290,7 @@ namespace RMuseum.Services.Implementation
                                                 RootCatId = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().Id,
                                                 Nickname = p.Nickname,
                                                 Published = p.Published,
-                                                ImageUrl = p.RImageId == null ? "" : $"/api/rimages/{p.RImageId}.jpg"
+                                                ImageUrl = p.RImageId == null ? "" : $"/api/ganjoor/poet/image{_context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl}.png"
                                             }).FirstOrDefaultAsync(),
                        Cat = catViewModel
                    }
@@ -336,7 +362,7 @@ namespace RMuseum.Services.Implementation
                           RootCatId = cat.Id,
                           Nickname = poet.Nickname,
                           Published = poet.Published,
-                          ImageUrl = poet.RImageId == null ? "" : $"/api/rimages/{poet.RImageId}.jpg"
+                          ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.png"
                       }
                       )
                      .SingleAsync();

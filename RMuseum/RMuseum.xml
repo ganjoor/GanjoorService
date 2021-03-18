@@ -637,6 +637,13 @@
             <param name="url"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.Get(System.String)">
+            <summary>
+            get poet image
+            </summary>
+            <param name="url">sample: hafez</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetCatById(System.Int32,System.Boolean)">
             <summary>
             cat by id
@@ -852,7 +859,12 @@
             for client IP resolution
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+        <member name="F:RMuseum.Controllers.GanjoorController._imageFileService">
+            <summary>
+            Image Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor,RSecurityBackend.Services.IImageFileService)">
             <summary>
             constructor
             </summary>
@@ -6167,6 +6179,13 @@
             <param name="url"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoetImageIdByUrl(System.String)">
+            <summary>
+            poet image id by url
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetCatById(System.Int32,System.Boolean)">
             <summary>
             get cat by id
@@ -7135,6 +7154,13 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetByUrl(System.String)">
             <summary>
             get poet by url
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetImageIdByUrl(System.String)">
+            <summary>
+            poet image id by url
             </summary>
             <param name="url"></param>
             <returns></returns>

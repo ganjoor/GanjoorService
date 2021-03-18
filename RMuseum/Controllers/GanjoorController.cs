@@ -9,9 +9,11 @@ using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Models.Image;
 using RSecurityBackend.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -84,6 +86,53 @@ namespace RMuseum.Controllers
             if (res.Result == null)
                 return NotFound();
             return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// get poet image
+        /// </summary>
+        /// <param name="url">sample: hafez</param>
+        /// <returns></returns>
+        [HttpGet("poet/image/{url}.png")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> Get(string url)
+        {
+
+            RServiceResult<Guid> poet = await _ganjoorService.GetPoetImageIdByUrl($"/{url}");
+            if (!string.IsNullOrEmpty(poet.ExceptionString))
+                return BadRequest(poet.ExceptionString);
+
+            if (poet.Result == Guid.Empty)
+                return NotFound();
+
+
+            RServiceResult<RImage> img =
+                await _imageFileService.GetImage(poet.Result);
+
+            if (!string.IsNullOrEmpty(img.ExceptionString))
+                return BadRequest(img.ExceptionString);
+
+            if (img.Result == null)
+                return NotFound();
+
+            Response.GetTypedHeaders().LastModified = img.Result.LastModified;
+
+            var requestHeaders = Request.GetTypedHeaders();
+            if (requestHeaders.IfModifiedSince.HasValue &&
+                requestHeaders.IfModifiedSince.Value >= img.Result.LastModified)
+            {
+                return StatusCode(StatusCodes.Status304NotModified);
+            }
+
+            RServiceResult<string> imgPath = _imageFileService.GetImagePath(img.Result);
+            if (!string.IsNullOrEmpty(imgPath.ExceptionString))
+                return BadRequest(imgPath.ExceptionString);
+
+
+            return new FileStreamResult(new FileStream(imgPath.Result, FileMode.Open, FileAccess.Read), "image/png");
+
         }
 
         /// <summary>
@@ -751,16 +800,22 @@ namespace RMuseum.Controllers
         protected IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
+        /// Image Service
+        /// </summary>
+        protected readonly IImageFileService _imageFileService;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="ganjoorService"></param>
         /// <param name="appUserService"></param>
         /// <param name="httpContextAccessor"></param>
-        public GanjoorController(IGanjoorService ganjoorService, IAppUserService appUserService, IHttpContextAccessor httpContextAccessor)
+        public GanjoorController(IGanjoorService ganjoorService, IAppUserService appUserService, IHttpContextAccessor httpContextAccessor, IImageFileService imageFileService)
         {
             _ganjoorService = ganjoorService;
             _appUserService = appUserService;
             _httpContextAccessor = httpContextAccessor;
+            _imageFileService = imageFileService;
         }
     }
 }
