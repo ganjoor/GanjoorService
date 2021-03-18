@@ -128,7 +128,7 @@ namespace RSecurityBackend.Controllers
         [HttpGet]
         [Authorize]
         [Route("checkmysession")]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PublicRAppUser>))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> IsSessionValid(Guid sessionId)
         {
@@ -143,6 +143,27 @@ namespace RSecurityBackend.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// get logged on user securableitems (permissions)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize]
+        [Route("securableitems")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<SecurableItem>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetUserSecurableItemsStatus()
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<SecurableItem[]> res = await _appUserService.GetUserSecurableItemsStatus(loggedOnUserId);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok(res.Result);
+        }
 
 
 

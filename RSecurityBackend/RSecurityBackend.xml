@@ -97,6 +97,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetUserSecurableItemsStatus">
+            <summary>
+            get logged on user securableitems (permissions)
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get">
             <summary>
             All Users Information (if user does not have user:view permission list only contains him/her information)
