@@ -66,19 +66,29 @@ namespace RSecurityBackend.Services.Implementation
                     appUser = await _userManager.FindByEmailAsync(loginViewModel.Username);
                     if(appUser == null)
                     {
-                        return new RServiceResult<LoggedOnUserModel>(null, "Invalid username.");
+                        return new RServiceResult<LoggedOnUserModel>(null, "نام کاربری و/یا رمز نادرست است.");
                     }                    
                 }
 
                 var result = await _signInManager.CheckPasswordSignInAsync(appUser, loginViewModel.Password, true);
+                if(result.IsLockedOut)
+                {
+                    return new RServiceResult<LoggedOnUserModel>(null, "نام کاربری شما به دلیل ورود متوالی ۵ بارهٔ رمزهای اشتباه قفل شده است. لطفاً ۵ دقیقهٔ‌دیگر مجدداً تلاش کنید.");
+                }
+
+                if(result.IsNotAllowed || result.RequiresTwoFactor)
+                {
+                    return new RServiceResult<LoggedOnUserModel>(null, result.ToString());
+                }
+
                 if (!result.Succeeded)
                 {                    
-                    return new RServiceResult<LoggedOnUserModel>(null, "Invalid password or other error. Identity error details says: " + result.ToString());
+                    return new RServiceResult<LoggedOnUserModel>(null, "نام کاربری و/یا رمز نادرست است.");
                 }
 
                 if (appUser.Status == RAppUserStatus.Inactive)
                 {
-                    return new RServiceResult<LoggedOnUserModel>(null, "User is disabled by an admin.");
+                    return new RServiceResult<LoggedOnUserModel>(null, "نام کاربری شما غیرفعال شده است.");
                 }
 
                 RServiceResult<SecurableItem[]> securableItems = await GetUserSecurableItemsStatus(appUser.Id);
