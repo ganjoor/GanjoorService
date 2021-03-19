@@ -845,6 +845,13 @@ namespace RSecurityBackend.Services.Implementation
                     }
                 }
 
+                if(isAdmin.Result != updateUserInfo.IsAdmin)
+                {
+                    return new RServiceResult<bool>(false, "امکان تغییر وضعیت مدیر کاربر از طریق این تابع وجود ندارد.");
+                }
+
+
+                
 
                 if (existingInfo.UserName != updateUserInfo.Username)
                 {
@@ -853,11 +860,18 @@ namespace RSecurityBackend.Services.Implementation
 
                     if(anotheruserWithUserName != null)
                     {
-                        return new RServiceResult<bool>(false, "کلمه عبور تکراری می باشد");
+                        return new RServiceResult<bool>(false, "کلمهٔ عبور تکراری می باشد");
                     }
 
                     existingInfo.UserName = updateUserInfo.Username;
                 }
+
+                if(updateUserInfo.RImageId != null && updateUserInfo.RImageId != Guid.Empty && updateUserInfo.RImageId != existingInfo.RImageId)
+                {
+                    return new RServiceResult<bool>(false, "برای تغییر تصویر کاربر از تابع اختصاصی این کار استفاده کنید");
+                }
+
+                
 
                 
                 existingInfo.FirstName = updateUserInfo.FirstName;
@@ -865,6 +879,9 @@ namespace RSecurityBackend.Services.Implementation
                 existingInfo.Email = updateUserInfo.Email;
                 existingInfo.PhoneNumber = updateUserInfo.PhoneNumber;
                 existingInfo.Status = updateUserInfo.Status;
+                existingInfo.Bio = updateUserInfo.Bio;
+                existingInfo.NickName = updateUserInfo.NickName;
+                existingInfo.Website = updateUserInfo.Website;
 
                 if (!string.IsNullOrEmpty(updateUserInfo.Password))
                 {
