@@ -436,6 +436,22 @@ namespace RSecurityBackend.Controllers
         public async Task<IActionResult> IsAdmin(Guid userId)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<bool> isAdmin = await _appUserService.IsAdmin(loggedOnUserId);
+            if (!string.IsNullOrEmpty(isAdmin.ExceptionString))
+                return BadRequest(isAdmin.ExceptionString);
+            if (!isAdmin.Result)
+            {
+                if(userId != loggedOnUserId)
+                {
+                    return Forbid();
+                }
+                return Ok(false);
+            }
+
+            if (userId == loggedOnUserId)
+            {
+                return Ok(true);
+            }
 
             RServiceResult<bool> res = await _appUserService.IsAdmin(userId);
 
