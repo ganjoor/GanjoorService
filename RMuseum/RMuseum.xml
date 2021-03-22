@@ -772,6 +772,13 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetMyRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get logged on users recent comments
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.NewComment(RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentPostViewModel)">
             <summary>
             post new comment

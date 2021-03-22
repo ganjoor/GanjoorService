@@ -515,6 +515,42 @@ namespace RMuseum.Controllers
             return Ok(comments.Result.Items);
         }
 
+        /// <summary>
+        /// get logged on users recent comments
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("comments/mine")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorCommentFullViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetMyRecentComments([FromQuery] PagingParameterModel paging)
+        {
+            Guid userId =
+                 new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId =
+                new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+            RServiceResult<bool> sessionCheckResult = await _appUserService.SessionExists(userId, sessionId);
+            if (!string.IsNullOrEmpty(sessionCheckResult.ExceptionString))
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
+            var comments = await _ganjoorService.GetRecentComments(paging, userId, false);
+            if (!string.IsNullOrEmpty(comments.ExceptionString))
+            {
+                return BadRequest(comments.ExceptionString);
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
+
+            return Ok(comments.Result.Items);
+        }
+
 
 
         /// <summary>
