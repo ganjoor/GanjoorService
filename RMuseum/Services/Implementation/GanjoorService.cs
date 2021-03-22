@@ -768,15 +768,19 @@ namespace RMuseum.Services.Implementation
         /// get recent comments
         /// </summary>
         /// <param name="paging"></param>
+        /// <param name="filterUserId"></param>
+        /// <param name="onlyPublished"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging, Guid filterUserId, bool onlyPublished)
         {
             try
             {
                 var source =
                      from comment in _context.GanjoorComments.Include(c => c.Poem).Include(c => c.User).Include(c => c.InReplyTo).ThenInclude(r => r.User)
                      where
-                    comment.Status == PublishStatus.Published
+                      ((comment.Status == PublishStatus.Published) || !onlyPublished)
+                     &&
+                     ((filterUserId == Guid.Empty) || (filterUserId != Guid.Empty && comment.UserId == filterUserId))
                      orderby comment.CommentDate descending
                      select new GanjoorCommentFullViewModel()
                      {

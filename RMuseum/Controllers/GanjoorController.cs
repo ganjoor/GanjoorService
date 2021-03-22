@@ -503,7 +503,7 @@ namespace RMuseum.Controllers
 
         public async Task<IActionResult> GetRecentComments([FromQuery] PagingParameterModel paging)
         {
-            var comments = await _ganjoorService.GetRecentComments(paging);
+            var comments = await _ganjoorService.GetRecentComments(paging, Guid.Empty, true);
             if (!string.IsNullOrEmpty(comments.ExceptionString))
             {
                 return BadRequest(comments.ExceptionString);
@@ -810,6 +810,7 @@ namespace RMuseum.Controllers
         /// <param name="ganjoorService"></param>
         /// <param name="appUserService"></param>
         /// <param name="httpContextAccessor"></param>
+        /// <param name="imageFileService"></param>
         public GanjoorController(IGanjoorService ganjoorService, IAppUserService appUserService, IHttpContextAccessor httpContextAccessor, IImageFileService imageFileService)
         {
             _ganjoorService = ganjoorService;

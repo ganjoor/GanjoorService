@@ -1,7 +1,6 @@
 ﻿using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
-using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Threading.Tasks;
@@ -206,8 +205,10 @@ namespace RMuseum.Services
         /// get recent comments
         /// </summary>
         /// <param name="paging"></param>
+        /// <param name="filterUserId">Guid.Empty</param>
+        /// <param name="onlyPublished"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging, Guid filterUserId, bool onlyPublished);
 
         /// <summary>
         /// report a comment

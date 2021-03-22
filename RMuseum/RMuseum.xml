@@ -871,6 +871,7 @@
             <param name="ganjoorService"></param>
             <param name="appUserService"></param>
             <param name="httpContextAccessor"></param>
+            <param name="imageFileService"></param>
         </member>
         <member name="M:RMuseum.Controllers.ImageController.Get(System.Guid,System.String)">
             <summary>
@@ -6346,11 +6347,13 @@
             <param name="commentId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,System.Boolean)">
             <summary>
             get recent comments
             </summary>
             <param name="paging"></param>
+            <param name="filterUserId">Guid.Empty</param>
+            <param name="onlyPublished"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.ReportComment(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPostReportCommentViewModel)">
@@ -7247,11 +7250,13 @@
             <param name="commentId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,System.Boolean)">
             <summary>
             get recent comments
             </summary>
             <param name="paging"></param>
+            <param name="filterUserId"></param>
+            <param name="onlyPublished"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ReportComment(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPostReportCommentViewModel)">
