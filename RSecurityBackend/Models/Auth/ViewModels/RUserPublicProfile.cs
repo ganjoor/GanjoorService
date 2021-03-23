@@ -1,0 +1,52 @@
+﻿using System;
+
+namespace RSecurityBackend.Models.Auth.ViewModels
+{
+    /// <summary>
+    /// user public profile
+    /// </summary>
+    public class RUserPublicProfile
+    {
+        /// <summary>
+        /// Id
+        /// </summary>
+        public Guid Id { get; set; }
+
+
+        /// <summary>
+        /// First Name
+        /// </summary>
+        /// <example>
+        /// Hamid Reza
+        /// </example>
+        public string FirstName { get; set; }
+
+        /// <summary>
+        /// Sure Name
+        /// </summary>
+        /// <example>
+        /// Mohammadi
+        /// </example>
+        public string SureName { get; set; }
+
+        /// <summary>
+        /// user image
+        /// </summary>
+        public Guid? RImageId { get; set; }
+
+        /// <summary>
+        /// nick name
+        /// </summary>
+        public string NickName { get; set; }
+
+        /// <summary>
+        /// biography
+        /// </summary>
+        public string Bio { get; set; }
+
+        /// <summary>
+        /// web site
+        /// </summary>
+        public string Website { get; set; }
+    }
+}

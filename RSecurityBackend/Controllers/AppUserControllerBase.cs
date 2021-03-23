@@ -254,6 +254,43 @@ namespace RSecurityBackend.Controllers
             return Ok(userInfo.Result);
         }
 
+        /// <summary>
+        /// Get user public profile
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("profile/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserPublicProfile))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> GetUserPublicProfile(Guid id)
+        {
+            RServiceResult<PublicRAppUser> userInfo = await _appUserService.GetUserInformation(id);
+            if (userInfo.Result == null)
+            {
+                if (string.IsNullOrEmpty(userInfo.ExceptionString))
+                    return NotFound();
+                return BadRequest(userInfo.ExceptionString);
+            }
+            return Ok
+                (
+                new RUserPublicProfile()
+                {
+                    Id = id,
+                    FirstName = userInfo.Result.FirstName,
+                    SureName = userInfo.Result.SureName,
+                    NickName = userInfo.Result.NickName,
+                    Bio = userInfo.Result.Bio,
+                    Website = userInfo.Result.Website,
+                    RImageId = userInfo.Result.RImageId
+                }
+                );
+        }
+
+
+
 
         /// <summary>
         /// add a new user (if you are trying to add an admin user you yourself should be admin)

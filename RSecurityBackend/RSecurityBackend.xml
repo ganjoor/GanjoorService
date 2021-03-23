@@ -116,6 +116,13 @@
             <param name="id">user id</param>
             <returns>user information</returns>
         </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetUserPublicProfile(System.Guid)">
+            <summary>
+            Get user public profile
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Post(RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser)">
             <summary>
             add a new user (if you are trying to add an admin user you yourself should be admin)
@@ -1392,6 +1399,52 @@
             <example>
             Test!123
             </example>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.RUserPublicProfile">
+            <summary>
+            user public profile
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.RUserPublicProfile.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.RUserPublicProfile.FirstName">
+            <summary>
+            First Name
+            </summary>
+            <example>
+            Hamid Reza
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.RUserPublicProfile.SureName">
+            <summary>
+            Sure Name
+            </summary>
+            <example>
+            Mohammadi
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.RUserPublicProfile.RImageId">
+            <summary>
+            user image
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.RUserPublicProfile.NickName">
+            <summary>
+            nick name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.RUserPublicProfile.Bio">
+            <summary>
+            biography
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.RUserPublicProfile.Website">
+            <summary>
+            web site
+            </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Auth.ViewModels.SetPasswordModel">
             <summary>
