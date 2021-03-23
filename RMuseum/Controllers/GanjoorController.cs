@@ -819,8 +819,6 @@ namespace RMuseum.Controllers
                 new GanjoorUserPublicProfile()
                 {
                     Id = id,
-                    FirstName = userInfo.Result.FirstName,
-                    SureName = userInfo.Result.SureName,
                     NickName = userInfo.Result.NickName,
                     Bio = userInfo.Result.Bio,
                     Website = userInfo.Result.Website,

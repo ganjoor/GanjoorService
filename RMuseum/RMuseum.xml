@@ -2166,22 +2166,6 @@
             Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile.FirstName">
-            <summary>
-            First Name
-            </summary>
-            <example>
-            Hamid Reza
-            </example>
-        </member>
-        <member name="P:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile.SureName">
-            <summary>
-            Sure Name
-            </summary>
-            <example>
-            Mohammadi
-            </example>
-        </member>
         <member name="P:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile.RImageId">
             <summary>
             user image

@@ -14,22 +14,6 @@ namespace RMuseum.Models.Auth.ViewModel
 
 
         /// <summary>
-        /// First Name
-        /// </summary>
-        /// <example>
-        /// Hamid Reza
-        /// </example>
-        public string FirstName { get; set; }
-
-        /// <summary>
-        /// Sure Name
-        /// </summary>
-        /// <example>
-        /// Mohammadi
-        /// </example>
-        public string SureName { get; set; }
-
-        /// <summary>
         /// user image
         /// </summary>
         public Guid? RImageId { get; set; }
