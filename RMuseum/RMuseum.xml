@@ -765,11 +765,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>
             get recent comments
             </summary>
             <param name="paging"></param>
+            <param name="filterUserId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetMyRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel)">

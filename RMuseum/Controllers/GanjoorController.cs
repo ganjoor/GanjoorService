@@ -496,6 +496,7 @@ namespace RMuseum.Controllers
         /// get recent comments
         /// </summary>
         /// <param name="paging"></param>
+        /// <param name="filterUserId"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("comments")]
@@ -503,9 +504,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorCommentFullViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> GetRecentComments([FromQuery] PagingParameterModel paging)
+        public async Task<IActionResult> GetRecentComments([FromQuery] PagingParameterModel paging, Guid? filterUserId = null)
         {
-            var comments = await _ganjoorService.GetRecentComments(paging, Guid.Empty, true);
+            var comments = await _ganjoorService.GetRecentComments(paging, filterUserId == null ? Guid.Empty : (Guid)filterUserId, true);
             if (!string.IsNullOrEmpty(comments.ExceptionString))
             {
                 return BadRequest(comments.ExceptionString);
