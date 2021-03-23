@@ -423,13 +423,12 @@ namespace RSecurityBackend.Controllers
         }
 
         /// <summary>
-        /// Checks if user is admin (if user does not have user:viewall permission list it will be failed for any user id other than himself/herself)
+        /// Checks if user is admin
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [Authorize]
         [Route("isadmin")]
-        [Authorize(Policy = SecurableItem.UserEntityShortName + ":" + SecurableItem.ViewAllOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]

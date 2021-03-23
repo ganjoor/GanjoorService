@@ -147,7 +147,7 @@
         </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.IsAdmin(System.Guid)">
             <summary>
-            Checks if user is admin (if user does not have user:viewall permission list it will be failed for any user id other than himself/herself)
+            Checks if user is admin
             </summary>
             <returns></returns>
         </member>
