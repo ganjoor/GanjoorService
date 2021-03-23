@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RSecurityBackend.Services;
 using RSecurityBackend.Controllers;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
-using Audit.WebApi;
 
 namespace RMuseum.Controllers
 {
@@ -30,11 +28,11 @@ namespace RMuseum.Controllers
             : base(configuration, appUserService, httpContextAccessor, userPermissionChecker, emailSender, imageFileService, captchaService)
         {
             
-        }      
+        }
 
 
 
-        
+
 
         /// <summary>
         /// Sign Up Email Subject
@@ -196,6 +194,7 @@ namespace RMuseum.Controllers
         {
             return true;
         }
+
 
     }
 }

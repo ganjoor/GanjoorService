@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
+using RMuseum.Models.Auth.ViewModel;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Services;
+using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Image;
 using RSecurityBackend.Services;
@@ -791,6 +793,40 @@ namespace RMuseum.Controllers
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);
+        }
+
+        /// <summary>
+        /// Get user public profile
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("user/profile/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserPublicProfile))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetUserPublicProfile(Guid id)
+        {
+            RServiceResult<PublicRAppUser> userInfo = await _appUserService.GetUserInformation(id);
+            if (userInfo.Result == null)
+            {
+                if (string.IsNullOrEmpty(userInfo.ExceptionString))
+                    return NotFound();
+                return BadRequest(userInfo.ExceptionString);
+            }
+            return Ok
+                (
+                new GanjoorUserPublicProfile()
+                {
+                    Id = id,
+                    FirstName = userInfo.Result.FirstName,
+                    SureName = userInfo.Result.SureName,
+                    NickName = userInfo.Result.NickName,
+                    Bio = userInfo.Result.Bio,
+                    Website = userInfo.Result.Website,
+                    RImageId = userInfo.Result.RImageId
+                }
+                );
         }
 
 

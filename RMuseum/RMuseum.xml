@@ -842,6 +842,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserPublicProfile(System.Guid)">
+            <summary>
+            Get user public profile
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetVersesByQuery(System.String,System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
              Get Verses By query
@@ -2147,6 +2154,52 @@
         <member name="P:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.Items">
             <summary>
             list of forms and their permissions
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile">
+            <summary>
+            ganjoor user public profile
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile.FirstName">
+            <summary>
+            First Name
+            </summary>
+            <example>
+            Hamid Reza
+            </example>
+        </member>
+        <member name="P:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile.SureName">
+            <summary>
+            Sure Name
+            </summary>
+            <example>
+            Mohammadi
+            </example>
+        </member>
+        <member name="P:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile.RImageId">
+            <summary>
+            user image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile.NickName">
+            <summary>
+            nick name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile.Bio">
+            <summary>
+            biography
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile.Website">
+            <summary>
+            web site
             </summary>
         </member>
         <member name="T:RMuseum.Models.Bookmark.RBookmarkType">

@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace RSecurityBackend.Models.Auth.ViewModels
+namespace RMuseum.Models.Auth.ViewModel
 {
     /// <summary>
-    /// user public profile
+    /// ganjoor user public profile
     /// </summary>
-    public class RUserPublicProfile
+    public class GanjoorUserPublicProfile
     {
         /// <summary>
         /// Id
@@ -48,5 +48,6 @@ namespace RSecurityBackend.Models.Auth.ViewModels
         /// web site
         /// </summary>
         public string Website { get; set; }
+
     }
 }

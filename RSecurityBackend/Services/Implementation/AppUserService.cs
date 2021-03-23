@@ -342,6 +342,8 @@ namespace RSecurityBackend.Services.Implementation
             {
                 RAppUser appUser =
                     await _userManager.Users.Where(u => u.Id == userId).SingleOrDefaultAsync();
+                if (appUser == null)
+                    return new RServiceResult<PublicRAppUser>(null);
                 return new RServiceResult<PublicRAppUser>(
                     new PublicRAppUser()
                     {
