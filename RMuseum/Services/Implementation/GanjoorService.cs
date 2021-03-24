@@ -613,7 +613,8 @@ namespace RMuseum.Services.Implementation
                         HtmlComment = comment.HtmlComment,
                         PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
                         InReplyToId = comment.InReplyToId,
-                        UserId = comment.UserId
+                        UserId = comment.UserId,
+                        Replies = new GanjoorCommentSummaryViewModel[] { }
                     }
                     );
             }
@@ -730,7 +731,7 @@ namespace RMuseum.Services.Implementation
                 var replies = await _FindReplies(comment);
                 for (int i = replies.Count - 1; i >= 0; i--)
                 {
-                    if (replies[i].UserId != null)
+                    if (replies[i].UserId != null && replies[i].UserId != userId)
                     {
                         await _notificationService.PushNotification((Guid)replies[i].UserId,
                                                "حذف پاسخ شما به حاشیه",
@@ -756,9 +757,14 @@ namespace RMuseum.Services.Implementation
         private async Task<List<GanjoorComment>> _FindReplies(GanjoorComment comment)
         {
             List<GanjoorComment> replies = await _context.GanjoorComments.Where(c => c.InReplyToId == comment.Id).ToListAsync();
+            List<GanjoorComment> replyToReplies = new List<GanjoorComment>();
             foreach (GanjoorComment reply in replies)
             {
-                replies.AddRange(await _FindReplies(reply));
+                replyToReplies.AddRange(await _FindReplies(reply));
+            }
+            if(replyToReplies.Count > 0)
+            {
+                replies.AddRange(replyToReplies);
             }
             return replies;
         }
