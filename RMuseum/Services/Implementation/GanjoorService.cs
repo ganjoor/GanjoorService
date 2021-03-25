@@ -1271,7 +1271,7 @@ namespace RMuseum.Services.Implementation
                                                         &&
                                                         (trackType == PoemMusicTrackType.All || t.TrackType == trackType)
                                                     )
-                                                    .OrderBy(t => t.Id)
+                                                    .OrderBy(t => t.SongOrder)
                                                     .Select
                                                     (
                                                      t => new PoemMusicTrackViewModel()
@@ -1375,6 +1375,9 @@ namespace RMuseum.Services.Implementation
                     sug
                     );
 
+                await _context.SaveChangesAsync();
+                sug.SongOrder = sug.Id;
+                _context.GanjoorPoemMusicTracks.Update(sug);
                 await _context.SaveChangesAsync();
                 song.Id = sug.Id;
                 return new RServiceResult<PoemMusicTrackViewModel>(song);
@@ -1562,6 +1565,11 @@ namespace RMuseum.Services.Implementation
 
                 _context.GanjoorPoemMusicTracks.Add(track);
 
+                await _context.SaveChangesAsync();
+
+                track.SongOrder = track.Id;
+                song.Id = track.Id;
+                _context.GanjoorPoemMusicTracks.Update(track);
                 await _context.SaveChangesAsync();
 
                 return new RServiceResult<PoemMusicTrackViewModel>(song);

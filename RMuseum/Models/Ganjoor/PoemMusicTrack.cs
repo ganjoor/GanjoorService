@@ -131,5 +131,10 @@ namespace RMuseum.Models.Ganjoor
         /// rejection cause
         /// </summary>
         public string RejectionCause { get; set; }
+
+        /// <summary>
+        /// Song Order
+        /// </summary>
+        public int SongOrder { get; set; }
     }
 }

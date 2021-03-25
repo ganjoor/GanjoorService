@@ -443,7 +443,7 @@ namespace RMuseum.Services.Implementation
                 {
                     connection.Open();
                     using (MySqlDataAdapter src = new MySqlDataAdapter(
-                        "SELECT poem_id, artist_name, artist_beeptunesurl, album_name, album_beeptunesurl, track_name, track_beeptunesurl, ptrack_typeid FROM ganja_ptracks ORDER BY id",
+                        "SELECT id, poem_id, artist_name, artist_beeptunesurl, album_name, album_beeptunesurl, track_name, track_beeptunesurl, ptrack_typeid FROM ganja_ptracks ORDER BY id",
                         connection))
                     {
                         job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - mysql")).Result;
@@ -467,7 +467,8 @@ namespace RMuseum.Services.Implementation
                                     TrackUrl = row["track_beeptunesurl"].ToString(),
                                     ApprovalDate = DateTime.Now,
                                     Description = "",
-                                    Approved = approved
+                                    Approved = approved,
+                                    SongOrder = int.Parse(row["id"].ToString())
                                 };
 
                                 var poem = await context.GanjoorPoems.Where(p => p.Id == track.PoemId).SingleOrDefaultAsync();
@@ -505,12 +506,14 @@ namespace RMuseum.Services.Implementation
 
                                 context.GanjoorPoemMusicTracks.Add(track);
 
-                                await context.SaveChangesAsync(); //preserve order of poems
+                                
 
                             }
                             job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - finalizing approved poem songs data")).Result;
 
-                           
+                            await context.SaveChangesAsync();
+
+
 
                         }
 
