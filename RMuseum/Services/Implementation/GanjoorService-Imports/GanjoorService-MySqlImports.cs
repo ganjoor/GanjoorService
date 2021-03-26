@@ -118,11 +118,7 @@ namespace RMuseum.Services.Implementation
                                                         GanjoorPageType.None;
 
                                             int? poetId = row["post_author"].ToString() == "1" ? (int?)null : int.Parse(row["post_author"].ToString());
-                                            if (poetId == 36)//رشحه
-                                            {
-                                                continue;
-                                            }
-
+                                           
                                             if (poetId != null)
                                             {
                                                 if (!await context.GanjoorPoets.Where(poet => poet.Id == poetId).AnyAsync())
