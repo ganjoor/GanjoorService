@@ -69,339 +69,62 @@ namespace RMuseum.Services.Implementation
                         stepCount++;
 
                         MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration, context);
+
                         RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql($"{stepCount} MusicCatalogueImportFromMySql", jobProgressServiceEF, job);
 
                         if (!musicCatalogueRes.Result)
                             return;
 
+                        stepCount++;
 
-                        try
+                        var resPages = await _ImportPagesFromMySql($"{stepCount} _ImportPagesFromMySql", context, jobProgressServiceEF, job);
+                        if(!resPages.Result)
                         {
-
-                            using (MySqlConnection connection = new MySqlConnection
-                                            (
-                                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
-                                            ))
-                            {
-                                connection.Open();
-                                using (MySqlDataAdapter src = new MySqlDataAdapter(
-                                    "SELECT ID, post_author, post_date, post_date_gmt, post_content, post_title, post_category, post_excerpt, post_status, comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, post_content_filtered, post_parent, guid, menu_order, post_type, post_mime_type, comment_count, " +
-                                    "COALESCE((SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='_wp_page_template'), '') AS template," +
-                                    "(SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='otherpoetid') AS other_poet_id " +
-                                    "FROM ganja_posts",
-                                    connection))
-                                {
-                                    using (DataTable srcData = new DataTable())
-                                    {
-                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 1 - mysql 1")).Result;
-
-                                        await src.FillAsync(srcData);
-
-                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 1 - processing mysql data")).Result;
-
-
-                                        foreach (DataRow row in srcData.Rows)
-                                        {
-                                            GanjoorPageType pageType =
-                                                row["post_type"].ToString() == "post" && row["comment_status"].ToString() != "closed" ?
-                                                        GanjoorPageType.PoemPage
-                                                        :
-                                                        row["template"].ToString() == "comspage.php" ?
-                                                        GanjoorPageType.AllComments
-                                                        :
-                                                        row["template"].ToString() == "relations.php" ?
-                                                        GanjoorPageType.ProsodySimilars
-                                                        :
-                                                        row["template"].ToString() == "vazn.php" ?
-                                                        GanjoorPageType.ProsodyAndStats
-                                                        :
-                                                        GanjoorPageType.None;
-
-                                            int? poetId = row["post_author"].ToString() == "1" ? (int?)null : int.Parse(row["post_author"].ToString());
-                                           
-                                            if (poetId != null)
-                                            {
-                                                if (!await context.GanjoorPoets.Where(poet => poet.Id == poetId).AnyAsync())
-                                                {
-                                                    continue;
-                                                }
-                                            }
-
-                                            GanjoorPage page = new GanjoorPage()
-                                            {
-                                                Id = int.Parse(row["ID"].ToString()),
-                                                GanjoorPageType = pageType,
-                                                Published = true,
-                                                PageOrder = -1,
-                                                Title = row["post_title"].ToString(),
-                                                UrlSlug = row["post_name"].ToString(),
-                                                HtmlText = row["post_content"].ToString(),
-                                                ParentId = row["post_parent"].ToString() == "0" ? (int?)null : int.Parse(row["post_parent"].ToString()),
-                                                PoetId = poetId,
-                                                SecondPoetId = row["other_poet_id"] == DBNull.Value ? (int?)null : int.Parse(row["other_poet_id"].ToString()),
-                                                PostDate = (DateTime)row["post_date"]
-                                            };
-
-
-
-                                            if (pageType == GanjoorPageType.PoemPage)
-                                            {
-                                                var poem = await context.GanjoorPoems.Where(p => p.Id == page.Id).FirstOrDefaultAsync();
-                                                if (poem == null)
-                                                    continue;
-                                                page.PoemId = poem.Id;
-                                            }
-                                            if (poetId != null && pageType == GanjoorPageType.None)
-                                            {
-                                                GanjoorCat cat = await context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId == null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
-                                                if (cat != null)
-                                                {
-                                                    page.GanjoorPageType = GanjoorPageType.PoetPage;
-                                                    page.CatId = cat.Id;
-                                                }
-                                                else
-                                                {
-                                                    cat = await context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId != null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
-                                                    if (cat != null)
-                                                    {
-                                                        page.GanjoorPageType = GanjoorPageType.CatPage;
-                                                        page.CatId = cat.Id;
-                                                    }
-                                                }
-                                            }
-
-                                            context.GanjoorPages.Add(page);
-
-                                        }
-                                    }
-                                }
-                            }
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 1 - finalizing")).Result;
-                            await context.SaveChangesAsync();
-
-
-
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 2 - pre fetch data")).Result;
-
-                            var orphanPages = await context.GanjoorPages.Include(p => p.Poem).Where(p => p.FullUrl == null).ToListAsync();
-
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 2 - post fetch data")).Result;
-
-                            double count = orphanPages.Count;
-                            int i = 0;
-                            foreach (var page in orphanPages)
-                            {
-
-                                job = (await jobProgressServiceEF.UpdateJob(job.Id, i++, "phase 2")).Result;
-
-                                string fullUrl = page.UrlSlug;
-                                string fullTitle = page.Title;
-
-                                if (page.GanjoorPageType == GanjoorPageType.PoemPage)
-                                {
-                                    fullTitle = page.Poem.FullTitle;
-                                    fullUrl = page.Poem.FullUrl;
-                                }
-                                else
-                                {
-                                    if (page.ParentId != null)
-                                    {
-                                        GanjoorPage parent = await context.GanjoorPages.Where(p => p.Id == page.ParentId).SingleAsync();
-                                        while (parent != null)
-                                        {
-                                            fullUrl = parent.UrlSlug + "/" + fullUrl;
-                                            fullTitle = parent.Title + " » " + fullTitle;
-                                            parent = parent.ParentId == null ? null : await context.GanjoorPages.Where(p => p.Id == parent.ParentId).SingleAsync();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        GanjoorCat cat = await context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
-                                        if (cat != null)
-                                        {
-                                            fullUrl = cat.FullUrl;
-                                            while (cat.ParentId != null)
-                                            {
-                                                cat = await context.GanjoorCategories.Where(c => c.Id == cat.ParentId).SingleOrDefaultAsync();
-                                                if (cat != null)
-                                                {
-                                                    fullTitle = cat.Title + " » " + fullTitle;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            cat = await context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.ParentId == null).SingleOrDefaultAsync();
-                                            if (cat != null)
-                                            {
-                                                fullUrl = $"{cat.UrlSlug}/{page.UrlSlug}";
-                                            }
-                                        }
-                                    }
-
-                                }
-                                if (!string.IsNullOrEmpty(fullUrl) && fullUrl.IndexOf('/') != 0)
-                                    fullUrl = $"/{fullUrl}";
-                                page.FullUrl = fullUrl;
-                                page.FullTitle = fullTitle;
-
-                                context.Update(page);
-                            }
-
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "phase 2 - finalizing")).Result;
-
-                            await context.SaveChangesAsync();
-
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - pre mysql data fetch")).Result;
-
-                            using (MySqlConnection connection = new MySqlConnection
-                                            (
-                                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
-                                            ))
-                            {
-                                connection.Open();
-                                using (MySqlDataAdapter src = new MySqlDataAdapter(
-                                    "SELECT meta_key, post_id, meta_value FROM ganja_postmeta WHERE meta_key IN ( 'vazn', 'ravi', 'src', 'srcslug', 'oldtag' )",
-                                    connection))
-                                {
-                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - mysql 2")).Result;
-                                    using (DataTable srcData = new DataTable())
-                                    {
-                                        await src.FillAsync(srcData);
-
-                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - processing meta data")).Result;
-
-                                        int r = 0;
-                                        foreach (DataRow row in srcData.Rows)
-                                        {
-                                            job = (await jobProgressServiceEF.UpdateJob(job.Id, r++, "phase 3 - processing meta data")).Result;
-
-                                            int poemId = int.Parse(row["post_id"].ToString());
-                                            var poem = await context.GanjoorPoems.Where(p => p.Id == poemId).FirstOrDefaultAsync();
-                                            if (poem == null)
-                                                continue;
-
-                                            string metaKey = row["meta_key"].ToString();
-                                            string metaValue = row["meta_value"].ToString();
-                                            switch (metaKey)
-                                            {
-                                                case "vazn":
-                                                    {
-                                                        GanjoorMetre metre = await context.GanjoorMetres.Where(m => m.Rhythm == metaValue).SingleOrDefaultAsync();
-                                                        if (metre == null)
-                                                        {
-                                                            metre = new GanjoorMetre()
-                                                            {
-                                                                Rhythm = metaValue,
-                                                                VerseCount = 0
-                                                            };
-                                                            context.GanjoorMetres.Add(metre);
-                                                            await context.SaveChangesAsync();
-                                                        }
-
-                                                        poem.GanjoorMetreId = metre.Id;
-                                                    }
-                                                    break;
-                                                case "ravi":
-                                                    poem.RhymeLetters = metaValue;
-                                                    break;
-                                                case "src":
-                                                    poem.SourceName = metaValue;
-                                                    break;
-                                                case "srcslug":
-                                                    poem.SourceUrlSlug = metaValue;
-                                                    break;
-                                                case "oldtag":
-                                                    poem.OldTag = metaValue;
-                                                    switch(poem.OldTag)
-                                                    {
-                                                        case "بدایع":
-                                                            poem.OldTagPageUrl = "/saadi/badaye";
-                                                            break;
-                                                        case "خواتیم":
-                                                            poem.OldTagPageUrl = "/saadi/khavatim";
-                                                            break;
-                                                        case "طیبات":
-                                                            poem.OldTagPageUrl = "/saadi/tayyebat";
-                                                            break;
-                                                        case "غزلیات قدیم":
-                                                            poem.OldTagPageUrl = "/saadi/ghazaliyat-e-ghadim";
-                                                            break;
-                                                        case "ملمعات":
-                                                            poem.OldTagPageUrl = "/saadi/molammaat";
-                                                            break;
-                                                    }
-                                                    break;
-                                            }
-
-                                            context.GanjoorPoems.Update(poem);
-                                        }
-                                    }
-                                }
-                            }
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase 3 - finalizing meta data")).Result;
-                            await context.SaveChangesAsync();
-
-                            var resApprovedPoemSongs = await _ImportPoemSongsDataFromMySql("_ImportPoemSongsDataFromMySql", context, jobProgressServiceEF, job, true);
-                            if (!resApprovedPoemSongs.Result)
-                            {
-                                return;
-                            }
-
-                            var resPendingPoemSongs = await _ImportPoemSongsDataFromMySql("_ImportPoemSongsDataFromMySql", context, jobProgressServiceEF, job, false);
-                            if (!resPendingPoemSongs.Result)
-                            {
-                                return;
-                            }
-
-                            using (MySqlConnection connection = new MySqlConnection
-                                            (
-                                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
-                                            ))
-                            {
-                                connection.Open();
-                                using (MySqlDataAdapter src = new MySqlDataAdapter(
-                                    "SELECT poem_id, mimage_id FROM ganja_mimages",
-                                    connection))
-                                {
-                                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase N - mysql N")).Result;
-                                    using (DataTable srcData = new DataTable())
-                                    {
-                                        await src.FillAsync(srcData);
-
-                                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase N - processing meta data")).Result;
-
-                                        int r = 0;
-                                        foreach (DataRow row in srcData.Rows)
-                                        {
-                                            job = (await jobProgressServiceEF.UpdateJob(job.Id, r++, "phase N - processing meta data")).Result;
-
-                                            int poemId = int.Parse(row["poem_id"].ToString());
-                                            Guid imageId = Guid.Parse(row["mimage_id"].ToString());
-
-                                            var link = await context.GanjoorLinks.Include(l => l.Item).ThenInclude(i => i.Images).
-                                                    Where(l => l.GanjoorPostId == poemId && l.Item.Images.First().Id == imageId)
-                                                    .FirstOrDefaultAsync();
-                                            if (link != null)
-                                            {
-                                                link.DisplayOnPage = true;
-                                                context.GanjoorLinks.Update(link);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase N - finalizing meta data")).Result;
-                            await context.SaveChangesAsync();
-
-
-                           
+                            return;
                         }
-                        catch (Exception jobExp)
+
+                        stepCount++;
+
+
+                        var resOrphans = await _CompleteOrphanPagesData($"{stepCount} _CompleteOrphanPagesData", context, jobProgressServiceEF, job);
+                        if (!resOrphans.Result)
                         {
-                            await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, jobExp.ToString());
+                            return;
                         }
-                        var resComments = await _ImportCommentsDataFromMySql("_ImportCommentsDataFromMySql", context, jobProgressServiceEF, job);
+
+                        stepCount++;
+
+                        var resMetadata = await _ImportMetadataFromMySql($"{stepCount} _ImportMetadataFromMySql", context, jobProgressServiceEF, job);
+                        if (!resMetadata.Result)
+                        {
+                            return;
+                        }
+
+                        stepCount++;
+
+
+                        var resApprovedPoemSongs = await _ImportPoemSongsDataFromMySql($"{stepCount} _ImportPoemSongsDataFromMySql", context, jobProgressServiceEF, job, true);
+                        if (!resApprovedPoemSongs.Result)
+                        {
+                            return;
+                        }
+
+                        stepCount++;
+                        var resPendingPoemSongs = await _ImportPoemSongsDataFromMySql($"{stepCount} - _ImportPoemSongsDataFromMySql", context, jobProgressServiceEF, job, false);
+                        if (!resPendingPoemSongs.Result)
+                        {
+                            return;
+                        }
+
+                        stepCount++;
+                        var resImages = await _ImportPoemImagesDataFromMySql($"{stepCount} - _ImportPoemImagesDataFromMySql", context, jobProgressServiceEF, job);
+                        if(!resImages.Result)
+                        {
+                            return;
+                        }
+
+                        stepCount++;
+                        var resComments = await _ImportCommentsDataFromMySql($"{stepCount} - _ImportCommentsDataFromMySql", context, jobProgressServiceEF, job);
                         if (!resComments.Result)
                         {
                             return;
@@ -418,6 +141,521 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
+        }
+
+
+        private async Task<RServiceResult<bool>> _ImportPagesFromMySql(string jobName, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection
+                                           (
+                                           $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                           ))
+                {
+                    connection.Open();
+                    using (MySqlDataAdapter src = new MySqlDataAdapter(
+                        "SELECT ID, post_author, post_date, post_date_gmt, post_content, post_title, post_category, post_excerpt, post_status, comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, post_content_filtered, post_parent, guid, menu_order, post_type, post_mime_type, comment_count, " +
+                        "COALESCE((SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='_wp_page_template'), '') AS template," +
+                        "(SELECT meta_value FROM ganja_postmeta WHERE post_id = ID AND meta_key='otherpoetid') AS other_poet_id " +
+                        "FROM ganja_posts",
+                        connection))
+                    {
+                        using (DataTable srcData = new DataTable())
+                        {
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 1 - mysql 1")).Result;
+
+                            await src.FillAsync(srcData);
+
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 1 - processing mysql data")).Result;
+
+
+                            foreach (DataRow row in srcData.Rows)
+                            {
+                                GanjoorPageType pageType =
+                                    row["post_type"].ToString() == "post" && row["comment_status"].ToString() != "closed" ?
+                                            GanjoorPageType.PoemPage
+                                            :
+                                            row["template"].ToString() == "comspage.php" ?
+                                            GanjoorPageType.AllComments
+                                            :
+                                            row["template"].ToString() == "relations.php" ?
+                                            GanjoorPageType.ProsodySimilars
+                                            :
+                                            row["template"].ToString() == "vazn.php" ?
+                                            GanjoorPageType.ProsodyAndStats
+                                            :
+                                            GanjoorPageType.None;
+
+                                int? poetId = row["post_author"].ToString() == "1" ? (int?)null : int.Parse(row["post_author"].ToString());
+
+
+                                GanjoorPage page = new GanjoorPage()
+                                {
+                                    Id = int.Parse(row["ID"].ToString()),
+                                    GanjoorPageType = pageType,
+                                    Published = true,
+                                    PageOrder = -1,
+                                    Title = row["post_title"].ToString(),
+                                    UrlSlug = row["post_name"].ToString(),
+                                    HtmlText = row["post_content"].ToString(),
+                                    ParentId = row["post_parent"].ToString() == "0" ? (int?)null : int.Parse(row["post_parent"].ToString()),
+                                    PoetId = poetId,
+                                    SecondPoetId = row["other_poet_id"] == DBNull.Value ? (int?)null : int.Parse(row["other_poet_id"].ToString()),
+                                    PostDate = (DateTime)row["post_date"]
+                                };
+
+
+
+                                if (pageType == GanjoorPageType.PoemPage)
+                                {
+                                    page.PoemId = page.Id;
+                                }
+                                if (poetId != null && pageType == GanjoorPageType.None)
+                                {
+                                    GanjoorCat cat = await context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId == null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                                    if (cat != null)
+                                    {
+                                        page.GanjoorPageType = GanjoorPageType.PoetPage;
+                                        page.CatId = cat.Id;
+                                    }
+                                    else
+                                    {
+                                        cat = await context.GanjoorCategories.Where(c => c.PoetId == poetId && c.ParentId != null && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                                        if (cat != null)
+                                        {
+                                            page.GanjoorPageType = GanjoorPageType.CatPage;
+                                            page.CatId = cat.Id;
+                                        }
+                                    }
+                                }
+
+                                context.GanjoorPages.Add(page);
+
+                            }
+                        }
+                    }
+                }
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 1 - finalizing")).Result;
+                await context.SaveChangesAsync();
+
+
+
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 2 - pre fetch data")).Result;
+
+                var orphanPages = await context.GanjoorPages.Include(p => p.Poem).Where(p => p.FullUrl == null).ToListAsync();
+
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 2 - post fetch data")).Result;
+
+                double count = orphanPages.Count;
+                int i = 0;
+                foreach (var page in orphanPages)
+                {
+
+                    job = (await jobProgressServiceEF.UpdateJob(job.Id, i++, $"{jobName} - phase 2")).Result;
+
+                    string fullUrl = page.UrlSlug;
+                    string fullTitle = page.Title;
+
+                    if (page.GanjoorPageType == GanjoorPageType.PoemPage)
+                    {
+                        fullTitle = page.Poem.FullTitle;
+                        fullUrl = page.Poem.FullUrl;
+                    }
+                    else
+                    {
+                        if (page.ParentId != null)
+                        {
+                            GanjoorPage parent = await context.GanjoorPages.Where(p => p.Id == page.ParentId).SingleAsync();
+                            while (parent != null)
+                            {
+                                fullUrl = parent.UrlSlug + "/" + fullUrl;
+                                fullTitle = parent.Title + " » " + fullTitle;
+                                parent = parent.ParentId == null ? null : await context.GanjoorPages.Where(p => p.Id == parent.ParentId).SingleAsync();
+                            }
+                        }
+                        else
+                        {
+                            GanjoorCat cat = await context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                            if (cat != null)
+                            {
+                                fullUrl = cat.FullUrl;
+                                while (cat.ParentId != null)
+                                {
+                                    cat = await context.GanjoorCategories.Where(c => c.Id == cat.ParentId).SingleOrDefaultAsync();
+                                    if (cat != null)
+                                    {
+                                        fullTitle = cat.Title + " » " + fullTitle;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                cat = await context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.ParentId == null).SingleOrDefaultAsync();
+                                if (cat != null)
+                                {
+                                    fullUrl = $"{cat.UrlSlug}/{page.UrlSlug}";
+                                }
+                            }
+                        }
+
+                    }
+                    if (!string.IsNullOrEmpty(fullUrl) && fullUrl.IndexOf('/') != 0)
+                        fullUrl = $"/{fullUrl}";
+                    page.FullUrl = fullUrl;
+                    page.FullTitle = fullTitle;
+
+                    context.Update(page);
+                }
+
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, $"{jobName} - phase 2 - finalizing")).Result;
+
+                await context.SaveChangesAsync();
+
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - pre mysql data fetch")).Result;
+
+                using (MySqlConnection connection = new MySqlConnection
+                                (
+                                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                ))
+                {
+                    connection.Open();
+                    using (MySqlDataAdapter src = new MySqlDataAdapter(
+                        "SELECT meta_key, post_id, meta_value FROM ganja_postmeta WHERE meta_key IN ( 'vazn', 'ravi', 'src', 'srcslug', 'oldtag' )",
+                        connection))
+                    {
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - mysql 2")).Result;
+                        using (DataTable srcData = new DataTable())
+                        {
+                            await src.FillAsync(srcData);
+
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - processing meta data")).Result;
+
+                            int r = 0;
+                            foreach (DataRow row in srcData.Rows)
+                            {
+                                job = (await jobProgressServiceEF.UpdateJob(job.Id, r++, $"{jobName} - phase 3 - processing meta data")).Result;
+
+                                int poemId = int.Parse(row["post_id"].ToString());
+                                var poem = await context.GanjoorPoems.Where(p => p.Id == poemId).FirstOrDefaultAsync();
+                                if (poem == null)
+                                    continue;
+
+                                string metaKey = row["meta_key"].ToString();
+                                string metaValue = row["meta_value"].ToString();
+                                switch (metaKey)
+                                {
+                                    case "vazn":
+                                        {
+                                            GanjoorMetre metre = await context.GanjoorMetres.Where(m => m.Rhythm == metaValue).SingleOrDefaultAsync();
+                                            if (metre == null)
+                                            {
+                                                metre = new GanjoorMetre()
+                                                {
+                                                    Rhythm = metaValue,
+                                                    VerseCount = 0
+                                                };
+                                                context.GanjoorMetres.Add(metre);
+                                                await context.SaveChangesAsync();
+                                            }
+
+                                            poem.GanjoorMetreId = metre.Id;
+                                        }
+                                        break;
+                                    case "ravi":
+                                        poem.RhymeLetters = metaValue;
+                                        break;
+                                    case "src":
+                                        poem.SourceName = metaValue;
+                                        break;
+                                    case "srcslug":
+                                        poem.SourceUrlSlug = metaValue;
+                                        break;
+                                    case "oldtag":
+                                        poem.OldTag = metaValue;
+                                        switch (poem.OldTag)
+                                        {
+                                            case "بدایع":
+                                                poem.OldTagPageUrl = "/saadi/badaye";
+                                                break;
+                                            case "خواتیم":
+                                                poem.OldTagPageUrl = "/saadi/khavatim";
+                                                break;
+                                            case "طیبات":
+                                                poem.OldTagPageUrl = "/saadi/tayyebat";
+                                                break;
+                                            case "غزلیات قدیم":
+                                                poem.OldTagPageUrl = "/saadi/ghazaliyat-e-ghadim";
+                                                break;
+                                            case "ملمعات":
+                                                poem.OldTagPageUrl = "/saadi/molammaat";
+                                                break;
+                                        }
+                                        break;
+                                }
+
+                                context.GanjoorPoems.Update(poem);
+                            }
+                        }
+                    }
+                }
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - finalizing meta data")).Result;
+                await context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, exp.ToString());
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        private async Task<RServiceResult<bool>> _CompleteOrphanPagesData(string jobName, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        {
+            try
+            {
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 2 - pre fetch data")).Result;
+
+                var orphanPages = await context.GanjoorPages.Include(p => p.Poem).Where(p => p.FullUrl == null).ToListAsync();
+
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 2 - post fetch data")).Result;
+
+                double count = orphanPages.Count;
+                int i = 0;
+                foreach (var page in orphanPages)
+                {
+
+                    job = (await jobProgressServiceEF.UpdateJob(job.Id, i++, $"{jobName} - phase 2")).Result;
+
+                    string fullUrl = page.UrlSlug;
+                    string fullTitle = page.Title;
+
+                    if (page.GanjoorPageType == GanjoorPageType.PoemPage)
+                    {
+                        fullTitle = page.Poem.FullTitle;
+                        fullUrl = page.Poem.FullUrl;
+                    }
+                    else
+                    {
+                        if (page.ParentId != null)
+                        {
+                            GanjoorPage parent = await context.GanjoorPages.Where(p => p.Id == page.ParentId).SingleAsync();
+                            while (parent != null)
+                            {
+                                fullUrl = parent.UrlSlug + "/" + fullUrl;
+                                fullTitle = parent.Title + " » " + fullTitle;
+                                parent = parent.ParentId == null ? null : await context.GanjoorPages.Where(p => p.Id == parent.ParentId).SingleAsync();
+                            }
+                        }
+                        else
+                        {
+                            GanjoorCat cat = await context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
+                            if (cat != null)
+                            {
+                                fullUrl = cat.FullUrl;
+                                while (cat.ParentId != null)
+                                {
+                                    cat = await context.GanjoorCategories.Where(c => c.Id == cat.ParentId).SingleOrDefaultAsync();
+                                    if (cat != null)
+                                    {
+                                        fullTitle = cat.Title + " » " + fullTitle;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                cat = await context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.ParentId == null).SingleOrDefaultAsync();
+                                if (cat != null)
+                                {
+                                    fullUrl = $"{cat.UrlSlug}/{page.UrlSlug}";
+                                }
+                            }
+                        }
+
+                    }
+                    if (!string.IsNullOrEmpty(fullUrl) && fullUrl.IndexOf('/') != 0)
+                        fullUrl = $"/{fullUrl}";
+                    page.FullUrl = fullUrl;
+                    page.FullTitle = fullTitle;
+
+                    context.Update(page);
+                }
+
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, $"{jobName} - phase 2 - finalizing")).Result;
+
+                await context.SaveChangesAsync();
+
+                
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, exp.ToString());
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        private async Task<RServiceResult<bool>> _ImportMetadataFromMySql(string jobName, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        {
+            try
+            {
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - pre mysql data fetch")).Result;
+
+                using (MySqlConnection connection = new MySqlConnection
+                                (
+                                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                ))
+                {
+                    connection.Open();
+                    using (MySqlDataAdapter src = new MySqlDataAdapter(
+                        "SELECT meta_key, post_id, meta_value FROM ganja_postmeta WHERE meta_key IN ( 'vazn', 'ravi', 'src', 'srcslug', 'oldtag' )",
+                        connection))
+                    {
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - mysql 2")).Result;
+                        using (DataTable srcData = new DataTable())
+                        {
+                            await src.FillAsync(srcData);
+
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - processing meta data")).Result;
+
+                            int r = 0;
+                            foreach (DataRow row in srcData.Rows)
+                            {
+                                job = (await jobProgressServiceEF.UpdateJob(job.Id, r++, $"{jobName} - phase 3 - processing meta data")).Result;
+
+                                int poemId = int.Parse(row["post_id"].ToString());
+                                var poem = await context.GanjoorPoems.Where(p => p.Id == poemId).FirstOrDefaultAsync();
+                                if (poem == null)
+                                    continue;
+
+                                string metaKey = row["meta_key"].ToString();
+                                string metaValue = row["meta_value"].ToString();
+                                switch (metaKey)
+                                {
+                                    case "vazn":
+                                        {
+                                            GanjoorMetre metre = await context.GanjoorMetres.Where(m => m.Rhythm == metaValue).SingleOrDefaultAsync();
+                                            if (metre == null)
+                                            {
+                                                metre = new GanjoorMetre()
+                                                {
+                                                    Rhythm = metaValue,
+                                                    VerseCount = 0
+                                                };
+                                                context.GanjoorMetres.Add(metre);
+                                                await context.SaveChangesAsync();
+                                            }
+
+                                            poem.GanjoorMetreId = metre.Id;
+                                        }
+                                        break;
+                                    case "ravi":
+                                        poem.RhymeLetters = metaValue;
+                                        break;
+                                    case "src":
+                                        poem.SourceName = metaValue;
+                                        break;
+                                    case "srcslug":
+                                        poem.SourceUrlSlug = metaValue;
+                                        break;
+                                    case "oldtag":
+                                        poem.OldTag = metaValue;
+                                        switch (poem.OldTag)
+                                        {
+                                            case "بدایع":
+                                                poem.OldTagPageUrl = "/saadi/badaye";
+                                                break;
+                                            case "خواتیم":
+                                                poem.OldTagPageUrl = "/saadi/khavatim";
+                                                break;
+                                            case "طیبات":
+                                                poem.OldTagPageUrl = "/saadi/tayyebat";
+                                                break;
+                                            case "غزلیات قدیم":
+                                                poem.OldTagPageUrl = "/saadi/ghazaliyat-e-ghadim";
+                                                break;
+                                            case "ملمعات":
+                                                poem.OldTagPageUrl = "/saadi/molammaat";
+                                                break;
+                                        }
+                                        break;
+                                }
+
+                                context.GanjoorPoems.Update(poem);
+                            }
+                        }
+                    }
+                }
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - finalizing meta data")).Result;
+                await context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, exp.ToString());
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+
+        private async Task<RServiceResult<bool>> _ImportPoemImagesDataFromMySql(string jobName, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        {
+            try
+            {
+
+                using (MySqlConnection connection = new MySqlConnection
+                                (
+                                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                ))
+                {
+                    connection.Open();
+                    using (MySqlDataAdapter src = new MySqlDataAdapter(
+                        "SELECT poem_id, mimage_id FROM ganja_mimages",
+                        connection))
+                    {
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase N - mysql N")).Result;
+                        using (DataTable srcData = new DataTable())
+                        {
+                            await src.FillAsync(srcData);
+
+                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase N - processing meta data")).Result;
+
+                            int r = 0;
+                            foreach (DataRow row in srcData.Rows)
+                            {
+                                job = (await jobProgressServiceEF.UpdateJob(job.Id, r++, "phase N - processing meta data")).Result;
+
+                                int poemId = int.Parse(row["poem_id"].ToString());
+                                Guid imageId = Guid.Parse(row["mimage_id"].ToString());
+
+                                var link = await context.GanjoorLinks.Include(l => l.Item).ThenInclude(i => i.Images).
+                                        Where(l => l.GanjoorPostId == poemId && l.Item.Images.First().Id == imageId)
+                                        .FirstOrDefaultAsync();
+                                if (link != null)
+                                {
+                                    link.DisplayOnPage = true;
+                                    context.GanjoorLinks.Update(link);
+                                }
+                            }
+                        }
+                    }
+                }
+                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, "phase N - finalizing meta data")).Result;
+                await context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, exp.ToString());
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+
         }
 
         private async Task<RServiceResult<bool>> _ImportPoemSongsDataFromMySql(string jobName, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, bool approved)
@@ -1078,8 +1316,6 @@ namespace RMuseum.Services.Implementation
             }
 
         }
-
-      
 
         private int GetCatsFullInfo(string ID, List<CatInfo> lstCatInfo, MySqlConnection newconn)
         {
