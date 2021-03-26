@@ -615,10 +615,7 @@ namespace RMuseum.Services.Implementation
                                     Status = row["comment_approved"].ToString() == "1" ? PublishStatus.Published : PublishStatus.Awaiting
                                 };
 
-                                var poem = await context.GanjoorPoems.Where(p => p.Id == comment.PoemId).SingleOrDefaultAsync();
-                                if (poem == null)
-                                    continue;
-
+                               
 
                                 context.GanjoorComments.Add(comment);
 
