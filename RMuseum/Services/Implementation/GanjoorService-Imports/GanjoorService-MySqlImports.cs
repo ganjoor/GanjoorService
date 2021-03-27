@@ -59,22 +59,20 @@ namespace RMuseum.Services.Implementation
                             await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, "PoetImagesImportPath is not set");
                             return;
                         }
-
                         stepCount++;
 
                         RServiceResult<bool> poetsResult = await _ImportPoetsFromMySql($"{stepCount} ImportPoetsFromMySql", context, jobProgressServiceEF, job);
                         if (!poetsResult.Result)
                             return;
 
-                        stepCount++;
+                       stepCount++;
 
-                        MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration, context);
+                       MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration, context);
 
-                        RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql($"{stepCount} MusicCatalogueImportFromMySql", jobProgressServiceEF, job);
+                       RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql($"{stepCount} MusicCatalogueImportFromMySql", jobProgressServiceEF, job);
 
                         if (!musicCatalogueRes.Result)
                             return;
-
                         stepCount++;
 
                         var resPages = await _ImportPagesFromMySql($"{stepCount} _ImportPagesFromMySql", context, jobProgressServiceEF, job);
@@ -148,6 +146,8 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                await context.Database.ExecuteSqlRawAsync("DELETE FROM GanjoorPages");
+
                 using (MySqlConnection connection = new MySqlConnection
                                            (
                                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
@@ -206,9 +206,14 @@ namespace RMuseum.Services.Implementation
                                 };
 
 
-
                                 if (pageType == GanjoorPageType.PoemPage)
                                 {
+                                    var poem = await context.GanjoorPoems.Where(p => p.Id == page.Id).SingleOrDefaultAsync();
+                                    if(poem == null)
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, $"page Id = {page.Id}");
+                                        return new RServiceResult<bool>(false, $"page Id = {page.Id}");
+                                    }
                                     page.PoemId = page.Id;
                                 }
                                 if (poetId != null && pageType == GanjoorPageType.None)
@@ -239,168 +244,6 @@ namespace RMuseum.Services.Implementation
                 job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 1 - finalizing")).Result;
                 await context.SaveChangesAsync();
 
-
-
-                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 2 - pre fetch data")).Result;
-
-                var orphanPages = await context.GanjoorPages.Include(p => p.Poem).Where(p => p.FullUrl == null).ToListAsync();
-
-                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 2 - post fetch data")).Result;
-
-                double count = orphanPages.Count;
-                int i = 0;
-                foreach (var page in orphanPages)
-                {
-
-                    job = (await jobProgressServiceEF.UpdateJob(job.Id, i++, $"{jobName} - phase 2")).Result;
-
-                    string fullUrl = page.UrlSlug;
-                    string fullTitle = page.Title;
-
-                    if (page.GanjoorPageType == GanjoorPageType.PoemPage)
-                    {
-                        fullTitle = page.Poem.FullTitle;
-                        fullUrl = page.Poem.FullUrl;
-                    }
-                    else
-                    {
-                        if (page.ParentId != null)
-                        {
-                            GanjoorPage parent = await context.GanjoorPages.Where(p => p.Id == page.ParentId).SingleAsync();
-                            while (parent != null)
-                            {
-                                fullUrl = parent.UrlSlug + "/" + fullUrl;
-                                fullTitle = parent.Title + " » " + fullTitle;
-                                parent = parent.ParentId == null ? null : await context.GanjoorPages.Where(p => p.Id == parent.ParentId).SingleAsync();
-                            }
-                        }
-                        else
-                        {
-                            GanjoorCat cat = await context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.UrlSlug == page.UrlSlug).SingleOrDefaultAsync();
-                            if (cat != null)
-                            {
-                                fullUrl = cat.FullUrl;
-                                while (cat.ParentId != null)
-                                {
-                                    cat = await context.GanjoorCategories.Where(c => c.Id == cat.ParentId).SingleOrDefaultAsync();
-                                    if (cat != null)
-                                    {
-                                        fullTitle = cat.Title + " » " + fullTitle;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                cat = await context.GanjoorCategories.Where(c => c.PoetId == page.PoetId && c.ParentId == null).SingleOrDefaultAsync();
-                                if (cat != null)
-                                {
-                                    fullUrl = $"{cat.UrlSlug}/{page.UrlSlug}";
-                                }
-                            }
-                        }
-
-                    }
-                    if (!string.IsNullOrEmpty(fullUrl) && fullUrl.IndexOf('/') != 0)
-                        fullUrl = $"/{fullUrl}";
-                    page.FullUrl = fullUrl;
-                    page.FullTitle = fullTitle;
-
-                    context.Update(page);
-                }
-
-                job = (await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, $"{jobName} - phase 2 - finalizing")).Result;
-
-                await context.SaveChangesAsync();
-
-                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - pre mysql data fetch")).Result;
-
-                using (MySqlConnection connection = new MySqlConnection
-                                (
-                                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
-                                ))
-                {
-                    connection.Open();
-                    using (MySqlDataAdapter src = new MySqlDataAdapter(
-                        "SELECT meta_key, post_id, meta_value FROM ganja_postmeta WHERE meta_key IN ( 'vazn', 'ravi', 'src', 'srcslug', 'oldtag' )",
-                        connection))
-                    {
-                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - mysql 2")).Result;
-                        using (DataTable srcData = new DataTable())
-                        {
-                            await src.FillAsync(srcData);
-
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - processing meta data")).Result;
-
-                            int r = 0;
-                            foreach (DataRow row in srcData.Rows)
-                            {
-                                job = (await jobProgressServiceEF.UpdateJob(job.Id, r++, $"{jobName} - phase 3 - processing meta data")).Result;
-
-                                int poemId = int.Parse(row["post_id"].ToString());
-                                var poem = await context.GanjoorPoems.Where(p => p.Id == poemId).FirstOrDefaultAsync();
-                                if (poem == null)
-                                    continue;
-
-                                string metaKey = row["meta_key"].ToString();
-                                string metaValue = row["meta_value"].ToString();
-                                switch (metaKey)
-                                {
-                                    case "vazn":
-                                        {
-                                            GanjoorMetre metre = await context.GanjoorMetres.Where(m => m.Rhythm == metaValue).SingleOrDefaultAsync();
-                                            if (metre == null)
-                                            {
-                                                metre = new GanjoorMetre()
-                                                {
-                                                    Rhythm = metaValue,
-                                                    VerseCount = 0
-                                                };
-                                                context.GanjoorMetres.Add(metre);
-                                                await context.SaveChangesAsync();
-                                            }
-
-                                            poem.GanjoorMetreId = metre.Id;
-                                        }
-                                        break;
-                                    case "ravi":
-                                        poem.RhymeLetters = metaValue;
-                                        break;
-                                    case "src":
-                                        poem.SourceName = metaValue;
-                                        break;
-                                    case "srcslug":
-                                        poem.SourceUrlSlug = metaValue;
-                                        break;
-                                    case "oldtag":
-                                        poem.OldTag = metaValue;
-                                        switch (poem.OldTag)
-                                        {
-                                            case "بدایع":
-                                                poem.OldTagPageUrl = "/saadi/badaye";
-                                                break;
-                                            case "خواتیم":
-                                                poem.OldTagPageUrl = "/saadi/khavatim";
-                                                break;
-                                            case "طیبات":
-                                                poem.OldTagPageUrl = "/saadi/tayyebat";
-                                                break;
-                                            case "غزلیات قدیم":
-                                                poem.OldTagPageUrl = "/saadi/ghazaliyat-e-ghadim";
-                                                break;
-                                            case "ملمعات":
-                                                poem.OldTagPageUrl = "/saadi/molammaat";
-                                                break;
-                                        }
-                                        break;
-                                }
-
-                                context.GanjoorPoems.Update(poem);
-                            }
-                        }
-                    }
-                }
-                job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - phase 3 - finalizing meta data")).Result;
-                await context.SaveChangesAsync();
 
                 return new RServiceResult<bool>(true);
 
