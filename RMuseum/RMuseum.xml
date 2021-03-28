@@ -859,6 +859,16 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Int32)">
+            <summary>
+            Get Similar Poems accroding to prosody and rhyme informations
+            </summary>
+            <param name="paging"></param>
+            <param name="metre">cannot be empty</param>
+            <param name="rhyme">can be empty</param>
+            <param name="poetId">send 0 for all</param>
+            <returns>return value is not complete or valid for some parts, you should use only the valid parts!</returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
             <summary>
             Ganjoor Service
@@ -6428,6 +6438,16 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32})">
+            <summary>
+            Get Similar Poems accroding to prosody and rhyme informations
+            </summary>
+            <param name="paging"></param>
+            <param name="metre"></param>
+            <param name="rhyme"></param>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.Faal">
             <summary>
             get a random poem from hafez
@@ -7421,6 +7441,16 @@
             <summary>
             get a random poem from hafez
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32})">
+            <summary>
+            Get Similar Poems accroding to prosody and rhyme informations
+            </summary>
+            <param name="paging"></param>
+            <param name="metre"></param>
+            <param name="rhyme"></param>
+            <param name="poetId"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._context">

@@ -233,6 +233,16 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items)>> GetReportedComments(PagingParameterModel paging);
 
         /// <summary>
+        /// Get Similar Poems accroding to prosody and rhyme informations
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="metre"></param>
+        /// <param name="rhyme"></param>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId);
+
+        /// <summary>
         /// get a random poem from hafez
         /// </summary>
         /// <returns></returns>

@@ -1650,6 +1650,88 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// Get Similar Poems accroding to prosody and rhyme informations
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="metre"></param>
+        /// <param name="rhyme"></param>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(rhyme))
+                    rhyme = "";
+                var source =
+                    _context.GanjoorPoems.Include(p => p.Cat).ThenInclude(c => c.Poet).Include(p => p.GanjoorMetre)
+                    .Where(p =>
+                            (poetId == null || p.Cat.PoetId == poetId)
+                            &&
+                            (p.GanjoorMetre.Rhythm == metre)
+                            &&
+                            (rhyme == "" || p.RhymeLetters == rhyme)
+                            )
+                    .OrderBy(p => p.CatId).ThenBy(p => p.Id)
+                    .Select
+                    (
+                        poem =>
+                        new GanjoorPoemCompleteViewModel()
+                        {
+                            Id = poem.Id,
+                            Title = poem.Title,
+                            FullTitle = poem.FullTitle,
+                            FullUrl = poem.FullUrl,
+                            UrlSlug = poem.UrlSlug,
+                            HtmlText = poem.HtmlText,
+                            PlainText = poem.PlainText,
+                            GanjoorMetre = poem.GanjoorMetre,
+                            RhymeLetters = poem.RhymeLetters,
+                            Category = new GanjoorPoetCompleteViewModel()
+                            {
+                                Poet = new GanjoorPoetViewModel()
+                                {
+                                    Id = poem.Cat.Poet.Id,
+                                }
+                            },
+                            
+                        }
+                    );
+
+
+                (PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items) paginatedResult =
+                   await QueryablePaginator<GanjoorPoemCompleteViewModel>.Paginate(source, paging);
+
+
+                Dictionary<int, GanjoorPoetCompleteViewModel> cachedPoets = new Dictionary<int, GanjoorPoetCompleteViewModel>();
+
+                foreach (var item in paginatedResult.Items)
+                {
+                    if(cachedPoets.TryGetValue(item.Category.Poet.Id, out GanjoorPoetCompleteViewModel poet))
+                    {
+                        item.Category = poet;
+                    }
+                    else
+                    {
+                        poet = (await GetPoetById(item.Category.Poet.Id)).Result;
+
+                        cachedPoets.Add(item.Category.Poet.Id, poet);
+
+                        item.Category = poet;
+                    }
+                    
+                }
+
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;

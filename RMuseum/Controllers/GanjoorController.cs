@@ -855,6 +855,33 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Get Similar Poems accroding to prosody and rhyme informations
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="metre">cannot be empty</param>
+        /// <param name="rhyme">can be empty</param>
+        /// <param name="poetId">send 0 for all</param>
+        /// <returns>return value is not complete or valid for some parts, you should use only the valid parts!</returns>
+
+        [HttpGet]
+        [Route("poems/similar")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorSearchVerseViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetSimilarPoems([FromQuery]PagingParameterModel paging, string metre, string rhyme, int poetId = 0)
+        {
+            var pagedResult = await _ganjoorService.GetSimilarPoems(paging, metre, rhyme, poetId == 0 ? (int?) null : poetId);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.Items);
+        }
+
+        /// <summary>
         /// Ganjoor Service
         /// </summary>
 
