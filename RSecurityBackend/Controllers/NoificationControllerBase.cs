@@ -8,7 +8,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
 
 namespace RSecurityBackend.Controllers
 {
@@ -34,6 +34,27 @@ namespace RSecurityBackend.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// Get User Notifications (Paginated Version)
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("paginated")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNotificationViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetUserNotificationsPaginated([FromQuery] PagingParameterModel paging)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = await _notificationService.GetUserNotificationsPaginated(paging, loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            return Ok(res.Result.Items);
         }
 
         /// <summary>

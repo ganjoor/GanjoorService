@@ -182,6 +182,43 @@ namespace RSecurityBackend.Services.Implementation
         }
 
         /// <summary>
+        /// Get User Notifications (paginated version)
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RUserNotificationViewModel[] Items)>> GetUserNotificationsPaginated(PagingParameterModel paging, Guid userId)
+        {
+            try
+            {
+                var source = _context.Notifications
+                    .Where(notification => notification.UserId == userId)
+                    .OrderByDescending(notification => notification.DateTime)
+                    .Select(notification =>
+                     new RUserNotificationViewModel()
+                     {
+                         Id = notification.Id,
+                         DateTime = notification.DateTime,
+                         Status = notification.Status,
+                         Subject = notification.Subject,
+                         HtmlText = notification.HtmlText
+                     });
+
+                (PaginationMetadata PagingMeta, RUserNotificationViewModel[] Items) paginatedResult =
+                    await QueryablePaginator<RUserNotificationViewModel>.Paginate(source, paging);
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, RUserNotificationViewModel[] Items)>
+                    (
+                   paginatedResult
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, RUserNotificationViewModel[] Items)>((null, null), exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Get Unread User Notifications Count
         /// </summary>
         /// <param name="userId"></param>

@@ -366,6 +366,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.GetUserNotificationsPaginated(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            Get User Notifications (Paginated Version)
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.GetUnreadUserNotificationsCount">
             <summary>
             Get unread user notifications count
@@ -3236,6 +3243,14 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.GetUserNotificationsPaginated(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+            <summary>
+            Get User Notifications (paginated version)
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.GetUnreadUserNotificationsCount(System.Guid)">
             <summary>
             Get Unread User Notifications Count
@@ -3403,6 +3418,14 @@
             <summary>
             Get User Notifications
             </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IRNotificationService.GetUserNotificationsPaginated(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+            <summary>
+            Get User Notifications (paginated version)
+            </summary>
+            <param name="paging"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>

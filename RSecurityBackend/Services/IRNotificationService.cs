@@ -28,6 +28,14 @@ namespace RSecurityBackend.Services
         Task<RServiceResult<RUserNotificationViewModel[]>> GetUserNotifications(Guid userId);
 
         /// <summary>
+        /// Get User Notifications (paginated version)
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, RUserNotificationViewModel[] Items)>> GetUserNotificationsPaginated(PagingParameterModel paging, Guid userId);
+
+        /// <summary>
         /// Get Unread User Notifications Count
         /// </summary>
         /// <param name="userId"></param>
