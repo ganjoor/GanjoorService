@@ -583,6 +583,10 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه خالی است.");
                 }
 
+                var userRes = await _appUserService.GetUserInformation(userId);
+
+                content = content.ToPersianNumbers().ApplyCorrectYeKe();
+
                 GanjoorComment comment = new GanjoorComment()
                 {
                     UserId = userId,
@@ -596,9 +600,23 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorComments.Add(comment);
                 await _context.SaveChangesAsync();
 
-                var userRes = await _appUserService.GetUserInformation(userId);
+                if(inReplyTo != null)
+                {
+                    GanjoorComment refComment = await _context.GanjoorComments.Where(c => c.Id == (int)inReplyTo).SingleAsync();
+                    if(refComment.UserId != null)
+                    {
 
-                comment.HtmlComment = comment.HtmlComment.ToPersianNumbers().ApplyCorrectYeKe();
+                        var poem = await _context.GanjoorPoems.Where(p => p.Id == comment.PoemId).SingleAsync();
+
+                        await _notificationService.PushNotification((Guid)refComment.UserId,
+                                           "پاسخ به حاشیهٔ شما",
+                                           $"{userRes.Result.NickName} به حاشیهٔ شما روی <a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> این پاسخ را نوشته است {Environment.NewLine}" +
+                                           $"{content}" +
+                                           $"این متن حاشیهٔ خود شماست: {Environment.NewLine}" +
+                                           $"{comment.HtmlComment}"
+                                           );
+                    }
+                }
 
 
 
