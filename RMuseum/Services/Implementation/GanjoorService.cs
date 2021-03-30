@@ -613,7 +613,7 @@ namespace RMuseum.Services.Implementation
                                            $"{userRes.Result.NickName} به حاشیهٔ شما روی <a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> این پاسخ را نوشته است {Environment.NewLine}" +
                                            $"{content}" +
                                            $"این متن حاشیهٔ خود شماست: {Environment.NewLine}" +
-                                           $"{comment.HtmlComment}"
+                                           $"{refComment.HtmlComment}"
                                            );
                     }
                 }
