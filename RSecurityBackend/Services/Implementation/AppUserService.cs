@@ -1233,7 +1233,8 @@ namespace RSecurityBackend.Services.Implementation
                     Status = RAppUserStatus.Active,
                     IsAdmin = false,
                     FirstName = firstName,
-                    SureName = sureName
+                    SureName = sureName,
+                    NickName = $"{firstName} {sureName}"
                 };
 
                 RServiceResult<RAppUser> userAddResult = await AddUser(newUserInfo);

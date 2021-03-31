@@ -288,7 +288,10 @@ namespace RSecurityBackend.Controllers
                 IsAdmin = newUserInfo.IsAdmin,
                 PhoneNumber = newUserInfo.PhoneNumber,
                 RImageId = newUserInfo.RImageId,
-                Username = newUserInfo.Username
+                Username = newUserInfo.Username,
+                NickName = newUserInfo.NickName,
+                Bio = newUserInfo.Bio,
+                Website = newUserInfo.Website
             };
             return Ok(registerRAppUser);
         }
