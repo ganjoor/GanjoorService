@@ -189,6 +189,13 @@ namespace RMuseum.Services.Implementation
 
                                 int? poetId = row["post_author"].ToString() == "1" ? (int?)null : int.Parse(row["post_author"].ToString());
 
+                                string htmlText = row["post_content"].ToString();
+
+                                //this changes fixes some issues with ganjoor audio player
+                                htmlText = htmlText.Replace("\r", "").Replace("\n", "");
+                                htmlText = htmlText.Replace("</div></div>", "</div></div>\r\n");
+                                htmlText = htmlText.Replace("</div><div class=\"b\">", "</div>\r\n<div class=\"b\">");
+
 
                                 GanjoorPage page = new GanjoorPage()
                                 {
@@ -198,7 +205,7 @@ namespace RMuseum.Services.Implementation
                                     PageOrder = -1,
                                     Title = row["post_title"].ToString(),
                                     UrlSlug = row["post_name"].ToString(),
-                                    HtmlText = row["post_content"].ToString(),
+                                    HtmlText = htmlText,
                                     ParentId = row["post_parent"].ToString() == "0" ? (int?)null : int.Parse(row["post_parent"].ToString()),
                                     PoetId = poetId,
                                     SecondPoetId = row["other_poet_id"] == DBNull.Value ? (int?)null : int.Parse(row["other_poet_id"].ToString()),
@@ -1097,6 +1104,13 @@ namespace RMuseum.Services.Implementation
                                 }
                             }
 
+                            string htmlText = row["post_content"].ToString();
+
+                            //this changes fixes some issues with ganjoor audio player
+                            htmlText = htmlText.Replace("\r", "").Replace("\n", "");
+                            htmlText = htmlText.Replace("</div></div>", "</div></div>\r\n");
+                            htmlText = htmlText.Replace("</div><div class=\"b\">", "</div>\r\n<div class=\"b\">");
+
                             GanjoorPoem poem = new GanjoorPoem()
                             {
                                 Id = int.Parse(row["ID"].ToString()),
@@ -1105,7 +1119,7 @@ namespace RMuseum.Services.Implementation
                                 UrlSlug = row["post_name"].ToString(),
                                 FullTitle = $"{catFullTitle} » {row["post_title"]}",
                                 FullUrl = $"{poemCat.FullUrl}/{row["post_name"]}",
-                                HtmlText = row["post_content"].ToString(),
+                                HtmlText = htmlText,
                             };
 
                             List<GanjoorVerse> verses = _extractVersesFromPoemHtmlText(poem.Id, poem.HtmlText);
