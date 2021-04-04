@@ -153,6 +153,7 @@ namespace RMuseum.Models.Auth.Memory
                             new SecurableItemOperation(AddSongs, "افزودن آهنگ از هر منبع", false),
                             new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات از منابع خارجی", false),
                             new SecurableItemOperation(ModerateOperationShortName, "مدیریت حاشیه‌ها", false),
+                            new SecurableItemOperation(ModifyOperationShortName, "ویرایش محتوا", false),
                         }
                     },
 
