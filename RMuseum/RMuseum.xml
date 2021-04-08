@@ -1399,6 +1399,11 @@
             Ganjoor Reported Comments
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPageSnapshots">
+            <summary>
+            Ganjoor Page Snapshots
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status
@@ -3924,6 +3929,91 @@
             post date
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPageSnapshot">
+            <summary>
+            snapshot of ganjoor pages to keep track of their changes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.GanjoorPageId">
+            <summary>
+            ganjoor page id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.GanjoorPage">
+            <summary>
+            ganjoor page
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.MadeObsoleteByUserId">
+            <summary>
+            id - this record is then modified by this user and made obsolete
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.MadeObsoleteByUser">
+            <summary>
+            this record is then modified by this user and made obsolete
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.RecordDate">
+            <summary>
+            record date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.Note">
+            <summary>
+            a description of the modfication
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.UrlSlug">
+            <summary>
+            url => slug
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.HtmlText">
+            <summary>
+            Html Text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.Rhythm">
+            <summary>
+            Poem Rhythm
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.RhymeLetters">
+            <summary>
+            rhyme letters
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.SourceName">
+            <summary>
+            source name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.SourceUrlSlug">
+            <summary>
+            source url slug
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.OldTag">
+            <summary>
+            old collection or book name for Saadi's ghazalyiat (طیبات، خواتیم و ....)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPageSnapshot.OldTagPageUrl">
+            <summary>
+            old collection page url e.g /saadi/tayyebat
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPageType">
             <summary>
             Ganjoor Page Type
@@ -4528,6 +4618,61 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.MyComment">
             <summary>
             this can be used by clients
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel">
+            <summary>
+            modify page view model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.UrlSlug">
+            <summary>
+            url => slug
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.HtmlText">
+            <summary>
+            Html Text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.Rhythm">
+            <summary>
+            Poem Rhythm
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.RhymeLetters">
+            <summary>
+            rhyme letters
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.SourceName">
+            <summary>
+            source name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.SourceUrlSlug">
+            <summary>
+            source url slug
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.OldTag">
+            <summary>
+            old collection or book name for Saadi's ghazalyiat (طیبات، خواتیم و ....)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.OldTagPageUrl">
+            <summary>
+            old collection page url e.g /saadi/tayyebat
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.Note">
+            <summary>
+            a description of the modfication
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPageCompleteViewModel">
@@ -7451,6 +7596,15 @@
             <param name="metre"></param>
             <param name="rhyme"></param>
             <param name="poetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ModifyPage(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
+            <summary>
+            modify page
+            </summary>
+            <param name="id"></param>
+            <param name="editingUserId"></param>
+            <param name="pageData"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._context">

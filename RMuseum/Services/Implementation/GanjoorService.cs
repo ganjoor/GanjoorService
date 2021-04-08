@@ -1749,6 +1749,63 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+
+       /// <summary>
+       /// modify page
+       /// </summary>
+       /// <param name="id"></param>
+       /// <param name="editingUserId"></param>
+       /// <param name="pageData"></param>
+       /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> ModifyPage(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData)
+        {
+            try
+            {
+                var dbPage = await _context.GanjoorPages.Where(p => p.Id == id).SingleOrDefaultAsync();
+                if (dbPage == null)
+                    return new RServiceResult<GanjoorPageCompleteViewModel>(null);//not found
+
+               
+
+                GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
+                {
+                    GanjoorPageId = id,
+                    MadeObsoleteByUserId = editingUserId,
+                    RecordDate = DateTime.Now,
+                    Note = pageData.Note,
+                    Title = dbPage.Title,
+                    UrlSlug = dbPage.UrlSlug,
+                    HtmlText = dbPage.HtmlText,
+                };
+
+                GanjoorPoem dbPoem = null;
+
+                if (dbPage.GanjoorPageType == GanjoorPageType.PoemPage)
+                {
+                    dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).SingleOrDefaultAsync();
+
+                    snapshot.SourceName = dbPoem.SourceName;
+                    snapshot.SourceUrlSlug = dbPoem.SourceUrlSlug;
+                    snapshot.Rhythm = dbPoem.GanjoorMetre == null ? null : dbPoem.GanjoorMetre.Rhythm;
+                    snapshot.RhymeLetters = dbPoem.RhymeLetters;
+                    snapshot.OldTag = dbPoem.OldTag;
+                    snapshot.OldTagPageUrl = dbPoem.OldTagPageUrl;
+                }
+
+                _context.GanjoorPageSnapshots.Add(snapshot);
+                await _context.SaveChangesAsync();
+
+                //TODO actula modification goes here:
+
+
+                return await GetPageByUrl(dbPage.FullUrl);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorPageCompleteViewModel>(null, exp.ToString());
+            }
+        }
+
         /// <summary>
         /// Database Context
         /// </summary>

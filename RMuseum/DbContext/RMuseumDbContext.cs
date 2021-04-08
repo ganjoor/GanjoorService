@@ -240,6 +240,11 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorCommentAbuseReport> GanjoorReportedComments { get; set; }
 
+        /// <summary>
+        /// Ganjoor Page Snapshots
+        /// </summary>
+        public DbSet<GanjoorPageSnapshot> GanjoorPageSnapshots { get; set; }
+
 
     }
 }
