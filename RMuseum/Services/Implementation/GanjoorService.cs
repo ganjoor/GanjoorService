@@ -1827,7 +1827,27 @@ namespace RMuseum.Services.Implementation
                     dbPoem.RhymeLetters = pageData.RhymeLetters;
                     dbPoem.OldTag = pageData.OldTag;
                     dbPoem.OldTagPageUrl = pageData.OldTagPageUrl;
+
+                    dbPoem.HtmlText = pageData.HtmlText;
+
+                    List<GanjoorVerse> verses = _extractVersesFromPoemHtmlText(id, pageData.HtmlText);
+
+                    string plainText = "";
+                    foreach (GanjoorVerse verse in verses)
+                    {
+                        plainText += $"{verse.Text} ";
+                    }
+
+                    dbPoem.PlainText = plainText.Trim();
+
                     _context.GanjoorPoems.Update(dbPoem);
+
+
+                    var oldVerses = await _context.GanjoorVerses.Where(v => v.PoemId == id).ToListAsync();
+                    _context.GanjoorVerses.RemoveRange(oldVerses);
+
+                    _context.GanjoorVerses.AddRange(verses);
+
                 }
 
                 await _context.SaveChangesAsync();
