@@ -668,6 +668,14 @@
             <param name="catPoems"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ModifyPage(System.Int32,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
+            <summary>
+            modify page
+            </summary>
+            <param name="id"></param>
+            <param name="page"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPageUrlById(System.Int32)">
             <summary>
             page url by id
@@ -6591,6 +6599,15 @@
             <param name="metre"></param>
             <param name="rhyme"></param>
             <param name="poetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ModifyPage(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
+            <summary>
+            modify page
+            </summary>
+            <param name="id"></param>
+            <param name="editingUserId"></param>
+            <param name="pageData"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.Faal">

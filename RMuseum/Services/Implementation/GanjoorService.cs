@@ -1795,7 +1795,42 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorPageSnapshots.Add(snapshot);
                 await _context.SaveChangesAsync();
 
-                //TODO actula modification goes here:
+                dbPage.Title = pageData.Title;
+                dbPage.UrlSlug = pageData.UrlSlug;
+                dbPage.HtmlText = pageData.HtmlText;
+
+                _context.GanjoorPages.Update(dbPage);
+
+                if(dbPoem != null)
+                {
+                    dbPoem.SourceName = pageData.SourceName;
+                    dbPoem.SourceUrlSlug = pageData.SourceUrlSlug;
+                    if(string.IsNullOrEmpty(pageData.Rhythm))
+                    {
+                        dbPoem.GanjoorMetreId = null;
+                    }
+                    else
+                    {
+                        var metre = await _context.GanjoorMetres.Where(m => m.Rhythm == pageData.Rhythm).SingleOrDefaultAsync();
+                        if (metre == null)
+                        {
+                            metre = new GanjoorMetre()
+                            {
+                                Rhythm = pageData.Rhythm,
+                                VerseCount = 0
+                            };
+                            _context.GanjoorMetres.Add(metre);
+                            await _context.SaveChangesAsync();
+                        }
+                        dbPoem.GanjoorMetreId = metre.Id;
+                    }
+                    dbPoem.RhymeLetters = pageData.RhymeLetters;
+                    dbPoem.OldTag = pageData.OldTag;
+                    dbPoem.OldTagPageUrl = pageData.OldTagPageUrl;
+                    _context.GanjoorPoems.Update(dbPoem);
+                }
+
+                await _context.SaveChangesAsync();
 
 
                 return await GetPageByUrl(dbPage.FullUrl);

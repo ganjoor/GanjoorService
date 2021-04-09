@@ -243,6 +243,15 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId);
 
         /// <summary>
+        /// modify page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="editingUserId"></param>
+        /// <param name="pageData"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPageCompleteViewModel>> ModifyPage(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData);
+
+        /// <summary>
         /// get a random poem from hafez
         /// </summary>
         /// <returns></returns>
