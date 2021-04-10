@@ -1350,7 +1350,27 @@ namespace RMuseum.Services.Implementationa
         }
 
 
-
+        private string GeneratedProfileFileSuffixWithoutDash(string fileSuffixWithoutDash, string artistName)
+        {
+            if (string.IsNullOrEmpty(fileSuffixWithoutDash))
+            {
+                fileSuffixWithoutDash = "";
+                foreach (string artistnamePart in GPersianTextSync.Farglisize(artistName).Split("-", StringSplitOptions.RemoveEmptyEntries))
+                {
+                    fileSuffixWithoutDash += artistnamePart[0];
+                }
+                fileSuffixWithoutDash = fileSuffixWithoutDash.ToLower();
+                while (fileSuffixWithoutDash.Length < 2)
+                {
+                    fileSuffixWithoutDash += 'a';
+                }
+                if (fileSuffixWithoutDash.Length > 4)
+                {
+                    fileSuffixWithoutDash = fileSuffixWithoutDash.Substring(0, 4);
+                }
+            }
+            return fileSuffixWithoutDash;
+        }
 
         /// <summary>
         /// Add a narration profile
@@ -1361,6 +1381,8 @@ namespace RMuseum.Services.Implementationa
         {
             try
             {
+                profile.FileSuffixWithoutDash = GeneratedProfileFileSuffixWithoutDash(profile.FileSuffixWithoutDash, profile.ArtistName);
+
                 var p = new UserRecitationProfile()
                 {
                     UserId = profile.UserId,
@@ -1447,6 +1469,8 @@ namespace RMuseum.Services.Implementationa
 
                 if (p.UserId != profile.UserId)
                     return new RServiceResult<UserRecitationProfileViewModel>(null, "permission error");
+
+                profile.FileSuffixWithoutDash = GeneratedProfileFileSuffixWithoutDash(profile.FileSuffixWithoutDash, profile.ArtistName);
 
                 p.Name = profile.Name.Trim();
                 p.ArtistName = profile.ArtistName.Trim();

@@ -41,6 +41,8 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// this would be appended to audio files names prefixed by a dash to make them unique and specfic to user
         /// filenames usually would look like {GanjoorPostId}-{FileSuffixWithoutDash}.{ext}
         /// for example 2200-hrm.xml
+        /// 
+        /// update [4/10/2021]: you can send this one empty
         /// </summary>
         public string FileSuffixWithoutDash { get; set; }
 
