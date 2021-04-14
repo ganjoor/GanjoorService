@@ -221,7 +221,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> ModifyPage(int id, GanjoorModifyPageViewModel page)
+        public async Task<IActionResult> ModifyPage(int id, [FromBody]GanjoorModifyPageViewModel page)
         {
             Guid userId =
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
