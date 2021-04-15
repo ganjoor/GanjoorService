@@ -252,6 +252,12 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPageCompleteViewModel>> ModifyPage(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData);
 
         /// <summary>
+        /// returns metre list (ordered by Rhythm)
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorMetre[]>> GetGanjoorMetres();
+
+        /// <summary>
         /// get a random poem from hafez
         /// </summary>
         /// <returns></returns>

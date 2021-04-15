@@ -1862,6 +1862,22 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// returns metre list (ordered by Rhythm)
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorMetre[]>> GetGanjoorMetres()
+        {
+            try
+            {
+                return new RServiceResult<GanjoorMetre[]>(await _context.GanjoorMetres.OrderBy(m => m.Rhythm).ToArrayAsync());
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorMetre[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;

@@ -911,6 +911,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// returns ganjoor metre list ordered by rhythm
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("rhythms")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorMetre>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetGanjoorMetres()
+        {
+            var res = await _ganjoorService.GetGanjoorMetres();
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// Ganjoor Service
         /// </summary>
 

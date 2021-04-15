@@ -877,6 +877,12 @@
             <param name="poetId">send 0 for all</param>
             <returns>return value is not complete or valid for some parts, you should use only the valid parts!</returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorMetres">
+            <summary>
+            returns ganjoor metre list ordered by rhythm
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
             <summary>
             Ganjoor Service
@@ -6612,6 +6618,12 @@
             <param name="pageData"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorMetres">
+            <summary>
+            returns metre list (ordered by Rhythm)
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.Faal">
             <summary>
             get a random poem from hafez
@@ -7624,6 +7636,12 @@
             <param name="id"></param>
             <param name="editingUserId"></param>
             <param name="pageData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorMetres">
+            <summary>
+            returns metre list (ordered by Rhythm)
+            </summary>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._context">
