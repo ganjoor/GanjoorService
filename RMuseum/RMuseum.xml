@@ -4210,6 +4210,41 @@
             published on website
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
+            <summary>
+            ganjoor.net site banner
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorSiteBanner.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorSiteBanner.RImage">
+            <summary>
+            banner image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorSiteBanner.RImageId">
+            <summary>
+            image id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorSiteBanner.AlternateText">
+            <summary>
+            alternate text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorSiteBanner.TargetUrl">
+            <summary>
+            target url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorSiteBanner.Active">
+            <summary>
+            active
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorVerse">
             <summary>
             Ganjoor Verse
