@@ -16,12 +16,12 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// banner image
         /// </summary>
-        public virtual RImage RImage { get; set; }
+        public RImage RImage { get; set; }
 
         /// <summary>
         /// image id
         /// </summary>
-        public Guid? RImageId { get; set; }
+        public Guid RImageId { get; set; }
 
         /// <summary>
         /// alternate text

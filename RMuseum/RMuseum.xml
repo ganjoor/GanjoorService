@@ -1418,6 +1418,11 @@
             Ganjoor Page Snapshots
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorSiteBanners">
+            <summary>
+            Ganjoor Site Bannaers
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status
@@ -6659,6 +6664,17 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.AddSiteBanner(System.IO.Stream,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Add site banner
+            </summary>
+            <param name="imageStream"></param>
+            <param name="fileName"></param>
+            <param name="alternateText"></param>
+            <param name="targetUrl"></param>
+            <param name="active"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.Faal">
             <summary>
             get a random poem from hafez
@@ -7679,6 +7695,17 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.AddSiteBanner(System.IO.Stream,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Add site banner
+            </summary>
+            <param name="imageStream"></param>
+            <param name="fileName"></param>
+            <param name="alternateText"></param>
+            <param name="targetUrl"></param>
+            <param name="active"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._context">
             <summary>
             Database Context
@@ -7704,7 +7731,12 @@
             Messaging service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IRNotificationService)">
+        <member name="F:RMuseum.Services.Implementation.GanjoorService._imageFileService">
+            <summary>
+            Image File Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IImageFileService)">
             <summary>
             constructor
             </summary>
@@ -7713,6 +7745,7 @@
             <param name="backgroundTaskQueue"></param>
             <param name="appUserService"></param>
             <param name="notificationService"></param>
+            <param name="imageFileService"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync">
             <summary>

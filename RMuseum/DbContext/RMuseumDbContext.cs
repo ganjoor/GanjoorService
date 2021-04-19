@@ -246,5 +246,11 @@ namespace RMuseum.DbContext
         public DbSet<GanjoorPageSnapshot> GanjoorPageSnapshots { get; set; }
 
 
+        /// <summary>
+        /// Ganjoor Site Bannaers
+        /// </summary>
+        public DbSet<GanjoorSiteBanner> GanjoorSiteBanners { get; set; }
+
+
     }
 }

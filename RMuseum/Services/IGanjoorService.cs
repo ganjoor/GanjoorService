@@ -3,6 +3,7 @@ using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services
@@ -256,6 +257,17 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<GanjoorMetre[]>> GetGanjoorMetres();
+
+        /// <summary>
+        /// Add site banner
+        /// </summary>
+        /// <param name="imageStream"></param>
+        /// <param name="fileName"></param>
+        /// <param name="alternateText"></param>
+        /// <param name="targetUrl"></param>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorSiteBanner>> AddSiteBanner(Stream imageStream, string fileName, string alternateText, string targetUrl, bool active);
 
         /// <summary>
         /// get a random poem from hafez

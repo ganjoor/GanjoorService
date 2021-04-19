@@ -17,6 +17,8 @@ using System.Threading.Tasks;
 using RMuseum.Models.Artifact;
 using RSecurityBackend.Services.Implementation;
 using DNTPersianUtils.Core;
+using System.IO;
+using RSecurityBackend.Models.Image;
 
 namespace RMuseum.Services.Implementation
 {
@@ -1878,6 +1880,46 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// Add site banner
+        /// </summary>
+        /// <param name="imageStream"></param>
+        /// <param name="fileName"></param>
+        /// <param name="alternateText"></param>
+        /// <param name="targetUrl"></param>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorSiteBanner>> AddSiteBanner(Stream imageStream, string fileName, string alternateText, string targetUrl, bool active)
+        {
+            try
+            {
+                RServiceResult<RImage> image = await _imageFileService.Add(null, imageStream, fileName, "SiteBanners");
+
+                if (!string.IsNullOrEmpty(image.ExceptionString))
+                {
+                    return new RServiceResult<GanjoorSiteBanner>(null, image.ExceptionString);
+                }
+
+                GanjoorSiteBanner banner = new GanjoorSiteBanner()
+                {
+                    RImageId = image.Result.Id,
+                    AlternateText = alternateText,
+                    TargetUrl = targetUrl,
+                    Active = active
+                };
+
+                _context.GanjoorSiteBanners.Add(banner);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<GanjoorSiteBanner>(banner);
+
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorSiteBanner>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;
@@ -1903,6 +1945,11 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         protected readonly IRNotificationService _notificationService;
 
+        /// <summary>
+        /// Image File Service
+        /// </summary>
+        protected readonly IImageFileService _imageFileService;
+
 
 
         /// <summary>
@@ -1913,12 +1960,14 @@ namespace RMuseum.Services.Implementation
         /// <param name="backgroundTaskQueue"></param>
         /// <param name="appUserService"></param>
         /// <param name="notificationService"></param>
-        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService appUserService, IRNotificationService notificationService)
+        /// <param name="imageFileService"></param>
+        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService appUserService, IRNotificationService notificationService, IImageFileService imageFileService)
         {
             _context = context;
             _backgroundTaskQueue = backgroundTaskQueue;
             _appUserService = appUserService;
             _notificationService = notificationService;
+            _imageFileService = imageFileService;
             Configuration = configuration;
         }
     }
