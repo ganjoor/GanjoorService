@@ -1920,6 +1920,65 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// modify site banner
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="alternateText"></param>
+        /// <param name="targetUrl"></param>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ModifySiteBanner(int id, string alternateText, string targetUrl, bool active)
+        {
+            try
+            {
+                GanjoorSiteBanner target = await _context.GanjoorSiteBanners.Where(b => b.Id == id).SingleOrDefaultAsync();
+                if(target == null)
+                    return new RServiceResult<bool>(false);//not found
+
+                target.AlternateText = alternateText;
+                target.TargetUrl = targetUrl;
+                target.Active = active;
+
+                _context.GanjoorSiteBanners.Update(target);
+
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete site banner
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteSiteBanner(int id)
+        {
+            try
+            {
+                GanjoorSiteBanner target = await _context.GanjoorSiteBanners.Where(b => b.Id == id).SingleOrDefaultAsync();
+                if (target == null)
+                    return new RServiceResult<bool>(false);//not found
+                
+                _context.GanjoorSiteBanners.Remove(target);
+
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;
