@@ -883,6 +883,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.AddSiteBanner">
+            <summary>
+            add site banner (send form) with these feilds: filename, alt, url and an image attachment
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
             <summary>
             Ganjoor Service

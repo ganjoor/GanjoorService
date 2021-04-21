@@ -932,6 +932,57 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// add site banner (send form) with these feilds: filename, alt, url and an image attachment
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("site/banner")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorSiteBanner))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> AddSiteBanner()
+        {
+            try
+            {
+                if (!Request.Form.TryGetValue("filename", out Microsoft.Extensions.Primitives.StringValues filename))
+                {
+                    return BadRequest("filename is null");
+                }
+
+                if (!Request.Form.TryGetValue("alt", out Microsoft.Extensions.Primitives.StringValues alt))
+                {
+                    return BadRequest("alt is null");
+                }
+
+                if (!Request.Form.TryGetValue("url", out Microsoft.Extensions.Primitives.StringValues url))
+                {
+                    return BadRequest("url is null");
+                }
+
+                if(Request.Form.Files.Count != 1)
+                {
+                    return BadRequest("a single image is not provided");
+                }
+                using Stream stream = Request.Form.Files[0].OpenReadStream();
+                RServiceResult<GanjoorSiteBanner> res = await _ganjoorService.AddSiteBanner(stream, filename.ToString(), alt.ToString(), alt.ToString(), false);
+
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                {
+                    return BadRequest(res.ExceptionString);
+                }
+
+
+
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Ganjoor Service
         /// </summary>
 
