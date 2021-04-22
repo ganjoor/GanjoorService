@@ -885,7 +885,7 @@
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.AddSiteBanner">
             <summary>
-            add site banner (send form) with these feilds: filename, alt, url and an image attachment
+            add site banner (send form) with these fields: filename, alt, url and an image attachment
             </summary>
             <returns></returns>
         </member>
@@ -902,6 +902,18 @@
             delete site banner
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetSiteBanners">
+            <summary>
+            get all defined site banners
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetARandomActiveSiteBanner">
+            <summary>
+            get a random active site banner
+            </summary>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
@@ -6768,6 +6780,18 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetSiteBanners">
+            <summary>
+            get site banners
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetARandomActiveSiteBanner">
+            <summary>
+            get a random site banner
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.Faal">
             <summary>
             get a random poem from hafez
@@ -7814,6 +7838,18 @@
             delete site banner
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSiteBanners">
+            <summary>
+            get site banners
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetARandomActiveSiteBanner">
+            <summary>
+            get a random site banner
+            </summary>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._context">

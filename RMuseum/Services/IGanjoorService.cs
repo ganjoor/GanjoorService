@@ -267,7 +267,7 @@ namespace RMuseum.Services
         /// <param name="targetUrl"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorSiteBanner>> AddSiteBanner(Stream imageStream, string fileName, string alternateText, string targetUrl, bool active);
+        Task<RServiceResult<GanjoorSiteBannerViewModel>> AddSiteBanner(Stream imageStream, string fileName, string alternateText, string targetUrl, bool active);
 
         /// <summary>
         /// modify site banner
@@ -285,6 +285,18 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> DeleteSiteBanner(int id);
+
+        /// <summary>
+        /// get site banners
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorSiteBannerViewModel[]>> GetSiteBanners();
+
+        /// <summary>
+        /// get a random site banner
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorSiteBannerViewModel>> GetARandomActiveSiteBanner();
 
         /// <summary>
         /// get a random poem from hafez

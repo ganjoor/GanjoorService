@@ -1888,7 +1888,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="targetUrl"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorSiteBanner>> AddSiteBanner(Stream imageStream, string fileName, string alternateText, string targetUrl, bool active)
+        public async Task<RServiceResult<GanjoorSiteBannerViewModel>> AddSiteBanner(Stream imageStream, string fileName, string alternateText, string targetUrl, bool active)
         {
             try
             {
@@ -1896,7 +1896,7 @@ namespace RMuseum.Services.Implementation
 
                 if (!string.IsNullOrEmpty(image.ExceptionString))
                 {
-                    return new RServiceResult<GanjoorSiteBanner>(null, image.ExceptionString);
+                    return new RServiceResult<GanjoorSiteBannerViewModel>(null, image.ExceptionString);
                 }
 
                 GanjoorSiteBanner banner = new GanjoorSiteBanner()
@@ -1910,12 +1910,22 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorSiteBanners.Add(banner);
                 await _context.SaveChangesAsync();
 
-                return new RServiceResult<GanjoorSiteBanner>(banner);
+                return new RServiceResult<GanjoorSiteBannerViewModel>
+                    (
+                    new GanjoorSiteBannerViewModel()
+                    {
+                        Id = banner.Id,
+                        ImageUrl = $"api/rimages/{banner.RImageId}.jpg",
+                        AlternateText = banner.AlternateText,
+                        TargetUrl = banner.TargetUrl,
+                        Active = banner.Active
+                    }
+                    );
 
             }
             catch(Exception exp)
             {
-                return new RServiceResult<GanjoorSiteBanner>(null, exp.ToString());
+                return new RServiceResult<GanjoorSiteBannerViewModel>(null, exp.ToString());
             }
         }
 
@@ -1975,6 +1985,67 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get site banners
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorSiteBannerViewModel[]>> GetSiteBanners()
+        {
+            try
+            {
+                return new RServiceResult<GanjoorSiteBannerViewModel[]>(
+                    await _context.GanjoorSiteBanners
+                    .Select(b => new GanjoorSiteBannerViewModel()
+                    {
+                        Id = b.Id,
+                        ImageUrl = $"api/rimages/{b.RImageId}.jpg",
+                        AlternateText = b.AlternateText,
+                        TargetUrl = b.TargetUrl,
+                        Active = b.Active
+                    }).ToArrayAsync()
+                    );
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorSiteBannerViewModel[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get a random site banner
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorSiteBannerViewModel>> GetARandomActiveSiteBanner()
+        {
+            try
+            {
+                int[] idSet = await _context.GanjoorSiteBanners.Where(b => b.Active == true).Select(b => b.Id).ToArrayAsync();
+                if (idSet.Length == 0)
+                    return new RServiceResult<GanjoorSiteBannerViewModel>(null);//not found
+
+                Random rnd = new Random(DateTime.Now.Millisecond);
+                int id = idSet[rnd.Next(0, idSet.Length - 1)];
+
+                return new RServiceResult<GanjoorSiteBannerViewModel>(
+                    await _context.GanjoorSiteBanners
+                    .Where(b => b.Id == id)
+                    .Select(b => new GanjoorSiteBannerViewModel()
+                    {
+                        Id = b.Id,
+                        ImageUrl = $"api/rimages/{b.RImageId}.jpg",
+                        AlternateText = b.AlternateText,
+                        TargetUrl = b.TargetUrl,
+                        Active = b.Active
+                    }).SingleAsync()
+                    );
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorSiteBannerViewModel>(null, exp.ToString());
             }
         }
 

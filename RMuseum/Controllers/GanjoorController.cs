@@ -932,13 +932,13 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// add site banner (send form) with these feilds: filename, alt, url and an image attachment
+        /// add site banner (send form) with these fields: filename, alt, url and an image attachment
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [Route("site/banner")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Banners)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorSiteBanner))]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorSiteBannerViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> AddSiteBanner()
@@ -965,14 +965,12 @@ namespace RMuseum.Controllers
                     return BadRequest("a single image is not provided");
                 }
                 using Stream stream = Request.Form.Files[0].OpenReadStream();
-                RServiceResult<GanjoorSiteBanner> res = await _ganjoorService.AddSiteBanner(stream, filename.ToString(), alt.ToString(), alt.ToString(), false);
+                RServiceResult<GanjoorSiteBannerViewModel> res = await _ganjoorService.AddSiteBanner(stream, filename.ToString(), alt.ToString(), alt.ToString(), false);
 
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                 {
                     return BadRequest(res.ExceptionString);
                 }
-
-
 
                 return Ok(res.Result);
             }
@@ -1050,6 +1048,70 @@ namespace RMuseum.Controllers
                 }
 
                 return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get all defined site banners
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("site/banners")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Banners)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorSiteBannerViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> GetSiteBanners()
+        {
+            try
+            {
+                RServiceResult<GanjoorSiteBannerViewModel[]> res = await _ganjoorService.GetSiteBanners();
+
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                {
+                    return BadRequest(res.ExceptionString);
+                }
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get a random active site banner
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("site/banner")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Banners)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorSiteBannerViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetARandomActiveSiteBanner()
+        {
+            try
+            {
+                RServiceResult<GanjoorSiteBannerViewModel> res = await _ganjoorService.GetARandomActiveSiteBanner();
+
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                {
+                    return BadRequest(res.ExceptionString);
+                }
+
+                if(res.Result == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(res.Result);
             }
             catch (Exception exp)
             {
