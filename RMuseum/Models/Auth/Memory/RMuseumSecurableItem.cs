@@ -84,6 +84,12 @@ namespace RMuseum.Models.Auth.Memory
         public const string AddSongs = "songadd";
 
         /// <summary>
+        /// manage footer bannaers
+        /// </summary>
+        public const string Banners = "banners";
+
+
+        /// <summary>
         /// list of forms and their permissions
         /// </summary>
         public new static SecurableItem[] Items
@@ -154,6 +160,7 @@ namespace RMuseum.Models.Auth.Memory
                             new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات از منابع خارجی", false),
                             new SecurableItemOperation(ModerateOperationShortName, "مدیریت حاشیه‌ها", false),
                             new SecurableItemOperation(ModifyOperationShortName, "ویرایش محتوا", false),
+                            new SecurableItemOperation(Banners, "مدیریت آگاهی‌ها", false),
                         }
                     },
 

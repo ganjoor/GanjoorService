@@ -937,7 +937,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("site/banner")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Banners)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorSiteBanner))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -975,6 +975,81 @@ namespace RMuseum.Controllers
 
 
                 return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// modify site banner
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("site/banner/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Banners)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> ModifySiteBanner(int id, [FromBody] GanjoorSiteBannerModifyViewModel model)
+        {
+            try
+            {
+
+                RServiceResult<bool> res = await _ganjoorService.ModifySiteBanner(id, model.AlternateText, model.TargetUrl, model.Active);
+
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                {
+                    return BadRequest(res.ExceptionString);
+                }
+
+                if(!res.Result)
+                {
+                    return NotFound();
+                }
+
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete site banner
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("site/banner")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Banners)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> DeleteSiteBanner(int id)
+        {
+            try
+            {
+
+                RServiceResult<bool> res = await _ganjoorService.DeleteSiteBanner(id);
+
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                {
+                    return BadRequest(res.ExceptionString);
+                }
+
+                if (!res.Result)
+                {
+                    return NotFound();
+                }
+
+                return Ok();
             }
             catch (Exception exp)
             {

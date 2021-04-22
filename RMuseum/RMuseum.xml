@@ -889,6 +889,21 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ModifySiteBanner(System.Int32,RMuseum.Models.Ganjoor.ViewModels.GanjoorSiteBannerModifyViewModel)">
+            <summary>
+            modify site banner
+            </summary>
+            <param name="id"></param>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeleteSiteBanner(System.Int32)">
+            <summary>
+            delete site banner
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
             <summary>
             Ganjoor Service
@@ -2190,6 +2205,11 @@
         <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.AddSongs">
             <summary>
             add song from any source
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.Banners">
+            <summary>
+            manage footer bannaers
             </summary>
         </member>
         <member name="P:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.Items">
@@ -5062,6 +5082,26 @@
             text
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorSiteBannerModifyViewModel">
+            <summary>
+            GanjoorSiteBanner PUT ViewModel
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorSiteBannerModifyViewModel.AlternateText">
+            <summary>
+            alternate text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorSiteBannerModifyViewModel.TargetUrl">
+            <summary>
+            target url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorSiteBannerModifyViewModel.Active">
+            <summary>
+            active
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorSiteBannerViewModel">
             <summary>
             Ganjoor Site Banner View Model
@@ -6709,6 +6749,23 @@
             <param name="alternateText"></param>
             <param name="targetUrl"></param>
             <param name="active"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ModifySiteBanner(System.Int32,System.String,System.String,System.Boolean)">
+            <summary>
+            modify site banner
+            </summary>
+            <param name="id"></param>
+            <param name="alternateText"></param>
+            <param name="targetUrl"></param>
+            <param name="active"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeleteSiteBanner(System.Int32)">
+            <summary>
+            delete site banner
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.Faal">

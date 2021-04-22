@@ -270,6 +270,23 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorSiteBanner>> AddSiteBanner(Stream imageStream, string fileName, string alternateText, string targetUrl, bool active);
 
         /// <summary>
+        /// modify site banner
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="alternateText"></param>
+        /// <param name="targetUrl"></param>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ModifySiteBanner(int id, string alternateText, string targetUrl, bool active);
+
+        /// <summary>
+        /// delete site banner
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteSiteBanner(int id);
+
+        /// <summary>
         /// get a random poem from hafez
         /// </summary>
         /// <returns></returns>
