@@ -961,7 +961,7 @@ namespace RMuseum.Controllers
                     return BadRequest("a single image is not provided");
                 }
                 using Stream stream = Request.Form.Files[0].OpenReadStream();
-                RServiceResult<GanjoorSiteBannerViewModel> res = await _ganjoorService.AddSiteBanner(stream, Request.Form.Files[0].FileName, alt.ToString(), alt.ToString(), false);
+                RServiceResult<GanjoorSiteBannerViewModel> res = await _ganjoorService.AddSiteBanner(stream, Request.Form.Files[0].FileName, alt.ToString(), url.ToString(), false);
 
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                 {
