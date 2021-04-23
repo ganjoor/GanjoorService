@@ -2028,7 +2028,7 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorSiteBannerViewModel>(null);//not found
 
                 Random rnd = new Random(DateTime.Now.Millisecond);
-                int id = idSet[rnd.Next(0, idSet.Length - 1)];
+                int id = idSet[rnd.Next(0, idSet.Length)];
 
                 return new RServiceResult<GanjoorSiteBannerViewModel>(
                     await _context.GanjoorSiteBanners

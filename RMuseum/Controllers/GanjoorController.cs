@@ -932,12 +932,12 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// add site banner (send form) with these fields: filename, alt, url and an image attachment
+        /// add site banner (send form) with these fields: alt, url and an image attachment
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [Route("site/banner")]
-        [AllowAnonymous]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Banners)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorSiteBannerViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -945,29 +945,24 @@ namespace RMuseum.Controllers
         {
             try
             {
-                
                 if (!Request.Form.TryGetValue("alt", out Microsoft.Extensions.Primitives.StringValues alt))
                 {
                     return BadRequest("alt is null");
                 }
-
                 if (!Request.Form.TryGetValue("url", out Microsoft.Extensions.Primitives.StringValues url))
                 {
                     return BadRequest("url is null");
                 }
-
                 if(Request.Form.Files.Count != 1)
                 {
                     return BadRequest("a single image is not provided");
                 }
                 using Stream stream = Request.Form.Files[0].OpenReadStream();
                 RServiceResult<GanjoorSiteBannerViewModel> res = await _ganjoorService.AddSiteBanner(stream, Request.Form.Files[0].FileName, alt.ToString(), url.ToString(), false);
-
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                 {
                     return BadRequest(res.ExceptionString);
                 }
-
                 return Ok(res.Result);
             }
             catch (Exception exp)
@@ -1086,7 +1081,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("site/banner")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Banners)]
+        [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorSiteBannerViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -1102,12 +1097,7 @@ namespace RMuseum.Controllers
                     return BadRequest(res.ExceptionString);
                 }
 
-                if(res.Result == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(res.Result);
+                return Ok(res.Result); //this might be null
             }
             catch (Exception exp)
             {

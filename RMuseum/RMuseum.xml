@@ -885,7 +885,7 @@
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.AddSiteBanner">
             <summary>
-            add site banner (send form) with these fields: filename, alt, url and an image attachment
+            add site banner (send form) with these fields: alt, url and an image attachment
             </summary>
             <returns></returns>
         </member>
