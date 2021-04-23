@@ -1899,9 +1899,10 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorSiteBannerViewModel>(null, image.ExceptionString);
                 }
 
+
                 GanjoorSiteBanner banner = new GanjoorSiteBanner()
                 {
-                    RImageId = image.Result.Id,
+                    RImage = image.Result,
                     AlternateText = alternateText,
                     TargetUrl = targetUrl,
                     Active = active

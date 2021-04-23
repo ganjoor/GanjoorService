@@ -945,11 +945,7 @@ namespace RMuseum.Controllers
         {
             try
             {
-                if (!Request.Form.TryGetValue("filename", out Microsoft.Extensions.Primitives.StringValues filename))
-                {
-                    return BadRequest("filename is null");
-                }
-
+                
                 if (!Request.Form.TryGetValue("alt", out Microsoft.Extensions.Primitives.StringValues alt))
                 {
                     return BadRequest("alt is null");
@@ -965,7 +961,7 @@ namespace RMuseum.Controllers
                     return BadRequest("a single image is not provided");
                 }
                 using Stream stream = Request.Form.Files[0].OpenReadStream();
-                RServiceResult<GanjoorSiteBannerViewModel> res = await _ganjoorService.AddSiteBanner(stream, filename.ToString(), alt.ToString(), alt.ToString(), false);
+                RServiceResult<GanjoorSiteBannerViewModel> res = await _ganjoorService.AddSiteBanner(stream, Request.Form.Files[0].FileName, alt.ToString(), alt.ToString(), false);
 
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                 {
