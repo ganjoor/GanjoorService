@@ -19,6 +19,7 @@ using RSecurityBackend.Services.Implementation;
 using DNTPersianUtils.Core;
 using System.IO;
 using RSecurityBackend.Models.Image;
+using Microsoft.Data.SqlClient;
 
 namespace RMuseum.Services.Implementation
 {
@@ -1763,32 +1764,38 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+
+                List<SqlParameter> parameters = new List<SqlParameter>();
                 string sql = "SELECT* FROM GanjoorPoems ";
 
                 string whereOrAnd = " WHERE ";
                 if (catId != null)
                 {
-                    sql += $" {whereOrAnd} CatId = {catId} ";
+                    parameters.Add(new SqlParameter("CatId", catId));
+                    sql += $" {whereOrAnd} CatId = @CatId ";
                     whereOrAnd = " AND ";
                 }
                 else
                 if (poetId != null)
                 {
-                    sql += $" {whereOrAnd} CatId IN (SELECT Id FROM GanjoorCategories WHERE PoetId = {poetId} ) ";
+                    parameters.Add(new SqlParameter("PoetId", poetId));
+                    sql += $" {whereOrAnd} CatId IN (SELECT Id FROM GanjoorCategories WHERE PoetId = @PoetId ) ";
                     whereOrAnd = " AND ";
                 }
 
+                int wIndex = 0;
                 foreach(string word in term.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                 {
-                    sql += $" {whereOrAnd} PlainText LIKE N'%{word}%' ";
+                    wIndex++;
+                    parameters.Add(new SqlParameter($"Word{wIndex}", word));
+                    sql += $" {whereOrAnd} PlainText LIKE N'%' + @Word{wIndex} + '%' ";
                     whereOrAnd = " AND ";
                 }
-
-                sql += $" ORDER BY CatId, Id OFFSET {(paging.PageNumber - 1) * paging.PageSize} ROWS FETCH NEXT {paging.PageSize} ROWS ONLY ";
 
 
                 var source =
-                    _context.GanjoorPoems.FromSqlRaw(sql).Include(p => p.Cat)
+                    _context.GanjoorPoems.FromSqlRaw(sql, parameters.ToArray()).Include(p => p.Cat)
+                    .OrderBy(p => p.CatId).ThenBy(p => p.Id)
                     .Select
                     (
                         poem =>
@@ -1810,9 +1817,7 @@ namespace RMuseum.Services.Implementation
                                     Id = poem.Cat.Poet.Id,
                                 }
                             },
-
-
-                        }
+                                                    }
                     );
                     
 
