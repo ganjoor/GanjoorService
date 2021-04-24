@@ -325,5 +325,16 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[] items)>> GetVersesByQuery(string query, int poetId,
             PagingParameterModel pagingParameterModel);
+
+
+        /// <summary>
+        /// Search
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <param name="poetId"></param>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> Search(PagingParameterModel paging, string term, int? poetId, int? catId);
     }
 }

@@ -1751,14 +1751,112 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// Search
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <param name="poetId"></param>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> Search(PagingParameterModel paging, string term, int? poetId, int? catId)
+        {
+            try
+            {
+                string sql = "SELECT* FROM GanjoorPoems ";
 
-       /// <summary>
-       /// modify page
-       /// </summary>
-       /// <param name="id"></param>
-       /// <param name="editingUserId"></param>
-       /// <param name="pageData"></param>
-       /// <returns></returns>
+                string whereOrAnd = " WHERE ";
+                if (catId != null)
+                {
+                    sql += $" {whereOrAnd} CatId = {catId} ";
+                    whereOrAnd = " AND ";
+                }
+                else
+                if (poetId != null)
+                {
+                    sql += $" {whereOrAnd} CatId IN (SELECT Id FROM GanjoorCategories WHERE PoetId = {poetId} ) ";
+                    whereOrAnd = " AND ";
+                }
+
+                foreach(string word in term.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    sql += $" {whereOrAnd} PlainText LIKE N'%{word}%' ";
+                    whereOrAnd = " AND ";
+                }
+
+                sql += $" ORDER BY CatId, Id OFFSET {(paging.PageNumber - 1) * paging.PageSize} ROWS FETCH NEXT {paging.PageSize} ROWS ONLY ";
+
+
+                var source =
+                    _context.GanjoorPoems.FromSqlRaw(sql).Include(p => p.Cat)
+                    .Select
+                    (
+                        poem =>
+                        new GanjoorPoemCompleteViewModel()
+                        {
+                            Id = poem.Id,
+                            Title = poem.Title,
+                            FullTitle = poem.FullTitle,
+                            FullUrl = poem.FullUrl,
+                            UrlSlug = poem.UrlSlug,
+                            HtmlText = poem.HtmlText,
+                            PlainText = poem.PlainText,
+                            GanjoorMetre = poem.GanjoorMetre,
+                            RhymeLetters = poem.RhymeLetters,
+                            Category = new GanjoorPoetCompleteViewModel()
+                            {
+                                Poet = new GanjoorPoetViewModel()
+                                {
+                                    Id = poem.Cat.Poet.Id,
+                                }
+                            },
+
+
+                        }
+                    );
+                    
+
+
+                (PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items) paginatedResult =
+                   await QueryablePaginator<GanjoorPoemCompleteViewModel>.Paginate(source, paging);
+
+
+                Dictionary<int, GanjoorPoetCompleteViewModel> cachedPoets = new Dictionary<int, GanjoorPoetCompleteViewModel>();
+
+                foreach (var item in paginatedResult.Items)
+                {
+                    if (cachedPoets.TryGetValue(item.Category.Poet.Id, out GanjoorPoetCompleteViewModel poet))
+                    {
+                        item.Category = poet;
+                    }
+                    else
+                    {
+                        poet = (await GetPoetById(item.Category.Poet.Id)).Result;
+
+                        cachedPoets.Add(item.Category.Poet.Id, poet);
+
+                        item.Category = poet;
+                    }
+
+                }
+
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), exp.ToString());
+            }
+        }
+
+
+        /// <summary>
+        /// modify page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="editingUserId"></param>
+        /// <param name="pageData"></param>
+        /// <returns></returns>
         public async Task<RServiceResult<GanjoorPageCompleteViewModel>> ModifyPage(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData)
         {
             try
