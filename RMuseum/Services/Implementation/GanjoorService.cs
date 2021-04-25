@@ -1782,6 +1782,7 @@ namespace RMuseum.Services.Implementation
                     sql += $" {whereOrAnd} CatId IN (SELECT Id FROM GanjoorCategories WHERE PoetId = @PoetId ) ";
                     whereOrAnd = " AND ";
                 }
+                term = term.ApplyCorrectYeKe();
 
                 int wIndex = 0;
                 foreach(string word in term.Split(' ', StringSplitOptions.RemoveEmptyEntries))
@@ -1817,7 +1818,7 @@ namespace RMuseum.Services.Implementation
                                     Id = poem.Cat.Poet.Id,
                                 }
                             },
-                                                    }
+                        }
                     );
                     
 
@@ -1844,8 +1845,6 @@ namespace RMuseum.Services.Implementation
                     }
 
                 }
-
-
                 return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
             }
             catch (Exception exp)
