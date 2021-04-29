@@ -1132,6 +1132,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// examine site pages for broken links
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("healthcheck")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult HealthCheckContents()
+        {
+            RServiceResult<bool> res =
+                 _ganjoorService.HealthCheckContents();
+            if (res.Result)
+                return Ok();
+            return BadRequest(res.ExceptionString);
+        }
+
+        /// <summary>
         /// Ganjoor Service
         /// </summary>
 

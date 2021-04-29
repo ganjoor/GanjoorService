@@ -317,6 +317,12 @@ namespace RMuseum.Services
         RServiceResult<bool> ImportFromMySql();
 
         /// <summary>
+        /// examine site pages for broken links
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> HealthCheckContents();
+
+        /// <summary>
         /// Get Verses By query
         /// </summary>
         /// <param name="query"></param>

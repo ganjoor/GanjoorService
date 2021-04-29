@@ -67,13 +67,9 @@ namespace RMuseum.Services.Implementation
                                     _tiles.Add((x, 0), tile);
                                     max_x = x;
                                 }
-                                catch (Exception aexp)
+                                catch (ArgumentException)
                                 {
-                                    if (aexp is ArgumentException)
-                                    {
-                                        break;
-                                    }
-                                    throw aexp;
+                                    break;
                                 }
                             }
                         }
@@ -113,13 +109,9 @@ namespace RMuseum.Services.Implementation
                                     _tiles.Add((0, y), tile);
                                     max_y = y;
                                 }
-                                catch (Exception aexp)
+                                catch (ArgumentException)
                                 {
-                                    if (aexp is ArgumentException)
-                                    {
-                                        break;
-                                    }
-                                    throw aexp;
+                                    break;
                                 }
                             }
                         }

@@ -251,6 +251,11 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorSiteBanner> GanjoorSiteBanners { get; set; }
 
+        /// <summary>
+        /// Ganjoor Health Check Errors
+        /// </summary>
+        public DbSet<GanjoorHealthCheckError> GanjoorHealthCheckErrors { get; set; }
+
 
     }
 }

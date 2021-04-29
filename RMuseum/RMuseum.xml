@@ -926,6 +926,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.HealthCheckContents">
+            <summary>
+            examine site pages for broken links
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
             <summary>
             Ganjoor Service
@@ -1464,6 +1470,11 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorSiteBanners">
             <summary>
             Ganjoor Site Bannaers
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorHealthCheckErrors">
+            <summary>
+            Ganjoor Health Check Errors
             </summary>
         </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
@@ -3852,6 +3863,36 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport.ReportedBy">
             <summary>
             reported by user
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorHealthCheckError">
+            <summary>
+            Ganjoor Page Health Check log
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHealthCheckError.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHealthCheckError.ReferrerPageUrl">
+            <summary>
+            referer url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHealthCheckError.BrokenLink">
+            <summary>
+            broken link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHealthCheckError.MulipleTargets">
+            <summary>
+            multiple targets for a page
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHealthCheckError.TargetUrl">
+            <summary>
+            target url
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorMetre">
@@ -6820,6 +6861,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.HealthCheckContents">
+            <summary>
+            examine site pages for broken links
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetVersesByQuery(System.String,System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             Get Verses By query
@@ -7879,6 +7926,12 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetARandomActiveSiteBanner">
             <summary>
             get a random site banner
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.HealthCheckContents">
+            <summary>
+            examine site pages for broken links
             </summary>
             <returns></returns>
         </member>

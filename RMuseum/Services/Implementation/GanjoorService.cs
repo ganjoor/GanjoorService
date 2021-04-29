@@ -20,6 +20,7 @@ using DNTPersianUtils.Core;
 using System.IO;
 using RSecurityBackend.Models.Image;
 using Microsoft.Data.SqlClient;
+using System.Text.RegularExpressions;
 
 namespace RMuseum.Services.Implementation
 {
@@ -2149,6 +2150,107 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorSiteBannerViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// examine site pages for broken links
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> HealthCheckContents()
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                (
+                async token =>
+                {
+                    using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
+                    {
+                        LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                        var job = (await jobProgressServiceEF.NewJob("HealthCheckContents", "Query data")).Result;
+
+                        try
+                        {
+                            var pages = await context.GanjoorPages.ToArrayAsync();
+
+                            await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Examining Pages");
+
+                            var previousErrors = await context.GanjoorHealthCheckErrors.ToArrayAsync();
+                            context.RemoveRange(previousErrors);
+                            await context.SaveChangesAsync();
+                            int percent = 0;
+                            for (int i = 0; i < pages.Length; i++)
+                            {
+                                if (i * 100 / pages.Length > percent)
+                                {
+                                    percent++;
+                                    await jobProgressServiceEF.UpdateJob(job.Id, percent);
+                                }
+
+                                var hrefs = pages[i].HtmlText.Split(new[] { "href=\"" }, StringSplitOptions.RemoveEmptyEntries).Where(o => o.StartsWith("http")).Select(o => o.Substring(0, o.IndexOf("\"")));
+
+                                foreach (string url in hrefs)
+                                {
+                                    if (url == "https://ganjoor.net" || url == "https://ganjoor.net/")
+                                        continue;
+                                    if (url.IndexOf("http://ganjoor.net") == 0)
+                                    {
+                                        context.GanjoorHealthCheckErrors.Add
+                                        (
+                                            new GanjoorHealthCheckError()
+                                            {
+                                                ReferrerPageUrl = pages[i].FullUrl,
+                                                TargetUrl = url,
+                                                BrokenLink = false,
+                                                MulipleTargets = false
+                                            }
+                                         );
+
+                                        await context.SaveChangesAsync();
+                                    }
+                                    else
+                                    if (url.IndexOf("https://ganjoor.net") == 0)
+                                    {
+                                        var testUrl = url.Substring("https://ganjoor.net".Length);
+                                        if (testUrl[testUrl.Length - 1] == '/')
+                                            testUrl = testUrl.Substring(0, testUrl.Length - 1);
+                                        var pageCount = await context.GanjoorPages.Where(p => p.FullUrl == testUrl).CountAsync();
+                                        if (pageCount != 1)
+                                        {
+                                            context.GanjoorHealthCheckErrors.Add
+                                         (
+                                             new GanjoorHealthCheckError()
+                                             {
+                                                 ReferrerPageUrl = pages[i].FullUrl,
+                                                 TargetUrl = url,
+                                                 BrokenLink = pageCount == 0,
+                                                 MulipleTargets = pageCount != 0
+                                             }
+                                          );
+
+                                            await context.SaveChangesAsync();
+                                        }
+                                    }
+                                }
+                            }
+
+                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                        }
+                        catch(Exception exp)
+                        {
+                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                        }
+
+                    }
+                }
+                );
+
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 
