@@ -448,13 +448,9 @@ namespace RMuseum.Services.Implementation
                                                                         tiles.Add((x, 0), tile);
                                                                         max_x = x;
                                                                     }
-                                                                    catch (Exception aexp)
+                                                                    catch (ArgumentException)//in other cases throw the exception
                                                                     {
-                                                                        if (aexp is ArgumentException)
-                                                                        {
-                                                                            break;
-                                                                        }
-                                                                        throw aexp;
+                                                                        break;
                                                                     }
                                                                 }
                                                             }
@@ -504,13 +500,9 @@ namespace RMuseum.Services.Implementation
                                                                         tiles.Add((0, y), tile);
                                                                         max_y = y;
                                                                     }
-                                                                    catch (Exception aexp)
+                                                                    catch (ArgumentException)//in other cases throw the exception
                                                                     {
-                                                                        if (aexp is ArgumentException)
-                                                                        {
-                                                                            break;
-                                                                        }
-                                                                        throw aexp;
+                                                                        break;
                                                                     }
                                                                 }
                                                             }
