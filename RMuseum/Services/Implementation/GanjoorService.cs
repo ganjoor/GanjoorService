@@ -20,7 +20,6 @@ using DNTPersianUtils.Core;
 using System.IO;
 using RSecurityBackend.Models.Image;
 using Microsoft.Data.SqlClient;
-using System.Text.RegularExpressions;
 
 namespace RMuseum.Services.Implementation
 {
@@ -2192,7 +2191,7 @@ namespace RMuseum.Services.Implementation
 
                                 foreach (string url in hrefs)
                                 {
-                                    if (url == "https://ganjoor.net" || url == "https://ganjoor.net/" || url.IndexOf("https://ganjoor.net/vazn/?") == 0)
+                                    if (url == "https://ganjoor.net" || url == "https://ganjoor.net/" || url.IndexOf("https://ganjoor.net/vazn/?") == 0 || url.IndexOf("https://ganjoor.net/simi/?v") == 0)
                                         continue;
                                     if (url.IndexOf("http://ganjoor.net") == 0)
                                     {
