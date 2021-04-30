@@ -2192,7 +2192,7 @@ namespace RMuseum.Services.Implementation
 
                                 foreach (string url in hrefs)
                                 {
-                                    if (url == "https://ganjoor.net" || url == "https://ganjoor.net/")
+                                    if (url == "https://ganjoor.net" || url == "https://ganjoor.net/" || url.IndexOf("https://ganjoor.net/vazn/?") == 0)
                                         continue;
                                     if (url.IndexOf("http://ganjoor.net") == 0)
                                     {
