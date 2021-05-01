@@ -856,33 +856,7 @@ namespace RMuseum.Controllers
                 }
                 );
         }
-
-
-        /// <summary>
-        ///  Get Verses By query
-        /// </summary>
-        /// <param name="query"></param>
-        /// <param name="poetId"></param>
-        /// <param name="paging"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("verse/search")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorSearchVerseViewModel>))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-
-        public async Task<IActionResult> GetVersesByQuery(string query, int poetId, [FromQuery] PagingParameterModel paging)
-        {
-            var pagedResult = await _ganjoorService.GetVersesByQuery(query, poetId, paging);
-            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
-                return BadRequest(pagedResult.ExceptionString);
-
-            // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
-
-            return Ok(pagedResult.Result.items);
-        }
-
+        
         /// <summary>
         /// Get Similar Poems accroding to prosody and rhyme informations
         /// </summary>
