@@ -91,6 +91,11 @@ namespace RMuseum.Services.Implementation
 
                 using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
                 {
+                    if(await context.GolhaCollections.AnyAsync())
+                    {
+                        job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - golha collections are already imported")).Result;
+                        return new RServiceResult<bool>(true);
+                    }
                     using (MySqlConnection connection = new MySqlConnection
                                            (
                                            $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["SongsUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["SongsPassword"]};database={Configuration.GetSection("AudioMySqlServer")["SongsDatabase"]};charset=utf8;convert zero datetime=True"

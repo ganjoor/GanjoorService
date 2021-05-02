@@ -858,15 +858,6 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetVersesByQuery(System.String,System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
-            <summary>
-             Get Verses By query
-            </summary>
-            <param name="query"></param>
-            <param name="poetId"></param>
-            <param name="paging"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Int32)">
             <summary>
             Get Similar Poems accroding to prosody and rhyme informations

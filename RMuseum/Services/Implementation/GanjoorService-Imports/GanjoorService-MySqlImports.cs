@@ -146,7 +146,11 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                await context.Database.ExecuteSqlRawAsync("DELETE FROM GanjoorPages");
+                if(await context.GanjoorPages.AnyAsync())
+                {
+                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - pages are alreay imported")).Result;
+                    return new RServiceResult<bool>(true);
+                }
 
                 using (MySqlConnection connection = new MySqlConnection
                                            (
@@ -928,6 +932,11 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                if(await context.GanjoorPoets.AnyAsync())
+                {
+                    job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} poets are already imported")).Result;
+                    return new RServiceResult<bool>(true);
+                }
 
                 job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - pre mysql data fetch")).Result;
 
@@ -954,13 +963,6 @@ namespace RMuseum.Services.Implementation
                         using (DataTable data = new DataTable())
                         {
                             await src.FillAsync(data);
-
-                            job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - removing existing poets data")).Result;
-
-                            await context.Database.ExecuteSqlRawAsync("DELETE FROM GanjoorPages");
-
-                            await context.Database.ExecuteSqlRawAsync("DELETE FROM GanjoorPoets");
-
 
                             job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - processing poets")).Result;
 
