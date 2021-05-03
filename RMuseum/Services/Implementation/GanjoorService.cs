@@ -1782,10 +1782,17 @@ namespace RMuseum.Services.Implementation
                     sql += $" {whereOrAnd} CatId IN (SELECT Id FROM GanjoorCategories WHERE PoetId = @PoetId ) ";
                     whereOrAnd = " AND ";
                 }
-                term = term.ApplyCorrectYeKe();
+                term = term.Trim().ApplyCorrectYeKe();
+
+                if(string.IsNullOrEmpty(term))
+                {
+                    return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), "خطای جستجوی عبارت خالی");
+                }
+
+                string[] words = term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1) ? new string[] { term.Replace("\"", "") } : term.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                 int wIndex = 0;
-                foreach(string word in term.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                foreach(string word in words)
                 {
                     wIndex++;
                     parameters.Add(new SqlParameter($"Word{wIndex}", word));
