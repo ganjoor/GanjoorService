@@ -10,7 +10,6 @@ using RMuseum.Models.Note;
 using RSecurityBackend.DbContext;
 using RSecurityBackend.Models.Auth.Db;
 using System;
-using Dapper;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.MusicCatalogue;
 
