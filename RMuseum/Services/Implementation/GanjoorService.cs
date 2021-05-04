@@ -45,8 +45,7 @@ namespace RMuseum.Services.Implementation
                      (from poet in _context.GanjoorPoets
                       join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
                       on poet.Id equals cat.PoetId
-                      where !websitePoets || poet.Id < 200
-                      orderby poet.Name descending
+                      where poet.Published
                       select new GanjoorPoetViewModel()
                       {
                           Id = poet.Id,
@@ -62,7 +61,7 @@ namespace RMuseum.Services.Implementation
                      .ToListAsync();
 
                 StringComparer fa = StringComparer.Create(new CultureInfo("fa-IR"), true);
-                res.Sort((a, b) => fa.Compare(a.Name, b.Name));
+                res.Sort((a, b) => fa.Compare(a.Nickname, b.Nickname));
 
                 return new RServiceResult<GanjoorPoetViewModel[]>
                     (
