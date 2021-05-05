@@ -1592,18 +1592,33 @@ namespace RMuseum.Services.Implementation
         /// random poem id from hafez sonnets
         /// </summary>
         /// <returns></returns>
-        private int _GetRandomPoemIdFromHafezSonnets()
+        private int _GetRandomPoemId(int poetId)
         {
-            //this is magic number based method!
-            int startPoemId = 2130;
-            int endPoemId = 2624 + 1; //one is added for مژده ای دل که مسیحا نفسی می‌آید
             Random r = new Random(DateTime.Now.Millisecond);
-            int poemId = r.Next(startPoemId, endPoemId);
-            if (poemId == endPoemId)
+            switch (poetId)
             {
-                poemId = 33179;//مژده ای دل که مسیحا نفسی می‌آید
+                case 2://حافظ
+                    {
+                        //this is magic number based method!
+                        int startPoemId = 2130;
+                        int endPoemId = 2624 + 1; //one is added for مژده ای دل که مسیحا نفسی می‌آید
+                        int poemId = r.Next(startPoemId, endPoemId);
+                        if (poemId == endPoemId)
+                        {
+                            poemId = 33179;//مژده ای دل که مسیحا نفسی می‌آید
+                        }
+                        return poemId;
+                    }
+                case 3://خیام
+                    return r.Next(1119, 1296);
+                case 26://ابوسعید
+                    return r.Next(20509, 21232);
+                case 22://صائب
+                    return r.Next(52198, 59193);
             }
-            return poemId;
+
+            return 0;
+            
         }
 
 
@@ -1616,7 +1631,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                int poemId = _GetRandomPoemIdFromHafezSonnets();
+                int poemId = _GetRandomPoemId(2);
                 var poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).SingleOrDefaultAsync();
                 PublicRecitationViewModel[] recitations = poem == null ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
                 int loopPreventer = 0;

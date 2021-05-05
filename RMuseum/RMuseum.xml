@@ -7839,7 +7839,7 @@
             <param name="song"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService._GetRandomPoemIdFromHafezSonnets">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._GetRandomPoemId(System.Int32)">
             <summary>
             random poem id from hafez sonnets
             </summary>
