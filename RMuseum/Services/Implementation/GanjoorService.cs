@@ -1031,21 +1031,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private int _GetRandomPoemId()
-        {
-            //this is magic number based method!
-            int startPoemId = 2130;
-            int endPoemId = 2624 + 1; //one is added for مژده ای دل که مسیحا نفسی می‌آید
-            Random r = new Random(DateTime.Now.Millisecond);
-            int poemId = r.Next(startPoemId, endPoemId);
-            if (poemId == endPoemId)
-            {
-                poemId = 33179;//مژده ای دل که مسیحا نفسی می‌آید
-            }
-            return poemId;
-        }
-
-        /// <summary>
+                /// <summary>
         /// Get Poem By Url
         /// </summary>
         /// <param name="url"></param>
@@ -1602,6 +1588,25 @@ namespace RMuseum.Services.Implementation
         }
 
 
+        /// <summary>
+        /// random poem id from hafez sonnets
+        /// </summary>
+        /// <returns></returns>
+        private int _GetRandomPoemIdFromHafezSonnets()
+        {
+            //this is magic number based method!
+            int startPoemId = 2130;
+            int endPoemId = 2624 + 1; //one is added for مژده ای دل که مسیحا نفسی می‌آید
+            Random r = new Random(DateTime.Now.Millisecond);
+            int poemId = r.Next(startPoemId, endPoemId);
+            if (poemId == endPoemId)
+            {
+                poemId = 33179;//مژده ای دل که مسیحا نفسی می‌آید
+            }
+            return poemId;
+        }
+
+
 
         /// <summary>
         /// get a random poem from hafez
@@ -1611,7 +1616,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                int poemId = _GetRandomPoemId();
+                int poemId = _GetRandomPoemIdFromHafezSonnets();
                 var poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).SingleOrDefaultAsync();
                 PublicRecitationViewModel[] recitations = poem == null ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
                 int loopPreventer = 0;
@@ -1632,6 +1637,13 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// older search method
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="poetId"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[] items)>> GetVersesByQuery(string query, int poetId, PagingParameterModel paging)
         {
             try

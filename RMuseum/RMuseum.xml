@@ -7839,10 +7839,25 @@
             <param name="song"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._GetRandomPoemIdFromHafezSonnets">
+            <summary>
+            random poem id from hafez sonnets
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal">
             <summary>
             get a random poem from hafez
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetVersesByQuery(System.String,System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            older search method
+            </summary>
+            <param name="query"></param>
+            <param name="poetId"></param>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32})">
