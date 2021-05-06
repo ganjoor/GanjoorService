@@ -1813,8 +1813,7 @@ namespace RMuseum.Controllers
         /// <param name="userPermissionChecker"></param>
         /// <param name="memoryCache"></param>
         /// <param name="captchaService"></param>
-        /// <param name="notificationService"></param>
-        public ArtifactController(IArtifactService artifactService, IUserPermissionChecker userPermissionChecker, IMemoryCache memoryCache, ICaptchaService captchaService, IRNotificationService notificationService)
+        public ArtifactController(IArtifactService artifactService, IUserPermissionChecker userPermissionChecker, IMemoryCache memoryCache, ICaptchaService captchaService)
         {
             _artifactService = artifactService;
             _userPermissionChecker = userPermissionChecker;

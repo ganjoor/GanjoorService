@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Auth.ViewModel;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
-using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Auth.ViewModels;
@@ -40,11 +40,19 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetPoets(bool websitePoets = true, bool includeBio = true)
         {
-            RServiceResult<GanjoorPoetViewModel[]> res =
+            var cacheKey = $"ganjoor/poets/{websitePoets}/{includeBio}";
+            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetViewModel[] poets))
+            {
+                RServiceResult<GanjoorPoetViewModel[]>  res =
                 await _ganjoorService.GetPoets(websitePoets, includeBio);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+
+                poets = res.Result;
+                _memoryCache.Set(cacheKey, poets);
+                
+            }
+            return Ok(poets);
         }
 
         /// <summary>
@@ -1145,18 +1153,25 @@ namespace RMuseum.Controllers
         protected readonly IImageFileService _imageFileService;
 
         /// <summary>
+        /// IMemoryCache
+        /// </summary>
+        protected readonly IMemoryCache _memoryCache;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="ganjoorService"></param>
         /// <param name="appUserService"></param>
         /// <param name="httpContextAccessor"></param>
         /// <param name="imageFileService"></param>
-        public GanjoorController(IGanjoorService ganjoorService, IAppUserService appUserService, IHttpContextAccessor httpContextAccessor, IImageFileService imageFileService)
+        /// <param name="memoryCache"></param>
+        public GanjoorController(IGanjoorService ganjoorService, IAppUserService appUserService, IHttpContextAccessor httpContextAccessor, IImageFileService imageFileService, IMemoryCache memoryCache)
         {
             _ganjoorService = ganjoorService;
             _appUserService = appUserService;
             _httpContextAccessor = httpContextAccessor;
             _imageFileService = imageFileService;
+            _memoryCache = memoryCache;
         }
     }
 }
