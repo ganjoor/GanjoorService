@@ -88,6 +88,8 @@ namespace RMuseum.DbContext
             builder.Entity<GanjoorTrack>()
                 .HasIndex(c => c.Name);
 
+            builder.Entity<GanjoorComment>()
+                .HasIndex(c => c.CommentDate);
         }
 
 
