@@ -1225,6 +1225,14 @@ namespace RSecurityBackend.Services.Implementation
 
                 secret = secret.Trim();
 
+                firstName = firstName.Trim();
+                sureName = sureName.Trim();
+
+                if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(sureName))
+                {
+                    return new RServiceResult<bool>(false, "لطفاً حداقل یکی از اطلاعات نام یا نام خانوادگی را وارد کنید.");
+                }
+
                 RegisterRAppUser newUserInfo = new RegisterRAppUser()
                 {
                     Username = email,
@@ -1234,7 +1242,7 @@ namespace RSecurityBackend.Services.Implementation
                     IsAdmin = false,
                     FirstName = firstName,
                     SureName = sureName,
-                    NickName = $"{firstName} {sureName}"
+                    NickName = $"{firstName} {sureName}".Trim()
                 };
 
                 RServiceResult<RAppUser> userAddResult = await AddUser(newUserInfo);
