@@ -588,7 +588,12 @@ namespace RMuseum.Services.Implementation
 
                 var userRes = await _appUserService.GetUserInformation(userId);
 
-                content = content.ToPersianNumbers().ApplyCorrectYeKe();
+                if(string.IsNullOrEmpty(userRes.Result.NickName))
+                {
+                    return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "لطفاً با مراجعه به پیشخان کاربری (دکمهٔ گوشهٔ پایین سمت راست) «نام مستعار» خود را مشخص کنید و سپس اقدام به ارسال حاشیه بفرمایید.");
+                }
+
+                content = content.ApplyCorrectYeKe();
 
                 GanjoorComment comment = new GanjoorComment()
                 {
@@ -661,6 +666,8 @@ namespace RMuseum.Services.Implementation
                 {
                     return new RServiceResult<bool>(false); //not found
                 }
+
+                htmlComment = htmlComment.ApplyCorrectYeKe();
 
                 comment.HtmlComment = htmlComment;
 
