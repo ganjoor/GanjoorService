@@ -1822,9 +1822,11 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), "خطای جستجوی عبارت خالی");
                 }
                 string freeText;
+                bool exactSearch = false;
                 if(term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
                 {
-                    freeText = term;
+                    exactSearch = true;
+                    freeText = term.Substring(1, term.Length - 2);
                 }
                 else
                 {
@@ -1857,7 +1859,12 @@ namespace RMuseum.Services.Implementation
                     .Where(p =>
                             (catId == null || catIdList.Contains(p.CatId))
                             &&
-                            EF.Functions.FreeText(p.PlainText, freeText)
+                            (
+                            (!exactSearch && EF.Functions.FreeText(p.PlainText, freeText)
+                            ||
+                            (exactSearch && p.PlainText.Contains(freeText))
+                            )
+                            )
                             )
                     .Include(p => p.Cat)
                     .OrderBy(p => p.CatId).ThenBy(p => p.Id)
