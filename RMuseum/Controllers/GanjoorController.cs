@@ -68,13 +68,19 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetPoetById(int id)
         {
-            RServiceResult<GanjoorPoetCompleteViewModel> res =
+            var cacheKey = $"poet/byid/{id}";
+            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
+            {
+                RServiceResult<GanjoorPoetCompleteViewModel> res =
                 await _ganjoorService.GetPoetById(id);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            if (res.Result == null)
-                return NotFound();
-            return Ok(res.Result);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                if (res.Result == null)
+                    return NotFound();
+                poet = res.Result;
+                _memoryCache.Set(cacheKey, poet);
+            }
+            return Ok(poet);
         }
 
         /// <summary>
