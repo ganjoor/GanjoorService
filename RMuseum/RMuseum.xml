@@ -7876,14 +7876,21 @@
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.Search(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
-            <summary>
-            Search
-            </summary>
-            <param name="paging"></param>
-            <param name="term"></param>
-            <param name="poetId"></param>
-            <param name="catId"></param>
-            <returns></returns>
+             <summary>
+             Search
+             You need to run this scripts manually on the database before using this method:
+             
+             CREATE FULLTEXT CATALOG [GanjoorPoemPlainTextCatalog] WITH ACCENT_SENSITIVITY = OFF
+             ALTER TABLE [dbo].[GanjoorPoems] ADD  CONSTRAINT [PK_GanjoorPoems] PRIMARY KEY CLUSTERED 
+            (
+                [Id] ASC
+            ) WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]
+             </summary>
+             <param name="paging"></param>
+             <param name="term"></param>
+             <param name="poetId"></param>
+             <param name="catId"></param>
+             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ModifyPage(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
             <summary>

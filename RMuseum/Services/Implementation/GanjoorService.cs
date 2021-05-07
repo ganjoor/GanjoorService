@@ -1785,9 +1785,26 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), exp.ToString());
             }
         }
+        private async Task _populateCategoryChildren(int catId, List<int> catListId)
+        {
+            var catRes = await GetCatById(catId, false);
+            foreach(var c in catRes.Result.Cat.Children)
+            {
+                catListId.Add(c.Id);
+                await _populateCategoryChildren(c.Id, catListId);
+            }
+        }
+
 
         /// <summary>
         /// Search
+        /// You need to run this scripts manually on the database before using this method:
+        /// 
+        /// CREATE FULLTEXT CATALOG [GanjoorPoemPlainTextCatalog] WITH ACCENT_SENSITIVITY = OFF
+        /// ALTER TABLE [dbo].[GanjoorPoems] ADD  CONSTRAINT [PK_GanjoorPoems] PRIMARY KEY CLUSTERED 
+        ///(
+        ///    [Id] ASC
+        ///) WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="term"></param>
@@ -1804,76 +1821,50 @@ namespace RMuseum.Services.Implementation
                 {
                     return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), "خطای جستجوی عبارت خالی");
                 }
-
-                using (SqlConnection sqlConnection = new SqlConnection(Configuration.GetConnectionString("DefaultConnection")))
+                string freeText;
+                if(term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
                 {
-                    await sqlConnection.OpenAsync();
+                    freeText = term;
+                }
+                else
+                {
+                    string[] words =term.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                    IDbConnection dapper = sqlConnection;
-
-                    var parameters = new DynamicParameters();
-                    string sql = "SELECT* FROM GanjoorPoems ";
-
-                    string whereOrAnd = " WHERE ";
-                    if (catId != null)
-                    {
-                        parameters.Add("@CatId", catId);
-                        sql += $" {whereOrAnd} FullUrl LIKE (SELECT FullUrl FROM GanjoorCategories WHERE Id = @CatId) + '%' ";
-                        whereOrAnd = " AND ";
-                    }
-                    else
-                    if (poetId != null)
-                    {
-                        parameters.Add("@PoetId", poetId);
-                        sql += $" {whereOrAnd} CatId IN (SELECT Id FROM GanjoorCategories WHERE PoetId = @PoetId ) ";
-                        whereOrAnd = " AND ";
-                    }
-
-
-                    string[] words = term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1) ? new string[] { term.Replace("\"", "") } : term.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                    int wIndex = 0;
+                    freeText = "";
+                    string emptyOrAnd = "";
                     foreach (string word in words)
                     {
-                        wIndex++;
-                        parameters.Add($"@Word{wIndex}", word);
-                        sql += $" {whereOrAnd} PlainText LIKE N'%' + @Word{wIndex} + '%' ";
-                        whereOrAnd = " AND ";
+                        freeText += $" {emptyOrAnd} \"{word}\" ";
+                        emptyOrAnd = " AND ";
                     }
+                }
+                if(poetId != null && catId == null)
+                {
+                    var poetRes = await GetPoetById((int)poetId);
+                    if (!string.IsNullOrEmpty(poetRes.ExceptionString))
+                        return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), poetRes.ExceptionString);
+                    catId = poetRes.Result.Cat.Id;
+                }
+                List<int> catIdList = new List<int>();
+                if(catId != null)
+                {
+                    catIdList.Add((int)catId);
+                    await _populateCategoryChildren((int)catId, catIdList);
+                }
 
-                    sql += $" ORDER BY CatId, Id OFFSET {(paging.PageNumber - 1) * paging.PageSize} ROWS FETCH NEXT {paging.PageSize + 1} ROWS ONLY ";
-
-                    List<GanjoorPoem> poems = new List<GanjoorPoem> (await dapper.QueryAsync<GanjoorPoem>(sql, parameters));
-
-                    int clientPageSize = (poems.Count == paging.PageSize + 1) ? paging.PageSize : poems.Count;
-
-
-                    int count = clientPageSize;
-                    int PageSize = paging.PageSize;
-                    int CurrentPage = paging.PageNumber;
-                    int TotalCount = -1;
-                    int TotalPages = -1;
-                    bool previousPage = CurrentPage > 1;
-                    bool nextPage = clientPageSize != poems.Count;
-
-                    PaginationMetadata paginationMetadata = new PaginationMetadata()
-                    {
-                        totalCount = TotalCount,
-                        pageSize = PageSize,
-                        currentPage = CurrentPage,
-                        totalPages = TotalPages,
-                        hasPreviousPage = previousPage,
-                        hasNextPage = nextPage
-                    };
-
-
-                    List<GanjoorPoemCompleteViewModel> items = new List<GanjoorPoemCompleteViewModel>();
-
-                    Dictionary<int, GanjoorPoetCompleteViewModel> cachedPoetsByCat = new Dictionary<int, GanjoorPoetCompleteViewModel>();
-
-                    foreach (var poem in poems)
-                    {
-                        var item = new GanjoorPoemCompleteViewModel()
+                var source =
+                    _context.GanjoorPoems
+                    .Where(p =>
+                            (catId == null || catIdList.Contains(p.CatId))
+                            &&
+                            EF.Functions.FreeText(p.PlainText, freeText)
+                            )
+                    .Include(p => p.Cat)
+                    .OrderBy(p => p.CatId).ThenBy(p => p.Id)
+                    .Select
+                    (
+                        poem =>
+                        new GanjoorPoemCompleteViewModel()
                         {
                             Id = poem.Id,
                             Title = poem.Title,
@@ -1884,41 +1875,47 @@ namespace RMuseum.Services.Implementation
                             PlainText = poem.PlainText,
                             GanjoorMetre = poem.GanjoorMetre,
                             RhymeLetters = poem.RhymeLetters,
-                        };
-                        
-
-                        if (cachedPoetsByCat.TryGetValue(poem.CatId, out GanjoorPoetCompleteViewModel poet))
-                        {
-                            item.Category = poet;
+                            Category = new GanjoorPoetCompleteViewModel()
+                            {
+                                Poet = new GanjoorPoetViewModel()
+                                {
+                                    Id = poem.Cat.Poet.Id,
+                                }
+                            },
                         }
-                        else
-                        {
-                            int itemPoetId = await dapper.QuerySingleAsync<int>($"SELECT PoetId FROM GanjoorCategories WHERE Id = {poem.CatId}");
-                            poet = (await GetPoetById(itemPoetId)).Result;
+                    );
 
-                            cachedPoetsByCat.Add(poem.CatId, poet);
 
-                            item.Category = poet;
-                        }
 
-                        items.Add
-                            (
-                            item
-                            );
+                (PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items) paginatedResult =
+                   await QueryablePaginator<GanjoorPoemCompleteViewModel>.Paginate(source, paging);
+
+
+                Dictionary<int, GanjoorPoetCompleteViewModel> cachedPoets = new Dictionary<int, GanjoorPoetCompleteViewModel>();
+
+                foreach (var item in paginatedResult.Items)
+                {
+                    if (cachedPoets.TryGetValue(item.Category.Poet.Id, out GanjoorPoetCompleteViewModel poet))
+                    {
+                        item.Category = poet;
+                    }
+                    else
+                    {
+                        poet = (await GetPoetById(item.Category.Poet.Id)).Result;
+
+                        cachedPoets.Add(item.Category.Poet.Id, poet);
+
+                        item.Category = poet;
                     }
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(new(paginationMetadata, items.ToArray()));
-
                 }
-
-               
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
             }
             catch (Exception exp)
             {
                 return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), exp.ToString());
             }
         }
-
 
         /// <summary>
         /// modify page
