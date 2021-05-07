@@ -187,13 +187,19 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetCatById(int id, bool poems = true)
         {
-            RServiceResult<GanjoorPoetCompleteViewModel> res =
-                await _ganjoorService.GetCatById(id, poems);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            if (res.Result == null)
-                return NotFound();
-            return Ok(res.Result);
+            var cacheKey = $"cat/byid/{id}/{poems}";
+            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel cat))
+            {
+                RServiceResult<GanjoorPoetCompleteViewModel> res =
+               await _ganjoorService.GetCatById(id, poems);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                if (res.Result == null)
+                    return NotFound();
+                cat = res.Result;
+                _memoryCache.Set(cacheKey, cat);
+            }
+            return Ok(cat);
         }
 
         /// <summary>
@@ -210,13 +216,21 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetCatByUrl(string url, bool poems = true)
         {
-            RServiceResult<GanjoorPoetCompleteViewModel> res =
-                await _ganjoorService.GetCatByUrl(url, poems);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            if (res.Result == null)
-                return NotFound();
-            return Ok(res.Result);
+            var cacheKey = $"cat/byurl/{url}/{poems}";
+            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel cat))
+            {
+                RServiceResult<GanjoorPoetCompleteViewModel> res =
+                 await _ganjoorService.GetCatByUrl(url, poems);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                if (res.Result == null)
+                    return NotFound();
+                cat = res.Result;
+                _memoryCache.Set(cacheKey, cat);
+            }
+
+            
+            return Ok(cat);
         }
 
         /// <summary>
