@@ -111,38 +111,53 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> Get(string url)
         {
 
-            RServiceResult<Guid> poet = await _ganjoorService.GetPoetImageIdByUrl($"/{url}");
-            if (!string.IsNullOrEmpty(poet.ExceptionString))
-                return BadRequest(poet.ExceptionString);
+            var cacheKey = $"poet/image/{url}.png";
+            var cacheKeyForLastModified = $"{cacheKey}/lastModified";
+            if (!_memoryCache.TryGetValue(cacheKey, out string imagePath) || !_memoryCache.TryGetValue(cacheKeyForLastModified, out DateTime lastModified))
+            {
+                RServiceResult<Guid> poet = await _ganjoorService.GetPoetImageIdByUrl($"/{url}");
+                if (!string.IsNullOrEmpty(poet.ExceptionString))
+                    return BadRequest(poet.ExceptionString);
 
-            if (poet.Result == Guid.Empty)
-                return NotFound();
+                if (poet.Result == Guid.Empty)
+                    return NotFound();
 
 
-            RServiceResult<RImage> img =
-                await _imageFileService.GetImage(poet.Result);
+                RServiceResult<RImage> img =
+                    await _imageFileService.GetImage(poet.Result);
 
-            if (!string.IsNullOrEmpty(img.ExceptionString))
-                return BadRequest(img.ExceptionString);
+                if (!string.IsNullOrEmpty(img.ExceptionString))
+                    return BadRequest(img.ExceptionString);
 
-            if (img.Result == null)
-                return NotFound();
+                if (img.Result == null)
+                    return NotFound();
 
-            Response.GetTypedHeaders().LastModified = img.Result.LastModified;
+                lastModified = img.Result.LastModified;
+
+                
+
+                RServiceResult<string> imgPath = _imageFileService.GetImagePath(img.Result);
+                if (!string.IsNullOrEmpty(imgPath.ExceptionString))
+                    return BadRequest(imgPath.ExceptionString);
+
+                imagePath = imgPath.Result;
+
+
+                _memoryCache.Set(cacheKey, imagePath);
+                _memoryCache.Set(cacheKeyForLastModified, lastModified);
+
+            }
+
+            Response.GetTypedHeaders().LastModified = lastModified;
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= img.Result.LastModified)
+                requestHeaders.IfModifiedSince.Value >= lastModified)
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
 
-            RServiceResult<string> imgPath = _imageFileService.GetImagePath(img.Result);
-            if (!string.IsNullOrEmpty(imgPath.ExceptionString))
-                return BadRequest(imgPath.ExceptionString);
-
-
-            return new FileStreamResult(new FileStream(imgPath.Result, FileMode.Open, FileAccess.Read), "image/png");
+            return new FileStreamResult(new FileStream(imagePath, FileMode.Open, FileAccess.Read), "image/png");
 
         }
 
