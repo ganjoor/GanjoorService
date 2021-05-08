@@ -1,14 +1,10 @@
 ﻿using DNTPersianUtils.Core;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RMuseum.Models.Auth.ViewModel;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
@@ -27,15 +23,22 @@ namespace GanjooRazor.Pages
                 pageNumber = int.Parse(Request.Query["page"]);
             }
 
-            string url = $"{APIRoot.Url}/api/ganjoor/comments?PageNumber={pageNumber}&PageSize=20";
+            
             string filterUserId = Request.Query["userid"];
             string htmlText = "";
             if (!string.IsNullOrEmpty(filterUserId))
             {
-                var responseUserProfile = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/user/profile/{filterUserId}");
-                responseUserProfile.EnsureSuccessStatusCode();
+                RServiceResult<PublicRAppUser> userInfo = await _appUserService.GetUserInformation(Guid.Parse(filterUserId));
 
-                GanjoorUserPublicProfile profile = JsonConvert.DeserializeObject<GanjoorUserPublicProfile>(await responseUserProfile.Content.ReadAsStringAsync());
+                GanjoorUserPublicProfile profile = new GanjoorUserPublicProfile()
+                {
+                    Id = (Guid)userInfo.Result.Id,
+                    NickName = userInfo.Result.NickName,
+                    Bio = userInfo.Result.Bio,
+                    Website = userInfo.Result.Website,
+                    RImageId = userInfo.Result.RImageId
+                };
+               
 
                 ViewData["Title"] = $"گنجور &raquo; حاشیه‌های {profile.NickName}";
 
@@ -61,24 +64,21 @@ namespace GanjooRazor.Pages
                 htmlText += $"<hr />{Environment.NewLine}";
 
 
-                url += $"&filterUserId={filterUserId}";
+                
             }
 
-
-
-            var response = await _httpClient.GetAsync(url);
-
-            if (!response.IsSuccessStatusCode)
+            var commentsRes = await _ganjoorService.GetRecentComments(new PagingParameterModel()
             {
-                LastError = await response.Content.ReadAsStringAsync();
-                return;
-            }
+                PageNumber = pageNumber,
+                PageSize = 20
+            }, 
+            string.IsNullOrEmpty(filterUserId) ? Guid.Empty : Guid.Parse(filterUserId), true);
 
-            response.EnsureSuccessStatusCode();
+            PaginationMetadata paginationMetadata = commentsRes.Result.PagingMeta;
+            GanjoorCommentFullViewModel[] comments = commentsRes.Result.Items;
 
 
-
-            foreach (var comment in JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCommentFullViewModel>>())
+            foreach (var comment in comments)
             {
                 htmlText += $"<blockquote>{comment.HtmlComment}{Environment.NewLine}" +
                     $"<p>{comment.AuthorName} <small>در {comment.CommentDate.ToFriendlyPersianDateTextify()}</small> دربارهٔ <a href=\"{comment.Poem.UrlSlug}\">{comment.Poem.Title}</a>" +
@@ -87,42 +87,36 @@ namespace GanjooRazor.Pages
 
             htmlText += "<p style=\"text-align: center;\">";
 
-            string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
-            if (!string.IsNullOrEmpty(paginnationMetadata))
+            string queryFilterUserId = string.IsNullOrEmpty(filterUserId) ? "" : $"&userid={filterUserId}";
+
+            if (paginationMetadata.totalPages > 1)
             {
-                PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata);
+                GanjoorPage.Title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
+                ViewData["Title"] += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
 
-                string queryFilterUserId = string.IsNullOrEmpty(filterUserId) ? "" : $"&userid={filterUserId}";
-
-                if (paginationMetadata.totalPages > 1)
+                if (paginationMetadata.currentPage > 3)
                 {
-                    GanjoorPage.Title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
-                    ViewData["Title"] += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
-
-                    if (paginationMetadata.currentPage > 3)
+                    htmlText += $"[<a href=\"/hashieha/?page=1{queryFilterUserId}\">صفحهٔ اول</a>] …";
+                }
+                for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
+                {
+                    if (i >= 1 && i <= paginationMetadata.totalPages)
                     {
-                        htmlText += $"[<a href=\"/hashieha/?page=1{queryFilterUserId}\">صفحهٔ اول</a>] …";
-                    }
-                    for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
-                    {
-                        if (i >= 1 && i <= paginationMetadata.totalPages)
+                        htmlText += " [";
+                        if (i == paginationMetadata.currentPage)
                         {
-                            htmlText += " [";
-                            if (i == paginationMetadata.currentPage)
-                            {
-                                htmlText += i.ToPersianNumbers();
-                            }
-                            else
-                            {
-                                htmlText += $"<a href=\"/hashieha/?page={i}{queryFilterUserId}\">{i.ToPersianNumbers()}</a>";
-                            }
-                            htmlText += "] ";
+                            htmlText += i.ToPersianNumbers();
                         }
+                        else
+                        {
+                            htmlText += $"<a href=\"/hashieha/?page={i}{queryFilterUserId}\">{i.ToPersianNumbers()}</a>";
+                        }
+                        htmlText += "] ";
                     }
-                    if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
-                    {
-                        htmlText += $"… [<a href=\"/hashieha/?page={paginationMetadata.totalPages}{queryFilterUserId}\">صفحهٔ آخر</a>]";
-                    }
+                }
+                if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
+                {
+                    htmlText += $"… [<a href=\"/hashieha/?page={paginationMetadata.totalPages}{queryFilterUserId}\">صفحهٔ آخر</a>]";
                 }
             }
 

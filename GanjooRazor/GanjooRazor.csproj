@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Utils\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\RMuseum\RMuseum.csproj" />
     <ProjectReference Include="..\RSecurityBackend\RSecurityBackend.csproj" />
   </ItemGroup>

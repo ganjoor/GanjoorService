@@ -12,8 +12,10 @@ using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Services;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Auth.ViewModels;
+using RSecurityBackend.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +37,14 @@ namespace GanjooRazor.Pages
         /// <summary>
         /// IMemoryCache
         /// </summary>
-        protected readonly IMemoryCache _memoryCache;
+        private readonly IMemoryCache _memoryCache;
+
+        /// <summary>
+        /// IAppUserService instance
+        /// </summary>
+        private readonly IAppUserService _appUserService;
+
+        private readonly IGanjoorService _ganjoorService;
 
         /// <summary>
         /// HttpClient instance
@@ -47,10 +56,15 @@ namespace GanjooRazor.Pages
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="memoryCache"></param>
-        public IndexModel(IConfiguration configuration, IMemoryCache memoryCache, HttpClient httpClient)
+        /// <param name="appUserService"></param>
+        /// <param name="ganjoorService"></param>
+        /// <param name="httpClient"></param>
+        public IndexModel(IConfiguration configuration, IMemoryCache memoryCache, IAppUserService appUserService, IGanjoorService ganjoorService, HttpClient httpClient)
         {
             _configuration = configuration;
             _memoryCache = memoryCache;
+            _appUserService = appUserService;
+            _ganjoorService = ganjoorService;
             _httpClient = httpClient;
         }
 
