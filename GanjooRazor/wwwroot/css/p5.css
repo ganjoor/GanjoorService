@@ -1,0 +1,780 @@
+/*
+Theme Name:ganjoor.net theme
+Theme URI:http://www.gozir.com/
+Description:Designed to be used in ganjoor.net (based on gozir.com them)
+Version:1.0
+Author:gozir.com
+*/
+@font-face {
+    font-family: Vazir;
+    src: url('Vazir-Regular.eot');
+    src: url('Vazir-Regular.eot?#iefix') format('embedded-opentype'),
+         url('Vazir-Regular.woff2') format('woff2'),
+         url('Vazir-Regular.woff') format('woff'),
+         url('Vazir-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: Vazir;
+    src: url('Vazir-Bold.eot');
+    src: url('Vazir-Bold.eot?#iefix') format('embedded-opentype'),
+         url('Vazir-Bold.woff2') format('woff2'),
+         url('Vazir-Bold.woff') format('woff'),
+         url('Vazir-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: Vazir;
+    src: url('Vazir-Black.eot');
+    src: url('Vazir-Black.eot?#iefix') format('embedded-opentype'),
+         url('Vazir-Black.woff2') format('woff2'),
+         url('Vazir-Black.woff') format('woff'),
+         url('Vazir-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+@font-face {
+    font-family: Vazir;
+    src: url('Vazir-Medium.eot');
+    src: url('Vazir-Medium.eot?#iefix') format('embedded-opentype'),
+         url('Vazir-Medium.woff2') format('woff2'),
+         url('Vazir-Medium.woff') format('woff'),
+         url('Vazir-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: Vazir;
+    src: url('Vazir-Light.eot');
+    src: url('Vazir-Light.eot?#iefix') format('embedded-opentype'),
+         url('Vazir-Light.woff2') format('woff2'),
+         url('Vazir-Light.woff') format('woff'),
+         url('Vazir-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+@font-face {
+    font-family: Vazir;
+    src: url('Vazir-Thin.eot');
+    src: url('Vazir-Thin.eot?#iefix') format('embedded-opentype'),
+         url('Vazir-Thin.woff2') format('woff2'),
+         url('Vazir-Thin.woff') format('woff'),
+         url('Vazir-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: #fff;
+}
+
+#hdr, #hdr2 {
+    max-width: 752px;
+    margin: auto;
+    display: block;
+    text-align: center;
+    direction: rtl;
+    clear: both
+}
+
+#hdr2 {
+    margin-bottom: 3px;
+}
+
+h1 {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#hdr2 h1 {
+    float: right;
+    height: 100px;
+}
+
+h1 a img {
+    border: none;
+    display: block;
+}
+
+#fa {
+    direction: rtl;
+    font-family: Vazir;font-weight: 300;font-size: 1em;
+    background: transparent url(/image/bk.gif) top center repeat scroll;
+}
+
+#fa a {
+    text-decoration: none;
+    color: #c44
+}
+
+h2 {
+    font-family: Vazir;font-weight: bold;font-size: 1.2em;
+    margin: 3px auto;
+    color: #300
+}
+
+form:after, form div:after {
+    content: ".";
+    display: block;
+    visibility: hidden;
+    clear: both;
+    height: 0
+}
+
+.actionbox {
+    position: relative;
+    margin: auto;
+    line-height: normal;
+    text-align: center
+}
+
+#hdr2 .actionbox {
+    margin: 0;
+    float: left;
+    font-family: Vazir;font-weight: 300;font-size: 1em;
+}
+
+#main, .sitem, .poem {
+    max-width: 752px;
+    margin: auto;
+    display: block;
+    background-color: #fc9;
+    border: 2px solid #300;
+}
+
+.poem, #guides, .sitem {
+    background: transparent url(/image/pbk.jpg) top center repeat scroll;
+}
+
+.sitem, .poem {
+    margin-bottom: 3px;
+    padding: 3px;
+}
+
+.poem p {
+    text-indent: 20px;
+    text-align: justify;
+}
+
+#footer {
+    max-width: 752px;
+    margin: auto;
+    text-align: center;
+    height: 30px;
+    display: block;
+    clear: both
+}
+
+#footer ul {
+    list-style: none;
+    font-size: 0.8em
+}
+
+#footer li {
+    display: inline;
+    text-align: right
+}
+
+#footer li a {
+    display: inline
+}
+
+form {
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+}
+
+label {
+    font-size: 100%;
+    color: #000
+}
+
+input, select, textarea {
+    font-family: Vazir;font-weight: 300;font-size: 0.8em;
+    padding: 2px;
+    text-align: right;
+    color: #7f7f7f;
+    border: 2px solid #300;
+    background-color: #fff
+}
+
+select {
+    width: 190px;
+    margin-top: 3px;
+}
+
+.inputText {
+    margin-top: 3px;
+}
+
+.linputText {
+    margin-top: 3px;
+    direction: ltr;
+    text-align: left
+}
+
+#guides {
+    display: block;
+    text-align: center;
+    margin: auto;
+    width: 100%;
+}
+
+#guides p {
+    text-indent: 20px;
+    margin: 5px 5px 5px 5px;
+    font-family: Vazir;font-weight: 300;font-size: 1em;
+    line-height: 24px
+}
+
+.poet {
+    display: inline-table;
+    width: 82px;
+    margin-right: 1px;
+}
+
+.poet .caption {
+    display: block;
+    width: 100%;
+    font-family: Vazir;font-weight: 300;font-size: 0.8em;
+    text-align: center;
+    margin-right: 1px;
+}
+
+.width-100per {
+    width: 100%;
+}
+
+.text-align-center{
+    text-align:center;
+}
+
+.caption {
+    max-height: 20px;
+}
+
+#fa .caption a:hover {
+    color: #300
+}
+
+a img {
+    border: none;
+    width: 100%;
+    display: block
+}
+
+
+.hilite {
+    color: #000;
+    background-color: #9cf
+}
+
+.hilite1 {
+    color: #000;
+    background-color: #fc6
+}
+
+.hilite2 {
+    color: #000;
+    background-color: #9f6
+}
+
+.hilite3 {
+    color: #000;
+    background-color: #f99
+}
+
+div.spacer, .item, .b2 {
+    clear: both;
+}
+
+div.n {
+    clear: left;
+}
+
+
+.navigation {
+    width: 75%;
+    margin: auto;
+    display: block
+}
+
+.navleft {
+    float: left;
+    padding: 0 0 5px 5px;
+    text-align: center
+}
+
+.navright {
+    float: right;
+    padding: 0 0 5px 5px;
+    text-align: center
+}
+
+.b {
+    margin: auto;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.m1 {
+    width: 45%;
+    float: right;
+}
+
+.m2 {
+    width: 45%;
+    float: left;
+}
+
+.m1 p, .m2 p {
+    font-family: Vazir;font-weight: 300;font-size: 0.9em;font-style:normal;
+    text-indent: 0;
+    margin: 0;
+    line-height: 30px;
+}
+
+.m1 p {
+    text-align: left;
+}
+
+.m2 p {
+    text-align: right;
+}
+
+.b2 p {
+    text-align: center;
+}
+
+.item {
+    padding-top: 20px;
+}
+
+.ganjoor-comment{
+    margin-right:20px;
+}
+
+.sit {
+    display: block;
+    float: right;
+    max-width: 508px
+}
+
+#comments, #profile {
+    margin: 20px auto 6px;
+    display: block;
+    background: transparent url(/image/cbk.jpg) top center repeat scroll;
+    padding: 3px;
+    clear: both;
+    border: 2px solid #300;
+}
+
+.notice {
+    width: 90%;
+    margin: 6px auto;
+    display: block;
+    background-color: #ffffe1;
+    padding: 3px;
+    clear: both;
+    border: 2px solid #300;
+}
+
+.notice p {
+    color: #ffffe1;
+}
+
+#commentsp h3, #comments h3 {
+    font-family: Vazir;font-weight: 300;font-size: 0.9em;
+    margin: 3px auto;
+    color: #fff;
+    text-align: center;
+}
+
+#comments h3 {
+    font-size: 20px;
+    color: #300
+}
+
+#commentsp p, #comments p {
+    text-indent: 20px;
+    text-align: justify;
+    color: #ffffe1
+}
+
+#comments p {
+    color: #300
+}
+
+#commentsp label {
+    color: #ffffe1
+}
+
+.actionlink {
+    cursor: pointer
+}
+
+textarea {
+    background-color: #fc9
+}
+
+form div.notes p.last {
+    margin: 0;
+}
+
+form div.required label, label.required {
+    color: black
+}
+
+form div.optional label, label.optional {
+    font-weight: normal
+}
+
+form div label {
+    clear: both;
+    display: block;
+    float: right;
+    width: 120px;
+    padding: 3px 5px;
+    margin: 0 0 5px 0;
+    text-align: left
+}
+
+.inputText {
+    margin-top: 3px;
+    height: 13px
+}
+
+.linputText {
+    margin-top: 3px;
+    height: 13px;
+    direction: ltr;
+    text-align: left
+}
+
+
+form div.submit {
+    text-align: center
+}
+
+form div input.inputSubmit {
+    background-color: #fff;
+    border: 2px solid #300;
+    color: #300
+}
+
+input[type="submit"] { padding:0px; text-align:center; background-color: #ccc}
+
+.lft {
+    direction: ltr;
+    unicode-bidi: bidi-override
+}
+
+table {
+    font-family: Vazir;font-weight: 300;font-size: 0.8em;
+    border-collapse: collapse;
+    max-width: 600px;
+    margin: auto;
+    margin-top: 10px;
+    text-align: center;
+}
+
+td {
+    border: 1px solid #000;
+}
+
+.noborder td {
+    border: none;
+}
+
+tr {
+    background: #eee;
+}
+
+tr.h td {
+    border-top: 1px solid #fb7a31;
+    border-bottom: 1px solid #fb7a31;
+    background: #ffc;
+}
+
+tr.e {
+    background: #fff;
+}
+
+td.c1 {
+    width: 50px;
+}
+
+td.c3, td.c4 {
+    width: 100px;
+}
+
+td.c2 {
+    width: 350px;
+}
+
+
+#selection-image {
+    background: url('/image/loghatname.png') 0 0 no-repeat;
+    width: 25px;
+    height: 29px;
+    position: absolute;
+    top: -50px;
+    left: -50px;
+}
+
+#vajje {
+    background: url('/image/vajje.png') 0 0 no-repeat;
+    width: 25px;
+    height: 29px;
+    position: absolute;
+    top: 20px;
+    left: -50px;
+}
+#abjad {
+    background: url('/image/abjad.png') 0 0 no-repeat;
+    width: 28px;
+    height: 29px;
+    position: absolute;
+    top: 20px;
+    left: -50px;
+}
+
+#vazn{ background:url('/image/vazn.png') 0 0 no-repeat;
+	width:41px;
+	height:25px;
+	position:absolute;
+	top:0px; 
+	left:100px; 
+}
+
+.poet-pic-wrap {
+    width:82px;
+    margin:auto;
+}
+
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+
+#searchhorm {
+    margin:auto;
+    max-width: 500px;
+}
+
+#searchform {
+    float: left;
+    max-width: 150px;
+}
+
+#searchform input,
+#searchform select,
+#searchhorm input,
+#searchhorm select
+ {
+    width: 150px;
+    margin: 3px 0;
+    padding: 4px;
+    float: left;
+    height: 30px;
+}
+
+#searchhorm input,
+#searchhorm select,
+#searchhorm label
+{
+float: right;
+margin: 1px;
+}
+
+#searchhorm input[type="submit"] { width:50px; }
+
+
+@media(max-width: 768px) {
+    .b {
+        margin-bottom: 15px;
+    }
+    .b p {
+        text-align: center;
+        font-size: 1.4em;
+    }
+    .b > div {
+        width: 100%;
+        float: none;
+    }
+	.tooltip {
+        font-size: 1.4em;
+    }
+}
+
+.tooltip {
+        font-family: Vazir;
+    }
+
+.tooltip a {
+    border-radius: 10px;
+	height: 100%;
+	padding: 0.5em;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}
+
+.tooltip a:hover {
+    background: rgba(59,68,75,0.9);
+}
+
+.tooltip::before {
+    content: '';
+    display: block;
+    border-left: 0.5em solid transparent;
+    border-right: 0.5em solid transparent;
+    border-bottom: 0.5em solid rgba(14,17,17,0.9);
+    position: absolute;
+    top: 0;
+    margin-top: -0.5em;
+}
+
+.jp-video-270p {
+    width: 100%;
+}
+
+ol {
+ 	list-style-type: persian;
+}
+
+ol li {
+  margin-right: 2em;
+  float:right;
+
+}
+
+#login {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+#login-container {
+    display: flex;
+}
+
+#login-container form {
+    margin: auto; /* nice thing of auto margin if display:flex; it center both horizontal and vertical :) */
+}
+
+#login-container td {
+    border: 0;
+}
+
+#login-container input {
+    direction: ltr;
+    text-align: left;
+}
+
+.alert-text{
+    color:red;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #eee;
+    margin: 5px auto; /* 15% from the top and centered */
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    font-size: 1.25em;
+    padding: 5px;
+}
+
+
+.modal-content td {
+    border: none
+}
+
+
+/* The Close Button */
+.close {
+    /* Position it in the top right corner outside of the modal */
+    position: absolute;
+    right: 25px;
+    top: 0;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+    /* Close button on hover */
+    .close:hover,
+    .close:focus {
+        color: red;
+        cursor: pointer;
+    }
+
+/* Add Zoom Animation */
+.animate {
+    -webkit-animation: animatezoom 0.6s;
+    animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+    from {
+        -webkit-transform: scale(0)
+    }
+
+    to {
+        -webkit-transform: scale(1)
+    }
+}
+
+@keyframes animatezoom {
+    from {
+        transform: scale(0)
+    }
+
+    to {
+        transform: scale(1)
+    }
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+    span.psw {
+        display: block;
+        float: none;
+    }
+}
+
+.loginImgContainer{
+}
