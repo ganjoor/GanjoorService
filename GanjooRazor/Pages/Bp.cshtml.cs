@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Services;
+using RSecurityBackend.Models.Generic;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -25,13 +27,16 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly HttpClient _httpClient;
 
+        private readonly IGanjoorService _ganjoorService;
+
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        public BpModel(HttpClient httpClient)
+        public BpModel(HttpClient httpClient, IGanjoorService ganjoorService)
         {
             _httpClient = httpClient;
+            _ganjoorService = ganjoorService;
         }
 
         /// <summary>
@@ -73,11 +78,11 @@ namespace GanjooRazor.Pages
 
         private async Task _GetSuggestedSongs()
         {
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{PoemId}/songs/?approved=false&trackType={(int)PoemMusicTrackType.BeepTunesOrKhosousi}");
-
-            if (response.StatusCode == HttpStatusCode.OK)
+            RServiceResult<PoemMusicTrackViewModel[]> res =
+               await _ganjoorService.GetPoemSongs(PoemId, false, PoemMusicTrackType.BeepTunesOrKhosousi);
+            if (string.IsNullOrEmpty(res.ExceptionString))
             {
-                SuggestedSongs = JsonConvert.DeserializeObject<PoemMusicTrackViewModel[]>(await response.Content.ReadAsStringAsync());
+                SuggestedSongs = res.Result;
             }
             else
             {
