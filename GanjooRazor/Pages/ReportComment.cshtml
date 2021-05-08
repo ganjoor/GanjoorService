@@ -1,0 +1,87 @@
+﻿@page
+@model GanjooRazor.Pages.ReportCommentModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>درخواست حذف حاشیه</title>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <link href="/css/p5.css" rel="stylesheet" type="text/css" />
+    <style>
+    label{
+		width:100px;
+		display:block;
+	}
+	input#submit{text-align:center;background-color:#fff;border:2px solid #300;color:#300}
+	input#submit:hover{background-color:#300;color:#fff;border:2px solid #433;}
+    </style>
+</head>
+<body>
+    <div id="fa">
+        @if (Model.Report.CommentId == 0)
+        {
+            <div class="width-100per">
+                <div class="width-100per text-align-center">
+                    <p class="alert-text">
+                        خطا: حاشیه‌ای انتخاب نشده است.
+                    </p>
+                </div>
+            </div>
+        }
+        else
+       if (!Model.LoggedIn)
+        {
+            <div class="width-100per">
+                <div class="width-100per text-align-center">
+                    <p class="alert-text">
+                        برای ثبت درخواست حذف حاشیه لازم است ابتدا با نام کاربری خود وارد گنجور شوید.
+                    </p>
+                    <p class="text-align-center">
+                        <a href=@Html.Raw($"/login/?redirect=/ReportComment/?CommentId={Model.Report.CommentId}")>ورود به گنجور</a>
+                    </p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="poem">
+                <h2>درخواست حذف حاشیه</h2>
+                @if (Model.PostSuccess)
+                {
+                    <p>درخواست شما ثبت شد. این درخواست در فرصت مناسب بررسی و در صورت تناسب با معیارهای حذف حاشیه، این حاشیه حذف خواهد شد.</p>
+                }
+                else
+               if (Model.LastError != "")
+                {
+                    <p>@Model.LastError</p>
+                }
+                else
+                {
+                    <p>
+                        <span style="color:red">لطفاً</span> تنها در صورتی که حاشیهٔ مد نظر توهین‌آمیز (حاوی کلمات رکیک، توهین شخصی، سیاسی، مذهبی یا قومیتی و ...) یا نامفهوم (جملات و کلمات ناخوانا و بی‌ربط یا پینگلیش) است آن را جهت حذف گزارش کنید. <span style="color:red">اگر فکر می‌کنید بحث مطرح شده غلط یا نامستند است یا به هر دلیل دیگری با آن مخالفید به جای درخواست حذف حاشیه مطابق <a href="http://blog.ganjoor.net/1393/01/29/how-to-comment/" target="_blank">این راهنما به آن پاسخ دهید</a> و درخواست حذف آن را نکنید.</span> متنی که در اینجا می‌نویسید هیچ جا منتشر نمی‌شود و پس از بررسی گزارش حذف می‌شود.
+                    </p>
+                }
+            </div>
+            @if (!Model.PostSuccess && Model.LastError == "")
+            {
+                <div class="content">
+
+                    <form method="post">
+                        <span class="inputlabel">چرا باید این حاشیه حذف شود؟</span><br>
+                        <input type="radio" asp-for="Report.ReasonCode" value="offensive">توهین‌آمیز است.<br>
+                        <input type="radio" asp-for="Report.ReasonCode" value="bogus">نامفهوم است.<br>
+                        <input type="radio" asp-for="Report.ReasonCode" value="other"> دلیل دیگری دارم:<br>
+                        <textarea asp-for="Report.ReasonText" class="inputTextarea editor" tabindex="4" rows="4" cols="26"></textarea>
+                        <input type="hidden" asp-for="Report.CommentId" />
+
+                        <input type="submit" name="submit" id="submit" value="درخواست حذف حاشیه" />
+                    </form>
+                </div>
+            }
+        }
+    </div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+﻿@page
+@model GanjooRazor.Pages.SpotifyModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>انتخاب قطعهٔ موسیقی مرتبط با شعر از اسپاتیفای</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link href="/css/p5.css" rel="stylesheet" type="text/css" />
+    <link href="/css/spotify.css" rel="stylesheet" type="text/css" />
+
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/spotify.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#spotify').on('click', function() {
+                window.location.href = "@Html.Raw($"/spotify/?p={Model.PoemId}")";
+            });
+
+            $('#golha').on('click', function () {
+                window.location.href = "@Html.Raw($"/golha/?p={Model.PoemId}")";
+            });
+
+            $('#beeptunes').on('click', function () {
+                window.location.href = "@Html.Raw($"/bp/?p={Model.PoemId}")";
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="fa">
+        <div class="poem">
+            @if (Model.PoemId == 0)
+            {
+                <div class="width-100per">
+                    <div class="width-100per text-align-center">
+                        <p class="alert-text">
+                            خطا: شعری انتخاب نشده است.
+                        </p>
+                    </div>
+                </div>
+            }
+            else
+            if (!Model.LoggedIn)
+            {
+                <div class="width-100per">
+                    <div class="width-100per text-align-center">
+                        <p class="alert-text">
+                            برای پیشنهاد آهنگهای مرتبط با اشعار لازم است ابتدا با نام کاربری خود وارد گنجور شوید.
+                        </p>
+                        <p class="text-align-center">
+                            <a href=@Html.Raw($"/login/?redirect=/spotify/?p={Model.PoemId}")>ورود به گنجور</a>
+                        </p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @if (!string.IsNullOrEmpty(Model.LastError))
+                {
+                    <div class="width-100per">
+                        <div class="width-100per text-align-center">
+                            <p class="alert-text">
+                                @Model.LastError
+                            </p>
+                        </div>
+                    </div>
+                }
+
+
+
+                <div class="width-100per">
+                    <div class="width-100per text-align-center">
+                        <h3><strong>انتخاب منبع جستجو:</strong></h3>
+                    </div>
+                    <div style="width:100%;text-align:center">
+                        <input type="radio" id="spotify" name="spotify" value="اسپاتیفای" checked>
+                        <label for="spotify"><a href="@Html.Raw($"/spotify/?p={Model.PoemId}")"><img src="/image/spotify.png" alt="اسپاتیفای" height="32" /></a></label>
+                        <input type="radio" id="golha" name="golha" value="گلها">
+                        <label for="golha"><a href="@Html.Raw($"/golha/?p={Model.PoemId}")"><img src="/image/golha.png" alt="گلها" height="32" /></a></label>
+                        <input type="radio" id="beeptunes" name="beeptunes" value="بیپ‌تونز">
+                        <label for="beeptunes"><a href="@Html.Raw($"/bp/?p={Model.PoemId}")"><img src="/image/beeptunes.png" alt="بیپ‌تونز" height="32" /></a></label>
+                    </div>
+                </div>
+                <p>
+                    با استفاده از این صفحه می‌توانید آهنگهایی را که در متن آنها از شعر جاری استفاده شده است معرفی کنید. جستجو در سایت <a href="https://open.spotify.com" target="_blank">اسپاتیفای</a> صورت می‌گیرد. جستجو با تایپ قسمتی از نام خواننده در جعبهٔ «خواننده» و کلیک بر روی آن شروع می‌شود (<span style="color:red">نکتهٔ مهم:</span> لطفاً توجه فرمایید که جستجو در اسپاتیفای عموماً با حروف لاتین به نتیجه می‌رسد). پس از انتخاب خواننده فهرست آلبومها و آهنگهای آلبوم جاری نمایش داده می‌شود. با کلیک بر روی پیوند صفحهٔ آهنگ می‌توانید جهت اطمینان آهنگ را در اسپاتیفای گوش کنید (پخش آهنگ در اسپاتیفای نیازمند ثبت‌نام در این سایت است). پس از «پیشنهاد قطعه» آهنگ پیشنهادی در صف بررسی قرار می‌گیرد و پس از بازبینی و تأیید به صفحهٔ اصلی شعر اضافه می‌شود. از این که کمک می‌کنید که گنجور به نمایه‌ای برای موسیقی ایرانی بدل شود سپاسگزاریم.
+                </p>
+                <p>
+                    <span style="color:red">تذکر مهم:</span> فقط مواردی تأیید می‌شود که <span style="color:red">در آهنگ متناظر همین شعر خوانده شود</span>. تعیین نام خواننده به تنهایی کارایی ندارد و لطفا جهت کاهش زمان مورد نیاز برای بررسی موارد پیشنهادی از اعلام موارد اینچنینی خودداری فرمایید. جهت مشاهدهٔ روش پیشنهادی برای کمک به این پروژه <a href="http://www.aparat.com/v/kxGre" target="_blank">این فیلم</a> را مشاهده فرمایید. فهرست کامل آهنگهای مرتبط در <a href="https://ganjoor.net/mundex/" target="_blank">این صفحه</a> در دسترس است.
+                </p>
+
+                @if (Model.SuggestedSongs.Length > 0)
+                {
+                    <p>موارد زیر شامل قطعه‌هایی هستند که پیشتر توسط دوستان دیگر پیشنهاد شده و در صف بررسی قرار دارند:</p>
+
+                    @foreach (var suggestedSong in Model.SuggestedSongs)
+                    {
+        <p>
+            @if (suggestedSong.Id == Model.InsertedSongId)
+            {
+                <text>
+                    <a target="_blank" href="@Html.Raw(suggestedSong.ArtistUrl)" style="color:green">@suggestedSong.ArtistName</a> » <a target="_blank" href="@Html.Raw(suggestedSong.AlbumUrl)" style="color:green">@suggestedSong.AlbumName</a> » <a target="_blank" href="@Html.Raw(suggestedSong.TrackUrl)" style="color:green">@suggestedSong.TrackName</a>
+                </text>
+
+            }
+            else
+            {
+                <text>
+                    <a target="_blank" href="@Html.Raw(suggestedSong.ArtistUrl)">@suggestedSong.ArtistName</a> » <a target="_blank" href="@Html.Raw(suggestedSong.AlbumUrl)">@suggestedSong.AlbumName</a> » <a target="_blank" href="@Html.Raw(suggestedSong.TrackUrl)">@suggestedSong.TrackName</a>
+                </text>
+            }
+
+        </p>
+                    }
+                    @if (Model.PostSuccess)
+                    {
+                        <div class="width-100per">
+                            <div class="width-100per text-align-center">
+                                <p style="color:green">
+                                    با سپاس! پیشنهاد شما به فهرست اضافه شد.
+                                </p>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        </div>
+
+        @if (Model.PoemId != 0 && Model.LoggedIn)
+        {
+            <div class="content">
+                <span class="inputlabel">خواننده: </span>
+                <input type="text" class="search" id="searchid" placeholder="خواننده" />&nbsp;<span style="visibility:hidden" id="l1"><a id="artistlink" href="#" target="_blank">صفحهٔ هنرمند</a></span>
+                <br />
+                <div id="result"></div>
+                <span class="inputlabel">آلبوم: </span><select name="album" id="album" disabled="disabled" class="albumtrack"></select>&nbsp;<span style="visibility:hidden" id="l2"><a id="albumlink" href="#" target="_blank">صفحهٔ آلبوم</a></span>
+                <br />
+                <span class="inputlabel">آهنگ: </span><select name="track" id="track" disabled="disabled" class="albumtrack"></select>&nbsp;<span style="visibility:hidden" id="l3"><a id="tracklink" href="#" target="_blank">صفحهٔ آهنگ</a></span>
+                <br />
+                <span><small>جستجو بر اساس نام آهنگ:</small> </span>
+                <input type="text" class="trackq" id="trackq" placeholder="عنوان آهنگ" />
+                <br />
+                <div id="resultq"></div>
+
+                <form method="post">
+                    <input type="hidden" asp-for="PoemMusicTrackViewModel.ArtistName" />
+                    <input type="hidden" asp-for="PoemMusicTrackViewModel.ArtistUrl" />
+                    <input type="hidden" asp-for="PoemMusicTrackViewModel.AlbumName" />
+                    <input type="hidden" asp-for="PoemMusicTrackViewModel.AlbumUrl" />
+                    <input type="hidden" asp-for="PoemMusicTrackViewModel.TrackName" />
+                    <input type="hidden" asp-for="PoemMusicTrackViewModel.TrackUrl" />
+                    <span class="inputlabel">توضیح: </span><input type="text" class="albumtrack" placeholder="توضیح" asp-for="PoemMusicTrackViewModel.Description" />
+                    <br />
+                    <input type="submit" name="submit" id="submit" value="پیشنهاد قطعه" />
+                </form>
+            </div>
+        }
+
+    </div>
+</body>
+</html>
+

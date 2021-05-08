@@ -1,0 +1,30 @@
+﻿@page
+@model GanjooRazor.Pages.randomModel
+@{
+    Layout = null;
+    ViewData["Title"] = "بیت تصادفی";
+}
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+    <link href="/css/r4.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/js/r2.js"></script>
+</head>
+<body id="tb" onclick="window.location.reload()">
+    <div id="content">
+        <div id="ganjoor" />
+    </div>
+    <div id="footer">
+        <p>
+            برای مطالعهٔ متن کامل شعر روی نام شاعر و برای مشاهدهٔ شعری دیگر روی جعبهٔ متن شعر کلیک کنید.
+        </p>
+        <p>
+            به کمک <a href="http://c.ganjoor.net">کدهای گنجور</a>
+        </p>
+    </div>
+    <script type="text/javascript" src="http://c.ganjoor.net/beyt.php"></script>
+</body>
+</html>

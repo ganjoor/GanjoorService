@@ -1,0 +1,77 @@
+﻿@page
+@model GanjooRazor.Pages.LoginModel
+@{
+    Layout = null;
+    ViewData["Title"] = "ورود کاربر";
+}
+
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link href="/css/p5.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="login">
+        <div id="login-container">
+            @if (Model.LoggedIn)
+            {
+                <form method="post">
+                    <table>
+                        <tr>
+                            <td></td>
+                            <td><input type="submit" name="submit" id="submit" value="خروج" /></td>
+                        </tr>
+                    </table>
+                    <div>@Model.LastError</div>
+                </form>
+                <div>@Model.UserFriendlyName</div>
+            }
+            else
+            {
+                <form method="post">
+                    <table>
+                        <tr>
+                            <td>
+                                <span class="inputlabel">پست الکترونیکی: </span>
+                            </td>
+                            <td>
+                                <input type="email" asp-for="LoginViewModel.Username" placeholder="پست الکترونیکی" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="inputlabel">گذرواژه: </span>
+                            </td>
+                            <td>
+                                <input type="password" asp-for="LoginViewModel.Password" id="password" placeholder="گذرواژه" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><input type="submit" name="submit" id="submit" value="ورود" /></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><a href="https://museum.ganjoor.net/signup" target="_blank">ثبت نام</a></td>
+                        </tr>
+
+
+                    </table>
+                    <div>@Model.LastError</div>
+                </form>
+
+            }
+
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+

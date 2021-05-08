@@ -1,11 +1,8 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
 {
@@ -27,6 +24,10 @@ namespace GanjooRazor.Pages
         public void OnGet()
         {
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+            var err = HttpContext.Features.Get<IExceptionHandlerPathFeature>().Error;
+
+            ViewData["Exception"] = err.Message;
+            ViewData["StackTrace"] = err.StackTrace;
         }
     }
 }

@@ -1,0 +1,165 @@
+﻿@page
+@model GanjooRazor.Pages.SearchModel
+@{
+  Layout = null;
+}
+
+
+
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>
+    @Html.Raw(ViewData["Title"])
+  </title>
+
+  <link href="/css/p5.css" rel="stylesheet" type="text/css" />
+  <link href="/css/fab.css" rel="stylesheet" type="text/css" />
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+
+</head>
+<body>
+
+    <div id="hdr2" class="clearfix">
+        <h1><a href="/" title="گنجور"><img src="/image/ganjadabk.gif" alt="گنجور" /></a></h1>
+        <div class="actionbox">
+            <form action="/search" method="get" id="searchform">
+                <input type="text" name="s" id="s" class="inputText" value="@Model.Query" placeholder="جستجو" />
+                <select name="author" id="author">
+
+                    @{
+                        if (Model.PoetId != 0)
+                        {
+                            <option value="0">در آثار همه شاعران</option>
+                        }
+                        else
+                        {
+                            <option value="0" selected>در آثار همه شاعران</option>
+                        }
+
+                        if (Model.Poets != null)
+                        {
+                            foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
+                            {
+                                if (poet.Id == Model.PoetId)
+                                {
+                                    <option value="@poet.Id" selected>@Html.Raw(poet.Name)</option>
+                                }
+                                else
+                                {
+                                    <option value="@poet.Id">@Html.Raw(poet.Name)</option>
+                                }
+
+                            }
+                        }
+                    }
+                </select>
+                @{
+                    if (Model.Poet != null)
+                    {
+                        <select name="cat" id="cat" style="width:150px">
+                            @if (Model.CatId == 0)
+                            {
+                                <option value="0" selected>در همه بخشها</option>
+                            }
+                            else
+                            {
+                                <option value="0">در همه بخشها</option>
+                            }
+
+                            @{
+                                foreach (var gran in Model.Poet.Cat.Ancestors)
+                                {
+                                    @if (Model.CatId == gran.Id)
+                                    {
+                                        <option value="@Html.Raw(gran.Id)" selected>@Html.Raw(gran.Title)</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@Html.Raw(gran.Id)">@Html.Raw(gran.Title)</option>
+                                    }
+
+                                }
+                                @if (Model.CatId == Model.Poet.Cat.Id)
+                                {
+                                    <option value="@Html.Raw(Model.Poet.Cat.Id)" selected>@Html.Raw(Model.Poet.Cat.Title)</option>
+                                }
+                                else
+                                {
+                                    <option value="@Html.Raw(Model.Poet.Cat.Id)">@Html.Raw(Model.Poet.Cat.Title)</option>
+                                }
+
+
+                                foreach (var child in Model.Poet.Cat.Children)
+                                {
+                                    @if (Model.CatId == child.Id)
+                                    {
+                                        <option value="@Html.Raw(child.Id)" selected>@Html.Raw(child.Title)</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@Html.Raw(child.Id)">@Html.Raw(child.Title)</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    }
+                }
+
+                <input type="submit" value="بیاب" />
+            </form>
+        </div><!-- .actionbox -->
+    </div><!-- #hdr2 -->
+
+    <div id="fa">
+
+
+
+        <div id="maincnt">
+
+            <div class="spacer">&nbsp;</div>
+
+            @foreach (var poem in Model.Poems)
+            {
+
+                <div class="sitem">
+                    <h2>
+                        <a href="@poem.FullUrl">@poem.FullTitle</a>
+                    </h2>
+                    <div class="spacer">&nbsp;</div>
+                    <div class="sit">
+
+                        @Html.Raw(poem.PlainText)
+
+                        <p>
+                            <br>
+                            <a href="@poem.FullUrl">متن کامل شعر را ببینید ...</a>
+                        </p>
+                    </div>
+
+                    <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{poem.Category.Poet.ImageUrl}")" alt=@("{poem.Category.Poet.Name}") />
+
+                    <div class="spacer">&nbsp;</div>
+                </div>
+            }
+
+            <div class="spacer">&nbsp;</div>
+
+            @Html.Raw(Model.PagingToolsHtml)
+
+        </div>
+
+        <partial name="_FooterPartial" model="null" />
+
+    </div>
+
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/js/be.js"></script>
+    <script src="/js/vaabc.js"></script>
+
+</body>
+</html>
+

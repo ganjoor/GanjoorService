@@ -1,0 +1,99 @@
+﻿@page
+@model GanjooRazor.Pages.PinModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>پیشنهاد شعر مرتبط با تصویر</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link href="/css/p5.css" rel="stylesheet" type="text/css" />
+    <link href="/css/spotify.css" rel="stylesheet" type="text/css" />
+
+    <script src="/lib/jquery/dist//jquery.min.js"></script>
+    <script>
+        function assignEvents() {
+            const inputPinterestUrl = document.getElementById('RelatedImageSuggestionModel_PinterestUrl');
+            const inputPinterestImageUrl = document.getElementById('RelatedImageSuggestionModel_PinterestImageUrl');
+
+            const inputHandler = function (e) {
+                if (e.target.value.indexOf("instagram.com") != -1) {
+                    inputPinterestImageUrl.value = e.target.value + 'media/?size=l';
+                }
+            }
+
+            inputPinterestUrl.addEventListener('input', inputHandler);
+            inputPinterestUrl.addEventListener('propertychange', inputHandler); // for IE8
+        }
+    </script>
+    <style>
+        .inputlabel {
+            width: 100%;
+            display: block;
+        }
+
+        textarea {
+            background-color: white;
+        }
+
+        input#submit {
+            text-align: center;
+            background-color: #fff;
+            border: 2px solid #300;
+            color: #300
+        }
+
+            input#submit:hover {
+                background-color: #300;
+                color: #fff;
+                border: 2px solid #433;
+            }
+    </style>
+</head>
+<body onload="assignEvents()">
+    <div id="fa">
+        <div class="poem">
+
+
+
+            @if (Model.Succeeded)
+            {
+                <p>با تشکر، تصویر پیشنهادی جهت بررسی ارسال شد.</p>
+                <p>لطفاً توجه فرمایید که تصاویر دارای واترمارک نازیبا یا دارای کیفیت پایین یا دارای مشکلات دیگر تأیید نخواهند شد.</p>
+                <p>تصویر ارسالی:</p>
+            }
+            else
+            {
+               <p>
+                   @Model.LastError
+               </p>
+
+                <form method="post" action="/pin/?final=1">
+                    <input type="hidden" asp-for="RelatedImageSuggestionModel.GanjoorTitle">
+                    <input type="hidden" asp-for="RelatedImageSuggestionModel.PoemId">
+                    <input type="hidden" asp-for="RelatedImageSuggestionModel.GanjoorUrl">
+
+                    <span class="inputlabel">نشانی سایت منبع (در این صفحه می‌بایست تصویر دیده شود): </span><input type="text" asp-for="RelatedImageSuggestionModel.PinterestUrl" style="direction:ltr" size="50">
+                    <span class="inputlabel">نشانی تصویر (در مرحلهٔ بعد با توجه به این نشانی باید تصویر نمایش داده شود): </span><input type="text" asp-for="RelatedImageSuggestionModel.PinterestImageUrl" style="direction:ltr" size="50">
+                    <br />
+                    <span class="inputlabel">توضیحات (<small>می‌توانید اطلاعاتی مانند نام هنرمند و ... را اضافه کنید.</small>):</span>
+                    <textarea asp-for="RelatedImageSuggestionModel.AltText" class="editor" rows="10" cols="50"></textarea>
+                    <br />
+                    <input type="submit" name="pinterest_suggest" value="پیشنهاد" style="background-color:red;color:white">
+                </form>
+            }
+
+            @if (Model.RelatedImageSuggestionModel.PinterestUrl != "manual")
+            {
+                <img src="@Html.Raw(Model.RelatedImageSuggestionModel.PinterestImageUrl)" width="400" />
+            }
+
+
+        </div>
+    </div>
+</body>
+</html>

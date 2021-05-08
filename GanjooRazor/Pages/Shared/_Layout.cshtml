@@ -1,17 +1,143 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="fa-IR" dir="rtl">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - GanjooRazor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        @Html.Raw(ViewData["Title"])
+    </title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link href="/dist/skin/blue.monday/css/jplayer.blue.monday.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/p5.css" rel="stylesheet" type="text/css" />
+    <link href="/css/fab.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+    <script src="/lib/tinymce/tinymce.min.js"></script>
+    <script>tinymce.init({ selector: 'textarea.editor', language: 'fa_IR' });</script>
+    <script>
+        function deleteComment(commentId, reasonCode, reasonText) {
+            if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
+                return;
+
+
+            $.ajax({
+                type: "POST",
+                url: '?handler=ModerateComment',
+                data: {
+                    id: commentId,
+                    reasonCode: reasonCode,
+                    reasonText: reasonText
+                },
+                success: function () {
+                    var commentBlockId = '#comment-' + commentId;
+                    $(commentBlockId).remove();
+                },
+            });
+
+        }
+
+        function deleteReport(reportId, commentId) {
+            $.ajax({
+                type: "DELETE",
+                url: '?handler=Report',
+                data: {
+                    id: reportId
+                },
+                success: function () {
+                    var commentBlockId = '#comment-' + commentId;
+                    $(commentBlockId).remove();
+                },
+            });
+
+        }
+
+        function deleteMyComment(commentId) {
+            if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=MyComment';
+
+            $.ajax({
+                type: "DELETE",
+                url: url,
+                data: {
+                    id: commentId
+                },
+                success: function () {
+                    var commentBlockId = '#comment-' + commentId;
+                    $(commentBlockId).remove();
+                },
+            });
+
+        }
+
+        function deleteNotification(notificationId) {
+            if (!confirm('آیا از حذف این اعلان اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=Notification';
+
+            $.ajax({
+                type: "DELETE",
+                url: url,
+                data: {
+                    id: notificationId
+                },
+                success: function () {
+                    var notificationBlockId = '#notification-' + notificationId;
+                    $(notificationBlockId).remove();
+                },
+            });
+        }
+
+        function editMyComment(commentId) {
+            var commentTextBlockId = '#comment-text-' + commentId;
+            tinymce.get('editCommentText').setContent($(commentTextBlockId).html());
+            $("#editCommentId").val(commentId);
+            document.getElementById('id02').style.display = 'block';
+        }
+
+        function editComment() {
+            $("#editcommentform").unbind('submit').bind('submit', function (e) {
+
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                var url = '?handler=MyComment';
+
+                var commentId = $("#editCommentId").val();
+
+
+                $.ajax({
+                    type: "PUT",
+                    url: url,
+                    data: {
+                        id: commentId,
+                        comment: $("textarea#editCommentText").val()
+                    },
+                    success: function () {
+                        document.getElementById('id02').style.display = 'none';
+
+                        var commentTextBlockId = '#comment-text-' + commentId;
+
+                        $(commentTextBlockId).html($("textarea#editCommentText").val());
+                    },
+
+                });
+
+
+
+
+            });
+        }
+    </script>
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">GanjooRazor</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index" title="گنجور"><img src="/image/ganjadabk.gif" alt="گنجور" style="width:auto;margin:auto;" /></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -19,11 +145,30 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="User" asp-page="/Index">خانه</a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="User" asp-page="/MyComments">حاشیه‌های من</a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="User" asp-page="/Notifications">اعلان‌‌های من</a>
+                        </li>
+
+                        @if (ViewData.ContainsKey("ganjoor-songrevu"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="User" asp-page="/ReviewSongs">آهنگ‌ها</a>
+                            </li>
+                        }
+
+                        @if (ViewData.ContainsKey("ganjoor-moderate"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="User" asp-page="/ReportedComments">حاشیه‌های گزارش شده</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -37,7 +182,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - GanjooRazor - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            گنجور - <a asp-area="" asp-page="/Privacy">حریم خصوصی</a>
         </div>
     </footer>
 

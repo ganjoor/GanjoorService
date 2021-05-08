@@ -1,10 +1,261 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    Layout = null;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        @Html.Raw(ViewData["Title"])
+    </title>
+    @if (Model.IsHomePage)
+    {
+        <meta name="description" content="جستجو در شعر فارسی" />
+    }
+    else
+    {
+        <script type="application/ld+json">
+        {
+        @Html.Raw(@ViewData["BrearCrumpList"])
+        }
+        </script>
+    }
+    <link href="/dist/skin/blue.monday/css/jplayer.blue.monday.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/p5.css" rel="stylesheet" type="text/css" />
+    <link href="/css/fab.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+   
+</head>
+<body>
+
+
+    @if (Model.IsHomePage)
+    {
+        @if (!string.IsNullOrEmpty(Model.LastError))
+        {
+            <div class="poem">
+                @Model.LastError
+            </div>
+        }
+        else
+        {
+            <partial name="_HomePagePartial" model="Model" />
+        }
+    }
+    else
+    {
+        <partial name="_GanjoorPagePartial" model="Model" />
+    }
+
+
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/js/be.js"></script>
+    <script src="/js/vaabc.js"></script>
+
+
+    @{
+        if (Model.IsPoemPage)
+        {
+            if (Model.GanjoorPage != null && Model.GanjoorPage.Poem.Recitations.Length > 0)
+            {
+                <script src="/dist/jplayer/jquery.jplayer.min.js"></script>
+                <script src="/dist/add-on/jplayer.playlist.min.js"></script>
+                <script>
+                //<![CDATA[
+                $(document).ready(function () {
+                    var jlist = prepaudio(
+                        "@Html.Raw($"https://ganjgah.ir/api/audio/file/{Model.GanjoorPage.Poem.Recitations[0].Id}.xml")",
+                        "@Html.Raw(Model.GanjoorPage.Poem.Recitations[0].AudioTitle)",
+                        "@Html.Raw(Model.getAudioDesc(Model.GanjoorPage.Poem.Recitations[0], true))",
+                        "",
+                        "@Html.Raw(Model.GanjoorPage.Poem.Recitations[0].Mp3Url)"
+                    );
+
+                    @for(int x = 1; x<Model.GanjoorPage.Poem.Recitations.Length; x++)
+                    {
+                        <text>
+                    addpaudio(@x, jlist,
+                        "@Html.Raw($"https://ganjgah.ir/api/audio/file/{Model.GanjoorPage.Poem.Recitations[x].Id}.xml")",
+                        "@Html.Raw(Model.GanjoorPage.Poem.Recitations[x].AudioTitle)",
+                        "@Html.Raw(Model.getAudioDesc(Model.GanjoorPage.Poem.Recitations[x], false))",
+                        "",
+                        "@Html.Raw(Model.GanjoorPage.Poem.Recitations[x].Mp3Url)"
+                    );
+                        </text>
+                    }
+
+                });
+                //]]>
+                </script>
+            }
+        }
+
+        if (!string.IsNullOrEmpty(Model.PinterestUrl))
+        {
+            <script>
+                    $(function () {
+                        $("a").attr('href', function (i, h) {
+                            if (h != null) {
+                                return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
+                            }
+                            return h;
+                        });
+                    });
+            </script>
+        }
+    }
+
+
+    <script src="/lib/tinymce/tinymce.min.js"></script>
+    <script>tinymce.init({
+    selector: 'textarea.editor', language: 'fa_IR', menubar: false, plugins: 'link', toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link' });</script>
+    <script>
+        function wpopen(macagna) {
+            window.open(macagna, '_blank', 'width=600,height=700,scrollbars=yes,status=yes');
+        }
+
+        function postComment(parent) {
+            $("#commentform").unbind('submit').bind('submit', function (e) {
+
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                $('#comment-error').remove();
+
+                var form = $(this);
+                var url = form.attr('action');
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: form.serialize(), // serializes the form's elements.
+                    success: function (data) {
+                        $(data).appendTo(parent);
+                        $("#commentform")[0].reset();
+                    },
+                });
+
+            });
+        }
+
+        function replyComment(commentId) {
+            $("#refComment").html($('#comment-text-' + commentId).html());
+            $("#refCommentId").val(commentId);
+            document.getElementById('id03').style.display = 'block';
+        }
+
+        function postReplyComment() {
+            parent = $('#comment-' + $("#refCommentId").val());
+            $("#replycommentform").unbind('submit').bind('submit', function (e) {
+
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                $('#comment-error').remove();
+
+                var form = $(this);
+                var url = form.attr('action');
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: form.serialize(), // serializes the form's elements.
+                    success: function (data) {
+                        document.getElementById('id03').style.display = 'none';
+                        $(data).appendTo(parent);
+                        $("#replycommentform")[0].reset();
+                    },
+                });
+
+            });
+        }
+
+        function deleteMyComment(commentId) {
+            if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=MyComment';
+
+            $.ajax({
+                type: "DELETE",
+                url: url,
+                data: {
+                    id: commentId
+                },
+                success: function () {
+                    var commentBlockId = '#comment-' + commentId;
+                    $(commentBlockId).remove();
+                },
+            });
+
+        }
+
+        function editMyComment(commentId) {
+            var commentTextBlockId = '#comment-text-' + commentId;
+            tinymce.get('editCommentText').setContent($(commentTextBlockId).html());
+            $("#editCommentId").val(commentId);
+            document.getElementById('id02').style.display = 'block';
+        }
+
+
+
+        function editComment() {
+            $("#editcommentform").unbind('submit').bind('submit', function (e) {
+
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                var url = '?handler=MyComment';
+
+                var commentId = $("#editCommentId").val();
+
+
+                $.ajax({
+                    type: "PUT",
+                    url: url,
+                    data: {
+                        id: commentId,
+                        comment: $("textarea#editCommentText").val()
+                    },
+                    success: function () {
+                        document.getElementById('id02').style.display = 'none';
+
+                        var commentTextBlockId = '#comment-text-' + commentId;
+
+                        $(commentTextBlockId).html($("textarea#editCommentText").val());
+                    },
+
+                });
+
+
+
+
+            });
+        }
+
+
+
+    </script>
+
+    @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
+    {
+        <script>
+            (function (i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+            ga('create', '@ViewData["GoogleAnalyticsCode"]', 'auto');
+            ga('send', 'pageview');
+
+        </script>
+    }
+
+</body>
+</html>
+
+

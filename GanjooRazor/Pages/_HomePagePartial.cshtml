@@ -1,0 +1,54 @@
+﻿@model GanjooRazor.Pages.IndexModel
+<div id="hdr">
+    <h1><a href="/" title="گنجور"><img src="/image/gm.gif" alt="گنجور" style="width:auto;margin:auto;" /></a></h1>
+</div>
+
+<div id="fa">
+    <h2>
+        آثار سخنسرایان پارسی‌گو
+    </h2>
+
+    <div class="actionbox">
+        <form action="/search" method="get" id="searchhorm">
+            <label for="s">جستجو:</label>
+            <input type="text" name="s" id="s" class="inputText" size="35" value="" />
+            <select name="author" id="author">
+                <option value="0" selected>در آثار همه شاعران</option>
+                @{
+                    foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
+                    {
+                        <option value="@poet.Id">@poet.Nickname</option>
+                    }
+                }
+            </select>
+            <input type="submit" value="بیاب" />
+        </form>
+    </div>
+
+
+    <div id="main">
+        <div id="guides">
+            <div class="spacer">&nbsp;</div>
+
+            @{
+                foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
+                {
+                    <div class="poet"><a href="@poet.FullUrl" title="@poet.Name"><img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" /></a><div class="caption"><a href="@poet.FullUrl">@poet.Nickname</a></div></div>
+                }
+            }
+
+
+            <div class="spacer">&nbsp;</div>
+
+
+
+            <partial name="_InlineLoginPartial" model="Model" />
+
+
+        </div>
+
+    </div>
+
+    <partial name="_FooterPartial" model="null" />
+
+</div>

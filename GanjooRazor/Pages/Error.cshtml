@@ -1,26 +1,299 @@
 ﻿@page
 @model ErrorModel
 @{
-    ViewData["Title"] = "Error";
+    Layout = null;
+    ViewData["Title"] = "خطای پیش‌بینی نشده";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        @ViewData["Title"]
+    </title>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    <link href="/css/p5.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+
+    <style>
+        code, pre {
+            background-color: #333;
+            color: #fff;
+            border: none !important;
+        }
+        .stacktrace .st-type {
+            color: #0a8472;
+            font-weight: bolder
+        }
+
+        .stacktrace .st-method {
+            color: #70c9ba;
+            font-weight: bolder
+        }
+
+        .stacktrace .st-frame-params {
+            color: #fff;
+            font-weight: 400
+        }
+
+        .stacktrace .st-param-type {
+            color: #0a8472
+        }
+
+        .stacktrace .st-param-name {
+            color: #fff
+        }
+
+        .stacktrace .st-file {
+            color: #f8b068
+        }
+
+        .stacktrace .st-line {
+            color: #ff4f68
+        }
+    </style>
+
+    
+</head>
+
+<body>
+    <div id="hdr">
+        <h1><a href="/" title="گنجور"><img src="/image/gm.gif" alt="گنجور" style="width:auto;margin:auto;" /></a></h1>
+    </div>
+
+    <h1 class="text-danger">خطای پیش‌بینی نشده</h1>
+    <h2 class="text-danger">متأسفانه نمایش صفحهٔ مد نظر شما با خطا مواجه شد.</h2>
+
+    @if (Model.ShowRequestId)
+    {
+        <p>
+            <strong>شناسهٔ درخواست:</strong> <code>@Model.RequestId</code>
+        </p>
+    }
+
+    <h3>جزئیات خطا برای پیگیری برنامه‌نویس</h3>
+
+    <h4>پیغام خطا:</h4>
+    <p style="direction:ltr;color:red">
+        @ViewData["Exception"]
     </p>
-}
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to the <strong>Development</strong> environment displays detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+    <h4>مسیر خطا:</h4>
+
+    <pre>
+    <code style="direction:ltr" class="stacktrace" data-bind="text: content">
+            @ViewData["StackTrace"]
+    </code>
+    </pre>
+
+
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+
+    <script>
+        /*!
+ * netStack v1.0.14
+ * A simple and easy jQuery plugin for highlighting .NET stack traces
+ * License : Apache 2
+ * Author : https://elmah.io
+ */
+        (function ($) {
+            'use strict';
+
+            $.fn.netStack = function (options) {
+
+                function search(nameKey, myArray) {
+                    for (var i = 0; i < myArray.length; i++) {
+                        if (myArray[i].name === nameKey) {
+                            return myArray[i];
+                        }
+                    }
+                }
+
+                function formatException(exceptionMessage, at_language) {
+                    var result = exceptionMessage || '';
+                    var searchReplaces = [
+                        {
+                            find: new RegExp(" " + at_language, "g"),
+                            repl: '\r\n   ' + at_language
+                        },
+                        {
+                            find: new RegExp(" ---> ", "g"),
+                            repl: '\r\n ---> '
+                        },
+                        {
+                            find: new RegExp("\\) " + at_language + " ", "g"),
+                            repl: '\r\n ' + at_language + ' '
+                        },
+                        {
+                            find: / --- End of inner exception stack trace ---/g,
+                            repl: '\r\n   --- End of inner exception stack trace ---'
+                        }
+                    ]
+                    searchReplaces.forEach(function (item) {
+                        result = result.replace(item.find, item.repl);
+                    });
+                    return result;
+                };
+
+                var settings = $.extend({
+
+                    // Default values for classes
+                    prettyprint: false,
+                    frame: 'st-frame',
+                    type: 'st-type',
+                    method: 'st-method',
+                    paramsList: 'st-frame-params',
+                    paramType: 'st-param-type',
+                    paramName: 'st-param-name',
+                    file: 'st-file',
+                    line: 'st-line'
+
+                }, options);
+
+                var languages = [
+                    { name: 'english', at: 'at', in: 'in', line: 'line' },
+                    { name: 'danish', at: 'ved', in: 'i', line: 'linje' },
+                    { name: 'german', at: 'bei', in: 'in', line: 'Zeile' }
+                ];
+
+                return this.each(function () {
+
+                    // Get the stacktrace, sanitize it, and split it into lines
+
+                    var stacktrace = $(this).text(),
+                        sanitizedStack = stacktrace.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+                        lines = sanitizedStack.split('\n'),
+                        lang = '',
+                        clone = '';
+
+                    // search for language
+                    for (var i = 0, j = lines.length; i < j; ++i) {
+                        if (lang === '') {
+                            var line = lines[i];
+                            var english = new RegExp('\\bat .*\\)'),
+                                danish = new RegExp('\\bved .*\\)'),
+                                german = new RegExp('\\bbei .*\\)');
+
+                            if (english.test(lines[i])) {
+                                lang = 'english';
+                            } else if (danish.test(lines[i])) {
+                                lang = 'danish';
+                            } else if (german.test(lines[i])) {
+                                lang = 'german';
+                            }
+                        }
+                    }
+
+                    if (lang === '') return;
+
+                    var selectedLanguage = search(lang, languages);
+
+                    // Pritty print result if is set to true
+                    if (settings.prettyprint) {
+                        sanitizedStack = formatException(sanitizedStack, selectedLanguage['at']);
+                        lines = sanitizedStack.split('\n');
+                    }
+
+                    for (var i = 0, j = lines.length; i < j; ++i) {
+
+                        var li = lines[i],
+                            hli = new RegExp('\\b' + selectedLanguage['at'] + ' .*\\)');
+
+                        if (hli.test(lines[i])) {
+
+                            // Frame
+                            var regFrame = new RegExp('\\b' + selectedLanguage['at'] + ' .*?\\)'),
+                                partsFrame = String(regFrame.exec(lines[i]));
+                            partsFrame = partsFrame.replace(selectedLanguage['at'] + ' ', '');
+
+                            // Frame -> ParameterList
+                            var regParamList = new RegExp('\\(.*\\)'),
+                                partsParamList = String(regParamList.exec(lines[i]));
+
+                            // Frame -> Params
+                            var partsParams = partsParamList.replace('(', '').replace(')', ''),
+                                arrParams = partsParams.split(', '),
+                                stringParam = '';
+
+                            for (var x = 0, y = arrParams.length; x < y; ++x) {
+                                var theParam = '',
+                                    param = arrParams[x].split(' '),
+                                    paramType = param[0],
+                                    paramName = param[1];
+
+                                if (param[0] !== "null" && param[0] !== '') {
+                                    theParam = '<span class="' + settings.paramType + '">' + paramType + '</span>' + ' ' + '<span class="' + settings.paramName + '">' + paramName + '</span>';
+                                    stringParam += String(theParam) + ', ';
+                                }
+                            }
+
+                            stringParam = stringParam.replace(/,\s*$/, "");
+                            stringParam = '<span class="' + settings.paramsList + '">' + '(' + stringParam + ')' + '</span>';
+
+                            // Frame -> Type & Method
+                            var partsTypeMethod = partsFrame.replace(partsParamList, ''),
+                                arrTypeMethod = partsTypeMethod.split('.'),
+                                method = arrTypeMethod.pop(),
+                                type = partsTypeMethod.replace('.' + method, ''),
+                                stringTypeMethod = '<span class="' + settings.type + '">' + type + '</span>.' + '<span class="' + settings.method + '">' + method + '</span>';
+
+                            // Construct Frame
+                            var newPartsFrame = partsFrame.replace(partsParamList, stringParam).replace(partsTypeMethod, stringTypeMethod);
+
+                            // Line
+                            var regLine = new RegExp('\\b:' + selectedLanguage['line'] + '.*'),
+                                partsLine = String(regLine.exec(lines[i]));
+                            partsLine = partsLine.replace(':', '');
+
+                            // File => (!) text requires multiline to exec regex, otherwise it will return null.
+                            var regFile = new RegExp('\\b' + selectedLanguage['in'] + '\\s.*$', 'm'),
+                                partsFile = String(regFile.exec(lines[i]));
+                            partsFile = partsFile.replace(selectedLanguage['in'] + ' ', '').replace(':' + partsLine, '');
+
+                            li = li.replace(partsFrame, '<span class="' + settings.frame + '">' + newPartsFrame + '</span>')
+                                .replace(partsFile, '<span class="' + settings.file + '">' + partsFile + '</span>')
+                                .replace(partsLine, '<span class="' + settings.line + '">' + partsLine + '</span>');
+
+                            li = li.replace(/&lt;/g, '<span>&lt;</span>').replace(/&gt;/g, '<span>&gt;</span>');
+
+                            if (lines.length - 1 == i) {
+                                clone += li;
+                            } else {
+                                clone += li + '\n';
+                            }
+                        } else {
+                            if ((lines[i].trim()).length) {
+                                li = lines[i];
+
+                                if (lines.length - 1 == i) {
+                                    clone += li;
+                                } else {
+                                    clone += li + '\n';
+                                }
+                            }
+                        }
+                    }
+
+                    return $(this).html(clone);
+
+                });
+
+            };
+
+        }(jQuery));
+
+
+        $(document).ready(function () {
+            $('.stacktrace').netStack({
+                prettyprint: true
+            });
+        });
+
+       
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,541 @@
+﻿@model GanjooRazor.Pages.IndexModel
+@using DNTPersianUtils.Core
+
+<div id="hdr2" class="clearfix">
+    <h1><a href="/" title="گنجور"><img src="/image/ganjadabk.gif" alt="گنجور" /></a></h1>
+    <div class="actionbox">
+        <form action="/search" method="get" id="searchform">
+            <input type="text" name="s" id="s" class="inputText" value="" placeholder="جستجو" />
+            <select name="author" id="author">
+
+                @{
+                    if (Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null)
+                    {
+                        <option value="0">در آثار همه شاعران</option>
+                    }
+                    else
+                    {
+                        <option value="0" selected>در آثار همه شاعران</option>
+                    }
+
+                    if (Model.Poets != null)
+                    {
+                        foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
+                        {
+                            if (Model.GanjoorPage.PoetOrCat != null && poet.Id == Model.GanjoorPage.PoetOrCat.Poet.Id)
+                            {
+                            <option value="@poet.Id" selected>@Html.Raw(poet.Nickname)</option>
+                            }
+                            else
+                            {
+                            <option value="@poet.Id">@Html.Raw(poet.Nickname)</option>
+                                }
+
+                            }
+                        }
+                    }
+            </select>
+            @{
+                if (!Model.IsPoetPage && Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null)
+                {
+                    <select name="cat" id="cat" style="width:150px">
+                        <option value="0">در همه بخشها</option>
+                        @{
+                            foreach (var gran in Model.GanjoorPage.PoetOrCat.Cat.Ancestors)
+                            {
+                                <option value="@Html.Raw(gran.Id)">@Html.Raw(gran.Title)</option>
+                            }
+                            <option value="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Id)" selected>@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</option>
+
+                            foreach (var child in Model.GanjoorPage.PoetOrCat.Cat.Children)
+                            {
+                                <option value="@Html.Raw(child.Id)">@Html.Raw(child.Title)</option>
+                            }
+                        }
+                    </select>
+                            }
+            }
+
+            <input type="submit" value="بیاب" />
+        </form>
+    </div><!-- .actionbox -->
+</div><!-- #hdr2 -->
+
+<div id="fa">
+    <div id="maincnt">
+
+        @if (!string.IsNullOrEmpty(Model.LastError))
+        {
+        <div class="poem">
+            @Model.LastError
+        </div>
+        }
+        else
+        {
+            <div class="poem" id="post-@Html.Raw(Model.GanjoorPage.Id.ToString())">
+                @{
+                    if (!string.IsNullOrEmpty(Model.PinterestUrl))
+                    {
+                        if (!Model.LoggedIn)
+                        {
+                            <div class="width-100per">
+                                <div class="width-100per text-align-center">
+                                    <p class="alert-text">
+                                        برای پیشنهاد تصاویر مرتبط با اشعار لازم است ابتدا با نام کاربری خود وارد گنجور شوید.
+                                    </p>
+                                    <p class="text-align-center">
+                                        <a href=@Html.Raw($"/login/?redirect={Model.GanjoorPage.FullUrl}")>ورود به گنجور</a>
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div style="display:block;width:100%">
+                                <form method="post" action="/pin">
+                                    <input type="hidden" id="RelatedImageSuggestionModel_PoemId" name="RelatedImageSuggestionModel.PoemId" value="@Model.GanjoorPage.Id">
+                                    <input type="hidden" id="RelatedImageSuggestionModel_GanjoorUrl" name="RelatedImageSuggestionModel.GanjoorUrl" value="@Model.GanjoorPage.FullUrl">
+                                    <input type="hidden" id="RelatedImageSuggestionModel_GanjoorTitle" name="RelatedImageSuggestionModel.GanjoorTitle" value="@Model.GanjoorPage.FullTitle">
+                                    <input type="hidden" id="RelatedImageSuggestionModel_PinterestUrl" name="RelatedImageSuggestionModel.PinterestUrl" value="@Model.PinterestUrl">
+                                    <input type="submit" name="pinterest_suggest" value="انتخاب شعر" style="background-color:red;color:white;font-family:IRANSans;font-size:1.5em;width:100%;cursor:pointer;">
+                                </form>
+                                @if (Model.PinterestUrl == "manual")
+                                {
+                                    <a href="http://blog.ganjoor.net/1399/01/29/pinterest/" target="_blank">پیشنهاد آسان از اینستاگرام و پین‌ترست با افزونهٔ فایرفاکس</a>
+                                }
+                            </div>
+                        }
+
+                    }
+                }
+                <article>
+                    @{
+                        if (Model.IsPoemPage)
+                        {
+                            <h2>
+                                <a href="@Html.Raw(Model.GanjoorPage.Poem.FullUrl)" rel="bookmark">
+                                    @Html.Raw(Model.GanjoorPage.Poem.Title)
+                                </a>
+                            </h2>
+                        }
+                        else
+                        if (Model.GanjoorPage.PoetOrCat == null)
+                        {
+                            <h2>
+                                <a href="@Html.Raw(Model.Request.Path)" rel="bookmark">
+                                    @Html.Raw(Model.GanjoorPage.Title)
+                                </a>
+                            </h2>
+                        }
+
+                    }
+
+                    @{
+                        if (Model.GanjoorPage.PoetOrCat != null)
+                        {
+                            <div class="spacer">&nbsp;</div>
+                            @if (Model.GanjoorPage.SecondPoet != null)
+                            {
+                                <div style="width:164px;margin:auto">
+                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" style="width:auto;float:right" /></a>
+                                    <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Name)" style="width:auto;float:right" /></a>
+                                </div>
+                                <div style="width:164px;margin:auto">
+                                    @{
+                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)</a><span> &raquo;</span>
+                                        <a href="@Html.Raw(Model.GanjoorPage.FullUrl)">@Html.Raw(Model.GanjoorPage.Title)</a>
+                                    }
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div style="width:82px;margin:auto">
+                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" /></a>
+                                </div>
+                                <div style="width:100%;margin:auto">
+                                    @{
+                                        foreach (var gran in Model.GanjoorPage.PoetOrCat.Cat.Ancestors)
+                                        {
+                                            <a href="@Html.Raw(gran.FullUrl)">@Html.Raw(gran.Title)</a><span> &raquo;</span>
+                                        }
+                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</a>
+                                        @if (!Model.IsPoemPage && !Model.IsCatPage && !Model.IsPoetPage)
+                                        {
+                                            <text> &raquo; </text>
+                                            <a href="@Html.Raw(Model.GanjoorPage.FullUrl)" rel="bookmark">
+                                                @Html.Raw(Model.GanjoorPage.Title)
+                                            </a>
+                                        }
+                                    }
+                                </div>
+                            }
+                        }
+                    }
+
+                    <div class="spacer">&nbsp;</div>
+                    @{
+                        @Html.Raw(Model.GanjoorPage.HtmlText)
+                    }
+
+
+                </article>
+
+                @{
+                    if (Model.IsPoemPage)
+                    {
+                        if (Model.GanjoorPage.Poem.Recitations.Length > 0)
+                        {
+                            <div class="spacer">&nbsp;</div>
+                            <div style="width:95%;max-width:500px;margin:auto">
+                                <div id="jp_container_1" class="jp-video jp-video-270p">
+                                    <div class="jp-type-playlist">
+                                        <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+                                        <div class="jp-gui">
+                                            <div class="jp-video-play">
+                                                <button class="jp-video-play-icon" tabindex="0">پخش</button>
+                                            </div>
+                                            <div class="jp-interface">
+                                                <div class="jp-progress">
+                                                    <div class="jp-seek-bar">
+                                                        <div class="jp-play-bar"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="jp-current-time">&nbsp;</div>
+                                                <div class="jp-duration">&nbsp;</div>
+                                                <div class="jp-controls-holder" style="width:auto">
+                                                    <div class="jp-controls">
+                                                        <button class="jp-previous" tabindex="0">قبلی</button>
+                                                        <button class="jp-play" tabindex="0">پخش</button>
+                                                        <button class="jp-next" tabindex="0">بعدی</button>
+                                                        <button class="jp-stop" tabindex="0">توقف</button>
+                                                    </div>
+                                                    <div class="jp-volume-controls">
+                                                        <button class="jp-mute" tabindex="0">بی‌صدا</button>
+                                                        <button class="jp-volume-max" tabindex="0">حداکثر صدا</button>
+                                                        <div class="jp-volume-bar">
+                                                            <div class="jp-volume-bar-value"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="jp-details">
+                                                    <div class="jp-title">&nbsp;</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="jp-playlist">
+                                            <ul>
+                                                <!-- The method Playlist.displayPlaylist() uses this unordered list -->
+                                                <li>&nbsp;</li>
+                                            </ul>
+                                        </div>
+                                        <div class="jp-no-solution">
+                                            <span>نیاز به بروزآوری</span>
+                                            جهت خوانش شعر شما یا باید از مرورگر جدیدی همچون <a href="http://getfirefox.com/">فایرفاکس</a> استفاده کنید یا افزونه <a href="http://get.adobe.com/flashplayer/" target="_blank">فلش</a> مرورگرتان را بروزآوری کنید.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+
+
+                @{
+                    if (Model.IsCatPage)
+                    {
+                        <nav>
+                            <div class="spacer">&nbsp;</div>
+                            <div class="navigation">
+                                <div class="navleft">
+                                    @if (Model.GanjoorPage.PoetOrCat.Cat.Next != null)
+                                    {
+                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Next.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Next.Title)</a><span> &raquo;</span>
+                                    }
+                                </div>
+                                <div class="navright">
+                                    @if (Model.GanjoorPage.PoetOrCat.Cat.Previous != null)
+                                    {
+                                        <span>&laquo; </span><a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Previous.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Previous.Title)</a>
+                                    }
+                                </div>
+                            </div>
+                        </nav>
+                    }
+
+                    if (Model.IsPoemPage)
+                    {
+
+                        <nav>
+                            <div class="spacer">&nbsp;</div>
+                            <div class="navigation">
+                                <div class="navleft">
+                                    @if (Model.GanjoorPage.Poem.Next != null)
+                                    {
+                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + Model.GanjoorPage.Poem.Next.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Next.Title): @Html.Raw(Model.GanjoorPage.Poem.Next.Excerpt)</a><span> &raquo;</span>
+                                    }
+                                </div>
+                                <div class="navright">
+                                    @if (Model.GanjoorPage.Poem.Previous != null)
+                                    {
+                                        <span>&laquo; </span><a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" +Model.GanjoorPage.Poem.Previous.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Previous.Title) :@Html.Raw(Model.GanjoorPage.Poem.Previous.Excerpt)</a>
+                                    }
+                                </div>
+                            </div>
+                        </nav>
+
+                        <div id="comments">
+                            <p>
+                                <small>🖰 با دو بار کلیک روی واژه‌ها یا انتخاب متن و کلیک روی آنها می‌توانید آنها را در لغتنامهٔ دهخدا جستجو کنید.</small>
+                            </p>
+                            <p>
+                                <small>🖐 <a role="button" onclick="btshmr()" class="actionlink">شماره‌گذاری ابیات</a></small>
+                                @if (Model.GanjoorPage.Poem.GanjoorMetre != null)
+                                {
+                                    <text>| <small>وزن: <a href="@Html.Raw($"/vazn/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@Html.Raw(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)</a></small></text>
+                                    @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
+                                    {
+                                        <text> | <small>🔍 <a href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای مشابه (وزن و قافیه)</a></small></text>
+                                    }
+                                }
+                                @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag))
+                                {
+                                    <text> | <small><a href="@Html.Raw($"{Model.GanjoorPage.Poem.OldTagPageUrl}/")">@Html.Raw(Model.GanjoorPage.Poem.OldTag)</a></small></text>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
+                                {
+                                    <text> | <small>منبع اولیه: <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Html.Raw(Model.GanjoorPage.Poem.SourceName)</a></small></text>
+                                }
+                                | <small><a href="@Html.Raw($"http://www.facebook.com/sharer.php?u=https://ganjoor.net{Model.GanjoorPage.FullUrl}&amp;t={Uri.EscapeUriString(Model.GanjoorPage.FullTitle)}/")">ارسال به فیس‌بوک</a></small>
+                            </p>
+                            <h3>این شعر را چه کسی در کدام آهنگ خوانده است؟</h3>
+                            @if (Model.GanjoorPage.Poem.Songs.Length == 0)
+                            {
+                                <p>🎜 <small><a href="@Html.Raw($"/spotify/?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است</a> ...</small></p>
+                            }
+                            else
+                            {
+
+                                @foreach (var song in Model.GanjoorPage.Poem.Songs)
+                                {
+                                    <p>
+                                        <a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
+                                        @if (song.TrackType == RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify)
+                                        {
+                                            <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img style="display:inline;width:16px;" src="/image/sp16.png" alt="اسپاتیفای" height="16" /></a>
+                                        }
+                                    </p>
+                                }
+
+                                <p>🎜 <small><a href="@Html.Raw($"/spotify/?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">معرفی آهنگهای دیگری که در متن آنها از این شعر استفاده شده است</a> ...</small></p>
+                            }
+
+                            @if (Model.GanjoorPage.Poem.Images.Length == 0)
+                            {
+                                <p>
+                                    <small>📷 <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی</a>، 📖 <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور</a></small>
+                                </p>
+                            }
+                            else
+                            {
+                                <h3>تصاویر مرتبط در گنجینهٔ گنجور</h3>
+                                <div style="display: flex;clear: both;width:auto;margin:auto;flex-flow:wrap;text-align:center">
+                                    @foreach (var image in Model.GanjoorPage.Poem.Images)
+                                    {
+                                        <a target="_blank" style="text-align:center;margin:auto" href="@Html.Raw(image.TargetPageUrl)">
+                                            <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@Html.Raw(image.AltText)" width="200" style="width:200px;float: right;padding: 5px;">
+                                        </a>
+                                    }
+                                </div>
+                            }
+
+                            <h3>حاشیه‌ها</h3>
+
+                            @switch (Model.GanjoorPage.Poem.Comments.Length)
+                            {
+                                case 0:
+                                    <p>
+                                        تا به حال حاشیه‌ای برای این شعر نوشته نشده است. <a href="#commentform" class="comments-link" title="شما حاشیه بگذارید ...">💬 شما حاشیه بگذارید ...</a>
+                                    </p>
+                                    break;
+                                case 1:
+                                    <p>
+                                        تا به حال یک حاشیه برای این شعر نوشته شده است. <a href="#commentform" class="comments-link" title="شما حاشیه بگذارید ...">💬 شما حاشیه بگذارید ...</a>
+                                    </p>
+                                    break;
+                                default:
+                                    <p>
+                                        تا به حال @Html.Raw(Model.GanjoorPage.Poem.Comments.Length.ToPersianNumbers()) حاشیه برای این شعر نوشته شده است. <a href="#commentform" class="comments-link" title="شما حاشیه بگذارید ...">💬 شما حاشیه بگذارید ...</a>
+                                    </p>
+                                    break;
+                            }
+
+                            <div id="comments-block">
+                                @foreach (var comment in Model.GanjoorPage.Poem.Comments)
+                                {
+                                    <partial name="_CommentPartial" model=Model.GetCommentModel(comment) />
+                                }
+                            </div>
+
+
+                            @if (Model.LoggedIn)
+                            {
+
+                                <form method="post" id="commentform" action="?handler=Comment">
+                                    <fieldset>
+                                        <legend>💬 شما حاشیه بگذارید ...</legend>
+                                        <table style="max-width:100%; width:100%; margin:0">
+                                            <tr>
+                                                <td>
+                                                    <div class="required">
+                                                        <textarea name="comment" id="comment" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                                                    </div>
+                                                    <input type="hidden" name="poemId" id="poemId" value="@Model.GanjoorPage.Id" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <button name="postcomment" id="postcomment" class="inputSubmit" onclick="return postComment(document.getElementById('comments-block'));" style="width:100%">درج حاشیه</button>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+
+                                        <div class="notice">
+                                            <p>
+                                                لطفاً توجه داشته باشید که حاشیه‌ها برای ثبت نظرات شما راجع به <strong>همین شعر</strong> در نظر گرفته شده‌اند. در صورتی که در متن ثبت شده‌ی شعر در گنجور غلط املایی مشاهده کردید، یا با مقابله با نسخه‌ی چاپی در دسترستان اشتباهاتی یافتید، در مورد این شعر نظر یا احساس خاصی دارید یا مطلب خاصی در مورد آن می‌دانید یا دوست دارید درباره‌ی آن از دیگران چیزی بپرسید یک حاشیه برای آن بنویسید. <span style="color:#f00">لطفاً از درج مطالب غیرمرتبط با متن این شعر خاص خودداری فرمایید</span> و حتی‌الامکان سعی کنید متن حاشیه‌ی خود را با حروف فارسی درج کنید (حاشیه‌ها بازبینی خواهند شد و موارد غیرمرتبط و ناقض این نکات حذف می‌شوند).
+                                            </p>
+                                            <p>
+                                                <span style="color:#f00">بحثهای مذهبی و اعتقادی و ارجاع توهین‌آمیز نسبت به بزرگان ادیان و همینطور بحثهای قومیتی و توهین به فرهنگها و قومیتها و زبانها از مصادیق حاشیه‌های نامناسب محسوب می‌شوند.</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#0a0">لطفاً در صورتی که اشتباهات را با استناد به نسخه‌های چاپی گزارش می‌کنید این مسئله را (حتی‌الامکان با ذکر نام مصحح) ذکر نمایید تا بتوانیم بین پیشنهادهای تصحیحی حدسی حاشیه‌گذاران و پیشنهادهای مستند تمایز قایل شویم.</span>
+                                            </p>
+                                        </div>
+                                    </fieldset>
+
+                                </form>
+
+
+                                <div id="id02" class="modal">
+                                    <span onclick="document.getElementById('id02').style.display='none'"
+                                          class="close" title="بستن">&times;</span>
+                                    <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
+                                        <table style="max-width:100%; width:100%; margin:0">
+                                            <tr>
+                                                <td>
+                                                    <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                                                    <input type="hidden" name="editCommentId" id="editCommentId" value="" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <button name="editcomment" id="editcomment" class="inputSubmit" onclick="return editComment();" style="width:100%">ویرایش حاشیه</button>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </form>
+                                </div>
+
+                                <div id="id03" class="modal">
+                                    <span onclick="document.getElementById('id03').style.display='none'"
+                                          class="close" title="بستن">&times;</span>
+                                    <form class="modal-content animate" method="post" id="replycommentform" action="?handler=Reply">
+                                        <table style="max-width:100%; width:100%; margin:0">
+                                            <tr>
+                                                <td>
+                                                    <textarea name="replyCommentText" id="replyCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                                                    <input type="hidden" name="refPoemId" id="refPoemId" value="@Model.GanjoorPage.Id" />
+                                                    <input type="hidden" name="refCommentId" id="refCommentId" value="" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <button name="replycomment" id="replycomment" class="inputSubmit" onclick="return postReplyComment();" style="width:100%">درج پاسخ به حاشیه</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <p>در پاسخ به:</p>
+                                                    <div id="refComment"></div>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="notice" id="commentform">
+                                    <p>
+                                        برای حاشیه‌گذاری باید در گنجور <a href="https://museum.ganjoor.net/signup">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
+                                    </p>
+                                </div>
+                            }
+
+                        </div> <!-- <div id="comments"> -->
+                    }
+
+
+                    if (Model.GanjoorPage.Previous != null || Model.GanjoorPage.Next != null)
+                    {
+                        <nav>
+                            <div class="spacer">&nbsp;</div>
+                            <div class="navigation">
+                                <div class="navleft">
+                                    @if (Model.GanjoorPage.Next != null)
+                                    {
+                                        <a href="@Html.Raw(Model.GanjoorPage.Next.FullUrl)">@Html.Raw(Model.GanjoorPage.Next.Title)</a><span> &raquo;</span>
+                                    }
+                                </div>
+                                <div class="navright">
+                                    @if (Model.GanjoorPage.Previous != null)
+                                    {
+                                        <span>&laquo; </span><a href="@Html.Raw(Model.GanjoorPage.Previous.FullUrl)">@Html.Raw(Model.GanjoorPage.Previous.Title)</a>
+                                    }
+                                </div>
+                            </div>
+                        </nav>
+                    }
+
+
+                }
+
+
+                <div class="spacer">&nbsp;</div>
+
+                @if(Model.Banner != null)
+                {
+                    <div style="margin:auto">
+                        <a href="@Model.Banner.TargetUrl"><img src="@($"{GanjooRazor.APIRoot.InternetUrl}/{Model.Banner.ImageUrl}")" alt="@Model.Banner.AlternateText" /></a>
+                    </div>
+                }
+
+                <div class="helpers">
+
+                    <div class="cat">
+                    </div>
+
+                    <div class="com">
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+
+
+        <partial name="_InlineLoginPartial" model="Model" />
+
+
+
+    </div>
+
+    <partial name="_FooterPartial" model="null" />
+
+
+</div>

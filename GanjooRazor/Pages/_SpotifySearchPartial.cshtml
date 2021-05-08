@@ -1,0 +1,35 @@
+﻿@model GanjooRazor.Pages._SpotifySearchPartialModel
+@{
+    Layout = null;
+}
+
+@if (Model.Artists != null)
+{
+    foreach (var artist in Model.Artists)
+    {
+        <div class="show" align="right">
+            <img src="@artist.Image" style="width:60px; height:60px; float:right; margin-right:6px;pointer-events: none;" /><span class="name">@artist.Name</span>&nbsp;<br /><br />
+            <span class="artist_id" style="display:none">@artist.Id</span>
+            <span class="artist_url" style="display:none">@artist.Url</span>
+        </div>
+    }
+}
+
+@if (Model.Tracks != null)
+{
+    foreach (var track in Model.Tracks)
+    {
+        <div class="show" align="right">
+            <span class="name">@Html.Raw($"{track.Name}({track.ArtistName}::{track.AlbumName})")</span>&nbsp;<br /><br />
+            <span class="track_name" style="display:none">@track.Name</span>
+            <span class="track_id" style="display:none">@track.Id</span>
+            <span class="track_url" style="display:none">@track.Url</span>
+            <span class="artist_id" style="display:none">@track.ArtistId</span>
+            <span class="artist_name" style="display:none">@track.ArtistName</span>
+            <span class="artist_url" style="display:none">@track.ArtistUrl</span>
+            <span class="album_id" style="display:none">@track.AlbumId</span>
+            <span class="album_name" style="display:none">@track.AlbumName</span>
+            <span class="album_url" style="display:none">@track.AlbunUrl</span>
+        </div>
+    }
+}
