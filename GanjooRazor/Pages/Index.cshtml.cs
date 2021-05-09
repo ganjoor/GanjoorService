@@ -479,7 +479,7 @@ namespace GanjooRazor.Pages
             if(!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
             {
                 var resPoets = await _ganjoorService.GetPoets(true, false);
-                if(!string.IsNullOrEmpty(resPoets.ExceptionString))
+                if(string.IsNullOrEmpty(resPoets.ExceptionString))
                 {
                     poets = new List<GanjoorPoetViewModel>(resPoets.Result);
                     _memoryCache.Set(cacheKey, poets);
@@ -518,7 +518,7 @@ namespace GanjooRazor.Pages
             if (!IsHomePage)
             {
                 var pageRes = await _ganjoorService.GetPageByUrl(Request.Path, true);
-                if(!string.IsNullOrEmpty(pageRes.ExceptionString))
+                if(string.IsNullOrEmpty(pageRes.ExceptionString))
                 {
                     if(pageRes.Result == null)
                     {
