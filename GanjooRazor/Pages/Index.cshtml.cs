@@ -44,6 +44,9 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly IAppUserService _appUserService;
 
+        /// <summary>
+        /// ganjoor service
+        /// </summary>
         private readonly IGanjoorService _ganjoorService;
 
         /// <summary>
@@ -475,11 +478,12 @@ namespace GanjooRazor.Pages
             var cacheKey = $"/api/ganjoor/poets?includeBio={includeBio}";
             if(!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
             {
-                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets?includeBio={includeBio}");
-                response.EnsureSuccessStatusCode();
-                poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-
-                _memoryCache.Set(cacheKey, poets);
+                var resPoets = await _ganjoorService.GetPoets(true, false);
+                if(!string.IsNullOrEmpty(resPoets.ExceptionString))
+                {
+                    poets = new List<GanjoorPoetViewModel>(resPoets.Result);
+                    _memoryCache.Set(cacheKey, poets);
+                }
             }
 
             Poets = poets;
@@ -505,26 +509,23 @@ namespace GanjooRazor.Pages
 
             if (!string.IsNullOrEmpty(Request.Query["p"]))
             {
-                var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["p"]}");
-                pageUrlResponse.EnsureSuccessStatusCode();
-                var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
-                return Redirect(pageUrl);
+                var pageUrlRes = await _ganjoorService.GetPageUrlById(int.Parse(Request.Query["p"]));
+                return Redirect(pageUrlRes.Result);
             }
 
             await preparePoets(false);
 
             if (!IsHomePage)
             {
-                var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Path}");
-                if (!pageQuery.IsSuccessStatusCode)
+                var pageRes = await _ganjoorService.GetPageByUrl(Request.Path, true);
+                if(!string.IsNullOrEmpty(pageRes.ExceptionString))
                 {
-                    if (pageQuery.StatusCode == HttpStatusCode.NotFound)
+                    if(pageRes.Result == null)
                     {
                         return NotFound();
                     }
                 }
-                pageQuery.EnsureSuccessStatusCode();
-                GanjoorPage = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+                GanjoorPage = pageRes.Result;
                 GanjoorPage.HtmlText = GanjoorPage.HtmlText.Replace("https://ganjoor.net/", "/").Replace("http://ganjoor.net/", "/");
                 switch (GanjoorPage.GanjoorPageType)
                 {
@@ -545,14 +546,7 @@ namespace GanjooRazor.Pages
 
                 if (IsPoemPage)
                 {
-                    var bannerQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/site/banner");
-                    bannerQuery.EnsureSuccessStatusCode();
-                    string bannerResponse = await bannerQuery.Content.ReadAsStringAsync();
-                    if (!string.IsNullOrEmpty(bannerResponse))
-                    {
-                        Banner = JObject.Parse(bannerResponse).ToObject<GanjoorSiteBannerViewModel>();
-                    }
-
+                    Banner = (await _ganjoorService.GetARandomActiveSiteBanner()).Result;
                 }
             }
 

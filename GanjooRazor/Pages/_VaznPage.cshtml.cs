@@ -31,17 +31,17 @@ namespace GanjooRazor.Pages
             string metre = Request.Query["v"];
             int poetId = string.IsNullOrEmpty(Request.Query["a"]) ? 0 : int.Parse(Request.Query["a"]);
 
-            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={metre}&poetId={poetId}";
-
-
-            var response = await _httpClient.GetAsync(url);
-            if (!response.IsSuccessStatusCode)
-            {
-                LastError = await response.Content.ReadAsStringAsync();
-                return;
-            }
-
-            response.EnsureSuccessStatusCode();
+            var poemsRes = await _ganjoorService.GetSimilarPoems
+                (
+                new PagingParameterModel()
+                {
+                    PageNumber = pageNumber,
+                    PageSize = 20
+                },
+                metre: metre,
+                rhyme: null,
+                poetId: poetId
+                );
 
             GanjoorPage.Title = "شعرهای ";
             if (poetId != 0)
@@ -65,13 +65,9 @@ namespace GanjooRazor.Pages
                 htmlText += $"</div>{Environment.NewLine}";
             }
 
-            var poems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
 
 
-
-
-
-            foreach (var poem in poems)
+            foreach (var poem in poemsRes.Result.Items)
             {
                 htmlText += $"<div class=\"sitem\" id=\"post-{poem.Id}\">{Environment.NewLine}<h2><a href=\"{poem.FullUrl}\" rel=\"bookmark\">{poem.FullTitle}</a>{Environment.NewLine}</h2>{Environment.NewLine}" +
                     $"<div class=\"spacer\">&nbsp;</div>{Environment.NewLine}"
@@ -88,42 +84,37 @@ namespace GanjooRazor.Pages
 
             htmlText += "<p style=\"text-align: center;\">";
 
-            string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
-            if (!string.IsNullOrEmpty(paginnationMetadata))
+            PaginationMetadata paginationMetadata = poemsRes.Result.PagingMeta;
+
+            string queryPoetId = poetId == 0 ? "" : $"&a={poetId}";
+
+            if (paginationMetadata.totalPages > 1)
             {
+                GanjoorPage.Title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
 
-                PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata);
-
-                string queryPoetId = poetId == 0 ? "" : $"&a={poetId}";
-
-                if (paginationMetadata.totalPages > 1)
+                if (paginationMetadata.currentPage > 3)
                 {
-                    GanjoorPage.Title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
-
-                    if (paginationMetadata.currentPage > 3)
+                    htmlText += $"[<a href=\"/vazn/?v={Uri.EscapeUriString(metre)}&page=1{queryPoetId}\">صفحهٔ اول</a>] …";
+                }
+                for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
+                {
+                    if (i >= 1 && i <= paginationMetadata.totalPages)
                     {
-                        htmlText += $"[<a href=\"/vazn/?v={Uri.EscapeUriString(metre)}&page=1{queryPoetId}\">صفحهٔ اول</a>] …";
-                    }
-                    for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
-                    {
-                        if (i >= 1 && i <= paginationMetadata.totalPages)
+                        htmlText += " [";
+                        if (i == paginationMetadata.currentPage)
                         {
-                            htmlText += " [";
-                            if (i == paginationMetadata.currentPage)
-                            {
-                                htmlText += i.ToPersianNumbers();
-                            }
-                            else
-                            {
-                                htmlText += $"<a href=\"/vazn/?v={Uri.EscapeUriString(metre)}&page={i}{queryPoetId}\">{i.ToPersianNumbers()}</a>";
-                            }
-                            htmlText += "] ";
+                            htmlText += i.ToPersianNumbers();
                         }
+                        else
+                        {
+                            htmlText += $"<a href=\"/vazn/?v={Uri.EscapeUriString(metre)}&page={i}{queryPoetId}\">{i.ToPersianNumbers()}</a>";
+                        }
+                        htmlText += "] ";
                     }
-                    if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
-                    {
-                        htmlText += $"… [<a href=\"/vazn/?v={Uri.EscapeUriString(metre)}&page={paginationMetadata.totalPages}{queryPoetId}\">صفحهٔ آخر</a>]";
-                    }
+                }
+                if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
+                {
+                    htmlText += $"… [<a href=\"/vazn/?v={Uri.EscapeUriString(metre)}&page={paginationMetadata.totalPages}{queryPoetId}\">صفحهٔ آخر</a>]";
                 }
             }
 

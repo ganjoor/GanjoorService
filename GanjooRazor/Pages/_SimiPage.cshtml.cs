@@ -35,17 +35,20 @@ namespace GanjooRazor.Pages
             string metre = Request.Query["v"];
             string rhyme = Request.Query["g"];
 
-            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={metre}&rhyme={rhyme}";
-
-
-            var response = await _httpClient.GetAsync(url);
-            if (!response.IsSuccessStatusCode)
-            {
-                LastError = await response.Content.ReadAsStringAsync();
-                return;
-            }
-
-            response.EnsureSuccessStatusCode();
+            var poemsRes =
+                (
+            await _ganjoorService.GetSimilarPoems
+                (
+                new PagingParameterModel()
+                {
+                    PageNumber = pageNumber,
+                    PageSize = 20
+                },
+                metre,
+                rhyme,
+                null
+                )
+                ).Result;
 
             GanjoorPage.Title = "شعرهای ";
 
@@ -60,13 +63,12 @@ namespace GanjooRazor.Pages
             string htmlText = "";
 
 
-            var poems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
 
 
 
 
 
-            foreach (var poem in poems)
+            foreach (var poem in poemsRes.Items)
             {
                 htmlText += $"<div class=\"sitem\" id=\"post-{poem.Id}\">{Environment.NewLine}<h2><a href=\"{poem.FullUrl}\" rel=\"bookmark\">{poem.FullTitle}</a>{Environment.NewLine}</h2>{Environment.NewLine}" +
                     $"<div class=\"spacer\">&nbsp;</div>{Environment.NewLine}"
@@ -83,41 +85,34 @@ namespace GanjooRazor.Pages
 
             htmlText += "<p style=\"text-align: center;\">";
 
-            string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
-            if (!string.IsNullOrEmpty(paginnationMetadata))
+            PaginationMetadata paginationMetadata = poemsRes.PagingMeta;
+            
+            if (paginationMetadata.totalPages > 1)
             {
-
-
-                PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata);
-
-
-                if (paginationMetadata.totalPages > 1)
+                GanjoorPage.Title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
+                if (paginationMetadata.currentPage > 3)
                 {
-                    GanjoorPage.Title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
-                    if (paginationMetadata.currentPage > 3)
+                    htmlText += $"[<a href=\"/simi/?v={Uri.EscapeUriString(metre)}&g={Uri.EscapeUriString(rhyme)}&page=1\">صفحهٔ اول</a>] …";
+                }
+                for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
+                {
+                    if (i >= 1 && i <= paginationMetadata.totalPages)
                     {
-                        htmlText += $"[<a href=\"/simi/?v={Uri.EscapeUriString(metre)}&g={Uri.EscapeUriString(rhyme)}&page=1\">صفحهٔ اول</a>] …";
-                    }
-                    for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
-                    {
-                        if (i >= 1 && i <= paginationMetadata.totalPages)
+                        htmlText += " [";
+                        if (i == paginationMetadata.currentPage)
                         {
-                            htmlText += " [";
-                            if (i == paginationMetadata.currentPage)
-                            {
-                                htmlText += i.ToPersianNumbers();
-                            }
-                            else
-                            {
-                                htmlText += $"<a href=\"/simi/?v={Uri.EscapeUriString(metre)}&g={Uri.EscapeUriString(rhyme)}&page={i}\">{i.ToPersianNumbers()}</a>";
-                            }
-                            htmlText += "] ";
+                            htmlText += i.ToPersianNumbers();
                         }
+                        else
+                        {
+                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeUriString(metre)}&g={Uri.EscapeUriString(rhyme)}&page={i}\">{i.ToPersianNumbers()}</a>";
+                        }
+                        htmlText += "] ";
                     }
-                    if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
-                    {
-                        htmlText += $"… [<a href=\"/simi/?v={Uri.EscapeUriString(metre)}&g={Uri.EscapeUriString(rhyme)}&page={paginationMetadata.totalPages}\">صفحهٔ آخر</a>]";
-                    }
+                }
+                if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
+                {
+                    htmlText += $"… [<a href=\"/simi/?v={Uri.EscapeUriString(metre)}&g={Uri.EscapeUriString(rhyme)}&page={paginationMetadata.totalPages}\">صفحهٔ آخر</a>]";
                 }
             }
 
