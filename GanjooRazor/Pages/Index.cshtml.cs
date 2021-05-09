@@ -59,7 +59,11 @@ namespace GanjooRazor.Pages
         /// <param name="appUserService"></param>
         /// <param name="ganjoorService"></param>
         /// <param name="httpClient"></param>
-        public IndexModel(IConfiguration configuration, IMemoryCache memoryCache, IAppUserService appUserService, IGanjoorService ganjoorService, HttpClient httpClient)
+        public IndexModel(IConfiguration configuration, 
+            IMemoryCache memoryCache, 
+            IAppUserService appUserService, 
+            IGanjoorService ganjoorService, 
+            HttpClient httpClient)
         {
             _configuration = configuration;
             _memoryCache = memoryCache;
