@@ -19,10 +19,11 @@ namespace GanjooRazor.Pages
 
         private readonly IMusicCatalogueService _musicCatalogue;
 
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="httpClient"></param>
+       /// <summary>
+       /// constructor
+       /// </summary>
+       /// <param name="ganjoorService"></param>
+       /// <param name="musicCatalogue"></param>
         public GolhaModel(
             IGanjoorService ganjoorService,
             IMusicCatalogueService musicCatalogue

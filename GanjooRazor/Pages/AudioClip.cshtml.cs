@@ -1,30 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Services;
 
 namespace GanjooRazor.Pages
 {
     public class AudioClipModel : PageModel
     {
-        /// <summary>
-        /// HttpClient instance
-        /// </summary>
-        private readonly HttpClient _httpClient;
 
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="httpClient"></param>
-        public AudioClipModel(HttpClient httpClient)
+        private readonly IGanjoorService _ganjoorService;
+
+
+        private readonly IRecitationService _recitationService;
+
+        public AudioClipModel(IGanjoorService ganjoorService, IRecitationService recitationService)
         {
-            _httpClient = httpClient;
+            _ganjoorService = ganjoorService;
+            _recitationService = recitationService;
         }
 
         /// <summary>
@@ -44,15 +38,14 @@ namespace GanjooRazor.Pages
                 return BadRequest();
             }
 
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/published/{Request.Query["a"]}");
-            response.EnsureSuccessStatusCode();
+            var res = await _recitationService.GetPublishedRecitationById(int.Parse(Request.Query["a"]));
 
-            Recitation = JsonConvert.DeserializeObject<PublicRecitationViewModel>(await response.Content.ReadAsStringAsync());
 
-            var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{Recitation.PoemId}?rhymes=false&recitations=false&images=false&songs=false&comments=false&navigation=false");
-            responsePoem.EnsureSuccessStatusCode();
+            Recitation = res.Result;
 
-            Poem = JsonConvert.DeserializeObject<GanjoorPoemCompleteViewModel>(await responsePoem.Content.ReadAsStringAsync());
+            var resPoem = await _ganjoorService.GetPoemById(Recitation.PoemId, true, false, false, false, false, false, false, false, false);
+
+            Poem = resPoem.Result;
 
             return Page();
 
