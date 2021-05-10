@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DNTPersianUtils.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
 
 namespace GanjooRazor.Pages
@@ -26,19 +23,20 @@ namespace GanjooRazor.Pages
         protected readonly IMemoryCache _memoryCache;
 
         /// <summary>
-        /// HttpClient instance
+        /// ganjoor service
         /// </summary>
-        private readonly HttpClient _httpClient;
+        private readonly IGanjoorService _ganjoorService;
+
 
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="memoryCache"></param>
-        /// <param name="httpClient"></param>
-        public SearchModel(IMemoryCache memoryCache, HttpClient httpClient)
+        /// <param name="ganjoorService"></param>
+        public SearchModel(IMemoryCache memoryCache, IGanjoorService ganjoorService)
         {
             _memoryCache = memoryCache;
-            _httpClient = httpClient;
+            _ganjoorService = ganjoorService;
         }
 
         public List<GanjoorPoetViewModel> Poets { get; set; }
@@ -55,11 +53,12 @@ namespace GanjooRazor.Pages
             var cacheKey = $"/api/ganjoor/poets?includeBio={includeBio}";
             if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
             {
-                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets?includeBio={includeBio}");
-                response.EnsureSuccessStatusCode();
-                poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-
-                _memoryCache.Set(cacheKey, poets);
+                var resPoets = await _ganjoorService.GetPoets(true, false);
+                if (string.IsNullOrEmpty(resPoets.ExceptionString))
+                {
+                    poets = new List<GanjoorPoetViewModel>(resPoets.Result);
+                    _memoryCache.Set(cacheKey, poets);
+                }
             }
 
             Poets = poets;
@@ -68,12 +67,15 @@ namespace GanjooRazor.Pages
         private async Task preparePoet()
         {
             var cacheKey = $"/api/ganjoor/poet/{PoetId}";
+
             if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
             {
-                var poetResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{PoetId}");
-                poetResponse.EnsureSuccessStatusCode();
-                poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
-                _memoryCache.Set(cacheKey, poet);
+                var resPoets = await _ganjoorService.GetPoetById(PoetId);
+                if (string.IsNullOrEmpty(resPoets.ExceptionString))
+                {
+                    poet = resPoets.Result;
+                    _memoryCache.Set(cacheKey, poet);
+                }
             }
 
             Poet = poet;
@@ -112,11 +114,20 @@ namespace GanjooRazor.Pages
                 pageNumber = int.Parse(Request.Query["page"]);
             }
 
-            var searchQueryResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poems/search?term={Query}&poetId={PoetId}&catId={CatId}&PageNumber={pageNumber}&PageSize=20");
+            var searchRes = await _ganjoorService.Search
+                (
+                new PagingParameterModel()
+                {
+                    PageNumber = pageNumber,
+                    PageSize = 20
+                },
+                Query,
+                PoetId == 0 ? null : PoetId,
+                CatId == 0 ? null : CatId
+                );
 
-            searchQueryResponse.EnsureSuccessStatusCode();
 
-            Poems = JArray.Parse(await searchQueryResponse.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
+            Poems = new List<GanjoorPoemCompleteViewModel>(searchRes.Result.Items);
             if (Poems != null)
             {
                 // highlight searched word
@@ -153,9 +164,7 @@ namespace GanjooRazor.Pages
 
                 }
 
-                string paginationMetadata = searchQueryResponse.Headers.GetValues("paging-headers").FirstOrDefault();
-
-                PagingToolsHtml = GeneratePagingBarHtml(paginationMetadata, $"/search?s={Query}&author={PoetId}");
+                PagingToolsHtml = GeneratePagingBarHtml(searchRes.Result.PagingMeta, $"/search?s={Query}&author={PoetId}");
             }
 
             return Page();
@@ -188,40 +197,35 @@ namespace GanjooRazor.Pages
             }
         }
 
-        private string GeneratePagingBarHtml(string paginationMetadataJsonValue, string routeStartWithQueryStrings)
+        private string GeneratePagingBarHtml(PaginationMetadata paginationMetadata, string routeStartWithQueryStrings)
         {
             string htmlText = "<p style=\"text-align: center;\">";
 
-            if (!string.IsNullOrEmpty(paginationMetadataJsonValue))
+            if (paginationMetadata.totalPages > 1)
             {
-                PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginationMetadataJsonValue);
-
-                if (paginationMetadata.totalPages > 1)
+                if (paginationMetadata.currentPage > 3)
                 {
-                    if (paginationMetadata.currentPage > 3)
+                    htmlText += $"[<a href=\"{routeStartWithQueryStrings}&page=1\">صفحهٔ اول</a>] …";
+                }
+                for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
+                {
+                    if (i >= 1 && i <= paginationMetadata.totalPages)
                     {
-                        htmlText += $"[<a href=\"{routeStartWithQueryStrings}&page=1\">صفحهٔ اول</a>] …";
-                    }
-                    for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
-                    {
-                        if (i >= 1 && i <= paginationMetadata.totalPages)
+                        htmlText += " [";
+                        if (i == paginationMetadata.currentPage)
                         {
-                            htmlText += " [";
-                            if (i == paginationMetadata.currentPage)
-                            {
-                                htmlText += i.ToPersianNumbers();
-                            }
-                            else
-                            {
-                                htmlText += $"<a href=\"{routeStartWithQueryStrings}&page={i}\">{i.ToPersianNumbers()}</a>";
-                            }
-                            htmlText += "] ";
+                            htmlText += i.ToPersianNumbers();
                         }
+                        else
+                        {
+                            htmlText += $"<a href=\"{routeStartWithQueryStrings}&page={i}\">{i.ToPersianNumbers()}</a>";
+                        }
+                        htmlText += "] ";
                     }
-                    if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
-                    {
-                        htmlText += $"… [<a href=\"{routeStartWithQueryStrings}&page={paginationMetadata.totalPages}\">صفحهٔ آخر</a>]";
-                    }
+                }
+                if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
+                {
+                    htmlText += $"… [<a href=\"{routeStartWithQueryStrings}&page={paginationMetadata.totalPages}\">صفحهٔ آخر</a>]";
                 }
             }
 
