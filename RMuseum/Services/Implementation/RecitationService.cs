@@ -47,7 +47,7 @@ namespace RMuseum.Services.Implementationa
             {
                 //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
                 var source =
-                     from audio in _context.Recitations.Include(a => a.Owner)
+                     from audio in _context.Recitations.AsNoTracking().Include(a => a.Owner)
                      join poem in _context.GanjoorPoems
                      on audio.GanjoorPostId equals poem.Id
                      where 
@@ -83,7 +83,7 @@ namespace RMuseum.Services.Implementationa
             try
             {
                 var source =
-                     from audio in _context.Recitations
+                     from audio in _context.Recitations.AsNoTracking()
                      join poem in _context.GanjoorPoems
                      on audio.GanjoorPostId equals poem.Id
                      where
@@ -148,7 +148,7 @@ namespace RMuseum.Services.Implementationa
             try
             {
                 var source =
-                     from audio in _context.Recitations
+                     from audio in _context.Recitations.AsNoTracking()
                      join poem in _context.GanjoorPoems
                      on audio.GanjoorPostId equals poem.Id
                      where
@@ -194,7 +194,7 @@ namespace RMuseum.Services.Implementationa
             {
                 //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
                 var source =
-                     from audio in _context.Recitations
+                     from audio in _context.Recitations.AsNoTracking()
                      .Include(a => a.Owner)
                      .Where(a => a.Id == id)
                      join poem in _context.GanjoorPoems
@@ -293,8 +293,8 @@ namespace RMuseum.Services.Implementationa
         {
             try
             {
-                var narration = await _context.Recitations.Where(a => a.Id == id).SingleOrDefaultAsync();
-                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == narration.GanjoorPostId).OrderBy(v => v.VOrder).ToListAsync();
+                var narration = await _context.Recitations.AsNoTracking().Where(a => a.Id == id).SingleOrDefaultAsync();
+                var verses = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == narration.GanjoorPostId).OrderBy(v => v.VOrder).ToListAsync();
 
                 string xml = File.ReadAllText(narration.LocalXmlFilePath);
 
@@ -1117,7 +1117,7 @@ namespace RMuseum.Services.Implementationa
             {
                 return new RServiceResult<UploadSession>
                     (
-                    await _context.UploadSessions.Include(s => s.UploadedFiles).FirstOrDefaultAsync(s => s.Id == id)
+                    await _context.UploadSessions.AsNoTracking().Include(s => s.UploadedFiles).FirstOrDefaultAsync(s => s.Id == id)
                     );
 
             }
@@ -1141,7 +1141,7 @@ namespace RMuseum.Services.Implementationa
 
                 foreach (UserRecitationProfile p in 
                     (
-                    await _context.UserRecitationProfiles.Include(p => p.User)
+                    await _context.UserRecitationProfiles.AsNoTracking().Include(p => p.User)
                     .Where(p => p.UserId == userId && p.IsDefault == true && 
                     (string.IsNullOrEmpty(artistName) || (!string.IsNullOrEmpty(artistName) && p.ArtistName.Contains(artistName)))
                     ).ToArrayAsync())
@@ -1179,7 +1179,7 @@ namespace RMuseum.Services.Implementationa
                         );
                 }
 
-                foreach (UserRecitationProfile p in (await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == false
+                foreach (UserRecitationProfile p in (await _context.UserRecitationProfiles.AsNoTracking().Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == false
                 &&
                     (string.IsNullOrEmpty(artistName) || (!string.IsNullOrEmpty(artistName) && p.ArtistName.Contains(artistName)))
                 ).ToArrayAsync()))
@@ -1233,7 +1233,7 @@ namespace RMuseum.Services.Implementationa
         {
             try
             {
-                var defProfile = await _context.UserRecitationProfiles.Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == true).FirstOrDefaultAsync();
+                var defProfile = await _context.UserRecitationProfiles.AsNoTracking().Include(p => p.User).Where(p => p.UserId == userId && p.IsDefault == true).FirstOrDefaultAsync();
                 if (defProfile == null)
                     return new RServiceResult<UserRecitationProfileViewModel>(null);
                 return new RServiceResult<UserRecitationProfileViewModel>
@@ -1580,7 +1580,7 @@ namespace RMuseum.Services.Implementationa
             {
                 var source =
                     (
-                    from file in _context.UploadedFiles
+                    from file in _context.UploadedFiles.AsNoTracking()
                     join session in _context.UploadSessions.Include(s => s.User)
                     on file.UploadSessionId equals session.Id
                     where userId == Guid.Empty || session.UseId == userId
@@ -1610,7 +1610,7 @@ namespace RMuseum.Services.Implementationa
             try
             {
                 var source =
-                      from tracker in _context.RecitationPublishingTrackers
+                      from tracker in _context.RecitationPublishingTrackers.AsNoTracking()
                       join recitation in _context.Recitations.Include(a => a.Owner)
                      on tracker.PoemNarrationId equals recitation.Id
                       join poem in _context.GanjoorPoems
@@ -1758,7 +1758,7 @@ namespace RMuseum.Services.Implementationa
             try
             {
                 var source =
-                     from audio in _context.Recitations.Include(a => a.Owner)
+                     from audio in _context.Recitations.AsNoTracking().Include(a => a.Owner)
                      join poem in _context.GanjoorPoems
                      on audio.GanjoorPostId equals poem.Id
                      where
