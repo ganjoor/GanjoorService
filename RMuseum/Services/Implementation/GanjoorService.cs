@@ -19,8 +19,6 @@ using RSecurityBackend.Services.Implementation;
 using DNTPersianUtils.Core;
 using System.IO;
 using RSecurityBackend.Models.Image;
-using Microsoft.Data.SqlClient;
-using Dapper;
 
 namespace RMuseum.Services.Implementation
 {
@@ -58,6 +56,7 @@ namespace RMuseum.Services.Implementation
                           ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.png"
                       }
                       )
+                      .AsNoTracking()
                      .ToListAsync();
 
                 StringComparer fa = StringComparer.Create(new CultureInfo("fa-IR"), true);
@@ -83,10 +82,10 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var poet = await _context.GanjoorPoets.Where(p => p.Id == id).FirstOrDefaultAsync();
+                var poet = await _context.GanjoorPoets.Where(p => p.Id == id).AsNoTracking().FirstOrDefaultAsync();
                 if (poet == null)
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
-                var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).FirstOrDefaultAsync();
+                var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).AsNoTracking().FirstOrDefaultAsync();
                 return await GetCatById(cat.Id);
             }
             catch (Exception exp)
@@ -109,7 +108,7 @@ namespace RMuseum.Services.Implementation
                 {
                     url = url.Substring(0, url.Length - 1);
                 }
-                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url && c.ParentId == null).SingleOrDefaultAsync();
+                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url && c.ParentId == null).AsNoTracking().SingleOrDefaultAsync();
                 if (cat == null)
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
                 return await GetCatById(cat.Id);
@@ -134,10 +133,10 @@ namespace RMuseum.Services.Implementation
                 {
                     url = url.Substring(0, url.Length - 1);
                 }
-                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url && c.ParentId == null).SingleOrDefaultAsync();
+                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url && c.ParentId == null).AsNoTracking().SingleOrDefaultAsync();
                 if (cat == null)
                     return new RServiceResult<Guid>(Guid.Empty);
-                var poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId).SingleOrDefaultAsync();
+                var poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId).AsNoTracking().SingleOrDefaultAsync();
                 return new RServiceResult<Guid>((Guid)poet.RImageId);
             }
             catch (Exception exp)
@@ -161,7 +160,7 @@ namespace RMuseum.Services.Implementation
                 {
                     url = url.Substring(0, url.Length - 1);
                 }
-                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url).SingleOrDefaultAsync();
+                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
                 if (cat == null)
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
                 return await GetCatById(cat.Id);
@@ -183,7 +182,7 @@ namespace RMuseum.Services.Implementation
             try
             {
 
-                var cat = await _context.GanjoorCategories.Include(c => c.Poet).Include(c => c.Parent).Where(c => c.Id == id).FirstOrDefaultAsync();
+                var cat = await _context.GanjoorCategories.Include(c => c.Poet).Include(c => c.Parent).Where(c => c.Id == id).AsNoTracking().FirstOrDefaultAsync();
                 if (cat == null)
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
 
@@ -200,7 +199,7 @@ namespace RMuseum.Services.Implementation
                         FullUrl = parent.FullUrl
                     });
 
-                    parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).FirstOrDefaultAsync();
+                    parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).AsNoTracking().FirstOrDefaultAsync();
                 }
 
 
@@ -223,7 +222,7 @@ namespace RMuseum.Services.Implementation
                                                         FullUrl = c.FullUrl
                                                         //other fields null
                                                     }
-                                            ).SingleOrDefaultAsync();
+                                            ).AsNoTracking().SingleOrDefaultAsync();
 
                 int preCatId =
                      await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id < id).AnyAsync() ?
@@ -244,7 +243,7 @@ namespace RMuseum.Services.Implementation
                                                         FullUrl = c.FullUrl
                                                         //other fields null
                                                     }
-                                            ).SingleOrDefaultAsync();
+                                            ).AsNoTracking().SingleOrDefaultAsync();
 
                 GanjoorCatViewModel catViewModel = new GanjoorCatViewModel()
                 {
@@ -264,7 +263,7 @@ namespace RMuseum.Services.Implementation
                          UrlSlug = c.UrlSlug,
                          FullUrl = c.FullUrl
                      }
-                     ).ToListAsync(),
+                     ).AsNoTracking().ToListAsync(),
                     Poems = poems ? await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).OrderBy(p => p.Id).Select
                      (
                          p => new GanjoorPoemSummaryViewModel()
@@ -274,7 +273,7 @@ namespace RMuseum.Services.Implementation
                              UrlSlug = p.UrlSlug,
                              Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
                          }
-                     ).ToListAsync()
+                     ).AsNoTracking().ToListAsync()
                      :
                      null
                 };
@@ -294,7 +293,7 @@ namespace RMuseum.Services.Implementation
                                                 Nickname = p.Nickname,
                                                 Published = p.Published,
                                                 ImageUrl = p.RImageId == null ? "" : $"/api/ganjoor/poet/image{_context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl}.png"
-                                            }).FirstOrDefaultAsync(),
+                                            }).AsNoTracking().FirstOrDefaultAsync(),
                        Cat = catViewModel
                    }
                    );
@@ -315,7 +314,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var dbPage = await _context.GanjoorPages.Where(p => p.Id == id).SingleOrDefaultAsync();
+                var dbPage = await _context.GanjoorPages.Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
                 if (dbPage == null)
                     return new RServiceResult<string>(null); //not found
                 return new RServiceResult<string>(dbPage.FullUrl);
@@ -347,7 +346,7 @@ namespace RMuseum.Services.Implementation
                     url = url.Substring(0, url.Length - 1);
                 }
 
-                var dbPage = await _context.GanjoorPages.Where(p => p.FullUrl == url).SingleOrDefaultAsync();
+                var dbPage = await _context.GanjoorPages.Where(p => p.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
                 if (dbPage == null)
                     return new RServiceResult<GanjoorPageCompleteViewModel>(null); //not found
                 var secondPoet = dbPage.SecondPoetId == null ? null :
@@ -368,7 +367,7 @@ namespace RMuseum.Services.Implementation
                           ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.png"
                       }
                       )
-                     .SingleAsync();
+                     .AsNoTracking().SingleAsync();
                 GanjoorPageCompleteViewModel page = new GanjoorPageCompleteViewModel()
                 {
                     Id = dbPage.Id,
@@ -419,6 +418,7 @@ namespace RMuseum.Services.Implementation
                                     ((p.PageOrder < dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id < dbPage.Id)))
                                     .OrderByDescending(p => p.PageOrder)
                                     .ThenByDescending(p => p.Id)
+                                    .AsNoTracking()
                                     .FirstOrDefaultAsync();
                                 if(pre != null)
                                 {
@@ -434,6 +434,7 @@ namespace RMuseum.Services.Implementation
                                     ((p.PageOrder > dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id > dbPage.Id)))
                                     .OrderBy(p => p.PageOrder)
                                     .ThenBy(p => p.Id)
+                                    .AsNoTracking()
                                     .FirstOrDefaultAsync();
                                 if (next != null)
                                 {
@@ -498,7 +499,7 @@ namespace RMuseum.Services.Implementation
                          PlainText = "", //poem.PlainText 
                          HtmlText = "",//poem.HtmlText
                      };
-                return new RServiceResult<PublicRecitationViewModel[]>(await source.ToArrayAsync());
+                return new RServiceResult<PublicRecitationViewModel[]>(await source.AsNoTracking().ToArrayAsync());
             }
             catch (Exception exp)
             {
@@ -537,7 +538,7 @@ namespace RMuseum.Services.Implementation
                           UserId = comment.UserId
                       };
 
-                GanjoorCommentSummaryViewModel[] allComments = await source.ToArrayAsync();
+                GanjoorCommentSummaryViewModel[] allComments = await source.AsNoTracking().ToArrayAsync();
 
                 foreach (GanjoorCommentSummaryViewModel comment in allComments)
                 {
@@ -784,7 +785,7 @@ namespace RMuseum.Services.Implementation
 
         private async Task<List<GanjoorComment>> _FindReplies(GanjoorComment comment)
         {
-            List<GanjoorComment> replies = await _context.GanjoorComments.Where(c => c.InReplyToId == comment.Id).ToListAsync();
+            List<GanjoorComment> replies = await _context.GanjoorComments.Where(c => c.InReplyToId == comment.Id).AsNoTracking().ToListAsync();
             List<GanjoorComment> replyToReplies = new List<GanjoorComment>();
             foreach (GanjoorComment reply in replies)
             {
@@ -1022,7 +1023,7 @@ namespace RMuseum.Services.Implementation
                          AltText = link.AltText,
                      };
 
-                museumImages.AddRange(await externalSrc.ToListAsync());
+                museumImages.AddRange(await externalSrc.AsNoTracking().ToListAsync());
 
                 for (int i = 0; i < museumImages.Count; i++)
                 {
@@ -1092,7 +1093,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var poem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).SingleOrDefaultAsync();
+                var poem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
                 if (poem == null)
                 {
                     return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
@@ -1133,7 +1134,7 @@ namespace RMuseum.Services.Implementation
                                 UrlSlug = p.UrlSlug,
                                 Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
                             }
-                            ).SingleAsync();
+                            ).AsNoTracking().SingleAsync();
                     }
 
                 }
@@ -1163,7 +1164,7 @@ namespace RMuseum.Services.Implementation
                                 UrlSlug = p.UrlSlug,
                                 Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
                             }
-                            ).SingleAsync();
+                            ).AsNoTracking().SingleAsync();
                     }
 
                 }
@@ -1201,7 +1202,7 @@ namespace RMuseum.Services.Implementation
                                                             VersePosition = v.VersePosition,
                                                             Text = v.Text
                                                         }
-                                                    ).ToArrayAsync();
+                                                    ).AsNoTracking().ToArrayAsync();
                 };
 
 
@@ -1307,7 +1308,7 @@ namespace RMuseum.Services.Implementation
                                                          RejectionCause = t.RejectionCause
 
                                                      }
-                                                    ).ToArrayAsync()
+                                                    ).AsNoTracking().ToArrayAsync()
                     );
             }
             catch (Exception exp)
@@ -1434,7 +1435,7 @@ namespace RMuseum.Services.Implementation
             {
                 var song = await _context.GanjoorPoemMusicTracks
                     .Where(p => p.Approved == false && p.Rejected == false && (suggestedById == Guid.Empty || p.SuggestedById == suggestedById))
-                    .OrderBy(p => p.Id).Skip(skip).FirstOrDefaultAsync();
+                    .OrderBy(p => p.Id).Skip(skip).AsNoTracking().FirstOrDefaultAsync();
                 if (song != null)
                 {
                     return new RServiceResult<PoemMusicTrackViewModel>
@@ -1639,12 +1640,12 @@ namespace RMuseum.Services.Implementation
             try
             {
                 int poemId = _GetRandomPoemId(2);
-                var poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).SingleOrDefaultAsync();
+                var poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
                 PublicRecitationViewModel[] recitations = poem == null ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
                 int loopPreventer = 0;
                 while (poem == null || recitations.Length == 0)
                 {
-                    poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).SingleOrDefaultAsync();
+                    poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
                     recitations = poem == null ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
                     loopPreventer++;
                     if (loopPreventer > 5)
@@ -1751,7 +1752,7 @@ namespace RMuseum.Services.Implementation
                             },
                             
                         }
-                    );
+                    ).AsNoTracking();
 
 
                 (PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items) paginatedResult =
@@ -1883,7 +1884,7 @@ namespace RMuseum.Services.Implementation
                                 }
                             },
                         }
-                    );
+                    ).AsNoTracking();
 
 
 
@@ -2036,7 +2037,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                return new RServiceResult<GanjoorMetre[]>(await _context.GanjoorMetres.OrderBy(m => m.Rhythm).ToArrayAsync());
+                return new RServiceResult<GanjoorMetre[]>(await _context.GanjoorMetres.OrderBy(m => m.Rhythm).AsNoTracking().ToArrayAsync());
             }
             catch(Exception exp)
             {
@@ -2205,7 +2206,7 @@ namespace RMuseum.Services.Implementation
                         AlternateText = b.AlternateText,
                         TargetUrl = b.TargetUrl,
                         Active = b.Active
-                    }).SingleAsync()
+                    }).AsNoTracking().SingleAsync()
                     );
 
             }

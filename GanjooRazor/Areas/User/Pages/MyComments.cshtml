@@ -1,0 +1,91 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.MyCommentsModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "حاشیه‌های من";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @foreach (var comment in Model.Comments)
+    {
+        if (color == "gray")
+            color = "white";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="comment-@comment.Id">
+            <blockquote>
+                <div id="comment-text-@comment.Id">
+                    @Html.Raw(comment.HtmlComment)
+                </div>
+                <p>
+                    @comment.AuthorName <small>در @comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@comment.Poem.UrlSlug">@comment.Poem.Title</a>
+                </p>
+            </blockquote>
+            <p>
+                <a role="button" onclick="deleteMyComment(@comment.Id)" class="actionlink" title="حذف حاشیه">🗑</a>
+                <a role="button" onclick="editMyComment(@comment.Id)" class="actionlink" title="ویرایش حاشیه">✎</a>
+            </p>
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    <div id="id02" class="modal">
+        <span onclick="document.getElementById('id02').style.display='none'"
+              class="close" title="بستن">&times;</span>
+        <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
+            <table style="max-width:100%; width:100%; margin:0">
+                <tr>
+                    <td>
+                        <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                        <input type="hidden" name="editCommentId" id="editCommentId" value="" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button name="editcomment" id="editcomment" class="inputSubmit" onclick="return editComment();" style="width:100%">ویرایش حاشیه</button>
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
+}

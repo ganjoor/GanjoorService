@@ -1,0 +1,119 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.ModifyPageModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "ویرایش";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>@Model.LastMessage</p>
+
+<form method="post">
+    <table style="width:100%" class="noborder">
+        <tr>
+            <td>
+                <span class="inputlabel">شناسهٔ صفحه: </span>
+            </td>
+            <td>
+                <span class="inputlabel"><a href="/?p=@Request.Query["id"]">@Request.Query["id"]</a></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="inputlabel">عنوان: </span>
+            </td>
+            <td>
+                <input asp-for="ModifyModel.Title" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="inputlabel">نامک: </span>
+            </td>
+            <td>
+                <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.UrlSlug" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="inputlabel">متن: </span>
+            </td>
+            <td>
+                <textarea asp-for="ModifyModel.HtmlText" tabindex="4" rows="20" cols="80"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="inputlabel">منبع (شعر): </span>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td><span>نام:</span> <input asp-for="ModifyModel.SourceName" /></td>
+                    </tr>
+                    <tr>
+                        <td><span>نشانی:</span> <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.SourceUrlSlug" /></td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="inputlabel">دسته‌بندی کهن (شعر): </span>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td><span>نام:</span> <input asp-for="ModifyModel.OldTag" /></td>
+                    </tr>
+                    <tr>
+                        <td><span>نشانی:</span> <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.OldTagPageUrl" /></td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="inputlabel">وزن (شعر): </span>
+            </td>
+            <td>
+                <input asp-for="ModifyModel.Rhythm" list="rythms" />
+                <datalist id="rythms">
+                    @if(Model.Rhythms != null)
+                    @foreach(var rythm in Model.Rhythms)
+                    {
+                    <option value="@rythm.Rhythm">@rythm.Rhythm</option>
+                    }
+                </datalist>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="inputlabel">حروف قافیه (شعر): </span>
+            </td>
+            <td>
+                <input asp-for="ModifyModel.RhymeLetters" />
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="inputlabel">توضیح این ویرایش: </span>
+            </td>
+            <td>
+                <input asp-for="ModifyModel.Note" />
+
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">ذخیره</button>
+            </td>
+        </tr>
+    </table>
+</form>

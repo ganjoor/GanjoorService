@@ -1,0 +1,75 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.ReportedCommentsModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "حاشیه‌های گزارش شده";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @foreach (var report in Model.Reports)
+    {
+        if (color == "gray")
+            color = "white";
+        else
+            color = "gray";
+
+<div style="background-color:@color" id="comment-@report.Comment.Id">
+    <p style="color:red">
+        @report.ReasonCode
+    </p>
+    <hr />
+    <p style="color:red">
+        @report.ReasonText
+    </p>
+    <hr />
+    <blockquote>
+        @Html.Raw(report.Comment.HtmlComment)
+        <p>
+            @report.Comment.AuthorName <small>در @report.Comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@report.Comment.Poem.UrlSlug">@report.Comment.Poem.Title</a>
+        </p>
+    </blockquote>
+    <a role="button" onclick="deleteComment(@report.Comment.Id, '@report.ReasonCode', '@report.ReasonText')" class="actionlink" style="color:green" title="تأیید و حذف حاشیه">✓ درست می‌گوید</a>
+    &nbsp;&nbsp;&nbsp;
+    <a role="button" onclick="deleteReport(@report.Id, @report.Comment.Id)" class="actionlink" style="color:red" title="حذف گزارش">گزارش نابجا ❌</a>
+</div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+}

@@ -1,0 +1,71 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.NotificationsModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "اعلان‌های من";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @foreach (var notification in Model.Notifications)
+    {
+        if (color == "gray")
+            color = "white";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="notification-@notification.Id">
+            <blockquote>
+                <p>
+                    @notification.Subject <small>در @notification.DateTime.ToFriendlyPersianDateTextify()</small>
+                </p>
+                <div id="notification-text-@notification.Id">
+                    @Html.Raw(notification.HtmlText)
+                </div>
+            </blockquote>
+            <p>
+                <a role="button" onclick="deleteNotification('@notification.Id')" class="actionlink" title="حذف">🗑</a>
+            </p>
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    
+}

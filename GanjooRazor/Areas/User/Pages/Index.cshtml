@@ -1,0 +1,128 @@
+﻿@page
+@model GanjooRazor.Areas.Panel.Pages.IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "پیشخان کاربر";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <form method="post" asp-page-handler="SetMyPass">
+        <table style="width:100%" class="noborder">
+            <tr>
+                <td colspan="2">
+                    <h2>تغییر گذرواژه</h2>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">گذرواژهٔ کنونی: </span>
+                </td>
+                <td>
+                    <input type="password" style="width:100%" asp-for="ChangePasswordModel.OldPassword" /><br />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">گذرواژهٔ جدید: </span>
+                </td>
+                <td>
+                    <input type="password" style="width:100%" asp-for="ChangePasswordModel.NewPassword" /><br />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">تکرار گذرواژهٔ جدید: </span>
+                </td>
+                <td>
+                    <input type="password" style="width:100%" asp-for="ChangePasswordModel.NewPasswordRepeat" /><br />
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    @Model.PasswordChanged
+                </td>
+                <td>
+                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">تغییر گذرواژه</button>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+    <form method="post" asp-page-handler="SetMyInfo">
+        <table style="width:100%" class="noborder">
+            <tr>
+                <td colspan="2">
+                    <h2>تغییر مشخصات</h2>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">نام: </span>
+                </td>
+                <td>
+                    <input style="width:100%" asp-for="UserInfo.FirstName" /><br />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">نام خانوادگی: </span>
+                </td>
+                <td>
+                    <input style="width:100%" asp-for="UserInfo.SureName" /><br />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">نام مستعار (نمایش در حاشیه‌ها): </span>
+                </td>
+                <td>
+                    <input style="width:100%" asp-for="UserInfo.NickName" /><br />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel"><a target="_blank" href="@Html.Raw(Model.UserInfo.Website)">وبگاه:</a></span>
+                </td>
+                <td>
+                    <input style="width:100%;text-align:left;direction:ltr;" asp-for="UserInfo.Website" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">دربارهٔ من: </span>
+                </td>
+                <td>
+                    <textarea asp-for="UserInfo.Bio" class="editor"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="hidden" asp-for="UserInfo.Id" />
+                    <input type="hidden" asp-for="UserInfo.Email" />
+                    <input type="hidden" asp-for="UserInfo.Username" />
+                    <input type="hidden" asp-for="UserInfo.Password" />
+                    <input type="hidden" asp-for="UserInfo.PhoneNumber" />
+                    <input type="hidden" asp-for="UserInfo.Status" />
+                    <input type="hidden" asp-for="UserInfo.RImageId" />
+                </td>
+                <td>
+                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">ذخیره</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <a href="/hashieha/?userid=@Model.UserInfo.Id" target="_blank">نمایهٔ عمومی من</a>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+}

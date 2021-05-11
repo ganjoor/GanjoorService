@@ -1,0 +1,55 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.BannersModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "آگاهی‌ها";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+
+<p>@Model.LastMessage</p>
+
+<form method="post" enctype="multipart/form-data">
+    <input type="file" asp-for="Upload.Image" />
+    <input asp-for="Upload.Alt" />
+    <input style="text-align:left;direction:ltr;" asp-for="Upload.Url" />
+    <input type="submit" value="بارگذاری" />
+</form>
+
+@if (Model.Banners != null)
+{
+<table>
+    
+    @foreach (var banner in Model.Banners)
+    {
+    <tr id="tr-@banner.Id">
+        <td>متن جایگزین: <input type="text" name="alt-@banner.Id" id="alt-@banner.Id" value="@banner.AlternateText" /> </td>
+        <td>نشانی مقصد:<input type="text" name="url-@banner.Id" id="url-@banner.Id" style="text-align:left;direction:ltr;" value=@banner.TargetUrl /> </td>
+        <td><img src="@($"{GanjooRazor.APIRoot.InternetUrl}/{banner.ImageUrl}")" alt="@banner.AlternateText" width="200" /></td>
+        @if (banner.Active)
+        {
+            <td>فعال <input type="checkbox" name="active-@banner.Id" id="active-@banner.Id" checked /> </td>
+        }
+        else
+        {
+            <td>فعال <input type="checkbox" name="active-@banner.Id" id="active-@banner.Id" /> </td>
+        }
+    <td>
+        <a role="button" onclick="editBanner(@banner.Id)" class="actionlink" title="ویرایش آگاهی">✎</a>
+        <a role="button" onclick="deleteBanner(@banner.Id)" class="actionlink" title="حذف آگاهی">🗑</a>
+    </td>
+    </tr>
+    }
+</table>
+
+<div style="visibility:hidden">
+    <form method="post" id="editbannerform">
+        <input type="text" name="id" id="id" />
+        <input type="text" name="alt" id="alt" />
+        <input type="text" name="url" id="url" />
+        <input type="checkbox" name="active" id="active" />
+    </form>
+</div>
+}
