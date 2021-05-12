@@ -29,7 +29,7 @@ namespace GanjooRazor.Pages
             }
 
             string metre = Request.Query["v"];
-            int poetId = string.IsNullOrEmpty(Request.Query["a"]) ? 0 : int.Parse(Request.Query["a"]);
+            int? poetId = string.IsNullOrEmpty(Request.Query["a"]) ? null : int.Parse(Request.Query["a"]);
 
             var poemsRes = await _ganjoorService.GetSimilarPoems
                 (
@@ -39,12 +39,12 @@ namespace GanjooRazor.Pages
                     PageSize = 20
                 },
                 metre: metre,
-                rhyme: null,
+                rhyme: "",
                 poetId: poetId
                 );
 
             GanjoorPage.Title = "شعرهای ";
-            if (poetId != 0)
+            if (poetId != null)
             {
                 GanjoorPage.Title += $"{Poets.Where(p => p.Id == poetId).Single().Name} ";
             }
@@ -56,7 +56,7 @@ namespace GanjooRazor.Pages
 
             string htmlText = "";
 
-            if (poetId != 0)
+            if (poetId != null)
             {
                 htmlText += $"<div class=\"sitem\" id=\"all\">{Environment.NewLine}";
                 htmlText += $"<h2>{Environment.NewLine}";

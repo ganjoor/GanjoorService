@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RSecurityBackend", "RSecuri
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMuseum", "RMuseum\RMuseum.csproj", "{113EF3DE-E8A9-40EF-9DA0-8DFABB3CDD68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GanjooRazor", "GanjooRazor\GanjooRazor.csproj", "{48F9CDFA-625F-4743-BF21-BD556F6F33E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GanjooRazor", "GanjooRazor\GanjooRazor.csproj", "{48F9CDFA-625F-4743-BF21-BD556F6F33E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
