@@ -156,7 +156,7 @@ namespace RSecurityBackend.Services.Implementation
             try
             {
                 return new RServiceResult<RImage>(
-                    await _context.GeneralImages
+                    await _context.GeneralImages.AsNoTracking()
                          .Where(p => p.Id == id)
                          .SingleOrDefaultAsync()
                          );
