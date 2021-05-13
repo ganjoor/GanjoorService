@@ -597,7 +597,7 @@
             Security EF DbContext
             </summary>
         </member>
-        <member name="M:RSecurityBackend.DbContext.RSecurityDbContext`3.#ctor">
+        <member name="M:RSecurityBackend.DbContext.RSecurityDbContext`3.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions)">
             <summary>
             parameterless constructor
             </summary>
@@ -606,6 +606,12 @@
             <summary>
             delete db
             </summary>
+        </member>
+        <member name="M:RSecurityBackend.DbContext.RSecurityDbContext`3.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
+            <summary>
+            OnConfiguring
+            </summary>
+            <param name="optionsBuilder"></param>
         </member>
         <member name="M:RSecurityBackend.DbContext.RSecurityDbContext`3.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <summary>

@@ -84,7 +84,7 @@ namespace RMuseum.Services.Implementation
 
 
                 //here is a problem, this method could be called from a background service where _context is disposed, so I need to renew it
-                /*using(RMuseumDbContext context = new RMuseumDbContext(Configuration))
+                /*using(RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                 {
                     await context.PictureFiles.AddAsync(pictureFile.Result);
                     await context.SaveChangesAsync();
@@ -144,7 +144,7 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<RPictureFile>(null, pictureFile.ExceptionString);
 
                 //here is a problem, this method could be called from a background service where _context is disposed, so I need to renew it
-                /*using(RMuseumDbContext context = new RMuseumDbContext(Configuration))
+                /*using(RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                 {
                     await context.PictureFiles.AddAsync(pictureFile.Result);
                     await context.SaveChangesAsync();

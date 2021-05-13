@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using RSecurityBackend.Models.Audit.Db;
 using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Generic.Db;
 using RSecurityBackend.Models.Image;
 using RSecurityBackend.Models.Notification;
 using System;
+using System.IO;
 
 namespace RSecurityBackend.DbContext
 {
@@ -21,8 +23,8 @@ namespace RSecurityBackend.DbContext
         /// <summary>
         /// parameterless constructor
         /// </summary>
-        public RSecurityDbContext()
-            : base()
+        public RSecurityDbContext(DbContextOptions options)
+            : base(options)
         {
 
         }
@@ -32,6 +34,21 @@ namespace RSecurityBackend.DbContext
         public void DeleteDb()
         {
             Database.EnsureDeleted();
+        }
+        /// <summary>
+        /// OnConfiguring
+        /// </summary>
+        /// <param name="optionsBuilder"></param>
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                IConfigurationRoot configuration = new ConfigurationBuilder()
+                   .SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json")
+                   .Build();
+
+                optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            }
         }
 
         /// <summary>

@@ -39,8 +39,8 @@ namespace RMuseum.Services.Implementation
                 async token =>
                 {
 
-                    using (RMuseumDbContext context = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
-                    using (RMuseumDbContext contextReport = new RMuseumDbContext(Configuration)) //this is long running job, so _context might be already been freed/collected by GC
+                    using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                    using (RMuseumDbContext contextReport = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                     {
                         LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(contextReport);
 

@@ -1291,22 +1291,6 @@
             Museum Database Context
             </summary>
         </member>
-        <member name="M:RMuseum.DbContext.RMuseumDbContext.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            constructor
-            </summary>
-        </member>
-        <member name="P:RMuseum.DbContext.RMuseumDbContext.Configuration">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:RMuseum.DbContext.RMuseumDbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
-            <summary>
-            
-            </summary>
-            <param name="optionsBuilder"></param>
-        </member>
         <member name="M:RMuseum.DbContext.RMuseumDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <summary>
             

@@ -12,6 +12,7 @@ using RSecurityBackend.Models.Auth.Db;
 using System;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.MusicCatalogue;
+using System.IO;
 
 namespace RMuseum.DbContext
 {
@@ -20,29 +21,7 @@ namespace RMuseum.DbContext
     /// </summary>
     public class RMuseumDbContext : RSecurityDbContext<RAppUser, RAppRole, Guid>
     {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public RMuseumDbContext(IConfiguration configuration)
-        {
-            Configuration = configuration;
-            Database.Migrate();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public IConfiguration Configuration { get; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="optionsBuilder"></param>
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-            base.OnConfiguring(optionsBuilder);
-        }
+        public RMuseumDbContext(DbContextOptions<RMuseumDbContext> options) : base(options) { }
 
         /// <summary>
         /// 

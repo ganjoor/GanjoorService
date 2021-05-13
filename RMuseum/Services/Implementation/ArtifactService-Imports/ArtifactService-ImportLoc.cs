@@ -97,7 +97,7 @@ namespace RMuseum.Services.Implementation
                         {
                             try
                             {
-                                using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(Configuration))
+                                using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                 {
                                     job.StartTime = DateTime.Now;
                                     job.Status = ImportJobStatus.Running;
@@ -123,7 +123,7 @@ namespace RMuseum.Services.Implementation
                                         }
                                         else
                                         {
-                                            using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(Configuration))
+                                            using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                             {
                                                 job.EndTime = DateTime.Now;
                                                 job.Status = ImportJobStatus.Failed;
@@ -157,7 +157,7 @@ namespace RMuseum.Services.Implementation
                                         {
 
                                             //here is a problem, this method could be called from a background service where _context is disposed, so I need to renew it
-                                            using (RMuseumDbContext context = new RMuseumDbContext(Configuration))
+                                            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                             {
                                                 RArtifactMasterRecord book = new RArtifactMasterRecord($"extracted from {url}", $"extracted from {url}")
                                                 {
@@ -269,7 +269,7 @@ namespace RMuseum.Services.Implementation
                                                     }
                                                     */
 
-                                                    using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(Configuration))
+                                                    using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                                     {
                                                         job.ProgressPercent = order * 100 / (decimal)pageCount;
                                                         importJobUpdaterDb.Update(job);
@@ -455,7 +455,7 @@ namespace RMuseum.Services.Implementation
                                                             }
                                                             else
                                                             {
-                                                                using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(Configuration))
+                                                                using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                                                 {
                                                                     job.EndTime = DateTime.Now;
                                                                     job.Status = ImportJobStatus.Failed;
@@ -503,7 +503,7 @@ namespace RMuseum.Services.Implementation
                                         }
                                         else
                                         {
-                                            using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(Configuration))
+                                            using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                             {
                                                 job.EndTime = DateTime.Now;
                                                 job.Status = ImportJobStatus.Failed;
@@ -519,7 +519,7 @@ namespace RMuseum.Services.Implementation
                             }
                             catch (Exception exp)
                             {
-                                using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(Configuration))
+                                using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                 {
                                     job.EndTime = DateTime.Now;
                                     job.Status = ImportJobStatus.Failed;

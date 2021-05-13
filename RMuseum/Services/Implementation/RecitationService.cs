@@ -748,7 +748,7 @@ namespace RMuseum.Services.Implementationa
                     (
                     async token =>
                     {
-                        using RMuseumDbContext context = new RMuseumDbContext(Configuration);
+                        using RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>());
                         session.ProcessStartTime = DateTime.Now;
                         double fileCount = session.UploadedFiles.Count;
                         int processFilesCount = 0;

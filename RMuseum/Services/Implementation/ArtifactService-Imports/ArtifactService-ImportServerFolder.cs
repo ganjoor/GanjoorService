@@ -80,7 +80,7 @@ namespace RMuseum.Services.Implementation
                         {
                             try
                             {
-                                using (RMuseumDbContext context = new RMuseumDbContext(Configuration))
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                 {
                                     RArtifactMasterRecord book = new RArtifactMasterRecord($"extracted from server folder {job.ResourceNumber}", $"extracted from server folder {job.ResourceNumber}")
                                     {
@@ -106,7 +106,7 @@ namespace RMuseum.Services.Implementation
 
                                     meta.Add(tag);
 
-                                    using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(Configuration))
+                                    using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                     {
                                         job.StartTime = DateTime.Now;
                                         job.Status = ImportJobStatus.Running;
@@ -120,7 +120,7 @@ namespace RMuseum.Services.Implementation
                                     int order = 0;
                                     foreach (string fileName in fileNames)
                                     {
-                                        using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(Configuration))
+                                        using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                         {
                                             job.ProgressPercent = order * 100 / (decimal)fileNames.Length;
                                             importJobUpdaterDb.Update(job);
@@ -214,7 +214,7 @@ namespace RMuseum.Services.Implementation
 
                                     if (pages.Count == 0)
                                     {
-                                        using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(Configuration))
+                                        using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                         {
                                             job.EndTime = DateTime.Now;
                                             job.Status = ImportJobStatus.Failed;
@@ -241,7 +241,7 @@ namespace RMuseum.Services.Implementation
                             }
                             catch (Exception exp)
                             {
-                                using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(Configuration))
+                                using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                 {
                                     job.EndTime = DateTime.Now;
                                     job.Status = ImportJobStatus.Failed;
