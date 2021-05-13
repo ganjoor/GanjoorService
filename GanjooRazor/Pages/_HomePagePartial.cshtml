@@ -33,7 +33,7 @@
             @{
                 foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
                 {
-                    <div class="poet"><a href="@poet.FullUrl" title="@poet.Name"><img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" /></a><div class="caption"><a href="@poet.FullUrl">@poet.Nickname</a></div></div>
+                    <div class="poet"><a href="@poet.FullUrl" title="@poet.Name"><img src="@($"/image/poets/{poet.Id}.png")" alt="@poet.Name" /></a><div class="caption"><a href="@poet.FullUrl">@poet.Nickname</a></div></div>
                 }
             }
 

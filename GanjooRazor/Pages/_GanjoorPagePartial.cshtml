@@ -137,8 +137,8 @@
                             @if (Model.GanjoorPage.SecondPoet != null)
                             {
                                 <div style="width:164px;margin:auto">
-                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" style="width:auto;float:right" /></a>
-                                    <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Name)" style="width:auto;float:right" /></a>
+                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@($"/image/poets/{Model.GanjoorPage.PoetOrCat.Poet.Id}.png")" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" style="width:auto;float:right" /></a>
+                                    <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)"><img src="@($"/image/poets/{Model.GanjoorPage.SecondPoet.Id}.png")" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Name)" style="width:auto;float:right" /></a>
                                 </div>
                                 <div style="width:164px;margin:auto">
                                     @{
@@ -151,7 +151,7 @@
                             else
                             {
                                 <div style="width:82px;margin:auto">
-                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" /></a>
+                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@($"/image/poets/{Model.GanjoorPage.PoetOrCat.Poet.Id}.png")" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" /></a>
                                 </div>
                                 <div style="width:100%;margin:auto">
                                     @{
