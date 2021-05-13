@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <!-- Created on Tue, 30 Dec 2008 17:57:57 GMT -->
+  <ShortName>Ganjoor</ShortName>
+  <Description>Search inside ganjoor.net</Description>
+  <Url type="text/html" method="get" template="http://ganjoor.net/index.php?s={searchTerms}"/>
+  <Image width="16" height="16">http://ganjoor/favicon.ico</Image>
+  <Developer>hamid reza</Developer>
+  <InputEncoding>UTF-8</InputEncoding>
+  <moz:SearchForm>http://ganjoor.net</moz:SearchForm>
+</OpenSearchDescription>
