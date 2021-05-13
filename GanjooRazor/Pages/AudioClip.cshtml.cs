@@ -43,7 +43,7 @@ namespace GanjooRazor.Pages
 
             Recitation = res.Result;
 
-            var resPoem = await _ganjoorService.GetPoemById(Recitation.PoemId, true, false, false, false, false, false, false, false, false);
+            var resPoem = await _ganjoorService.GetPoemById(Recitation.PoemId, true, false, false, false, false, false, false, true, false);
 
             Poem = resPoem.Result;
 
