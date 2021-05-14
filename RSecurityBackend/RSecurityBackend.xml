@@ -275,6 +275,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:RSecurityBackend.Controllers.AppUserControllerBase.VerifyEmailOnSignUp">
+            <summary>
+            verify email on signup
+            </summary>
+        </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.ResetPassword(RSecurityBackend.Models.Auth.ViewModels.ResetPasswordViewModel)">
             <summary>
             reset password
@@ -2686,6 +2691,11 @@
             <param name="verifyQueueType"></param>
             <param name="secret"></param>
             <returns>associated email</returns>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.AppUserService.VerifyEmailOnSignUp">
+            <summary>
+            verify email on signup
+            </summary>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.AppUserService.FinalizeSignUp(System.String,System.String,System.String,System.String,System.String)">
             <summary>

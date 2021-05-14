@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Auth.ViewModels;
@@ -825,19 +826,24 @@ namespace RSecurityBackend.Controllers
                 return BadRequest(res.ExceptionString);
             }
 
-            try
+            if(VerifyEmailOnSignUp)
             {
-                await _emailSender.SendEmailAsync
-                    (
-                    signUpViewModel.Email,
-                    GetSignUpEmailSubject(res.Result.Secret),
-                    GetSignUpEmailHtmlContent(res.Result.Secret, signUpViewModel.CallbackUrl)
-                    );
+                try
+                {
+                    await _emailSender.SendEmailAsync
+                        (
+                        signUpViewModel.Email,
+                        GetSignUpEmailSubject(res.Result.Secret),
+                        GetSignUpEmailHtmlContent(res.Result.Secret, signUpViewModel.CallbackUrl)
+                        );
+                }
+                catch (Exception exp)
+                {
+                    return BadRequest("Error sending email: " + exp.ToString());
+                }
             }
-            catch (Exception exp)
-            {
-                return BadRequest("Error sending email: " + exp.ToString());
-            }
+
+            HttpContext.Response.Headers.Add("signup-verified", JsonConvert.SerializeObject(!VerifyEmailOnSignUp));
 
             return Ok(true);
         }
@@ -993,6 +999,17 @@ namespace RSecurityBackend.Controllers
             get
             {
                 return bool.Parse(Configuration.GetSection("SignUp")["Enabled"]);
+            }
+        }
+
+        /// <summary>
+        /// verify email on signup
+        /// </summary>
+        public bool VerifyEmailOnSignUp
+        {
+            get
+            {
+                return bool.Parse(Configuration.GetSection("SignUp")["VerifyEmail"]);
             }
         }
 
