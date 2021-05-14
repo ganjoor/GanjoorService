@@ -211,7 +211,7 @@
             signup
             </summary>
             <param name="signUpViewModel">signUpViewModel</param>
-            <returns>result</returns>
+            <returns>next step: "verify" or "finalize"</returns>
         </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetSignUpEmailSubject(System.String)">
             <summary>

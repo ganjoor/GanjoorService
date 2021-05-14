@@ -801,11 +801,11 @@ namespace RSecurityBackend.Controllers
         /// signup
         /// </summary>
         /// <param name="signUpViewModel">signUpViewModel</param>
-        /// <returns>result</returns>
+        /// <returns>next step: "verify" or "finalize"</returns>
         [HttpPost]
         [AllowAnonymous]
         [Route("signup")]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> SignUp([FromBody] UnverifiedSignUpViewModel signUpViewModel)
         {
@@ -836,6 +836,7 @@ namespace RSecurityBackend.Controllers
                         GetSignUpEmailSubject(res.Result.Secret),
                         GetSignUpEmailHtmlContent(res.Result.Secret, signUpViewModel.CallbackUrl)
                         );
+                    return Ok("verify");
                 }
                 catch (Exception exp)
                 {
@@ -843,9 +844,7 @@ namespace RSecurityBackend.Controllers
                 }
             }
 
-            HttpContext.Response.Headers.Add("signup-verified", JsonConvert.SerializeObject(!VerifyEmailOnSignUp));
-
-            return Ok(true);
+            return Ok("finalize");
         }
 
         /// <summary>
