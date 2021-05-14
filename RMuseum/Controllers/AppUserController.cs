@@ -186,15 +186,6 @@ namespace RMuseum.Controllers
             return content;
         }
 
-        /// <summary>
-        /// Is Sign-up enabled?
-        /// </summary>
-        /// <returns></returns>
-        protected override bool IsSignupEnabled()
-        {
-            return true;
-        }
-
 
     }
 }

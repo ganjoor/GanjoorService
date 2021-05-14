@@ -55,12 +55,6 @@
             <param name="forgotPasswordCallbackUrl"></param>
             <returns>html content</returns>
         </member>
-        <member name="M:RMuseum.Controllers.AppUserController.IsSignupEnabled">
-            <summary>
-            Is Sign-up enabled?
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.ArtifactController.Get(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             get all published artifacts (including CoverImage info but not items info)

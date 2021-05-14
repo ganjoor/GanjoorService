@@ -269,7 +269,7 @@
             <param name="forgotPasswordCallbackUrl"></param>
             <returns>html content</returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.IsSignupEnabled">
+        <member name="P:RSecurityBackend.Controllers.AppUserControllerBase.SignupEnabled">
             <summary>
             Is Sign-up enabled?
             </summary>

@@ -808,7 +808,7 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> SignUp([FromBody] UnverifiedSignUpViewModel signUpViewModel)
         {
-            if (!IsSignupEnabled())
+            if (!SignupEnabled)
                 return BadRequest("ثبت نام غیرفعال است.");
 
             RServiceResult<bool> captchaRes = await _captchaService.Evaluate(signUpViewModel.CaptchaImageId, signUpViewModel.CaptchaValue);
@@ -988,9 +988,12 @@ namespace RSecurityBackend.Controllers
         /// Is Sign-up enabled?
         /// </summary>
         /// <returns></returns>
-        protected virtual bool IsSignupEnabled()
+        public bool SignupEnabled
         {
-            return false;
+            get
+            {
+                return bool.Parse(Configuration.GetSection("SignUp")["Enabled"]);
+            }
         }
 
         /// <summary>
