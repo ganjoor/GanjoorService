@@ -94,6 +94,11 @@ namespace RSecurityBackend.Models.Auth.ViewModels
         /// </summary>
         public string Website { get; set; }
 
+        /// <summary>
+        /// email verified
+        /// </summary>
+        public bool EmailConfirmed { get; set; }
+
 
     }
 }

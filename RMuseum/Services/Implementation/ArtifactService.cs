@@ -2309,7 +2309,8 @@ namespace RMuseum.Services.Implementation
                         Status = appUser.Status,
                         NickName = appUser.NickName,
                         Website = appUser.Website,
-                        Bio = appUser.Bio
+                        Bio = appUser.Bio,
+                        EmailConfirmed = appUser.EmailConfirmed
 
                     };
 
@@ -2432,7 +2433,8 @@ namespace RMuseum.Services.Implementation
                         Status = appUser.Status,
                         NickName = appUser.NickName,
                         Website = appUser.Website,
-                        Bio = appUser.Bio
+                        Bio = appUser.Bio,
+                        EmailConfirmed = appUser.EmailConfirmed
                     };
 
                 RUserNoteViewModel viewModel
@@ -2608,7 +2610,8 @@ namespace RMuseum.Services.Implementation
                             Status = appUser.Status,
                             NickName = appUser.NickName,
                             Website = appUser.Website,
-                            Bio = appUser.Bio
+                            Bio = appUser.Bio,
+                            EmailConfirmed = appUser.EmailConfirmed
                         };
 
                     RUserNoteViewModel model
@@ -2751,7 +2754,8 @@ namespace RMuseum.Services.Implementation
                             Status = user.Status,
                             NickName = user.NickName,
                             Website = user.Website,
-                            Bio = user.Bio
+                            Bio = user.Bio,
+                            EmailConfirmed = user.EmailConfirmed
                         }
                     };
                 return new RServiceResult<GanjoorLinkViewModel>(viewModel);
@@ -2808,7 +2812,8 @@ namespace RMuseum.Services.Implementation
                                 Status = link.SuggestedBy.Status,
                                 NickName = link.SuggestedBy.NickName,
                                 Website = link.SuggestedBy.Website,
-                                Bio = link.SuggestedBy.Bio
+                                Bio = link.SuggestedBy.Bio,
+                                EmailConfirmed = link.SuggestedBy.EmailConfirmed
                             }
                         }
                         );

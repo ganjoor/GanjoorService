@@ -139,7 +139,8 @@ namespace RSecurityBackend.Services.Implementation
                             Status = appUser.Status,
                             NickName = appUser.NickName,
                             Website = appUser.Website,
-                            Bio = appUser.Bio
+                            Bio = appUser.Bio,
+                            EmailConfirmed = appUser.EmailConfirmed
                         },
                         Token = userToken.Result,
                         SecurableItem = securableItems.Result
@@ -221,7 +222,8 @@ namespace RSecurityBackend.Services.Implementation
                             Status = appUser.Status,
                             NickName = appUser.NickName,
                             Website = appUser.Website,
-                            Bio = appUser.Bio
+                            Bio = appUser.Bio,
+                            EmailConfirmed = appUser.EmailConfirmed
                         },
                         Token = userToken.Result,
                         SecurableItem = securableItems.Result
@@ -357,7 +359,8 @@ namespace RSecurityBackend.Services.Implementation
                         Status = appUser.Status,
                         NickName = appUser.NickName,
                         Website = appUser.Website,
-                        Bio = appUser.Bio
+                        Bio = appUser.Bio,
+                        EmailConfirmed = appUser.EmailConfirmed
                     });              
             }
             catch (Exception exp)
@@ -397,7 +400,8 @@ namespace RSecurityBackend.Services.Implementation
                             Status = appUser.Status,
                             NickName = appUser.NickName,
                             Website = appUser.Website,
-                            Bio = appUser.Bio
+                            Bio = appUser.Bio,
+                            EmailConfirmed = appUser.EmailConfirmed
                         });
                 }
                 return new RServiceResult<PublicRAppUser[]>(lstPublicUsersInfo.ToArray());
@@ -443,7 +447,8 @@ namespace RSecurityBackend.Services.Implementation
                                 Status = rUserSession.RAppUser.Status,
                                 NickName = rUserSession.RAppUser.NickName,
                                 Website = rUserSession.RAppUser.Website,
-                                Bio = rUserSession.RAppUser.Bio
+                                Bio = rUserSession.RAppUser.Bio,
+                                EmailConfirmed = rUserSession.RAppUser.EmailConfirmed
                             },
                             ClientAppName = rUserSession.ClientAppName,
                             ClientIPAddress = rUserSession.ClientIPAddress,
@@ -723,7 +728,8 @@ namespace RSecurityBackend.Services.Implementation
                                     Status = appUser.Status,
                                     NickName = appUser.NickName,
                                     Website = appUser.Website,
-                                    Bio = appUser.Bio
+                                    Bio = appUser.Bio,
+                                    EmailConfirmed = appUser.EmailConfirmed
                                 });
                         }
                     }
@@ -1446,7 +1452,8 @@ namespace RSecurityBackend.Services.Implementation
                         Status = appUser.Status,
                         NickName = appUser.NickName,
                         Website = appUser.Website,
-                        Bio = appUser.Bio
+                        Bio = appUser.Bio,
+                        EmailConfirmed = appUser.EmailConfirmed
                     });
             }
             catch(Exception exp)

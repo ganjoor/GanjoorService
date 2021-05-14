@@ -48,16 +48,20 @@ namespace RMuseum.Services.Implementation
                 try
                 {
                     RMuseumDbContext context = _context as RMuseumDbContext;
-                    var comments = await context.GanjoorComments.Where(c => c.AuthorEmail == email.ToLower()).ToListAsync();
-                    if (comments.Count > 0)
+                    var user = (await FindUserByEmail(email)).Result;
+                    if(user.EmailConfirmed)
                     {
-                        var user = (await FindUserByEmail(email)).Result;
-                        foreach (var comment in comments)
+                        var comments = await context.GanjoorComments.Where(c => c.AuthorEmail == email.ToLower()).ToListAsync();
+                        if (comments.Count > 0)
                         {
-                            comment.UserId = user.Id;
+
+                            foreach (var comment in comments)
+                            {
+                                comment.UserId = user.Id;
+                            }
+                            _context.UpdateRange(comments);
+                            await _context.SaveChangesAsync();
                         }
-                        _context.UpdateRange(comments);
-                        await _context.SaveChangesAsync();
                     }
                 }
                 catch

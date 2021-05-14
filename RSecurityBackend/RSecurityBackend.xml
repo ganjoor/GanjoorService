@@ -1315,6 +1315,11 @@
             web site
             </summary>
         </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.EmailConfirmed">
+            <summary>
+            email verified
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Models.Auth.ViewModels.PublicRUserSession">
             <summary>
             a safe subset of RUserSession

@@ -1165,7 +1165,8 @@ namespace RMuseum.Services.Implementationa
                                 Status = p.User.Status,
                                 NickName = p.User.NickName,
                                 Website = p.User.Website,
-                                Bio = p.User.Bio
+                                Bio = p.User.Bio,
+                                EmailConfirmed = p.User.EmailConfirmed
                             },
                             UserId = p.UserId,
                             Name = p.Name,
@@ -1202,7 +1203,8 @@ namespace RMuseum.Services.Implementationa
                                 Status = p.User.Status,
                                 NickName = p.User.NickName,
                                 Website = p.User.Website,
-                                Bio = p.User.Bio
+                                Bio = p.User.Bio,
+                                EmailConfirmed = p.User.EmailConfirmed
                             },
                             UserId = p.UserId,
                             Name = p.Name,
@@ -1254,7 +1256,8 @@ namespace RMuseum.Services.Implementationa
                                 Status = defProfile.User.Status,
                                 NickName = defProfile.User.NickName,
                                 Website = defProfile.User.Website,
-                                Bio = defProfile.User.Bio
+                                Bio = defProfile.User.Bio,
+                                EmailConfirmed = defProfile.User.EmailConfirmed
                             },
                          UserId = defProfile.UserId,
                          Name = defProfile.Name,
@@ -1436,7 +1439,8 @@ namespace RMuseum.Services.Implementationa
                                 Status = p.User.Status,
                                 NickName = p.User.NickName,
                                 Website = p.User.Website,
-                                Bio = p.User.Bio
+                                Bio = p.User.Bio,
+                                EmailConfirmed = p.User.EmailConfirmed
                             },
                         UserId = p.UserId,
                         Name = p.Name,
@@ -1521,7 +1525,8 @@ namespace RMuseum.Services.Implementationa
                                 Status = p.User.Status,
                                 NickName = p.User.NickName,
                                 Website = p.User.Website,
-                                Bio = p.User.Bio
+                                Bio = p.User.Bio,
+                                EmailConfirmed = p.User.EmailConfirmed
                             },
                         UserId = p.UserId,
                         Name = p.Name,

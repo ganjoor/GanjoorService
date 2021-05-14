@@ -38,7 +38,8 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
                 Status = appUser.Status,
                 NickName = appUser.NickName,
                 Website = appUser.Website,
-                Bio = appUser.Bio
+                Bio = appUser.Bio,
+                EmailConfirmed = appUser.EmailConfirmed
             };
             GanjoorAudioId = src.GanjoorAudioId;
             GanjoorPostId = src.GanjoorPostId;
