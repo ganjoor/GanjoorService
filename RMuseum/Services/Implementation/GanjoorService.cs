@@ -496,7 +496,10 @@ namespace RMuseum.Services.Implementation
                             }
                             break;
                     }
-                    _memoryCache.Set(cachKey, page);
+                    if(page.FullUrl != "/hashieha" && page.FullUrl != "/vazn" && page.FullUrl != "/simi" && page.FullUrl != "/audioclip")
+                    {
+                        _memoryCache.Set(cachKey, page);
+                    }
                 }
                 
                 return new RServiceResult<GanjoorPageCompleteViewModel>(page);
