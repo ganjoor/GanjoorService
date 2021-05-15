@@ -1879,6 +1879,10 @@ namespace RMuseum.Services.Implementation
                 {
                     return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), "خطای جستجوی عبارت خالی");
                 }
+
+                term = term.Replace("‌", " ");//replace zwnj with space
+
+
                 string searchConditions;
                 if(term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
                 {
@@ -2060,7 +2064,7 @@ namespace RMuseum.Services.Implementation
                     string plainText = "";
                     foreach (GanjoorVerse verse in verses)
                     {
-                        plainText += $"{verse.Text} ";
+                        plainText += $"{verse.Text.Replace("‌", " ")} ";//replace zwnj with space
                     }
 
                     dbPoem.PlainText = plainText.Trim();
