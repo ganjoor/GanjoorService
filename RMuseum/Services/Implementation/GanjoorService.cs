@@ -347,7 +347,7 @@ namespace RMuseum.Services.Implementation
         public void CacheCleanForPageByUrl(string url)
         {
             var cachKey = $"GanjoorService::GetPageByUrl::{url}";
-            if (!_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
+            if (_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
             {
                 _memoryCache.Remove(cachKey);
             }
