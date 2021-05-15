@@ -13,12 +13,27 @@ using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System.Text;
+using RMuseum.Services;
 
 namespace GanjooRazor.Areas.User.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
     public class ReportedCommentsModel : PageModel
     {
+        /// <summary>
+        /// ganjoor service
+        /// </summary>
+        private readonly IGanjoorService _ganjoorService;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="ganjoorService"></param>
+        public ReportedCommentsModel(IGanjoorService ganjoorService)
+        {
+            _ganjoorService = ganjoorService;
+        }
+
         /// <summary>
         /// Last Error
         /// </summary>
@@ -156,6 +171,8 @@ namespace GanjooRazor.Areas.User.Pages
                             reason = reasonText;
                             break;
                     }
+                    await _ganjoorService.CacheCleanForComment(id);
+
                     var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/comment/moderate/{id}", new StringContent(JsonConvert.SerializeObject(reason), Encoding.UTF8, "application/json"));
 
                     if (response.StatusCode != HttpStatusCode.OK)
@@ -174,6 +191,7 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+                    await _ganjoorService.CacheCleanForComment(id);
                     var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment/report/{id}");
 
                     if (response.StatusCode != HttpStatusCode.OK)

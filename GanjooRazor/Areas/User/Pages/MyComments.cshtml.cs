@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
 
 namespace GanjooRazor.Areas.User.Pages
@@ -19,6 +20,19 @@ namespace GanjooRazor.Areas.User.Pages
     [IgnoreAntiforgeryToken(Order = 1001)]
     public class MyCommentsModel : PageModel
     {
+        /// <summary>
+        /// ganjoor service
+        /// </summary>
+        private readonly IGanjoorService _ganjoorService;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="ganjoorService"></param>
+        public MyCommentsModel(IGanjoorService ganjoorService)
+        {
+            _ganjoorService = ganjoorService;
+        }
         // <summary>
         /// Last Error
         /// </summary>
@@ -143,6 +157,7 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+                    await _ganjoorService.CacheCleanForComment(id);
                     var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment?id={id}");
 
                     if (response.StatusCode != HttpStatusCode.OK)
@@ -161,6 +176,7 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+                    await _ganjoorService.CacheCleanForComment(id);
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/{id}", new StringContent(JsonConvert.SerializeObject(comment), Encoding.UTF8, "application/json"));
                     if (response.StatusCode != HttpStatusCode.OK)
                     {

@@ -19,6 +19,7 @@ using RSecurityBackend.Services.Implementation;
 using DNTPersianUtils.Core;
 using System.IO;
 using RSecurityBackend.Models.Image;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace RMuseum.Services.Implementation
 {
@@ -326,6 +327,47 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// clean cache for paeg by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task CacheCleanForPageById(int id)
+        {
+            var dbPage = await _context.GanjoorPages.Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
+            if (dbPage != null)
+            {
+                CacheCleanForPageByUrl(dbPage.FullUrl);
+            }
+        }
+
+        /// <summary>
+        /// clean cache for page by url
+        /// </summary>
+        /// <param name="url"></param>
+        public void CacheCleanForPageByUrl(string url)
+        {
+            var cachKey = $"GanjoorService::GetPageByUrl::{url}";
+            if (!_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
+            {
+                _memoryCache.Remove(cachKey);
+            }
+        }
+
+        /// <summary>
+        /// clean cache for page by comment
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        public async Task CacheCleanForComment(int commentId)
+        {
+            var comment = await _context.GanjoorComments.Where(c => c.Id == commentId).SingleOrDefaultAsync();
+            if(comment != null)
+            {
+                await CacheCleanForPageById(comment.PoemId);
+            }
+        }
+
+        /// <summary>
         /// get page by url
         /// </summary>
         /// <param name="url"></param>
@@ -346,109 +388,117 @@ namespace RMuseum.Services.Implementation
                     url = url.Substring(0, url.Length - 1);
                 }
 
-                var dbPage = await _context.GanjoorPages.Where(p => p.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
-                if (dbPage == null)
-                    return new RServiceResult<GanjoorPageCompleteViewModel>(null); //not found
-                var secondPoet = dbPage.SecondPoetId == null ? null :
-                     await
-                     (from poet in _context.GanjoorPoets
-                      join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
-                      on poet.Id equals cat.PoetId
-                      where poet.Id == (int)dbPage.SecondPoetId
-                      orderby poet.Name descending
-                      select new GanjoorPoetViewModel()
-                      {
-                          Id = poet.Id,
-                          Name = poet.Name,
-                          FullUrl = cat.FullUrl,
-                          RootCatId = cat.Id,
-                          Nickname = poet.Nickname,
-                          Published = poet.Published,
-                          ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.png"
-                      }
-                      )
-                     .AsNoTracking().SingleAsync();
-                GanjoorPageCompleteViewModel page = new GanjoorPageCompleteViewModel()
+                url = url.Replace("//", "/"); //duplicated slashes would be merged
+
+                var cachKey = $"GanjoorService::GetPageByUrl::{url}";
+                if (!_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
                 {
-                    Id = dbPage.Id,
-                    GanjoorPageType = dbPage.GanjoorPageType,
-                    Title = dbPage.Title,
-                    FullTitle = dbPage.FullTitle,
-                    UrlSlug = dbPage.UrlSlug,
-                    FullUrl = dbPage.FullUrl,
-                    HtmlText = dbPage.HtmlText,
-                    SecondPoet = secondPoet
+                    var dbPage = await _context.GanjoorPages.Where(p => p.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
+                    if (dbPage == null)
+                        return new RServiceResult<GanjoorPageCompleteViewModel>(null); //not found
+                    var secondPoet = dbPage.SecondPoetId == null ? null :
+                         await
+                         (from poet in _context.GanjoorPoets
+                          join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
+                          on poet.Id equals cat.PoetId
+                          where poet.Id == (int)dbPage.SecondPoetId
+                          orderby poet.Name descending
+                          select new GanjoorPoetViewModel()
+                          {
+                              Id = poet.Id,
+                              Name = poet.Name,
+                              FullUrl = cat.FullUrl,
+                              RootCatId = cat.Id,
+                              Nickname = poet.Nickname,
+                              Published = poet.Published,
+                              ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.png"
+                          }
+                          )
+                         .AsNoTracking().SingleAsync();
+                    page = new GanjoorPageCompleteViewModel()
+                    {
+                        Id = dbPage.Id,
+                        GanjoorPageType = dbPage.GanjoorPageType,
+                        Title = dbPage.Title,
+                        FullTitle = dbPage.FullTitle,
+                        UrlSlug = dbPage.UrlSlug,
+                        FullUrl = dbPage.FullUrl,
+                        HtmlText = dbPage.HtmlText,
+                        SecondPoet = secondPoet
 
-                };
-                switch (page.GanjoorPageType)
-                {
-                    case GanjoorPageType.PoemPage:
-                        {
-                            var poemRes = await GetPoemById((int)dbPage.PoemId);
-                            if (!string.IsNullOrEmpty(poemRes.ExceptionString))
+                    };
+                    switch (page.GanjoorPageType)
+                    {
+                        case GanjoorPageType.PoemPage:
                             {
-                                return new RServiceResult<GanjoorPageCompleteViewModel>(null, poemRes.ExceptionString);
-                            }
-                            page.Poem = poemRes.Result;
-                        }
-                        break;
-
-                    case GanjoorPageType.CatPage:
-                        {
-                            var catRes = await GetCatById((int)dbPage.CatId);
-                            if (!string.IsNullOrEmpty(catRes.ExceptionString))
-                            {
-                                return new RServiceResult<GanjoorPageCompleteViewModel>(null, catRes.ExceptionString);
-                            }
-                            page.PoetOrCat = catRes.Result;
-                        }
-                        break;
-                    default:
-                        {
-                            if (dbPage.PoetId != null)
-                            {
-                                var poetRes = await GetPoetById((int)dbPage.PoetId);
-                                if (!string.IsNullOrEmpty(poetRes.ExceptionString))
+                                var poemRes = await GetPoemById((int)dbPage.PoemId);
+                                if (!string.IsNullOrEmpty(poemRes.ExceptionString))
                                 {
-                                    return new RServiceResult<GanjoorPageCompleteViewModel>(null, poetRes.ExceptionString);
+                                    return new RServiceResult<GanjoorPageCompleteViewModel>(null, poemRes.ExceptionString);
                                 }
-                                page.PoetOrCat = poetRes.Result;
+                                page.Poem = poemRes.Result;
+                            }
+                            break;
 
-                                var pre = await _context.GanjoorPages.Where(p => p.GanjoorPageType == page.GanjoorPageType && p.ParentId == dbPage.ParentId && p.PoetId == dbPage.PoetId &&
-                                    ((p.PageOrder < dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id < dbPage.Id)))
-                                    .OrderByDescending(p => p.PageOrder)
-                                    .ThenByDescending(p => p.Id)
-                                    .AsNoTracking()
-                                    .FirstOrDefaultAsync();
-                                if(pre != null)
+                        case GanjoorPageType.CatPage:
+                            {
+                                var catRes = await GetCatById((int)dbPage.CatId);
+                                if (!string.IsNullOrEmpty(catRes.ExceptionString))
                                 {
-                                    page.Previous = new GanjoorPageSummaryViewModel()
+                                    return new RServiceResult<GanjoorPageCompleteViewModel>(null, catRes.ExceptionString);
+                                }
+                                page.PoetOrCat = catRes.Result;
+                            }
+                            break;
+                        default:
+                            {
+                                if (dbPage.PoetId != null)
+                                {
+                                    var poetRes = await GetPoetById((int)dbPage.PoetId);
+                                    if (!string.IsNullOrEmpty(poetRes.ExceptionString))
                                     {
-                                        Id = pre.Id,
-                                        Title = pre.Title,
-                                        FullUrl = pre.FullUrl
-                                    };
-                                }
+                                        return new RServiceResult<GanjoorPageCompleteViewModel>(null, poetRes.ExceptionString);
+                                    }
+                                    page.PoetOrCat = poetRes.Result;
 
-                                var next = await _context.GanjoorPages.Where(p => p.GanjoorPageType == page.GanjoorPageType &&  p.ParentId == dbPage.ParentId && p.PoetId == dbPage.PoetId &&
-                                    ((p.PageOrder > dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id > dbPage.Id)))
-                                    .OrderBy(p => p.PageOrder)
-                                    .ThenBy(p => p.Id)
-                                    .AsNoTracking()
-                                    .FirstOrDefaultAsync();
-                                if (next != null)
-                                {
-                                    page.Next = new GanjoorPageSummaryViewModel()
+                                    var pre = await _context.GanjoorPages.Where(p => p.GanjoorPageType == page.GanjoorPageType && p.ParentId == dbPage.ParentId && p.PoetId == dbPage.PoetId &&
+                                        ((p.PageOrder < dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id < dbPage.Id)))
+                                        .OrderByDescending(p => p.PageOrder)
+                                        .ThenByDescending(p => p.Id)
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync();
+                                    if (pre != null)
                                     {
-                                        Id = next.Id,
-                                        Title = next.Title,
-                                        FullUrl = next.FullUrl
-                                    };
+                                        page.Previous = new GanjoorPageSummaryViewModel()
+                                        {
+                                            Id = pre.Id,
+                                            Title = pre.Title,
+                                            FullUrl = pre.FullUrl
+                                        };
+                                    }
+
+                                    var next = await _context.GanjoorPages.Where(p => p.GanjoorPageType == page.GanjoorPageType && p.ParentId == dbPage.ParentId && p.PoetId == dbPage.PoetId &&
+                                        ((p.PageOrder > dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id > dbPage.Id)))
+                                        .OrderBy(p => p.PageOrder)
+                                        .ThenBy(p => p.Id)
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync();
+                                    if (next != null)
+                                    {
+                                        page.Next = new GanjoorPageSummaryViewModel()
+                                        {
+                                            Id = next.Id,
+                                            Title = next.Title,
+                                            FullUrl = next.FullUrl
+                                        };
+                                    }
                                 }
                             }
-                        }
-                        break;
+                            break;
+                    }
+                    _memoryCache.Set(cachKey, page);
                 }
+                
                 return new RServiceResult<GanjoorPageCompleteViewModel>(page);
 
             }
@@ -627,6 +677,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
+                await CacheCleanForPageById(poemId);
 
 
                 return new RServiceResult<GanjoorCommentSummaryViewModel>
@@ -668,6 +719,8 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<bool>(false); //not found
                 }
 
+                await CacheCleanForComment(commentId);
+
                 htmlComment = htmlComment.ApplyCorrectYeKe();
 
                 comment.HtmlComment = htmlComment;
@@ -698,6 +751,8 @@ namespace RMuseum.Services.Implementation
                 {
                     return new RServiceResult<bool>(false); //not found
                 }
+
+                await CacheCleanForComment(commentId);
 
                 if (comment.UserId != null)
                 {
@@ -755,6 +810,8 @@ namespace RMuseum.Services.Implementation
                 {
                     return new RServiceResult<bool>(false); //not found
                 }
+
+                await CacheCleanForComment(commentId);
 
                 //if user has got replies, delete them and notify their owners of what happened
                 var replies = await _FindReplies(comment);
@@ -2021,6 +2078,9 @@ namespace RMuseum.Services.Implementation
                 await _context.SaveChangesAsync();
 
 
+                CacheCleanForPageByUrl(dbPage.FullUrl);
+
+
                 return await GetPageByUrl(dbPage.FullUrl);
             }
             catch(Exception exp)
@@ -2348,6 +2408,11 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         protected readonly IImageFileService _imageFileService;
 
+        /// <summary>
+        /// IMemoryCache
+        /// </summary>
+        protected readonly IMemoryCache _memoryCache;
+
 
 
         /// <summary>
@@ -2359,13 +2424,15 @@ namespace RMuseum.Services.Implementation
         /// <param name="appUserService"></param>
         /// <param name="notificationService"></param>
         /// <param name="imageFileService"></param>
-        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService appUserService, IRNotificationService notificationService, IImageFileService imageFileService)
+        /// <param name="memoryCache"></param>
+        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService appUserService, IRNotificationService notificationService, IImageFileService imageFileService, IMemoryCache memoryCache)
         {
             _context = context;
             _backgroundTaskQueue = backgroundTaskQueue;
             _appUserService = appUserService;
             _notificationService = notificationService;
             _imageFileService = imageFileService;
+            _memoryCache = memoryCache;
             Configuration = configuration;
         }
     }

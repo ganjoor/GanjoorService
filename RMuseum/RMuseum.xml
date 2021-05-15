@@ -6841,6 +6841,26 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.CacheCleanForPageById(System.Int32)">
+            <summary>
+            clean cache for paeg by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.CacheCleanForPageByUrl(System.String)">
+            <summary>
+            clean cache for page by url
+            </summary>
+            <param name="url"></param>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.CacheCleanForComment(System.Int32)">
+            <summary>
+            clean cache for page by comment
+            </summary>
+            <param name="commentId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetVersesByQuery(System.String,System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             Get Verses By query
@@ -7646,6 +7666,26 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.CacheCleanForPageById(System.Int32)">
+            <summary>
+            clean cache for paeg by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.CacheCleanForPageByUrl(System.String)">
+            <summary>
+            clean cache for page by url
+            </summary>
+            <param name="url"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.CacheCleanForComment(System.Int32)">
+            <summary>
+            clean cache for page by comment
+            </summary>
+            <param name="commentId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPageByUrl(System.String,System.Boolean)">
             <summary>
             get page by url
@@ -7961,7 +8001,12 @@
             Image File Service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IImageFileService)">
+        <member name="F:RMuseum.Services.Implementation.GanjoorService._memoryCache">
+            <summary>
+            IMemoryCache
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
             <summary>
             constructor
             </summary>
@@ -7971,6 +8016,7 @@
             <param name="appUserService"></param>
             <param name="notificationService"></param>
             <param name="imageFileService"></param>
+            <param name="memoryCache"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync">
             <summary>

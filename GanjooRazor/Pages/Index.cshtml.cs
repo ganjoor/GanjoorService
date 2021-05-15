@@ -222,6 +222,7 @@ namespace GanjooRazor.Pages
                             }
                         ),
                         Encoding.UTF8, "application/json");
+                    await _ganjoorService.CacheCleanForPageById(poemId);
                     var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/comment", stringContent);
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
@@ -289,6 +290,7 @@ namespace GanjooRazor.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+                    await _ganjoorService.CacheCleanForComment(id);
                     var response  = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment?id={id}");
 
                     if (response.StatusCode != HttpStatusCode.OK)
@@ -313,6 +315,7 @@ namespace GanjooRazor.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+                    await _ganjoorService.CacheCleanForComment(id);
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/{id}", new StringContent(JsonConvert.SerializeObject(comment), Encoding.UTF8, "application/json"));
                     if (response.StatusCode != HttpStatusCode.OK)
                     {

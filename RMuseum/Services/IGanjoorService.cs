@@ -323,6 +323,26 @@ namespace RMuseum.Services
         RServiceResult<bool> HealthCheckContents();
 
         /// <summary>
+        /// clean cache for paeg by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task CacheCleanForPageById(int id);
+
+        /// <summary>
+        /// clean cache for page by url
+        /// </summary>
+        /// <param name="url"></param>
+        void CacheCleanForPageByUrl(string url);
+
+        /// <summary>
+        /// clean cache for page by comment
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        Task CacheCleanForComment(int commentId);
+
+        /// <summary>
         /// Get Verses By query
         /// </summary>
         /// <param name="query"></param>
