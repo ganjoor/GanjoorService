@@ -1135,6 +1135,13 @@ namespace RSecurityBackend.Services.Implementation
                     return new RServiceResult<RVerifyQueueItem>(null, "این نام کاربری قبلا استفاده شده است");
                 }
 
+                var oldSecrets = await _context.VerifyQueueItems.Where(i => i.DateTime < DateTime.Now.AddDays(-1)).ToListAsync();
+                if(oldSecrets.Count > 0)
+                {
+                    _context.VerifyQueueItems.RemoveRange(oldSecrets);
+                    await _context.SaveChangesAsync();
+                }
+
                 //checking this queue for previous signup attempts is unnecessary and is not done intentionally
                 RVerifyQueueItem item = new RVerifyQueueItem()
                 {
@@ -1147,15 +1154,13 @@ namespace RSecurityBackend.Services.Implementation
                     Language = langauge
                 };
 
-                while(
-                    null != 
-                    await _context.VerifyQueueItems.Where(i => i.Secret == item.Secret).SingleOrDefaultAsync()
-                    )
+                var existingSecrets = await _context.VerifyQueueItems.Where(i => i.Secret == item.Secret).ToListAsync();
+                if(existingSecrets.Count > 0)
                 {
-                    item.Secret = $"{(new Random(DateTime.Now.Millisecond)).Next(0, 99999)}".PadLeft(6, '0');
+                    _context.VerifyQueueItems.RemoveRange(existingSecrets);
+                    await _context.SaveChangesAsync();
                 }
-
-
+                
                 await _context.VerifyQueueItems.AddAsync
                     (
                     item
@@ -1321,7 +1326,14 @@ namespace RSecurityBackend.Services.Implementation
                 if (rAppUser == null)
                 {
                     return new RServiceResult<RVerifyQueueItem>(null, "کاربر مورد نظر یافت نشد");
-                }               
+                }
+
+                var oldSecrets = await _context.VerifyQueueItems.Where(i => i.DateTime < DateTime.Now.AddDays(-1)).ToListAsync();
+                if (oldSecrets.Count > 0)
+                {
+                    _context.VerifyQueueItems.RemoveRange(oldSecrets);
+                    await _context.SaveChangesAsync();
+                }
 
                 //checking this queue for previous signup attempts is unnecessary and is not done intentionally
                 RVerifyQueueItem item = new RVerifyQueueItem()
@@ -1335,13 +1347,13 @@ namespace RSecurityBackend.Services.Implementation
                     Language = langauge
                 };
 
-                while (
-                    null !=
-                    await _context.VerifyQueueItems.Where(i => i.Secret == item.Secret).SingleOrDefaultAsync()
-                    )
+                var existingSecrets = await _context.VerifyQueueItems.Where(i => i.Secret == item.Secret).ToListAsync();
+                if (existingSecrets.Count > 0)
                 {
-                    item.Secret = $"{(new Random(DateTime.Now.Millisecond)).Next(0, 99999)}".PadLeft(6, '0');
+                    _context.VerifyQueueItems.RemoveRange(existingSecrets);
+                    await _context.SaveChangesAsync();
                 }
+
 
 
                 await _context.VerifyQueueItems.AddAsync
