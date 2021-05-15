@@ -2256,7 +2256,12 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                int[] idSet = await _context.GanjoorSiteBanners.Where(b => b.Active == true).Select(b => b.Id).ToArrayAsync();
+                var cacheKeyForIdSet = $"GetARandomActiveSiteBanner::idSet";
+                if(!_memoryCache.TryGetValue(cacheKeyForIdSet, out int[] idSet))
+                {
+                    idSet = await _context.GanjoorSiteBanners.Where(b => b.Active == true).Select(b => b.Id).ToArrayAsync();
+                    _memoryCache.Set(cacheKeyForIdSet, idSet);
+                }
                 if (idSet.Length == 0)
                     return new RServiceResult<GanjoorSiteBannerViewModel>(null);//not found
 
