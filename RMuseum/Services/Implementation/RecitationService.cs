@@ -2,6 +2,7 @@
 using ganjoor;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using RMuseum.DbContext;
@@ -192,16 +193,22 @@ namespace RMuseum.Services.Implementationa
         {
             try
             {
-                //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
-                var source =
-                     from audio in _context.Recitations.AsNoTracking()
-                     .Include(a => a.Owner)
-                     .Where(a => a.Id == id)
-                     join poem in _context.GanjoorPoems
-                     on audio.GanjoorPostId equals poem.Id
-                     select new RecitationViewModel(audio, audio.Owner, poem);
+                var cachKey = $"RecitationService::Get::{id}";
+                if(!_memoryCache.TryGetValue(cachKey, out RecitationViewModel narration))
+                {
+                    //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
+                    var source =
+                         from audio in _context.Recitations.AsNoTracking()
+                         .Include(a => a.Owner)
+                         .Where(a => a.Id == id)
+                         join poem in _context.GanjoorPoems
+                         on audio.GanjoorPostId equals poem.Id
+                         select new RecitationViewModel(audio, audio.Owner, poem);
 
-                var narration = await source.SingleOrDefaultAsync();
+                    narration = await source.SingleOrDefaultAsync();
+                    _memoryCache.Set(cachKey, narration);
+                }
+               
                 return new RServiceResult<RecitationViewModel>(narration);
             }
             catch (Exception exp)
@@ -1826,6 +1833,11 @@ namespace RMuseum.Services.Implementationa
         /// </summary>
         protected readonly IAppUserService _userService;
 
+        /// <summary>
+        /// memory cache
+        /// </summary>
+        private readonly IMemoryCache _memoryCache;
+
 
         /// <summary>
         /// constructor
@@ -1835,13 +1847,15 @@ namespace RMuseum.Services.Implementationa
         /// <param name="backgroundTaskQueue"></param>
         /// <param name="notificationService"></param>
         /// <param name="userService"></param>
-        public RecitationService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IRNotificationService notificationService, IAppUserService userService)
+        /// <param name="memoryCache"></param>
+        public RecitationService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IRNotificationService notificationService, IAppUserService userService, IMemoryCache memoryCache)
         {
             _context = context;
             Configuration = configuration;
             _backgroundTaskQueue = backgroundTaskQueue;
             _notificationService = notificationService;
             _userService = userService;
+            _memoryCache = memoryCache;
         }
     }
 }
