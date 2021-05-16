@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
@@ -166,10 +167,17 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                return new RServiceResult<RPictureFile>(
-                    await _context.PictureFiles
+                var cachKey = $"PictureFileService::GetImage::{id}";
+                if(!_memoryCache.TryGetValue(cachKey, out RPictureFile pictureFile))
+                {
+                    pictureFile = await _context.PictureFiles.AsNoTracking()
                          .Where(p => p.Id == id)
-                         .SingleOrDefaultAsync()
+                         .SingleOrDefaultAsync();
+                    _memoryCache.Set(cachKey, pictureFile);
+                }
+
+                return new RServiceResult<RPictureFile>(
+                   pictureFile
                          );
             }
             catch (Exception exp)
@@ -571,6 +579,11 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         protected readonly IImageFileService _simpleImageStorage;
 
+        /// <summary>
+        /// memory cache
+        /// </summary>
+        private readonly IMemoryCache _memoryCache;
+
 
         /// <summary>
         /// constructor
@@ -578,11 +591,13 @@ namespace RMuseum.Services.Implementation
         /// <param name="context"></param>
         /// <param name="configuration"></param>
         /// <param name="simpleImageStorage"></param>
-        public PictureFileService(RMuseumDbContext context, IConfiguration configuration, IImageFileService simpleImageStorage)
+        /// <param name="memoryCache"></param>
+        public PictureFileService(RMuseumDbContext context, IConfiguration configuration, IImageFileService simpleImageStorage, IMemoryCache memoryCache)
         {
             _context = context;
             Configuration = configuration;
             _simpleImageStorage = simpleImageStorage;
+            _memoryCache = memoryCache;
         }
     }
 }
