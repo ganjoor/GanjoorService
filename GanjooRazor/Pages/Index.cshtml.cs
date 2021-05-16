@@ -4,10 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
@@ -35,11 +33,6 @@ namespace GanjooRazor.Pages
         private readonly IConfiguration _configuration;
 
         /// <summary>
-        /// IMemoryCache
-        /// </summary>
-        private readonly IMemoryCache _memoryCache;
-
-        /// <summary>
         /// IAppUserService instance
         /// </summary>
         private readonly IAppUserService _appUserService;
@@ -58,18 +51,15 @@ namespace GanjooRazor.Pages
         /// constructor
         /// </summary>
         /// <param name="configuration"></param>
-        /// <param name="memoryCache"></param>
         /// <param name="appUserService"></param>
         /// <param name="ganjoorService"></param>
         /// <param name="httpClient"></param>
         public IndexModel(IConfiguration configuration, 
-            IMemoryCache memoryCache, 
             IAppUserService appUserService, 
             IGanjoorService ganjoorService, 
             HttpClient httpClient)
         {
             _configuration = configuration;
-            _memoryCache = memoryCache;
             _appUserService = appUserService;
             _ganjoorService = ganjoorService;
             _httpClient = httpClient;
@@ -476,20 +466,9 @@ namespace GanjooRazor.Pages
             return audiodesc;
         }
 
-        private async Task preparePoets(bool includeBio)
+        private async Task preparePoets()
         {
-            var cacheKey = $"/api/ganjoor/poets?includeBio={includeBio}";
-            if(!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
-            {
-                var resPoets = await _ganjoorService.GetPoets(true, false);
-                if(string.IsNullOrEmpty(resPoets.ExceptionString))
-                {
-                    poets = new List<GanjoorPoetViewModel>(resPoets.Result);
-                    _memoryCache.Set(cacheKey, poets);
-                }
-            }
-
-            Poets = poets;
+           Poets = new List<GanjoorPoetViewModel>((await _ganjoorService.GetPoets(true, false)).Result);
         }
 
         /// <summary>
@@ -516,7 +495,7 @@ namespace GanjooRazor.Pages
                 return Redirect(pageUrlRes.Result);
             }
 
-            await preparePoets(false);
+            await preparePoets();
 
             if (!IsHomePage)
             {

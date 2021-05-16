@@ -11,7 +11,6 @@ using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor.ViewModels;
@@ -27,11 +26,6 @@ namespace GanjooRazor.Pages
     public class SearchModel : PageModel
     {
         /// <summary>
-        /// IMemoryCache
-        /// </summary>
-        protected readonly IMemoryCache _memoryCache;
-
-        /// <summary>
         /// ganjoor service
         /// </summary>
         private readonly IGanjoorService _ganjoorService;
@@ -46,12 +40,10 @@ namespace GanjooRazor.Pages
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="memoryCache"></param>
         /// <param name="ganjoorService"></param>
         /// <param name="httpClient"></param>
-        public SearchModel(IMemoryCache memoryCache, IGanjoorService ganjoorService, HttpClient httpClient)
+        public SearchModel(IGanjoorService ganjoorService, HttpClient httpClient)
         {
-            _memoryCache = memoryCache;
             _ganjoorService = ganjoorService;
             _httpClient = httpClient;
         }
@@ -73,37 +65,14 @@ namespace GanjooRazor.Pages
         [BindProperty]
         public LoginViewModel LoginViewModel { get; set; }
 
-        private async Task preparePoets(bool includeBio)
+        private async Task preparePoets()
         {
-            var cacheKey = $"/api/ganjoor/poets?includeBio={includeBio}";
-            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
-            {
-                var resPoets = await _ganjoorService.GetPoets(true, false);
-                if (string.IsNullOrEmpty(resPoets.ExceptionString))
-                {
-                    poets = new List<GanjoorPoetViewModel>(resPoets.Result);
-                    _memoryCache.Set(cacheKey, poets);
-                }
-            }
-
-            Poets = poets;
+            Poets = new List<GanjoorPoetViewModel>((await _ganjoorService.GetPoets(true, false)).Result);
         }
 
         private async Task preparePoet()
         {
-            var cacheKey = $"/api/ganjoor/poet/{PoetId}";
-
-            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
-            {
-                var resPoets = await _ganjoorService.GetPoetById(PoetId);
-                if (string.IsNullOrEmpty(resPoets.ExceptionString))
-                {
-                    poet = resPoets.Result;
-                    _memoryCache.Set(cacheKey, poet);
-                }
-            }
-
-            Poet = poet;
+            Poet = (await _ganjoorService.GetPoetById(PoetId)).Result;
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -117,7 +86,7 @@ namespace GanjooRazor.Pages
 
             //todo: use html master layout or make it partial
             // 1. poets 
-            await preparePoets(false);
+            await preparePoets();
 
             var poetName = Poets.SingleOrDefault(p => p.Id == PoetId);
             if (poetName != null)

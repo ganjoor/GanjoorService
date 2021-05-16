@@ -39,7 +39,10 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var res =
+                var cacheKey = $"/api/ganjoor/poets?websitePoets={websitePoets}&includeBio={includeBio}";
+                if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetViewModel[] poets))
+                {
+                    var res =
                      await
                      (from poet in _context.GanjoorPoets
                       join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
@@ -60,13 +63,18 @@ namespace RMuseum.Services.Implementation
                       .AsNoTracking()
                      .ToListAsync();
 
-                StringComparer fa = StringComparer.Create(new CultureInfo("fa-IR"), true);
-                res.Sort((a, b) => fa.Compare(a.Nickname, b.Nickname));
+                    StringComparer fa = StringComparer.Create(new CultureInfo("fa-IR"), true);
+                    res.Sort((a, b) => fa.Compare(a.Nickname, b.Nickname));
+                    poets = res.ToArray();
+                    _memoryCache.Set(cacheKey, poets);
+                }
+
+                
 
                 return new RServiceResult<GanjoorPoetViewModel[]>
                     (
-                        res.ToArray()
-                    ); ;
+                        poets
+                    );
             }
             catch (Exception exp)
             {
@@ -83,11 +91,21 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var poet = await _context.GanjoorPoets.Where(p => p.Id == id).AsNoTracking().FirstOrDefaultAsync();
-                if (poet == null)
-                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
-                var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).AsNoTracking().FirstOrDefaultAsync();
-                return await GetCatById(cat.Id);
+                var cacheKey = $"/api/ganjoor/poet/{id}";
+
+                if(!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poetCat))
+                {
+                    var poet = await _context.GanjoorPoets.Where(p => p.Id == id).AsNoTracking().FirstOrDefaultAsync();
+                    if (poet == null)
+                        return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
+                    var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).AsNoTracking().FirstOrDefaultAsync();
+                    poetCat = (await GetCatById(cat.Id)).Result;
+                    if(poetCat != null)
+                    {
+                        _memoryCache.Set(cacheKey, poetCat);
+                    }
+                }
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(poetCat);
             }
             catch (Exception exp)
             {
