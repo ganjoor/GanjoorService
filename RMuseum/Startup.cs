@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -61,7 +62,12 @@ namespace RMuseum
                     );
             });
 
-            services.AddDbContext<RMuseumDbContext>();
+            services.AddDbContextPool<RMuseumDbContext>(
+                        options => options.UseSqlServer(
+                            Configuration.GetConnectionString("DefaultConnection"),
+                            providerOptions => providerOptions.EnableRetryOnFailure()
+                            )
+                        );
 
             Audit.Core.Configuration.JsonSettings.ContractResolver = AuditNetEnvironmentSkippingContractResolver.Instance;
             Audit.Core.Configuration.DataProvider = new RAuditDataProvider(Configuration.GetConnectionString("DefaultConnection"));

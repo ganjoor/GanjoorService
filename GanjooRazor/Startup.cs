@@ -53,9 +53,11 @@ namespace GanjooRazor
             });
 
             services.AddDbContextPool<RMuseumDbContext>(
-                        options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-            services.AddDbContext<RMuseumDbContext>();
+                        options => options.UseSqlServer(
+                            Configuration.GetConnectionString("DefaultConnection"),
+                            providerOptions => providerOptions.EnableRetryOnFailure()
+                            )
+                        );
 
             Audit.Core.Configuration.JsonSettings.ContractResolver = AuditNetEnvironmentSkippingContractResolver.Instance;
             Audit.Core.Configuration.DataProvider = new RAuditDataProvider(Configuration.GetConnectionString("DefaultConnection"));
