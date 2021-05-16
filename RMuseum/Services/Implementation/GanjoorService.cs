@@ -1586,6 +1586,11 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
+                if(track.Approved)
+                {
+                    await CacheCleanForPageById(track.PoemId);
+                }
+
                 return new RServiceResult<PoemMusicTrackViewModel>(song);
             }
             catch (Exception exp)
@@ -1664,6 +1669,8 @@ namespace RMuseum.Services.Implementation
                 song.Id = track.Id;
                 _context.GanjoorPoemMusicTracks.Update(track);
                 await _context.SaveChangesAsync();
+
+                await CacheCleanForPageById(track.PoemId);
 
                 return new RServiceResult<PoemMusicTrackViewModel>(song);
             }
