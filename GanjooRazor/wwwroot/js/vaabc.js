@@ -45,7 +45,7 @@ document.addEventListener('selectionchange', function() {
 	})
 	
 	$search.attr({
-		href: text.indexOf(' ') == -1 ? 'https://ganjoor.net/index.php?s=' + encodeURI(text) : 'https://ganjoor.net/index.php?s="' + encodeURI(text) + '"',
+		href: text.indexOf(' ') == -1 ? 'https://ganjoor.net/search?s=' + encodeURI(text) : 'https://ganjoor.net/search?s="' + encodeURI(text) + '"',
 		title: 'جستجوی عبارت در گنجور',
 		target: '_blank'
 	})

@@ -4,7 +4,7 @@
   <!-- Created on Tue, 30 Dec 2008 17:57:57 GMT -->
   <ShortName>Ganjoor</ShortName>
   <Description>Search inside ganjoor.net</Description>
-  <Url type="text/html" method="get" template="http://ganjoor.net/index.php?s={searchTerms}"/>
+  <Url type="text/html" method="get" template="http://ganjoor.net/search?s={searchTerms}"/>
   <Image width="16" height="16">http://ganjoor/favicon.ico</Image>
   <Developer>hamid reza</Developer>
   <InputEncoding>UTF-8</InputEncoding>
