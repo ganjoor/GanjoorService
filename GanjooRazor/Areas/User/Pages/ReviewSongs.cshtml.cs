@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
-using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -15,18 +14,12 @@ namespace GanjooRazor.Areas.User.Pages
 {
     public class ReviewSongsModel : PageModel
     {
-        /// <summary>
-        /// ganjoor service
-        /// </summary>
-        private readonly IGanjoorService _ganjoorService;
 
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ganjoorService"></param>
-        public ReviewSongsModel(IGanjoorService ganjoorService)
+        public ReviewSongsModel()
         {
-            _ganjoorService = ganjoorService;
         }
         /// <summary>
         /// Last Error
@@ -143,13 +136,6 @@ namespace GanjooRazor.Areas.User.Pages
                     if (!putResponse.IsSuccessStatusCode)
                     {
                         LastError = await putResponse.Content.ReadAsStringAsync();
-                    }
-                    else
-                    {
-                        if(PoemMusicTrackViewModel.Approved)
-                        {
-                            await _ganjoorService.CacheCleanForPageById(PoemMusicTrackViewModel.PoemId);
-                        }
                     }
                 }
                 else

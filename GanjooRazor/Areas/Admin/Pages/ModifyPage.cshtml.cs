@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
-using RMuseum.Services;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,12 +14,6 @@ namespace GanjooRazor.Areas.Admin.Pages
 {
     public class ModifyPageModel : PageModel
     {
-        /// <summary>
-        /// ganjoor service
-        /// </summary>
-        private readonly IGanjoorService _ganjoorService;
-
-       
 
         /// <summary>
         /// HttpClient instance
@@ -31,11 +24,9 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        /// <param name="ganjoorService"></param>
-        public ModifyPageModel(HttpClient httpClient, IGanjoorService ganjoorService)
+        public ModifyPageModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _ganjoorService = ganjoorService;
         }
 
         /// <summary>
@@ -119,7 +110,6 @@ namespace GanjooRazor.Areas.Admin.Pages
                     }
                     else
                     {
-                        await _ganjoorService.CacheCleanForPageById(int.Parse(Request.Query["id"]));
                         return Redirect($"/Admin/ModifyPage?id={Request.Query["id"]}&edit=true");
                     }
                 }

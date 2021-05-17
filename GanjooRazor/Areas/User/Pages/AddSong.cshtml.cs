@@ -6,24 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
-using RMuseum.Services;
 
 namespace GanjooRazor.Areas.User.Pages
 {
     public class AddSongModel : PageModel
     {
-        /// ganjoor service
-        /// </summary>
-        private readonly IGanjoorService _ganjoorService;
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="ganjoorService"></param>
-        public AddSongModel(IGanjoorService ganjoorService)
-        {
-            _ganjoorService = ganjoorService;
-        }
 
         /// <summary>
         /// Last Error
@@ -70,10 +57,6 @@ namespace GanjooRazor.Areas.User.Pages
                     if (!putResponse.IsSuccessStatusCode)
                     {
                         LastError = await putResponse.Content.ReadAsStringAsync();
-                    }
-                    else
-                    {
-                        await _ganjoorService.CacheCleanForPageById(PoemMusicTrackViewModel.PoemId);
                     }
                 }
                 else
