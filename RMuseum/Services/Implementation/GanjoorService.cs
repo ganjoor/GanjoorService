@@ -368,6 +368,12 @@ namespace RMuseum.Services.Implementation
             if (_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
             {
                 _memoryCache.Remove(cachKey);
+
+                var poemCachKey = $"GetPoemById({page.Id}, {true}, {false}, {true}, {true}, {true}, {true}, {true}, {true}, {true})";
+                if(_memoryCache.TryGetValue(poemCachKey, out GanjoorPoemCompleteViewModel p))
+                {
+                    _memoryCache.Remove(poemCachKey);
+                }
             }
         }
 
@@ -1171,143 +1177,142 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var poem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
-                if (poem == null)
+                var cachKey = $"GetPoemById({id}, {catInfo}, {catPoems}, {rhymes}, {recitations}, {images}, {songs}, {comments}, {verseDetails}, {navigation})";
+                if(!_memoryCache.TryGetValue(cachKey, out GanjoorPoemCompleteViewModel poemViewModel))
                 {
-                    return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
-                }
-                GanjoorPoetCompleteViewModel cat = null;
-                if (catInfo)
-                {
-                    var catRes = await GetCatById(poem.CatId, catPoems);
-                    if (!string.IsNullOrEmpty(catRes.ExceptionString))
+                    var poem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
+                    if (poem == null)
                     {
-                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, catRes.ExceptionString);
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
                     }
-                    cat = catRes.Result;
-                }
-
-                GanjoorPoemSummaryViewModel next = null;
-                if (navigation)
-                {
-                    int nextId =
-                        await _context.GanjoorPoems
-                                                       .Where(p => p.CatId == poem.CatId && p.Id > poem.Id)
-                                                       .AnyAsync()
-                                                       ?
-                        await _context.GanjoorPoems
-                                                       .Where(p => p.CatId == poem.CatId && p.Id > poem.Id)
-                                                       .MinAsync(p => p.Id)
-                                                       :
-                                                       0;
-                    if (nextId != 0)
+                    GanjoorPoetCompleteViewModel cat = null;
+                    if (catInfo)
                     {
-                        next = await _context.GanjoorPoems.Where(p => p.Id == nextId).Select
-                            (
-                            p =>
-                            new GanjoorPoemSummaryViewModel()
-                            {
-                                Id = p.Id,
-                                Title = p.Title,
-                                UrlSlug = p.UrlSlug,
-                                Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
-                            }
-                            ).AsNoTracking().SingleAsync();
+                        var catRes = await GetCatById(poem.CatId, catPoems);
+                        if (!string.IsNullOrEmpty(catRes.ExceptionString))
+                        {
+                            return new RServiceResult<GanjoorPoemCompleteViewModel>(null, catRes.ExceptionString);
+                        }
+                        cat = catRes.Result;
                     }
 
-                }
-
-                GanjoorPoemSummaryViewModel previous = null;
-                if (navigation)
-                {
-                    int preId =
-                        await _context.GanjoorPoems
-                                                       .Where(p => p.CatId == poem.CatId && p.Id < poem.Id)
-                                                       .AnyAsync()
-                                                       ?
-                        await _context.GanjoorPoems
-                                                       .Where(p => p.CatId == poem.CatId && p.Id < poem.Id)
-                                                       .MaxAsync(p => p.Id)
-                                                       :
-                                                       0;
-                    if (preId != 0)
+                    GanjoorPoemSummaryViewModel next = null;
+                    if (navigation)
                     {
-                        previous = await _context.GanjoorPoems.Where(p => p.Id == preId).Select
-                            (
-                            p =>
-                            new GanjoorPoemSummaryViewModel()
-                            {
-                                Id = p.Id,
-                                Title = p.Title,
-                                UrlSlug = p.UrlSlug,
-                                Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
-                            }
-                            ).AsNoTracking().SingleAsync();
+                        int nextId =
+                            await _context.GanjoorPoems
+                                                           .Where(p => p.CatId == poem.CatId && p.Id > poem.Id)
+                                                           .AnyAsync()
+                                                           ?
+                            await _context.GanjoorPoems
+                                                           .Where(p => p.CatId == poem.CatId && p.Id > poem.Id)
+                                                           .MinAsync(p => p.Id)
+                                                           :
+                                                           0;
+                        if (nextId != 0)
+                        {
+                            next = await _context.GanjoorPoems.Where(p => p.Id == nextId).Select
+                                (
+                                p =>
+                                new GanjoorPoemSummaryViewModel()
+                                {
+                                    Id = p.Id,
+                                    Title = p.Title,
+                                    UrlSlug = p.UrlSlug,
+                                    Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
+                                }
+                                ).AsNoTracking().SingleAsync();
+                        }
+
                     }
 
-                }
+                    GanjoorPoemSummaryViewModel previous = null;
+                    if (navigation)
+                    {
+                        int preId =
+                            await _context.GanjoorPoems
+                                                           .Where(p => p.CatId == poem.CatId && p.Id < poem.Id)
+                                                           .AnyAsync()
+                                                           ?
+                            await _context.GanjoorPoems
+                                                           .Where(p => p.CatId == poem.CatId && p.Id < poem.Id)
+                                                           .MaxAsync(p => p.Id)
+                                                           :
+                                                           0;
+                        if (preId != 0)
+                        {
+                            previous = await _context.GanjoorPoems.Where(p => p.Id == preId).Select
+                                (
+                                p =>
+                                new GanjoorPoemSummaryViewModel()
+                                {
+                                    Id = p.Id,
+                                    Title = p.Title,
+                                    UrlSlug = p.UrlSlug,
+                                    Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
+                                }
+                                ).AsNoTracking().SingleAsync();
+                        }
 
-                PublicRecitationViewModel[] rc = null;
-                if (recitations)
-                {
-                    var rcRes = await GetPoemRecitations(id);
-                    if (!string.IsNullOrEmpty(rcRes.ExceptionString))
-                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, rcRes.ExceptionString);
-                    rc = rcRes.Result;
-                }
+                    }
 
-                PoemRelatedImage[] imgs = null;
-                if (images)
-                {
-                    var imgsRes = await GetPoemImages(id);
-                    if (!string.IsNullOrEmpty(imgsRes.ExceptionString))
-                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, imgsRes.ExceptionString);
-                    imgs = imgsRes.Result;
-                }
+                    PublicRecitationViewModel[] rc = null;
+                    if (recitations)
+                    {
+                        var rcRes = await GetPoemRecitations(id);
+                        if (!string.IsNullOrEmpty(rcRes.ExceptionString))
+                            return new RServiceResult<GanjoorPoemCompleteViewModel>(null, rcRes.ExceptionString);
+                        rc = rcRes.Result;
+                    }
 
-                GanjoorVerseViewModel[] verses = null;
-                if (verseDetails)
-                {
-                    verses = await _context.GanjoorVerses
-                                                    .Where(v => v.PoemId == id)
-                                                    .OrderBy(v => v.VOrder)
-                                                    .Select
-                                                    (
-                                                        v => new GanjoorVerseViewModel()
-                                                        {
-                                                            Id = v.Id,
-                                                            VOrder = v.VOrder,
-                                                            VersePosition = v.VersePosition,
-                                                            Text = v.Text
-                                                        }
-                                                    ).AsNoTracking().ToArrayAsync();
-                };
+                    PoemRelatedImage[] imgs = null;
+                    if (images)
+                    {
+                        var imgsRes = await GetPoemImages(id);
+                        if (!string.IsNullOrEmpty(imgsRes.ExceptionString))
+                            return new RServiceResult<GanjoorPoemCompleteViewModel>(null, imgsRes.ExceptionString);
+                        imgs = imgsRes.Result;
+                    }
 
-
-                PoemMusicTrackViewModel[] tracks = null;
-                if (songs)
-                {
-                    var songsRes = await GetPoemSongs(id, true, PoemMusicTrackType.All);
-                    if (!string.IsNullOrEmpty(songsRes.ExceptionString))
-                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, songsRes.ExceptionString);
-                    tracks = songsRes.Result;
-                }
-
-                GanjoorCommentSummaryViewModel[] poemComments = null;
-
-                if (comments)
-                {
-                    var commentsRes = await GetPoemComments(id, Guid.Empty);
-                    if (!string.IsNullOrEmpty(commentsRes.ExceptionString))
-                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, commentsRes.ExceptionString);
-                    poemComments = commentsRes.Result;
-                }
+                    GanjoorVerseViewModel[] verses = null;
+                    if (verseDetails)
+                    {
+                        verses = await _context.GanjoorVerses
+                                                        .Where(v => v.PoemId == id)
+                                                        .OrderBy(v => v.VOrder)
+                                                        .Select
+                                                        (
+                                                            v => new GanjoorVerseViewModel()
+                                                            {
+                                                                Id = v.Id,
+                                                                VOrder = v.VOrder,
+                                                                VersePosition = v.VersePosition,
+                                                                Text = v.Text
+                                                            }
+                                                        ).AsNoTracking().ToArrayAsync();
+                    };
 
 
+                    PoemMusicTrackViewModel[] tracks = null;
+                    if (songs)
+                    {
+                        var songsRes = await GetPoemSongs(id, true, PoemMusicTrackType.All);
+                        if (!string.IsNullOrEmpty(songsRes.ExceptionString))
+                            return new RServiceResult<GanjoorPoemCompleteViewModel>(null, songsRes.ExceptionString);
+                        tracks = songsRes.Result;
+                    }
 
-                return new RServiceResult<GanjoorPoemCompleteViewModel>
-                    (
-                    new GanjoorPoemCompleteViewModel()
+                    GanjoorCommentSummaryViewModel[] poemComments = null;
+
+                    if (comments)
+                    {
+                        var commentsRes = await GetPoemComments(id, Guid.Empty);
+                        if (!string.IsNullOrEmpty(commentsRes.ExceptionString))
+                            return new RServiceResult<GanjoorPoemCompleteViewModel>(null, commentsRes.ExceptionString);
+                        poemComments = commentsRes.Result;
+                    }
+
+                    poemViewModel = new GanjoorPoemCompleteViewModel()
                     {
                         Id = poem.Id,
                         Title = poem.Title,
@@ -1330,7 +1335,17 @@ namespace RMuseum.Services.Implementation
                         Verses = verses,
                         Songs = tracks,
                         Comments = poemComments
-                    }
+                    };
+
+                    _memoryCache.Set(cachKey, poemViewModel);
+                }
+                
+
+
+
+                return new RServiceResult<GanjoorPoemCompleteViewModel>
+                    (
+                    poemViewModel
                     );
             }
             catch (Exception exp)
