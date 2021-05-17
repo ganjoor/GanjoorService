@@ -11,7 +11,9 @@ using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services;
@@ -26,26 +28,23 @@ namespace GanjooRazor.Pages
     public class SearchModel : PageModel
     {
         /// <summary>
-        /// ganjoor service
-        /// </summary>
-        private readonly IGanjoorService _ganjoorService;
-
-        /// <summary>
         /// HttpClient instance
         /// </summary>
         private readonly HttpClient _httpClient;
 
-
+        /// <summary>
+        /// memory cache
+        /// </summary>
+        private readonly IMemoryCache _memoryCache;
 
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ganjoorService"></param>
         /// <param name="httpClient"></param>
-        public SearchModel(IGanjoorService ganjoorService, HttpClient httpClient)
+        public SearchModel(HttpClient httpClient, IMemoryCache memoryCache)
         {
-            _ganjoorService = ganjoorService;
             _httpClient = httpClient;
+            _memoryCache = memoryCache;
         }
 
         public List<GanjoorPoetViewModel> Poets { get; set; }
@@ -67,12 +66,30 @@ namespace GanjooRazor.Pages
 
         private async Task preparePoets()
         {
-            Poets = new List<GanjoorPoetViewModel>((await _ganjoorService.GetPoets(true, false)).Result);
+            var cacheKey = $"/api/ganjoor/poets?includeBio=false";
+            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
+            {
+                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets?includeBio=false");
+                response.EnsureSuccessStatusCode();
+                poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
+                _memoryCache.Set(cacheKey, poets);
+            }
+
+            Poets = poets;
         }
 
         private async Task preparePoet()
         {
-            Poet = (await _ganjoorService.GetPoetById(PoetId)).Result;
+            var cacheKey = $"/api/ganjoor/poet/{PoetId}";
+            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
+            {
+                var poetResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{PoetId}");
+                poetResponse.EnsureSuccessStatusCode();
+                poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
+                _memoryCache.Set(cacheKey, poet);
+            }
+
+            Poet = poet;
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -111,21 +128,18 @@ namespace GanjooRazor.Pages
                 pageNumber = int.Parse(Request.Query["page"]);
             }
 
-            var searchRes = await _ganjoorService.Search
-                (
-                new PagingParameterModel()
-                {
-                    PageNumber = pageNumber,
-                    PageSize = 20
-                },
-                Query,
-                PoetId == 0 ? null : PoetId,
-                CatId == 0 ? null : CatId
-                );
+            var searchQueryResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poems/search?term={Query}&poetId={PoetId}&catId={CatId}&PageNumber={pageNumber}&PageSize=20");
 
+            searchQueryResponse.EnsureSuccessStatusCode();
 
-            Poems = searchRes.Result.Items == null ? new List<GanjoorPoemCompleteViewModel>() : new List<GanjoorPoemCompleteViewModel>(searchRes.Result.Items);
-            if (Poems != null)
+            Poems = JArray.Parse(await searchQueryResponse.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
+
+            if(Poems != null && Poems.Count == 0)
+            {
+                Poems = null;
+            }
+
+            if(Poems != null)
             {
                 // highlight searched word
                 foreach (var poem in Poems)
@@ -161,8 +175,16 @@ namespace GanjooRazor.Pages
 
                 }
 
-                PagingToolsHtml = GeneratePagingBarHtml(searchRes.Result.PagingMeta, $"/search?s={Query}&author={PoetId}");
+                string paginationMetadataJsonValue = searchQueryResponse.Headers.GetValues("paging-headers").FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(paginationMetadataJsonValue))
+                {
+                    PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginationMetadataJsonValue);
+                    PagingToolsHtml = GeneratePagingBarHtml(paginationMetadata, $"/search?s={Query}&author={PoetId}");
+                }
             }
+
+           
 
             return Page();
         }

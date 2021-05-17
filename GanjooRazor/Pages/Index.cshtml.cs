@@ -12,10 +12,8 @@ using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
-using RMuseum.Services;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Auth.ViewModels;
-using RSecurityBackend.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +37,9 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly HttpClient _httpClient;
 
+        /// <summary>
+        /// memory cache
+        /// </summary>
         private readonly IMemoryCache _memoryCache;
 
         /// <summary>
