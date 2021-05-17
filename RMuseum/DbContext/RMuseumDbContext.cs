@@ -21,7 +21,10 @@ namespace RMuseum.DbContext
     /// </summary>
     public class RMuseumDbContext : RSecurityDbContext<RAppUser, RAppRole, Guid>
     {
-        public RMuseumDbContext(DbContextOptions<RMuseumDbContext> options) : base(options) { }
+        public RMuseumDbContext(DbContextOptions<RMuseumDbContext> options) : base(options) 
+        {
+            Database.Migrate();
+        }
 
         /// <summary>
         /// 
