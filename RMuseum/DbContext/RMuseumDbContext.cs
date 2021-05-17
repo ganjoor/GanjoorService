@@ -105,6 +105,9 @@ namespace RMuseum.DbContext
             builder.Entity<PoemMusicTrack>()
                 .HasIndex(c => new { c.Approved, c.Rejected });
 
+            builder.Entity<RArtifactMasterRecord>()
+                .HasIndex(c => new { c.CoverItemIndex, c.Status });
+
 
             //Index set suggested by SQL Server Tuning Wizard -- end
         }
