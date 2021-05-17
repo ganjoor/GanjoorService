@@ -1,10 +1,13 @@
 ﻿using DNTPersianUtils.Core;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RMuseum.Models.Auth.ViewModel;
 using RMuseum.Models.Ganjoor.ViewModels;
-using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
@@ -25,20 +28,15 @@ namespace GanjooRazor.Pages
 
             
             string filterUserId = Request.Query["userid"];
+            string url = $"{APIRoot.Url}/api/ganjoor/comments?PageNumber={pageNumber}&PageSize=20";
             string htmlText = "";
             if (!string.IsNullOrEmpty(filterUserId))
             {
-                RServiceResult<PublicRAppUser> userInfo = await _appUserService.GetUserInformation(Guid.Parse(filterUserId));
+                var responseUserProfile = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/user/profile/{filterUserId}");
+                responseUserProfile.EnsureSuccessStatusCode();
 
-                GanjoorUserPublicProfile profile = new GanjoorUserPublicProfile()
-                {
-                    Id = (Guid)userInfo.Result.Id,
-                    NickName = userInfo.Result.NickName,
-                    Bio = userInfo.Result.Bio,
-                    Website = userInfo.Result.Website,
-                    RImageId = userInfo.Result.RImageId
-                };
-               
+                GanjoorUserPublicProfile profile = JsonConvert.DeserializeObject<GanjoorUserPublicProfile>(await responseUserProfile.Content.ReadAsStringAsync());
+
 
                 ViewData["Title"] = $"گنجور &raquo; حاشیه‌های {profile.NickName}";
 
@@ -63,19 +61,18 @@ namespace GanjooRazor.Pages
                 htmlText += $"</div>{Environment.NewLine}";
                 htmlText += $"<hr />{Environment.NewLine}";
 
+                url += $"&filterUserId={filterUserId}";
 
-                
             }
 
-            var commentsRes = await _ganjoorService.GetRecentComments(new PagingParameterModel()
-            {
-                PageNumber = pageNumber,
-                PageSize = 20
-            }, 
-            string.IsNullOrEmpty(filterUserId) ? Guid.Empty : Guid.Parse(filterUserId), true);
+            var response = await _httpClient.GetAsync(url);
 
-            PaginationMetadata paginationMetadata = commentsRes.Result.PagingMeta;
-            GanjoorCommentFullViewModel[] comments = commentsRes.Result.Items;
+
+            response.EnsureSuccessStatusCode();
+
+            string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
+            PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata);
+            var comments = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCommentFullViewModel>>();
 
 
             foreach (var comment in comments)

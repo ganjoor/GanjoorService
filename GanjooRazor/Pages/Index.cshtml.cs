@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
@@ -33,36 +35,26 @@ namespace GanjooRazor.Pages
         private readonly IConfiguration _configuration;
 
         /// <summary>
-        /// IAppUserService instance
-        /// </summary>
-        private readonly IAppUserService _appUserService;
-
-        /// <summary>
-        /// ganjoor service
-        /// </summary>
-        private readonly IGanjoorService _ganjoorService;
-
-        /// <summary>
         /// HttpClient instance
         /// </summary>
         private readonly HttpClient _httpClient;
+
+        private readonly IMemoryCache _memoryCache;
 
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="configuration"></param>
-        /// <param name="appUserService"></param>
-        /// <param name="ganjoorService"></param>
         /// <param name="httpClient"></param>
+        /// <param name="memoryCache"></param>
         public IndexModel(IConfiguration configuration, 
-            IAppUserService appUserService, 
-            IGanjoorService ganjoorService, 
-            HttpClient httpClient)
+            HttpClient httpClient,
+            IMemoryCache memoryCache
+            )
         {
             _configuration = configuration;
-            _appUserService = appUserService;
-            _ganjoorService = ganjoorService;
             _httpClient = httpClient;
+            _memoryCache = memoryCache;
         }
 
         [BindProperty]
@@ -212,7 +204,6 @@ namespace GanjooRazor.Pages
                             }
                         ),
                         Encoding.UTF8, "application/json");
-                    await _ganjoorService.CacheCleanForPageById(poemId);
                     var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/comment", stringContent);
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
@@ -280,7 +271,6 @@ namespace GanjooRazor.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    await _ganjoorService.CacheCleanForComment(id);
                     var response  = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment?id={id}");
 
                     if (response.StatusCode != HttpStatusCode.OK)
@@ -305,7 +295,6 @@ namespace GanjooRazor.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    await _ganjoorService.CacheCleanForComment(id);
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/{id}", new StringContent(JsonConvert.SerializeObject(comment), Encoding.UTF8, "application/json"));
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
@@ -468,7 +457,16 @@ namespace GanjooRazor.Pages
 
         private async Task preparePoets()
         {
-           Poets = new List<GanjoorPoetViewModel>((await _ganjoorService.GetPoets(true, false)).Result);
+            var cacheKey = $"/api/ganjoor/poets?includeBio=false";
+            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
+            {
+                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets?includeBio=false");
+                response.EnsureSuccessStatusCode();
+                poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
+                _memoryCache.Set(cacheKey, poets);
+            }
+
+            Poets = poets;
         }
 
         /// <summary>
@@ -491,23 +489,26 @@ namespace GanjooRazor.Pages
 
             if (!string.IsNullOrEmpty(Request.Query["p"]))
             {
-                var pageUrlRes = await _ganjoorService.GetPageUrlById(int.Parse(Request.Query["p"]));
-                return Redirect(pageUrlRes.Result);
+                var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["p"]}");
+                pageUrlResponse.EnsureSuccessStatusCode();
+                var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                return Redirect(pageUrl);
             }
 
             await preparePoets();
 
             if (!IsHomePage)
             {
-                var pageRes = await _ganjoorService.GetPageByUrl(Request.Path, true);
-                if(string.IsNullOrEmpty(pageRes.ExceptionString))
+                var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Path}");
+                if (!pageQuery.IsSuccessStatusCode)
                 {
-                    if(pageRes.Result == null)
+                    if (pageQuery.StatusCode == HttpStatusCode.NotFound)
                     {
                         return NotFound();
                     }
                 }
-                GanjoorPage = pageRes.Result;
+                pageQuery.EnsureSuccessStatusCode();
+                GanjoorPage = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
                 GanjoorPage.HtmlText = GanjoorPage.HtmlText.Replace("https://ganjoor.net/", "/").Replace("http://ganjoor.net/", "/");
                 switch (GanjoorPage.GanjoorPageType)
                 {
@@ -528,7 +529,13 @@ namespace GanjooRazor.Pages
 
                 if (IsPoemPage)
                 {
-                    Banner = (await _ganjoorService.GetARandomActiveSiteBanner()).Result;
+                    var bannerQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/site/banner");
+                    bannerQuery.EnsureSuccessStatusCode();
+                    string bannerResponse = await bannerQuery.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(bannerResponse))
+                    {
+                        Banner = JObject.Parse(bannerResponse).ToObject<GanjoorSiteBannerViewModel>();
+                    }
                 }
             }
 

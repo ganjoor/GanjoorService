@@ -29,22 +29,16 @@ namespace GanjooRazor.Pages
             }
 
             string metre = Request.Query["v"];
-            int? poetId = string.IsNullOrEmpty(Request.Query["a"]) ? null : int.Parse(Request.Query["a"]);
+            int poetId = string.IsNullOrEmpty(Request.Query["a"]) ? 0 : int.Parse(Request.Query["a"]);
 
-            var poemsRes = await _ganjoorService.GetSimilarPoems
-                (
-                new PagingParameterModel()
-                {
-                    PageNumber = pageNumber,
-                    PageSize = 20
-                },
-                metre: metre,
-                rhyme: "",
-                poetId: poetId
-                );
+            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={metre}&poetId={poetId}";
+
+            var response = await _httpClient.GetAsync(url);
+
+            response.EnsureSuccessStatusCode();
 
             GanjoorPage.Title = "شعرهای ";
-            if (poetId != null)
+            if (poetId != 0)
             {
                 GanjoorPage.Title += $"{Poets.Where(p => p.Id == poetId).Single().Name} ";
             }
@@ -56,7 +50,7 @@ namespace GanjooRazor.Pages
 
             string htmlText = "";
 
-            if (poetId != null)
+            if (poetId != 0)
             {
                 htmlText += $"<div class=\"sitem\" id=\"all\">{Environment.NewLine}";
                 htmlText += $"<h2>{Environment.NewLine}";
@@ -65,9 +59,9 @@ namespace GanjooRazor.Pages
                 htmlText += $"</div>{Environment.NewLine}";
             }
 
+            var poems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
 
-
-            foreach (var poem in poemsRes.Result.Items)
+            foreach (var poem in poems)
             {
                 htmlText += $"<div class=\"sitem\" id=\"post-{poem.Id}\">{Environment.NewLine}<h2><a href=\"{poem.FullUrl}\" rel=\"bookmark\">{poem.FullTitle}</a>{Environment.NewLine}</h2>{Environment.NewLine}" +
                     $"<div class=\"spacer\">&nbsp;</div>{Environment.NewLine}"
@@ -84,7 +78,9 @@ namespace GanjooRazor.Pages
 
             htmlText += "<p style=\"text-align: center;\">";
 
-            PaginationMetadata paginationMetadata = poemsRes.Result.PagingMeta;
+            string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
+
+            PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata);
 
             string queryPoetId = poetId == 0 ? "" : $"&a={poetId}";
 
