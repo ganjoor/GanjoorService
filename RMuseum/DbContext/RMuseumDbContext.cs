@@ -69,6 +69,41 @@ namespace RMuseum.DbContext
 
             builder.Entity<GanjoorComment>()
                 .HasIndex(c => c.CommentDate);
+
+            builder.Entity<ImportJob>()
+               .Property(c => c.ProgressPercent)
+               .HasColumnType("decimal(18,2)");
+
+            //Index set suggested by SQL Server Tuning Wizard -- begin
+
+            builder.Entity<GanjoorComment>()
+                .HasIndex(c => c.Status);
+
+            builder.Entity<GanjoorPoem>()
+                .HasIndex(c => c.Id);
+
+            builder.Entity<Recitation>()
+                .HasIndex(c => c.GanjoorAudioId);
+
+            builder.Entity<Recitation>()
+                .HasIndex(c => new { c.ReviewStatus, c.GanjoorPostId });
+
+            builder.Entity<RArtifactMasterRecord>()
+                .HasIndex(c => c.LastModified);
+
+            builder.Entity<GanjoorPoet>()
+               .HasIndex(c => new { c.Published, c.Id })
+               .IncludeProperties(c => new { c.Name, c.Nickname, c.RImageId });
+
+            builder.Entity<GanjoorCat>()
+                .HasIndex(c => new { c.ParentId, c.PoetId })
+                .IncludeProperties(c => c.Id);
+
+            builder.Entity<PoemMusicTrack>()
+                .HasIndex(c => new { c.Approved, c.Rejected });
+
+
+            //Index set suggested by SQL Server Tuning Wizard -- end
         }
 
 
