@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class ModifyPageModel : PageModel
     {
 
@@ -104,14 +105,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var putResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/page/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(ModifyModel), Encoding.UTF8, "application/json"));
-                    if (!putResponse.IsSuccessStatusCode)
-                    {
-                        LastMessage = await putResponse.Content.ReadAsStringAsync();
-                    }
-                    else
-                    {
-                        return Redirect($"/Admin/ModifyPage?id={Request.Query["id"]}&edit=true");
-                    }
+                    putResponse.EnsureSuccessStatusCode();
+                    return Redirect($"/Admin/ModifyPage?id={Request.Query["id"]}&edit=true");
                 }
                 else
                 {

@@ -67,7 +67,10 @@
         @if (!string.IsNullOrEmpty(Model.LastError))
         {
         <div class="poem">
-            @Model.LastError
+            @if (Model.LastError != null)
+            {
+                @Model.LastError
+            }
         </div>
         }
         else
