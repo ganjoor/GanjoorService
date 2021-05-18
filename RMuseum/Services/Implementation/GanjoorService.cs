@@ -696,7 +696,7 @@ namespace RMuseum.Services.Implementation
 
                         await _notificationService.PushNotification((Guid)refComment.UserId,
                                            "پاسخ به حاشیهٔ شما",
-                                           $"{userRes.Result.NickName} به حاشیهٔ شما روی <a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> این پاسخ را نوشته است {Environment.NewLine}" +
+                                           $"{userRes.Result.NickName} برای حاشیهٔ شما روی <a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> این پاسخ را نوشته است: {Environment.NewLine}" +
                                            $"{content}" +
                                            $"این متن حاشیهٔ خود شماست: {Environment.NewLine}" +
                                            $"{refComment.HtmlComment}"
@@ -1723,6 +1723,14 @@ namespace RMuseum.Services.Implementation
                     return r.Next(20509, 21232);
                 case 22://صائب
                     return r.Next(52198, 59193);
+                case 7://سعدی
+                    return r.Next(9323, 9959);
+                case 28://بابا طاهر
+                    return r.Next(21309, 21674);
+                case 5://مولانا
+                    return r.Next(2625, 5853);
+                case 19://اوحدی
+                    return r.Next(16955, 5853);
             }
 
             return 0;
