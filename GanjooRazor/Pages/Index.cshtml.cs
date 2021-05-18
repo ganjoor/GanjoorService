@@ -530,7 +530,7 @@ namespace GanjooRazor.Pages
 
                 if (IsPoemPage)
                 {
-                    var bannerQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/site/banner");
+                    var bannerQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/banners/random");
                     bannerQuery.EnsureSuccessStatusCode();
                     string bannerResponse = await bannerQuery.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(bannerResponse))

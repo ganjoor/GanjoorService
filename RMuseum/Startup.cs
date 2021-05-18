@@ -274,6 +274,9 @@ namespace RMuseum
             //long running job service
             services.AddTransient<ILongRunningJobProgressService, LongRunningJobProgressServiceEF>();
 
+            //site banner service
+            services.AddTransient<ISiteBannersService, SiteBannersService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {

@@ -40,7 +40,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/site/banners");
+                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/banners");
                     if (!response.IsSuccessStatusCode)
                     {
                         LastMessage = await response.Content.ReadAsStringAsync();
@@ -78,7 +78,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         TargetUrl = url,
                         Active = active
                     };
-                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/site/banner/{id}", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/banners/{id}", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
                         LastMessage = await response.Content.ReadAsStringAsync();
@@ -102,7 +102,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/site/banner?id={id}");
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/banners?id={id}");
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
@@ -133,7 +133,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         var fileContent = stream.ToArray();
                         form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Upload.Image.FileName, Upload.Image.FileName);
 
-                        HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/site/banner", form);
+                        HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/banners", form);
                         if (!response.IsSuccessStatusCode)
                         {
                             LastMessage = await response.Content.ReadAsStringAsync();
