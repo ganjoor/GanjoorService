@@ -249,6 +249,8 @@ namespace RMuseum.Services.Implementationa
                         $"خوانش ارسالی {audioTitle} حذف شد.{Environment.NewLine}" +
                         $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
                     );
+
+                    await _ganjoorService.CacheCleanForPageById(GanjoorPostId);
                 }
                 else
                 {
@@ -458,6 +460,8 @@ namespace RMuseum.Services.Implementationa
                     await _context.SaveChangesAsync();
 
                     await UpdateRecitation(narration, true);
+
+                    await _ganjoorService.CacheCleanForPageById(narration.GanjoorPostId);
 
                 }
                 return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
@@ -1077,6 +1081,9 @@ namespace RMuseum.Services.Implementationa
                         $"خوانش ارسالی {narration.AudioTitle} منتشر شد.{Environment.NewLine}" +
                         $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
                     );
+
+
+                    await _ganjoorService.CacheCleanForPageById(narration.GanjoorPostId);
                 }
 
                 return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
@@ -1742,6 +1749,8 @@ namespace RMuseum.Services.Implementationa
 
                         
                         await UpdateRecitation(other, false /* owner of this recitation did nothing to expect any notifications*/);
+
+                        await _ganjoorService.CacheCleanForPageById(other.GanjoorPostId);
                     }
 
                     recitation.AudioOrder = 1;
@@ -1749,6 +1758,8 @@ namespace RMuseum.Services.Implementationa
                     _context.Recitations.Update(recitation);
                     
                     await UpdateRecitation(recitation, true);
+
+                    await _ganjoorService.CacheCleanForPageById(recitation.GanjoorPostId);
                 }
                 
 
@@ -1838,6 +1849,11 @@ namespace RMuseum.Services.Implementationa
         /// </summary>
         private readonly IMemoryCache _memoryCache;
 
+        /// <summary>
+        /// ganjoor service
+        /// </summary>
+        private readonly IGanjoorService _ganjoorService;
+
 
         /// <summary>
         /// constructor
@@ -1848,7 +1864,8 @@ namespace RMuseum.Services.Implementationa
         /// <param name="notificationService"></param>
         /// <param name="userService"></param>
         /// <param name="memoryCache"></param>
-        public RecitationService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IRNotificationService notificationService, IAppUserService userService, IMemoryCache memoryCache)
+        /// <param name="ganjoorService"></param>
+        public RecitationService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IRNotificationService notificationService, IAppUserService userService, IMemoryCache memoryCache, IGanjoorService ganjoorService)
         {
             _context = context;
             Configuration = configuration;
@@ -1856,6 +1873,7 @@ namespace RMuseum.Services.Implementationa
             _notificationService = notificationService;
             _userService = userService;
             _memoryCache = memoryCache;
+            _ganjoorService = ganjoorService;
         }
     }
 }
