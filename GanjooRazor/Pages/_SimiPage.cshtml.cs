@@ -64,7 +64,7 @@ namespace GanjooRazor.Pages
                     $"<div class=\"sit\">{Environment.NewLine} {_GetPoemTextExcerpt(poem.HtmlText)}" +
                     $"<p><br /><a href=\"{poem.FullUrl}\">متن کامل شعر را ببینید ...</a></p>" +
                     $"</div>{Environment.NewLine}" +
-                    $"<img src=\"/image/poets/{poem.Category.Poet.Id}.png\" alt=\"{poem.Category.Poet.Name}\" />"
+                    $"<img src=\"{APIRoot.InternetUrl}{poem.Category.Poet.ImageUrl}\" alt=\"{poem.Category.Poet.Name}\" />"
                     +
                     $"<div class=\"spacer\">&nbsp;</div>{Environment.NewLine}"
                     +
