@@ -299,10 +299,12 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorSiteBannerViewModel>> GetARandomActiveSiteBanner();
 
         /// <summary>
-        /// get a random poem from hafez
+        /// get a random poem (2 = from hafez)
         /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="recitation"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemCompleteViewModel>> Faal();
+        Task<RServiceResult<GanjoorPoemCompleteViewModel>> Faal(int poetId = 2, bool recitation = true);
 
         /// <summary>
         /// imports unimported poem data from a locally accessible ganjoor SqlLite database

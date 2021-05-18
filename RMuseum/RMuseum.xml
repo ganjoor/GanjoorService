@@ -766,6 +766,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetARandomPoem(System.Int32)">
+            <summary>
+            get a random poem from a poet (c.ganjoor.net replacement), 0 means random poet, 
+            حافظ (2)، خیام (3)، ابوسعید ابوالخیر (26)، صائب (22)، سعدی (7)، باباطاهر (28)، مولوی (5)، اوحدی (19)، خواجو (20)، شهریار (35)، عراقی (21)، فروغی بسطامی (32)، سلمان ساوجی (40)، محتشم کاشانی (29)، امیرخسرو دهلوی (34)، سیف فرغانی (31)، عبید زاکانی (33)، هاتف اصفهانی (25) یا رهی معیری (41)
+            </summary>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>
             get recent comments
@@ -6817,10 +6825,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.Faal">
+        <member name="M:RMuseum.Services.IGanjoorService.Faal(System.Int32,System.Boolean)">
             <summary>
-            get a random poem from hafez
+            get a random poem (2 = from hafez)
             </summary>
+            <param name="poetId"></param>
+            <param name="recitation"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.ImportLocalSQLiteDb">
@@ -7862,16 +7872,18 @@
             <param name="song"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService._GetRandomPoemId(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._GetRandomPoemId(System.Int32,System.Int32)">
             <summary>
-            random poem id from hafez sonnets
+            random poem id from hafez sonnets and old c.ganjoor.net service
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal(System.Int32,System.Boolean)">
             <summary>
             get a random poem from hafez
             </summary>
+            <param name="poetId"></param>
+            <param name="recitation"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetVersesByQuery(System.String,System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
