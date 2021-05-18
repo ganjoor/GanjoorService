@@ -65,7 +65,10 @@ namespace RMuseum
             services.AddDbContextPool<RMuseumDbContext>(
                         options => options.UseSqlServer(
                             Configuration.GetConnectionString("DefaultConnection"),
-                            providerOptions => providerOptions.EnableRetryOnFailure()
+                            providerOptions => {
+                                providerOptions.EnableRetryOnFailure();
+                                providerOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                                }
                             )
                         );
 
