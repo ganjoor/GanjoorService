@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RSecurityBackend.Services;
 using RSecurityBackend.Controllers;
-using Audit.WebApi;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace RMuseum.Controllers
 {
@@ -13,12 +12,12 @@ namespace RMuseum.Controllers
     [Route("api/rimages")]
     public class RImageController : RImageControllerBase
     {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="pictureFileService">
-        /// </param>
-        public RImageController(IImageFileService pictureFileService) : base(pictureFileService)
+       /// <summary>
+       /// constructor
+       /// </summary>
+       /// <param name="pictureFileService"></param>
+       /// <param name="memoryCache"></param>
+        public RImageController(IImageFileService pictureFileService, IMemoryCache memoryCache) : base(pictureFileService, memoryCache)
         {
 
         }

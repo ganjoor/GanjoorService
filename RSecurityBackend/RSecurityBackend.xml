@@ -444,16 +444,21 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.RImageControllerBase.#ctor(RSecurityBackend.Services.IImageFileService)">
+        <member name="M:RSecurityBackend.Controllers.RImageControllerBase.#ctor(RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
             <summary>
             constructor
             </summary>
-            <param name="pictureFileService">
-            </param>
+            <param name="pictureFileService"></param>
+            <param name="memoryCache"></param>
         </member>
         <member name="F:RSecurityBackend.Controllers.RImageControllerBase._pictureFileService">
             <summary>
             Artifact Service
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.RImageControllerBase._memoryCache">
+            <summary>
+            IMemoryCache
             </summary>
         </member>
         <member name="T:RSecurityBackend.Controllers.RLongRunningJobsControllerBase">

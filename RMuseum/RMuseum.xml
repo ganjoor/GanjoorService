@@ -1225,12 +1225,12 @@
             Generic Image Provider
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.RImageController.#ctor(RSecurityBackend.Services.IImageFileService)">
+        <member name="M:RMuseum.Controllers.RImageController.#ctor(RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
             <summary>
             constructor
             </summary>
-            <param name="pictureFileService">
-            </param>
+            <param name="pictureFileService"></param>
+            <param name="memoryCache"></param>
         </member>
         <member name="T:RMuseum.Controllers.RLongRunningJobsController">
             <summary>

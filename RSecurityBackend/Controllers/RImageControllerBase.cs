@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Image;
@@ -30,30 +31,45 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> Get(Guid id)
         {
-            RServiceResult<RImage> img =
-                await _pictureFileService.GetImage(id);
+            var cachKey = $"RImageControllerBase::RImage::{id}";
+            if(!_memoryCache.TryGetValue(cachKey, out RImage img))
+            {
+                RServiceResult<RImage> imgRes =
+               await _pictureFileService.GetImage(id);
 
-            if (!string.IsNullOrEmpty(img.ExceptionString))
-                return BadRequest(img.ExceptionString);
+                if (!string.IsNullOrEmpty(imgRes.ExceptionString))
+                    return BadRequest(imgRes.ExceptionString);
 
-            if (img.Result == null)
-                return NotFound();
+                if (imgRes.Result == null)
+                    return NotFound();
 
-            Response.GetTypedHeaders().LastModified = img.Result.LastModified;
+                img = imgRes.Result;
+
+                _memoryCache.Set(cachKey, img);
+            }
+
+            var cachKeyForPath = $"RImageControllerBase::Path::{id}";
+            if (!_memoryCache.TryGetValue(cachKeyForPath, out string imgPath))
+            {
+                RServiceResult<string> imgPathRes = _pictureFileService.GetImagePath(img);
+                if (!string.IsNullOrEmpty(imgPathRes.ExceptionString))
+                    return BadRequest(imgPathRes.ExceptionString);
+
+                imgPath = imgPathRes.Result;
+
+                _memoryCache.Set(cachKeyForPath, imgPath);
+            }
+
+            Response.GetTypedHeaders().LastModified = img.LastModified;
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= img.Result.LastModified)
+                requestHeaders.IfModifiedSince.Value >= img.LastModified)
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
 
-            RServiceResult<string> imgPath = _pictureFileService.GetImagePath(img.Result);
-            if (!string.IsNullOrEmpty(imgPath.ExceptionString))
-                return BadRequest(imgPath.ExceptionString);
-
-
-            return new FileStreamResult(new FileStream(imgPath.Result, FileMode.Open, FileAccess.Read), "image/jpeg");
+            return new FileStreamResult(new FileStream(imgPath, FileMode.Open, FileAccess.Read), "image/jpeg");
 
         }
 
@@ -105,17 +121,23 @@ namespace RSecurityBackend.Controllers
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="pictureFileService">
-        /// </param>
-        public RImageControllerBase(IImageFileService pictureFileService)
+        /// <param name="pictureFileService"></param>
+        /// <param name="memoryCache"></param>
+        public RImageControllerBase(IImageFileService pictureFileService, IMemoryCache memoryCache)
         {
             _pictureFileService = pictureFileService;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
         /// Artifact Service
         /// </summary>
         protected readonly IImageFileService _pictureFileService;
+
+        /// <summary>
+        /// IMemoryCache
+        /// </summary>
+        protected readonly IMemoryCache _memoryCache;
 
 
     }
