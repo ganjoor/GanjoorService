@@ -168,7 +168,12 @@ namespace GanjooRazor.Pages
                     for (int i = 0; i < queryParts.Length; i++)
                     {
                         string cssClass = i % 3 == 0 ? "hilite" : i % 3 == 1 ? "hilite2" : "hilite3";
-                        poem.PlainText = Regex.Replace(poem.PlainText, queryParts[i], $"<span class=\"{cssClass}\">{queryParts[i]}</span>", RegexOptions.IgnoreCase | RegexOptions.RightToLeft);
+                        string finalPlainText = "";
+                        foreach(string line in poem.PlainText.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            finalPlainText += $"<p>{line}</p>";
+                        }
+                        poem.PlainText = Regex.Replace(finalPlainText, queryParts[i], $"<span class=\"{cssClass}\">{queryParts[i]}</span>", RegexOptions.IgnoreCase | RegexOptions.RightToLeft); ;
                     }
 
 

@@ -1825,51 +1825,6 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// older search method
-        /// </summary>
-        /// <param name="query"></param>
-        /// <param name="poetId"></param>
-        /// <param name="paging"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[] items)>> GetVersesByQuery(string query, int poetId, PagingParameterModel paging)
-        {
-            try
-            {
-                var versesQ = _context.GanjoorVerses.AsNoTracking().Include(v => v.Poem).ThenInclude(p => p.Cat)
-                    .Where(v => v.Text.Contains(query));
-
-                if (poetId != 0)
-                {
-                    versesQ = versesQ.Where(v => v.Poem.Cat.PoetId == poetId);
-                }
-
-                var source = versesQ.Select(
-                        v => new GanjoorSearchVerseViewModel
-                        {
-                            Id = v.Id,
-                            VOrder = v.VOrder,
-                            VersePosition = v.VersePosition,
-                            Text = v.Text,
-                            PoemId = v.PoemId,
-                            PoetId = v.Poem.Cat.PoetId,
-                            PoemFullTitle = v.Poem.FullTitle,
-                            PoemFullUrl = v.Poem.FullUrl,
-                        }
-                    );
-
-                (PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[] Items) paginatedResult = 
-                    await QueryablePaginator<GanjoorSearchVerseViewModel>.Paginate(source, paging);
-
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[])>(paginatedResult);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
-
-            }
-        }
-
-        /// <summary>
         /// Get Similar Poems accroding to prosody and rhyme informations
         /// </summary>
         /// <param name="paging"></param>
@@ -1993,17 +1948,18 @@ namespace RMuseum.Services.Implementation
                 string searchConditions;
                 if(term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
                 {
-                    searchConditions = term;
+                    searchConditions = term.Replace("\"", "").Replace("'", "");
+                    searchConditions = $"\"*{term}*\"";
                 }
                 else
                 {
-                    string[] words =term.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    string[] words =term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                     searchConditions = "";
                     string emptyOrAnd = "";
                     foreach (string word in words)
                     {
-                        searchConditions += $" {emptyOrAnd} \"{word}\" ";
+                        searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
                         emptyOrAnd = " AND ";
                     }
                 }
@@ -2213,6 +2169,79 @@ namespace RMuseum.Services.Implementation
             catch(Exception exp)
             {
                 return new RServiceResult<GanjoorMetre[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> RegerneratePoemsPlainText()
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                (
+                async token =>
+                {
+                    using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                    {
+                        LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                        var job = (await jobProgressServiceEF.NewJob("RegerneratePoemsPlainText", "Query data")).Result;
+
+                        try
+                        {
+                            var poems = await context.GanjoorPoems.ToArrayAsync();
+
+                            await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating PlainText");
+
+                            int percent = 0;
+                            for (int i = 0; i < poems.Length; i++)
+                            {
+                                if (i * 100 / poems.Length > percent)
+                                {
+                                    percent++;
+                                    await jobProgressServiceEF.UpdateJob(job.Id, percent);
+                                }
+
+                                var poem = poems[i];
+
+                                List<GanjoorVerse> verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.Id).ToListAsync();
+
+                                string plainText = "";
+                                foreach (GanjoorVerse verse in verses)
+                                {
+                                    plainText += $"{verse.Text}{Environment.NewLine}";
+                                }
+
+                                poem.PlainText = plainText.Trim();
+
+                                
+
+                            }
+
+                            await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Finalizing PlainText");
+
+                            context.GanjoorPoems.UpdateRange(poems);
+
+                            await context.SaveChangesAsync();
+
+                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                        }
+                        catch (Exception exp)
+                        {
+                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                        }
+
+                    }
+                }
+                );
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 

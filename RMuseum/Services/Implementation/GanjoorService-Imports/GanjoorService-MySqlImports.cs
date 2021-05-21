@@ -1129,7 +1129,7 @@ namespace RMuseum.Services.Implementation
                             string plainText = "";
                             foreach(GanjoorVerse verse in verses)
                             {
-                                plainText += $"{verse.Text} ";
+                                plainText += $"{verse.Text}{Environment.NewLine}";
                             }
 
                             poem.PlainText = plainText.Trim();

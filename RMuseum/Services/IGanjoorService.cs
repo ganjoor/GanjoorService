@@ -285,6 +285,12 @@ namespace RMuseum.Services
         RServiceResult<bool> HealthCheckContents();
 
         /// <summary>
+        /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> RegerneratePoemsPlainText();
+
+        /// <summary>
         /// clean cache for paeg by id
         /// </summary>
         /// <param name="id"></param>
@@ -303,16 +309,6 @@ namespace RMuseum.Services
         /// <param name="commentId"></param>
         /// <returns></returns>
         Task CacheCleanForComment(int commentId);
-
-        /// <summary>
-        /// Get Verses By query
-        /// </summary>
-        /// <param name="query"></param>
-        /// <param name="poetId"></param>
-        /// <param name="pagingParameterModel"></param>
-        /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorSearchVerseViewModel[] items)>> GetVersesByQuery(string query, int poetId,
-            PagingParameterModel pagingParameterModel);
 
 
         /// <summary>
