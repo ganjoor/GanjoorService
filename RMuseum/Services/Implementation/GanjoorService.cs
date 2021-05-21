@@ -906,6 +906,8 @@ namespace RMuseum.Services.Implementation
                          AuthorUrl = comment.AuthorUrl,
                          CommentDate = comment.CommentDate,
                          HtmlComment = comment.HtmlComment,
+                         PublishStatus = "",//invalid!
+                         UserId = comment.UserId,
                          InReplayTo = comment.InReplyTo == null ? null :
                             new GanjoorCommentSummaryViewModel()
                             {
@@ -914,7 +916,8 @@ namespace RMuseum.Services.Implementation
                                 AuthorUrl = comment.InReplyTo.AuthorUrl,
                                 CommentDate = comment.InReplyTo.CommentDate,
                                 HtmlComment = comment.InReplyTo.HtmlComment,
-                                PublishStatus = ""
+                                PublishStatus = "",
+                                UserId = comment.InReplyTo.UserId
                             },
                          Poem = new GanjoorPoemSummaryViewModel()
                          {
@@ -1020,6 +1023,8 @@ namespace RMuseum.Services.Implementation
                              AuthorUrl = comment.AuthorUrl,
                              CommentDate = comment.CommentDate,
                              HtmlComment = comment.HtmlComment,
+                             PublishStatus = "",//invalid!
+                             UserId = comment.UserId,
                              InReplayTo = comment.InReplyTo == null ? null :
                             new GanjoorCommentSummaryViewModel()
                             {
@@ -1028,7 +1033,8 @@ namespace RMuseum.Services.Implementation
                                 AuthorUrl = comment.InReplyTo.AuthorUrl,
                                 CommentDate = comment.InReplyTo.CommentDate,
                                 HtmlComment = comment.InReplyTo.HtmlComment,
-                                PublishStatus = ""
+                                PublishStatus = "",
+                                UserId = comment.InReplyTo.UserId
                             },
                              Poem = new GanjoorPoemSummaryViewModel()
                              {

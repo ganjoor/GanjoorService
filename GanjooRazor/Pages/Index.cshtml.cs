@@ -171,7 +171,8 @@ namespace GanjooRazor.Pages
             {
                 Comment = comment,
                 Error = "",
-                InReplyTo = null
+                InReplyTo = null,
+                LoggedIn = LoggedIn
             };
         }
 
@@ -220,7 +221,8 @@ namespace GanjooRazor.Pages
                                 {
                                     Comment = resComment,
                                     Error = "",
-                                    InReplyTo = inReplytoId == 0 ? null : new GanjoorCommentSummaryViewModel()
+                                    InReplyTo = inReplytoId == 0 ? null : new GanjoorCommentSummaryViewModel(),
+                                    LoggedIn = LoggedIn
                                 }
                             }
                         };
@@ -236,7 +238,8 @@ namespace GanjooRazor.Pages
                                 {
                                     Comment = null,
                                     Error = await response.Content.ReadAsStringAsync(),
-                                    InReplyTo = null
+                                    InReplyTo = null,
+                                    LoggedIn = LoggedIn
                                 }
                             }
                         };

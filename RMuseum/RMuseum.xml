@@ -4668,6 +4668,16 @@
             comment
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.PublishStatus">
+            <summary>
+            status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.UserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.InReplayTo">
             <summary>
             in reply to

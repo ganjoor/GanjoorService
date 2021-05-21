@@ -23,9 +23,9 @@ else
         <p>@Model.Comment.AuthorName <small>در @Html.Raw($"{Model.Comment.CommentDate.ToFriendlyPersianDateTextify()}")</small> @Model.Wrote:</p>
     }
 
-    <div id="comment-text-@Model.Comment.Id">
+    <blockquote id="comment-text-@Model.Comment.Id">
         @Html.Raw(Model.Comment.HtmlComment)
-    </div>
+    </blockquote>
     <p>
         @if (Model.Comment.MyComment)
         {
@@ -33,10 +33,11 @@ else
             <a role="button" onclick="editMyComment(@Model.Comment.Id)" class="actionlink" title="ویرایش حاشیه">✎</a>
         }
 
-        <a role="button" onclick="replyComment(@Model.Comment.Id)" class="actionlink" title="پاسخگویی به این حاشیه">⤶</a>
+        <a role="button" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"))" class="actionlink" title="پاسخگویی به این حاشیه">⤶</a>
         <a href="/ReportComment/?CommentId=@Model.Comment.Id" onclick="wpopen(this.href); return false" class="comments-link" title="گزارش حاشیهٔ نامناسب">⚐</a>
     </p>
-    @foreach(var reply in Model.Comment.Replies)
+    <hr />
+    @foreach (var reply in Model.Comment.Replies)
     {
         <partial name="_CommentPartial" model=Model.GetCommentModel(reply) />
     }

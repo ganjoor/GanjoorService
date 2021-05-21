@@ -142,7 +142,11 @@
             });
         }
 
-        function replyComment(commentId) {
+        function replyComment(commentId, loggedIn) {
+            if (!loggedIn) {
+                alert('برای پاسخگویی لازم است با نام کاربری خود وارد گنجور شوید.');
+                return;
+            }
             $("#refComment").html($('#comment-text-' + commentId).html());
             $("#refCommentId").val(commentId);
             document.getElementById('id03').style.display = 'block';

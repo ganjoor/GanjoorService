@@ -11,6 +11,8 @@ namespace GanjooRazor.Pages
 
         public GanjoorCommentSummaryViewModel InReplyTo { get; set; }
 
+        public bool LoggedIn { get; set; }
+
         public string Wrote
         {
             get
@@ -25,7 +27,8 @@ namespace GanjooRazor.Pages
             {
                 Comment = comment,
                 Error = "",
-                InReplyTo = Comment
+                InReplyTo = Comment,
+                LoggedIn = LoggedIn
             };
         }
         public void OnGet()

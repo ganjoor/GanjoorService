@@ -30,6 +30,16 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public string HtmlComment { get; set; }
 
         /// <summary>
+        /// status
+        /// </summary>
+        public string PublishStatus { get; set; }
+
+        /// <summary>
+        /// User Id
+        /// </summary>
+        public Guid? UserId { get; set; }
+
+        /// <summary>
         /// in reply to
         /// </summary>
 
