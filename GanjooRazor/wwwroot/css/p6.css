@@ -713,7 +713,6 @@ ol li {
     background-color: #eee;
     margin: 5px auto; /* 15% from the top and centered */
     border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
     font-size: 1.25em;
     padding: 5px;
 }
@@ -777,4 +776,8 @@ ol li {
 }
 
 .loginImgContainer{
+}
+
+.refComment{
+    width:90%
 }
