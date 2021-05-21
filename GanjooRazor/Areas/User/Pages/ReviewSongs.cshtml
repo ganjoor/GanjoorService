@@ -31,6 +31,9 @@ else
                 <td>
                     <a href="@Html.Raw(Model.Poem.FullUrl)" target="_blank">@Model.Poem.FullTitle</a>
                     <input type="hidden" asp-for="PoemMusicTrackViewModel.Id" />
+                    <input type="hidden" asp-for="PoemMusicTrackViewModel.PoemId" />
+                    <input type="hidden" asp-for="PoemMusicTrackViewModel.GolhaTrackId" />
+                    <input type="hidden" asp-for="PoemMusicTrackViewModel.TrackType" />
                 </td>
             </tr>
             <tr>
