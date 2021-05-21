@@ -1976,7 +1976,7 @@ namespace RMuseum.Services.Implementation
                 if(term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
                 {
                     searchConditions = term.Replace("\"", "").Replace("'", "");
-                    searchConditions = $"\"*{term}*\"";
+                    searchConditions = $"\"{searchConditions}\"";
                 }
                 else
                 {
