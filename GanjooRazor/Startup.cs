@@ -37,6 +37,12 @@ namespace GanjooRazor
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.Use(async (c, n) => {
+
+                c.Response.Headers.Add("Access-Control-Allow-Origin", "https://museum.ganjoor.net");
+                await n.Invoke();
+            });
+
             app.UseExceptionHandler("/Error");
 
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
