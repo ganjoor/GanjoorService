@@ -1507,93 +1507,7 @@ namespace RMuseum.Services.Implementation
             }            
         }
 
-        /// <summary>
-        /// due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely
-        /// </summary>
-        /// <returns></returns>
-        public async Task<RServiceResult<string[]>> ReExamineLocDownloads()
-        {
-            try
-            {
-                ImportJob[] jobs = await _context.ImportJobs
-                    .Include(j => j.Artifact)
-                    .Where(j => j.Status == ImportJobStatus.Succeeded && j.JobType == JobType.Loc).ToArrayAsync();
-
-                List<string> scheduled = new List<string>();
-                List<ImportJob> rescheduledJobs = new List<ImportJob>();
-                foreach (ImportJob job in jobs)
-                {
-
-                    int pageCount = 0;
-                    //اول یک صفحه را می‌خوانیم تا تعداد صفحات را مشخص کنیم
-                    using (var client = new HttpClient())
-                    {
-                        if (job.Artifact == null)
-                            continue;
-
-                        string url = $"https://www.loc.gov/resource/rbc0001.{job.ResourceNumber}/?fo=json&st=gallery"; //plmp
-
-                        var result = await client.GetAsync(url);
-                        //using (var result = await client.GetAsync(url))
-                        {
-                            int _ImportRetryCount = 5;
-                            int _ImportRetryInitialSleep = 500;
-                            int retryCount = 0;
-                            while (retryCount < _ImportRetryCount && !result.IsSuccessStatusCode && result.StatusCode == HttpStatusCode.ServiceUnavailable)
-                            {
-                                result.Dispose();
-                                Thread.Sleep(_ImportRetryInitialSleep * (retryCount + 1));
-                                result = await client.GetAsync(url);
-                                retryCount++;
-                            }
-
-                            if (result.IsSuccessStatusCode)
-                            {
-                                string json = await result.Content.ReadAsStringAsync();
-                                var parsed = JObject.Parse(json);
-
-                                pageCount = parsed.SelectToken("resource.segment_count").Value<int>();
-                            }
-                            else
-                            {
-                                return new RServiceResult<string[]>(null, $"{job.ResourceNumber}: Http result is not ok ({result.StatusCode}) for {url}");
-                            }
-
-                            if(pageCount != job.Artifact.ItemCount)
-                            {
-                                if (scheduled.IndexOf(job.ResourceNumber) == -1)
-                                {                                    
-                                    scheduled.Add(job.ResourceNumber);
-                                    rescheduledJobs.Add(job);
-
-                                }
-                            }
-                            result.Dispose();
-                        }
-
-                    }                   
-                }
-
-                scheduled = new List<string>();
-                foreach (ImportJob job in rescheduledJobs)
-                {
-                    await RemoveArtifactHavingNoNoteAndBookmarks((Guid)job.ArtifactId, false);
-                    _context.ImportJobs.Remove(job);
-                    await _context.SaveChangesAsync();
-                    RServiceResult<bool> rescheduled = await StartImportingFromTheLibraryOfCongress(job.ResourceNumber, job.FriendlyUrl, "rbc0001");//plmp
-                    if (rescheduled.Result)
-                    {
-                       
-                        scheduled.Add(job.ResourceNumber);
-                    }
-                }
-                return new RServiceResult<string[]>(scheduled.ToArray());
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<string[]>(null, exp.ToString());
-            }
-        }
+        
         private async Task<string> HandleSimpleValue(RMuseumDbContext context, JObject parsed, List<RTagValue> meta, string path, string aName)
         {
             try
@@ -2777,7 +2691,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 GanjoorLink[] links =
-                await _context.GanjoorLinks
+                await _context.GanjoorLinks.AsNoTracking()
                      .Include(l => l.SuggestedBy)
                      .Include(l => l.Artifact)
                      .Include(l => l.Item).ThenInclude(i => i.Images)
@@ -2837,13 +2751,23 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                
+
                 GanjoorLink link =
                 await _context.GanjoorLinks
                      .Include(l => l.Artifact).ThenInclude(a => a.Tags).ThenInclude(t => t.RTag)
                      .Include(l => l.Item).ThenInclude(i => i.Tags).ThenInclude(t => t.RTag)
                      .Where(l => l.Id == linkId)
                      .SingleOrDefaultAsync();
-                
+
+                var poem = (await _ganjoorService.GetPoemById(link.GanjoorPostId)).Result;//if it fails here nothing is updated
+                string titleInTOC = poem.FullTitle;
+
+                if (poem.Verses.Length > 0)
+                {
+                    titleInTOC += $" - {poem.Verses[0].Text}";
+                }
+
                 link.ReviewResult = result;
                 link.ReviewerId = userId;
                 link.ReviewDate = DateTime.Now;
@@ -2866,63 +2790,29 @@ namespace RMuseum.Services.Implementation
                     }
 
                     //add TOC:
-                    using (var client = new HttpClient())
+
+                   
+
+                    RTagValue toc = await TagHandler.PrepareAttribute(_context, "Title in TOC", titleInTOC, 1);
+                    toc.ValueSupplement = "1";//font size
+                    if (link.Item == null)
                     {
-                        using (var httpResult = await client.GetAsync(link.GanjoorUrl))
+                        if (link.Artifact.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == toc.Value).Count() == 0)
                         {
-                            if (httpResult.IsSuccessStatusCode)
-                            {
-                                string html = await httpResult.Content.ReadAsStringAsync();
-                                int nIndexFirstParagraphOpenning = html.IndexOf("<p>");
-                                if (nIndexFirstParagraphOpenning != -1)
-                                {
-                                    int nIndexFirstParagraphClosing = html.IndexOf("</p>");
-                                    if (nIndexFirstParagraphClosing > nIndexFirstParagraphOpenning)
-                                    {
-                                        string paragraphContent = html.Substring(nIndexFirstParagraphOpenning + "<p>".Length, 1 + nIndexFirstParagraphClosing - (nIndexFirstParagraphOpenning + "</p>".Length));
-                                        if (paragraphContent.Length != 0)
-                                        {
-                                            int openIndex = paragraphContent.IndexOf('<');
-                                            while (paragraphContent.Length > 0 && (openIndex != -1))
-                                            {
-                                                string afterClosing = "";
-                                                int closeIndex = paragraphContent.IndexOf('>', openIndex);
-                                                if (closeIndex != -1)
-                                                    afterClosing = paragraphContent.Substring(closeIndex + 1);
-                                                paragraphContent = paragraphContent.Substring(0, openIndex) + afterClosing;
-                                                openIndex = paragraphContent.IndexOf('<');
-                                            }
-                                            paragraphContent = paragraphContent.Replace("<", "").Replace(">", "");
-                                            if (paragraphContent.Length > 100)
-                                                paragraphContent = paragraphContent.Substring(0, 100) + " ...";
-                                            RTagValue toc = await TagHandler.PrepareAttribute(_context, "Title in TOC", paragraphContent, 1);
-                                            toc.ValueSupplement = "1";//font size
-                                            if (link.Item == null)
-                                            {
-                                                if (link.Artifact.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == toc.Value).Count() == 0)
-                                                {
-                                                    toc.Order = 1 + link.Artifact.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
-                                                    link.Artifact.Tags.Add(toc);
-                                                    _context.Artifacts.Update(link.Artifact);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if (link.Item.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == toc.Value).Count() == 0)
-                                                {
-                                                    toc.Order = 1 + link.Item.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
-                                                    link.Item.Tags.Add(toc);
-                                                    _context.Items.Update(link.Item);
-                                                }
-
-                                            }
-                                        }                                            
-                                        
-                                    }
-                                }
-                            }
-
+                            toc.Order = 1 + link.Artifact.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
+                            link.Artifact.Tags.Add(toc);
+                            _context.Artifacts.Update(link.Artifact);
                         }
+                    }
+                    else
+                    {
+                        if (link.Item.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == toc.Value).Count() == 0)
+                        {
+                            toc.Order = 1 + link.Item.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
+                            link.Item.Tags.Add(toc);
+                            _context.Items.Update(link.Item);
+                        }
+
                     }
                 }
 
@@ -2955,51 +2845,34 @@ namespace RMuseum.Services.Implementation
 
                 foreach(GanjoorLink link in links)
                 {
-                    using(var client = new HttpClient())
-                    {
-                        using (var result = await client.GetAsync(link.GanjoorUrl))
-                        {
-                            if (result.IsSuccessStatusCode)
-                            {
-                                string html = await result.Content.ReadAsStringAsync();
-                                int nIndexFirstParagraphOpenning = html.IndexOf("<p>");
-                                if(nIndexFirstParagraphOpenning != -1)
-                                {
-                                    int nIndexFirstParagraphClosing = html.IndexOf("</p>");
-                                    if(nIndexFirstParagraphClosing > nIndexFirstParagraphOpenning)
-                                    {
-                                        string paragraphContent = html.Substring(nIndexFirstParagraphOpenning + "<p>".Length, 1 + nIndexFirstParagraphClosing - (nIndexFirstParagraphOpenning + "</p>".Length));
-                                        if (paragraphContent.Length == 0)
-                                            continue;
-                                        if (paragraphContent.Length > 100)
-                                            paragraphContent = paragraphContent.Substring(0, 100) + " ...";
-                                        lst.Add(paragraphContent);
-                                        RTagValue tag = await TagHandler.PrepareAttribute(_context, "Title in TOC", paragraphContent, 1);
-                                        tag.ValueSupplement = "1";//font size
-                                        if (link.Item == null)
-                                        {
-                                            if(link.Artifact.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == tag.Value).Count() == 0)
-                                            {
-                                                tag.Order = 1 + link.Artifact.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
-                                                link.Artifact.Tags.Add(tag);
-                                                _context.Artifacts.Update(link.Artifact);
-                                            }                                            
-                                        }
-                                        else
-                                        {
-                                            if (link.Item.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == tag.Value).Count() == 0)
-                                            {
-                                                tag.Order = 1 + link.Item.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
-                                                link.Item.Tags.Add(tag);
-                                                _context.Items.Update(link.Item);
-                                            }
-                                            
-                                        }
-                                    }
-                                }
-                            }                           
+                    var poem = (await _ganjoorService.GetPoemById(link.GanjoorPostId)).Result;//if it fails here nothing is updated
+                    string titleInTOC = poem.FullTitle;
 
+                    if (poem.Verses.Length > 0)
+                    {
+                        titleInTOC += $" - {poem.Verses[0].Text}";
+                    }
+
+                    RTagValue tag = await TagHandler.PrepareAttribute(_context, "Title in TOC", titleInTOC, 1);
+                    tag.ValueSupplement = "1";//font size
+                    if (link.Item == null)
+                    {
+                        if (link.Artifact.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == tag.Value).Count() == 0)
+                        {
+                            tag.Order = 1 + link.Artifact.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
+                            link.Artifact.Tags.Add(tag);
+                            _context.Artifacts.Update(link.Artifact);
                         }
+                    }
+                    else
+                    {
+                        if (link.Item.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == tag.Value).Count() == 0)
+                        {
+                            tag.Order = 1 + link.Item.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
+                            link.Item.Tags.Add(tag);
+                            _context.Items.Update(link.Item);
+                        }
+
                     }
                 }
 
@@ -3409,6 +3282,11 @@ namespace RMuseum.Services.Implementation
         protected readonly IRNotificationService _notificationService;
 
         /// <summary>
+        /// Ganjoor Service
+        /// </summary>
+        private readonly IGanjoorService _ganjoorService;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
@@ -3417,7 +3295,8 @@ namespace RMuseum.Services.Implementation
         /// <param name="backgroundTaskQueue"></param>
         /// <param name="userService"></param>
         /// <param name="notificationService"></param>
-        public ArtifactService(RMuseumDbContext context, IConfiguration configuration, IPictureFileService pictureFileService, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService userService, IRNotificationService notificationService)
+        /// <param name="ganjoorService"></param>
+        public ArtifactService(RMuseumDbContext context, IConfiguration configuration, IPictureFileService pictureFileService, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService userService, IRNotificationService notificationService, IGanjoorService ganjoorService)
         {
             _context = context;
             _pictureFileService = pictureFileService;
@@ -3425,6 +3304,7 @@ namespace RMuseum.Services.Implementation
             _backgroundTaskQueue = backgroundTaskQueue;
             _userService = userService;
             _notificationService = notificationService;
+            _ganjoorService = ganjoorService;
         }
     }
 }

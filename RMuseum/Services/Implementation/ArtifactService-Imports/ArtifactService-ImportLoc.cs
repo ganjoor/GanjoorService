@@ -541,5 +541,92 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
+        /// <summary>
+        /// due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<string[]>> ReExamineLocDownloads()
+        {
+            try
+            {
+                ImportJob[] jobs = await _context.ImportJobs
+                    .Include(j => j.Artifact)
+                    .Where(j => j.Status == ImportJobStatus.Succeeded && j.JobType == JobType.Loc).ToArrayAsync();
+
+                List<string> scheduled = new List<string>();
+                List<ImportJob> rescheduledJobs = new List<ImportJob>();
+                foreach (ImportJob job in jobs)
+                {
+
+                    int pageCount = 0;
+                    //اول یک صفحه را می‌خوانیم تا تعداد صفحات را مشخص کنیم
+                    using (var client = new HttpClient())
+                    {
+                        if (job.Artifact == null)
+                            continue;
+
+                        string url = $"https://www.loc.gov/resource/rbc0001.{job.ResourceNumber}/?fo=json&st=gallery"; //plmp
+
+                        var result = await client.GetAsync(url);
+                        //using (var result = await client.GetAsync(url))
+                        {
+                            int _ImportRetryCount = 5;
+                            int _ImportRetryInitialSleep = 500;
+                            int retryCount = 0;
+                            while (retryCount < _ImportRetryCount && !result.IsSuccessStatusCode && result.StatusCode == HttpStatusCode.ServiceUnavailable)
+                            {
+                                result.Dispose();
+                                Thread.Sleep(_ImportRetryInitialSleep * (retryCount + 1));
+                                result = await client.GetAsync(url);
+                                retryCount++;
+                            }
+
+                            if (result.IsSuccessStatusCode)
+                            {
+                                string json = await result.Content.ReadAsStringAsync();
+                                var parsed = JObject.Parse(json);
+
+                                pageCount = parsed.SelectToken("resource.segment_count").Value<int>();
+                            }
+                            else
+                            {
+                                return new RServiceResult<string[]>(null, $"{job.ResourceNumber}: Http result is not ok ({result.StatusCode}) for {url}");
+                            }
+
+                            if (pageCount != job.Artifact.ItemCount)
+                            {
+                                if (scheduled.IndexOf(job.ResourceNumber) == -1)
+                                {
+                                    scheduled.Add(job.ResourceNumber);
+                                    rescheduledJobs.Add(job);
+
+                                }
+                            }
+                            result.Dispose();
+                        }
+
+                    }
+                }
+
+                scheduled = new List<string>();
+                foreach (ImportJob job in rescheduledJobs)
+                {
+                    await RemoveArtifactHavingNoNoteAndBookmarks((Guid)job.ArtifactId, false);
+                    _context.ImportJobs.Remove(job);
+                    await _context.SaveChangesAsync();
+                    RServiceResult<bool> rescheduled = await StartImportingFromTheLibraryOfCongress(job.ResourceNumber, job.FriendlyUrl, "rbc0001");//plmp
+                    if (rescheduled.Result)
+                    {
+
+                        scheduled.Add(job.ResourceNumber);
+                    }
+                }
+                return new RServiceResult<string[]>(scheduled.ToArray());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<string[]>(null, exp.ToString());
+            }
+        }
     }
 }
