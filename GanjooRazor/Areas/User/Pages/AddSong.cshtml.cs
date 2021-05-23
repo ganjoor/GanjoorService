@@ -9,6 +9,7 @@ using RMuseum.Models.Ganjoor.ViewModels;
 
 namespace GanjooRazor.Areas.User.Pages
 {
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class AddSongModel : PageModel
     {
 
