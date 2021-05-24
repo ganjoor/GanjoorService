@@ -2772,10 +2772,24 @@ namespace RMuseum.Services.Implementation
                 link.ReviewerId = userId;
                 link.ReviewDate = DateTime.Now;
 
+                //check to see if any other image from this artifact has been added to this poem:
+                if (
+                    link.ReviewResult == ReviewResult.Approved
+                    &&
+                    !await _context.GanjoorLinks.Where(l => l.ArtifactId == link.ArtifactId && l.GanjoorPostId == link.GanjoorPostId && l.ReviewResult == ReviewResult.Approved && l.DisplayOnPage).AnyAsync()
+                    )
+                {
+                    link.DisplayOnPage = true;
+                    link.Synchronized = true;
+                }//if not user must decide through UI for this link
+
                 _context.GanjoorLinks.Update(link);
 
                 if(link.ReviewResult == ReviewResult.Approved)
                 {
+                    
+
+
                     RTagValue tag = await TagHandler.PrepareAttribute(_context, "Ganjoor Link", link.GanjoorTitle, 1);
                     tag.ValueSupplement = link.GanjoorUrl;
                     if(link.Item == null)
