@@ -700,9 +700,9 @@ namespace RMuseum.Services.Implementationa
                 };
 
                 string ext = Path.GetExtension(file.FileName).ToLower();
-                if(ext != ".mp3" && ext != ".xml" && ext != ".ogg")
+                if(ext != ".mp3" && ext != ".xml")
                 {
-                    file.ProcessResultMsg = "تنها فایلهای با پسوند mp3، xml و ogg قابل قبول هستند.";
+                    file.ProcessResultMsg = "تنها فایلهای با پسوند mp3 و xml قابل قبول هستند.";
                 }
                 else
                 {
