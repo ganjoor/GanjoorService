@@ -821,7 +821,8 @@ namespace RMuseum.Services.Implementationa
                                             Directory.CreateDirectory(targetPathForXmlFiles);
                                         }
 
-                                        string fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}";
+                                        Random rnd = new Random(DateTime.Now.Millisecond);
+                                        string fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}-{rnd.Next()}";
                                         int tmp = 1;
                                         while
                                         (
@@ -830,7 +831,7 @@ namespace RMuseum.Services.Implementationa
                                         File.Exists(Path.Combine(targetPathForXmlFiles, $"{fileNameWithoutExtension}.xml"))
                                         )
                                         {
-                                            fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}{tmp}";
+                                            fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}-{rnd.Next()}{tmp}";
                                             tmp++;
                                         }
 
