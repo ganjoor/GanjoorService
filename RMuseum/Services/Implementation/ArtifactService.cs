@@ -43,7 +43,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items)>> GetAll(PagingParameterModel paging, PublishStatus[] statusArray)
         {
             try
-            {              
+            {
                 var source =
                      _context.Artifacts
                      .Include(a => a.CoverImage)
@@ -79,7 +79,7 @@ namespace RMuseum.Services.Implementation
                             await _context.Tags
                             .Where(a => a.FriendlyUrl == tagUrl)
                         .SingleOrDefaultAsync();
-                if(tag == null)
+                if (tag == null)
                     return new RServiceResult<RArtifactMasterRecord[]>(new RArtifactMasterRecord[] { });
 
 
@@ -123,10 +123,10 @@ namespace RMuseum.Services.Implementation
                      .AsNoTracking()
                     .SingleOrDefaultAsync();
 
-                if(artifact != null)
+                if (artifact != null)
                 {
-                   
-                   return new RServiceResult<RArtifactMasterRecordViewModel>(RArtifactMasterRecord.ToViewModel(artifact));
+
+                    return new RServiceResult<RArtifactMasterRecordViewModel>(RArtifactMasterRecord.ToViewModel(artifact));
                 }
 
 
@@ -167,11 +167,11 @@ namespace RMuseum.Services.Implementation
 
                 if (artifact != null)
                 {
-                    List<RArtifactItemRecord> filteredItems = new List<RArtifactItemRecord>();                 
-                    
-                    foreach(RArtifactItemRecord item in artifact.Items)
+                    List<RArtifactItemRecord> filteredItems = new List<RArtifactItemRecord>();
+
+                    foreach (RArtifactItemRecord item in artifact.Items)
                     {
-                        if(item.Tags.Any(v => v.RTagId == rTag.Id  && (string.IsNullOrEmpty(tagValueFriendlyUrl) || v.FriendlyUrl == tagValueFriendlyUrl) ))
+                        if (item.Tags.Any(v => v.RTagId == rTag.Id && (string.IsNullOrEmpty(tagValueFriendlyUrl) || v.FriendlyUrl == tagValueFriendlyUrl)))
                         {
                             item.Tags = null;
                             filteredItems.Add(item);
@@ -204,7 +204,7 @@ namespace RMuseum.Services.Implementation
             try
             {
 
-                if(string.IsNullOrEmpty(edited.Name))
+                if (string.IsNullOrEmpty(edited.Name))
                 {
                     return new RServiceResult<RArtifactMasterRecord>(null, "Name could not be empty.");
                 }
@@ -213,18 +213,18 @@ namespace RMuseum.Services.Implementation
                      await _context.Artifacts
                      .Where(a => a.Id == edited.Id)
                     .SingleOrDefaultAsync();
-                   
+
 
                 if (item != null)
                 {
-                    if(item.Status != edited.Status)
+                    if (item.Status != edited.Status)
                     {
-                        if(!canChangeStatusToAwaiting)
+                        if (!canChangeStatusToAwaiting)
                         {
                             return new RServiceResult<RArtifactMasterRecord>(null, "User should be able to change status to Awaiting to complete this operation.");
                         }
 
-                        if(
+                        if (
                             !
                             (
                             (item.Status == PublishStatus.Draft && edited.Status == PublishStatus.Awaiting)
@@ -233,7 +233,7 @@ namespace RMuseum.Services.Implementation
                             )
                             )
                         {
-                            if(!canPublish)
+                            if (!canPublish)
                             {
                                 return new RServiceResult<RArtifactMasterRecord>(null, "User should have Publish permission to complete this operation.");
                             }
@@ -275,13 +275,13 @@ namespace RMuseum.Services.Implementation
                     .Artifacts.Where(a => a.Id == artifactId)
                     .Include(a => a.Items).ThenInclude(i => i.Images)
                     .SingleOrDefaultAsync();
-                if(artifact == null)
+                if (artifact == null)
                     return new RServiceResult<bool>(false, "Artifact not found.");
 
                 if (itemIndex == artifact.CoverItemIndex)
                     return new RServiceResult<bool>(true);
 
-                if(itemIndex < 0 || itemIndex >= artifact.Items.Count())
+                if (itemIndex < 0 || itemIndex >= artifact.Items.Count())
                     return new RServiceResult<bool>(false, "Item not found.");
 
                 artifact.CoverItemIndex = itemIndex;
@@ -294,7 +294,7 @@ namespace RMuseum.Services.Implementation
 
                 return new RServiceResult<bool>(true);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
@@ -343,10 +343,10 @@ namespace RMuseum.Services.Implementation
                             .OrderByDescending(g => g.Count)
                             .ToArrayAsync()
                             );
-                   
+
 
                     viewModel.Values = values.ToArray();
-                    
+
                     return new RServiceResult<RTagBundleViewModel>(viewModel);
                 }
 
@@ -369,7 +369,7 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<DateTime>(await _context.Artifacts.MaxAsync(a => a.LastModified));
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<DateTime>(DateTime.Now, exp.ToString());
             }
@@ -410,7 +410,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<RTag>> GetTagByFriendlyUrl(string friendlyUrl)
         {
             try
-            {                
+            {
                 return new RServiceResult<RTag>(await _context.Tags.Where(t => t.FriendlyUrl == friendlyUrl).SingleOrDefaultAsync());
             }
             catch (Exception exp)
@@ -458,7 +458,7 @@ namespace RMuseum.Services.Implementation
                      await _context.Tags
                      .Where(a => a.Name == tagName || a.NameInEnglish == tagName)
                     .SingleOrDefaultAsync();
-                if(existingTag != null)
+                if (existingTag != null)
                 {
                     return new RServiceResult<RTag>(null, "Duplicated Name or English Name for tag.");
                 }
@@ -520,14 +520,14 @@ namespace RMuseum.Services.Implementation
                     tag.PluralNameInEnglish = edited.PluralNameInEnglish;
                     _context.Update(tag);
 
-                    
+
 
                     RArtifactMasterRecord[] taggedItems =
                         await _context.Artifacts.Include(a => a.Tags)
                         .Where(a => a.Tags != null && a.Tags.Any(v => v.RTagId == tag.Id))
-                        .ToArrayAsync();                      
+                        .ToArrayAsync();
 
-                    foreach(RArtifactMasterRecord taggedItem in taggedItems)
+                    foreach (RArtifactMasterRecord taggedItem in taggedItems)
                     {
                         taggedItem.LastModified = DateTime.Now;
                         _context.Update(taggedItem);
@@ -615,7 +615,7 @@ namespace RMuseum.Services.Implementation
 
                 int tagOrder = viewModel.ArtifactTags.Where(tag => tag.Id == tagId).FirstOrDefault().Order;
                 RArtifactTagViewModel otherTagViewModel;
-                if(up)
+                if (up)
                 {
                     otherTagViewModel = viewModel.ArtifactTags.Where(tag => tag.Order < tagOrder).OrderByDescending(tag => tag.Order).FirstOrDefault();
                 }
@@ -624,13 +624,13 @@ namespace RMuseum.Services.Implementation
                     otherTagViewModel = viewModel.ArtifactTags.Where(tag => tag.Order > tagOrder).OrderBy(tag => tag.Order).FirstOrDefault();
                 }
 
-                if(otherTagViewModel == null)
+                if (otherTagViewModel == null)
                 {
                     return new RServiceResult<Guid?>(null, "Invalid movement");
                 }
 
                 RTag rTag1 = await _context.Tags.Where(tag => tag.Id == tagId).FirstOrDefaultAsync();
-                RTag rTag2 = await _context.Tags.Where(tag => tag.Id == otherTagViewModel.Id ).FirstOrDefaultAsync();
+                RTag rTag2 = await _context.Tags.Where(tag => tag.Id == otherTagViewModel.Id).FirstOrDefaultAsync();
 
                 rTag1.Order = otherTagViewModel.Order;
                 rTag2.Order = tagOrder;
@@ -648,7 +648,7 @@ namespace RMuseum.Services.Implementation
 
 
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<Guid?>(null, exp.ToString());
             }
@@ -755,7 +755,7 @@ namespace RMuseum.Services.Implementation
                             PluralName = tag.PluralName,
                             PluralNameInEnglish = tag.PluralNameInEnglish
                         };
-                       
+
                     viewModel.Values =
                         new RTagValue[]
                         {
@@ -763,7 +763,7 @@ namespace RMuseum.Services.Implementation
                             .Where(value => value.RTagId == tag.Id && value.FriendlyUrl == valueUrl)
                             .FirstOrDefaultAsync()
                         };
-                            
+
 
                     return new RServiceResult<RArtifactTagViewModel>(viewModel);
                 }
@@ -864,12 +864,12 @@ namespace RMuseum.Services.Implementation
                      .Include(a => a.Tags)
                      .Where(a => a.Id == artifactId)
                     .SingleOrDefaultAsync();
-                if(artifact == null)
+                if (artifact == null)
                     return new RServiceResult<RTagValue>(null);
 
                 RTagValue tag =
                     artifact.Tags.Where(a => a.Id == edited.Id)
-                    .SingleOrDefault();                   
+                    .SingleOrDefault();
 
 
                 if (tag != null)
@@ -881,7 +881,7 @@ namespace RMuseum.Services.Implementation
                     if (global)
                     {
                         RTagValue[] sameValueTags = await _context.TagValues.Where(v => v.Value == tag.Value && v.RTagId == tag.RTagId).ToArrayAsync();
-                        foreach(RTagValue sameValueTag in sameValueTags)
+                        foreach (RTagValue sameValueTag in sameValueTags)
                         {
                             sameValueTag.Value = edited.Value;
                             sameValueTag.ValueInEnglish = edited.ValueInEnglish;
@@ -889,9 +889,9 @@ namespace RMuseum.Services.Implementation
                             sameValueTag.FriendlyUrl = edited.FriendlyUrl;
                             _context.Update(sameValueTag);
 
-                            RArtifactMasterRecord correspondingArtifact = 
+                            RArtifactMasterRecord correspondingArtifact =
                                 await _context.Artifacts.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
-                            if(correspondingArtifact != null)
+                            if (correspondingArtifact != null)
                             {
                                 correspondingArtifact.LastModified = DateTime.Now;
                                 _context.Update(correspondingArtifact);
@@ -899,12 +899,12 @@ namespace RMuseum.Services.Implementation
 
                             RArtifactItemRecord correspondingItem =
                                 await _context.Items.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
-                            if(correspondingItem != null)
+                            if (correspondingItem != null)
                             {
                                 correspondingItem.LastModified = DateTime.Now;
                                 _context.Update(correspondingItem);
-                            }                           
-                            
+                            }
+
                         }
                         await _context.SaveChangesAsync();
                     }
@@ -932,8 +932,8 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        
-               /// <summary>
+
+        /// <summary>
         /// add item tag value
         /// </summary>
         /// <param name="itemId"></param>
@@ -945,7 +945,7 @@ namespace RMuseum.Services.Implementation
             {
                 RTag type = await _context.Tags.Where(a => a.Id == rTag.Id).SingleOrDefaultAsync();
 
-                RArtifactItemRecord item = await _context.Items.Include(i => i.Tags).Where(i=> i.Id == itemId).SingleOrDefaultAsync();
+                RArtifactItemRecord item = await _context.Items.Include(i => i.Tags).Where(i => i.Id == itemId).SingleOrDefaultAsync();
 
                 int order = item.Tags.Where(t => t.RTagId == type.Id).Count() == 0 ? 1 : item.Tags.Where(t => t.RTagId == type.Id).OrderByDescending(t => t.Order).FirstOrDefault().Order + 1;
 
@@ -983,7 +983,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-              
+
                 RArtifactItemRecord item = await _context.Items.Include(i => i.Tags).Where(i => i.Id == itemId).SingleOrDefaultAsync();
                 item.Tags.Remove(item.Tags.Where(t => t.Id == tagValueId).SingleOrDefault());
                 item.LastModified = DateTime.Now;
@@ -1043,7 +1043,7 @@ namespace RMuseum.Services.Implementation
                             sameValueTag.ValueInEnglish = edited.ValueInEnglish;
                             sameValueTag.Status = edited.Status;
                             sameValueTag.FriendlyUrl = edited.FriendlyUrl;
-                            
+
                             _context.Update(sameValueTag);
 
                             RArtifactMasterRecord correspondingArtifact =
@@ -1241,9 +1241,9 @@ namespace RMuseum.Services.Implementation
                 if (parent == null)
                     return new RServiceResult<RArtifactItemRecordViewModel>(null);
 
-                if(parent.Items != null)
+                if (parent.Items != null)
                     parent.Items = parent.Items.OrderBy(i => i.Order).ToArray();
-                if(parent.Tags != null)
+                if (parent.Tags != null)
                     parent.Tags = parent.Tags.OrderBy(a => a.RTag.Order).ToArray();
 
 
@@ -1341,11 +1341,11 @@ namespace RMuseum.Services.Implementation
 
                 return new RServiceResult<RArtifactMasterRecord>(artifact);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<RArtifactMasterRecord>(null, exp.ToString());
-            }         
-                      
+            }
+
         }
 
         /// <summary>
@@ -1358,40 +1358,40 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix)
         {
-           return
-                srcType == "princeton" ?
-                await StartImportingFromPrinceton(resourceNumber, friendlyUrl)
-                :
-                srcType == "harvard" ?
-                await StartImportingFromHarvard(resourceNumber, friendlyUrl)
-                :
-                 srcType == "qajarwomen" ?
-                await StartImportingFromHarvardDirectly(resourceNumber, friendlyUrl, resourcePrefix)
-                :
-                 srcType == "hathitrust" ?
-                await StartImportingFromHathiTrust(resourceNumber, friendlyUrl)
-                :
-                srcType == "penn" ?
-                await StartImportingFromPenLibraries(resourceNumber, friendlyUrl)
-                :
-                srcType == "cam" ?
-                await StartImportingFromCambridge(resourceNumber, friendlyUrl)
-                :
-                srcType == "bl" ?
-                await StartImportingFromBritishLibrary(resourceNumber, friendlyUrl)
-                :
-                srcType == "folder" ?
-                await StartImportingFromServerFolder(resourceNumber, friendlyUrl, resourcePrefix)
-                :
-                srcType == "walters" ?
-                await StartImportingFromWalters(resourceNumber, friendlyUrl)
+            return
+                 srcType == "princeton" ?
+                 await StartImportingFromPrinceton(resourceNumber, friendlyUrl)
                  :
-                srcType == "cbl" ?
-                await StartImportingFromChesterBeatty(resourceNumber, friendlyUrl)
-                :
-                await StartImportingFromTheLibraryOfCongress(resourceNumber, friendlyUrl, resourcePrefix);
+                 srcType == "harvard" ?
+                 await StartImportingFromHarvard(resourceNumber, friendlyUrl)
+                 :
+                  srcType == "qajarwomen" ?
+                 await StartImportingFromHarvardDirectly(resourceNumber, friendlyUrl, resourcePrefix)
+                 :
+                  srcType == "hathitrust" ?
+                 await StartImportingFromHathiTrust(resourceNumber, friendlyUrl)
+                 :
+                 srcType == "penn" ?
+                 await StartImportingFromPenLibraries(resourceNumber, friendlyUrl)
+                 :
+                 srcType == "cam" ?
+                 await StartImportingFromCambridge(resourceNumber, friendlyUrl)
+                 :
+                 srcType == "bl" ?
+                 await StartImportingFromBritishLibrary(resourceNumber, friendlyUrl)
+                 :
+                 srcType == "folder" ?
+                 await StartImportingFromServerFolder(resourceNumber, friendlyUrl, resourcePrefix)
+                 :
+                 srcType == "walters" ?
+                 await StartImportingFromWalters(resourceNumber, friendlyUrl)
+                  :
+                 srcType == "cbl" ?
+                 await StartImportingFromChesterBeatty(resourceNumber, friendlyUrl)
+                 :
+                 await StartImportingFromTheLibraryOfCongress(resourceNumber, friendlyUrl, resourcePrefix);
         }
-       
+
 
         /// <summary>
         /// reschedule jobs
@@ -1403,13 +1403,13 @@ namespace RMuseum.Services.Implementation
             {
 
 
-                ImportJob[] jobs =  await _context.ImportJobs.Where(j => j.Status != ImportJobStatus.Succeeded && j.JobType == JobType.ChesterBeatty).OrderByDescending(j => j.ProgressPercent).ToArrayAsync();
+                ImportJob[] jobs = await _context.ImportJobs.Where(j => j.Status != ImportJobStatus.Succeeded && j.JobType == JobType.ChesterBeatty).OrderByDescending(j => j.ProgressPercent).ToArrayAsync();
 
                 List<string> scheduled = new List<string>();
-                
-                foreach(ImportJob job in jobs)
-                {              
-                    if(job.Status != ImportJobStatus.Failed)
+
+                foreach (ImportJob job in jobs)
+                {
+                    if (job.Status != ImportJobStatus.Failed)
                     {
                         job.Status = ImportJobStatus.Aborted;
                         job.EndTime = DateTime.Now;
@@ -1428,9 +1428,9 @@ namespace RMuseum.Services.Implementation
                     if (scheduled.IndexOf(job.ResourceNumber) == -1)
                     {
                         scheduled.Add(job.ResourceNumber);
-                       
+
                         RServiceResult<bool> rescheduled = await StartImportingFromChesterBeatty(job.ResourceNumber, job.FriendlyUrl);
-                        if(rescheduled.Result)
+                        if (rescheduled.Result)
                         {
                             _context.ImportJobs.Remove(job);
                             await _context.SaveChangesAsync();
@@ -1438,7 +1438,7 @@ namespace RMuseum.Services.Implementation
 
                     }
                 }
-                
+
                 return new RServiceResult<bool>(true);
             }
             catch (Exception exp)
@@ -1472,7 +1472,7 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<bool>(false, "Can not delete published artifact");
                 }
 
-                if(checkJobs)
+                if (checkJobs)
                 {
                     var jobs = await _context.ImportJobs.Where(j => j.ArtifactId == artifactId).ToArrayAsync();
                     if (jobs.Length > 0)
@@ -1501,13 +1501,13 @@ namespace RMuseum.Services.Implementation
 
                 return new RServiceResult<bool>(true);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
-            }            
+            }
         }
 
-        
+
         private async Task<string> HandleSimpleValue(RMuseumDbContext context, JObject parsed, List<RTagValue> meta, string path, string aName)
         {
             try
@@ -1689,7 +1689,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                if((await _context.UserBookmarks.Where(b => b.RAppUserId == userId && b.RArtifactItemRecordId == itemId && b.RBookmarkType == type).SingleOrDefaultAsync()) != null)
+                if ((await _context.UserBookmarks.Where(b => b.RAppUserId == userId && b.RArtifactItemRecordId == itemId && b.RBookmarkType == type).SingleOrDefaultAsync()) != null)
                 {
                     return new RServiceResult<RUserBookmark>(null, "Item is already bookmarked/faved.");
                 }
@@ -1733,7 +1733,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<RUserBookmark[]>(null, exp.ToString());
             }
         }
-       
+
         /// <summary>
         /// update bookmark note
         /// </summary>
@@ -1744,8 +1744,8 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                RUserBookmark bookmark =  await _context.UserBookmarks.Where(b => b.Id == bookmarkId).SingleOrDefaultAsync();
-                if(bookmark == null)
+                RUserBookmark bookmark = await _context.UserBookmarks.Where(b => b.Id == bookmarkId).SingleOrDefaultAsync();
+                if (bookmark == null)
                 {
                     return new RServiceResult<bool>(false, "bookmark not found");
                 }
@@ -1798,7 +1798,7 @@ namespace RMuseum.Services.Implementation
             {
                 var source =
                      _context.UserBookmarks
-                     .Include(b =>  b.RArtifactMasterRecord).ThenInclude(a => a.CoverImage)
+                     .Include(b => b.RArtifactMasterRecord).ThenInclude(a => a.CoverImage)
                      .Include(b => b.RArtifactItemRecord).ThenInclude(b => b.Images)
                      .Where(b => b.RAppUserId == userId && b.RBookmarkType == type)
                     .OrderByDescending(b => b.DateTime)
@@ -1809,7 +1809,7 @@ namespace RMuseum.Services.Implementation
 
 
                 List<RUserBookmarkViewModel> finalList = new List<RUserBookmarkViewModel>();
-                foreach(RUserBookmark bookmark in paginatedResult1.Bookmarks)
+                foreach (RUserBookmark bookmark in paginatedResult1.Bookmarks)
                 {
                     RUserBookmarkViewModel model = new RUserBookmarkViewModel()
                     {
@@ -1821,12 +1821,12 @@ namespace RMuseum.Services.Implementation
                         RBookmarkType = bookmark.RBookmarkType,
                         Note = bookmark.Note
                     };
-                    if(bookmark.RArtifactMasterRecord != null)
+                    if (bookmark.RArtifactMasterRecord != null)
                     {
                         if (!statusArray.Contains(bookmark.RArtifactMasterRecord.Status))
                             continue; //this may result in paging bugs
                     }
-                    if(bookmark.RArtifactItemRecord != null)
+                    if (bookmark.RArtifactItemRecord != null)
                     {
                         RArtifactMasterRecord parent =
                              await _context.Artifacts
@@ -1843,7 +1843,7 @@ namespace RMuseum.Services.Implementation
                         };
                         model.RArtifactItemRecord.ParentFriendlyUrl = parent.FriendlyUrl;
                         model.RArtifactItemRecord.ParentName = parent.Name;
-                    }                    
+                    }
                     finalList.Add(model);
                 }
 
@@ -1894,12 +1894,12 @@ namespace RMuseum.Services.Implementation
                 if (referenceNoteId != null)
                 {
                     RUserNote referenceNote = await _context.UserNotes.Where(n => n.Id == referenceNoteId).SingleOrDefaultAsync();
-                    if(referenceNote == null)
+                    if (referenceNote == null)
                     {
                         return new RServiceResult<RUserNoteViewModel>(null, "Reference note not found!");
                     }
 
-                    if(referenceNote.RAppUserId != userId)
+                    if (referenceNote.RAppUserId != userId)
                     {
                         RArtifactMasterRecord artificat = await _context.Artifacts.Where(a => a.Id == artifactId).SingleOrDefaultAsync();
                         await _notificationService.PushNotification
@@ -1911,10 +1911,10 @@ namespace RMuseum.Services.Implementation
                             $"<blockquote cite=\"/item/{artificat.FriendlyUrl}#{note.Id}\">{note.HtmlContent}</blockquote><br />" +
                             $"یادداشت شما: <br />" +
                             $"<blockquote cite=\"/item/{artificat.FriendlyUrl}#{referenceNote.Id}\">{referenceNote.HtmlContent}</blockquote>"
-                            );                       
+                            );
                     }
-                }         
-                
+                }
+
                 return new RServiceResult<RUserNoteViewModel>
                     (
                     new RUserNoteViewModel()
@@ -1999,7 +1999,7 @@ namespace RMuseum.Services.Implementation
                             );
                     }
                 }
-               
+
 
                 return new RServiceResult<RUserNoteViewModel>
                     (
@@ -2045,7 +2045,7 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<RUserNoteViewModel>(null, "Note not found.");
                 }
 
-                if(userId != null) //sending null here means user is a moderator
+                if (userId != null) //sending null here means user is a moderator
                 {
                     if (userId != note.RAppUserId)
                     {
@@ -2053,20 +2053,20 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-               
+
 
                 RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(note.RAppUserId);
                 if (!string.IsNullOrEmpty(userInfo.ExceptionString))
                     return new RServiceResult<RUserNoteViewModel>(null, userInfo.ExceptionString);
 
-                
+
 
                 note.HtmlContent = noteContents;
                 note.LastModified = DateTime.Now;
 
                 _context.UserNotes.Update(note);
                 await _context.SaveChangesAsync();
-                
+
 
                 return new RServiceResult<RUserNoteViewModel>
                     (
@@ -2121,14 +2121,14 @@ namespace RMuseum.Services.Implementation
 
                 List<Guid> deletedNotesIdSet = new List<Guid>();
 
-                RUserNote[] relatedNotes =  await _context.UserNotes.Where(n => n.ReferenceNoteId == noteId).ToArrayAsync();
-                foreach(RUserNote relatedNote in relatedNotes)
+                RUserNote[] relatedNotes = await _context.UserNotes.Where(n => n.ReferenceNoteId == noteId).ToArrayAsync();
+                foreach (RUserNote relatedNote in relatedNotes)
                 {
                     deletedNotesIdSet.Add(relatedNote.Id);
 
                     RServiceResult<Guid[]> refDel = await DeleteUserNote(relatedNote.Id, null);
                     if (!string.IsNullOrEmpty(refDel.ExceptionString))
-                        return new RServiceResult<Guid[]>(null, refDel.ExceptionString);                    
+                        return new RServiceResult<Guid[]>(null, refDel.ExceptionString);
                 }
 
                 deletedNotesIdSet.Add(noteId);
@@ -2142,7 +2142,7 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<Guid[]>(null, exp.ToString());
             }
-        }       
+        }
 
 
         /// <summary>
@@ -2245,7 +2245,7 @@ namespace RMuseum.Services.Implementation
                         DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
                         LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
                     };
-                    
+
                 viewModel.Notes = await _GetArtifactPublicNotes(artifactId, note.Id);
                 res.Add(viewModel);
             }
@@ -2260,7 +2260,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<RUserNoteViewModel[]>> GetArtifactPublicNotes(Guid artifactId)
         {
             try
-            {             
+            {
                 return new RServiceResult<RUserNoteViewModel[]>(await _GetArtifactPublicNotes(artifactId, null));
             }
             catch (Exception exp)
@@ -2368,7 +2368,7 @@ namespace RMuseum.Services.Implementation
                         DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
                         LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
                     };
-                
+
                 viewModel.Notes = await _GetArtifactItemPublicNotes(itemId, note.Id);
                 res.Add(viewModel);
             }
@@ -2383,7 +2383,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<RUserNoteViewModel[]>> GetArtifactItemPublicNotes(Guid itemId)
         {
             try
-            {              
+            {
 
                 return new RServiceResult<RUserNoteViewModel[]>(await _GetArtifactItemPublicNotes(itemId, null));
             }
@@ -2418,14 +2418,14 @@ namespace RMuseum.Services.Implementation
 
                 RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(userId);
                 if (!string.IsNullOrEmpty(userInfo.ExceptionString))
-                    return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>((PagingMeta: null, Notes: null), userInfo.ExceptionString);               
+                    return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>((PagingMeta: null, Notes: null), userInfo.ExceptionString);
 
                 PublicRAppUser user = userInfo.Result;
 
                 List<RUserNoteViewModel> finalList = new List<RUserNoteViewModel>();
                 foreach (RUserNote note in paginatedResult1.Notes)
                 {
-                    RUserNoteViewModel model = 
+                    RUserNoteViewModel model =
                         new RUserNoteViewModel()
                         {
                             Id = note.Id,
@@ -2441,14 +2441,14 @@ namespace RMuseum.Services.Implementation
                             DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
                             LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
                         };
-                if (note.RArtifactMasterRecord != null)
+                    if (note.RArtifactMasterRecord != null)
                     {
                         if (!statusArray.Contains(note.RArtifactMasterRecord.Status))
                             continue; //this may result in paging bugs
                     }
 
                     if (note.RArtifactItemRecord != null)
-                    {                       
+                    {
 
                         RArtifactMasterRecord parent =
                              await _context.Artifacts
@@ -2465,7 +2465,7 @@ namespace RMuseum.Services.Implementation
                         model.RelatedItemParentName = parent.Name;
                     }
 
-                    if(note.RArtifactMasterRecord != null)
+                    if (note.RArtifactMasterRecord != null)
                     {
                         model.RelatedEntityName = note.RArtifactMasterRecord.Name;
                         model.RelatedEntityImageId = note.RArtifactMasterRecord.CoverImage.Id;
@@ -2504,8 +2504,8 @@ namespace RMuseum.Services.Implementation
                 (PaginationMetadata PagingMeta, RUserNote[] Notes) paginatedResult1 =
                     await QueryablePaginator<RUserNote>.Paginate(source, paging);
 
-             
-               
+
+
                 List<RUserNoteViewModel> finalList = new List<RUserNoteViewModel>();
                 foreach (RUserNote note in paginatedResult1.Notes)
                 {
@@ -2545,7 +2545,7 @@ namespace RMuseum.Services.Implementation
                             DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
                             LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
                         };
-                    
+
                     if (note.RArtifactMasterRecord != null)
                     {
                         if (note.RArtifactMasterRecord.Status != PublishStatus.Published)
@@ -2602,7 +2602,7 @@ namespace RMuseum.Services.Implementation
             {
                 RArtifactMasterRecord artifact = await _context.Artifacts.Where(a => a.FriendlyUrl == link.ArtifactFriendlyUrl).SingleOrDefaultAsync();
 
-                GanjoorLink alreaySuggest = 
+                GanjoorLink alreaySuggest =
                 await _context.GanjoorLinks.
                     Where(l => l.GanjoorPostId == link.GanjoorPostId && l.ArtifactId == artifact.Id && l.ItemId == link.ItemId && l.ReviewResult != ReviewResult.Rejected)
                     .SingleOrDefaultAsync();
@@ -2627,9 +2627,9 @@ namespace RMuseum.Services.Implementation
 
                 string entityName, entityFriendlyUrl;
                 Guid entityImageId;
-                
+
                 if (suggestion.ItemId == null)
-                {                    
+                {
                     entityName = artifact.Name;
                     entityFriendlyUrl = $"/items/{artifact.FriendlyUrl}";
                     entityImageId = artifact.CoverImageId;
@@ -2644,7 +2644,7 @@ namespace RMuseum.Services.Implementation
 
                 var user = (await _userService.GetUserInformation(userId)).Result;
 
-                GanjoorLinkViewModel viewModel 
+                GanjoorLinkViewModel viewModel
                     = new GanjoorLinkViewModel()
                     {
                         Id = suggestion.Id,
@@ -2674,11 +2674,112 @@ namespace RMuseum.Services.Implementation
                     };
                 return new RServiceResult<GanjoorLinkViewModel>(viewModel);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<GanjoorLinkViewModel>(null, exp.ToString());
             }
         }
+
+        /// <summary>
+        /// finds what the method name suggests
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorLinkViewModel[]>> GetNextUnsynchronizedSuggestedLinkWithAlreadySynchedOneForPoem(int skip)
+        {
+            try
+            {
+                GanjoorLink link =
+                await _context.GanjoorLinks.AsNoTracking()
+                     .Include(l => l.SuggestedBy)
+                     .Include(l => l.Artifact)
+                     .Include(l => l.Item).ThenInclude(i => i.Images)
+                     .Where(l => l.ReviewResult == ReviewResult.Approved && !l.Synchronized)
+                     .OrderBy(l => l.SuggestionDate)
+                     .Skip(skip)
+                     .FirstOrDefaultAsync();
+                if (link == null)
+                    return new RServiceResult<GanjoorLinkViewModel[]>(null);
+                List<GanjoorLinkViewModel> result = new List<GanjoorLinkViewModel>();
+                result.Add
+                         (
+                         new GanjoorLinkViewModel()
+                         {
+                             Id = link.Id,
+                             GanjoorPostId = link.GanjoorPostId,
+                             GanjoorUrl = link.GanjoorUrl,
+                             GanjoorTitle = link.GanjoorTitle,
+                             EntityName = link.Item == null ? link.Artifact.Name : link.Artifact.Name + " » " + link.Item.Name,
+                             EntityFriendlyUrl = link.Item == null ? $"/items/{link.Artifact.FriendlyUrl}" : $"/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                             EntityImageId = link.Item == null ? link.Artifact.CoverImageId : link.Item.Images.First().Id,
+                             ReviewResult = link.ReviewResult,
+                             Synchronized = link.Synchronized,
+                             SuggestedBy = new PublicRAppUser()
+                             {
+                                 Id = link.SuggestedBy.Id,
+                                 Username = link.SuggestedBy.UserName,
+                                 Email = link.SuggestedBy.Email,
+                                 FirstName = link.SuggestedBy.FirstName,
+                                 SureName = link.SuggestedBy.SureName,
+                                 PhoneNumber = link.SuggestedBy.PhoneNumber,
+                                 RImageId = link.SuggestedBy.RImageId,
+                                 Status = link.SuggestedBy.Status,
+                                 NickName = link.SuggestedBy.NickName,
+                                 Website = link.SuggestedBy.Website,
+                                 Bio = link.SuggestedBy.Bio,
+                                 EmailConfirmed = link.SuggestedBy.EmailConfirmed
+                             }
+                         }
+                         );
+                GanjoorLink preLink =
+                await _context.GanjoorLinks.AsNoTracking()
+                     .Include(l => l.SuggestedBy)
+                     .Include(l => l.Artifact)
+                     .Include(l => l.Item).ThenInclude(i => i.Images)
+                     .Where(l => l.ReviewResult == ReviewResult.Approved && l.DisplayOnPage && l.GanjoorPostId == link.GanjoorPostId)
+                     .OrderBy(l => l.SuggestionDate)
+                     .FirstOrDefaultAsync();
+                if(preLink != null)
+                {
+                    result.Add
+                         (
+                         new GanjoorLinkViewModel()
+                         {
+                             Id = preLink.Id,
+                             GanjoorPostId = preLink.GanjoorPostId,
+                             GanjoorUrl = preLink.GanjoorUrl,
+                             GanjoorTitle = preLink.GanjoorTitle,
+                             EntityName = preLink.Item == null ? preLink.Artifact.Name : preLink.Artifact.Name + " » " + preLink.Item.Name,
+                             EntityFriendlyUrl = preLink.Item == null ? $"/items/{preLink.Artifact.FriendlyUrl}" : $"/items/{preLink.Artifact.FriendlyUrl}/{preLink.Item.FriendlyUrl}",
+                             EntityImageId = preLink.Item == null ? preLink.Artifact.CoverImageId : preLink.Item.Images.First().Id,
+                             ReviewResult = preLink.ReviewResult,
+                             Synchronized = preLink.Synchronized,
+                             SuggestedBy = new PublicRAppUser()
+                             {
+                                 Id = preLink.SuggestedBy.Id,
+                                 Username = preLink.SuggestedBy.UserName,
+                                 Email = preLink.SuggestedBy.Email,
+                                 FirstName = preLink.SuggestedBy.FirstName,
+                                 SureName = preLink.SuggestedBy.SureName,
+                                 PhoneNumber = preLink.SuggestedBy.PhoneNumber,
+                                 RImageId = preLink.SuggestedBy.RImageId,
+                                 Status = preLink.SuggestedBy.Status,
+                                 NickName = preLink.SuggestedBy.NickName,
+                                 Website = preLink.SuggestedBy.Website,
+                                 Bio = preLink.SuggestedBy.Bio,
+                                 EmailConfirmed = preLink.SuggestedBy.EmailConfirmed
+                             }
+                         }
+                         );
+                }
+                return new RServiceResult<GanjoorLinkViewModel[]>(result.ToArray());
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorLinkViewModel[]>(null, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// get suggested ganjoor links

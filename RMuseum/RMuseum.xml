@@ -6489,6 +6489,13 @@
             <param name="link"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetNextUnsynchronizedSuggestedLinkWithAlreadySynchedOneForPoem(System.Int32)">
+            <summary>
+            finds what the method name suggests
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IArtifactService.GetSuggestedLinks(RMuseum.Models.GanjoorIntegration.ReviewResult,System.Boolean)">
             <summary>
             get suggested ganjoor links
@@ -7444,6 +7451,13 @@
             </summary>
             <param name="userId"></param>
             <param name="link"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetNextUnsynchronizedSuggestedLinkWithAlreadySynchedOneForPoem(System.Int32)">
+            <summary>
+            finds what the method name suggests
+            </summary>
+            <param name="skip"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.GetSuggestedLinks(RMuseum.Models.GanjoorIntegration.ReviewResult,System.Boolean)">

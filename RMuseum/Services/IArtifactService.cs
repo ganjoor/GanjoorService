@@ -434,6 +434,13 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorLinkViewModel>> SuggestGanjoorLink(Guid userId, LinkSuggestion link);
 
         /// <summary>
+        /// finds what the method name suggests
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorLinkViewModel[]>> GetNextUnsynchronizedSuggestedLinkWithAlreadySynchedOneForPoem(int skip);
+
+        /// <summary>
         /// get suggested ganjoor links
         /// </summary>
         /// <param name="status"></param>
