@@ -141,9 +141,14 @@ namespace GanjooRazor.Pages
             if(Poems != null)
             {
                 // highlight searched word
+                string[] queryParts = Query.IndexOf('"') == 0 && Query.LastIndexOf('"') == (Query.Length - 1) ?
+                       new string[] { Query.Replace("\"", "") }
+                       :
+                       Query.Replace("\"", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
                 foreach (var poem in Poems)
                 {
-                    string[] queryParts = Query.Replace("\"", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                   
 
                     int firstIndex = poem.PlainText.Length;
                     for (int i = 0; i < queryParts.Length; i++)
