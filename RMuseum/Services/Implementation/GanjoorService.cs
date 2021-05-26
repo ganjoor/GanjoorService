@@ -1990,6 +1990,10 @@ namespace RMuseum.Services.Implementation
                         emptyOrAnd = " AND ";
                     }
                 }
+                if (poetId == null)
+                {
+                    catId = null;
+                }
                 if(poetId != null && catId == null)
                 {
                     var poetRes = await GetPoetById((int)poetId);
