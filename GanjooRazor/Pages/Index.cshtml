@@ -113,7 +113,17 @@
 
     <script src="/lib/tinymce/tinymce.min.js"></script>
     <script>tinymce.init({
-    selector: 'textarea.editor', language: 'fa_IR', menubar: false, plugins: 'link', toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | outdent indent | link' });</script>
+        selector: 'textarea.editor',
+        language: 'fa_IR',
+        menubar: false,
+        plugins: 'link paste',
+        toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | outdent indent | link',
+        paste_auto_cleanup_on_paste: true,
+        paste_remove_styles: true,
+        paste_remove_styles_if_webkit: true,
+        paste_strip_class_attributes: true,
+        });
+    </script>
     <script>
         function wpopen(macagna) {
             window.open(macagna, '_blank', 'width=600,height=700,scrollbars=yes,status=yes');
