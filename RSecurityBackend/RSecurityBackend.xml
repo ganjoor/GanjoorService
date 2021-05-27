@@ -213,23 +213,6 @@
             <param name="signUpViewModel">signUpViewModel</param>
             <returns>next step: "verify" or "finalize"</returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetSignUpEmailSubject(System.String)">
-            <summary>
-            Sign Up Email Subject
-            </summary>
-            <returns>
-            subject
-            </returns>
-            <param name="secretCode"></param>
-        </member>
-        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetSignUpEmailHtmlContent(System.String,System.String)">
-            <summary>
-            Sign Up Email Html Content
-            </summary>
-            <param name="secretCode"></param>
-            <param name="signupCallbackUrl"></param>
-            <returns>html content</returns>
-        </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.VerifySignUp(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String)">
             <summary>
             verify signup / forgot password
@@ -251,23 +234,6 @@
             </summary>
             <param name="fpwdViewModel">signUpViewModel</param>
             <returns>result</returns>
-        </member>
-        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetForgotPasswordEmailSubject(System.String)">
-            <summary>
-            Forgot Password Email Subject
-            </summary>
-            <returns>
-            subject
-            </returns>
-            <param name="secretCode"></param>
-        </member>
-        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetForgotPasswordEmailHtmlContent(System.String,System.String)">
-            <summary>
-            Forgot Password Email Html Content
-            </summary>
-            <param name="secretCode"></param>
-            <param name="forgotPasswordCallbackUrl"></param>
-            <returns>html content</returns>
         </member>
         <member name="P:RSecurityBackend.Controllers.AppUserControllerBase.SignupEnabled">
             <summary>
@@ -2341,6 +2307,40 @@
             <param name="email"></param>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetSignUpEmailSubject(System.String)">
+            <summary>
+            Sign Up Email Subject
+            </summary>
+            <returns>
+            subject
+            </returns>
+            <param name="secretCode"></param>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetSignUpEmailHtmlContent(System.String,System.String)">
+            <summary>
+            Sign Up Email Html Content
+            </summary>
+            <param name="secretCode"></param>
+            <param name="signupCallbackUrl"></param>
+            <returns>html content</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetForgotPasswordEmailSubject(System.String)">
+            <summary>
+            Forgot Password Email Subject
+            </summary>
+            <returns>
+            subject
+            </returns>
+            <param name="secretCode"></param>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetForgotPasswordEmailHtmlContent(System.String,System.String)">
+            <summary>
+            Forgot Password Email Html Content
+            </summary>
+            <param name="secretCode"></param>
+            <param name="forgotPasswordCallbackUrl"></param>
+            <returns>html content</returns>
+        </member>
         <member name="P:RSecurityBackend.Services.IAppUserService.TokenSecret">
             <summary>
             secret used for generating Jwt token
@@ -2798,6 +2798,40 @@
             </summary>
             <param name="errors"></param>
             <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetSignUpEmailSubject(System.String)">
+            <summary>
+            Sign Up Email Subject
+            </summary>
+            <returns>
+            subject
+            </returns>
+            <param name="secretCode"></param>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetSignUpEmailHtmlContent(System.String,System.String)">
+            <summary>
+            Sign Up Email Html Content
+            </summary>
+            <param name="secretCode"></param>
+            <param name="signupCallbackUrl"></param>
+            <returns>html content</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetForgotPasswordEmailSubject(System.String)">
+            <summary>
+            Forgot Password Email Subject
+            </summary>
+            <returns>
+            subject
+            </returns>
+            <param name="secretCode"></param>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetForgotPasswordEmailHtmlContent(System.String,System.String)">
+            <summary>
+            Forgot Password Email Html Content
+            </summary>
+            <param name="secretCode"></param>
+            <param name="forgotPasswordCallbackUrl"></param>
+            <returns>html content</returns>
         </member>
         <member name="F:RSecurityBackend.Services.Implementation.AppUserService._context">
             <summary>

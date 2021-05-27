@@ -833,8 +833,8 @@ namespace RSecurityBackend.Controllers
                     await _emailSender.SendEmailAsync
                         (
                         signUpViewModel.Email,
-                        GetSignUpEmailSubject(res.Result.Secret),
-                        GetSignUpEmailHtmlContent(res.Result.Secret, signUpViewModel.CallbackUrl)
+                        _appUserService.GetSignUpEmailSubject(res.Result.Secret),
+                        _appUserService.GetSignUpEmailHtmlContent(res.Result.Secret, signUpViewModel.CallbackUrl)
                         );
                     return Ok("verify");
                 }
@@ -845,31 +845,6 @@ namespace RSecurityBackend.Controllers
             }
 
             return Ok("finalize");
-        }
-
-        /// <summary>
-        /// Sign Up Email Subject
-        /// </summary>
-        /// <returns>
-        /// subject
-        /// </returns>
-        /// <param name="secretCode"></param>
-        protected virtual string GetSignUpEmailSubject(string secretCode)
-        {
-            return $"Ganjoor SignUp Code:{secretCode}";
-        }
-
-        /// <summary>
-        /// Sign Up Email Html Content
-        /// </summary>
-        /// <param name="secretCode"></param>
-        /// <param name="signupCallbackUrl"></param>
-        /// <returns>html content</returns>
-        protected virtual string GetSignUpEmailHtmlContent(string secretCode, string signupCallbackUrl)
-        {
-            if(string.IsNullOrEmpty(signupCallbackUrl))
-                return $"{signupCallbackUrl}?secret={secretCode}";
-            return $"لطفا {secretCode} را در صفحهٔ ثبت نام وارد کنید.";
         }
 
         /// <summary>
@@ -954,8 +929,8 @@ namespace RSecurityBackend.Controllers
                 await _emailSender.SendEmailAsync
                     (
                     fpwdViewModel.Email,
-                    GetForgotPasswordEmailSubject(res.Result.Secret),
-                    GetForgotPasswordEmailHtmlContent(res.Result.Secret, fpwdViewModel.CallbackUrl)
+                    _appUserService.GetForgotPasswordEmailSubject(res.Result.Secret),
+                    _appUserService.GetForgotPasswordEmailHtmlContent(res.Result.Secret, fpwdViewModel.CallbackUrl)
                     );
             }
             catch (Exception exp)
@@ -966,28 +941,6 @@ namespace RSecurityBackend.Controllers
             return Ok(true);
         }
 
-        /// <summary>
-        /// Forgot Password Email Subject
-        /// </summary>
-        /// <returns>
-        /// subject
-        /// </returns>
-        /// <param name="secretCode"></param>
-        protected virtual string GetForgotPasswordEmailSubject(string secretCode)
-        {
-            return $"Ganjoor Forgot Password Code:{secretCode}";
-        }
-
-        /// <summary>
-        /// Forgot Password Email Html Content
-        /// </summary>
-        /// <param name="secretCode"></param>
-        /// <param name="forgotPasswordCallbackUrl"></param>
-        /// <returns>html content</returns>
-        protected virtual string GetForgotPasswordEmailHtmlContent(string secretCode, string forgotPasswordCallbackUrl)
-        {
-            return $"{forgotPasswordCallbackUrl}?secret={secretCode}";
-        }
 
         /// <summary>
         /// Is Sign-up enabled?

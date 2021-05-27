@@ -254,8 +254,39 @@ namespace RSecurityBackend.Services
         /// <returns></returns>
         Task<RServiceResult<PublicRAppUser>> FindUserByEmail(string email);
 
+        /// <summary>
+        /// Sign Up Email Subject
+        /// </summary>
+        /// <returns>
+        /// subject
+        /// </returns>
+        /// <param name="secretCode"></param>
+        string GetSignUpEmailSubject(string secretCode);
 
-        
+        /// <summary>
+        /// Sign Up Email Html Content
+        /// </summary>
+        /// <param name="secretCode"></param>
+        /// <param name="signupCallbackUrl"></param>
+        /// <returns>html content</returns>
+        string GetSignUpEmailHtmlContent(string secretCode, string signupCallbackUrl);
+
+        /// <summary>
+        /// Forgot Password Email Subject
+        /// </summary>
+        /// <returns>
+        /// subject
+        /// </returns>
+        /// <param name="secretCode"></param>
+        string GetForgotPasswordEmailSubject(string secretCode);
+
+        /// <summary>
+        /// Forgot Password Email Html Content
+        /// </summary>
+        /// <param name="secretCode"></param>
+        /// <param name="forgotPasswordCallbackUrl"></param>
+        /// <returns>html content</returns>
+        string GetForgotPasswordEmailHtmlContent(string secretCode, string forgotPasswordCallbackUrl);
 
         /// <summary>
         /// secret used for generating Jwt token

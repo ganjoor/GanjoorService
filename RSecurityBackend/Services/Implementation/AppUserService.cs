@@ -1683,6 +1683,57 @@ namespace RSecurityBackend.Services.Implementation
         #endregion
         #endregion
 
+
+        #region Signup/Forget password email related overridables
+        /// <summary>
+        /// Sign Up Email Subject
+        /// </summary>
+        /// <returns>
+        /// subject
+        /// </returns>
+        /// <param name="secretCode"></param>
+        public virtual string GetSignUpEmailSubject(string secretCode)
+        {
+            return $"Ganjoor SignUp Code:{secretCode}";
+        }
+
+        /// <summary>
+        /// Sign Up Email Html Content
+        /// </summary>
+        /// <param name="secretCode"></param>
+        /// <param name="signupCallbackUrl"></param>
+        /// <returns>html content</returns>
+        public virtual string GetSignUpEmailHtmlContent(string secretCode, string signupCallbackUrl)
+        {
+            if (string.IsNullOrEmpty(signupCallbackUrl))
+                return $"{signupCallbackUrl}?secret={secretCode}";
+            return $"لطفا {secretCode} را در صفحهٔ ثبت نام وارد کنید.";
+        }
+
+        /// <summary>
+        /// Forgot Password Email Subject
+        /// </summary>
+        /// <returns>
+        /// subject
+        /// </returns>
+        /// <param name="secretCode"></param>
+        public virtual string GetForgotPasswordEmailSubject(string secretCode)
+        {
+            return $"Ganjoor Forgot Password Code:{secretCode}";
+        }
+
+        /// <summary>
+        /// Forgot Password Email Html Content
+        /// </summary>
+        /// <param name="secretCode"></param>
+        /// <param name="forgotPasswordCallbackUrl"></param>
+        /// <returns>html content</returns>
+        public virtual string GetForgotPasswordEmailHtmlContent(string secretCode, string forgotPasswordCallbackUrl)
+        {
+            return $"{forgotPasswordCallbackUrl}?secret={secretCode}";
+        }
+        #endregion
+
         /// <summary>
         /// Main Database context
         /// </summary>
