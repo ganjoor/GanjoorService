@@ -1622,7 +1622,7 @@ namespace RMuseum.Services.Implementation
                 }
                 
 
-                GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
+                GanjoorSinger singer = await _context.GanjoorSingers.AsNoTracking().Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
                 if (singer != null)
                 {
                     track.SingerId = singer.Id;
@@ -1636,6 +1636,31 @@ namespace RMuseum.Services.Implementation
                 {
                     await CacheCleanForPageById(track.PoemId);
                 }
+
+                var poem = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == track.PoemId).SingleAsync();
+
+                if (track.Approved)
+                {
+                    await _notificationService.PushNotification(
+                        (Guid)track.SuggestedById,
+                                      "تأیید آهنگ پیشنهادی",
+                                      $"آهنگ پیشنهادی شما («{track.TrackName}» برای «<a href='{poem.FullUrl}'>{poem.FullTitle}</a>») تأیید شد.  {Environment.NewLine}" +
+                                      $"از این که به تکمیل اطلاعات گنجور کمک کردید سپاسگزاریم."
+                                      );
+                }
+                else if (track.Rejected)
+                {
+                    await _notificationService.PushNotification(
+                        (Guid)track.SuggestedById,
+                                      "رد آهنگ پیشنهادی",
+                                      $"آهنگ پیشنهادی شما («{track.TrackName}» برای «<a href='{poem.FullUrl}'>{poem.FullTitle}</a>») تأیید نشد. {Environment.NewLine}" +
+                                      $"علت عدم تأیید: {Environment.NewLine}" +
+                                      $"«{track.RejectionCause}» {Environment.NewLine}" +
+                                      $"توجه کنید که در پیشنهاد آهنگ می‌بایست دقیقا قطعه‌ای را مشخص کنید که شعر در آن خوانده شده و پیشنهاد خواننده یا آلبوم یا برنامهٔ گلها به طور کلی فایده‌ای ندارد.{Environment.NewLine}" +
+                                      $"اگر تصور می‌کنید اشتباهی رخ داده لطفا مجددا آهنگ را پیشنهاد دهید و در بخش توضیحات دلیل خود را بنویسید.{Environment.NewLine}با سپاس"
+                                      );
+                }
+                    
 
                 return new RServiceResult<PoemMusicTrackViewModel>(song);
             }
