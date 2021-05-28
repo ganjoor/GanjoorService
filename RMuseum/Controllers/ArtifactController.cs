@@ -1669,8 +1669,9 @@ namespace RMuseum.Controllers
 
         /// <summary>
         /// finds next unsynchronized suggested link with an aleady synched one from the artificat if exists,
-        /// return value might be null or an array with length  1 or 2
+        /// return value might be null or an array with length  1 or 2 (has paging-headers)
         /// </summary>
+        /// <remarks>has paging-headers</remarks>
         /// <param name="skip"></param>
         /// <returns> return value might be null or an array with length  1 or 2</returns>
         [HttpGet]
@@ -1683,6 +1684,23 @@ namespace RMuseum.Controllers
             RServiceResult<GanjoorLinkViewModel[]> res = await _artifactService.GetNextUnsynchronizedSuggestedLinkWithAlreadySynchedOneForPoem(skip);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
+            var resCount = await _artifactService.GetUnsynchronizedSuggestedLinksCount();
+            if (!string.IsNullOrEmpty(resCount.ExceptionString))
+                return BadRequest(resCount.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers",
+                JsonConvert.SerializeObject(
+                    new PaginationMetadata()
+                    {
+                        totalCount = resCount.Result,
+                        pageSize = -1,
+                        currentPage = -1,
+                        hasNextPage = false,
+                        hasPreviousPage = false,
+                        totalPages = -1
+                    })
+                );
             return Ok(res.Result);
         }
 

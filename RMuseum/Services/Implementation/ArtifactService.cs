@@ -2681,6 +2681,30 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get Unsynchronized image count
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> GetUnsynchronizedSuggestedLinksCount()
+        {
+            try
+            {
+                return new RServiceResult<int>
+                    (
+                      await _context.GanjoorLinks.AsNoTracking()
+                     .Include(l => l.SuggestedBy)
+                     .Include(l => l.Artifact)
+                     .Include(l => l.Item).ThenInclude(i => i.Images)
+                     .Where(l => l.ReviewResult == ReviewResult.Approved && !l.Synchronized)
+                     .CountAsync()
+                     );
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<int>(-1, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// finds what the method name suggests
         /// </summary>
         /// <param name="skip"></param>

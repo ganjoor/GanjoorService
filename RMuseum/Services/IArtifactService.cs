@@ -434,6 +434,12 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorLinkViewModel>> SuggestGanjoorLink(Guid userId, LinkSuggestion link);
 
         /// <summary>
+        /// get Unsynchronized image count
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<int>> GetUnsynchronizedSuggestedLinksCount();
+
+        /// <summary>
         /// finds what the method name suggests
         /// </summary>
         /// <param name="skip"></param>
