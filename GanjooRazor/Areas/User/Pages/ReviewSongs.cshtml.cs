@@ -84,9 +84,6 @@ namespace GanjooRazor.Areas.User.Pages
                         if (poemResponse.IsSuccessStatusCode)
                         {
                             Poem = JsonConvert.DeserializeObject<GanjoorPoemCompleteViewModel>(await poemResponse.Content.ReadAsStringAsync());
-
-                           
-
                         }
                         else
                         {

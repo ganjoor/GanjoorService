@@ -169,6 +169,13 @@
                                 <a class="nav-link text-dark" asp-area="User" asp-page="/ReportedComments">حاشیه‌های گزارش شده</a>
                             </li>
                         }
+
+                        @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ArtifactEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName}"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="User" asp-page="/FinalizeImages">نهایی‌سازی تصاویر</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

@@ -3007,8 +3007,9 @@ namespace RMuseum.Services.Implementation
         /// Synchronize suggested link
         /// </summary>
         /// <param name="linkId"></param>
+        /// <param name="displayOnPage"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> SynchronizeSuggestedLink(Guid linkId)
+        public async Task<RServiceResult<bool>> SynchronizeSuggestedLink(Guid linkId, bool displayOnPage)
         {
             try
             {
@@ -3018,6 +3019,7 @@ namespace RMuseum.Services.Implementation
                      .SingleOrDefaultAsync();
 
                 link.Synchronized = true;
+                link.DisplayOnPage = displayOnPage;
 
                 _context.GanjoorLinks.Update(link);
                 await _context.SaveChangesAsync();

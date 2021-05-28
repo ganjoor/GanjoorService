@@ -1,0 +1,24 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.FinalizeImagesModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "نهایی‌سازی تصاویر پیشنهادی";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+<h1>@ViewData["Title"]</h1>
+
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+
+@if (Model.MainImage != null)
+{
+    <img src="https://ganjgah.ir/api/images/thumb/@(Model.MainImage.EntityImageId).jpg" />
+}
+
+@if (Model.PreviouslyLinkedImage != null)
+{
+    <img src="https://ganjgah.ir/api/images/thumb/@(Model.PreviouslyLinkedImage.EntityImageId).jpg" />
+}

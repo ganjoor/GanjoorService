@@ -1667,7 +1667,25 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
-       
+        /// <summary>
+        /// finds next unsynchronized suggested link with an aleady synched one from the artificat if exists,
+        /// return value might be null or an array with length  1 or 2
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns> return value might be null or an array with length  1 or 2</returns>
+        [HttpGet]
+        [Route("ganjoor/nextunsychedimage")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorLinkViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetNextUnsynchronizedSuggestedLinkWithAlreadySynchedOneForPoem(int skip)
+        {
+            RServiceResult<GanjoorLinkViewModel[]> res = await _artifactService.GetNextUnsynchronizedSuggestedLinkWithAlreadySynchedOneForPoem(skip);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
         /// <summary>
         /// review suggested ganjoor link
         /// </summary>
@@ -1692,15 +1710,16 @@ namespace RMuseum.Controllers
         /// mark suggested ganjoor link as synchronized
         /// </summary>
         /// <param name="linkId"></param>
+        /// <param name="displayOnPage">display ogn page</param>
         /// <returns></returns>
         [HttpPut]
-        [Route("ganjoor/sync/{linkId}")]
+        [Route("ganjoor/sync/{linkId}/{displayOnPage}")]
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> SynchronizeGanjoorLink(Guid linkId)
+        public async Task<IActionResult> SynchronizeGanjoorLink(Guid linkId, bool displayOnPage)
         {
-            RServiceResult<bool> suggestion = await _artifactService.SynchronizeSuggestedLink(linkId);
+            RServiceResult<bool> suggestion = await _artifactService.SynchronizeSuggestedLink(linkId, displayOnPage);
             if (!string.IsNullOrEmpty(suggestion.ExceptionString))
                 return BadRequest(suggestion.ExceptionString);
             return Ok();

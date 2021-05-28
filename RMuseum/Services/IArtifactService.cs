@@ -467,8 +467,9 @@ namespace RMuseum.Services
         /// Synchronize suggested link
         /// </summary>
         /// <param name="linkId"></param>
+        /// <param name="displayOnPage"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> SynchronizeSuggestedLink(Guid linkId);
+        Task<RServiceResult<bool>> SynchronizeSuggestedLink(Guid linkId, bool displayOnPage);
 
         /// <summary>
         /// get suggested pinterest links

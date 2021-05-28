@@ -478,6 +478,14 @@
             <param name="notSynced"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetNextUnsynchronizedSuggestedLinkWithAlreadySynchedOneForPoem(System.Int32)">
+            <summary>
+            finds next unsynchronized suggested link with an aleady synched one from the artificat if exists,
+            return value might be null or an array with length  1 or 2
+            </summary>
+            <param name="skip"></param>
+            <returns> return value might be null or an array with length  1 or 2</returns>
+        </member>
         <member name="M:RMuseum.Controllers.ArtifactController.ReviewGanjoorLink(System.Guid,RMuseum.Models.GanjoorIntegration.ReviewResult)">
             <summary>
             review suggested ganjoor link
@@ -486,11 +494,12 @@
             <param name="result"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.SynchronizeGanjoorLink(System.Guid)">
+        <member name="M:RMuseum.Controllers.ArtifactController.SynchronizeGanjoorLink(System.Guid,System.Boolean)">
             <summary>
             mark suggested ganjoor link as synchronized
             </summary>
             <param name="linkId"></param>
+            <param name="displayOnPage">display ogn page</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.ArtifactController.AddTOCForSuggestedLinks">
@@ -6485,11 +6494,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.SynchronizeSuggestedLink(System.Guid)">
+        <member name="M:RMuseum.Services.IArtifactService.SynchronizeSuggestedLink(System.Guid,System.Boolean)">
             <summary>
             Synchronize suggested link
             </summary>
             <param name="linkId"></param>
+            <param name="displayOnPage"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IArtifactService.GetSuggestedPinterestLinks(RMuseum.Models.GanjoorIntegration.ReviewResult,System.Boolean)">
@@ -7449,11 +7459,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.SynchronizeSuggestedLink(System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.SynchronizeSuggestedLink(System.Guid,System.Boolean)">
             <summary>
             Synchronize suggested link
             </summary>
             <param name="linkId"></param>
+            <param name="displayOnPage"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.GetSuggestedPinterestLinks(RMuseum.Models.GanjoorIntegration.ReviewResult,System.Boolean)">
