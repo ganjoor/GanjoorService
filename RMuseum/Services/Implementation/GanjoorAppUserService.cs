@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Auth.Db;
+using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
 using RSecurityBackend.Services.Implementation;
@@ -25,11 +28,19 @@ namespace RMuseum.Services.Implementation
             ISecretGenerator secretGenerator,
             IImageFileService imageFileService,
             IUserRoleService userRoleService,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IMemoryCache memoryCache
+            )
             : base(context, userManager, signInManager, roleManager, secretGenerator, imageFileService, userRoleService, configuration)
         {
-           
+            _memoryCache = memoryCache;
         }
+
+        /// <summary>
+        /// IMemoryCache
+        /// </summary>
+        protected readonly IMemoryCache _memoryCache;
+
 
         /// <summary>
         /// Sign Up Email Subject
@@ -218,8 +229,66 @@ namespace RMuseum.Services.Implementation
                 }
                 catch
                 {
-                    return new RServiceResult<bool>(true); //ignore this error! because signup was succesful
+                    return new RServiceResult<bool>(true); //ignore this error! because signup was succesfull
                 }
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// modify existing user /*update related entities cache*/
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="updateUserInfo"></param>
+        /// <returns></returns>
+        public override async Task<RServiceResult<bool>> ModifyUser(Guid userId, RegisterRAppUser updateUserInfo)
+        {
+            RAppUser unmodifiedUserInfo = await _userManager.FindByIdAsync(userId.ToString());
+            if (unmodifiedUserInfo == null)
+            {
+                return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
+            }
+
+            string nickName = unmodifiedUserInfo.NickName;
+
+            RServiceResult<bool> res = await base.ModifyUser(userId, updateUserInfo);
+            if(res.Result)
+            {
+                try
+                {
+                    if (nickName != updateUserInfo.NickName)
+                    {
+                        RMuseumDbContext context = _context as RMuseumDbContext;
+                        var poemIdSet = await context.GanjoorComments.AsNoTracking().Where(c => c.UserId == userId).Select(c => c.PoemId).ToListAsync();
+                        foreach (var poemId in poemIdSet)
+                        {
+                            //await _ganjoorService.CacheCleanForPageById(poemId); /*had error in service initializtion, so done it in the dirty way*/
+
+                            var dbPage = await context.GanjoorPages.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
+                            if (dbPage != null)
+                            {
+                                //CacheCleanForPageByUrl(dbPage.FullUrl);
+                                var url = dbPage.FullUrl;
+                                var cachKey = $"GanjoorService::GetPageByUrl::{url}";
+                                if (_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
+                                {
+                                    _memoryCache.Remove(cachKey);
+
+                                    var poemCachKey = $"GetPoemById({page.Id}, {true}, {false}, {true}, {true}, {true}, {true}, {true}, {true}, {true})";
+                                    if (_memoryCache.TryGetValue(poemCachKey, out GanjoorPoemCompleteViewModel p))
+                                    {
+                                        _memoryCache.Remove(poemCachKey);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    return new RServiceResult<bool>(true); //ignore this error! because main operation was successfull!
+                }
+               
             }
             return res;
         }

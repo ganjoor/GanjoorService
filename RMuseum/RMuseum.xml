@@ -7560,6 +7560,11 @@
             Ganjoor User Service
             </summary>
         </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorAppUserService._memoryCache">
+            <summary>
+            IMemoryCache
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.GetSignUpEmailSubject(System.String)">
             <summary>
             Sign Up Email Subject
@@ -7603,6 +7608,14 @@
             <param name="password"></param>
             <param name="firstName"></param>
             <param name="sureName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.ModifyUser(System.Guid,RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser)">
+            <summary>
+            modify existing user /*update related entities cache*/
+            </summary>
+            <param name="userId"></param>
+            <param name="updateUserInfo"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorService">
