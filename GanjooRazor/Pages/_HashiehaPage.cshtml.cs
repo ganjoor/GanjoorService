@@ -80,7 +80,7 @@ namespace GanjooRazor.Pages
                 string commentAuthorLink = comment.UserId == null ? comment.AuthorName : $"<a href=\"/hashieha/?userid={comment.UserId}\">{comment.AuthorName}</a>";
                 htmlText += $"<p>{commentAuthorLink} <small>در {comment.CommentDate.ToFriendlyPersianDateTextify()}</small> دربارهٔ <a href=\"{comment.Poem.UrlSlug}#comment-{comment.Id}\">{comment.Poem.Title}</a>:</p>" + 
                     $"<blockquote>{comment.HtmlComment}{Environment.NewLine}" +
-                    $"</blockquote>{Environment.NewLine}<hr />{Environment.NewLine}";
+                    $"</blockquote>{Environment.NewLine}<div class='spacer'>&nbsp;</div><hr />{Environment.NewLine}";
             }
 
             htmlText += "<p style=\"text-align: center;\">";
