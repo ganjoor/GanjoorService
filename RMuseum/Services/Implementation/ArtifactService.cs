@@ -2760,7 +2760,7 @@ namespace RMuseum.Services.Implementation
                      .Include(l => l.SuggestedBy)
                      .Include(l => l.Artifact)
                      .Include(l => l.Item).ThenInclude(i => i.Images)
-                     .Where(l => l.ReviewResult == ReviewResult.Approved && l.DisplayOnPage && l.GanjoorPostId == link.GanjoorPostId)
+                     .Where(l => l.ReviewResult == ReviewResult.Approved && l.DisplayOnPage && l.GanjoorPostId == link.GanjoorPostId && l.ArtifactId == link.ArtifactId)
                      .OrderBy(l => l.SuggestionDate)
                      .FirstOrDefaultAsync();
                 if(preLink != null)
