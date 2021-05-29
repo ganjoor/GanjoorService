@@ -2906,6 +2906,8 @@ namespace RMuseum.Services.Implementation
                 {
                     link.DisplayOnPage = true;
                     link.Synchronized = true;
+
+                    await _ganjoorService.CacheCleanForPageById(link.GanjoorPostId);
                 }//if not user must decide through UI for this link
 
                 _context.GanjoorLinks.Update(link);
@@ -3047,6 +3049,8 @@ namespace RMuseum.Services.Implementation
 
                 _context.GanjoorLinks.Update(link);
                 await _context.SaveChangesAsync();
+
+                await _ganjoorService.CacheCleanForPageById(link.GanjoorPostId);
 
                 return new RServiceResult<bool>(true);
             }

@@ -13,12 +13,43 @@
     <h2>@Model.LastError</h2>
 }
 
+
+
 @if (Model.MainImage != null)
 {
-    <img src="https://ganjgah.ir/api/images/thumb/@(Model.MainImage.EntityImageId).jpg" />
-}
-
-@if (Model.PreviouslyLinkedImage != null)
-{
-    <img src="https://ganjgah.ir/api/images/thumb/@(Model.PreviouslyLinkedImage.EntityImageId).jpg" />
+<table style="width:100%" class="noborder">
+    <tr>
+        <td colspan="2">
+            <a href="@Model.MainImage.GanjoorUrl" target="_blank">@Model.MainImage.GanjoorTitle</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <img src="https://ganjgah.ir/api/images/thumb/@(Model.MainImage.EntityImageId).jpg" />
+        </td>
+        <td>
+            @if (Model.PreviouslyLinkedImage != null)
+            {
+                <img src="https://ganjgah.ir/api/images/thumb/@(Model.PreviouslyLinkedImage.EntityImageId).jpg" />
+            }
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <form method="post">
+                <input type="hidden" asp-for="ImageLinkFinalizeModel.Id" />
+                <input asp-for="ImageLinkFinalizeModel.DisplayOnPage" />
+                <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">تأیید</button>
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            تعداد کل:
+        </td>
+        <td>
+            @Model.TotalCount
+        </td>
+    </tr>
+</table>
 }
