@@ -645,6 +645,13 @@
             <param name="page"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetOlderVersionsOfPage(System.Int32)">
+            <summary>
+            older versions of a page (modifications history except for current version)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPageUrlById(System.Int32)">
             <summary>
             page url by id
@@ -6876,7 +6883,7 @@
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetOlderVersionsOfPage(System.Int32)">
             <summary>
-            return page modifications history
+            page modifications history
             </summary>
             <param name="pageId"></param>
             <returns></returns>

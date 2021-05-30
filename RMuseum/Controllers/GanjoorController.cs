@@ -285,6 +285,25 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// older versions of a page (modifications history except for current version)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("page/oldversions/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageSnapshotSummaryViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetOlderVersionsOfPage(int id)
+        {
+            RServiceResult<GanjoorPageSnapshotSummaryViewModel[]> res =
+                await _ganjoorService.GetOlderVersionsOfPage(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// page url by id
         /// </summary>
         /// <param name="id"></param>
