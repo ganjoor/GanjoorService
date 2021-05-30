@@ -2213,6 +2213,40 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// return page modifications history
+        /// </summary>
+        /// <param name="pageId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPageSnapshotSummaryViewModel[]>> GetOlderVersionsOfPage(int pageId)
+        {
+            try
+            {
+                return
+                    new RServiceResult<GanjoorPageSnapshotSummaryViewModel[]>
+                    (
+                        await _context.GanjoorPageSnapshots.AsNoTracking()
+                                        .Where(s => s.GanjoorPageId == pageId)
+                                        .OrderByDescending(s => s.RecordDate)
+                                        .Select
+                                        (
+                                            s =>
+                                                new GanjoorPageSnapshotSummaryViewModel()
+                                                {
+                                                    Id = s.Id,
+                                                    RecordDate = s.RecordDate,
+                                                    Note = s.Note
+                                                }
+                                        )
+                                        .ToArrayAsync()
+                    );
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorPageSnapshotSummaryViewModel[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// returns metre list (ordered by Rhythm)
         /// </summary>
         /// <returns></returns>

@@ -310,6 +310,13 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task CacheCleanForComment(int commentId);
 
+        /// <summary>
+        /// page modifications history
+        /// </summary>
+        /// <param name="pageId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPageSnapshotSummaryViewModel[]>> GetOlderVersionsOfPage(int pageId);
+
 
         /// <summary>
         /// Search
