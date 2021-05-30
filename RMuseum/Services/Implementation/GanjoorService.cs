@@ -2247,6 +2247,45 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get old version
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorModifyPageViewModel>> GetOldVersionOfPage(int id)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorModifyPageViewModel>
+                    (
+                    await _context.GanjoorPageSnapshots.AsNoTracking()
+                                  .Where(s => s.Id == id)
+                                  .Select
+                                  (
+                                    s =>
+                                        new GanjoorModifyPageViewModel()
+                                        {
+                                            HtmlText = s.HtmlText,
+                                            Note = s.Note,
+                                            OldTag = s.OldTag,
+                                            OldTagPageUrl = s.OldTagPageUrl,
+                                            RhymeLetters = s.RhymeLetters,
+                                            Rhythm = s.Rhythm,
+                                            SourceName = s.SourceName,
+                                            SourceUrlSlug = s.SourceUrlSlug,
+                                            Title = s.Title,
+                                            UrlSlug = s.UrlSlug
+                                        }
+                                  )
+                                  .SingleOrDefaultAsync()
+                    );
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorModifyPageViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// returns metre list (ordered by Rhythm)
         /// </summary>
         /// <returns></returns>

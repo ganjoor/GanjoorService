@@ -302,6 +302,25 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
         }
+        
+        /// <summary>
+        /// get old version of page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("oldversion/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorModifyPageViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetOldVersionOfPage(int id)
+        {
+            RServiceResult<GanjoorModifyPageViewModel> res =
+                await _ganjoorService.GetOldVersionOfPage(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
 
         /// <summary>
         /// page url by id

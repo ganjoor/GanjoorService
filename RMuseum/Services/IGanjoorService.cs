@@ -317,6 +317,13 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<GanjoorPageSnapshotSummaryViewModel[]>> GetOlderVersionsOfPage(int pageId);
 
+        /// <summary>
+        /// get old version
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorModifyPageViewModel>> GetOldVersionOfPage(int id);
+
 
         /// <summary>
         /// Search
