@@ -1,0 +1,11 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.PageHistoryModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "سابقهٔ ویرایش";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>@Model.LastMessage</p>
