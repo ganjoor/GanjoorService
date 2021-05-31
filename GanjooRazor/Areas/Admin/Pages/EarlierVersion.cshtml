@@ -1,0 +1,98 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.EarlierVersionModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "نسخهٔ قدیمی";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>@Model.LastMessage</p>
+
+@if(Model.EarlierVersion != null)
+{
+<table style="width:100%" class="noborder">
+    <tr>
+        <td>
+            <span class="inputlabel">عنوان: </span>
+        </td>
+        <td>
+            <input asp-for="EarlierVersion.Title" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="inputlabel">نامک: </span>
+        </td>
+        <td>
+            <input style="text-align:left;direction:ltr;" asp-for="EarlierVersion.UrlSlug" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="inputlabel">متن: </span>
+        </td>
+        <td>
+            <textarea asp-for="EarlierVersion.HtmlText" tabindex="4" rows="20" cols="80"></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="inputlabel">منبع (شعر): </span>
+        </td>
+        <td>
+            <table>
+                <tr>
+                    <td><span>نام:</span> <input asp-for="EarlierVersion.SourceName" /></td>
+                </tr>
+                <tr>
+                    <td><span>نشانی:</span> <input style="text-align:left;direction:ltr;" asp-for="EarlierVersion.SourceUrlSlug" /></td>
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="inputlabel">دسته‌بندی کهن (شعر): </span>
+        </td>
+        <td>
+            <table>
+                <tr>
+                    <td><span>نام:</span> <input asp-for="EarlierVersion.OldTag" /></td>
+                </tr>
+                <tr>
+                    <td><span>نشانی:</span> <input style="text-align:left;direction:ltr;" asp-for="EarlierVersion.OldTagPageUrl" /></td>
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="inputlabel">وزن (شعر): </span>
+        </td>
+        <td>
+            <input asp-for="EarlierVersion.Rhythm" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="inputlabel">حروف قافیه (شعر): </span>
+        </td>
+        <td>
+            <input asp-for="EarlierVersion.RhymeLetters" />
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="inputlabel">توضیح این ویرایش: </span>
+        </td>
+        <td>
+            <input asp-for="EarlierVersion.Note" />
+        </td>
+    </tr>
+</table>
+}
