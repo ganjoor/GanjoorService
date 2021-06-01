@@ -83,11 +83,11 @@
             <td>
                 <input asp-for="ModifyModel.Rhythm" list="rythms" />
                 <datalist id="rythms">
-                    @if(Model.Rhythms != null)
-                    @foreach(var rythm in Model.Rhythms)
-                    {
-                    <option value="@rythm.Rhythm">@rythm.Rhythm</option>
-                    }
+                    @if (Model.Rhythms != null)
+                        @foreach (var rythm in Model.Rhythms)
+                        {
+                            <option value="@rythm.Rhythm">@rythm.Rhythm</option>
+                        }
                 </datalist>
 
             </td>
@@ -112,9 +112,10 @@
         </tr>
         <tr>
             <td colspan="2">
-                
+                <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">ذخیره</button>
             </td>
         </tr>
+
         <tr>
             <td colspan="2">
                 <a href="/Admin/PageHistory?id=@Request.Query["id"]">سوابق</a>
