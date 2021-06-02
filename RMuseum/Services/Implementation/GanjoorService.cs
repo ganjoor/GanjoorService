@@ -2098,6 +2098,31 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        private async Task _UpdatePageChildrenTitleAndUrl(GanjoorPage dbPage)
+        {
+            var children = await _context.GanjoorPages.Where(p => p.ParentId == dbPage.Id).ToListAsync();
+            foreach(var child in children)
+            {
+                child.FullUrl = dbPage.FullUrl + "/" + child.UrlSlug;
+                child.FullTitle = dbPage.FullTitle + " » " + child.Title;
+
+                if(child.GanjoorPageType == GanjoorPageType.PoemPage)
+                {
+                    GanjoorPoem poem = await _context.GanjoorPoems.Where(p => p.Id == child.Id).SingleAsync();
+                    poem.FullTitle = child.FullTitle;
+                    poem.FullUrl = child.FullUrl;
+
+                    _context.GanjoorPoems.Update(poem);
+                }
+
+                await _UpdatePageChildrenTitleAndUrl(child);
+
+                CacheCleanForPageByUrl(child.FullUrl);
+            }
+            _context.GanjoorPages.UpdateRange(children);
+            await _context.SaveChangesAsync();
+        }
+
         /// <summary>
         /// modify page
         /// </summary>
@@ -2143,8 +2168,27 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorPageSnapshots.Add(snapshot);
                 await _context.SaveChangesAsync();
 
-                dbPage.Title = pageData.Title;
-                dbPage.UrlSlug = pageData.UrlSlug;
+               
+
+                if (dbPage.Title != pageData.Title || dbPage.UrlSlug != pageData.UrlSlug)
+                {
+                    dbPage.Title = pageData.Title;
+                    dbPage.UrlSlug = pageData.UrlSlug;
+
+                    if (dbPage.ParentId != null)
+                    {
+                        GanjoorPage parent = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == dbPage.ParentId).SingleAsync();
+                        dbPage.FullUrl = parent.FullUrl + "/" + pageData.UrlSlug;
+                        dbPage.FullTitle = parent.FullTitle + " » " + pageData.Title;
+                    }
+                    else
+                    {
+                        dbPage.FullUrl = "/" + pageData.UrlSlug;
+                        dbPage.FullTitle = pageData.Title;
+                    }
+                    await _UpdatePageChildrenTitleAndUrl(dbPage);
+                }
+               
                 dbPage.HtmlText = pageData.HtmlText;
 
                 _context.GanjoorPages.Update(dbPage);
@@ -2177,6 +2221,10 @@ namespace RMuseum.Services.Implementation
                     dbPoem.OldTagPageUrl = pageData.OldTagPageUrl;
 
                     dbPoem.HtmlText = pageData.HtmlText;
+                    dbPoem.Title = pageData.Title;
+                    dbPoem.UrlSlug = pageData.UrlSlug;
+                    dbPoem.FullUrl = dbPage.FullUrl;
+                    dbPoem.FullTitle = dbPoem.FullTitle;
 
                     List<GanjoorVerse> verses = _extractVersesFromPoemHtmlText(id, pageData.HtmlText);
 
