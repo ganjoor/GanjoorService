@@ -2472,6 +2472,98 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// modify poet
+        /// </summary>
+        /// <param name="poet"></param>
+        /// <param name="editingUserId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> UpdatePoet(GanjoorPoetViewModel poet, Guid editingUserId)
+        {
+            try
+            {
+                var dbPoet = await _context.GanjoorPoets.Where(p => p.Id == poet.Id).SingleAsync();
+
+                var dbPoetPage = await _context.GanjoorPages.Where(page => page.PoetId == poet.Id && page.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
+
+                if (dbPoet.Nickname != poet.Nickname)
+                {
+                    var resPageEdit =
+                        await ModifyPage
+                        (
+                        dbPoetPage.Id,
+                        editingUserId,
+                        new GanjoorModifyPageViewModel()
+                        {
+                            Title = poet.Nickname,
+                            HtmlText = dbPoetPage.HtmlText,
+                            Note = "ویرایش مستقیم مشخصات شاعر",
+                            UrlSlug = dbPoetPage.UrlSlug,
+                        }
+                        );
+                    if(!string.IsNullOrEmpty(resPageEdit.ExceptionString))
+                        new RServiceResult<bool>(false, resPageEdit.ExceptionString);
+
+                    dbPoet.Nickname = poet.Nickname;
+                }
+
+                dbPoet.Name = poet.Name;
+                dbPoet.Description = poet.Description;
+                dbPoet.Published = poet.Published;
+
+                _context.GanjoorPoets.Update(dbPoet);
+
+                await _context.SaveChangesAsync();
+
+
+                //cache clean:
+                var cachKeyPoets = $"/api/ganjoor/poets?websitePoets=true&includeBio=false";
+                if (_memoryCache.TryGetValue(cachKeyPoets, out GanjoorPoetViewModel[] poets))
+                {
+                    _memoryCache.Remove(cachKeyPoets);
+                }
+                var cachKeyPoets2 = $"ganjoor/poets/true/false";
+                if (_memoryCache.TryGetValue(cachKeyPoets2, out GanjoorPoetViewModel[] poets2))
+                {
+                    _memoryCache.Remove(cachKeyPoets2);
+                }
+
+                var cacheKeyPoet = $"/api/ganjoor/poet/{poet.Id}";
+                if (_memoryCache.TryGetValue(cacheKeyPoet, out GanjoorPoetCompleteViewModel poetCat))
+                {
+                    _memoryCache.Remove(cacheKeyPoet);
+                }
+
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// chaneg poet image
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ChangePoetImage(int poetId, Guid imageId)
+        {
+            try
+            {
+                var dbPoet = await _context.GanjoorPoets.Where(p => p.Id == poetId).SingleAsync();
+                dbPoet.RImageId = imageId;
+                _context.GanjoorPoets.Update(dbPoet);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
         /// </summary>
         /// <returns></returns>

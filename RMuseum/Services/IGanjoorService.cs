@@ -252,6 +252,22 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPageCompleteViewModel>> ModifyPage(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData);
 
         /// <summary>
+        /// modify poet
+        /// </summary>
+        /// <param name="poet"></param>
+        /// <param name="editingUserId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> UpdatePoet(GanjoorPoetViewModel poet, Guid editingUserId);
+
+        /// <summary>
+        /// chaneg poet image
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ChangePoetImage(int poetId, Guid imageId);
+
+        /// <summary>
         /// returns metre list (ordered by Rhythm)
         /// </summary>
         /// <returns></returns>

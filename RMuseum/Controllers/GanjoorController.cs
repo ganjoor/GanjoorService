@@ -112,6 +112,38 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// update poet info (except for image)
+        /// </summary>
+        /// <param name="poet"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("poet")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> ModifyPoet(GanjoorPoetViewModel poet)
+        {
+
+            if (!string.IsNullOrEmpty(poet.ImageUrl))
+            {
+                return BadRequest("Please send an empty image url, if you are trying to change poet image this is not the right method to do it.");
+            }
+
+            Guid userId =
+             new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            var res = await _ganjoorService.UpdatePoet(poet, userId);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok(res.Result);
+        }
+
+
+
+        /// <summary>
         /// get poet image
         /// </summary>
         /// <param name="url">sample: hafez</param>
@@ -120,7 +152,7 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> Get(string url)
+        public async Task<IActionResult> GetPoetImage(string url)
         {
 
             var cacheKey = $"poet/image/{url}.png";
@@ -171,6 +203,56 @@ namespace RMuseum.Controllers
 
             return new FileStreamResult(new FileStream(imagePath, FileMode.Open, FileAccess.Read), "image/png");
 
+        }
+
+        /// <summary>
+        /// set poet image
+        /// </summary>
+        /// <param name="id">poet image</param>
+        /// <returns></returns>
+        [HttpPost("poet/image/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+        public async Task<IActionResult> UploadPoetImage(int id)
+        {
+            try
+            {
+                var poet = await _ganjoorService.GetPoetById(id);
+                IFormFile file = Request.Form.Files[0];
+                RServiceResult<RImage> image = await _imageFileService.Add(file, null, file.FileName, $"C:\\PoetImages\\{poet.Result.Cat.UrlSlug}.png");
+                if (!string.IsNullOrEmpty(image.ExceptionString))
+                {
+                    return BadRequest(image.ExceptionString);
+                }
+                image = await _imageFileService.Store(image.Result);
+                if (!string.IsNullOrEmpty(image.ExceptionString))
+                {
+                    return BadRequest(image.ExceptionString);
+                }
+
+                var res = await _ganjoorService.ChangePoetImage(id, image.Result.Id);
+
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+
+                if(res.Result)
+                {
+                    var cacheKey = $"poet/image/{poet.Result.Cat.UrlSlug}.png";
+                    if (_memoryCache.TryGetValue(cacheKey, out string imagePath))
+                    {
+                        _memoryCache.Remove(cacheKey);
+                    }
+                }
+
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
         }
 
         /// <summary>

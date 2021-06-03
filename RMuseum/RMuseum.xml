@@ -606,11 +606,25 @@
             <param name="url"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.Get(System.String)">
+        <member name="M:RMuseum.Controllers.GanjoorController.ModifyPoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel)">
+            <summary>
+            update poet info (except for image)
+            </summary>
+            <param name="poet"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoetImage(System.String)">
             <summary>
             get poet image
             </summary>
             <param name="url">sample: hafez</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.UploadPoetImage(System.Int32)">
+            <summary>
+            set poet image
+            </summary>
+            <param name="id">poet image</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetCatById(System.Int32,System.Boolean)">
@@ -6830,6 +6844,22 @@
             <param name="pageData"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.UpdatePoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
+            <summary>
+            modify poet
+            </summary>
+            <param name="poet"></param>
+            <param name="editingUserId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ChangePoetImage(System.Int32,System.Guid)">
+            <summary>
+            chaneg poet image
+            </summary>
+            <param name="poetId"></param>
+            <param name="imageId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorMetres">
             <summary>
             returns metre list (ordered by Rhythm)
@@ -8029,6 +8059,22 @@
             <summary>
             returns metre list (ordered by Rhythm)
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
+            <summary>
+            modify poet
+            </summary>
+            <param name="poet"></param>
+            <param name="editingUserId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ChangePoetImage(System.Int32,System.Guid)">
+            <summary>
+            chaneg poet image
+            </summary>
+            <param name="poetId"></param>
+            <param name="imageId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.RegerneratePoemsPlainText">
