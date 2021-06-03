@@ -2100,7 +2100,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task _UpdatePageChildrenTitleAndUrl(RMuseumDbContext context, GanjoorPage dbPage, bool messWithTitles, bool messWidthUrls)
+        private async Task _UpdatePageChildrenTitleAndUrl(RMuseumDbContext context, GanjoorPage dbPage, bool messWithTitles, bool messWithUrls)
         {
             var children = await context.GanjoorPages.Where(p => p.ParentId == dbPage.Id).ToListAsync();
             foreach(var child in children)
@@ -2115,7 +2115,7 @@ namespace RMuseum.Services.Implementation
                             GanjoorPoem poem = await context.GanjoorPoems.Where(p => p.Id == child.Id).SingleAsync();
                             if(messWithTitles)
                              poem.FullTitle = child.FullTitle;
-                            if(messWidthUrls)
+                            if(messWithUrls)
                                 poem.FullUrl = child.FullUrl;
 
                             context.GanjoorPoems.Update(poem);
@@ -2123,7 +2123,7 @@ namespace RMuseum.Services.Implementation
                         break;
                     case GanjoorPageType.CatPage:
                         {
-                            if (messWidthUrls)
+                            if (messWithUrls)
                             {
                                 GanjoorCat cat = await context.GanjoorCategories.Where(c => c.Id == child.CatId).SingleAsync();
                                 cat.FullUrl = child.FullTitle;
@@ -2134,7 +2134,7 @@ namespace RMuseum.Services.Implementation
                         break;
                 }
 
-                await _UpdatePageChildrenTitleAndUrl(context, child, messWithTitles, messWidthUrls);
+                await _UpdatePageChildrenTitleAndUrl(context, child, messWithTitles, messWithUrls);
 
                 CacheCleanForPageByUrl(child.FullUrl);
             }
@@ -2189,9 +2189,9 @@ namespace RMuseum.Services.Implementation
 
                 dbPage.HtmlText = pageData.HtmlText;
                 bool messWithTitles = dbPage.Title != pageData.Title;
-                bool messWidthUrls = dbPage.UrlSlug != pageData.UrlSlug;
+                bool messWithUrls = dbPage.UrlSlug != pageData.UrlSlug;
 
-                if (messWithTitles || messWidthUrls)
+                if (messWithTitles || messWithUrls)
                 {
                    
                     dbPage.Title = pageData.Title;
@@ -2200,7 +2200,7 @@ namespace RMuseum.Services.Implementation
                     if (dbPage.ParentId != null)
                     {
                         GanjoorPage parent = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == dbPage.ParentId).SingleAsync();
-                        if(messWidthUrls)
+                        if(messWithUrls)
                         {
                             dbPage.FullUrl = parent.FullUrl + "/" + pageData.UrlSlug;
                         }
@@ -2211,7 +2211,7 @@ namespace RMuseum.Services.Implementation
                     }
                     else
                     {
-                        if (messWidthUrls)
+                        if (messWithUrls)
                         {
                             dbPage.FullUrl = "/" + pageData.UrlSlug;
                         }
@@ -2228,9 +2228,9 @@ namespace RMuseum.Services.Implementation
                         case GanjoorPageType.CatPage:
                             {
                                 GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
-                                if (messWidthUrls)
+                                if (messWithTitles)
                                     cat.Title = dbPage.Title;
-                                if(messWidthUrls)
+                                if(messWithUrls)
                                 {
                                     cat.UrlSlug = dbPage.UrlSlug;
                                     cat.FullUrl = dbPage.FullUrl;
@@ -2253,7 +2253,7 @@ namespace RMuseum.Services.Implementation
                                {
 
 
-                                   await _UpdatePageChildrenTitleAndUrl(context, dbPage, messWithTitles, messWidthUrls);
+                                   await _UpdatePageChildrenTitleAndUrl(context, dbPage, messWithTitles, messWithUrls);
 
                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                }
@@ -2268,7 +2268,7 @@ namespace RMuseum.Services.Implementation
                   
                 }
 
-                if(dbPage.GanjoorPageType == GanjoorPageType.PoetPage && (messWithTitles || messWidthUrls))
+                if(dbPage.GanjoorPageType == GanjoorPageType.PoetPage && (messWithTitles || messWithUrls))
                 {
                     if (messWithTitles)
                     {
@@ -2284,7 +2284,7 @@ namespace RMuseum.Services.Implementation
                     {
                         cat.Title = dbPage.Title;
                     }
-                    if (messWidthUrls)
+                    if (messWithUrls)
                     {
                         cat.UrlSlug = dbPage.UrlSlug;
                         cat.FullUrl = dbPage.FullUrl;
