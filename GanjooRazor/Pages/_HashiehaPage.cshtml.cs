@@ -44,14 +44,14 @@ namespace GanjooRazor.Pages
 
                 htmlText += $"<div id=\"profile\">{Environment.NewLine}";
 
+                htmlText += $"<p>{profile.NickName}{Environment.NewLine}";
+
                 if (!string.IsNullOrEmpty(profile.Website))
                 {
-                    htmlText += $"<p><a href=\"{profile.Website}\">{profile.NickName}</a></p>{Environment.NewLine}";
+                    htmlText += $"<a href=\"{profile.Website}\">🌐</a></p>{Environment.NewLine}";
                 }
-                else
-                {
-                    htmlText += $"<p>{profile.NickName}</p>{Environment.NewLine}";
-                }
+                
+                htmlText += $"</p>{Environment.NewLine}";
 
                 if (!string.IsNullOrEmpty(profile.Bio))
                 {
