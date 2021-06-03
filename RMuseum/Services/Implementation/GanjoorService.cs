@@ -2100,9 +2100,9 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task _UpdatePageChildrenTitleAndUrl(GanjoorPage dbPage, bool messWithTitles, bool messWidthUrls)
+        private async Task _UpdatePageChildrenTitleAndUrl(RMuseumDbContext context, GanjoorPage dbPage, bool messWithTitles, bool messWidthUrls)
         {
-            var children = await _context.GanjoorPages.Where(p => p.ParentId == dbPage.Id).ToListAsync();
+            var children = await context.GanjoorPages.Where(p => p.ParentId == dbPage.Id).ToListAsync();
             foreach(var child in children)
             {
                 child.FullUrl = dbPage.FullUrl + "/" + child.UrlSlug;
@@ -2112,34 +2112,34 @@ namespace RMuseum.Services.Implementation
                 {
                     case GanjoorPageType.PoemPage:
                         {
-                            GanjoorPoem poem = await _context.GanjoorPoems.Where(p => p.Id == child.Id).SingleAsync();
+                            GanjoorPoem poem = await context.GanjoorPoems.Where(p => p.Id == child.Id).SingleAsync();
                             if(messWithTitles)
                              poem.FullTitle = child.FullTitle;
                             if(messWidthUrls)
                                 poem.FullUrl = child.FullUrl;
 
-                            _context.GanjoorPoems.Update(poem);
+                            context.GanjoorPoems.Update(poem);
                         }
                         break;
                     case GanjoorPageType.CatPage:
                         {
                             if (messWidthUrls)
                             {
-                                GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == child.CatId).SingleAsync();
+                                GanjoorCat cat = await context.GanjoorCategories.Where(c => c.Id == child.CatId).SingleAsync();
                                 cat.FullUrl = child.FullTitle;
-                                _context.GanjoorCategories.Update(cat);
+                                context.GanjoorCategories.Update(cat);
                             }
                            
                         }
                         break;
                 }
 
-                await _UpdatePageChildrenTitleAndUrl(child, messWithTitles, messWidthUrls);
+                await _UpdatePageChildrenTitleAndUrl(context, child, messWithTitles, messWidthUrls);
 
                 CacheCleanForPageByUrl(child.FullUrl);
             }
-            _context.GanjoorPages.UpdateRange(children);
-            await _context.SaveChangesAsync();
+            context.GanjoorPages.UpdateRange(children);
+            await context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -2241,8 +2241,31 @@ namespace RMuseum.Services.Implementation
                             }
                             break;
                     }
+                    _backgroundTaskQueue.QueueBackgroundWorkItem
+                       (
+                       async token =>
+                       {
+                           using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                           {
+                               LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                               var job = (await jobProgressServiceEF.NewJob($"Updating PageChildren for {dbPage.Id}", "Updating")).Result;
+                               try
+                               {
 
-                    await _UpdatePageChildrenTitleAndUrl(dbPage, messWithTitles, messWidthUrls);
+
+                                   await _UpdatePageChildrenTitleAndUrl(context, dbPage, messWithTitles, messWidthUrls);
+
+                                   await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                               }
+                               catch (Exception expUpdateBatch)
+                               {
+                                   await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, expUpdateBatch.ToString());
+                               }
+                           }
+                          
+                       }
+                       );
+                  
                 }
 
                 if(dbPage.GanjoorPageType == GanjoorPageType.PoetPage && (messWithTitles || messWidthUrls))
