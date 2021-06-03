@@ -35,6 +35,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoetViewModel[]>> GetPoets(bool websitePoets, bool includeBio = true)
         {
+           
             try
             {
                 var cacheKey = $"/api/ganjoor/poets?websitePoets={websitePoets}&includeBio={includeBio}";
@@ -87,6 +88,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetById(int id)
         {
+           
             try
             {
                 var cacheKey = $"/api/ganjoor/poet/{id}";
@@ -2098,24 +2100,41 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task _UpdatePageChildrenTitleAndUrl(GanjoorPage dbPage)
+        private async Task _UpdatePageChildrenTitleAndUrl(GanjoorPage dbPage, bool messWithTitles, bool messWidthUrls)
         {
             var children = await _context.GanjoorPages.Where(p => p.ParentId == dbPage.Id).ToListAsync();
             foreach(var child in children)
             {
                 child.FullUrl = dbPage.FullUrl + "/" + child.UrlSlug;
                 child.FullTitle = dbPage.FullTitle + " » " + child.Title;
-
-                if(child.GanjoorPageType == GanjoorPageType.PoemPage)
+                
+                switch(child.GanjoorPageType)
                 {
-                    GanjoorPoem poem = await _context.GanjoorPoems.Where(p => p.Id == child.Id).SingleAsync();
-                    poem.FullTitle = child.FullTitle;
-                    poem.FullUrl = child.FullUrl;
+                    case GanjoorPageType.PoemPage:
+                        {
+                            GanjoorPoem poem = await _context.GanjoorPoems.Where(p => p.Id == child.Id).SingleAsync();
+                            if(messWithTitles)
+                             poem.FullTitle = child.FullTitle;
+                            if(messWidthUrls)
+                                poem.FullUrl = child.FullUrl;
 
-                    _context.GanjoorPoems.Update(poem);
+                            _context.GanjoorPoems.Update(poem);
+                        }
+                        break;
+                    case GanjoorPageType.CatPage:
+                        {
+                            if (messWidthUrls)
+                            {
+                                GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == child.CatId).SingleAsync();
+                                cat.FullUrl = child.FullTitle;
+                                _context.GanjoorCategories.Update(cat);
+                            }
+                           
+                        }
+                        break;
                 }
 
-                await _UpdatePageChildrenTitleAndUrl(child);
+                await _UpdatePageChildrenTitleAndUrl(child, messWithTitles, messWidthUrls);
 
                 CacheCleanForPageByUrl(child.FullUrl);
             }
@@ -2168,28 +2187,108 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorPageSnapshots.Add(snapshot);
                 await _context.SaveChangesAsync();
 
-               
+                dbPage.HtmlText = pageData.HtmlText;
+                bool messWithTitles = dbPage.Title != pageData.Title;
+                bool messWidthUrls = dbPage.UrlSlug != pageData.UrlSlug;
 
-                if (dbPage.Title != pageData.Title || dbPage.UrlSlug != pageData.UrlSlug)
+                if (messWithTitles || messWidthUrls)
                 {
+                   
                     dbPage.Title = pageData.Title;
                     dbPage.UrlSlug = pageData.UrlSlug;
 
                     if (dbPage.ParentId != null)
                     {
                         GanjoorPage parent = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == dbPage.ParentId).SingleAsync();
-                        dbPage.FullUrl = parent.FullUrl + "/" + pageData.UrlSlug;
-                        dbPage.FullTitle = parent.FullTitle + " » " + pageData.Title;
+                        if(messWidthUrls)
+                        {
+                            dbPage.FullUrl = parent.FullUrl + "/" + pageData.UrlSlug;
+                        }
+                        if(messWithTitles)
+                        {
+                            dbPage.FullTitle = parent.FullTitle + " » " + pageData.Title;
+                        }
                     }
                     else
                     {
-                        dbPage.FullUrl = "/" + pageData.UrlSlug;
-                        dbPage.FullTitle = pageData.Title;
+                        if (messWidthUrls)
+                        {
+                            dbPage.FullUrl = "/" + pageData.UrlSlug;
+                        }
+
+                        if (messWithTitles)
+                        {
+                            dbPage.FullTitle = pageData.Title;
+                        }
+                            
                     }
-                    await _UpdatePageChildrenTitleAndUrl(dbPage);
+
+                    switch(dbPage.GanjoorPageType)
+                    {
+                        case GanjoorPageType.CatPage:
+                            {
+                                GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
+                                if (messWidthUrls)
+                                    cat.Title = dbPage.Title;
+                                if(messWidthUrls)
+                                {
+                                    cat.UrlSlug = dbPage.UrlSlug;
+                                    cat.FullUrl = dbPage.FullUrl;
+                                }
+
+                                _context.GanjoorCategories.Update(cat);
+                                await _context.SaveChangesAsync();
+                            }
+                            break;
+                    }
+
+                    await _UpdatePageChildrenTitleAndUrl(dbPage, messWithTitles, messWidthUrls);
                 }
-               
-                dbPage.HtmlText = pageData.HtmlText;
+
+                if(dbPage.GanjoorPageType == GanjoorPageType.PoetPage && (messWithTitles || messWidthUrls))
+                {
+                    if (messWithTitles)
+                    {
+                        GanjoorPoet poet = await _context.GanjoorPoets.Where(p => p.Id == dbPage.PoetId).SingleAsync();
+                        poet.Nickname = dbPage.Title;
+                        //poet.Description = dbPage.HtmlText; -- description might become html free
+                        _context.GanjoorPoets.Update(poet);
+                    }
+                        
+
+                    GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
+                    if(messWithTitles)
+                    {
+                        cat.Title = dbPage.Title;
+                    }
+                    if (messWidthUrls)
+                    {
+                        cat.UrlSlug = dbPage.UrlSlug;
+                        cat.FullUrl = dbPage.FullUrl;
+                    }
+                   
+
+                    _context.GanjoorCategories.Update(cat);
+
+                    await _context.SaveChangesAsync();
+
+                    var cachKeyPoets = $"/api/ganjoor/poets?websitePoets=true&includeBio=false";
+                    if (_memoryCache.TryGetValue(cachKeyPoets, out GanjoorPoetViewModel[] poets))
+                    {
+                        _memoryCache.Remove(cachKeyPoets);
+                    }
+                    var cachKeyPoets2 = $"ganjoor/poets/true/false";
+                    if (_memoryCache.TryGetValue(cachKeyPoets2, out GanjoorPoetViewModel[] poets2))
+                    {
+                        _memoryCache.Remove(cachKeyPoets2);
+                    }
+
+                    var cacheKeyPoet = $"/api/ganjoor/poet/{dbPage.PoetId}";
+                    if (_memoryCache.TryGetValue(cacheKeyPoet, out GanjoorPoetCompleteViewModel poetCat))
+                    {
+                        _memoryCache.Remove(cacheKeyPoet);
+                    }
+                }
 
                 _context.GanjoorPages.Update(dbPage);
 
