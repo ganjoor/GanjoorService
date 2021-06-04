@@ -1484,6 +1484,36 @@
             Ganjoor Health Check Errors
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorDonations">
+            <summary>
+            donations
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorExpenses">
+            <summary>
+            expenses
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
+            <summary>
+            donation expenditures
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.DonationExpenditure.GanjoorDonationId">
+            <summary>
+            GanjoorDonation Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.DonationExpenditure.GanjoorDonation">
+            <summary>
+            GanjoorDonation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.DonationExpenditure.Amount">
+            <summary>
+            amount
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.GanjoorDonation">
             <summary>
             Ganjoor Donation (based on donation records saved in old html format of https://ganjoor.net/donate/)
@@ -1496,7 +1526,7 @@
         </member>
         <member name="P:RMuseum.Models.Accounting.GanjoorDonation.DateString">
             <summary>
-            date: (donation dates have been collected in different format, so instead of keeping their dates in a DateTime field I ought to use a string field)
+            date: (donation dates have been collected in different formats, so instead of keeping their dates in a DateTime field I ought to use a string field)
             </summary>
         </member>
         <member name="P:RMuseum.Models.Accounting.GanjoorDonation.RecordDate">
@@ -1531,7 +1561,7 @@
         </member>
         <member name="P:RMuseum.Models.Accounting.GanjoorDonation.Remaining">
             <summary>
-            remaining
+            remaining (it could be ignored later when our data has been normalized enough and be calculated using related data)
             </summary>
         </member>
         <member name="P:RMuseum.Models.Accounting.GanjoorDonation.ExpenditureDesc">
@@ -1542,6 +1572,41 @@
         <member name="P:RMuseum.Models.Accounting.GanjoorDonation.ImportedRecord">
             <summary>
             record is imported from old HTML text of donation page
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Accounting.GanjoorExpense">
+            <summary>
+            Ganjoor Expenses
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorExpense.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorExpense.ExpenseDate">
+            <summary>
+            date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorExpense.Amount">
+            <summary>
+            amount
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorExpense.Unit">
+            <summary>
+            unit
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorExpense.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorExpense.DonationExpenditures">
+            <summary>
+            donation expenitures
             </summary>
         </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
@@ -7720,6 +7785,58 @@
             </summary>
             <param name="format"></param>
             <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.DonationService">
+            <summary>
+            donation service
+            </summary>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.DonationService.DonationPageRow">
+            <summary>
+            donation page row
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.DonationService.DonationPageRow.Date">
+            <summary>
+            date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.DonationService.DonationPageRow.Amount">
+            <summary>
+            amount
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.DonationService.DonationPageRow.Donor">
+            <summary>
+            donor
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.DonationService.DonationPageRow.Usage">
+            <summary>
+            usage
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.DonationService.DonationPageRow.Remaining">
+            <summary>
+            remaining
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.DonationService.InitializeRecords">
+            <summary>
+            parse html of https://ganjoor.net/donate/ and fill the records
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.DonationService._context">
+            <summary>
+            Database Context
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.DonationService.#ctor(RMuseum.DbContext.RMuseumDbContext)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorAppUserService">
             <summary>

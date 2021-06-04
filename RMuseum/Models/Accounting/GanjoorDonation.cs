@@ -48,7 +48,7 @@ namespace RMuseum.Models.Accounting
         public string DonorLink { get; set; }
 
         /// <summary>
-        /// remaining
+        /// remaining (it could be ignored later when our data has been normalized enough and be calculated using related data)
         /// </summary>
         public decimal Remaining { get; set; }
 

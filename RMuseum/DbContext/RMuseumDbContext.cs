@@ -13,6 +13,7 @@ using System;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.MusicCatalogue;
 using System.IO;
+using RMuseum.Models.Accounting;
 
 namespace RMuseum.DbContext
 {
@@ -276,6 +277,16 @@ namespace RMuseum.DbContext
         /// Ganjoor Health Check Errors
         /// </summary>
         public DbSet<GanjoorHealthCheckError> GanjoorHealthCheckErrors { get; set; }
+
+        /// <summary>
+        /// donations
+        /// </summary>
+        public DbSet<GanjoorDonation> GanjoorDonations { get; set; }
+
+        /// <summary>
+        /// expenses
+        /// </summary>
+        public DbSet<GanjoorExpense> GanjoorExpenses { get; set; }
 
 
     }
