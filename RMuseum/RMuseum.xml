@@ -1499,6 +1499,11 @@
             donation expenditures
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Accounting.DonationExpenditure.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Accounting.DonationExpenditure.GanjoorDonationId">
             <summary>
             GanjoorDonation Id

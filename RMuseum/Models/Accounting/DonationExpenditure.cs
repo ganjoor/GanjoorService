@@ -6,6 +6,10 @@
     public class DonationExpenditure
     {
         /// <summary>
+        /// Id
+        /// </summary>
+        public int Id { get; set; }
+        /// <summary>
         /// GanjoorDonation Id
         /// </summary>
         public int GanjoorDonationId { get; set; }

@@ -24,7 +24,7 @@ namespace RMuseum.DbContext
     {
         public RMuseumDbContext(DbContextOptions<RMuseumDbContext> options) : base(options) 
         {
-            //Database.Migrate();
+            Database.Migrate();
         }
 
         /// <summary>
@@ -111,6 +111,22 @@ namespace RMuseum.DbContext
 
 
             //Index set suggested by SQL Server Tuning Wizard -- end
+
+            builder.Entity<GanjoorDonation>()
+              .Property(c => c.Amount)
+              .HasColumnType("decimal(18,2)");
+
+            builder.Entity<GanjoorDonation>()
+             .Property(c => c.Remaining)
+             .HasColumnType("decimal(18,2)");
+
+            builder.Entity<GanjoorExpense>()
+             .Property(c => c.Amount)
+             .HasColumnType("decimal(18,2)");
+
+            builder.Entity<DonationExpenditure>()
+            .Property(c => c.Amount)
+            .HasColumnType("decimal(18,2)");
         }
 
 
