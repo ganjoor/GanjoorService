@@ -65,10 +65,10 @@ namespace GanjooRazor.Pages
 
         private async Task preparePoets()
         {
-            var cacheKey = $"/api/ganjoor/poets?includeBio=false";
+            var cacheKey = $"/api/ganjoor/poets";
             if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
             {
-                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets?includeBio=false");
+                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
                 response.EnsureSuccessStatusCode();
                 poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
                 _memoryCache.Set(cacheKey, poets);

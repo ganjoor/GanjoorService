@@ -584,12 +584,10 @@
             <param name="auditLogService">
             </param>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPoets(System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoets">
             <summary>
-            get list of poets
+            get list of published poets without their biography
             </summary>
-            <param name="websitePoets"></param>
-            <param name="includeBio"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoetById(System.Int32)">
@@ -6609,7 +6607,7 @@
             <summary>
             Get List of poets
             </summary>
-            <param name="websitePoets"></param>
+            <param name="published"></param>
             <param name="includeBio"></param>
             <returns></returns>
         </member>
@@ -7747,7 +7745,7 @@
             <summary>
             Get List of poets
             </summary>
-            <param name="websitePoets"></param>
+            <param name="published"></param>
             <param name="includeBio"></param>
             <returns></returns>
         </member>

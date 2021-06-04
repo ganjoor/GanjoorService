@@ -28,23 +28,21 @@ namespace RMuseum.Controllers
     public class GanjoorController : Controller
     {
         /// <summary>
-        /// get list of poets
+        /// get list of published poets without their biography
         /// </summary>
-        /// <param name="websitePoets"></param>
-        /// <param name="includeBio"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("poets")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPoets(bool websitePoets = true, bool includeBio = true)
+        public async Task<IActionResult> GetPoets()
         {
-            var cacheKey = $"ganjoor/poets/{websitePoets}/{includeBio}";
+            var cacheKey = $"ganjoor/poets";
             if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetViewModel[] poets))
             {
                 RServiceResult<GanjoorPoetViewModel[]>  res =
-                await _ganjoorService.GetPoets(websitePoets, includeBio);
+                await _ganjoorService.GetPoets(true, false);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
 
