@@ -43,7 +43,7 @@ namespace RMuseum.Models.Accounting
         public string DonorName { get; set; }
 
         /// <summary>
-        /// donor link
+        /// donor link (unused)
         /// </summary>
         public string DonorLink { get; set; }
 

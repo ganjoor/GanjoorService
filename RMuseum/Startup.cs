@@ -277,6 +277,9 @@ namespace RMuseum
             //site banner service
             services.AddTransient<ISiteBannersService, SiteBannersService>();
 
+            //donation service
+            services.AddTransient<IDonationService, DonationService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {

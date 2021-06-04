@@ -88,6 +88,11 @@ namespace RMuseum.Models.Auth.Memory
         /// </summary>
         public const string Banners = "banners";
 
+        /// <summary>
+        /// donations
+        /// </summary>
+        public const string Donations = "donations";
+
 
         /// <summary>
         /// list of forms and their permissions
@@ -161,8 +166,11 @@ namespace RMuseum.Models.Auth.Memory
                             new SecurableItemOperation(ModerateOperationShortName, "مدیریت حاشیه‌ها", false),
                             new SecurableItemOperation(ModifyOperationShortName, "ویرایش محتوا", false),
                             new SecurableItemOperation(Banners, "مدیریت آگاهی‌ها", false),
+                            new SecurableItemOperation(Donations, "مدیریت کمکهای مالی", false),
                         }
                     },
+
+
 
                 });
                 return lst.ToArray();

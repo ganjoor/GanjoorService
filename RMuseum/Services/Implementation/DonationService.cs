@@ -13,7 +13,7 @@ namespace RMuseum.Services.Implementation
     /// <summary>
     /// donation service
     /// </summary>
-    public class DonationService
+    public class DonationService : IDonationService
     {
 
         /// <summary>
@@ -68,31 +68,31 @@ namespace RMuseum.Services.Implementation
                 DonationPageRow row = new DonationPageRow();
 
                 nStartIndex += "<td class=\"ddate\">".Length;
-                row.Date = htmlText.Substring(nStartIndex, htmlText.IndexOf("</td>", nStartIndex));
+                row.Date = htmlText.Substring(nStartIndex, htmlText.IndexOf("</td>", nStartIndex) - nStartIndex);
 
                 nStartIndex = htmlText.IndexOf("<td class=\"damount\">", nStartIndex);
                 if (nStartIndex == -1)
                     return new RServiceResult<bool>(false, $"{rowNumber} : damount");
                 nStartIndex += "<td class=\"damount\">".Length;
-                row.Amount = htmlText.Substring(nStartIndex, htmlText.IndexOf("</td>", nStartIndex));
+                row.Amount = htmlText.Substring(nStartIndex, htmlText.IndexOf("</td>", nStartIndex) - nStartIndex);
 
                 nStartIndex = htmlText.IndexOf("<td class=\"ddonator\">", nStartIndex);
                 if (nStartIndex == -1)
                     return new RServiceResult<bool>(false, $"{rowNumber} : ddonator");
                 nStartIndex += "<td class=\"ddonator\">".Length;
-                row.Donor = htmlText.Substring(nStartIndex, htmlText.IndexOf("</td>", nStartIndex));
+                row.Donor = htmlText.Substring(nStartIndex, htmlText.IndexOf("</td>", nStartIndex) - nStartIndex);
 
                 nStartIndex = htmlText.IndexOf("<td class=\"dusage\">", nStartIndex);
                 if (nStartIndex == -1)
                     return new RServiceResult<bool>(false, $"{rowNumber} : dusage");
                 nStartIndex += "<td class=\"dusage\">".Length;
-                row.Usage = htmlText.Substring(nStartIndex, htmlText.IndexOf("</td>", nStartIndex));
+                row.Usage = htmlText.Substring(nStartIndex, htmlText.IndexOf("</td>", nStartIndex) - nStartIndex);
 
                 nStartIndex = htmlText.IndexOf("<td class=\"drem\">", nStartIndex);
                 if (nStartIndex == -1)
                     return new RServiceResult<bool>(false, $"{rowNumber} : drem");
                 nStartIndex += "<td class=\"drem\">".Length;
-                row.Remaining = htmlText.Substring(nStartIndex, htmlText.IndexOf("</td>", nStartIndex));
+                row.Remaining = htmlText.Substring(nStartIndex, htmlText.IndexOf("</td>", nStartIndex) - nStartIndex);
 
 
                 rows.Add(row);
@@ -121,25 +121,18 @@ namespace RMuseum.Services.Implementation
                     rows[i].Remaining.ToEnglishNumbers() != "0"
                     )
                 {
-                    donation.Remaining = decimal.Parse(rows[i].Remaining.Replace("٬", "").Replace("تومان", "").Trim());
-                }
-
-                if(donation.DonorName.IndexOf("href") != -1)
-                {
-                    nStartIndex = donation.DonorName.IndexOf("href") + "href".Length + 1;
-                    donation.DonorLink = donation.DonorName.Substring(nStartIndex, donation.DonorName.IndexOf("</a>") - nStartIndex);
-                    donation.DonorName = donation.DonorName.Substring(0, donation.DonorName.IndexOf("<a")) + donation.DonorName.Replace("</a>", "").Substring(donation.DonorName.IndexOf(">") + 1);
+                    donation.Remaining = decimal.Parse(rows[i].Remaining.Replace("٬", "").Replace("تومان", "").Trim().ToEnglishNumbers());
                 }
 
                 if(donation.AmountString.Contains("تومان"))
                 {
-                    donation.Amount = decimal.Parse(donation.AmountString.Replace("٬", "").Replace("تومان", "").Trim());
+                    donation.Amount = decimal.Parse(donation.AmountString.Replace("٬", "").Replace("تومان", "").Trim().ToEnglishNumbers());
                     donation.Unit = "تومان";
                 }
 
                 if (donation.AmountString.Contains("دلار"))
                 {
-                    donation.Amount = decimal.Parse(donation.AmountString.Replace("٬", "").Replace("دلار", "").Trim());
+                    donation.Amount = decimal.Parse(donation.AmountString.Replace("٬", "").Replace("دلار", "").Trim().ToEnglishNumbers());
                     donation.Unit = "دلار";
                 }
 
