@@ -590,6 +590,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetAllPoets">
+            <summary>
+            get list of all poets (including unpublished ones) with their bio
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoetById(System.Int32)">
             <summary>
             poet by id

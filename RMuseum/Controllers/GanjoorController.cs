@@ -53,6 +53,25 @@ namespace RMuseum.Controllers
             return Ok(poets);
         }
 
+
+        /// <summary>
+        /// get list of all poets (including unpublished ones) with their bio
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poets/all")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetAllPoets()
+        {
+            RServiceResult<GanjoorPoetViewModel[]> res =
+                 await _ganjoorService.GetPoets(false, true);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
         /// <summary>
         /// poet by id
         /// </summary>
