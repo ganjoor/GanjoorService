@@ -1484,6 +1484,66 @@
             Ganjoor Health Check Errors
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Accounting.GanjoorDonation">
+            <summary>
+            Ganjoor Donation (based on donation records saved in old html format of https://ganjoor.net/donate/)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorDonation.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorDonation.DateString">
+            <summary>
+            date: (donation dates have been collected in different format, so instead of keeping their dates in a DateTime field I ought to use a string field)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorDonation.RecordDate">
+            <summary>
+            record date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorDonation.Amount">
+            <summary>
+            donation amount (0 for old imported records)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorDonation.Unit">
+            <summary>
+            Amount Unit
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorDonation.AmountString">
+            <summary>
+            amount string (avoiding to parse different formats of old html text)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorDonation.DonorName">
+            <summary>
+            donor name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorDonation.DonorLink">
+            <summary>
+            donor link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorDonation.Remaining">
+            <summary>
+            remaining
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorDonation.ExpenditureDesc">
+            <summary>
+            expenditure desc
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.GanjoorDonation.ImportedRecord">
+            <summary>
+            record is imported from old HTML text of donation page
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status
