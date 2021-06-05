@@ -24,7 +24,7 @@ namespace RMuseum.DbContext
     {
         public RMuseumDbContext(DbContextOptions<RMuseumDbContext> options) : base(options) 
         {
-            Database.Migrate();
+            //Database.Migrate();
         }
 
         /// <summary>
