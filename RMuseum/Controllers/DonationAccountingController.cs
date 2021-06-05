@@ -43,6 +43,33 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// delete donation + regenerate donations page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Donations)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> DeleteDonation(int id)
+        {
+            try
+            {
+                Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+                var res = await _donationService.DeleteDonation(userId, id);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// add expense + regenerate donations page
         /// </summary>
         /// <param name="expense"></param>

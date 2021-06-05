@@ -111,6 +111,31 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// delete donation
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteDonation(Guid editingUserId, int id)
+        {
+            try
+            {
+                var donation = await _context.GanjoorDonations.Where(d => d.Id == id).SingleAsync();
+                _context.GanjoorDonations.Remove(donation);
+                await _context.SaveChangesAsync();
+
+                await RegenerateDonationsPage(editingUserId);//ignore possible errors here!
+
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// new expense

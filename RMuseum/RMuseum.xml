@@ -6838,6 +6838,14 @@
             <param name="donation"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IDonationService.DeleteDonation(System.Guid,System.Int32)">
+            <summary>
+            delete donation
+            </summary>
+            <param name="editingUserId"></param>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IDonationService.AddExpense(System.Guid,RMuseum.Models.Accounting.GanjoorExpense)">
             <summary>
             new expense
@@ -7927,6 +7935,14 @@
             </summary>
             <param name="editingUserId"></param>
             <param name="donation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.DonationService.DeleteDonation(System.Guid,System.Int32)">
+            <summary>
+            delete donation
+            </summary>
+            <param name="editingUserId"></param>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.DonationService.AddExpense(System.Guid,RMuseum.Models.Accounting.GanjoorExpense)">

@@ -20,6 +20,14 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorDonationViewModel>> AddDonation(Guid editingUserId, GanjoorDonationViewModel donation);
 
         /// <summary>
+        /// delete donation
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteDonation(Guid editingUserId, int id);
+
+        /// <summary>
         /// new expense
         /// </summary>
         /// <param name="editingUserId"></param>
