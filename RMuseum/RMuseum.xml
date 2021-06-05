@@ -6887,11 +6887,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IDonationService.RegenerateDonationsPage(System.Guid)">
+        <member name="M:RMuseum.Services.IDonationService.RegenerateDonationsPage(System.Guid,System.String)">
             <summary>
             regenerate donations page
             </summary>
             <param name="editingUserId"></param>
+            <param name="note"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorService">
@@ -8024,11 +8025,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.DonationService.RegenerateDonationsPage(System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.DonationService.RegenerateDonationsPage(System.Guid,System.String)">
             <summary>
             regenerate donations page
             </summary>
             <param name="editingUserId"></param>
+            <param name="note"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.DonationService._context">

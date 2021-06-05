@@ -92,7 +92,7 @@ namespace RMuseum.Services.Implementation
                 }
 
 
-                await RegenerateDonationsPage(editingUserId);//ignore possible errors here!
+                await RegenerateDonationsPage(editingUserId, $"ثبت کمک مالی از {d.DonorName} به مبلغ {d.AmountString}");//ignore possible errors here!
 
                 donation.Id = d.Id;
                 donation.DateString = d.DateString;
@@ -131,10 +131,11 @@ namespace RMuseum.Services.Implementation
                     }
 
                 }
+                string note = $"حذف کمک مالی از {donation.DonorName} به مبلغ {donation.AmountString}";
                 _context.GanjoorDonations.Remove(donation);
                 await _context.SaveChangesAsync();
 
-                await RegenerateDonationsPage(editingUserId);//ignore possible errors here!
+                await RegenerateDonationsPage(editingUserId, note);//ignore possible errors here!
 
                 return new RServiceResult<bool>(true);
 
@@ -202,7 +203,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                await RegenerateDonationsPage(editingUserId);//ignore possible errors here!
+                await RegenerateDonationsPage(editingUserId, $"ثبت هزینهٔ {expense.Description} به مبلغ {expense.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {expense.Unit}");//ignore possible errors here!
 
                 return new RServiceResult<GanjoorExpense>(expense);
             }
@@ -223,6 +224,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var expense = await _context.GanjoorExpenses.Include(e => e.DonationExpenditures).Where(e => e.Id == id).SingleAsync();
+                string note = $"حذف هزینهٔ {expense.Description} به مبلغ {expense.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {expense.Unit}";
 
                 List<GanjoorDonation> donations = new List<GanjoorDonation>();
                 foreach(var expenditure in expense.DonationExpenditures)
@@ -270,7 +272,7 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
-                await RegenerateDonationsPage(editingUserId);//ignore possible errors here!
+                await RegenerateDonationsPage(editingUserId, note);//ignore possible errors here!
 
                 return new RServiceResult<bool>(true);
 
@@ -469,8 +471,9 @@ namespace RMuseum.Services.Implementation
         /// regenerate donations page
         /// </summary>
         /// <param name="editingUserId"></param>
+        /// <param name="note"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> RegenerateDonationsPage(Guid editingUserId)
+        public async Task<RServiceResult<bool>> RegenerateDonationsPage(Guid editingUserId, string note)
         {
             try
             {
@@ -593,7 +596,7 @@ namespace RMuseum.Services.Implementation
                     {
                         Title = dbPage.Title,
                         HtmlText = htmlText,
-                        Note = "تولید خودکار صفحهٔ کمکهای مالی",
+                        Note = note,
                         UrlSlug = dbPage.UrlSlug,
                     }
                     );

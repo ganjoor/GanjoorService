@@ -163,7 +163,7 @@ namespace RMuseum.Controllers
             {
                 Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
-                var res = await _donationService.RegenerateDonationsPage(userId);
+                var res = await _donationService.RegenerateDonationsPage(userId, "بازسازی دستی صفحهٔ کمکهای مالی");
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 return Ok();
