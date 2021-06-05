@@ -175,6 +175,20 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// is account info settings is on or off (for deciding to regenerate donations page based on it)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("accountinfo/visible")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Donations)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult IsAccountInfoVisible()
+        {
+            return Ok(_donationService.ShowAccountInfo);
+        }
+
+        /// <summary>
         /// donation service
         /// </summary>
         private readonly IDonationService _donationService;

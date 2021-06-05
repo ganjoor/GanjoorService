@@ -56,5 +56,10 @@ namespace RMuseum.Services
         /// <param name="note"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> RegenerateDonationsPage(Guid editingUserId, string note);
+
+        /// <summary>
+        /// Show Donating Information (temporary switch off/on)
+        /// </summary>
+        bool ShowAccountInfo { get; }
     }
 }

@@ -499,12 +499,20 @@ namespace RMuseum.Services.Implementation
 
                 var dateString = $"{last.ToPersianYearMonthDay().Day.ToPersianNumbers()}م {PersianCulture.GetPersianMonthName(last.ToPersianYearMonthDay().Month)} {last.ToPersianYearMonthDay().Year.ToPersianNumbers()}";
 
-                htmlText += $"<p>{Environment.NewLine}";
-                htmlText += $"در صورت تمایل به کمک مالی به گنجور از طریق کارت عابربانک؛ لطفاً کمکهای خود را به کارت شمارهٔ <span class=\"lft\">6219-8610-2780-4979</span> (بانک سامان) به نام حمیدرضا محمدی واریز نمایید. علاوه بر آن از طریق اینترنت‌بانک سامان می‌توانید کمکهای خود را به شماره حساب <span class=\"lft\">۸۲۸-۸۰۰-۸۷۳۳۳۰-۱</span> (شمارهٔ شبا: <span class=\"lft\">IR03-0560-0828-8000-0873-3300-01</span>) واریز نمایید. لطفاً از طریق تماس با نشانی ganjoor@ganjoor.net مشخصات خودتان و مبلغ واریزی را اطلاع دهید (نام کمک دهندگان و نوع استفاده‌ای که از کمک آنها شده به مرور در همین صفحه به اطلاع خواهد رسید).{Environment.NewLine}";
-                htmlText += $"</p>{Environment.NewLine}";
-                htmlText += $"<p>{Environment.NewLine}";
-                htmlText += $"مبالغ واریزی جهت پرداخت هزینه‌های جاری (میزبانی وب و ...)، گسترش امکانات و همینطور پایگاه داده‌های سایت مورد استفاده قرار خواهد گرفت.{Environment.NewLine}";
-                htmlText += $"</p>{Environment.NewLine}";
+                if(ShowAccountInfo)
+                {
+                    htmlText += $"<p>{Environment.NewLine}";
+                    htmlText += $"در صورت تمایل به کمک مالی به گنجور از طریق کارت عابربانک؛ لطفاً کمکهای خود را به کارت شمارهٔ <span class=\"lft\">6219-8610-2780-4979</span> (بانک سامان) به نام حمیدرضا محمدی واریز نمایید. علاوه بر آن از طریق اینترنت‌بانک سامان می‌توانید کمکهای خود را به شماره حساب <span class=\"lft\">۸۲۸-۸۰۰-۸۷۳۳۳۰-۱</span> (شمارهٔ شبا: <span class=\"lft\">IR03-0560-0828-8000-0873-3300-01</span>) واریز نمایید. لطفاً از طریق تماس با نشانی ganjoor@ganjoor.net مشخصات خودتان و مبلغ واریزی را اطلاع دهید (نام کمک دهندگان و نوع استفاده‌ای که از کمک آنها شده به مرور در همین صفحه به اطلاع خواهد رسید).{Environment.NewLine}";
+                    htmlText += $"</p>{Environment.NewLine}";
+                    htmlText += $"<p>{Environment.NewLine}";
+                    htmlText += $"مبالغ واریزی جهت پرداخت هزینه‌های جاری (میزبانی وب و ...)، گسترش امکانات و همینطور پایگاه داده‌های سایت مورد استفاده قرار خواهد گرفت.{Environment.NewLine}";
+                    htmlText += $"</p>{Environment.NewLine}";
+                }
+                else
+                {
+                    htmlText += $"<p><span style=\"color:green\">با سپاس از بزرگواری همه دوستان در حال حاضر هزینه‌های جاری گنجور تا چند ماه آینده تأمین شده است. خواهشمندیم در صورت امکان کمکهای خود را به ماههای آینده محول فرمایید. اطلاعات واریز در مقطع مورد نیاز مجدداً در دسترس قرار خواهد گرفت.</span></p>{Environment.NewLine}";
+                }
+               
                 htmlText += $"<p>{Environment.NewLine}";
                 htmlText += $"باقیماندهٔ قابل هزینهٔ کمکهای دریافتی تا {donations[0].DateString} برابر {remSum.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} تومان است.{Environment.NewLine}";
                 htmlText += $"</p>{Environment.NewLine}";
@@ -606,6 +614,24 @@ namespace RMuseum.Services.Implementation
             catch(Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Show Donating Information (temporary switch off/on)
+        /// </summary>
+        public bool ShowAccountInfo
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(_configuration.GetSection("Donations")["ShowAccountInfo"]);
+                }
+                catch
+                {
+                    return true;
+                }
             }
         }
 
