@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RMuseum.Models.Accounting
+namespace RMuseum.Models.Accounting.ViewModels
 {
     /// <summary>
     /// Ganjoor Donation View Model

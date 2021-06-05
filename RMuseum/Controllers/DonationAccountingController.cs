@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RMuseum.Models.Accounting;
+using RMuseum.Models.Accounting.ViewModels;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Services;
 using System;

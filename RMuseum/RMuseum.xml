@@ -584,7 +584,7 @@
             <param name="auditLogService">
             </param>
         </member>
-        <member name="M:RMuseum.Controllers.DonationAccountingController.AddDonation(RMuseum.Models.Accounting.GanjoorDonationViewModel)">
+        <member name="M:RMuseum.Controllers.DonationAccountingController.AddDonation(RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel)">
             <summary>
             add donation + regenerate donations page
             </summary>
@@ -1603,61 +1603,6 @@
             record is imported from old HTML text of donation page
             </summary>
         </member>
-        <member name="T:RMuseum.Models.Accounting.GanjoorDonationViewModel">
-            <summary>
-            Ganjoor Donation View Model
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Accounting.GanjoorDonationViewModel.Id">
-            <summary>
-            id - null for POST api -
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Accounting.GanjoorDonationViewModel.RecordDate">
-            <summary>
-            record date
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Accounting.GanjoorDonationViewModel.Amount">
-            <summary>
-            donation amount (0 for old imported records)
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Accounting.GanjoorDonationViewModel.Unit">
-            <summary>
-            "تومان" is good, Amount Unit, if you send another string other than تومان in post api it does not try to consume the expense!
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Accounting.GanjoorDonationViewModel.DonorName">
-            <summary>
-            donor name
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Accounting.GanjoorDonationViewModel.DateString">
-            <summary>
-            null for POST api -  date: (donation dates have been collected in different formats, so instead of keeping their dates in a DateTime field I ought to use a string field)
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Accounting.GanjoorDonationViewModel.AmountString">
-            <summary>
-            null for POST api -amount string (avoiding to parse different formats of old html text)
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Accounting.GanjoorDonationViewModel.Remaining">
-            <summary>
-            null for POST api -remaining (it could be ignored later when our data has been normalized enough and be calculated using related data)
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Accounting.GanjoorDonationViewModel.ExpenditureDesc">
-            <summary>
-            null for POST api -expenditure desc
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Accounting.GanjoorDonationViewModel.ImportedRecord">
-            <summary>
-            null for POST api - record is imported from old HTML text of donation page
-            </summary>
-        </member>
         <member name="T:RMuseum.Models.Accounting.GanjoorExpense">
             <summary>
             Ganjoor Expenses
@@ -1691,6 +1636,61 @@
         <member name="P:RMuseum.Models.Accounting.GanjoorExpense.DonationExpenditures">
             <summary>
             donation expenitures
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel">
+            <summary>
+            Ganjoor Donation View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.Id">
+            <summary>
+            id - null for POST api -
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.RecordDate">
+            <summary>
+            record date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.Amount">
+            <summary>
+            donation amount (0 for old imported records)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.Unit">
+            <summary>
+            "تومان" is good, Amount Unit, if you send another string other than تومان in post api it does not try to consume the expense!
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.DonorName">
+            <summary>
+            donor name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.DateString">
+            <summary>
+            null for POST api -  date: (donation dates have been collected in different formats, so instead of keeping their dates in a DateTime field I ought to use a string field)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.AmountString">
+            <summary>
+            null for POST api -amount string (avoiding to parse different formats of old html text)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.Remaining">
+            <summary>
+            null for POST api -remaining (it could be ignored later when our data has been normalized enough and be calculated using related data)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.ExpenditureDesc">
+            <summary>
+            null for POST api -expenditure desc
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.ImportedRecord">
+            <summary>
+            null for POST api - record is imported from old HTML text of donation page
             </summary>
         </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
@@ -6823,7 +6823,7 @@
             donation service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.IDonationService.AddDonation(System.Guid,RMuseum.Models.Accounting.GanjoorDonationViewModel)">
+        <member name="M:RMuseum.Services.IDonationService.AddDonation(System.Guid,RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel)">
             <summary>
             new donation
             </summary>
@@ -7906,7 +7906,7 @@
             donation service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.DonationService.AddDonation(System.Guid,RMuseum.Models.Accounting.GanjoorDonationViewModel)">
+        <member name="M:RMuseum.Services.Implementation.DonationService.AddDonation(System.Guid,RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel)">
             <summary>
             new donation
             </summary>

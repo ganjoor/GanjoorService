@@ -1,4 +1,4 @@
-﻿using RMuseum.Models.Accounting;
+﻿using RMuseum.Models.Accounting.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Threading.Tasks;
