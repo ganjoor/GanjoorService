@@ -1660,7 +1660,7 @@
         </member>
         <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.Unit">
             <summary>
-            "تومان" is good, Amount Unit, if you send another string other than تومان in post api it does not try to consume the expense!
+            "تومان" is good, Amount Unit, if you send another Unit it would be consumed with EXPENSES of the same Unit, if it send EMPTY it wotld not be consumed!
             </summary>
         </member>
         <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.DonorName">

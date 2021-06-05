@@ -51,12 +51,12 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorDonations.Add(d);
                 await _context.SaveChangesAsync();
 
-                if(d.Unit == "تومان")
+                if(!string.IsNullOrEmpty(d.Unit))
                 {
                     var expenses =
                     await _context.GanjoorExpenses
                         .Include(e => e.DonationExpenditures)
-                        .Where(e => (e.Amount - e.DonationExpenditures.DefaultIfEmpty().Sum(x => x.Amount)) > 0)
+                        .Where(e => e.Unit == d.Unit && (e.Amount - e.DonationExpenditures.DefaultIfEmpty().Sum(x => x.Amount)) > 0)
                         .OrderBy(e => e.Id)
                         .ToListAsync();
 
@@ -81,7 +81,7 @@ namespace RMuseum.Services.Implementation
                         var part = expense.DonationExpenditures.Count == 0 && remaining == d.Amount ? "" : "بخشی از ";
                         if (!string.IsNullOrEmpty(d.ExpenditureDesc))
                             d.ExpenditureDesc += " ";
-                        d.ExpenditureDesc += $"جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {expense.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} تومان صرف شد.";
+                        d.ExpenditureDesc += $"جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {expense.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {d.Unit} صرف شد.";
                         d.Remaining -= remaining;
                         _context.GanjoorDonations.Update(d);
                         await _context.SaveChangesAsync();

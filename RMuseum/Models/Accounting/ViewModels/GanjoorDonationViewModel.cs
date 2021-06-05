@@ -23,7 +23,7 @@ namespace RMuseum.Models.Accounting.ViewModels
         public decimal Amount { get; set; }
 
         /// <summary>
-        /// "تومان" is good, Amount Unit, if you send another string other than تومان in post api it does not try to consume the expense!
+        /// "تومان" is good, Amount Unit, if you send another Unit it would be consumed with EXPENSES of the same Unit, if it send EMPTY it wotld not be consumed!
         /// </summary>
         public string Unit { get; set; }
 
