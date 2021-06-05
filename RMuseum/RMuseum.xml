@@ -590,6 +590,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.DonationAccountingController.RegenerateDonationsPage">
+            <summary>
+            regenerate donations page
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.DonationAccountingController._donationService">
             <summary>
             donation service
@@ -6761,6 +6767,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IDonationService.RegenerateDonationsPage(System.Guid)">
+            <summary>
+            regenerate donations page
+            </summary>
+            <param name="editingUserId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorService">
             <summary>
             Ganjoor Poems Content Privider Service
@@ -7859,6 +7872,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.DonationService.RegenerateDonationsPage(System.Guid)">
+            <summary>
+            regenerate donations page
+            </summary>
+            <param name="editingUserId"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.DonationService._context">
             <summary>
             Database Context
@@ -7869,12 +7889,24 @@
             Background Task Queue Instance
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.DonationService.#ctor(RMuseum.DbContext.RMuseumDbContext,RSecurityBackend.Services.IBackgroundTaskQueue)">
+        <member name="F:RMuseum.Services.Implementation.DonationService._ganjoorService">
+            <summary>
+            Ganjoor Service
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.DonationService._configuration">
+            <summary>
+            configuration
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.DonationService.#ctor(RMuseum.DbContext.RMuseumDbContext,RSecurityBackend.Services.IBackgroundTaskQueue,RMuseum.Services.IGanjoorService,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             constructor
             </summary>
             <param name="context"></param>
             <param name="backgroundTaskQueue"></param>
+            <param name="ganjoorService"></param>
+            <param name="configuration"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorAppUserService">
             <summary>

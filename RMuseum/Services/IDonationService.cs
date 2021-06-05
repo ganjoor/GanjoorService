@@ -1,4 +1,5 @@
 ﻿using RSecurityBackend.Models.Generic;
+using System;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services
@@ -13,5 +14,12 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<bool>> InitializeRecords();
+
+        /// <summary>
+        /// regenerate donations page
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RegenerateDonationsPage(Guid editingUserId);
     }
 }

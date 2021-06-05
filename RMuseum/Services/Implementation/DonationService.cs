@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using DNTPersianUtils.Core;
 using RSecurityBackend.Services.Implementation;
 using RSecurityBackend.Services;
+using Microsoft.Extensions.Configuration;
+using RMuseum.Models.Ganjoor.ViewModels;
+using System.Globalization;
 
 namespace RMuseum.Services.Implementation
 {
@@ -169,6 +172,8 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+
+
         /// <summary>
         /// parse html of https://ganjoor.net/donate/ and fill the records
         /// </summary>
@@ -200,6 +205,87 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<bool>(true);
         }
 
+        /// <summary>
+        /// regenerate donations page
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> RegenerateDonationsPage(Guid editingUserId)
+        {
+            try
+            {
+
+                var dbPage = await _context.GanjoorPages.Where(p => p.UrlSlug == "donate").SingleAsync();
+
+                var donations = await _context.GanjoorDonations.OrderByDescending(d => d.Id).ToArrayAsync();
+
+                var remSum = await _context.GanjoorDonations.Where(d => d.Unit == "تومان").SumAsync(d => d.Remaining);
+
+
+                string htmlText = "";
+
+                htmlText += $"<p>{Environment.NewLine}";
+                htmlText += $"در صورت تمایل به کمک مالی به گنجور از طریق کارت عابربانک؛ لطفاً کمکهای خود را به کارت شمارهٔ <span class=\"lft\">6219-8610-2780-4979</span> (بانک سامان) به نام حمیدرضا محمدی واریز نمایید. علاوه بر آن از طریق اینترنت‌بانک سامان می‌توانید کمکهای خود را به شماره حساب <span class=\"lft\">۸۲۸-۸۰۰-۸۷۳۳۳۰-۱</span> (شمارهٔ شبا: <span class=\"lft\">IR03-0560-0828-8000-0873-3300-01</span>) واریز نمایید. لطفاً از طریق تماس با نشانی ganjoor@ganjoor.net مشخصات خودتان و مبلغ واریزی را اطلاع دهید (نام کمک دهندگان و نوع استفاده‌ای که از کمک آنها شده به مرور در همین صفحه به اطلاع خواهد رسید).{Environment.NewLine}";
+                htmlText += $"</p>{Environment.NewLine}";
+                htmlText += $"<p>{Environment.NewLine}";
+                htmlText += $"مبالغ واریزی جهت پرداخت هزینه‌های جاری (میزبانی وب و ...)، گسترش امکانات و همینطور پایگاه داده‌های سایت مورد استفاده قرار خواهد گرفت.{Environment.NewLine}";
+                htmlText += $"</p>{Environment.NewLine}";
+                htmlText += $"<p>{Environment.NewLine}";
+                htmlText += $"باقیماندهٔ قابل هزینهٔ کمکهای دریافتی تا {donations[0].DateString} برابر {remSum.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} تومان است.{Environment.NewLine}";
+                htmlText += $"</p>{Environment.NewLine}";
+
+                htmlText += $"<h3>کمکهای دریافت شده تا به حال</h3>{Environment.NewLine}";
+
+                htmlText += $"<table>{Environment.NewLine}";
+
+                htmlText += $"<tr class=\"h\">{Environment.NewLine}";
+                htmlText += $"<td class=\"d1\">ردیف</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"d2\">تاریخ</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"d3\">مبلغ</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"d4\">اهدا کننده</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"d5\">محل هزینه</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"d6\">مانده</td>{Environment.NewLine}";
+                htmlText += $"</tr>{Environment.NewLine}";
+
+
+
+                for (int i=0; i<donations.Length; i++)  
+                {
+                    var donation = donations[i];
+
+                    string cssClass = i % 2 == 0 ? " class=\"e\"" : "";
+
+                    htmlText += $"<tr{cssClass}>{Environment.NewLine}";
+                    htmlText += $"<td class=\"drow\">{(donations.Length - i).ToPersianNumbers()}</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"ddate\">{donation.DateString}</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"damount\">{donation.AmountString}</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"ddonator\">{donation.DonorName}</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"dusage\">{(string.IsNullOrEmpty(donation.ExpenditureDesc) ? "هنوز هزینه نشده." : donation.ExpenditureDesc)}</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"drem\">{(donation.Remaining == 0 || string.IsNullOrEmpty(donation.Unit) ? donation.Remaining.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers() : $"{donation.Remaining.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {donation.Unit}")}</td>{Environment.NewLine}";
+                    htmlText += $"</tr>{Environment.NewLine}";
+
+                }
+
+                htmlText += $"</table>{Environment.NewLine}";
+
+                await _ganjoorService.ModifyPage(dbPage.Id, editingUserId,
+                    new GanjoorModifyPageViewModel()
+                    {
+                        Title = dbPage.Title,
+                        HtmlText = htmlText,
+                        Note = "تولید خودکار صفحهٔ کمکهای مالی",
+                        UrlSlug = dbPage.UrlSlug,
+                    }
+                    );
+
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// Database Context
@@ -212,16 +298,28 @@ namespace RMuseum.Services.Implementation
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
 
         /// <summary>
+        /// Ganjoor Service
+        /// </summary>
+        private readonly IGanjoorService _ganjoorService;
+
+        /// <summary>
+        /// configuration
+        /// </summary>
+        private readonly IConfiguration _configuration;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="backgroundTaskQueue"></param>
-        public DonationService(RMuseumDbContext context, IBackgroundTaskQueue backgroundTaskQueue)
+        /// <param name="ganjoorService"></param>
+        /// <param name="configuration"></param>
+        public DonationService(RMuseumDbContext context, IBackgroundTaskQueue backgroundTaskQueue, IGanjoorService ganjoorService, IConfiguration configuration)
         {
             _context = context;
             _backgroundTaskQueue = backgroundTaskQueue;
-
-
+            _ganjoorService = ganjoorService;
+            _configuration = configuration;
         }
     }
 }
