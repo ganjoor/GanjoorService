@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RMuseum.Models.Accounting;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Services;
 using System;
@@ -13,7 +14,33 @@ namespace RMuseum.Controllers
     [Route("api/donations")]
     public class DonationAccountingController : Controller
     {
-        
+        /// <summary>
+        /// add donation + regenerate donations page
+        /// </summary>
+        /// <param name="donation"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Donations)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorDonationViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> AddDonation([FromBody] GanjoorDonationViewModel donation)
+        {
+            try
+            {
+                Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+                var res = await _donationService.AddDonation(userId, donation);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
         /// <summary>
         /// one time import
         /// </summary>

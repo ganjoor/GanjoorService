@@ -584,6 +584,13 @@
             <param name="auditLogService">
             </param>
         </member>
+        <member name="M:RMuseum.Controllers.DonationAccountingController.AddDonation(RMuseum.Models.Accounting.GanjoorDonationViewModel)">
+            <summary>
+            add donation + regenerate donations page
+            </summary>
+            <param name="donation"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.DonationAccountingController.Import">
             <summary>
             one time import
@@ -6815,6 +6822,14 @@
             <summary>
             donation service
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.IDonationService.AddDonation(System.Guid,RMuseum.Models.Accounting.GanjoorDonationViewModel)">
+            <summary>
+            new donation
+            </summary>
+            <param name="editingUserId"></param>
+            <param name="donation"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IDonationService.InitializeRecords">
             <summary>
