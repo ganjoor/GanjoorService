@@ -204,6 +204,75 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// delete expense
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteExpense(Guid editingUserId, int id)
+        {
+            try
+            {
+                var expense = await _context.GanjoorExpenses.Include(e => e.DonationExpenditures).Where(e => e.Id == id).SingleAsync();
+
+                List<GanjoorDonation> donations = new List<GanjoorDonation>();
+                foreach(var expenditure in expense.DonationExpenditures)
+                {
+                    if(!donations.Where(d => d.Id == expenditure.GanjoorDonationId).Any())
+                    {
+                        donations.Add(await _context.GanjoorDonations.Where(d => d.Id == expenditure.GanjoorDonationId).SingleAsync());
+                    }
+
+                    _context.DonationExpenditure.Remove(expenditure);
+                }
+
+                await _context.SaveChangesAsync();
+
+                _context.GanjoorExpenses.Remove(expense);
+                await _context.SaveChangesAsync();
+
+                foreach(var donation in donations)
+                {
+                    donation.Remaining = donation.Amount;
+                    donation.ExpenditureDesc = "";
+
+                    var donationExpenses = await _context.GanjoorExpenses.AsNoTracking()
+                                                                            .Include(e => e.DonationExpenditures)
+                                                                            .Where(e => e.DonationExpenditures
+                                                                            .Any(x => x.GanjoorDonationId == donation.Id))
+                                                                            .ToListAsync();
+
+                    foreach(var donationExpense in donationExpenses)
+                        foreach(var donationExpenditure in donationExpense.DonationExpenditures)
+                            if(donationExpenditure.GanjoorDonationId == donation.Id)
+                            {
+                                var amount = donation.Remaining == donation.Amount && donationExpenditure.Amount == donation.Remaining ? "" : donation.Remaining == donationExpenditure.Amount ? "باقیماندهٔ آن " : $"مبلغ {donationExpenditure.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {donation.Unit} آن ";
+                                var part = expense.DonationExpenditures.Count == 1 && donationExpenditure.Amount == donationExpense.Amount ? "" : "بخشی از ";
+                                if (!string.IsNullOrEmpty(donation.ExpenditureDesc))
+                                    donation.ExpenditureDesc += " ";
+                                DateTime expenseDate = expense.ExpenseDate;
+                                var dateString = $"{expenseDate.ToPersianYearMonthDay().Day.ToPersianNumbers()}م {PersianCulture.GetPersianMonthName(expenseDate.ToPersianYearMonthDay().Month)} {expenseDate.ToPersianYearMonthDay().Year.ToPersianNumbers()}";
+                                donation.ExpenditureDesc += $"{amount}جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {expense.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {donation.Unit} صرف شد ({dateString}).";
+                                donation.Remaining -= donationExpenditure.Amount;
+                            }
+
+                    _context.GanjoorDonations.Update(donation);
+                }
+
+                await _context.SaveChangesAsync();
+
+                await RegenerateDonationsPage(editingUserId);//ignore possible errors here!
+
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// donation page row
         /// </summary>
         private class DonationPageRow

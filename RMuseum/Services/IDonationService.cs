@@ -36,6 +36,14 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorExpense>> AddExpense(Guid editingUserId, GanjoorExpense expense);
 
         /// <summary>
+        /// delete expense
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteExpense(Guid editingUserId, int id);
+
+        /// <summary>
         /// parse html of https://ganjoor.net/donate/ and fill the records
         /// </summary>
         /// <returns></returns>

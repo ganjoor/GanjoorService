@@ -304,6 +304,11 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorExpense> GanjoorExpenses { get; set; }
 
+        /// <summary>
+        /// donation expenditures
+        /// </summary>
+        public DbSet<DonationExpenditure> DonationExpenditure { get; set; }
+
 
     }
 }
