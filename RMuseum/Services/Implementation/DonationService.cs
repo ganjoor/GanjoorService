@@ -51,7 +51,7 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorDonations.Add(d);
                 await _context.SaveChangesAsync();
 
-                if(!string.IsNullOrEmpty(d.Unit))
+                if(!string.IsNullOrEmpty(d.Unit) && d.Amount > 0)
                 {
                     var expenses =
                     await _context.GanjoorExpenses
@@ -78,10 +78,13 @@ namespace RMuseum.Services.Implementation
 
                         expense.DonationExpenditures.Add(n);
                         _context.GanjoorExpenses.Update(expense);
-                        var part = expense.DonationExpenditures.Count == 0 && remaining == d.Amount ? "" : "بخشی از ";
+                        var amount = d.Remaining == d.Amount && remaining == d.Remaining ? "" : d.Remaining == remaining ? "" : $"مبلغ {remaining.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {d.Unit} آن ";
+                        var part = expense.DonationExpenditures.Count == 0 && remaining == expense.Amount ? "" : "بخشی از ";
                         if (!string.IsNullOrEmpty(d.ExpenditureDesc))
                             d.ExpenditureDesc += " ";
-                        d.ExpenditureDesc += $"جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {expense.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {d.Unit} صرف شد.";
+                        DateTime expenseDate = expense.ExpenseDate;
+                        var dateString = $"{expenseDate.ToPersianYearMonthDay().Day.ToPersianNumbers()}م {PersianCulture.GetPersianMonthName(expenseDate.ToPersianYearMonthDay().Month)} {expenseDate.ToPersianYearMonthDay().Year.ToPersianNumbers()}";
+                        d.ExpenditureDesc += $"{amount}جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {expense.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {d.Unit} صرف شد ({dateString}).";
                         d.Remaining -= remaining;
                         _context.GanjoorDonations.Update(d);
                         await _context.SaveChangesAsync();
@@ -105,6 +108,73 @@ namespace RMuseum.Services.Implementation
             catch(Exception exp)
             {
                 return new RServiceResult<GanjoorDonationViewModel>(null, exp.ToString());
+            }
+        }
+
+
+        /// <summary>
+        /// new expense
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="expense"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorExpense>> AddExpense(Guid editingUserId, GanjoorExpense expense)
+        {
+            try
+            {
+                expense.DonationExpenditures = new List<DonationExpenditure>();//fix swagger posting a list which causes a donation to be added
+                _context.GanjoorExpenses.Add(expense);
+                await _context.SaveChangesAsync();
+
+                if(!string.IsNullOrEmpty(expense.Unit) && expense.Amount > 0)
+                {
+                    var expenseRemaining = expense.Amount;
+
+                    var donations = await _context.GanjoorDonations.Where(d => d.Unit == expense.Unit && d.Remaining > 0).OrderBy(d => d.Id).ToListAsync();
+                    foreach(var d in donations)
+                    {
+                        if (expenseRemaining <= 0)
+                            break;
+
+                        var remaining = expenseRemaining;
+                        if (remaining > d.Remaining)
+                        {
+                            remaining = d.Remaining;
+                        }
+
+                        DonationExpenditure n = new DonationExpenditure()
+                        {
+                            Amount = remaining,
+                            GanjoorDonationId = d.Id
+                        };
+
+                        expense.DonationExpenditures.Add(n);
+                        _context.GanjoorExpenses.Update(expense);
+
+                        var amount = d.Remaining == d.Amount && remaining == d.Remaining ? "" : d.Remaining == remaining ? "باقیماندهٔ آن " : $"مبلغ {remaining.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {d.Unit} آن ";
+                        var part = expense.DonationExpenditures.Count == 1 && remaining == expenseRemaining ? "" : "بخشی از ";
+                        if (!string.IsNullOrEmpty(d.ExpenditureDesc))
+                            d.ExpenditureDesc += " ";
+                        DateTime expenseDate = expense.ExpenseDate;
+                        var dateString = $"{expenseDate.ToPersianYearMonthDay().Day.ToPersianNumbers()}م {PersianCulture.GetPersianMonthName(expenseDate.ToPersianYearMonthDay().Month)} {expenseDate.ToPersianYearMonthDay().Year.ToPersianNumbers()}";
+                        d.ExpenditureDesc += $"{amount}جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {expense.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {d.Unit} صرف شد ({dateString}).";
+                        d.Remaining -= remaining;
+                        _context.GanjoorDonations.Update(d);
+
+
+                        await _context.SaveChangesAsync();
+
+                        expenseRemaining -= remaining;
+                    }
+                }
+
+                await RegenerateDonationsPage(editingUserId);//ignore possible errors here!
+
+                return new RServiceResult<GanjoorExpense>(expense);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorExpense>(null, exp.ToString());
             }
         }
 
@@ -310,6 +380,18 @@ namespace RMuseum.Services.Implementation
 
 
                 string htmlText = "";
+
+                DateTime dateLastDonation = donations.Length > 0 ? donations[0].RecordDate : DateTime.MinValue;
+                DateTime dateLastExpense = DateTime.MinValue;
+                var lastExpense = await _context.GanjoorExpenses.OrderByDescending(e => e.ExpenseDate).FirstOrDefaultAsync();
+                if(lastExpense != null)
+                {
+                    dateLastExpense = lastExpense.ExpenseDate;
+                }
+
+                DateTime last = dateLastDonation > dateLastExpense ? dateLastDonation : dateLastExpense;
+
+                var dateString = $"{last.ToPersianYearMonthDay().Day.ToPersianNumbers()}م {PersianCulture.GetPersianMonthName(last.ToPersianYearMonthDay().Month)} {last.ToPersianYearMonthDay().Year.ToPersianNumbers()}";
 
                 htmlText += $"<p>{Environment.NewLine}";
                 htmlText += $"در صورت تمایل به کمک مالی به گنجور از طریق کارت عابربانک؛ لطفاً کمکهای خود را به کارت شمارهٔ <span class=\"lft\">6219-8610-2780-4979</span> (بانک سامان) به نام حمیدرضا محمدی واریز نمایید. علاوه بر آن از طریق اینترنت‌بانک سامان می‌توانید کمکهای خود را به شماره حساب <span class=\"lft\">۸۲۸-۸۰۰-۸۷۳۳۳۰-۱</span> (شمارهٔ شبا: <span class=\"lft\">IR03-0560-0828-8000-0873-3300-01</span>) واریز نمایید. لطفاً از طریق تماس با نشانی ganjoor@ganjoor.net مشخصات خودتان و مبلغ واریزی را اطلاع دهید (نام کمک دهندگان و نوع استفاده‌ای که از کمک آنها شده به مرور در همین صفحه به اطلاع خواهد رسید).{Environment.NewLine}";

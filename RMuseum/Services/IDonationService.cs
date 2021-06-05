@@ -1,4 +1,5 @@
-﻿using RMuseum.Models.Accounting.ViewModels;
+﻿using RMuseum.Models.Accounting;
+using RMuseum.Models.Accounting.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Threading.Tasks;
@@ -17,6 +18,14 @@ namespace RMuseum.Services
         /// <param name="donation"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorDonationViewModel>> AddDonation(Guid editingUserId, GanjoorDonationViewModel donation);
+
+        /// <summary>
+        /// new expense
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="expense"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorExpense>> AddExpense(Guid editingUserId, GanjoorExpense expense);
 
         /// <summary>
         /// parse html of https://ganjoor.net/donate/ and fill the records

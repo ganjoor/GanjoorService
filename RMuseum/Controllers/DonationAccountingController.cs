@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RMuseum.Models.Accounting;
 using RMuseum.Models.Accounting.ViewModels;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Services;
@@ -31,6 +32,34 @@ namespace RMuseum.Controllers
                 Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
                 var res = await _donationService.AddDonation(userId, donation);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// add expense + regenerate donations page
+        /// </summary>
+        /// <param name="expense"></param>
+        /// <returns></returns>
+
+        [HttpPost("expense")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Donations)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorDonationViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> AddExpense([FromBody] GanjoorExpense expense)
+        {
+            try
+            {
+                Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+                var res = await _donationService.AddExpense(userId, expense);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 return Ok(res.Result);
