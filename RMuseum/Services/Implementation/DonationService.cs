@@ -122,6 +122,15 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var donation = await _context.GanjoorDonations.Where(d => d.Id == id).SingleAsync();
+                if(donation.ImportedRecord)
+                {
+                    var sumExpenditures = await _context.DonationExpenditure.AsNoTracking().Where(x => x.GanjoorDonationId == id).SumAsync(x => x.Amount);
+                    if(sumExpenditures != (donation.Amount - donation.Remaining))
+                    {
+                        return new RServiceResult<bool>(false, "حذف این ردیف از طریق API امکان ندارد.");
+                    }
+
+                }
                 _context.GanjoorDonations.Remove(donation);
                 await _context.SaveChangesAsync();
 
