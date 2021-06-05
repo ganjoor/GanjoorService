@@ -22,6 +22,92 @@ namespace RMuseum.Services.Implementation
     {
 
         /// <summary>
+        /// new donation
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="donation"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorDonationViewModel>> AddDonation(Guid editingUserId, GanjoorDonationViewModel donation)
+        {
+            try
+            {
+                var d = new GanjoorDonation()
+                {
+                    DateString = $"{donation.RecordDate.ToPersianYearMonthDay().Day.ToPersianNumbers()}م {PersianCulture.GetPersianMonthName(donation.RecordDate.ToPersianYearMonthDay().Month)} {donation.RecordDate.ToPersianYearMonthDay().Year.ToPersianNumbers()}",
+                    RecordDate = donation.RecordDate,
+                    Amount = donation.Amount,
+                    Unit = donation.Unit,
+                    AmountString = donation.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers(),
+                    DonorName = donation.DonorName,
+                    Remaining = donation.Amount,
+                    ExpenditureDesc = "",
+                    ImportedRecord = false
+                };
+
+                if (!string.IsNullOrEmpty(donation.Unit))
+                    d.AmountString = $"{d.AmountString} {d.Unit}";
+
+                _context.GanjoorDonations.Add(d);
+                await _context.SaveChangesAsync();
+
+                if(d.Unit == "تومان")
+                {
+                    var expenses =
+                    await _context.GanjoorExpenses
+                        .Include(e => e.DonationExpenditures)
+                        .Where(e => (e.Amount - e.DonationExpenditures.DefaultIfEmpty().Sum(x => x.Amount)) > 0)
+                        .OrderBy(e => e.Id)
+                        .ToListAsync();
+
+                    foreach (var expense in expenses)
+                    {
+                        if (d.Remaining <= 0)
+                            break;
+                        var remaining = expense.Amount - expense.DonationExpenditures.DefaultIfEmpty().Sum(x => x.Amount);
+                        if(remaining > d.Remaining)
+                        {
+                            remaining = d.Remaining;
+                        }
+
+                        DonationExpenditure n = new DonationExpenditure()
+                        {
+                            Amount = remaining,
+                            GanjoorDonationId = d.Id
+                        };
+
+                        expense.DonationExpenditures.Add(n);
+                        _context.GanjoorExpenses.Update(expense);
+                        var part = expense.DonationExpenditures.Count == 0 && remaining == d.Amount ? "" : "بخشی از ";
+                        if (!string.IsNullOrEmpty(d.ExpenditureDesc))
+                            d.ExpenditureDesc += " ";
+                        d.ExpenditureDesc += $"جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {expense.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} تومان صرف شد.";
+                        d.Remaining -= remaining;
+                        _context.GanjoorDonations.Update(d);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+
+                await RegenerateDonationsPage(editingUserId);//ignore possible errors here!
+
+                donation.Id = d.Id;
+                donation.DateString = d.DateString;
+                donation.AmountString = d.AmountString;
+                donation.Remaining = d.Remaining;
+                donation.ExpenditureDesc = d.ExpenditureDesc;
+                donation.ImportedRecord = d.ImportedRecord;
+
+
+
+                return new RServiceResult<GanjoorDonationViewModel>(donation);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorDonationViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// donation page row
         /// </summary>
         private class DonationPageRow
