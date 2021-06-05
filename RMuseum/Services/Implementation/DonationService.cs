@@ -56,7 +56,7 @@ namespace RMuseum.Services.Implementation
                     var expenses =
                     await _context.GanjoorExpenses
                         .Include(e => e.DonationExpenditures)
-                        .Where(e => e.Unit == d.Unit && (e.Amount - e.DonationExpenditures.DefaultIfEmpty().Sum(x => x.Amount)) > 0)
+                        .Where(e => e.Unit == d.Unit && (e.Amount - e.DonationExpenditures.Sum(x => x.Amount)) > 0)
                         .OrderBy(e => e.Id)
                         .ToListAsync();
 
@@ -64,7 +64,7 @@ namespace RMuseum.Services.Implementation
                     {
                         if (d.Remaining <= 0)
                             break;
-                        var remaining = expense.Amount - expense.DonationExpenditures.DefaultIfEmpty().Sum(x => x.Amount);
+                        var remaining = expense.Amount - expense.DonationExpenditures.Sum(x => x.Amount);
                         if(remaining > d.Remaining)
                         {
                             remaining = d.Remaining;
@@ -406,7 +406,7 @@ namespace RMuseum.Services.Implementation
                 var expenses =
                     await _context.GanjoorExpenses
                         .Include(e => e.DonationExpenditures)
-                        .Where(e => !string.IsNullOrEmpty(e.Unit) && (e.Amount - e.DonationExpenditures.DefaultIfEmpty().Sum(x => x.Amount)) > 0)
+                        .Where(e => !string.IsNullOrEmpty(e.Unit) && (e.Amount - e.DonationExpenditures.Sum(x => x.Amount)) > 0)
                         .OrderBy(e => e.Id)
                         .ToListAsync();
                 if(expenses.Count > 0)
