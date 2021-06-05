@@ -284,6 +284,68 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// returns all donations
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorDonationViewModel[]>> GetDonations()
+        {
+            try
+            {
+                return new RServiceResult<GanjoorDonationViewModel[]>
+                    (
+                    await _context.GanjoorDonations
+                                  .AsNoTracking()
+                                  .OrderByDescending(d => d.Id)
+                                  .Select
+                                  (
+                                    d =>
+                                    new GanjoorDonationViewModel()
+                                    {
+                                        Id = d.Id,
+                                        Amount = d.Amount,
+                                        AmountString = d.AmountString,
+                                        DateString = d.DateString,
+                                        DonorName = d.DonorName,
+                                        ExpenditureDesc = d.ExpenditureDesc,
+                                        ImportedRecord = d.ImportedRecord,
+                                        RecordDate = d.RecordDate,
+                                        Remaining = d.Remaining,
+                                        Unit = d.Unit
+                                    }
+                                 ).ToArrayAsync()
+
+                    );
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorDonationViewModel[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// returns all expenses
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorExpense[]>> GetExpenses()
+        {
+            try
+            {
+                return new RServiceResult<GanjoorExpense[]>
+                    (
+                    await _context.GanjoorExpenses
+                                  .AsNoTracking()
+                                  .OrderByDescending(x => x.Id)
+                                  .ToArrayAsync()
+
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorExpense[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// donation page row
         /// </summary>
         private class DonationPageRow

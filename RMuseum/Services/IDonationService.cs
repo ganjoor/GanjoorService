@@ -58,6 +58,18 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> RegenerateDonationsPage(Guid editingUserId, string note);
 
         /// <summary>
+        /// returns all donations
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorDonationViewModel[]>> GetDonations();
+
+        /// <summary>
+        /// returns all expenses
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorExpense[]>> GetExpenses();
+
+        /// <summary>
         /// Show Donating Information (temporary switch off/on)
         /// </summary>
         bool ShowAccountInfo { get; }

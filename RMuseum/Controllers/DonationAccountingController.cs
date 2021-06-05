@@ -16,6 +16,29 @@ namespace RMuseum.Controllers
     public class DonationAccountingController : Controller
     {
         /// <summary>
+        /// returns all donations
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorDonationViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetDonations()
+        {
+            try
+            {
+                var res = await _donationService.GetDonations();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// add donation + regenerate donations page
         /// </summary>
         /// <param name="donation"></param>
@@ -59,6 +82,29 @@ namespace RMuseum.Controllers
                 Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
                 var res = await _donationService.DeleteDonation(userId, id);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// returns all expenses
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("expenses")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorExpense[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetExpenses()
+        {
+            try
+            {
+                var res = await _donationService.GetExpenses();
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 return Ok(res.Result);
