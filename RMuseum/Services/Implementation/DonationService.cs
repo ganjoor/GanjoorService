@@ -403,6 +403,54 @@ namespace RMuseum.Services.Implementation
                 htmlText += $"باقیماندهٔ قابل هزینهٔ کمکهای دریافتی تا {donations[0].DateString} برابر {remSum.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} تومان است.{Environment.NewLine}";
                 htmlText += $"</p>{Environment.NewLine}";
 
+                var expenses =
+                    await _context.GanjoorExpenses
+                        .Include(e => e.DonationExpenditures)
+                        .Where(e => !string.IsNullOrEmpty(e.Unit) && (e.Amount - e.DonationExpenditures.DefaultIfEmpty().Sum(x => x.Amount)) > 0)
+                        .OrderBy(e => e.Id)
+                        .ToListAsync();
+                if(expenses.Count > 0)
+                {
+                    htmlText += $"<h3>هزینه‌های پوشش داده نشده</h3>{Environment.NewLine}";
+
+                    htmlText += $"<p>کمکهای آتی دریافتی صرف پوشش هزینه‌های زیر خواهد شد:</p>{Environment.NewLine}";
+
+                    htmlText += $"<table>{Environment.NewLine}";
+
+                    htmlText += $"<tr class=\"h\">{Environment.NewLine}";
+                    htmlText += $"<td class=\"d1\">ردیف</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"d2\">تاریخ</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"d3\">مبلغ</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"d4\">عنوان</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"d6\">مانده</td>{Environment.NewLine}";
+                    htmlText += $"</tr>{Environment.NewLine}";
+
+                    for (int i = 0; i < expenses.Count; i++)
+                    {
+                        var expense = expenses[i];
+
+                        string cssClass = i % 2 == 0 ? " class=\"e\"" : "";
+
+
+                        var expenseDateString = $"{expense.ExpenseDate.ToPersianYearMonthDay().Day.ToPersianNumbers()}م {PersianCulture.GetPersianMonthName(expense.ExpenseDate.ToPersianYearMonthDay().Month)} {expense.ExpenseDate.ToPersianYearMonthDay().Year.ToPersianNumbers()}";
+
+                        var expenseRem = expense.Amount;
+                        if (expense.DonationExpenditures.Count > 0)
+                            expenseRem -= expense.DonationExpenditures.Sum(x => x.Amount);
+
+                        htmlText += $"<tr{cssClass}>{Environment.NewLine}";
+                        htmlText += $"<td class=\"drow\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"ddate\">{expenseDateString}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"damount\">{expense.Amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {expense.Unit}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"ddonator\">{expense.Description}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"drem\">{expenseRem.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers()} {expense.Unit}</td>{Environment.NewLine}";
+                        htmlText += $"</tr>{Environment.NewLine}";
+                    }
+
+
+                    htmlText += $"</table>{Environment.NewLine}";
+                }
+
                 htmlText += $"<h3>کمکهای دریافت شده تا به حال</h3>{Environment.NewLine}";
 
                 htmlText += $"<table>{Environment.NewLine}";
