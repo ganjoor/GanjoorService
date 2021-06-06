@@ -9,7 +9,13 @@
 <h1>@ViewData["Title"]</h1>
 
 
+
 <p>@Model.LastMessage</p>
+
+@if(!string.IsNullOrEmpty(Model.EmailContent))
+{
+    <textarea rows="5" cols="50">@Model.EmailContent</textarea>
+}
 
 <form method="post">
     <table>
@@ -56,6 +62,8 @@
     
 </form>
 
+<p><a href="/donate" target="_blank">مشاهدهٔ صفحه</a></p>
+
 @if (Model.Donations != null)
 {
 <table>
@@ -71,12 +79,12 @@
     @foreach (var donation in Model.Donations)
     {
         <tr id="tr-@donation.Id">
-            <td><a href="/Admin/DonationEdit/?od=@donation.Id">@donation.Id</a> </td>
+            <td><a href="/Admin/DonationEdit/?id=@donation.Id">@donation.Id</a> </td>
             <td>@donation.DateString</td>
             <td>@donation.AmountString</td>
             <td>@donation.DonorName</td>
             <td>
-                <a role="button" href="/Admin/DonationEdit/?od=@donation.Id" class="actionlink" title="ویرایش">✎</a>
+                <a role="button" href="/Admin/DonationEdit/?id=@donation.Id" class="actionlink" title="ویرایش">✎</a>
                 <a role="button" onclick="deleteDonation(@donation.Id)" class="actionlink" title="حذف">🗑</a>
             </td>
         </tr>

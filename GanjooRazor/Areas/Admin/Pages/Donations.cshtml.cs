@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using DNTPersianUtils.Core;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,9 +15,27 @@ namespace GanjooRazor.Areas.Admin.Pages
     public class DonationsModel : PageModel
     {
         /// <summary>
+        /// HttpClient instance
+        /// </summary>
+        private readonly HttpClient _httpClient;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="httpClient"></param>
+        public DonationsModel(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+        /// <summary>
         /// last message
         /// </summary>
         public string LastMessage { get; set; }
+
+        /// <summary>
+        /// email content
+        /// </summary>
+        public string EmailContent { get; set; }
 
         [BindProperty]
         public GanjoorDonationViewModel Donation { get; set; }
@@ -24,6 +44,19 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// donations
         /// </summary>
         public GanjoorDonationViewModel[] Donations { get; set; }
+
+        private async Task ReadDonations()
+        {
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/donations");
+            if (!response.IsSuccessStatusCode)
+            {
+                LastMessage = await response.Content.ReadAsStringAsync();
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            Donations = JsonConvert.DeserializeObject<GanjoorDonationViewModel[]>(await response.Content.ReadAsStringAsync());
+        }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -35,19 +68,35 @@ namespace GanjooRazor.Areas.Admin.Pages
                 Unit = "تومان"
             };
 
+            await ReadDonations();
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(GanjoorDonationViewModel Donation)
+        {
+            LastMessage = "";
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/donations");
+                    Donation.ImportedRecord = false;
+
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/donations", new StringContent(JsonConvert.SerializeObject(Donation), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
                         LastMessage = await response.Content.ReadAsStringAsync();
                     }
+                    else
+                    {
+                        await ReadDonations();
 
-                    response.EnsureSuccessStatusCode();
-
-                    Donations = JsonConvert.DeserializeObject<GanjoorDonationViewModel[]>(await response.Content.ReadAsStringAsync());
+                        EmailContent = $"با درود و سپاس از بزرگواری شما{Environment.NewLine}" +
+                            $"کمک دریافتی به شماره ردیف {Donations.Length.ToPersianNumbers()} در این نشانی ثبت شد:{Environment.NewLine}" +
+                            $"https://ganjoor.net/donate{Environment.NewLine}" +
+                            $"نحوهٔ هزینه شدن آن متعاقباً در همان ردیف مستند خواهد شد.{Environment.NewLine}" +
+                            $"سرافراز باشید.";
+                    }
 
                 }
                 else
@@ -56,6 +105,9 @@ namespace GanjooRazor.Areas.Admin.Pages
                 }
 
             }
+
+            
+
 
             return Page();
         }
