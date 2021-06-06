@@ -110,6 +110,35 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// update donation
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="id"></param>
+        /// <param name="updateModel"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> UpdateDonation(Guid editingUserId, int id, UpdateDateDescriptionViewModel updateModel)
+        {
+            try
+            {
+                var donation = await _context.GanjoorDonations.Where(d => d.Id == id).SingleAsync();
+                donation.RecordDate = updateModel.Date;
+                donation.DateString = FormatDate(donation.RecordDate);
+                donation.DonorName = updateModel.Description;
+                _context.GanjoorDonations.Update(donation);
+                await _context.SaveChangesAsync();
+
+                await RegenerateDonationsPage(editingUserId, $"ویرایش کمک مالی از {donation.DonorName} به مبلغ {donation.AmountString}");//ignore possible errors here!
+
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// delete donation
         /// </summary>
         /// <param name="editingUserId"></param>
@@ -210,6 +239,79 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// update expense
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="id"></param>
+        /// <param name="updateModel"></param>
+        /// <returns></returns>
+
+        public async Task<RServiceResult<bool>> UpdateExpense(Guid editingUserId, int id, UpdateDateDescriptionViewModel updateModel)
+        {
+            try
+            {
+                var expense = await _context.GanjoorExpenses.Include(e => e.DonationExpenditures).Where(d => d.Id == id).SingleAsync();
+                List<GanjoorDonation> donations = new List<GanjoorDonation>();
+                foreach (var expenditure in expense.DonationExpenditures)
+                {
+                    if (!donations.Where(d => d.Id == expenditure.GanjoorDonationId).Any())
+                    {
+                        donations.Add(await _context.GanjoorDonations.Where(d => d.Id == expenditure.GanjoorDonationId).SingleAsync());
+                    }
+                }
+                expense.ExpenseDate = updateModel.Date;
+                expense.Description = updateModel.Description;
+                _context.GanjoorExpenses.Update(expense);
+                await _context.SaveChangesAsync();
+
+                await RegenerateDonationsExpenditureDesc(donations);
+
+                await RegenerateDonationsPage(editingUserId, $"ویرایش هزینهٔ {expense.Description} به مبلغ {FormatMoney(expense.Amount)} {expense.Unit}");//ignore possible errors here!
+
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        private async Task RegenerateDonationsExpenditureDesc(List<GanjoorDonation> donations)
+        {
+            if(donations.Count > 0)
+            {
+                foreach (var donation in donations)
+                {
+                    donation.Remaining = donation.Amount;
+                    donation.ExpenditureDesc = "";
+
+                    var donationExpenses = await _context.GanjoorExpenses.AsNoTracking()
+                                                                            .Include(e => e.DonationExpenditures)
+                                                                            .Where(e => e.DonationExpenditures
+                                                                            .Any(x => x.GanjoorDonationId == donation.Id))
+                                                                            .ToListAsync();
+
+                    foreach (var donationExpense in donationExpenses)
+                        foreach (var donationExpenditure in donationExpense.DonationExpenditures)
+                            if (donationExpenditure.GanjoorDonationId == donation.Id)
+                            {
+                                var amount = donation.Remaining == donation.Amount && donationExpenditure.Amount == donation.Remaining ? "" : donation.Remaining == donationExpenditure.Amount ? "باقیماندهٔ آن " : $"مبلغ {FormatMoney(donationExpenditure.Amount)} {donation.Unit} آن ";
+                                var part = donationExpense.DonationExpenditures.Count == 1 && donationExpenditure.Amount == donationExpense.Amount ? "" : "بخشی از ";
+                                if (!string.IsNullOrEmpty(donation.ExpenditureDesc))
+                                    donation.ExpenditureDesc += " ";
+                                donation.ExpenditureDesc += $"{amount}جهت تأمین {part}هزینهٔ {donationExpense.Description} به مبلغ {FormatMoney(donationExpense.Amount)} {donation.Unit} صرف شد ({FormatDate(donationExpense.ExpenseDate)}).";
+                                donation.Remaining -= donationExpenditure.Amount;
+                            }
+
+                    _context.GanjoorDonations.Update(donation);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
         /// delete expense
         /// </summary>
         /// <param name="editingUserId"></param>
@@ -238,33 +340,7 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorExpenses.Remove(expense);
                 await _context.SaveChangesAsync();
 
-                foreach(var donation in donations)
-                {
-                    donation.Remaining = donation.Amount;
-                    donation.ExpenditureDesc = "";
-
-                    var donationExpenses = await _context.GanjoorExpenses.AsNoTracking()
-                                                                            .Include(e => e.DonationExpenditures)
-                                                                            .Where(e => e.DonationExpenditures
-                                                                            .Any(x => x.GanjoorDonationId == donation.Id))
-                                                                            .ToListAsync();
-
-                    foreach(var donationExpense in donationExpenses)
-                        foreach(var donationExpenditure in donationExpense.DonationExpenditures)
-                            if(donationExpenditure.GanjoorDonationId == donation.Id)
-                            {
-                                var amount = donation.Remaining == donation.Amount && donationExpenditure.Amount == donation.Remaining ? "" : donation.Remaining == donationExpenditure.Amount ? "باقیماندهٔ آن " : $"مبلغ {FormatMoney(donationExpenditure.Amount)} {donation.Unit} آن ";
-                                var part = expense.DonationExpenditures.Count == 1 && donationExpenditure.Amount == donationExpense.Amount ? "" : "بخشی از ";
-                                if (!string.IsNullOrEmpty(donation.ExpenditureDesc))
-                                    donation.ExpenditureDesc += " ";
-                                donation.ExpenditureDesc += $"{amount}جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {FormatMoney(expense.Amount)} {donation.Unit} صرف شد ({FormatDate(expense.ExpenseDate)}).";
-                                donation.Remaining -= donationExpenditure.Amount;
-                            }
-
-                    _context.GanjoorDonations.Update(donation);
-                }
-
-                await _context.SaveChangesAsync();
+                await RegenerateDonationsExpenditureDesc(donations);
 
                 await RegenerateDonationsPage(editingUserId, note);//ignore possible errors here!
 

@@ -66,6 +66,34 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// update donation date and donorname + regenerate donations page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="donation"></param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Donations)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> UpdateDonation(int id, [FromBody] UpdateDateDescriptionViewModel donation)
+        {
+            try
+            {
+                Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+                var res = await _donationService.UpdateDonation(userId, id, donation);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// delete donation + regenerate donations page
         /// </summary>
         /// <param name="id"></param>
@@ -133,6 +161,34 @@ namespace RMuseum.Controllers
                 Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
                 var res = await _donationService.AddExpense(userId, expense);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// update expense date and description + regenerate donations page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="expense"></param>
+        /// <returns></returns>
+        [HttpPut("expense/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Donations)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> UpdateExpense(int id, [FromBody] UpdateDateDescriptionViewModel expense)
+        {
+            try
+            {
+                Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+                var res = await _donationService.UpdateExpense(userId, id, expense);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 return Ok(res.Result);

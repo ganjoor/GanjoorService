@@ -597,6 +597,14 @@
             <param name="donation"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.DonationAccountingController.UpdateDonation(System.Int32,RMuseum.Models.Accounting.ViewModels.UpdateDateDescriptionViewModel)">
+            <summary>
+            update donation date and donorname + regenerate donations page
+            </summary>
+            <param name="id"></param>
+            <param name="donation"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.DonationAccountingController.DeleteDonation(System.Int32)">
             <summary>
             delete donation + regenerate donations page
@@ -614,6 +622,14 @@
             <summary>
             add expense + regenerate donations page
             </summary>
+            <param name="expense"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.DonationAccountingController.UpdateExpense(System.Int32,RMuseum.Models.Accounting.ViewModels.UpdateDateDescriptionViewModel)">
+            <summary>
+            update expense date and description + regenerate donations page
+            </summary>
+            <param name="id"></param>
             <param name="expense"></param>
             <returns></returns>
         </member>
@@ -1735,6 +1751,21 @@
         <member name="P:RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel.ImportedRecord">
             <summary>
             null for POST api - record is imported from old HTML text of donation page
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Accounting.ViewModels.UpdateDateDescriptionViewModel">
+            <summary>
+            update date and description view model (donation + expense limited update api)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.UpdateDateDescriptionViewModel.Date">
+            <summary>
+            date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.UpdateDateDescriptionViewModel.Description">
+            <summary>
+            description
             </summary>
         </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
@@ -6883,12 +6914,30 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IDonationService.UpdateDonation(System.Guid,System.Int32,RMuseum.Models.Accounting.ViewModels.UpdateDateDescriptionViewModel)">
+            <summary>
+            update donation
+            </summary>
+            <param name="editingUserId"></param>
+            <param name="id"></param>
+            <param name="updateModel"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IDonationService.AddExpense(System.Guid,RMuseum.Models.Accounting.GanjoorExpense)">
             <summary>
             new expense
             </summary>
             <param name="editingUserId"></param>
             <param name="expense"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IDonationService.UpdateExpense(System.Guid,System.Int32,RMuseum.Models.Accounting.ViewModels.UpdateDateDescriptionViewModel)">
+            <summary>
+            update expense
+            </summary>
+            <param name="editingUserId"></param>
+            <param name="id"></param>
+            <param name="updateModel"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IDonationService.DeleteExpense(System.Guid,System.Int32)">
@@ -8000,6 +8049,15 @@
             <param name="donation"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.DonationService.UpdateDonation(System.Guid,System.Int32,RMuseum.Models.Accounting.ViewModels.UpdateDateDescriptionViewModel)">
+            <summary>
+            update donation
+            </summary>
+            <param name="editingUserId"></param>
+            <param name="id"></param>
+            <param name="updateModel"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.DonationService.DeleteDonation(System.Guid,System.Int32)">
             <summary>
             delete donation
@@ -8014,6 +8072,15 @@
             </summary>
             <param name="editingUserId"></param>
             <param name="expense"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.DonationService.UpdateExpense(System.Guid,System.Int32,RMuseum.Models.Accounting.ViewModels.UpdateDateDescriptionViewModel)">
+            <summary>
+            update expense
+            </summary>
+            <param name="editingUserId"></param>
+            <param name="id"></param>
+            <param name="updateModel"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.DonationService.DeleteExpense(System.Guid,System.Int32)">

@@ -28,12 +28,31 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> DeleteDonation(Guid editingUserId, int id);
 
         /// <summary>
+        /// update donation
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="id"></param>
+        /// <param name="updateModel"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> UpdateDonation(Guid editingUserId, int id, UpdateDateDescriptionViewModel updateModel);
+
+        /// <summary>
         /// new expense
         /// </summary>
         /// <param name="editingUserId"></param>
         /// <param name="expense"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorExpense>> AddExpense(Guid editingUserId, GanjoorExpense expense);
+
+        /// <summary>
+        /// update expense
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="id"></param>
+        /// <param name="updateModel"></param>
+        /// <returns></returns>
+
+        Task<RServiceResult<bool>> UpdateExpense(Guid editingUserId, int id, UpdateDateDescriptionViewModel updateModel);
 
         /// <summary>
         /// delete expense
