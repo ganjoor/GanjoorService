@@ -45,6 +45,11 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public GanjoorDonationViewModel[] Donations { get; set; }
 
+        /// <summary>
+        /// show account info
+        /// </summary>
+        public string ShowAccountInfo { get; set; }
+
         private async Task ReadDonations()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/donations");
@@ -56,6 +61,22 @@ namespace GanjooRazor.Areas.Admin.Pages
             response.EnsureSuccessStatusCode();
 
             Donations = JsonConvert.DeserializeObject<GanjoorDonationViewModel[]>(await response.Content.ReadAsStringAsync());
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage resAccountInfo = await secureClient.GetAsync($"{APIRoot.Url}/api/donations/accountinfo/visible");
+                    if (!resAccountInfo.IsSuccessStatusCode)
+                    {
+                        LastMessage = await resAccountInfo.Content.ReadAsStringAsync();
+                    }
+
+                    resAccountInfo.EnsureSuccessStatusCode();
+
+                    ShowAccountInfo = JsonConvert.DeserializeObject<bool>(await resAccountInfo.Content.ReadAsStringAsync()) ? "نمایش حساب فعال است." : "نمایش حساب غیرفعال است.";
+                }
+            }
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -106,10 +127,21 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             }
 
-            
-
-
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostRebuildPageAsync()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/donations/page", null);
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
         }
     }
 }
