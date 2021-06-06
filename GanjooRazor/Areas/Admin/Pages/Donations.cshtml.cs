@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,9 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public string LastMessage { get; set; }
 
+        [BindProperty]
+        public GanjoorDonationViewModel Donation { get; set; }
+
         /// <summary>
         /// donations
         /// </summary>
@@ -24,6 +28,12 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnGetAsync()
         {
             LastMessage = "";
+
+            Donation = new GanjoorDonationViewModel()
+            {
+                RecordDate = DateTime.Now.Date,
+                Unit = "تومان"
+            };
 
             using (HttpClient secureClient = new HttpClient())
             {

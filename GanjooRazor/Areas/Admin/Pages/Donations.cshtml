@@ -11,6 +11,51 @@
 
 <p>@Model.LastMessage</p>
 
+<form method="post">
+    <table>
+        <tr>
+            <td>
+                تاریخ:
+            </td>
+            <td>
+                <input type="date" asp-for="Donation.RecordDate" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مبلغ:
+            </td>
+            <td>
+                <input type="number" asp-for="Donation.Amount" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                واحد:
+            </td>
+            <td>
+                <input asp-for="Donation.Unit" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                اهدا کننده:
+            </td>
+            <td>
+                <input size="50" asp-for="Donation.DonorName" />
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="ثبت کمک مالی جدید" />
+            </td>
+        </tr>
+
+    </table>
+    
+</form>
+
 @if (Model.Donations != null)
 {
 <table>
