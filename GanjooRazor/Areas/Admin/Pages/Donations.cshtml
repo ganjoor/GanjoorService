@@ -70,7 +70,6 @@
 {
 <table>
     <tr>
-        <th>#</th>
         <th>تاریخ</th>
         <th>مبلغ</th>
         <th>اهدا کننده</th>
@@ -81,7 +80,6 @@
     @foreach (var donation in Model.Donations)
     {
         <tr id="tr-@donation.Id">
-            <td><a href="/Admin/DonationEdit/?id=@donation.Id">@donation.Id</a> </td>
             <td>@donation.DateString</td>
             <td>@donation.AmountString</td>
             <td>@donation.DonorName</td>
