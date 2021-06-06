@@ -76,9 +76,9 @@
             });
         }
 
-        function deleteDonation(donationId) {
+        function deleteItem(itemId, itemName) {
 
-            if (!confirm('آیا از حذف این کمک اطمینان دارید؟'))
+            if (!confirm('آیا از حذف این ' + itemName+' اطمینان دارید؟'))
                 return;
 
 
@@ -86,7 +86,7 @@
                 type: "DELETE",
                 url: '',
                 data: {
-                    id: donationId
+                    id: itemId
                 },
                 error: function () {
                     alert('خطا رخ داد.');
@@ -123,6 +123,14 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Admin" asp-page="Donations">کمک‌های مالی</a>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Admin" asp-page="Expenses">هزینه‌ها</a>
                         </li>
 
                     </ul>

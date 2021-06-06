@@ -85,7 +85,7 @@
             <td>@donation.DonorName</td>
             <td>
                 <a role="button" href="/Admin/DonationEdit/?id=@donation.Id" class="actionlink" title="ویرایش">✎</a>
-                <a role="button" onclick="deleteDonation(@donation.Id)" class="actionlink" title="حذف">🗑</a>
+                <a role="button" onclick="deleteItem(@donation.Id, 'کمک')" class="actionlink" title="حذف">🗑</a>
             </td>
         </tr>
     }

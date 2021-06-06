@@ -1,0 +1,88 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.ExpensesModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "هزینه‌ها";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>@Model.LastMessage</p>
+
+<form method="post">
+    <table>
+        <tr>
+            <td>
+                تاریخ:
+            </td>
+            <td>
+                <input type="date" asp-for="Expense.ExpenseDate" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مبلغ:
+            </td>
+            <td>
+                <input type="number" asp-for="Expense.Amount" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                واحد:
+            </td>
+            <td>
+                <input asp-for="Expense.Unit" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                شرح:
+            </td>
+            <td>
+                <input size="50" asp-for="Expense.Description" />
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="ثبت هزینهٔ جدید" />
+            </td>
+        </tr>
+
+    </table>
+
+</form>
+
+<p><a href="/donate" target="_blank">مشاهدهٔ صفحه</a></p>
+<p>@Model.ShowAccountInfo</p>
+<p><a role="button" onclick="rebuildDonationsPage()" class="actionlink" title="بازسازی صفحهٔ کمک‌ها">بازسازی صفحهٔ کمک‌ها</a></p>
+
+@if (Model.Expenses != null)
+{
+    <table>
+        <tr>
+            <th>تاریخ</th>
+            <th>مبلغ</th>
+            <th>شرح</th>
+            <th>
+                #
+            </th>
+        </tr>
+        @foreach (var expense in Model.Expenses)
+        {
+            <tr id="tr-@expense.Id">
+                <td>@RMuseum.Services.Implementation.DonationService.FormatDate(expense.ExpenseDate)</td>
+                <td>@RMuseum.Services.Implementation.DonationService.FormatMoney(expense.Amount)</td>
+                <td>@expense.Description</td>
+                <td>
+                    <a role="button" href="/Admin/ExpenseEdit/?id=@expense.Id" class="actionlink" title="ویرایش">✎</a>
+                    <a role="button" onclick="deleteItem(@expense.Id, 'هزینه')" class="actionlink" title="حذف">🗑</a>
+                </td>
+            </tr>
+        }
+    </table>
+
+
+}
