@@ -1,9 +1,10 @@
-﻿var $vazn = $('<a>وزن</a>').attr('title', 'salam')
-var $meaning = $('<a>لغتنامه</a>').css({
+﻿var $meaning = $('<a>لغتنامه</a>').css({
 	boxShadow: '10px 0 0 -9px rgba(255,255,255,0.2), -10px 0 0 -9px rgba(255,255,255,0.2)'
 })
 var $abjad = $('<a>ابجد</a>')
-var $search = $('<a>جستجو</a>')
+var $search = $('<a>🔍</a>')
+var $quran = $('<a>قرآن</a>')
+var $vazn = $('<a>وزن</a>')
 
 
 var $tooltip = $('<div>').addClass('tooltip').css({
@@ -11,13 +12,13 @@ var $tooltip = $('<div>').addClass('tooltip').css({
 	transformOrigin: 'top',
 	position: 'absolute',
 	height: '2.5em',
-	width: '13em',
+	width: '14em',
 	borderRadius: '10px',
 	display: 'flex',
 	justifyContent: 'space-around',
 	alignItems: 'center',
 	background: 'rgba(14,17,17,0.9)'
-}).append($meaning, $abjad, $search, $vazn)
+}).append($meaning, $abjad, $quran, $search,  $vazn)
 
 $(document.body).append($tooltip)
 
@@ -49,6 +50,12 @@ document.addEventListener('selectionchange', function() {
 		title: 'جستجوی عبارت در گنجور',
 		target: '_blank'
 	})
+
+	$quran.attr({
+		href: 'http://www.parsquran.com/data/search.php?page=1&user=far&quantity=' + encodeURI(text) + '&tran=100',
+		title: 'جستجوی عبارت در قرآن',
+		target: '_blank'
+	})
 	
 	$vazn.attr({
 		href: 'http://sorud.info/?Text=' + encodeURI(text), 
@@ -73,7 +80,7 @@ document.addEventListener('selectionchange', function() {
 		transition: 'transform 0.2s ease-out',
 		top: rect.top + $(window).scrollTop(),
 		marginTop: '2em',
-		left: rect.left + rect.width / 2 - tooltipWidth / 2 - document.getElementById('fa').getBoundingClientRect().left
+		left: rect.right - tooltipWidth
 	})
 	prevtext = text
 });
