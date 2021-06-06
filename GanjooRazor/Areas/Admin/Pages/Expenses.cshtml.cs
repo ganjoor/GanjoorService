@@ -100,6 +100,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                     {
                         LastMessage = await response.Content.ReadAsStringAsync();
                     }
+                    else
+                    {
+                        await ReadExpenses();
+                    }
                 }
                 else
                 {

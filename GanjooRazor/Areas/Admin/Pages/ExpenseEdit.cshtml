@@ -1,0 +1,29 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.ExpenseEditModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "ویرایش هزینه";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="post">
+
+    <table>
+        <tr>
+            <td>تاریخ:</td>
+            <td><input type="date" asp-for="Expense.Date" /> </td>
+        </tr>
+        <tr>
+            <td>شرح:</td>
+            <td><input size="50" asp-for="Expense.Description" /> </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="ویرایش" />
+            </td>
+        </tr>
+    </table>
+
+</form>
