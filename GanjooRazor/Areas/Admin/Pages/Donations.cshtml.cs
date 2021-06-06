@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -137,6 +138,20 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/donations/page", null);
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
+        public async Task<IActionResult> OnDeleteAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/donations/{id}");
                     response.EnsureSuccessStatusCode();
                     return new OkObjectResult(true);
                 }

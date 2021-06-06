@@ -76,6 +76,28 @@
             });
         }
 
+        function deleteDonation(donationId) {
+
+            if (!confirm('آیا از حذف این کمک اطمینان دارید؟'))
+                return;
+
+
+            $.ajax({
+                type: "DELETE",
+                url: '',
+                data: {
+                    id: donationId
+                },
+                error: function () {
+                    alert('خطا رخ داد.');
+                },
+                success: function () {
+                    location.reload();
+                    return false;
+                },
+            });
+        }
+
 
     </script>
 </head>
