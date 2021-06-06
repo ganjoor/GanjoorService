@@ -1,0 +1,42 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.DonationsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "کمک‌های مالی";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+
+<p>@Model.LastMessage</p>
+
+@if (Model.Donations != null)
+{
+<table>
+    <tr>
+        <th>#</th>
+        <th>تاریخ</th>
+        <th>مبلغ</th>
+        <th>اهدا کننده</th>
+        <th>
+           #
+        </th>
+    </tr>
+    @foreach (var donation in Model.Donations)
+    {
+        <tr id="tr-@donation.Id">
+            <td><a href="/Admin/DonationEdit/?od=@donation.Id">@donation.Id</a> </td>
+            <td>@donation.DateString</td>
+            <td>@donation.AmountString</td>
+            <td>@donation.DonorName</td>
+            <td>
+                <a role="button" href="/Admin/DonationEdit/?od=@donation.Id" class="actionlink" title="ویرایش">✎</a>
+                <a role="button" onclick="deleteDonation(@donation.Id)" class="actionlink" title="حذف">🗑</a>
+            </td>
+        </tr>
+    }
+</table>
+
+ 
+}
