@@ -39,6 +39,31 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// donation by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorDonationViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetDonation(int id)
+        {
+            try
+            {
+                var res = await _donationService.GetDonation(id);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// add donation + regenerate donations page
         /// </summary>
         /// <param name="donation"></param>
@@ -124,7 +149,7 @@ namespace RMuseum.Controllers
         /// returns all expenses
         /// </summary>
         /// <returns></returns>
-        [HttpGet("expenses")]
+        [HttpGet("expense")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorExpense[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -133,6 +158,30 @@ namespace RMuseum.Controllers
             try
             {
                 var res = await _donationService.GetExpenses();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// expense by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("expense/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorExpense))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetExpense(int id)
+        {
+            try
+            {
+                var res = await _donationService.GetExpense(id);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 return Ok(res.Result);

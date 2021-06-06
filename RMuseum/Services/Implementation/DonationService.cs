@@ -173,7 +173,6 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-
         /// <summary>
         /// new expense
         /// </summary>
@@ -393,6 +392,46 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get donation by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorDonationViewModel>> GetDonation(int id)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorDonationViewModel>
+                    (
+                    await _context.GanjoorDonations
+                                  .AsNoTracking()
+                                  .Where(d => d.Id == id)
+                                  .Select
+                                  (
+                                    d =>
+                                    new GanjoorDonationViewModel()
+                                    {
+                                        Id = d.Id,
+                                        Amount = d.Amount,
+                                        AmountString = d.AmountString,
+                                        DateString = d.DateString,
+                                        DonorName = d.DonorName,
+                                        ExpenditureDesc = d.ExpenditureDesc,
+                                        ImportedRecord = d.ImportedRecord,
+                                        RecordDate = d.RecordDate,
+                                        Remaining = d.Remaining,
+                                        Unit = d.Unit
+                                    }
+                                 ).SingleOrDefaultAsync()
+
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorDonationViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// returns all expenses
         /// </summary>
         /// <returns></returns>
@@ -402,7 +441,7 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<GanjoorExpense[]>
                     (
-                    await _context.GanjoorExpenses
+                    await _context.GanjoorExpenses.Include(x => x.DonationExpenditures)
                                   .AsNoTracking()
                                   .OrderByDescending(x => x.Id)
                                   .ToArrayAsync()
@@ -412,6 +451,30 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorExpense[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get expense by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorExpense>> GetExpense(int id)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorExpense>
+                    (
+                    await _context.GanjoorExpenses.Include(x => x.DonationExpenditures)
+                                  .AsNoTracking()
+                                  .Where(e => e.Id == id)
+                                  .SingleOrDefaultAsync()
+
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorExpense>(null, exp.ToString());
             }
         }
 

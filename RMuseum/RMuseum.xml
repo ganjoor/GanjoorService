@@ -590,6 +590,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.DonationAccountingController.GetDonation(System.Int32)">
+            <summary>
+            donation by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.DonationAccountingController.AddDonation(RMuseum.Models.Accounting.ViewModels.GanjoorDonationViewModel)">
             <summary>
             add donation + regenerate donations page
@@ -616,6 +623,13 @@
             <summary>
             returns all expenses
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.DonationAccountingController.GetExpense(System.Int32)">
+            <summary>
+            expense by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.DonationAccountingController.AddExpense(RMuseum.Models.Accounting.GanjoorExpense)">
@@ -6968,10 +6982,24 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IDonationService.GetDonation(System.Int32)">
+            <summary>
+            get donation by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IDonationService.GetExpenses">
             <summary>
             returns all expenses
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IDonationService.GetExpense(System.Int32)">
+            <summary>
+            get expense by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.IDonationService.ShowAccountInfo">
@@ -8097,10 +8125,24 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.DonationService.GetDonation(System.Int32)">
+            <summary>
+            get donation by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.DonationService.GetExpenses">
             <summary>
             returns all expenses
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.DonationService.GetExpense(System.Int32)">
+            <summary>
+            get expense by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.DonationService.DonationPageRow">

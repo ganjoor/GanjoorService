@@ -83,10 +83,24 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorDonationViewModel[]>> GetDonations();
 
         /// <summary>
+        /// get donation by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorDonationViewModel>> GetDonation(int id);
+
+        /// <summary>
         /// returns all expenses
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<GanjoorExpense[]>> GetExpenses();
+
+        /// <summary>
+        /// get expense by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorExpense>> GetExpense(int id);
 
         /// <summary>
         /// Show Donating Information (temporary switch off/on)
