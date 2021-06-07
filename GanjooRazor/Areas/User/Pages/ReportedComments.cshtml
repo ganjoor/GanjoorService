@@ -47,7 +47,7 @@ else
     <blockquote>
         @Html.Raw(report.Comment.HtmlComment)
         <p>
-            @report.Comment.AuthorName <small>در @report.Comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@report.Comment.Poem.UrlSlug">@report.Comment.Poem.Title</a>
+            @report.Comment.AuthorName <small>در @report.Comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@report.Comment.Poem.UrlSlug#comment-@report.Comment.Id">@report.Comment.Poem.Title</a>
         </p>
     </blockquote>
     <a role="button" onclick="deleteComment(@report.Comment.Id, '@report.ReasonCode', '@report.ReasonText')" class="actionlink" style="color:green" title="تأیید و حذف حاشیه">✓ درست می‌گوید</a>
