@@ -72,6 +72,11 @@
                     <form method="post">
                         <span class="inputlabel">چرا باید این حاشیه حذف شود؟</span><br>
                         <input type="radio" asp-for="Report.ReasonCode" value="offensive">توهین‌آمیز است.<br>
+                        <input type="radio" asp-for="Report.ReasonCode" value="religious ">بحث مذهبی کرده.<br>
+                        <input type="radio" asp-for="Report.ReasonCode" value="repeated ">تکراری است.<br>
+                        <input type="radio" asp-for="Report.ReasonCode" value="unrelated ">به این شعر ربط ندارد.<br>
+                        <input type="radio" asp-for="Report.ReasonCode" value="brokenlink ">لینک شکسته است.<br>
+                        <input type="radio" asp-for="Report.ReasonCode" value="ad ">تبلیغاتی است.<br>
                         <input type="radio" asp-for="Report.ReasonCode" value="bogus">نامفهوم است.<br>
                         <input type="radio" asp-for="Report.ReasonCode" value="other"> دلیل دیگری دارم (کوتاه):<br>
                         <input asp-for="Report.ReasonText" maxlength="30" />
