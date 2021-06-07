@@ -111,7 +111,15 @@ namespace GanjooRazor.Pages
             }
             else
             {
-                ViewData["Title"] = $"گنجور &raquo; نتایج جستجو برای {Query}";
+                if(!string.IsNullOrEmpty(Query))
+                {
+                    ViewData["Title"] = $"گنجور &raquo; نتایج جستجو برای {Query}";
+                }
+                else
+                {
+                    ViewData["Title"] = $"گنجور &raquo; جستجو";
+                }
+                
             }
 
             if (PoetId != 0)
@@ -127,11 +135,17 @@ namespace GanjooRazor.Pages
                 pageNumber = int.Parse(Request.Query["page"]);
             }
 
-            var searchQueryResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poems/search?term={Query}&poetId={PoetId}&catId={CatId}&PageNumber={pageNumber}&PageSize=20");
+            HttpResponseMessage searchQueryResponse = null;
 
-            searchQueryResponse.EnsureSuccessStatusCode();
+            if (!string.IsNullOrEmpty(Query))
+            {
+                searchQueryResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poems/search?term={Query}&poetId={PoetId}&catId={CatId}&PageNumber={pageNumber}&PageSize=20");
 
-            Poems = JArray.Parse(await searchQueryResponse.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
+                searchQueryResponse.EnsureSuccessStatusCode();
+
+                Poems = JArray.Parse(await searchQueryResponse.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
+            }
+            
 
             if(Poems != null && Poems.Count == 0)
             {
@@ -184,13 +198,18 @@ namespace GanjooRazor.Pages
 
                 }
 
-                string paginationMetadataJsonValue = searchQueryResponse.Headers.GetValues("paging-headers").FirstOrDefault();
-
-                if (!string.IsNullOrEmpty(paginationMetadataJsonValue))
+                if(searchQueryResponse != null)
                 {
-                    PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginationMetadataJsonValue);
-                    PagingToolsHtml = GeneratePagingBarHtml(paginationMetadata, $"/search?s={Query}&author={PoetId}");
+                    string paginationMetadataJsonValue = searchQueryResponse.Headers.GetValues("paging-headers").FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(paginationMetadataJsonValue))
+                    {
+                        PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginationMetadataJsonValue);
+                        PagingToolsHtml = GeneratePagingBarHtml(paginationMetadata, $"/search?s={Query}&author={PoetId}");
+                    }
                 }
+
+               
             }
 
            
