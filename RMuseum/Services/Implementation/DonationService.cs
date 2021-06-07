@@ -690,9 +690,7 @@ namespace RMuseum.Services.Implementation
                     dateLastExpense = lastExpense.ExpenseDate;
                 }
 
-                DateTime last = dateLastDonation > dateLastExpense ? dateLastDonation : dateLastExpense;
-
-                var dateString = FormatDate(last);
+               
 
                 if(ShowAccountInfo)
                 {
@@ -707,9 +705,14 @@ namespace RMuseum.Services.Implementation
                 {
                     htmlText += $"<p><span style=\"color:green\">با سپاس از بزرگواری همه دوستان در حال حاضر هزینه‌های جاری گنجور تا چند ماه آینده تأمین شده است. خواهشمندیم در صورت امکان کمکهای خود را به ماههای آینده محول فرمایید. اطلاعات واریز در مقطع مورد نیاز مجدداً در دسترس قرار خواهد گرفت.</span></p>{Environment.NewLine}";
                 }
-               
+
+                               
                 htmlText += $"<p>{Environment.NewLine}";
-                htmlText += $"باقیماندهٔ قابل هزینهٔ کمکهای دریافتی تا {donations[0].DateString} برابر {FormatMoney(remSum)} تومان است.{Environment.NewLine}";
+
+                DateTime last = dateLastDonation > dateLastExpense ? dateLastDonation : dateLastExpense;
+
+                var dateString = FormatDate(last);
+                htmlText += $"باقیماندهٔ قابل هزینهٔ کمکهای دریافتی تا {dateString} برابر {FormatMoney(remSum)} تومان است.{Environment.NewLine}";
                 htmlText += $"</p>{Environment.NewLine}";
 
                 var expenses =
