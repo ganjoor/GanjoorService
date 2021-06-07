@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 
 namespace GanjooRazor.Areas.User.Pages
@@ -40,6 +41,8 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public List<NameIdUrlImage> PaginationLinks { get; set; }
 
+        public RegisterRAppUser UserInfo { get; set; }
+
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -48,6 +51,33 @@ namespace GanjooRazor.Areas.User.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     {
+                        var userInfoResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/users/{Request.Cookies["UserId"]}");
+                        if (userInfoResponse.IsSuccessStatusCode)
+                        {
+                            PublicRAppUser userInfo = JsonConvert.DeserializeObject<PublicRAppUser>(await userInfoResponse.Content.ReadAsStringAsync());
+
+                            UserInfo = new RegisterRAppUser()
+                            {
+                                Id = userInfo.Id,
+                                Username = userInfo.Username,
+                                FirstName = userInfo.FirstName,
+                                SureName = userInfo.SureName,
+                                NickName = userInfo.NickName,
+                                PhoneNumber = userInfo.PhoneNumber,
+                                Email = userInfo.Email,
+                                Website = userInfo.Website,
+                                Bio = userInfo.Bio,
+                                RImageId = userInfo.RImageId,
+                                Status = userInfo.Status,
+                                IsAdmin = false,
+                                Password = ""
+                            };
+                        }
+                        else
+                        {
+                            LastError = await userInfoResponse.Content.ReadAsStringAsync();
+                        }
+
                         int pageNumber = 1;
                         if (!string.IsNullOrEmpty(Request.Query["page"]))
                         {
