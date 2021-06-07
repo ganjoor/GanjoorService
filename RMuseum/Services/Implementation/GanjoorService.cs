@@ -2350,13 +2350,8 @@ namespace RMuseum.Services.Implementation
 
                     List<GanjoorVerse> verses = _extractVersesFromPoemHtmlText(id, pageData.HtmlText);
 
-                    string plainText = "";
-                    foreach (GanjoorVerse verse in verses)
-                    {
-                        plainText += $"{verse.Text.Replace("‌", " ")} ";//replace zwnj with space
-                    }
 
-                    dbPoem.PlainText = plainText.Trim();
+                    dbPoem.PlainText = PreparePlainText(verses);
 
                     _context.GanjoorPoems.Update(dbPoem);
 
@@ -2564,6 +2559,43 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// make text searchable
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string MakeTextSearchable(string text)
+        {
+            return text.Replace("‌", " ")//replace zwnj with space
+                       .Replace("ّ", "")//tashdid
+                       .Replace("َ", "")//a
+                       .Replace("ِ", "")//e
+                       .Replace("ُ", "")//o
+                       .Replace("ً", "")//an
+                       .Replace("ٍ", "")//en
+                       .Replace("ٌ", "")//on
+                       .Replace(".", "")//dot
+                       .Replace("،", "")//virgool
+                       .Replace("!", "")
+                       .Replace("؟", "")
+                       ;
+        }
+
+        /// <summary>
+        /// make plain text
+        /// </summary>
+        /// <param name="verses"></param>
+        /// <returns></returns>
+        private static string PreparePlainText(List<GanjoorVerse> verses)
+        {
+            string plainText = "";
+            foreach (GanjoorVerse verse in verses)
+            {
+                plainText += $"{MakeTextSearchable(verse.Text)}{Environment.NewLine}";//replace zwnj with space
+            }
+            return plainText.Trim();
+        }
+
+        /// <summary>
         /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
         /// </summary>
         /// <returns></returns>
@@ -2597,18 +2629,7 @@ namespace RMuseum.Services.Implementation
 
                                 var poem = poems[i];
 
-                                List<GanjoorVerse> verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.Id).ToListAsync();
-
-                                string plainText = "";
-                                foreach (GanjoorVerse verse in verses)
-                                {
-                                    plainText += $"{verse.Text}{Environment.NewLine}";
-                                }
-
-                                poem.PlainText = plainText.Trim();
-
-                                
-
+                                poem.PlainText = PreparePlainText(await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.Id).ToListAsync());
                             }
 
                             await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Finalizing PlainText");

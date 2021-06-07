@@ -8657,6 +8657,20 @@
             <param name="imageId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.MakeTextSearchable(System.String)">
+            <summary>
+            make text searchable
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.PreparePlainText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
+            <summary>
+            make plain text
+            </summary>
+            <param name="verses"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.RegerneratePoemsPlainText">
             <summary>
             separate verses in poem.PlainText with  Environment.NewLine instead of SPACE

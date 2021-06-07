@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Services.Implementation;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -106,7 +107,7 @@ namespace GanjooRazor.Pages
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
             Query = Request.Query["s"].ApplyCorrectYeKe().Trim();
-            Query = Query.Replace('‌', ' '); //replace zwnj with space
+            Query = GanjoorService.MakeTextSearchable(Query); //replace zwnj with space
             PoetId = string.IsNullOrEmpty(Request.Query["author"]) ? 0 : int.Parse(Request.Query["author"]);
             CatId = string.IsNullOrEmpty(Request.Query["cat"]) ? 0 : int.Parse(Request.Query["cat"]);
 
