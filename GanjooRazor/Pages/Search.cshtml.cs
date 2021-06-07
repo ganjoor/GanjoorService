@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Auth.Memory;
@@ -37,13 +38,22 @@ namespace GanjooRazor.Pages
         private readonly IMemoryCache _memoryCache;
 
         /// <summary>
+        /// configration file reader (appsettings.json)
+        /// </summary>
+        private readonly IConfiguration _configuration;
+
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        public SearchModel(HttpClient httpClient, IMemoryCache memoryCache)
+        /// <param name="memoryCache"></param>
+        /// <param name="configuration"></param>
+        public SearchModel(HttpClient httpClient, IMemoryCache memoryCache, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _memoryCache = memoryCache;
+            _configuration = configuration;
         }
 
         public List<GanjoorPoetViewModel> Poets { get; set; }
@@ -99,6 +109,8 @@ namespace GanjooRazor.Pages
             Query = Query.Replace('‌', ' '); //replace zwnj with space
             PoetId = string.IsNullOrEmpty(Request.Query["author"]) ? 0 : int.Parse(Request.Query["author"]);
             CatId = string.IsNullOrEmpty(Request.Query["cat"]) ? 0 : int.Parse(Request.Query["cat"]);
+
+            ViewData["GoogleAnalyticsCode"] = _configuration["GoogleAnalyticsCode"];
 
             //todo: use html master layout or make it partial
             // 1. poets 

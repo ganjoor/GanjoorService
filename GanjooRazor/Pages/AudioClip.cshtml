@@ -36,7 +36,7 @@
                     </div>
                     <div id="title2" style="display: table-row">
                         <p style="width:100%;height:25%;text-align:center;vertical-align: middle;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
-                            @for(int i = 1; i< Model.Poem.Category.Cat.Ancestors.Count; i++)
+                            @for (int i = 1; i < Model.Poem.Category.Cat.Ancestors.Count; i++)
                             {
                                 <text>
                                     @Model.Poem.Category.Cat.Ancestors.ElementAt(i).Title &raquo;
@@ -135,7 +135,7 @@
 
 
     <p style="font-family: 'Vazir';font-size: 1em">
-        فایل صوتی متناظر را می‌توانید در قالب mp3 از <a href="@Model.Recitation.Mp3Url" download>این نشانی</a> (اندازه @Html.Raw( $"{(Model.Recitation.Mp3SizeInBytes / (1024.0*1024.0)):0.00}".ToPersianNumbers()) مگابایت) دریافت کنید.
+        فایل صوتی متناظر را می‌توانید در قالب mp3 از <a href="@Model.Recitation.Mp3Url" download>این نشانی</a> (اندازه @Html.Raw($"{(Model.Recitation.Mp3SizeInBytes / (1024.0 * 1024.0)):0.00}".ToPersianNumbers()) مگابایت) دریافت کنید.
     </p>
 
     <p style="font-family: 'Vazir';font-size: 1em">
@@ -149,8 +149,8 @@
     <script src="~/dist/add-on/jplayer.playlist.min.js"></script>
     <script>
         var verses = [];
-       
-        @{ 
+
+        @{
             <text>
                 @Html.Raw($" var normaltext = { (Model.Poem.Verses.Where(v => v.VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph).Any() ? "true" : "false") }")
             </text>
@@ -285,7 +285,7 @@
 
 
         //<![CDATA[
-        $(document).ready(function () {	
+        $(document).ready(function () {
 
             prepareclip('@Html.Raw($"https://ganjgah.ir/api/audio/file/{Model.Recitation.Id}.xml")', '@Model.Recitation.AudioTitle',
                 'به خوانش @Model.Recitation.AudioArtist', '', '@Model.Recitation.Mp3Url', verses);
@@ -294,5 +294,21 @@
         });
 //]]>
     </script>
+
+    @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
+    {
+        <script>
+            (function (i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+            ga('create', '@ViewData["GoogleAnalyticsCode"]', 'auto');
+            ga('send', 'pageview');
+
+        </script>
+    }
 </body>
 </html>

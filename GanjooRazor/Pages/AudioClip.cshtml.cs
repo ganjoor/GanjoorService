@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
@@ -16,12 +17,20 @@ namespace GanjooRazor.Pages
         private readonly HttpClient _httpClient;
 
         /// <summary>
+        /// configration file reader (appsettings.json)
+        /// </summary>
+        private readonly IConfiguration _configuration;
+
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        public AudioClipModel(HttpClient httpClient)
+        /// <param name="configuration"></param>
+        public AudioClipModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -40,6 +49,8 @@ namespace GanjooRazor.Pages
             {
                 return BadRequest();
             }
+
+            ViewData["GoogleAnalyticsCode"] = _configuration["GoogleAnalyticsCode"];
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/published/{Request.Query["a"]}");
             response.EnsureSuccessStatusCode();
