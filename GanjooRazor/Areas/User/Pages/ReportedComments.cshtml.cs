@@ -144,27 +144,14 @@ namespace GanjooRazor.Areas.User.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostModerateComment(int id, string reasonCode, string reasonText)
+        public async Task<IActionResult> OnPostModerateComment(int id)
         {
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    string reason;
-                    switch(reasonCode)
-                    {
-                        case "offensive":
-                            reason = "توهین آمیز است. " + reasonText;
-                            break;
-                        case "bogus":
-                            reason = "نامفهوم است. " + reasonText;
-                            break;
-                        default:
-                            reason = reasonText;
-                            break;
-                    }
 
-                    var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/comment/moderate/{id}", new StringContent(JsonConvert.SerializeObject(reason), Encoding.UTF8, "application/json"));
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment/reported/moderate/{id}");
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
@@ -173,7 +160,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                 }
             }
-            return await OnGetAsync();
+            return new OkResult();
         }
 
         public async Task<IActionResult> OnDeleteReport(int id)
@@ -191,7 +178,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                 }
             }
-            return await OnGetAsync();
+            return new OkResult();
         }
     }
 }

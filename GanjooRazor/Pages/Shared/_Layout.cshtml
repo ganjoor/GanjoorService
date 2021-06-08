@@ -16,7 +16,7 @@
     <script src="/lib/tinymce/tinymce.min.js"></script>
     <script>tinymce.init({ selector: 'textarea.editor', language: 'fa_IR' });</script>
     <script>
-        function deleteComment(commentId, reasonCode, reasonText) {
+        function moderateReportedComment(reportId) {
             if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
                 return;
 
@@ -25,19 +25,17 @@
                 type: "POST",
                 url: '?handler=ModerateComment',
                 data: {
-                    id: commentId,
-                    reasonCode: reasonCode,
-                    reasonText: reasonText
+                    id: reportId,
                 },
                 success: function () {
-                    var commentBlockId = '#comment-' + commentId;
+                    var commentBlockId = '#report-' + reportId;
                     $(commentBlockId).remove();
                 },
             });
 
         }
 
-        function deleteReport(reportId, commentId) {
+        function deleteReport(reportId) {
             $.ajax({
                 type: "DELETE",
                 url: '?handler=Report',
@@ -45,7 +43,7 @@
                     id: reportId
                 },
                 success: function () {
-                    var commentBlockId = '#comment-' + commentId;
+                    var commentBlockId = '#report-' + reportId;
                     $(commentBlockId).remove();
                 },
             });

@@ -972,22 +972,21 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// delete other users comment comment
+        /// delete reported other users comment comment
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="reason"></param>
+        /// <param name="reportid"></param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("comment/moderate/{id}")]
+        [HttpDelete]
+        [Route("comment/reported/moderate/{reportid}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public async Task<IActionResult> DeleteModerateComment(int id, [FromBody]string reason)
+        public async Task<IActionResult> DeleteModerateComment(int reportid)
         {
 
             var res =
-                await _ganjoorService.DeleteModerateComment(id, reason);
+                await _ganjoorService.DeleteModerateComment(reportid);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             if (!res.Result)

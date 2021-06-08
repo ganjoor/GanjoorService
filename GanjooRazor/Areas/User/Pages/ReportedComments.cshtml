@@ -35,7 +35,7 @@ else
         else
             color = "gray";
 
-<div style="background-color:@color" id="comment-@report.Comment.Id">
+<div style="background-color:@color" id="report-@report.Id">
     <p style="color:red">
         @report.ReasonCode
     </p>
@@ -50,7 +50,7 @@ else
             @report.Comment.AuthorName <small>در @report.Comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@report.Comment.Poem.UrlSlug#comment-@report.Comment.Id">@report.Comment.Poem.Title</a>
         </p>
     </blockquote>
-    <a role="button" onclick="deleteComment(@report.Comment.Id, '@report.ReasonCode', '@report.ReasonText')" class="actionlink" style="color:green" title="تأیید و حذف حاشیه">✓ درست می‌گوید</a>
+    <a role="button" onclick="moderateReportedComment(@report.Id)" class="actionlink" style="color:green" title="تأیید و حذف حاشیه">✓ درست می‌گوید</a>
     &nbsp;&nbsp;&nbsp;
     <a role="button" onclick="deleteReport(@report.Id, @report.Comment.Id)" class="actionlink" style="color:red" title="حذف گزارش">گزارش نابجا ❌</a>
 </div>

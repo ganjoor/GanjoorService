@@ -933,12 +933,11 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.DeleteModerateComment(System.Int32,System.String)">
+        <member name="M:RMuseum.Controllers.GanjoorController.DeleteModerateComment(System.Int32)">
             <summary>
-            delete other users comment comment
+            delete reported other users comment comment
             </summary>
-            <param name="id"></param>
-            <param name="reason"></param>
+            <param name="reportid"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ImportLocalSQLiteDb">
@@ -7185,12 +7184,11 @@
             <param name="htmlComment"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.DeleteModerateComment(System.Int32,System.String)">
+        <member name="M:RMuseum.Services.IGanjoorService.DeleteModerateComment(System.Int32)">
             <summary>
-            delete a reported or abusive comment
+            delete a reported  comment
             </summary>
-            <param name="commentId"></param>
-            <param name="reason"></param>
+            <param name="reportId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.DeleteMyComment(System.Guid,System.Int32)">
@@ -8438,12 +8436,11 @@
             <param name="htmlComment"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteModerateComment(System.Int32,System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteModerateComment(System.Int32)">
             <summary>
-            delete a reported or abusive comment
+            delete a reported  comment
             </summary>
-            <param name="commentId"></param>
-            <param name="reason"></param>
+            <param name="repordId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteMyComment(System.Guid,System.Int32)">

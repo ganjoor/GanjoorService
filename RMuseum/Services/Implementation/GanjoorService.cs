@@ -764,25 +764,66 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// delete a reported or abusive comment
+        /// delete a reported  comment
         /// </summary>
-        /// <param name="commentId"></param>
-        /// <param name="reason"></param>
+        /// <param name="repordId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> DeleteModerateComment(int commentId, string reason)
+        public async Task<RServiceResult<bool>> DeleteModerateComment(int repordId)
         {
             try
             {
-                GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == commentId).SingleOrDefaultAsync();
+                GanjoorCommentAbuseReport report = await _context.GanjoorReportedComments.Where(r => r.Id == repordId).SingleOrDefaultAsync();
+                if (report == null)
+                {
+                    return new RServiceResult<bool>(false);
+                }
+
+
+                GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == report.GanjoorCommentId).SingleOrDefaultAsync();
                 if (comment == null)
                 {
                     return new RServiceResult<bool>(false); //not found
                 }
 
-                await CacheCleanForComment(commentId);
+                var commentId = report.GanjoorCommentId;
+               
 
                 if (comment.UserId != null)
                 {
+                    string reason = "";
+                    switch (report.ReasonCode)
+                    {
+                        case "offensive":
+                            reason = "توهین‌آمیز است.";
+                            break;
+                        case "religious":
+                            reason = "بحث مذهبی کرده.";
+                            break;
+                        case "repeated":
+                            reason = "تکراری است.";
+                            break;
+                        case "unrelated":
+                            reason = "به این شعر ربطی ندارد.";
+                            break;
+                        case "brokenlink":
+                            reason = "لینک شکسته است.";
+                            break;
+                        case "ad":
+                            reason = "تبلیغاتی است.";
+                            break;
+                        case "bogus":
+                            reason = "نامفهوم است.";
+                            break;
+                        case "latin":
+                            reason = "فارسی ننوشته.";
+                            break;
+                        case "other":
+                            reason = "دلیل دیگر";
+                            break;
+                    }
+                    if (!string.IsNullOrEmpty(report.ReasonText))
+                        reason += $" {report.ReasonText}";
+                    reason = reason.Trim();
                     reason = string.IsNullOrEmpty(reason) ? "" : $"علت ارائه شده برای حذف یا متن گزارش کاربر شاکی: {Environment.NewLine}" +
                                            $"{reason} {Environment.NewLine}";
                     await _notificationService.PushNotification((Guid)comment.UserId,
@@ -812,6 +853,8 @@ namespace RMuseum.Services.Implementation
 
                 _context.GanjoorComments.Remove(comment);
                 await _context.SaveChangesAsync();
+
+                await CacheCleanForComment(report.GanjoorCommentId);
 
                 return new RServiceResult<bool>(true);
             }
