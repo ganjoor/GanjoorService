@@ -1,0 +1,25 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.PoetsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "مدیریت شاعران";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>@Model.LastMessage</p>
+
+<table>
+    <tr>
+        <th>#</th>
+        <th>شاعر</th>
+    </tr>
+    @foreach (var poet in Model.Poets)
+    {
+        <tr>
+            <td>@poet.Id</td>
+            <td>@poet.Nickname</td>
+        </tr>
+    }
+</table>
