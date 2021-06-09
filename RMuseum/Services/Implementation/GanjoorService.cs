@@ -2621,6 +2621,7 @@ namespace RMuseum.Services.Implementation
                        .Replace("!", "")
                        .Replace("؟", "")
                        .Replace("ٔ", "")
+                       .Replace(":", "")
                        ;
         }
 
