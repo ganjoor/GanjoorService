@@ -59,7 +59,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("poets/all")]
+        [Route("poets/secure")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]

@@ -2523,7 +2523,7 @@ namespace RMuseum.Services.Implementation
 
                 var dbPoetPage = await _context.GanjoorPages.Where(page => page.PoetId == poet.Id && page.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
 
-                if (dbPoet.Nickname != poet.Nickname)
+                if (dbPoet.Nickname != poet.Nickname || dbPoetPage.FullUrl != poet.FullUrl)
                 {
                     var resPageEdit =
                         await ModifyPage
@@ -2535,7 +2535,7 @@ namespace RMuseum.Services.Implementation
                             Title = poet.Nickname,
                             HtmlText = dbPoetPage.HtmlText,
                             Note = "ویرایش مستقیم مشخصات شاعر",
-                            UrlSlug = dbPoetPage.UrlSlug,
+                            UrlSlug = poet.FullUrl.Substring(1),
                         }
                         );
                     if(!string.IsNullOrEmpty(resPageEdit.ExceptionString))

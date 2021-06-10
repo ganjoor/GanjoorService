@@ -1,0 +1,52 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.PoetModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "ویرایش شاعر";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="post">
+
+    <table>
+        <tr>
+            <td>نام کوتاه:</td>
+            <td><input asp-for="Poet.Nickname" /> </td>
+        </tr>
+        <tr>
+            <td>نامک:</td>
+            <td><input style="text-align:left;direction:ltr;" asp-for="Poet.FullUrl" /> </td>
+        </tr>
+        <tr>
+            <td>نام کامل:</td>
+            <td><input asp-for="Poet.Name" /> </td>
+        </tr>
+        <tr>
+            <td>منتشر شده:</td>
+            <td><input asp-for="Poet.Published" /> </td>
+        </tr>
+        <tr>
+            <td>زندگینامه:</td>
+            <td><textarea asp-for="Poet.Description" tabindex="4" rows="20" cols="80"></textarea></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="ویرایش" />
+            </td>
+        </tr>
+    </table>
+
+</form>
+
+<table>
+    <tr>
+        <td>
+            <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{Model.Poet.ImageUrl}")" alt="@Model.Poet.Name" />
+        </td>
+    </tr>
+</table>
+
+    
+

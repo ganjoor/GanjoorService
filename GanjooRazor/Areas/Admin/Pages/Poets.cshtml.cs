@@ -28,7 +28,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets/all");
+                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets/secure");
                     response.EnsureSuccessStatusCode();
 
                     Poets = JsonConvert.DeserializeObject<GanjoorPoetViewModel[]>(await response.Content.ReadAsStringAsync());
