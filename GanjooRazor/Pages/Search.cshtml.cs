@@ -107,7 +107,7 @@ namespace GanjooRazor.Pages
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
             Query = Request.Query["s"].ApplyCorrectYeKe().Trim();
-            Query = GanjoorService.MakeTextSearchable(Query); //replace zwnj with space
+            Query = LanguageUtils.MakeTextSearchable(Query); //replace zwnj with space
             PoetId = string.IsNullOrEmpty(Request.Query["author"]) ? 0 : int.Parse(Request.Query["author"]);
             CatId = string.IsNullOrEmpty(Request.Query["cat"]) ? 0 : int.Parse(Request.Query["cat"]);
 

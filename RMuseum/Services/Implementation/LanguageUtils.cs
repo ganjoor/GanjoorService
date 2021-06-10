@@ -30,5 +30,29 @@
                     return (c + "");
             return "";
         }
+
+        /// <summary>
+        /// make text searchable
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string MakeTextSearchable(string text)
+        {
+            return text.Replace("‌", " ")//replace zwnj with space
+                       .Replace("ّ", "")//tashdid
+                       .Replace("َ", "")//a
+                       .Replace("ِ", "")//e
+                       .Replace("ُ", "")//o
+                       .Replace("ً", "")//an
+                       .Replace("ٍ", "")//en
+                       .Replace("ٌ", "")//on
+                       .Replace(".", "")//dot
+                       .Replace("،", "")//virgool
+                       .Replace("!", "")
+                       .Replace("؟", "")
+                       .Replace("ٔ", "")
+                       .Replace(":", "")
+                       ;
+        }
     }
 }

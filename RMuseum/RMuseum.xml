@@ -8654,13 +8654,6 @@
             <param name="imageId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.MakeTextSearchable(System.String)">
-            <summary>
-            make text searchable
-            </summary>
-            <param name="text"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.PreparePlainText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
             <summary>
             make plain text
@@ -8766,6 +8759,13 @@
             <param name="input"></param>
             <param name="specfics"></param>
             <param name="additional"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.LanguageUtils.MakeTextSearchable(System.String)">
+            <summary>
+            make text searchable
+            </summary>
+            <param name="text"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.MusicCatalogueService">

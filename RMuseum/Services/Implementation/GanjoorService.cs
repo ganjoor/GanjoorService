@@ -2601,29 +2601,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        /// <summary>
-        /// make text searchable
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        public static string MakeTextSearchable(string text)
-        {
-            return text.Replace("‌", " ")//replace zwnj with space
-                       .Replace("ّ", "")//tashdid
-                       .Replace("َ", "")//a
-                       .Replace("ِ", "")//e
-                       .Replace("ُ", "")//o
-                       .Replace("ً", "")//an
-                       .Replace("ٍ", "")//en
-                       .Replace("ٌ", "")//on
-                       .Replace(".", "")//dot
-                       .Replace("،", "")//virgool
-                       .Replace("!", "")
-                       .Replace("؟", "")
-                       .Replace("ٔ", "")
-                       .Replace(":", "")
-                       ;
-        }
+ 
 
         /// <summary>
         /// make plain text
@@ -2635,7 +2613,7 @@ namespace RMuseum.Services.Implementation
             string plainText = "";
             foreach (GanjoorVerse verse in verses)
             {
-                plainText += $"{MakeTextSearchable(verse.Text)}{Environment.NewLine}";//replace zwnj with space
+                plainText += $"{LanguageUtils.MakeTextSearchable(verse.Text)}{Environment.NewLine}";//replace zwnj with space
             }
             return plainText.Trim();
         }
