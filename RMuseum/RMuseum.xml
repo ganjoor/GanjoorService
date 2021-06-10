@@ -703,10 +703,11 @@
             <param name="url"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.ModifyPoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel)">
+        <member name="M:RMuseum.Controllers.GanjoorController.ModifyPoet(System.Int32,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel)">
             <summary>
             update poet info (except for image)
             </summary>
+            <param name="id"></param>
             <param name="poet"></param>
             <returns></returns>
         </member>

@@ -2338,7 +2338,7 @@ namespace RMuseum.Services.Implementation
 
                     await _context.SaveChangesAsync();
 
-                    var cachKeyPoets = $"/api/ganjoor/poets?published=true&includeBio=false";
+                    var cachKeyPoets = $"/api/ganjoor/poets?published=True&includeBio=False";
                     if (_memoryCache.TryGetValue(cachKeyPoets, out GanjoorPoetViewModel[] poets))
                     {
                         _memoryCache.Remove(cachKeyPoets);
@@ -2353,6 +2353,12 @@ namespace RMuseum.Services.Implementation
                     if (_memoryCache.TryGetValue(cacheKeyPoet, out GanjoorPoetCompleteViewModel poetCat))
                     {
                         _memoryCache.Remove(cacheKeyPoet);
+                    }
+
+                    var cacheKeyPoet2 = $"poet/byid/{dbPage.PoetId}";
+                    if (_memoryCache.TryGetValue(cacheKeyPoet2, out GanjoorPoetCompleteViewModel poetCat2))
+                    {
+                        _memoryCache.Remove(cacheKeyPoet2);
                     }
                 }
 
@@ -2554,12 +2560,12 @@ namespace RMuseum.Services.Implementation
 
 
                 //cache clean:
-                var cachKeyPoets = $"/api/ganjoor/poets?websitePoets=true&includeBio=false";
+                var cachKeyPoets = $"/api/ganjoor/poets?published=True&includeBio=False";
                 if (_memoryCache.TryGetValue(cachKeyPoets, out GanjoorPoetViewModel[] poets))
                 {
                     _memoryCache.Remove(cachKeyPoets);
                 }
-                var cachKeyPoets2 = $"ganjoor/poets/true/false";
+                var cachKeyPoets2 = $"ganjoor/poets";
                 if (_memoryCache.TryGetValue(cachKeyPoets2, out GanjoorPoetViewModel[] poets2))
                 {
                     _memoryCache.Remove(cachKeyPoets2);
@@ -2570,6 +2576,13 @@ namespace RMuseum.Services.Implementation
                 {
                     _memoryCache.Remove(cacheKeyPoet);
                 }
+
+                var cacheKeyPoet2 = $"poet/byid/{poet.Id}";
+                if (_memoryCache.TryGetValue(cacheKeyPoet2, out GanjoorPoetCompleteViewModel poetCat2))
+                {
+                    _memoryCache.Remove(cacheKeyPoet2);
+                }
+               
 
                 return new RServiceResult<bool>(true);
             }

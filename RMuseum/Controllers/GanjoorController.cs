@@ -131,15 +131,16 @@ namespace RMuseum.Controllers
         /// <summary>
         /// update poet info (except for image)
         /// </summary>
+        /// <param name="id"></param>
         /// <param name="poet"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("poet")]
+        [Route("poet/{id}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> ModifyPoet(GanjoorPoetViewModel poet)
+        public async Task<IActionResult> ModifyPoet(int id, [FromBody]GanjoorPoetViewModel poet)
         {
 
             if (!string.IsNullOrEmpty(poet.ImageUrl))
@@ -149,6 +150,8 @@ namespace RMuseum.Controllers
 
             Guid userId =
              new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            poet.Id = id;
 
             var res = await _ganjoorService.UpdatePoet(poet, userId);
 

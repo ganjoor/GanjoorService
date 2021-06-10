@@ -8,6 +8,13 @@
 
 <h1>@ViewData["Title"]</h1>
 
+@if(!string.IsNullOrEmpty(Model.LastResult))
+{
+    <p>
+        @Model.LastResult
+    </p>
+}
+
 <form method="post">
 
     <table>
