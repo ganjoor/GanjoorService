@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
@@ -44,9 +46,12 @@ namespace GanjooRazor.Areas.Admin.Pages
         [BindProperty]
         public GanjoorPoetViewModel Poet { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        [BindProperty]
+        public IFormFile Image { get; set; }
+
+
+        private async Task PreparePoet()
         {
-            LastResult = "";
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}");
 
             response.EnsureSuccessStatusCode();
@@ -55,12 +60,16 @@ namespace GanjooRazor.Areas.Admin.Pages
 
 
             Poet = poet.Poet;
+        }
 
-
+        public async Task<IActionResult> OnGetAsync()
+        {
+            LastResult = "";
+            await PreparePoet();
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostEditPoetAsync(GanjoorPoetViewModel Poet)
         {
             LastResult = "";
             using (HttpClient secureClient = new HttpClient())
@@ -83,8 +92,39 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                 LastResult = "ویرایش انجام شد.";
 
+                await PreparePoet();
+
                 return Page();
             }
+        }
+
+        public async Task<IActionResult> OnPostUploadImageAsync(IFormFile Image)
+        {
+            LastResult = "";
+            await PreparePoet();
+
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
+                
+                MultipartFormDataContent form = new MultipartFormDataContent();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    await Image.CopyToAsync(stream);
+                    var fileContent = stream.ToArray();
+                    form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Poet.Nickname, Poet.ImageUrl);
+
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/poet/image/{Request.Query["id"]}", form);
+                    response.EnsureSuccessStatusCode();
+
+                    LastResult = "تصویر بارگذاری شد.";
+
+                }
+            }
+
+            return Page();
         }
     }
 }

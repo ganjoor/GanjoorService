@@ -15,7 +15,7 @@
     </p>
 }
 
-<form method="post">
+<form method="post" action="/Admin/Poet/?Handler=EditPoet&id=@Model.Poet.Id">
 
     <table>
         <tr>
@@ -49,8 +49,17 @@
 
 <table>
     <tr>
-        <td>
+        <td colspan="2">
             <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{Model.Poet.ImageUrl}")" alt="@Model.Poet.Name" />
+        </td>
+    </tr>
+    <tr>
+        <td>تصویر جدید:</td>
+        <td>
+            <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadImage&id=@Model.Poet.Id">
+                <input type="file" asp-for="Image" />
+                <input type="submit" value="بارگذاری" />
+            </form>
         </td>
     </tr>
 </table>
