@@ -2338,28 +2338,7 @@ namespace RMuseum.Services.Implementation
 
                     await _context.SaveChangesAsync();
 
-                    var cachKeyPoets = $"/api/ganjoor/poets?published=True&includeBio=False";
-                    if (_memoryCache.TryGetValue(cachKeyPoets, out GanjoorPoetViewModel[] poets))
-                    {
-                        _memoryCache.Remove(cachKeyPoets);
-                    }
-                    var cachKeyPoets2 = $"ganjoor/poets";
-                    if (_memoryCache.TryGetValue(cachKeyPoets2, out GanjoorPoetViewModel[] poets2))
-                    {
-                        _memoryCache.Remove(cachKeyPoets2);
-                    }
-
-                    var cacheKeyPoet = $"/api/ganjoor/poet/{dbPage.PoetId}";
-                    if (_memoryCache.TryGetValue(cacheKeyPoet, out GanjoorPoetCompleteViewModel poetCat))
-                    {
-                        _memoryCache.Remove(cacheKeyPoet);
-                    }
-
-                    var cacheKeyPoet2 = $"poet/byid/{dbPage.PoetId}";
-                    if (_memoryCache.TryGetValue(cacheKeyPoet2, out GanjoorPoetCompleteViewModel poetCat2))
-                    {
-                        _memoryCache.Remove(cacheKeyPoet2);
-                    }
+                    CleanPoetCache((int)dbPage.PoetId);
                 }
 
                 _context.GanjoorPages.Update(dbPage);
@@ -2515,6 +2494,33 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        private void CleanPoetCache(int poetId)
+        {
+            //cache clean:
+            var cachKeyPoets = $"/api/ganjoor/poets?published=True&includeBio=False";
+            if (_memoryCache.TryGetValue(cachKeyPoets, out GanjoorPoetViewModel[] poets))
+            {
+                _memoryCache.Remove(cachKeyPoets);
+            }
+            var cachKeyPoets2 = $"ganjoor/poets";
+            if (_memoryCache.TryGetValue(cachKeyPoets2, out GanjoorPoetViewModel[] poets2))
+            {
+                _memoryCache.Remove(cachKeyPoets2);
+            }
+
+            var cacheKeyPoet = $"/api/ganjoor/poet/{poetId}";
+            if (_memoryCache.TryGetValue(cacheKeyPoet, out GanjoorPoetCompleteViewModel poetCat))
+            {
+                _memoryCache.Remove(cacheKeyPoet);
+            }
+
+            var cacheKeyPoet2 = $"poet/byid/{poetId}";
+            if (_memoryCache.TryGetValue(cacheKeyPoet2, out GanjoorPoetCompleteViewModel poetCat2))
+            {
+                _memoryCache.Remove(cacheKeyPoet2);
+            }
+        }
+
         /// <summary>
         /// modify poet
         /// </summary>
@@ -2559,30 +2565,9 @@ namespace RMuseum.Services.Implementation
                 await _context.SaveChangesAsync();
 
 
-                //cache clean:
-                var cachKeyPoets = $"/api/ganjoor/poets?published=True&includeBio=False";
-                if (_memoryCache.TryGetValue(cachKeyPoets, out GanjoorPoetViewModel[] poets))
-                {
-                    _memoryCache.Remove(cachKeyPoets);
-                }
-                var cachKeyPoets2 = $"ganjoor/poets";
-                if (_memoryCache.TryGetValue(cachKeyPoets2, out GanjoorPoetViewModel[] poets2))
-                {
-                    _memoryCache.Remove(cachKeyPoets2);
-                }
+                CleanPoetCache(poet.Id);
 
-                var cacheKeyPoet = $"/api/ganjoor/poet/{poet.Id}";
-                if (_memoryCache.TryGetValue(cacheKeyPoet, out GanjoorPoetCompleteViewModel poetCat))
-                {
-                    _memoryCache.Remove(cacheKeyPoet);
-                }
 
-                var cacheKeyPoet2 = $"poet/byid/{poet.Id}";
-                if (_memoryCache.TryGetValue(cacheKeyPoet2, out GanjoorPoetCompleteViewModel poetCat2))
-                {
-                    _memoryCache.Remove(cacheKeyPoet2);
-                }
-               
 
                 return new RServiceResult<bool>(true);
             }
