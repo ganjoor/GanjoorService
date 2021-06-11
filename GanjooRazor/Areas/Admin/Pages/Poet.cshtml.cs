@@ -98,6 +98,13 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     var poet = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
 
+                    var cacheKey1 = $"/api/ganjoor/poets";
+                    if (_memoryCache.TryGetValue(cacheKey1, out List<GanjoorPoetViewModel> poets))
+                    {
+                        _memoryCache.Remove(cacheKey1);
+                    }
+
+
                     return Redirect($"/Admin/Poet?id={poet.Poet.Id}");
                 }
                 else
