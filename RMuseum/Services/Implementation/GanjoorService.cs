@@ -2723,8 +2723,6 @@ namespace RMuseum.Services.Implementation
             }
         }
 
- 
-
         /// <summary>
         /// make plain text
         /// </summary>

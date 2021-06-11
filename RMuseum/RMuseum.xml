@@ -8342,6 +8342,13 @@
             <param name="filePath"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.PrepareHtmlText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
+            <summary>
+            make html text
+            </summary>
+            <param name="verses"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean,System.Boolean)">
             <summary>
             Get List of poets
