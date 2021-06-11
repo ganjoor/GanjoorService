@@ -950,7 +950,7 @@
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ImportLocalSQLiteDb(System.Int32)">
             <summary>
-            imports data from ganjoor SQLite database
+            imports data from ganjoor SQLite database (form file)
             </summary>
             <param name="poetId"></param>
             <returns></returns>
@@ -7296,12 +7296,12 @@
             <param name="recitation"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.ImportFromSqlite(System.Int32,System.String)">
+        <member name="M:RMuseum.Services.IGanjoorService.ImportFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile)">
             <summary>
             import from sqlite
             </summary>
             <param name="poetId"></param>
-            <param name="filePath"></param>
+            <param name="file"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.ImportFromMySql">
@@ -8334,12 +8334,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportFromSqlite(System.Int32,System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile)">
             <summary>
             import from sqlite
             </summary>
             <param name="poetId"></param>
-            <param name="filePath"></param>
+            <param name="file"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.PrepareHtmlText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">

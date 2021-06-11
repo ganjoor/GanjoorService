@@ -49,6 +49,9 @@ namespace GanjooRazor.Areas.Admin.Pages
         [BindProperty]
         public IFormFile Image { get; set; }
 
+        [BindProperty]
+        public IFormFile SQLiteDb { get; set; }
+
 
         private async Task PreparePoet()
         {
@@ -156,6 +159,35 @@ namespace GanjooRazor.Areas.Admin.Pages
                     response.EnsureSuccessStatusCode();
 
                     LastResult = "تصویر بارگذاری شد.";
+
+                }
+            }
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostUploadDbAsync(IFormFile SQLiteDb)
+        {
+            LastResult = "";
+            await PreparePoet();
+
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
+
+                MultipartFormDataContent form = new MultipartFormDataContent();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    await SQLiteDb.CopyToAsync(stream);
+                    var fileContent = stream.ToArray();
+                    form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Poet.Nickname, SQLiteDb.FileName);
+
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqliteimport/{Request.Query["id"]}", form);
+                    response.EnsureSuccessStatusCode();
+
+                    LastResult = "پایگاه داده‌ها بارگذاری شد.";
 
                 }
             }

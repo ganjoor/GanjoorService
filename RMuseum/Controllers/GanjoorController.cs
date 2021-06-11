@@ -1027,7 +1027,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// imports data from ganjoor SQLite database
+        /// imports data from ganjoor SQLite database (form file)
         /// </summary>
         /// <param name="poetId"></param>
         /// <returns></returns>
@@ -1037,10 +1037,12 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult ImportLocalSQLiteDb(int poetId)
+        public async Task<IActionResult> ImportLocalSQLiteDb(int poetId)
         {
+            IFormFile file = Request.Form.Files[0];
+
             RServiceResult<bool> res =
-                _ganjoorService.ImportFromSqlite(poetId, "");
+                await _ganjoorService.ImportFromSqlite(poetId, file);
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);

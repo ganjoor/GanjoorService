@@ -2627,6 +2627,9 @@ namespace RMuseum.Services.Implementation
 
                 var id = 1 + await _context.GanjoorPoets.MaxAsync(p => p.Id);
 
+                if (string.IsNullOrEmpty(poet.Description))
+                    poet.Description = "";
+
                 GanjoorPoet dbPoet = new GanjoorPoet()
                 {
                     Id = id,
@@ -2651,6 +2654,8 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorCategories.Add(dbCat);
 
                 var poetPageId = 1 + await _context.GanjoorPages.MaxAsync(p => p.Id);
+                while (await _context.GanjoorPoems.Where(p => p.Id == poetPageId).AnyAsync())
+                    poetPageId++;
 
                 var pageText = "";
                 foreach(var line in poet.Description.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))

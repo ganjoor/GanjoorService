@@ -1,4 +1,5 @@
-﻿using RMuseum.Models.Ganjoor;
+﻿using Microsoft.AspNetCore.Http;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -293,9 +294,9 @@ namespace RMuseum.Services
         /// import from sqlite
         /// </summary>
         /// <param name="poetId"></param>
-        /// <param name="filePath"></param>
+        /// <param name="file"></param>
         /// <returns></returns>
-        RServiceResult<bool> ImportFromSqlite(int poetId, string filePath);
+        Task<RServiceResult<bool>> ImportFromSqlite(int poetId, IFormFile file);
 
         /// <summary>
         /// import GanjoorPage entity data from MySql

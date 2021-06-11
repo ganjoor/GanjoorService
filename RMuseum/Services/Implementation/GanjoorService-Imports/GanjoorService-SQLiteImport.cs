@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using DNTPersianUtils.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
@@ -9,6 +11,7 @@ using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,16 +22,30 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
-      
+
         /// <summary>
         /// import from sqlite
         /// </summary>
         /// <param name="poetId"></param>
-        /// <param name="filePath"></param>
+        /// <param name="file"></param>
         /// <returns></returns>
-        public RServiceResult<bool> ImportFromSqlite(int poetId, string filePath)
+        public async Task<RServiceResult<bool>> ImportFromSqlite(int poetId, IFormFile file)
         {
-            _backgroundTaskQueue.QueueBackgroundWorkItem
+            try
+            {
+                string dir = Path.Combine($"{Configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteImports");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                string filePath = Path.Combine(dir, file.FileName);
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+                using (FileStream fsMain = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fsMain);
+                }
+
+                _backgroundTaskQueue.QueueBackgroundWorkItem
                             (
                             async token =>
                             {
@@ -57,9 +74,7 @@ namespace RMuseum.Services.Implementation
 
                                             await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Importing");
 
-                                            await _ImportSQLiteCatChildren(context, sqlite, poetId, 0, cat, poet.Nickname);
-
-                                            await context.SaveChangesAsync();
+                                            await _ImportSQLiteCatChildren(context, sqlite, poetId, await sqlite.QuerySingleAsync<int>($"SELECT id FROM cat WHERE parent_id = 0") , cat, poet.Nickname);
 
                                             await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                         }
@@ -69,129 +84,157 @@ namespace RMuseum.Services.Implementation
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
                                     }
                                 }
+
+                                File.Delete(filePath);
                             }
                             );
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+            
+
+            
             return new RServiceResult<bool>(true);
         }
-        private async Task _ImportSQLiteCatChildren(RMuseumDbContext context, IDbConnection sqlite, int poetId, int catId, GanjoorCat parentCat, string parentFullTitle)
+        private async Task<string> _ImportSQLiteCatChildren(RMuseumDbContext context, IDbConnection sqlite, int poetId, int sqliteParentCatId, GanjoorCat parentCat, string parentFullTitle)
         {
-            string catHtmlText = "";
-            foreach (var cat in await sqlite.QueryAsync($"SELECT * FROM cat WHERE poet_id = {poetId} AND parent_id = {catId} ORDER BY id"))
+            try
             {
-                var poetCatId = 1 + await context.GanjoorCategories.MaxAsync(c => c.Id);
-
-                string url = GPersianTextSync.Farglisize(cat.text);
-
-                GanjoorCat dbCat = new GanjoorCat()
+                string catHtmlText = "";
+                foreach (var cat in await sqlite.QueryAsync($"SELECT * FROM cat WHERE parent_id = {sqliteParentCatId} ORDER BY id"))
                 {
-                    Id = poetCatId,
-                    PoetId = poetId,
-                    Title = cat.text,
-                    UrlSlug = url,
-                    FullUrl = $"{parentCat.FullUrl}/{url}"
-                };
-                context.GanjoorCategories.Add(dbCat);
+                    var poetCatId = 1 + await context.GanjoorCategories.MaxAsync(c => c.Id);
 
-                var catPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
+                    string url = GPersianTextSync.Farglisize(cat.text);
 
-                GanjoorPage dbPageCat = new GanjoorPage()
-                {
-                    Id = catPageId,
-                    GanjoorPageType = GanjoorPageType.CatPage,
-                    Published = false,
-                    PageOrder = -1,
-                    Title = dbCat.Title,
-                    FullTitle = $"{parentFullTitle} » {dbCat.Title}",
-                    UrlSlug = dbCat.UrlSlug,
-                    FullUrl = dbCat.FullUrl,
-                    HtmlText = "",
-                    PoetId = poetId,
-                    CatId = poetCatId,
-                    PostDate = DateTime.Now
-                };
-
-                context.GanjoorPages.Add(dbPageCat);
-
-                catHtmlText += $"<p><a href=\"{dbCat.FullUrl}\">{dbCat.Title}</a></p>{Environment.NewLine}";
-
-                await _ImportSQLiteCatChildren(context, sqlite, poetId, (int)cat.id, dbCat, $"{parentFullTitle} » {dbCat.Title}");
-            }
-
-            var poemId = 1 + await context.GanjoorPoems.MaxAsync(p => p.Id);
-            while (await context.GanjoorPages.Where(p => p.Id == poemId).AnyAsync())
-                poemId++;
-
-            int poemNumber = 0;
-            foreach (var poem in await sqlite.QueryAsync($"SELECT * FROM poem WHERE cat_id = {catId} ORDER BY id"))
-            {
-                poemNumber++;
-                GanjoorPoem dbPoem = new GanjoorPoem()
-                {
-                    Id = poemId,
-                    CatId = parentCat.Id,
-                    Title = poem.title,
-                    UrlSlug = $"sh{poemNumber}",
-                    FullTitle = $"{parentFullTitle} » {poem.title}",
-                    FullUrl = $"{parentCat.FullUrl}/sh{poemNumber}",
-                };
-
-                List<GanjoorVerse> poemVerses = new List<GanjoorVerse>();
-                foreach (var verse in await sqlite.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder"))
-                {
-                    GanjoorVerse dbVerse = new GanjoorVerse()
+                    GanjoorCat dbCat = new GanjoorCat()
                     {
-                        PoemId = poemId,
-                        VOrder = verse.vorder,
-                        VersePosition = verse.position,
-                        Text = verse.text.Replace("ـ", "").Replace("  ", " ").ApplyCorrectYeKe().Trim()
+                        Id = poetCatId,
+                        PoetId = poetId,
+                        Title = cat.text,
+                        UrlSlug = url,
+                        FullUrl = $"{parentCat.FullUrl}/{url}",
+                        ParentId = parentCat.Id
                     };
-                    poemVerses.Add(dbVerse);
+                    context.GanjoorCategories.Add(dbCat);
+
+                    var catPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
+                    while (await context.GanjoorPoems.Where(p => p.Id == catPageId).AnyAsync())
+                        catPageId++;
+
+                    GanjoorPage dbPageCat = new GanjoorPage()
+                    {
+                        Id = catPageId,
+                        GanjoorPageType = GanjoorPageType.CatPage,
+                        Published = false,
+                        PageOrder = -1,
+                        Title = dbCat.Title,
+                        FullTitle = $"{parentFullTitle} » {dbCat.Title}",
+                        UrlSlug = dbCat.UrlSlug,
+                        FullUrl = dbCat.FullUrl,
+                        HtmlText = "",
+                        PoetId = poetId,
+                        CatId = poetCatId,
+                        PostDate = DateTime.Now
+                    };
+
+                    context.GanjoorPages.Add(dbPageCat);
+
+                    await context.SaveChangesAsync();
+
+                    catHtmlText += $"<p><a href=\"{dbCat.FullUrl}\">{dbCat.Title}</a></p>{Environment.NewLine}";
+
+                    await _ImportSQLiteCatChildren(context, sqlite, poetId, (int)cat.id, dbCat, $"{parentFullTitle} » {dbCat.Title}");
                 }
 
-                dbPoem.PlainText = PreparePlainText(poemVerses);
-                dbPoem.HtmlText = PrepareHtmlText(poemVerses);
+                var poemId = 1 + await context.GanjoorPoems.MaxAsync(p => p.Id);
+                while (await context.GanjoorPages.Where(p => p.Id == poemId).AnyAsync())
+                    poemId++;
 
-                context.GanjoorPoems.Add(dbPoem);
-
-                foreach (var dbVerse in poemVerses)
+                int poemNumber = 0;
+                foreach (var poem in await sqlite.QueryAsync($"SELECT * FROM poem WHERE cat_id = {sqliteParentCatId} ORDER BY id"))
                 {
-                    context.GanjoorVerses.Add(dbVerse);
-                    await context.SaveChangesAsync();//id set should be in order
+                    poemNumber++;
+                    GanjoorPoem dbPoem = new GanjoorPoem()
+                    {
+                        Id = poemId,
+                        CatId = parentCat.Id,
+                        Title = poem.title,
+                        UrlSlug = $"sh{poemNumber}",
+                        FullTitle = $"{parentFullTitle} » {poem.title}",
+                        FullUrl = $"{parentCat.FullUrl}/sh{poemNumber}",
+                    };
+
+                    List<GanjoorVerse> poemVerses = new List<GanjoorVerse>();
+                    foreach (var verse in await sqlite.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder"))
+                    {
+                        int vOrder = int.Parse(verse.vorder.ToString());
+                        int position = int.Parse(verse.position.ToString());
+                        string text = verse.text;
+                        GanjoorVerse dbVerse = new GanjoorVerse()
+                        {
+                            PoemId = poemId,
+                            VOrder = vOrder,
+                            VersePosition = (VersePosition)position,
+                            Text = text.Replace("ـ", "").Replace("  ", " ").ApplyCorrectYeKe().Trim()
+                        };
+                        poemVerses.Add(dbVerse);
+                    }
+
+                    dbPoem.PlainText = PreparePlainText(poemVerses);
+                    dbPoem.HtmlText = PrepareHtmlText(poemVerses);
+
+                    context.GanjoorPoems.Add(dbPoem);
+                    await context.SaveChangesAsync();
+
+                    foreach (var dbVerse in poemVerses)
+                    {
+                        context.GanjoorVerses.Add(dbVerse);
+                        await context.SaveChangesAsync();//id set should be in order
+                    }
+
+                    GanjoorPage dbPoemPage = new GanjoorPage()
+                    {
+                        Id = poemId,
+                        GanjoorPageType = GanjoorPageType.PoemPage,
+                        Published = false,
+                        PageOrder = -1,
+                        Title = dbPoem.Title,
+                        FullTitle = dbPoem.FullTitle,
+                        UrlSlug = dbPoem.UrlSlug,
+                        FullUrl = dbPoem.FullUrl,
+                        HtmlText = dbPoem.HtmlText,
+                        PoetId = poetId,
+                        CatId = parentCat.Id,
+                        PoemId = poemId,
+                        PostDate = DateTime.Now
+                    };
+
+                    context.GanjoorPages.Add(dbPoemPage);
+                    await context.SaveChangesAsync();
+
+                    catHtmlText += $"<p><a href=\"{dbPoemPage.FullUrl}\">{dbPoemPage.Title}</a></p>{Environment.NewLine}";
+
+
+                    poemId++;
                 }
 
-                GanjoorPage dbPoemPage = new GanjoorPage()
+                if (!string.IsNullOrEmpty(catHtmlText))
                 {
-                    Id = poemId,
-                    GanjoorPageType = GanjoorPageType.PoemPage,
-                    Published = false,
-                    PageOrder = -1,
-                    Title = dbPoem.Title,
-                    FullTitle = dbPoem.FullTitle,
-                    UrlSlug = dbPoem.UrlSlug,
-                    FullUrl = dbPoem.FullUrl,
-                    HtmlText = dbPoem.HtmlText,
-                    PoetId = poemId,
-                    CatId = parentCat.Id,
-                    PostDate = DateTime.Now
-                };
+                    var parentCatPage = await context.GanjoorPages.Where(p => p.FullUrl == parentCat.FullUrl).SingleAsync();
+                    parentCatPage.HtmlText += catHtmlText;
+                    context.GanjoorPages.Update(parentCatPage);
+                }
 
-                _context.GanjoorPages.Add(dbPoemPage);
-
-                catHtmlText += $"<p><a href=\"{dbPoemPage.FullUrl}\">{dbPoemPage.Title}</a></p>{Environment.NewLine}";
-
-
-                poemId++;
+                await context.SaveChangesAsync();
             }
-
-            if (!string.IsNullOrEmpty(catHtmlText))
+            catch(Exception exp)
             {
-                var parentCatPage = await context.GanjoorPages.Where(p => p.FullUrl == parentCat.FullUrl && p.GanjoorPageType == GanjoorPageType.CatPage && p.PoetId == poetId).SingleAsync();
-                parentCatPage.HtmlText += catHtmlText;
-                context.GanjoorPages.Update(parentCatPage);
+                return exp.ToString();
             }
-
-            await context.SaveChangesAsync();
-
+            return "";
         }
 
 

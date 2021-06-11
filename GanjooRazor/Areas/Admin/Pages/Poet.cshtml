@@ -64,5 +64,18 @@
     </tr>
 </table>
 
+
+<table>
+    <tr>
+        <td>بارگذاری پایگاه داده‌ها:</td>
+        <td>
+            <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadDb&id=@Model.Poet.Id">
+                <input type="file" asp-for="SQLiteDb" />
+                <input type="submit" value="بارگذاری" />
+            </form>
+        </td>
+    </tr>
+</table>
+
     
 
