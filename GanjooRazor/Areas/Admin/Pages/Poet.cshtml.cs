@@ -65,7 +65,22 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnGetAsync()
         {
             LastResult = "";
-            await PreparePoet();
+            if(string.IsNullOrEmpty(Request.Query["id"]))
+            {
+                Poet = new GanjoorPoetViewModel()
+                {
+                    Nickname = "",
+                    Name = "",
+                    FullUrl = "",
+                    Description = "",
+                    Published = false
+                };
+            }
+            else
+            {
+                await PreparePoet();
+            }
+            
             return Page();
         }
 
@@ -75,26 +90,40 @@ namespace GanjooRazor.Areas.Admin.Pages
             using (HttpClient secureClient = new HttpClient())
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
-                HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(Poet), Encoding.UTF8, "application/json"));
-                response.EnsureSuccessStatusCode();
 
-                var cacheKey1 = $"/api/ganjoor/poets";
-                if (_memoryCache.TryGetValue(cacheKey1, out List<GanjoorPoetViewModel> poets))
+                if (Request.Query["id"].ToString() == "0")
                 {
-                    _memoryCache.Remove(cacheKey1);
-                }
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/poet", new StringContent(JsonConvert.SerializeObject(Poet), Encoding.UTF8, "application/json"));
+                    response.EnsureSuccessStatusCode();
 
-                var cacheKey2 = $"/api/ganjoor/poet/{Request.Query["id"]}";
-                if (_memoryCache.TryGetValue(cacheKey2, out GanjoorPoetCompleteViewModel poet))
+                    var poet = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
+
+                    return Redirect($"/Admin/Poet?id={poet.Poet.Id}");
+                }
+                else
                 {
-                    _memoryCache.Remove(cacheKey2);
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(Poet), Encoding.UTF8, "application/json"));
+                    response.EnsureSuccessStatusCode();
+
+                    var cacheKey1 = $"/api/ganjoor/poets";
+                    if (_memoryCache.TryGetValue(cacheKey1, out List<GanjoorPoetViewModel> poets))
+                    {
+                        _memoryCache.Remove(cacheKey1);
+                    }
+
+                    var cacheKey2 = $"/api/ganjoor/poet/{Request.Query["id"]}";
+                    if (_memoryCache.TryGetValue(cacheKey2, out GanjoorPoetCompleteViewModel poet))
+                    {
+                        _memoryCache.Remove(cacheKey2);
+                    }
+
+                    LastResult = "ویرایش انجام شد.";
+
+                    await PreparePoet();
+
+                    return Page();
                 }
-
-                LastResult = "ویرایش انجام شد.";
-
-                await PreparePoet();
-
-                return Page();
+                
             }
         }
 
@@ -114,7 +143,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 {
                     await Image.CopyToAsync(stream);
                     var fileContent = stream.ToArray();
-                    form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Poet.Nickname, Poet.ImageUrl);
+                    form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Poet.Nickname, Image.FileName);
 
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/poet/image/{Request.Query["id"]}", form);
                     response.EnsureSuccessStatusCode();
