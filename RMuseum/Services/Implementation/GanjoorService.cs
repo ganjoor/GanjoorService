@@ -2640,7 +2640,7 @@ namespace RMuseum.Services.Implementation
                 {
                     Id = poetPageId,
                     GanjoorPageType = GanjoorPageType.PoetPage,
-                    Published = false,
+                    Published = true,
                     PageOrder = -1,
                     Title = poet.Nickname,
                     FullTitle = poet.Nickname,
