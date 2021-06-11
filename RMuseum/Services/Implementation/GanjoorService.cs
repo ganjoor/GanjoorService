@@ -2558,11 +2558,27 @@ namespace RMuseum.Services.Implementation
 
                 dbPoet.Name = poet.Name;
                 dbPoet.Description = poet.Description;
+
+                bool publishedChange = dbPoet.Published != poet.Published;
+
                 dbPoet.Published = poet.Published;
 
                 _context.GanjoorPoets.Update(dbPoet);
 
                 await _context.SaveChangesAsync();
+
+                if(publishedChange)
+                {
+                    var pages = await _context.GanjoorPages.Where(p => p.PoemId == poet.Id).ToListAsync();
+                    foreach(var page in pages)
+                    {
+                        page.Published = poet.Published;
+                    }
+
+                    _context.GanjoorPages.UpdateRange(pages);
+
+                    await _context.SaveChangesAsync();
+                }
 
                 CleanPoetCache(poet.Id);
 
@@ -2617,7 +2633,7 @@ namespace RMuseum.Services.Implementation
                     Name = poet.Name,
                     Nickname = poet.Nickname,
                     Description = poet.Description,
-                    Published = false
+                    Published = poet.Published
                 };
 
                 _context.GanjoorPoets.Add(dbPoet);
@@ -2636,17 +2652,23 @@ namespace RMuseum.Services.Implementation
 
                 var poetPageId = 1 + await _context.GanjoorPages.MaxAsync(p => p.Id);
 
+                var pageText = "";
+                foreach(var line in poet.Description.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    pageText += $"<p>{line}</p>";
+                }
+
                 GanjoorPage dbPage = new GanjoorPage()
                 {
                     Id = poetPageId,
                     GanjoorPageType = GanjoorPageType.PoetPage,
-                    Published = true,
+                    Published = poet.Published,
                     PageOrder = -1,
                     Title = poet.Nickname,
                     FullTitle = poet.Nickname,
                     UrlSlug = poet.FullUrl.Substring(1),
                     FullUrl = poet.FullUrl,
-                    HtmlText = poet.Description,
+                    HtmlText = pageText,
                     PoetId = id,
                     CatId = poetCatId,
                     PostDate = DateTime.Now
