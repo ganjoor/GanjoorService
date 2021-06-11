@@ -290,10 +290,12 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoemCompleteViewModel>> Faal(int poetId = 2, bool recitation = true);
 
         /// <summary>
-        /// imports unimported poem data from a locally accessible ganjoor SqlLite database
+        /// import from sqlite
         /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="filePath"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> ImportLocalSQLiteDb();
+        RServiceResult<bool> ImportFromSqlite(int poetId, string filePath);
 
         /// <summary>
         /// import GanjoorPage entity data from MySql

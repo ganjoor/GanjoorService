@@ -2,8 +2,8 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
-using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Services.Implementation;
 using System;
 using System.Data;
 using System.Data.Common;
@@ -17,67 +17,69 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+      
         /// <summary>
-        /// imports unimported poem data from a locally accessible ganjoor SqlLite database
+        /// import from sqlite
         /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="filePath"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ImportLocalSQLiteDb()
+        public RServiceResult<bool> ImportFromSqlite(int poetId, string filePath)
         {
-            try
-            {
-                SqliteConnectionStringBuilder connectionStringBuilder = new SqliteConnectionStringBuilder();
-                connectionStringBuilder.DataSource = Configuration.GetSection("LocalSqliteImport")["FilePath"];
-                using (SqliteConnection sqliteConnection = new SqliteConnection(connectionStringBuilder.ToString()))
-                {
-                    await sqliteConnection.OpenAsync();
-                    IDbConnection dapper = sqliteConnection;
-                    using (var sqlConnection = _context.Database.GetDbConnection())
-                    {
-                        await sqlConnection.OpenAsync();
-
-                        foreach (var poet in await dapper.QueryAsync("SELECT * FROM poet ORDER BY id"))
-                        {
-                            int poetId = (int)poet.id;
-                            if ((await _context.GanjoorPoets.Where(p => p.Id == poetId).FirstOrDefaultAsync()) != null)
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
                             {
-                                continue;
-                            }
-
-                            DbTransaction transaction = await sqlConnection.BeginTransactionAsync();
-                            try
-                            {
-                                using (var command = sqlConnection.CreateCommand())
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                 {
-                                    command.Transaction = transaction;
-                                    command.CommandText =
-                                        $"INSERT INTO GanjoorPoets (Id, Name, Description) VALUES (${poet.id}, N'{poet.name}', N'{poet.description}')";
-                                    await command.ExecuteNonQueryAsync();
-                                    await _ImportSQLiteCatChildren(command, dapper, poetId, 0, "", "");
-                                    await transaction.CommitAsync();
+                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                    var job = (await jobProgressServiceEF.NewJob("ImportFromSqlite", "Query data")).Result;
+
+                                    try
+                                    {
+                                        SqliteConnectionStringBuilder connectionStringBuilder = new SqliteConnectionStringBuilder();
+                                        connectionStringBuilder.DataSource = filePath;
+                                        using (SqliteConnection sqliteConnection = new SqliteConnection(connectionStringBuilder.ToString()))
+                                        {
+                                            await sqliteConnection.OpenAsync();
+                                            IDbConnection dapper = sqliteConnection;
+                                            using (var sqlConnection = _context.Database.GetDbConnection())
+                                            {
+                                                await sqlConnection.OpenAsync();
+
+                                                var poets = (await dapper.QueryAsync("SELECT * FROM poet")).ToList();
+                                                if (poets.Count != 1)
+                                                {
+                                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, "poets count in sqlite db is not equal to 1");
+                                                }
+
+
+                                                var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync();
+
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Importing");
+
+
+
+                                                await context.SaveChangesAsync();
+
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+
+                                            }
+                                        }
+                                    }
+                                    catch (Exception exp)
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                    }
                                 }
                             }
-                            catch (Exception exp2)
-                            {
-                                await transaction.RollbackAsync();
-                                return new RServiceResult<bool>(false, exp2.ToString());
-                            }
-
-
-                        }
-                    }
-
-                }
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+                            );
             return new RServiceResult<bool>(true);
         }
-        private async Task _ImportSQLiteCatChildren(DbCommand command, IDbConnection dapper, int poetId, int catId, string itemFullTitle, string itemFullSlug)
+        public async Task _ImportSQLiteCatChildren(DbCommand command, IDbConnection sqlite, int poetId, int catId, string itemFullTitle, string itemFullSlug)
         {
 
-            foreach (var cat in await dapper.QueryAsync($"SELECT * FROM cat WHERE poet_id = {poetId} AND parent_id = {catId} ORDER BY id"))
+            foreach (var cat in await sqlite.QueryAsync($"SELECT * FROM cat WHERE poet_id = {poetId} AND parent_id = {catId} ORDER BY id"))
             {
 
                 if (catId == 0)
@@ -94,13 +96,13 @@ namespace RMuseum.Services.Implementation
                 await command.ExecuteNonQueryAsync();
 
 
-                foreach (var poem in await dapper.QueryAsync($"SELECT * FROM poem WHERE cat_id = {cat.id} ORDER BY id"))
+                foreach (var poem in await sqlite.QueryAsync($"SELECT * FROM poem WHERE cat_id = {cat.id} ORDER BY id"))
                 {
                     command.CommandText =
                                $"INSERT INTO GanjoorPoems (Id, CatId, Title, UrlSlug, FullTitle, FullUrl) VALUES (${poem.id}, {cat.id}, N'{poem.title}', '{ _ExtractUrlSlug(poem.url)}', N'{$"{itemFullTitle}{cat.text} » {poem.title}"}', '{itemFullSlug}/{ _ExtractUrlSlug(cat.url)}/{_ExtractUrlSlug(poem.url)}')";
                     await command.ExecuteNonQueryAsync();
 
-                    foreach (var verse in await dapper.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder"))
+                    foreach (var verse in await sqlite.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder"))
                     {
                         command.CommandText =
                               $"INSERT INTO GanjoorVerses (PoemId, VOrder, VersePosition, Text) VALUES (${poem.id}, {verse.vorder}, {verse.position}, N'{verse.text}')";
@@ -110,7 +112,7 @@ namespace RMuseum.Services.Implementation
                 }
 
 
-                await _ImportSQLiteCatChildren(command, dapper, poetId, (int)cat.id, $"{itemFullTitle}{cat.text} » ", $"{itemFullSlug}/{ _ExtractUrlSlug(cat.url)}");
+                await _ImportSQLiteCatChildren(command, sqlite, poetId, (int)cat.id, $"{itemFullTitle}{cat.text} » ", $"{itemFullSlug}/{ _ExtractUrlSlug(cat.url)}");
 
 
             }

@@ -1029,16 +1029,18 @@ namespace RMuseum.Controllers
         /// <summary>
         /// imports data from ganjoor SQLite database
         /// </summary>
+        /// <param name="poetId"></param>
         /// <returns></returns>
+
         [HttpPost]
-        [Route("sqliteimport")]
+        [Route("sqliteimport/{poetId}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> ImportLocalSQLiteDb()
+        public IActionResult ImportLocalSQLiteDb(int poetId)
         {
             RServiceResult<bool> res =
-                await _ganjoorService.ImportLocalSQLiteDb();
+                _ganjoorService.ImportFromSqlite(poetId, "");
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);
