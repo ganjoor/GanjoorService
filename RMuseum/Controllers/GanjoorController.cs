@@ -161,6 +161,35 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// create new poet
+        /// </summary>
+        /// <param name="poet"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("poet")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> CreatePoet([FromBody] GanjoorPoetViewModel poet)
+        {
+
+            if (!string.IsNullOrEmpty(poet.ImageUrl))
+            {
+                return BadRequest("Please send an empty image url, if you are trying to change poet image this is not the right method to do it.");
+            }
+
+            Guid userId =
+             new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            var res = await _ganjoorService.CreatePoet(poet, userId);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok(res.Result);
+        }
 
 
         /// <summary>

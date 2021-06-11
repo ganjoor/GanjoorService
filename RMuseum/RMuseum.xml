@@ -711,6 +711,13 @@
             <param name="poet"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.CreatePoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel)">
+            <summary>
+            create new poet
+            </summary>
+            <param name="poet"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoetImage(System.String)">
             <summary>
             get poet image
@@ -7258,6 +7265,14 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.CreatePoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
+            <summary>
+            create new poet
+            </summary>
+            <param name="poet"></param>
+            <param name="editingUserId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.ChangePoetImage(System.Int32,System.Guid)">
             <summary>
             chaneg poet image
@@ -8642,6 +8657,14 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
             <summary>
             modify poet
+            </summary>
+            <param name="poet"></param>
+            <param name="editingUserId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.CreatePoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
+            <summary>
+            create new poet
             </summary>
             <param name="poet"></param>
             <param name="editingUserId"></param>

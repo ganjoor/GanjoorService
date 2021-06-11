@@ -2507,7 +2507,7 @@ namespace RMuseum.Services.Implementation
             {
                 _memoryCache.Remove(cachKeyPoets2);
             }
-
+            
             var cacheKeyPoet = $"/api/ganjoor/poet/{poetId}";
             if (_memoryCache.TryGetValue(cacheKeyPoet, out GanjoorPoetCompleteViewModel poetCat))
             {
@@ -2564,16 +2564,118 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
-
                 CleanPoetCache(poet.Id);
-
-
 
                 return new RServiceResult<bool>(true);
             }
             catch(Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// create new poet
+        /// </summary>
+        /// <param name="poet"></param>
+        /// <param name="editingUserId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> CreatePoet(GanjoorPoetViewModel poet, Guid editingUserId)
+        {
+            try
+            {
+                if(await _context.GanjoorPoets.Where(p => p.Nickname == poet.Nickname || p.Name == poet.Name).AnyAsync())
+                {
+                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "conflicting poet");
+                }
+
+                if(await _context.GanjoorCategories.Where(c => c.FullUrl == poet.FullUrl).AnyAsync())
+                {
+                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "conflicting cat");
+                }
+
+                if (await _context.GanjoorPages.Where(p => p.FullUrl == poet.FullUrl).AnyAsync())
+                {
+                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "conflicting page");
+                }
+
+                if(poet.FullUrl.IndexOf('/') != 0)
+                {
+                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "Invalid FullUrl, it must start with /");
+                }
+
+                if(poet.FullUrl.Substring(1).IndexOf('/') >= 0)
+                {
+                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "Invalid FullUrl, it must contain only one /");
+                }
+
+                var id = 1 + await _context.GanjoorPoets.MaxAsync(p => p.Id);
+
+                GanjoorPoet dbPoet = new GanjoorPoet()
+                {
+                    Id = id,
+                    Name = poet.Name,
+                    Nickname = poet.Nickname,
+                    Description = poet.Description,
+                    Published = false
+                };
+
+                _context.GanjoorPoets.Add(dbPoet);
+
+                var poetCatId = 1 + await _context.GanjoorCategories.MaxAsync(c => c.Id);
+
+                GanjoorCat dbCat = new GanjoorCat()
+                {
+                    Id = poetCatId,
+                    PoetId = id,
+                    Title = poet.Nickname,
+                    UrlSlug = poet.FullUrl.Substring(1),
+                    FullUrl = poet.FullUrl
+                };
+                _context.GanjoorCategories.Add(dbCat);
+
+                var poetPageId = 1 + await _context.GanjoorPages.MaxAsync(p => p.Id);
+
+                GanjoorPage dbPage = new GanjoorPage()
+                {
+                    Id = poetPageId,
+                    GanjoorPageType = GanjoorPageType.PoetPage,
+                    Published = false,
+                    PageOrder = -1,
+                    Title = poet.Nickname,
+                    FullTitle = poet.Nickname,
+                    UrlSlug = poet.FullUrl.Substring(1),
+                    FullUrl = poet.FullUrl,
+                    HtmlText = poet.Description,
+                    PoetId = id,
+                    CatId = poetCatId,
+                    PostDate = DateTime.Now
+                };
+
+                _context.GanjoorPages.Add(dbPage);
+
+                GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
+                {
+                    GanjoorPageId = poetPageId,
+                    MadeObsoleteByUserId = editingUserId,
+                    RecordDate = DateTime.Now,
+                    Note = "ایجاد شاعر",
+                    Title = dbPage.Title,
+                    UrlSlug = dbPage.UrlSlug,
+                    HtmlText = dbPage.HtmlText,
+                };
+
+                _context.GanjoorPageSnapshots.Add(snapshot);
+
+                await _context.SaveChangesAsync();
+
+                CleanPoetCache(0);
+
+                return await GetPoetById(id);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
             }
         }
 

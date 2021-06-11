@@ -259,6 +259,14 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> UpdatePoet(GanjoorPoetViewModel poet, Guid editingUserId);
 
         /// <summary>
+        /// create new poet
+        /// </summary>
+        /// <param name="poet"></param>
+        /// <param name="editingUserId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoetCompleteViewModel>> CreatePoet(GanjoorPoetViewModel poet, Guid editingUserId);
+
+        /// <summary>
         /// chaneg poet image
         /// </summary>
         /// <param name="poetId"></param>
