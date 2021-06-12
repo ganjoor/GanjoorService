@@ -673,7 +673,7 @@ namespace RMuseum.Services.Implementation
             try
             {
 
-                var dbPage = await _context.GanjoorPages.Where(p => p.UrlSlug == "donate").SingleAsync();
+                var dbPage = await _context.GanjoorPages.Where(p => p.FullUrl == "/donate").SingleAsync();
 
                 var donations = await _context.GanjoorDonations.OrderByDescending(d => d.Id).ToArrayAsync();
 
