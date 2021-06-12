@@ -1,0 +1,41 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.PoetDelModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "حذف شاعر";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (!string.IsNullOrEmpty(Model.LastResult))
+{
+    <p>
+        @Model.LastResult
+    </p>
+    <p>
+        <a role="button" href="/Admin/Poets" class="actionlink">برگشت</a>
+    </p>
+}
+else
+{
+    <table>
+        <tr>
+            <td colspan="2">
+                آیا از حذف @Model.Poet.Nickname اطمینان دارید؟
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <form method="post">
+                    <input type="submit" value="بله" />
+                </form>
+            </td>
+            <td>
+                <a role="button" href="/Admin/Poet/?id=@Model.Poet.Id" class="actionlink">خیر / برگشت</a>
+            </td>
+        </tr>
+    </table>
+}
+
+

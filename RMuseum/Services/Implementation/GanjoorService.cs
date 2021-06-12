@@ -2715,6 +2715,8 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                var pages = await _context.GanjoorPages.Where(p => p.PoetId == id).ToListAsync();
+                _context.GanjoorPages.RemoveRange(pages);
                 var poet = await _context.GanjoorPoets.Where(p => p.Id == id).SingleAsync();
                 _context.GanjoorPoets.Remove(poet);
                 await _context.SaveChangesAsync();
