@@ -359,7 +359,7 @@ namespace GanjooRazor.Pages
         /// <param name="poem"></param>
         private void _preparePoemExcerpt(GanjoorPoemSummaryViewModel poem)
         {
-            if (poem == null)
+            if (poem == null || poem.Excerpt == null)
             {
                 return;
             }
