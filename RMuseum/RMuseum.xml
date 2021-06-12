@@ -718,6 +718,13 @@
             <param name="poet"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeletePoet(System.Int32)">
+            <summary>
+            delete poet
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoetImage(System.String)">
             <summary>
             get poet image
@@ -7030,7 +7037,7 @@
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoetById(System.Int32)">
             <summary>
-            get poet by id
+            get poet by idCra
             </summary>
             <param name="id"></param>
             <returns></returns>
@@ -7249,7 +7256,7 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.ModifyPage(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
+        <member name="M:RMuseum.Services.IGanjoorService.UpdatePageAsync(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
             <summary>
             modify page
             </summary>
@@ -7258,7 +7265,7 @@
             <param name="pageData"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.UpdatePoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
+        <member name="M:RMuseum.Services.IGanjoorService.UpdatePoetAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
             <summary>
             modify poet
             </summary>
@@ -7266,7 +7273,7 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.CreatePoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
+        <member name="M:RMuseum.Services.IGanjoorService.AddPoetAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
             <summary>
             create new poet
             </summary>
@@ -7274,7 +7281,14 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.ChangePoetImage(System.Int32,System.Guid)">
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePoetAsync(System.Int32)">
+            <summary>
+            delete poet
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ChangePoetImageAsync(System.Int32,System.Guid)">
             <summary>
             chaneg poet image
             </summary>
@@ -8637,7 +8651,7 @@
              <param name="catId"></param>
              <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ModifyPage(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePageAsync(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
             <summary>
             modify page
             </summary>
@@ -8666,7 +8680,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoetAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
             <summary>
             modify poet
             </summary>
@@ -8674,7 +8688,7 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.CreatePoet(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.AddPoetAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
             <summary>
             create new poet
             </summary>
@@ -8682,7 +8696,14 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ChangePoetImage(System.Int32,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoetAsync(System.Int32)">
+            <summary>
+            delete poet
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ChangePoetImageAsync(System.Int32,System.Guid)">
             <summary>
             chaneg poet image
             </summary>
