@@ -153,7 +153,7 @@ namespace RMuseum.Controllers
 
             poet.Id = id;
 
-            var res = await _ganjoorService.UpdatePoet(poet, userId);
+            var res = await _ganjoorService.UpdatePoetAsync(poet, userId);
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -183,7 +183,7 @@ namespace RMuseum.Controllers
             Guid userId =
              new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
-            var res = await _ganjoorService.CreatePoet(poet, userId);
+            var res = await _ganjoorService.AddPoetAsync(poet, userId);
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -191,6 +191,26 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// delete poet
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [Route("poet")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> DeletePoet(int id)
+        {
+            var res = await _ganjoorService.DeletePoetAsync(id);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok();
+        }
 
         /// <summary>
         /// get poet image
@@ -282,7 +302,7 @@ namespace RMuseum.Controllers
                     return BadRequest(image.ExceptionString);
                 }
 
-                var res = await _ganjoorService.ChangePoetImage(id, image.Result.Id);
+                var res = await _ganjoorService.ChangePoetImageAsync(id, image.Result.Id);
 
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
@@ -407,7 +427,7 @@ namespace RMuseum.Controllers
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
             RServiceResult<GanjoorPageCompleteViewModel> res =
-                await _ganjoorService.ModifyPage(id, userId, page);
+                await _ganjoorService.UpdatePageAsync(id, userId, page);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             if (res.Result == null)

@@ -2192,7 +2192,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="editingUserId"></param>
         /// <param name="pageData"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> ModifyPage(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData)
+        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> UpdatePageAsync(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData)
         {
             try
             {
@@ -2527,7 +2527,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="poet"></param>
         /// <param name="editingUserId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> UpdatePoet(GanjoorPoetViewModel poet, Guid editingUserId)
+        public async Task<RServiceResult<bool>> UpdatePoetAsync(GanjoorPoetViewModel poet, Guid editingUserId)
         {
             try
             {
@@ -2538,7 +2538,7 @@ namespace RMuseum.Services.Implementation
                 if (dbPoet.Nickname != poet.Nickname || dbPoetPage.FullUrl != poet.FullUrl)
                 {
                     var resPageEdit =
-                        await ModifyPage
+                        await UpdatePageAsync
                         (
                         dbPoetPage.Id,
                         editingUserId,
@@ -2596,7 +2596,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="poet"></param>
         /// <param name="editingUserId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> CreatePoet(GanjoorPoetViewModel poet, Guid editingUserId)
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> AddPoetAsync(GanjoorPoetViewModel poet, Guid editingUserId)
         {
             try
             {
@@ -2707,12 +2707,32 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// delete poet
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePoetAsync(int id)
+        {
+            try
+            {
+                var poet = await _context.GanjoorPoets.Where(p => p.Id == id).SingleAsync();
+                _context.GanjoorPoets.Remove(poet);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// chaneg poet image
         /// </summary>
         /// <param name="poetId"></param>
         /// <param name="imageId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ChangePoetImage(int poetId, Guid imageId)
+        public async Task<RServiceResult<bool>> ChangePoetImageAsync(int poetId, Guid imageId)
         {
             try
             {

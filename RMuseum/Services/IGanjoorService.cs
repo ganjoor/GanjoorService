@@ -22,7 +22,7 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoetViewModel[]>> GetPoets(bool published, bool includeBio = true);
 
         /// <summary>
-        /// get poet by id
+        /// get poet by idCra
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -249,7 +249,7 @@ namespace RMuseum.Services
         /// <param name="editingUserId"></param>
         /// <param name="pageData"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPageCompleteViewModel>> ModifyPage(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData);
+        Task<RServiceResult<GanjoorPageCompleteViewModel>> UpdatePageAsync(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData);
 
         /// <summary>
         /// modify poet
@@ -257,7 +257,7 @@ namespace RMuseum.Services
         /// <param name="poet"></param>
         /// <param name="editingUserId"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> UpdatePoet(GanjoorPoetViewModel poet, Guid editingUserId);
+        Task<RServiceResult<bool>> UpdatePoetAsync(GanjoorPoetViewModel poet, Guid editingUserId);
 
         /// <summary>
         /// create new poet
@@ -265,7 +265,14 @@ namespace RMuseum.Services
         /// <param name="poet"></param>
         /// <param name="editingUserId"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoetCompleteViewModel>> CreatePoet(GanjoorPoetViewModel poet, Guid editingUserId);
+        Task<RServiceResult<GanjoorPoetCompleteViewModel>> AddPoetAsync(GanjoorPoetViewModel poet, Guid editingUserId);
+
+        /// <summary>
+        /// delete poet
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePoetAsync(int id);
 
         /// <summary>
         /// chaneg poet image
@@ -273,7 +280,7 @@ namespace RMuseum.Services
         /// <param name="poetId"></param>
         /// <param name="imageId"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> ChangePoetImage(int poetId, Guid imageId);
+        Task<RServiceResult<bool>> ChangePoetImageAsync(int poetId, Guid imageId);
 
         /// <summary>
         /// returns metre list (ordered by Rhythm)

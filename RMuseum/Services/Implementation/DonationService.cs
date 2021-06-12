@@ -795,7 +795,7 @@ namespace RMuseum.Services.Implementation
 
                 htmlText += $"</table>{Environment.NewLine}";
 
-                await _ganjoorService.ModifyPage(dbPage.Id, editingUserId,
+                await _ganjoorService.UpdatePageAsync(dbPage.Id, editingUserId,
                     new GanjoorModifyPageViewModel()
                     {
                         Title = dbPage.Title,
