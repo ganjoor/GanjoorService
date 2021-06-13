@@ -1,0 +1,32 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.CatUtilsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "مدیریت بخش";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <p>
+        @Model.LastMessage
+    </p>
+}
+
+
+<table>
+    @foreach (var poem in Model.Cat.Cat.Poems)
+    {
+        <tr>
+            <td>
+                <a href="/Admin/ModifyPage?id=@poem.Id">@poem.Title</a>
+            </td>
+            <td>
+                @poem.Excerpt
+            </td>
+        </tr>
+    }
+</table>
+

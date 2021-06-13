@@ -353,7 +353,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// cat by url
+        /// cat by full url
         /// </summary>
         /// <param name="url"></param>
         /// <param name="poems"></param>

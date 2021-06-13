@@ -45,6 +45,11 @@ namespace GanjooRazor.Areas.Admin.Pages
         public GanjoorMetre[] Rhythms { get; set; }
 
         /// <summary>
+        /// page
+        /// </summary>
+        public GanjoorPageCompleteViewModel PageInformation { get; set; }
+
+        /// <summary>
         /// last message
         /// </summary>
         public string LastMessage { get; set; }
@@ -79,20 +84,20 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, await pageQuery.Content.ReadAsStringAsync());
             }
-            GanjoorPageCompleteViewModel page = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+            PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
             ModifyModel = new GanjoorModifyPageViewModel()
             {
-                Title = page.Title,
-                UrlSlug = page.UrlSlug,
-                HtmlText = page.HtmlText,
+                Title = PageInformation.Title,
+                UrlSlug = PageInformation.UrlSlug,
+                HtmlText = PageInformation.HtmlText,
                 Note = "",
-                SourceName = page.Poem == null ? null : page.Poem.SourceName,
-                SourceUrlSlug = page.Poem == null ? null : page.Poem.SourceUrlSlug,
-                OldTag = page.Poem == null ? null : page.Poem.OldTag,
-                OldTagPageUrl = page.Poem == null ? null : page.Poem.OldTagPageUrl,
-                RhymeLetters = page.Poem == null ? null : page.Poem.RhymeLetters,
-                Rhythm = page.Poem == null ? null : page.Poem.GanjoorMetre == null ? null : page.Poem.GanjoorMetre.Rhythm
+                SourceName = PageInformation.Poem == null ? null : PageInformation.Poem.SourceName,
+                SourceUrlSlug = PageInformation.Poem == null ? null : PageInformation.Poem.SourceUrlSlug,
+                OldTag = PageInformation.Poem == null ? null : PageInformation.Poem.OldTag,
+                OldTagPageUrl = PageInformation.Poem == null ? null : PageInformation.Poem.OldTagPageUrl,
+                RhymeLetters = PageInformation.Poem == null ? null : PageInformation.Poem.RhymeLetters,
+                Rhythm = PageInformation.Poem == null ? null : PageInformation.Poem.GanjoorMetre == null ? null : PageInformation.Poem.GanjoorMetre.Rhythm
             };
 
             return Page();

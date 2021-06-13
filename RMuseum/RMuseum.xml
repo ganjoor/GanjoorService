@@ -749,7 +749,7 @@
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetCatByUrl(System.String,System.Boolean)">
             <summary>
-            cat by url
+            cat by full url
             </summary>
             <param name="url"></param>
             <param name="poems"></param>
