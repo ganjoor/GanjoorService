@@ -2711,15 +2711,35 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> DeletePoetAsync(int id)
+        public RServiceResult<bool> StartDeletePoet(int id)
         {
             try
             {
-                var pages = await _context.GanjoorPages.Where(p => p.PoetId == id).ToListAsync();
-                _context.GanjoorPages.RemoveRange(pages);
-                var poet = await _context.GanjoorPoets.Where(p => p.Id == id).SingleAsync();
-                _context.GanjoorPoets.Remove(poet);
-                await _context.SaveChangesAsync();
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                                {
+                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                    var job = (await jobProgressServiceEF.NewJob($"Deleting Poet {id}", "Query data")).Result;
+                                    try
+                                    {
+                                        var pages = await context.GanjoorPages.Where(p => p.PoetId == id).ToListAsync();
+                                        context.GanjoorPages.RemoveRange(pages);
+                                        var poet = await context.GanjoorPoets.Where(p => p.Id == id).SingleAsync();
+                                        context.GanjoorPoets.Remove(poet);
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 99);
+                                        await context.SaveChangesAsync();
+                                    }
+                                    catch(Exception exp)
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                    }
+
+                                }
+                            });
+               
                 return new RServiceResult<bool>(true);
             }
             catch(Exception exp)

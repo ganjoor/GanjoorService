@@ -718,9 +718,9 @@
             <param name="poet"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.DeletePoet(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.StartDeletePoet(System.Int32)">
             <summary>
-            delete poet
+            starts deleting poet job
             </summary>
             <param name="id"></param>
             <returns></returns>
@@ -7281,7 +7281,7 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.DeletePoetAsync(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.StartDeletePoet(System.Int32)">
             <summary>
             delete poet
             </summary>
@@ -8696,7 +8696,7 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoetAsync(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartDeletePoet(System.Int32)">
             <summary>
             delete poet
             </summary>

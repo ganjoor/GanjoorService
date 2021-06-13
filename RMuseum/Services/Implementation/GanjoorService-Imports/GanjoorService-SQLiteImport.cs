@@ -72,10 +72,11 @@ namespace RMuseum.Services.Implementation
 
                                             var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync();
                                             var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poetId && c.ParentId == null).SingleAsync();
+                                            var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl == cat.FullUrl).SingleAsync();
 
                                             await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Importing");
 
-                                            await _ImportSQLiteCatChildren(context, sqlite, poetId, await sqlite.QuerySingleAsync<int>($"SELECT id FROM cat WHERE parent_id = 0") , cat, poet.Nickname, jobProgressServiceEF, job);
+                                            await _ImportSQLiteCatChildren(context, sqlite, poetId, await sqlite.QuerySingleAsync<int>($"SELECT id FROM cat WHERE parent_id = 0") , cat, poet.Nickname, jobProgressServiceEF, job, catPage.Id);
 
                                             await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                         }
@@ -99,7 +100,7 @@ namespace RMuseum.Services.Implementation
             
             return new RServiceResult<bool>(true);
         }
-        private async Task<string> _ImportSQLiteCatChildren(RMuseumDbContext context, IDbConnection sqlite, int poetId, int sqliteParentCatId, GanjoorCat parentCat, string parentFullTitle, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        private async Task<string> _ImportSQLiteCatChildren(RMuseumDbContext context, IDbConnection sqlite, int poetId, int sqliteParentCatId, GanjoorCat parentCat, string parentFullTitle, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int parentPagId)
         {
             try
             {
@@ -140,7 +141,8 @@ namespace RMuseum.Services.Implementation
                         HtmlText = "",
                         PoetId = poetId,
                         CatId = poetCatId,
-                        PostDate = DateTime.Now
+                        PostDate = DateTime.Now,
+                        ParentId = parentPagId
                     };
 
                     context.GanjoorPages.Add(dbPageCat);
@@ -149,7 +151,7 @@ namespace RMuseum.Services.Implementation
 
                     catHtmlText += $"<p><a href=\"{dbCat.FullUrl}\">{dbCat.Title}</a></p>{Environment.NewLine}";
 
-                    await _ImportSQLiteCatChildren(context, sqlite, poetId, (int)cat.id, dbCat, $"{parentFullTitle} » {dbCat.Title}", jobProgressServiceEF, job);
+                    await _ImportSQLiteCatChildren(context, sqlite, poetId, (int)cat.id, dbCat, $"{parentFullTitle} » {dbCat.Title}", jobProgressServiceEF, job, dbPageCat.Id);
                 }
 
                 var poemId = 1 + await context.GanjoorPoems.MaxAsync(p => p.Id);
@@ -220,7 +222,8 @@ namespace RMuseum.Services.Implementation
                         PoetId = poetId,
                         CatId = parentCat.Id,
                         PoemId = poemId,
-                        PostDate = DateTime.Now
+                        PostDate = DateTime.Now,
+                        ParentId = parentPagId
                     };
 
                     context.GanjoorPages.Add(dbPoemPage);

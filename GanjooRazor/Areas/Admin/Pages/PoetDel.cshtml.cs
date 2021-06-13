@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
@@ -84,7 +84,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     _memoryCache.Remove(cacheKey2);
                 }
 
-                LastResult = "��� ����� ��.";
+                LastResult = "عملیات حذف شاعر شروع شد.";
 
                 return Page();
 

@@ -272,7 +272,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> DeletePoetAsync(int id);
+        RServiceResult<bool> StartDeletePoet(int id);
 
         /// <summary>
         /// chaneg poet image

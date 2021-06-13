@@ -192,7 +192,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// delete poet
+        /// starts deleting poet job
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -201,9 +201,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> DeletePoet(int id)
+        public IActionResult StartDeletePoet(int id)
         {
-            var res = await _ganjoorService.DeletePoetAsync(id);
+            var res = _ganjoorService.StartDeletePoet(id);
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
