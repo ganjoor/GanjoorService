@@ -2731,6 +2731,7 @@ namespace RMuseum.Services.Implementation
                                         context.GanjoorPoets.Remove(poet);
                                         await jobProgressServiceEF.UpdateJob(job.Id, 99);
                                         await context.SaveChangesAsync();
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                     }
                                     catch(Exception exp)
                                     {
