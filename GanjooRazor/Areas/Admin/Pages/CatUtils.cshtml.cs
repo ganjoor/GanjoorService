@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
 
 namespace GanjooRazor.Areas.Admin.Pages
@@ -40,6 +41,11 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public GanjoorPoetCompleteViewModel Cat { get; set; }
 
+        /// <summary>
+        /// cat page
+        /// </summary>
+        public GanjoorPageCompleteViewModel PageInformation { get; set; }
+
 
         /// <summary>
         /// last message
@@ -60,6 +66,12 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             Cat = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
 
+            var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Query["url"]}");
+            if (!pageQuery.IsSuccessStatusCode)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, await pageQuery.Content.ReadAsStringAsync());
+            }
+            PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
             return Page();
         }
