@@ -15,7 +15,20 @@
     </p>
 }
 
+<h2>زیربخش‌ها</h2>
+<table>
+    @foreach (var cat in Model.Cat.Cat.Children)
+    {
+        <tr>
+            <td>
+                <a href="/Admin/CatUtils?url=@cat.FullUrl">@cat.Title</a>
+            </td>
+        </tr>
+    }
+</table>
 
+
+<h2>اشعار بخش</h2>
 <table>
     @foreach (var poem in Model.Cat.Cat.Poems)
     {
