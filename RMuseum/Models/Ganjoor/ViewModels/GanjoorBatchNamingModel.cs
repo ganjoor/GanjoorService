@@ -23,5 +23,10 @@
         /// </summary>
         /// <example>.-</example>
         public string RemoveSetOfCharacters { get; set; }
+
+        /// <summary>
+        /// simulate naming
+        /// </summary>
+        public bool Simulate { get; set; }
     }
 }

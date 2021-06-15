@@ -387,23 +387,22 @@ namespace RMuseum.Controllers
         /// batch rename cat poems
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="simulate"></param>
         /// <param name="model"></param>
         /// <returns></returns>
 
         [HttpPut]
-        [Route("cat/renamepoems/{id}/{simulate}")]
+        [Route("cat/renamepoems/{id}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> BatchRenameCatPoemTitles(int id, bool simulate, [FromBody]GanjoorBatchNamingModel model)
+        public async Task<IActionResult> BatchRenameCatPoemTitles(int id, [FromBody]GanjoorBatchNamingModel model)
         {
             Guid userId =
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
             RServiceResult<string[]> res =
-                await _ganjoorService.BatchRenameCatPoemTitles(id, simulate, model, userId);
+                await _ganjoorService.BatchRenameCatPoemTitles(id, model, userId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

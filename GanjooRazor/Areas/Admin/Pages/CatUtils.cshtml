@@ -15,35 +15,56 @@
     </p>
 }
 
-<h2>زیربخش‌ها</h2>
-<table>
-    @foreach (var cat in Model.Cat.Cat.Children)
-    {
-        <tr>
-            <td>
-                <a href="/Admin/CatUtils?url=@cat.FullUrl">@cat.Title</a>
-            </td>
-        </tr>
-    }
-</table>
+@if (Model.Cat != null)
+{
+    <h2>زیربخش‌ها</h2>
+    <table>
+        @foreach (var cat in Model.Cat.Cat.Children)
+        {
+            <tr>
+                <td>
+                    <a href="/Admin/CatUtils?url=@cat.FullUrl">@cat.Title</a>
+                </td>
+            </tr>
+        }
+    </table>
 
 
-<h2>اشعار بخش</h2>
-<table>
-    @foreach (var poem in Model.Cat.Cat.Poems)
-    {
-        <tr>
-            <td>
-                <a href="/Admin/ModifyPage?id=@poem.Id">@poem.Title</a>
-            </td>
-            <td>
-                @poem.Excerpt
-            </td>
-        </tr>
-    }
-</table>
+    <h2>اشعار بخش</h2>
+    <table>
+        @foreach (var poem in Model.Cat.Cat.Poems)
+        {
+            <tr>
+                <td>
+                    <a href="/Admin/ModifyPage?id=@poem.Id">@poem.Title</a>
+                </td>
+                <td>
+                    @poem.Excerpt
+                </td>
+            </tr>
+        }
+    </table>
+
+    <a href="/Admin/ModifyPage?id=@Model.PageInformation.Id">ویرایش صفحهٔ متناظر</a>
+}
+
 
 <h2>تغییر عنوان گروهی</h2>
+
+@if (Model.RenamingOutput != null)
+{
+    <table>
+        @foreach (var item in Model.RenamingOutput)
+        {
+            <tr>
+                <td>
+                    @item
+                </td>
+            </tr>
+        }
+    </table>
+}
+
 <form method="post">
     <table>
         <tr>
@@ -67,7 +88,15 @@
                 حذف الگوی قبلی از عنوان
             </td>
             <td>
-                <input asp-for="NamingModel.RemoveSetOfCharacters" />
+                <input asp-for="NamingModel.RemovePreviousPattern" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                شبیه‌سازی
+            </td>
+            <td>
+                <input asp-for="NamingModel.Simulate" />
             </td>
         </tr>
         <tr>
@@ -78,5 +107,5 @@
     </table>
 </form>
 
-<a href="/Admin/ModifyPage?id=@Model.PageInformation.Id">ویرایش صفحهٔ متناظر</a>
+
 

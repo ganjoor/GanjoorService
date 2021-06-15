@@ -2775,11 +2775,10 @@ namespace RMuseum.Services.Implementation
         /// batch rename
         /// </summary>
         /// <param name="catId"></param>
-        /// <param name="simulate"></param>
         /// <param name="model"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<string[]>> BatchRenameCatPoemTitles(int catId, bool simulate, GanjoorBatchNamingModel model, Guid userId)
+        public async Task<RServiceResult<string[]>> BatchRenameCatPoemTitles(int catId, GanjoorBatchNamingModel model, Guid userId)
         {
             try
             {
@@ -2799,7 +2798,8 @@ namespace RMuseum.Services.Implementation
                                 GanjoorPageId = poem.Id,
                                 MadeObsoleteByUserId = userId,
                                 Title = poem.Title,
-                                Note = "تغییر نام گروهی اشعار بخش"
+                                Note = "تغییر نام گروهی اشعار بخش",
+                                RecordDate = DateTime.Now
                             }
                             );
                         int index = poem.Title.IndexOfAny(numbers);
@@ -2831,10 +2831,18 @@ namespace RMuseum.Services.Implementation
 
                 for (int i = 0; i < poems.Count; i++)
                 {
-                    poems[i].Title = $"{model.StartWithNotIncludingSpaces} {(i + 1).ToPersianNumbers()} - {poems[i].Title}";
+                    if(poems[i].Title.Length > 0)
+                    {
+                        poems[i].Title = $"{model.StartWithNotIncludingSpaces} {(i + 1).ToPersianNumbers()} - {poems[i].Title}";
+                    }
+                    else
+                    {
+                        poems[i].Title = $"{model.StartWithNotIncludingSpaces} {(i + 1).ToPersianNumbers()}";
+                    }
+                    
                 }
 
-                if(!simulate)
+                if(!model.Simulate)
                 {
                     foreach (var poem in poems)
                     {

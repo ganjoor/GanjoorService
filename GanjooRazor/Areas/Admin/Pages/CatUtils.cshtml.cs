@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -53,13 +55,14 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public string LastMessage { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        /// <summary>
+        /// renaming output
+        /// </summary>
+        public string[] RenamingOutput { get; set; }
+
+        private async Task GetInformationAsync()
         {
-            LastMessage = Request.Query["edit"] == "true" ? "ویرایش انجام شد." : "";
-            if (string.IsNullOrEmpty(Request.Query["url"]))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "نشانی صفحه مشخص نیست.");
-            }
+           
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat?url={Request.Query["url"]}&poems=true");
 
@@ -68,19 +71,48 @@ namespace GanjooRazor.Areas.Admin.Pages
             Cat = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
 
             var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Query["url"]}");
-            if (!pageQuery.IsSuccessStatusCode)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, await pageQuery.Content.ReadAsStringAsync());
-            }
-            PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+            pageQuery.EnsureSuccessStatusCode();
 
+            PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+        }
+
+        public async Task<IActionResult> OnGetAsync()
+        {
+            LastMessage = Request.Query["edit"] == "true" ? "ویرایش انجام شد." : "";
+
+            if (string.IsNullOrEmpty(Request.Query["url"]))
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "نشانی صفحه مشخص نیست.");
+            }
+
+            await GetInformationAsync();
 
             NamingModel = new GanjoorBatchNamingModel()
             {
                 StartWithNotIncludingSpaces = "شمارهٔ ",
                 RemovePreviousPattern = true,
-                RemoveSetOfCharacters = ".-"
+                RemoveSetOfCharacters = ".-",
+                Simulate = true
             };
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(GanjoorBatchNamingModel NamingModel)
+        {
+            await GetInformationAsync();
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
+
+                HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/renamepoems/{Cat.Cat.Id}", new StringContent(JsonConvert.SerializeObject(NamingModel), Encoding.UTF8, "application/json"));
+                response.EnsureSuccessStatusCode();
+
+                RenamingOutput = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
+
+                NamingModel.Simulate = false;
+            }
 
             return Page();
         }
