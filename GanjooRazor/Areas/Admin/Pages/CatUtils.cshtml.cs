@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -46,6 +44,9 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
 
+        [BindProperty]
+        public GanjoorBatchNamingModel NamingModel { get; set; }
+
 
         /// <summary>
         /// last message
@@ -72,6 +73,14 @@ namespace GanjooRazor.Areas.Admin.Pages
                 return StatusCode(StatusCodes.Status500InternalServerError, await pageQuery.Content.ReadAsStringAsync());
             }
             PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+
+            NamingModel = new GanjoorBatchNamingModel()
+            {
+                StartWithNotIncludingSpaces = "شمارهٔ ",
+                RemovePreviousPattern = true,
+                RemoveSetOfCharacters = ".-"
+            };
 
             return Page();
         }

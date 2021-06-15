@@ -4900,6 +4900,30 @@
             Non-poem paragraph
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel">
+            <summary>
+            Ganjoor Batch Naming Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel.StartWithNotIncludingSpaces">
+            <summary>
+            Start with (not including required spaces)
+            </summary>
+            <example>
+            شمارهٔ 
+            </example>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel.RemovePreviousPattern">
+            <summary>
+            remove previous pattern from start until any numbers
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel.RemoveSetOfCharacters">
+            <summary>
+            remove set of characters other than spaces from beginning and end
+            </summary>
+            <example>.-</example>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel">
             <summary>
             cat view model
@@ -7380,6 +7404,16 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.BatchRenameCatPoemTitles(System.Int32,System.Boolean,RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel,System.Guid)">
+            <summary>
+            batch rename
+            </summary>
+            <param name="catId"></param>
+            <param name="simulate"></param>
+            <param name="model"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -8709,6 +8743,16 @@
             </summary>
             <param name="poetId"></param>
             <param name="imageId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BatchRenameCatPoemTitles(System.Int32,System.Boolean,RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel,System.Guid)">
+            <summary>
+            batch rename
+            </summary>
+            <param name="catId"></param>
+            <param name="simulate"></param>
+            <param name="model"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.PreparePlainText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">

@@ -2772,6 +2772,91 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// batch rename
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="simulate"></param>
+        /// <param name="model"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<string[]>> BatchRenameCatPoemTitles(int catId, bool simulate, GanjoorBatchNamingModel model, Guid userId)
+        {
+            try
+            {
+                var poems = await _context.GanjoorPoems.Where(p => p.CatId == catId).OrderBy(p => p.Id).ToListAsync();
+                if (poems.Count == 0)
+                    return new RServiceResult<string[]>(new string[] { });
+
+                if(model.RemovePreviousPattern)
+                {
+                    char[] numbers = "0123456789۰۱۲۳۴۵۶۷۸۹".ToArray();
+                    foreach(var poem in poems)
+                    {
+                        _context.GanjoorPageSnapshots.Add
+                            (
+                            new GanjoorPageSnapshot()
+                            {
+                                GanjoorPageId = poem.Id,
+                                MadeObsoleteByUserId = userId,
+                                Title = poem.Title,
+                                Note = "تغییر نام گروهی اشعار بخش"
+                            }
+                            );
+                        int index = poem.Title.IndexOfAny(numbers);
+                        if (index != 0)
+                        {
+                            while ((index + 1) < poem.Title.Length)
+                            {
+                                if (numbers.Contains(poem.Title[index + 1]))
+                                    index++;
+                                else
+                                    break;
+                            }
+                            poem.Title = poem.Title[(index + 1)..].Trim();
+                            if (poem.Title.IndexOf('-') == 0)
+                            {
+                                poem.Title = poem.Title[1..].Trim();
+                            }
+                        }
+
+                        if (!string.IsNullOrEmpty(model.RemoveSetOfCharacters))
+                        {
+                            foreach (var c in model.RemoveSetOfCharacters)
+                            {
+                                poem.Title = poem.Title.Replace($"{c}", "");
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < poems.Count; i++)
+                {
+                    poems[i].Title = $"{model.StartWithNotIncludingSpaces} {(i + 1).ToPersianNumbers()} - {poems[i].Title}";
+                }
+
+                if(!simulate)
+                {
+                    foreach (var poem in poems)
+                    {
+                        var page = await _context.GanjoorPages.Where(p => p.Id == poem.Id).SingleAsync();
+                        page.Title = poem.Title;
+                        _context.GanjoorPages.Update(page);
+                    }
+
+                    _context.GanjoorPoems.UpdateRange(poems);
+
+                    await _context.SaveChangesAsync();
+                }
+
+                return new RServiceResult<string[]>(poems.Select(p => p.Title).ToArray());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<string[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// make plain text
         /// </summary>
         /// <param name="verses"></param>

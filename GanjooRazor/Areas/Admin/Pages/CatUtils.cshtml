@@ -43,5 +43,40 @@
     }
 </table>
 
+<h2>تغییر عنوان گروهی</h2>
+<form method="post">
+    <table>
+        <tr>
+            <td>
+                شروع عنوان:
+            </td>
+            <td>
+                <input asp-for="NamingModel.StartWithNotIncludingSpaces" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                کاراکترهای حذفی از عنوان
+            </td>
+            <td>
+                <input asp-for="NamingModel.RemoveSetOfCharacters" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                حذف الگوی قبلی از عنوان
+            </td>
+            <td>
+                <input asp-for="NamingModel.RemoveSetOfCharacters" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="تغییر نام گروهی" />
+            </td>
+        </tr>
+    </table>
+</form>
+
 <a href="/Admin/ModifyPage?id=@Model.PageInformation.Id">ویرایش صفحهٔ متناظر</a>
 

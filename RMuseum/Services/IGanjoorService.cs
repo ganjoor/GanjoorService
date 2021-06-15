@@ -367,5 +367,15 @@ namespace RMuseum.Services
         /// <param name="catId"></param>
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> Search(PagingParameterModel paging, string term, int? poetId, int? catId);
+
+        /// <summary>
+        /// batch rename
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="simulate"></param>
+        /// <param name="model"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<string[]>> BatchRenameCatPoemTitles(int catId, bool simulate, GanjoorBatchNamingModel model, Guid userId);
     }
 }
