@@ -283,14 +283,17 @@ namespace RMuseum.Services.Implementation
                          FullUrl = c.FullUrl
                      }
                      ).AsNoTracking().ToListAsync(),
-                    Poems = poems ? await _context.GanjoorPoems.Where(p => p.CatId == cat.Id).OrderBy(p => p.Id).Select
+                    Poems = poems ? await _context.GanjoorPoems.Include(p => p.GanjoorMetre)
+                    .Where(p => p.CatId == cat.Id).OrderBy(p => p.Id).Select
                      (
                          p => new GanjoorPoemSummaryViewModel()
                          {
                              Id = p.Id,
                              Title = p.Title,
                              UrlSlug = p.UrlSlug,
-                             Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
+                             Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text,
+                             Rhythm = p.GanjoorMetre.Rhythm,
+                             RhymeLetters = p.RhymeLetters
                          }
                      ).AsNoTracking().ToListAsync()
                      :

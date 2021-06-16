@@ -32,6 +32,20 @@
 
     <h2>اشعار بخش</h2>
     <table>
+        <tr>
+            <th>
+                عنوان
+            </th>
+            <th>
+                ابتدا
+            </th>
+            <th>
+                حروف قافیه
+            </th>
+            <th>
+                وزن
+            </th>
+        </tr>
         @foreach (var poem in Model.Cat.Cat.Poems)
         {
             <tr>
@@ -40,6 +54,12 @@
                 </td>
                 <td>
                     @poem.Excerpt
+                </td>
+                <td>
+                    @poem.RhymeLetters
+                </td>
+                <td>
+                    @poem.Rhythm
                 </td>
             </tr>
         }

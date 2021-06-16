@@ -5454,6 +5454,17 @@
             excerpt text
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.Rhythm">
+            <summary>
+            Rythm
+            </summary>
+            <example>مفاعیلن مفاعیلن فعولن</example>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.RhymeLetters">
+            <summary>
+            rhyme letters
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel">
             <summary>
             Poet Complete Information 
