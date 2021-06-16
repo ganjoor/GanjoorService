@@ -2867,6 +2867,20 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        private async Task<RServiceResult<GanjooRhymeAnalysisResult>> _FindPoemRhyme(int id, RMuseumDbContext context)
+        {
+            try
+            {
+                return new RServiceResult<GanjooRhymeAnalysisResult>(
+                    LanguageUtils.FindRhyme(await context.GanjoorVerses.Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync())
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjooRhymeAnalysisResult>(null, exp.ToString());
+            }
+        }
+
         /// <summary>
         /// find poem rhyme
         /// </summary>
@@ -2874,15 +2888,67 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjooRhymeAnalysisResult>> FindPoemRhyme(int id)
         {
+            return await _FindPoemRhyme(id, _context);
+        }
+
+        private async Task _FindCategoryPoemsRhymesInternal(int catId, bool retag)
+        {
+            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+            {
+                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                var job = (await jobProgressServiceEF.NewJob($"FindCategoryPoemsRhymes Cat {catId}", "Query data")).Result;
+                try
+                {
+                    var poems = await context.GanjoorPoems.Where(p => p.CatId == catId).ToListAsync();
+
+                    int i = 0;
+                    foreach (var poem in poems)
+                    {
+                        if (retag || string.IsNullOrEmpty(poem.RhymeLetters))
+                        {
+                            await jobProgressServiceEF.UpdateJob(job.Id, i++);
+                            var res = await _FindPoemRhyme(poem.Id, context);
+                            if (!string.IsNullOrEmpty(res.Result.Rhyme))
+                            {
+                                poem.RhymeLetters = res.Result.Rhyme;
+                                context.GanjoorPoems.Update(poem);
+                            }
+
+                        }
+                    }
+                    await jobProgressServiceEF.UpdateJob(job.Id, 99);
+                    await context.SaveChangesAsync();
+                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                }
+                catch (Exception exp)
+                {
+                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                }
+            }
+        }
+
+        /// <summary>
+        /// find category poem rhymes
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="retag"></param>
+        /// <returns></returns>
+        public RServiceResult<bool> FindCategoryPoemsRhymes(int catId, bool retag)
+        {
             try
             {
-                return new RServiceResult<GanjooRhymeAnalysisResult>(
-                    LanguageUtils.FindRhyme(await _context.GanjoorVerses.Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync())
-                    );
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                await _FindCategoryPoemsRhymesInternal(catId, retag);
+                            });
+
+                return new RServiceResult<bool>(true);
             }
             catch(Exception exp)
             {
-                return new RServiceResult<GanjooRhymeAnalysisResult>(null, exp.ToString());
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 

@@ -409,6 +409,29 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// starts assigning poem rhymes
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="retag"></param>
+        /// <returns></returns>
+
+        [HttpPut]
+        [Route("cat/startassigningrhymes/{id}/{retag}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public  IActionResult FindCategoryPoemsRhymes(int id, bool retag)
+        {
+
+            RServiceResult<bool> res =
+                _ganjoorService.FindCategoryPoemsRhymes(id, retag);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// page by url
         /// </summary>
         /// <param name="url"></param>
@@ -1093,6 +1116,9 @@ namespace RMuseum.Controllers
                 return Ok();
             return BadRequest(res.ExceptionString);
         }
+
+       
+
 
         /// <summary>
         /// imports data from ganjoor MySql database
