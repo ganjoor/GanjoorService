@@ -725,6 +725,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoetImageInPng(System.String)">
+            <summary>
+            get poet image with png ext
+            </summary>
+            <param name="url">sample: hafez</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoetImage(System.String)">
             <summary>
             get poet image

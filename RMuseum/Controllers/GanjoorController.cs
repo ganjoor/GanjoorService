@@ -212,7 +212,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// get poet image
+        /// get poet image with png ext
         /// </summary>
         /// <param name="url">sample: hafez</param>
         /// <returns></returns>
@@ -220,10 +220,24 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoetImageInPng(string url)
+        {
+            return await GetPoetImage(url.Replace(".png", ".gif"));
+        }
+
+        /// <summary>
+        /// get poet image
+        /// </summary>
+        /// <param name="url">sample: hafez</param>
+        /// <returns></returns>
+        [HttpGet("poet/image/{url}.gif")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetPoetImage(string url)
         {
 
-            var cacheKey = $"poet/image/{url}.png";
+            var cacheKey = $"poet/image/{url}.gif";
             var cacheKeyForLastModified = $"{cacheKey}/lastModified";
             if (!_memoryCache.TryGetValue(cacheKey, out string imagePath) || !_memoryCache.TryGetValue(cacheKeyForLastModified, out DateTime lastModified))
             {
@@ -269,7 +283,7 @@ namespace RMuseum.Controllers
                 return StatusCode(StatusCodes.Status304NotModified);
             }
 
-            return new FileStreamResult(new FileStream(imagePath, FileMode.Open, FileAccess.Read), "image/png");
+            return new FileStreamResult(new FileStream(imagePath, FileMode.Open, FileAccess.Read), "image/gif");
 
         }
 
