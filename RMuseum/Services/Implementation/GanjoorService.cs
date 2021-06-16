@@ -2865,6 +2865,25 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// find poem rhyme
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjooRhymeAnalysisResult>> FindPoemRhyme(int id)
+        {
+            try
+            {
+                return new RServiceResult<GanjooRhymeAnalysisResult>(
+                    LanguageUtils.FindRhyme(await _context.GanjoorVerses.Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync())
+                    );
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjooRhymeAnalysisResult>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// make plain text
         /// </summary>
         /// <param name="verses"></param>

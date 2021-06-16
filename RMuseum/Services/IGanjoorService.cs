@@ -376,5 +376,12 @@ namespace RMuseum.Services
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<RServiceResult<string[]>> BatchRenameCatPoemTitles(int catId, GanjoorBatchNamingModel model, Guid userId);
+
+        /// <summary>
+        /// find poem rhyme
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjooRhymeAnalysisResult>> FindPoemRhyme(int id);
     }
 }

@@ -1218,7 +1218,28 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
-       
+        /// <summary>
+        /// find poem rhyme
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/analysisrhyme/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjooRhymeAnalysisResult))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> FindPoemRhyme(int id)
+        {
+            var res = await _ganjoorService.FindPoemRhyme(id);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok(res.Result);
+        }
+
+
 
         /// <summary>
         /// examine site pages for broken links

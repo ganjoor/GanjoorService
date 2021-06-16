@@ -1009,6 +1009,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.FindPoemRhyme(System.Int32)">
+            <summary>
+            find poem rhyme
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.HealthCheckContents">
             <summary>
             examine site pages for broken links
@@ -5137,6 +5144,21 @@
             this can be used by clients
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjooRhymeAnalysisResult">
+            <summary>
+            Rhyme Analysis Result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjooRhymeAnalysisResult.Rhyme">
+            <summary>
+            rhyme
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjooRhymeAnalysisResult.FailVerse">
+            <summary>
+            the verse analysis stopped at
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel">
             <summary>
             modify page view model
@@ -7426,6 +7448,13 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.FindPoemRhyme(System.Int32)">
+            <summary>
+            find poem rhyme
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -8766,6 +8795,13 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindPoemRhyme(System.Int32)">
+            <summary>
+            find poem rhyme
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.PreparePlainText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
             <summary>
             make plain text
@@ -8878,6 +8914,14 @@
             make text searchable
             </summary>
             <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.LanguageUtils.FindRhyme(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse},System.Boolean)">
+            <summary>
+            find rhyme
+            </summary>
+            <param name="verses"></param>
+            <param name="secondPhase"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.MusicCatalogueService">
