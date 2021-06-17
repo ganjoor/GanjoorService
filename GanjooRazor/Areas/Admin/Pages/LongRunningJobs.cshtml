@@ -1,0 +1,31 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.LongRunningJobsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "کارهای جاری";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table>
+    <tr>
+        <th>کار</th>
+        <th>شروع</th>
+        <th>گام</th>
+        <th>پیشرفت</th>
+        <th>موفق</th>
+        <th>خطا</th>
+    </tr>
+    @foreach (var job in Model.Jobs)
+    {
+        <tr>
+            <td>@job.Name</td>
+            <td>@job.StartTime</td>
+            <td>@job.Step</td>
+            <td>@job.Progress</td>
+            <td>@job.Succeeded</td>
+            <td>@job.Exception</td>
+        </tr>
+    }
+</table>
