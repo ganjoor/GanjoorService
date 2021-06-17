@@ -3092,18 +3092,20 @@ namespace RMuseum.Services.Implementation
                                     {
                                         poem.GanjoorMetreId = metres.Where(m => m.Rhythm == res.Result).Single().Id;
                                         context.GanjoorPoems.Update(poem);
+                                        await context.SaveChangesAsync();
                                     }
                                 }
                                 else
                                 {
                                     poem.GanjoorMetreId = preDeterminedMetre.Id;
                                     context.GanjoorPoems.Update(poem);
+                                    await context.SaveChangesAsync();
                                 }
                             }
                         }
                     }
                     await jobProgressServiceEF.UpdateJob(job.Id, 99);
-                    await context.SaveChangesAsync();
+                    
                     await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                 }
                 catch (Exception exp)
