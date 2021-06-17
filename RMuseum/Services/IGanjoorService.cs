@@ -391,5 +391,12 @@ namespace RMuseum.Services
         /// <param name="retag"></param>
         /// <returns></returns>
         RServiceResult<bool> FindCategoryPoemsRhymes(int catId, bool retag);
+
+        /// <summary>
+        /// find poem rhythm
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<string>> FindPoemRhythm(int id);
     }
 }

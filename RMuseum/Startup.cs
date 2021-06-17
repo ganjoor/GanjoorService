@@ -116,6 +116,8 @@ namespace RMuseum
 
             services.AddMemoryCache();
 
+            services.AddHttpClient();
+
             services.Configure<FormOptions>(x =>
             {
                 x.ValueLengthLimit = int.MaxValue;

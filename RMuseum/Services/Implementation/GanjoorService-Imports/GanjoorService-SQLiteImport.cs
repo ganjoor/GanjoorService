@@ -34,7 +34,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                string dir = Path.Combine($"{Configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteImports");
+                string dir = Path.Combine($"{_configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteImports");
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 

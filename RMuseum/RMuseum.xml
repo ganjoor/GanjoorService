@@ -1031,6 +1031,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.FindPoemRhythm(System.Int32)">
+            <summary>
+            analysis poem to find its prosody information
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.HealthCheckContents">
             <summary>
             examine site pages for broken links
@@ -7489,6 +7496,13 @@
             <param name="retag"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.FindPoemRhythm(System.Int32)">
+            <summary>
+            find poem rhythm
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -8836,6 +8850,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindPoemRhythm(System.Int32)">
+            <summary>
+            find poem rhythm
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhymes(System.Int32,System.Boolean)">
             <summary>
             find category poem rhymes
@@ -8868,7 +8889,7 @@
             Database Context
             </summary>
         </member>
-        <member name="P:RMuseum.Services.Implementation.GanjoorService.Configuration">
+        <member name="P:RMuseum.Services.Implementation.GanjoorService._configuration">
             <summary>
             Configuration
             </summary>
@@ -8898,7 +8919,12 @@
             IMemoryCache
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
+        <member name="F:RMuseum.Services.Implementation.GanjoorService._httpClient">
+            <summary>
+            http client
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache,System.Net.Http.HttpClient)">
             <summary>
             constructor
             </summary>
@@ -8909,6 +8935,7 @@
             <param name="notificationService"></param>
             <param name="imageFileService"></param>
             <param name="memoryCache"></param>
+            <param name="httpClient"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync">
             <summary>

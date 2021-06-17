@@ -18,6 +18,8 @@ using RMuseum.Models.Artifact;
 using RSecurityBackend.Services.Implementation;
 using DNTPersianUtils.Core;
 using Microsoft.Extensions.Caching.Memory;
+using System.Net.Http;
+using System.Web;
 
 namespace RMuseum.Services.Implementation
 {
@@ -2928,6 +2930,114 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// find poem rhythm
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<string>> FindPoemRhythm(int id)
+        {
+            try
+            {
+                var metres = (await GetGanjoorMetres()).Result.Select(m => m.Rhythm).ToArray();
+                return await _FindPoemRhythm(id, _context, metres);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<string>(null, exp.ToString());
+            }
+        }
+        private async Task<RServiceResult<string>> _FindPoemRhythm(int id, RMuseumDbContext context, string[] metres)
+        {
+            try
+            {
+                var verses = await context.GanjoorVerses.Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync();
+
+                Dictionary<string, int> rhytmCounter = new Dictionary<string, int>();
+
+                foreach(var verse in verses)
+                {
+                    try
+                    {
+                        var response = await _httpClient.GetAsync($"http://sorud.info/?Text={HttpUtility.UrlEncode(LanguageUtils.MakeTextSearchable(verse.Text))}");
+                        response.EnsureSuccessStatusCode();
+                        string result = await response.Content.ReadAsStringAsync();
+                        if (result.IndexOf("آهنگِ همه‌ی بندها شناسایی نشد.") != -1)
+                        {
+                            continue;
+                        }
+                        int nVaznIndex = result.IndexOf("ctl00_MainContent_lblMetricBottom");
+                        if (nVaznIndex == -1)
+                        {
+                            continue;
+                        }
+                        nVaznIndex += 2;
+                        int nQuote1Index = result.IndexOf('\'', nVaznIndex);
+                        if (nQuote1Index == -1)
+                        {
+                            continue;
+                        }
+
+                        int nQuote2Index = result.IndexOf('\'', nQuote1Index + 1);
+                        if (nQuote2Index == -1)
+                        {
+                            continue;
+                        }
+
+                        string strRokn = result.Substring(nQuote1Index + 1, nQuote2Index - nQuote1Index - 1);
+
+                        int nSpanClose = result.IndexOf("</span>", nQuote2Index + 1);
+
+                        if (nSpanClose == -1)
+                        {
+                            continue;
+                        }
+
+                        int nFQ1 = result.IndexOf('«', nQuote2Index + 1);
+
+                        if (nFQ1 == -1)
+                        {
+                            continue;
+                        }
+
+
+                        string rhythm = metres.Where(m => m.IndexOf(strRokn) == 0).SingleOrDefault();
+
+                        if (string.IsNullOrEmpty(rhythm))
+                            continue;
+
+                        if (rhythm == "فاعلاتن فاعلن فاعلاتن فاعلن")
+                            rhythm = "فاعلاتن فاعلاتن فاعلاتن فاعلن (رمل مثمن محذوف)";
+
+                        if (rhytmCounter.TryGetValue(rhythm, out int count))
+                        {
+                            count++;
+                            if(count > 10 || (count * 100.0 / verses.Count > 60))
+                            {
+                                return new RServiceResult<string>(rhythm);
+                            }
+                            
+                        }
+                        else
+                        {
+                            count = 1;
+                        }
+                        rhytmCounter[rhythm] = count;
+                    }
+                    catch
+                    {
+                        //continue
+                    }
+                }
+
+                return new RServiceResult<string>("");
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<string>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// find category poem rhymes
         /// </summary>
         /// <param name="catId"></param>
@@ -3138,7 +3248,7 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// Configuration
         /// </summary>
-        protected IConfiguration Configuration { get; }
+        protected IConfiguration _configuration { get; }
 
         /// <summary>
         /// Background Task Queue Instance
@@ -3166,7 +3276,10 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         protected readonly IMemoryCache _memoryCache;
 
-
+        /// <summary>
+        /// http client
+        /// </summary>
+        protected readonly HttpClient _httpClient;
 
         /// <summary>
         /// constructor
@@ -3178,7 +3291,8 @@ namespace RMuseum.Services.Implementation
         /// <param name="notificationService"></param>
         /// <param name="imageFileService"></param>
         /// <param name="memoryCache"></param>
-        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService appUserService, IRNotificationService notificationService, IImageFileService imageFileService, IMemoryCache memoryCache)
+        /// <param name="httpClient"></param>
+        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService appUserService, IRNotificationService notificationService, IImageFileService imageFileService, IMemoryCache memoryCache, HttpClient httpClient)
         {
             _context = context;
             _backgroundTaskQueue = backgroundTaskQueue;
@@ -3186,7 +3300,8 @@ namespace RMuseum.Services.Implementation
             _notificationService = notificationService;
             _imageFileService = imageFileService;
             _memoryCache = memoryCache;
-            Configuration = configuration;
+            _configuration = configuration;
+            _httpClient = httpClient;
         }
     }
 }
