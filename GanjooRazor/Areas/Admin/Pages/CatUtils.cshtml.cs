@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 
 namespace GanjooRazor.Areas.Admin.Pages
@@ -51,6 +52,12 @@ namespace GanjooRazor.Areas.Admin.Pages
 
 
         /// <summary>
+        /// rythm
+        /// </summary>
+        public GanjoorMetre[] Rhythms { get; set; }
+
+
+        /// <summary>
         /// last message
         /// </summary>
         public string LastMessage { get; set; }
@@ -74,6 +81,12 @@ namespace GanjooRazor.Areas.Admin.Pages
             pageQuery.EnsureSuccessStatusCode();
 
             PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+            var rhythmResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
+
+            rhythmResponse.EnsureSuccessStatusCode();
+
+            Rhythms = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -130,5 +143,21 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             return new OkObjectResult(false);
         }
+
+        public async Task<IActionResult> OnPostStartRhythmAnalysisAsync(int id, string rhythm)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/startassigningrhythms/{id}/{false}?rhythm={rhythm}", null);
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
+        
     }
 }

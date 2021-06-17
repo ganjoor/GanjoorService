@@ -67,11 +67,22 @@
 
     <p><a href="/Admin/ModifyPage?id=@Model.PageInformation.Id">ویرایش صفحهٔ متناظر</a></p>
 
-
-
-    <p><a role="button" onclick="tagCatWithPoems(@Model.Cat.Cat.Id)" class="actionlink">شروع قافیه‌یابی</a></p>
+    <p><a role="button" onclick="tagCatWithRhymes(@Model.Cat.Cat.Id)" class="actionlink">شروع قافیه‌یابی</a></p>
 
     <table>
+        <tr>
+            <td colspan="2">
+                <input type="text" name="rhythm" id="rhythm" list="rythms" size="50" />
+                <datalist id="rythms">
+                    @if (Model.Rhythms != null)
+                        @foreach (var rhythm in Model.Rhythms)
+                        {
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
+                </datalist>
+                <p><a role="button" onclick="tagCatWithRhythms(@Model.Cat.Cat.Id)" class="actionlink">شروع وزن‌یابی یا وزن‌گذاری</a></p>
+            </td>
+        </tr>
         <tr>
             <td>شناسه:</td>
             <td>@Model.Cat.Cat.Id</td>

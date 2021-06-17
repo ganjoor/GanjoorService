@@ -81,12 +81,12 @@
                 <span class="inputlabel">وزن (شعر): </span>
             </td>
             <td>
-                <input asp-for="ModifyModel.Rhythm" list="rythms" />
+                <input asp-for="ModifyModel.Rhythm" size="50" list="rythms" />
                 <datalist id="rythms">
                     @if (Model.Rhythms != null)
-                        @foreach (var rythm in Model.Rhythms)
+                        @foreach (var rhythm in Model.Rhythms)
                         {
-                            <option value="@rythm.Rhythm">@rythm.Rhythm</option>
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
                         }
                 </datalist>
 

@@ -76,7 +76,7 @@
             });
         }
 
-        function tagCatWithPoems(catId) {
+        function tagCatWithRhymes(catId) {
             if (!confirm('آیا از شروع کار قافیه‌یابی اطمینان دارید؟'))
                 return;
 
@@ -97,6 +97,30 @@
 
             });
         }
+
+        function tagCatWithRhythms(catId) {
+            if (!confirm('آیا از شروع کار وزن‌یابی یا وزن‌گذاری اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=StartRhythmAnalysis';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    id: catId,
+                    rhythm: $('#rhythm').val()
+                },
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('کار وزن‌یابی یا وزن‌گذاری بخش شروع شد.')
+                },
+
+            });
+        }
+
 
 
         function deleteItem(itemId, itemName) {
