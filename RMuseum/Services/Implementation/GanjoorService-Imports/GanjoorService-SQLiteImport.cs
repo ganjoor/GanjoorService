@@ -208,6 +208,15 @@ namespace RMuseum.Services.Implementation
                         await context.SaveChangesAsync();//id set should be in order
                     }
 
+
+                    var poemRhymeLettersRes = LanguageUtils.FindRhyme(poemVerses);
+                    if(!string.IsNullOrEmpty(poemRhymeLettersRes.Rhyme))
+                    {
+                        dbPoem.RhymeLetters = poemRhymeLettersRes.Rhyme;
+                        context.GanjoorPoems.Update(dbPoem);
+                    }
+
+
                     GanjoorPage dbPoemPage = new GanjoorPage()
                     {
                         Id = poemId,
