@@ -476,6 +476,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("cat/toc/{id}/{options}")]
+        [Produces("text/plain")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]

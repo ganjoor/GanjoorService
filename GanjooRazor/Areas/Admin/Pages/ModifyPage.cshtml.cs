@@ -50,17 +50,18 @@ namespace GanjooRazor.Areas.Admin.Pages
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
 
         /// <summary>
+        /// ganjoor toc
+        /// </summary>
+        [BindProperty]
+        public GanjoorTOC GanjoorTOC { get; set; }
+        /// <summary>
         /// last message
         /// </summary>
         public string LastMessage { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        private async Task PreparePage()
         {
-            LastMessage = Request.Query["edit"] == "true" ? "ویرایش انجام شد." : "";
-            if (string.IsNullOrEmpty(Request.Query["id"]))
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "شناسهٔ صفحه مشخص نیست.");
-            }
+            
             var rhythmResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
 
             rhythmResponse.EnsureSuccessStatusCode();
@@ -70,20 +71,13 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
 
-            if (!pageUrlResponse.IsSuccessStatusCode)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, await pageUrlResponse.Content.ReadAsStringAsync());
-            }
-
             pageUrlResponse.EnsureSuccessStatusCode();
 
             var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
 
             var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
-            if (!pageQuery.IsSuccessStatusCode)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, await pageQuery.Content.ReadAsStringAsync());
-            }
+            pageQuery.EnsureSuccessStatusCode();
+           
             PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
             ModifyModel = new GanjoorModifyPageViewModel()
@@ -99,11 +93,21 @@ namespace GanjooRazor.Areas.Admin.Pages
                 RhymeLetters = PageInformation.Poem == null ? null : PageInformation.Poem.RhymeLetters,
                 Rhythm = PageInformation.Poem == null ? null : PageInformation.Poem.GanjoorMetre == null ? null : PageInformation.Poem.GanjoorMetre.Rhythm
             };
+        }
 
+        public async Task<IActionResult> OnGetAsync()
+        {
+            LastMessage = Request.Query["edit"] == "true" ? "ویرایش انجام شد." : "";
+            if (string.IsNullOrEmpty(Request.Query["id"]))
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "شناسهٔ صفحه مشخص نیست.");
+            }
+            GanjoorTOC = GanjoorTOC.Analyse;
+            await PreparePage();
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(GanjoorModifyPageViewModel ModifyModel)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -117,12 +121,39 @@ namespace GanjooRazor.Areas.Admin.Pages
                 {
                     LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
                 }
-
             }
-
-
             return Page();
+        }
 
+        public async Task<IActionResult> OnPostGenerateCatPageAsync(GanjoorTOC GanjoorTOC)
+        {
+            await PreparePage();
+
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat?url={PageInformation.FullUrl}&poems=true");
+
+            response.EnsureSuccessStatusCode();
+
+            var Cat = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var htmlRes = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/toc/{Cat.Cat.Id}/{(int)GanjoorTOC}");
+                    htmlRes.EnsureSuccessStatusCode();
+
+                    ModifyModel.HtmlText = await htmlRes.Content.ReadAsStringAsync();
+
+                    LastMessage = $"متن تولیدی دریافت شد. لطفا آن را کپی کنید و سپس <a href=\"/Admin/ModifyPage?id={Request.Query["id"]}\">اینجا</a> کلیک کنید و آن را درج نمایید.";
+
+
+                }
+                else
+                {
+                    LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                }
+            }
+            return Page();
         }
     }
 }
