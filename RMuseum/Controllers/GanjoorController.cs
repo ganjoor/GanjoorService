@@ -432,7 +432,7 @@ namespace RMuseum.Controllers
         [HttpPut]
         [Route("cat/startassigningrhymes/{id}/{retag}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public  IActionResult FindCategoryPoemsRhymes(int id, bool retag)
@@ -440,6 +440,29 @@ namespace RMuseum.Controllers
 
             RServiceResult<bool> res =
                 _ganjoorService.FindCategoryPoemsRhymes(id, retag);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// start assigning poem rhuthmes
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="retag"></param>
+        /// <param name="rhythm"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("cat/startassigningrhythms/{id}/{retag}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public IActionResult FindCategoryPoemsRhythms(int id, bool retag, string rhythm = "")
+        {
+
+            RServiceResult<bool> res =
+                _ganjoorService.FindCategoryPoemsRhythms(id, retag, rhythm);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

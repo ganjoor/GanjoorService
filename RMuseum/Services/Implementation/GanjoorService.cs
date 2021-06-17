@@ -2930,6 +2930,31 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// find category poem rhymes
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="retag"></param>
+        /// <returns></returns>
+        public RServiceResult<bool> FindCategoryPoemsRhymes(int catId, bool retag)
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                await _FindCategoryPoemsRhymesInternal(catId, retag);
+                            });
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// find poem rhythm
         /// </summary>
         /// <param name="id"></param>
@@ -2939,14 +2964,14 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var metres = (await GetGanjoorMetres()).Result.Select(m => m.Rhythm).ToArray();
-                return await _FindPoemRhythm(id, _context, metres);
+                return await _FindPoemRhythm(id, _context, _httpClient, metres);
             }
             catch (Exception exp)
             {
                 return new RServiceResult<string>(null, exp.ToString());
             }
         }
-        private async Task<RServiceResult<string>> _FindPoemRhythm(int id, RMuseumDbContext context, string[] metres)
+        private async Task<RServiceResult<string>> _FindPoemRhythm(int id, RMuseumDbContext context, HttpClient httpClient, string[] metres)
         {
             try
             {
@@ -2958,7 +2983,7 @@ namespace RMuseum.Services.Implementation
                 {
                     try
                     {
-                        var response = await _httpClient.GetAsync($"http://sorud.info/?Text={HttpUtility.UrlEncode(LanguageUtils.MakeTextSearchable(verse.Text))}");
+                        var response = await httpClient.GetAsync($"http://sorud.info/?Text={HttpUtility.UrlEncode(LanguageUtils.MakeTextSearchable(verse.Text))}");
                         response.EnsureSuccessStatusCode();
                         string result = await response.Content.ReadAsStringAsync();
                         if (result.IndexOf("آهنگِ همه‌ی بندها شناسایی نشد.") != -1)
@@ -3037,13 +3062,65 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        private async Task _FindCategoryPoemsRhythmsInternal(int catId, bool retag, string rhythm)
+        {
+            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+            {
+                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                var job = (await jobProgressServiceEF.NewJob($"FindCategoryPoemsRhythms Cat {catId}", "Query data")).Result;
+                try
+                {
+                    var metres = await context.GanjoorMetres.OrderBy(m => m.Rhythm).AsNoTracking().ToArrayAsync();
+                    var rhythms = metres.Select(m => m.Rhythm).ToArray();
+
+                    GanjoorMetre preDeterminedMetre = string.IsNullOrEmpty(rhythm) ? null : metres.Where(m => m.Rhythm == rhythm).Single();
+
+                    var poems = await context.GanjoorPoems.Where(p => p.CatId == catId).ToListAsync();
+
+                    int i = 0;
+                    using(HttpClient httpClient = new HttpClient())
+                    {
+                        foreach (var poem in poems)
+                        {
+                            if (retag || poem.GanjoorMetreId == null)
+                            {
+                                await jobProgressServiceEF.UpdateJob(job.Id, i++);
+                                if (preDeterminedMetre == null)
+                                {
+                                    var res = await _FindPoemRhythm(poem.Id, context, httpClient, rhythms);
+                                    if (!string.IsNullOrEmpty(res.Result))
+                                    {
+                                        poem.GanjoorMetreId = metres.Where(m => m.Rhythm == res.Result).Single().Id;
+                                        context.GanjoorPoems.Update(poem);
+                                    }
+                                }
+                                else
+                                {
+                                    poem.GanjoorMetreId = preDeterminedMetre.Id;
+                                    context.GanjoorPoems.Update(poem);
+                                }
+                            }
+                        }
+                    }
+                    await jobProgressServiceEF.UpdateJob(job.Id, 99);
+                    await context.SaveChangesAsync();
+                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                }
+                catch (Exception exp)
+                {
+                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                }
+            }
+        }
+
         /// <summary>
         /// find category poem rhymes
         /// </summary>
         /// <param name="catId"></param>
         /// <param name="retag"></param>
+        /// <param name="rhythm"></param>
         /// <returns></returns>
-        public RServiceResult<bool> FindCategoryPoemsRhymes(int catId, bool retag)
+        public RServiceResult<bool> FindCategoryPoemsRhythms(int catId, bool retag, string rhythm = "")
         {
             try
             {
@@ -3051,16 +3128,18 @@ namespace RMuseum.Services.Implementation
                             (
                             async token =>
                             {
-                                await _FindCategoryPoemsRhymesInternal(catId, retag);
+                                await _FindCategoryPoemsRhythmsInternal(catId, retag, rhythm);
                             });
 
                 return new RServiceResult<bool>(true);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
+
+
 
         /// <summary>
         /// make plain text

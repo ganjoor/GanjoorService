@@ -778,6 +778,15 @@
             <param name="retag"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
+            <summary>
+            start assigning poem rhuthmes
+            </summary>
+            <param name="id"></param>
+            <param name="retag"></param>
+            <param name="rhythm"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPageByUrl(System.String,System.Boolean)">
             <summary>
             page by url
@@ -7503,6 +7512,15 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
+            <summary>
+            find category poem rhymes
+            </summary>
+            <param name="catId"></param>
+            <param name="retag"></param>
+            <param name="rhythm"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -8850,6 +8868,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhymes(System.Int32,System.Boolean)">
+            <summary>
+            find category poem rhymes
+            </summary>
+            <param name="catId"></param>
+            <param name="retag"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindPoemRhythm(System.Int32)">
             <summary>
             find poem rhythm
@@ -8857,12 +8883,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhymes(System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
             <summary>
             find category poem rhymes
             </summary>
             <param name="catId"></param>
             <param name="retag"></param>
+            <param name="rhythm"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.PreparePlainText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
