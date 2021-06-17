@@ -407,5 +407,13 @@ namespace RMuseum.Services
         /// <param name="rhythm"></param>
         /// <returns></returns>
         RServiceResult<bool> FindCategoryPoemsRhythms(int catId, bool retag, string rhythm = "");
+
+        /// <summary>
+        /// generate category TOC
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        Task<RServiceResult<string>> GenerateTableOfContents(int catId, GanjoorTOC options);
     }
 }

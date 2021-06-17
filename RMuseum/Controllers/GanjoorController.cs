@@ -469,6 +469,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// generate category toc
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("cat/toc/{id}/{options}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GenerateTableOfContents(int id, GanjoorTOC options = GanjoorTOC.Analyse)
+        {
+            var res = await _ganjoorService.GenerateTableOfContents(id, options);
+            if(!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// page by url
         /// </summary>
         /// <param name="url"></param>

@@ -787,6 +787,14 @@
             <param name="rhythm"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GenerateTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
+            <summary>
+            generate category toc
+            </summary>
+            <param name="id"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPageByUrl(System.String,System.Boolean)">
             <summary>
             page by url
@@ -4710,6 +4718,11 @@
             active
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorTOC">
+            <summary>
+            ganjoor TOC options
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorVerse">
             <summary>
             Ganjoor Verse
@@ -7521,6 +7534,14 @@
             <param name="rhythm"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GenerateTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
+            <summary>
+            generate category TOC
+            </summary>
+            <param name="catId"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -8890,6 +8911,14 @@
             <param name="catId"></param>
             <param name="retag"></param>
             <param name="rhythm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GenerateTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
+            <summary>
+            generate category TOC
+            </summary>
+            <param name="catId"></param>
+            <param name="options"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.PreparePlainText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
