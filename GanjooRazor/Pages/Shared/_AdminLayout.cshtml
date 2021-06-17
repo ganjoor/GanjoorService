@@ -76,6 +76,29 @@
             });
         }
 
+        function tagCatWithPoems(catId) {
+            if (!confirm('آیا از شروع کار قافیه‌یابی اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=StartRhymeAnalysis';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    id: catId
+                },
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('کار قافیه‌یابی بخش شروع شد.')
+                },
+
+            });
+        }
+
+
         function deleteItem(itemId, itemName) {
 
             if (!confirm('آیا از حذف این ' + itemName+' اطمینان دارید؟'))

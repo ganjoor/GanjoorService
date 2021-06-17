@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
@@ -13,6 +12,7 @@ using RMuseum.Models.Ganjoor.ViewModels;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class CatUtilsModel : PageModel
     {
         // <summary>
@@ -115,6 +115,20 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostStartRhymeAnalysisAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/startassigningrhymes/{id}/{false}", null);
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
         }
     }
 }
