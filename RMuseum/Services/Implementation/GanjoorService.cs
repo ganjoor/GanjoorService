@@ -2911,7 +2911,7 @@ namespace RMuseum.Services.Implementation
                         {
                             await jobProgressServiceEF.UpdateJob(job.Id, i++);
                             var res = await _FindPoemRhyme(poem.Id, context);
-                            if (!string.IsNullOrEmpty(res.Result.Rhyme))
+                            if (res.Result != null && !string.IsNullOrEmpty(res.Result.Rhyme))
                             {
                                 poem.RhymeLetters = res.Result.Rhyme;
                                 context.GanjoorPoems.Update(poem);
