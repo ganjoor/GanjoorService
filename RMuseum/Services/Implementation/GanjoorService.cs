@@ -2175,7 +2175,7 @@ namespace RMuseum.Services.Implementation
                             if (messWithUrls)
                             {
                                 GanjoorCat cat = await context.GanjoorCategories.Where(c => c.Id == child.CatId).SingleAsync();
-                                cat.FullUrl = child.FullTitle;
+                                cat.FullUrl = child.FullUrl;
                                 context.GanjoorCategories.Update(cat);
                             }
                            
