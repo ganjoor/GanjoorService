@@ -1175,7 +1175,24 @@ namespace RMuseum.Controllers
             return BadRequest(res.ExceptionString);
         }
 
-       
+        /// <summary>
+        /// export a poet to sqlite database
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("sqliteexport/{poetId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ExportToSqlite(int poetId)
+        {
+            RServiceResult<string> res =
+                await _ganjoorService.ExportToSqlite(poetId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return new FileStreamResult(new FileStream(res.Result, FileMode.Open, FileAccess.Read), "application/octet-stream");
+        }
 
 
         /// <summary>

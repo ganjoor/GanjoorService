@@ -34,13 +34,13 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync();
-                var cat = await _context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poetId && c.ParentId == null).SingleAsync();
+                var catPoet = await _context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poetId && c.ParentId == null).SingleAsync();
 
                 string dir = Path.Combine($"{_configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteExports");
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 
-                string filePath = Path.Combine(dir, $"{cat.UrlSlug}.gdb");
+                string filePath = Path.Combine(dir, $"{catPoet.UrlSlug}.gdb");
 
                 if (File.Exists(filePath))
                     File.Delete(filePath);
@@ -53,17 +53,22 @@ namespace RMuseum.Services.Implementation
                 {
                     await sqliteConnection.OpenAsync();
 
-                    string sql = "BEGIN TRANSACTION;" +
+                    string q = "BEGIN TRANSACTION;" +
                                 "CREATE TABLE [cat] ([id] INTEGER  PRIMARY KEY NOT NULL,[poet_id] INTEGER  NULL,[text] NVARCHAR(100)  NULL,[parent_id] INTEGER  NULL,[url] NVARCHAR(255)  NULL);"
                                 +
-                                "CREATE TABLE poem (id INTEGER PRIMARY KEY, cat_id INTEGER, title NVARCHAR(255), url NVARCHAR(255));"
+                                "CREATE TABLE [poem] (id INTEGER PRIMARY KEY, cat_id INTEGER, title NVARCHAR(255), url NVARCHAR(255));"
                                 +
-                                "CREATE TABLE [poet] ([id] INTEGER  PRIMARY KEY NOT NULL,[name] NVARCHAR(20)  NULL,[cat_id] INTEGER  NULL  NULL);"
+                                "CREATE TABLE [poet] ([id] INTEGER  PRIMARY KEY NOT NULL,[name] NVARCHAR(20)  NULL,[cat_id] INTEGER  NULL  NULL, [description] TEXT);"
                                 +
                                 "CREATE TABLE [verse] ([poem_id] INTEGER  NULL,[vorder] INTEGER  NULL,[position] INTEGER  NULL,[text] TEXT  NULL);"
                                 +
                                 "COMMIT;";
-                    await sqliteConnection.ExecuteAsync(sql);
+                    await sqliteConnection.ExecuteAsync(q);
+                    await sqliteConnection.ExecuteAsync("BEGIN;");
+                    await sqliteConnection.ExecuteAsync($"INSERT INTO poet (id, name, cat_id, description) VALUES ({poet.Id}, '{poet.Nickname}', {catPoet.Id}, '{poet.Description}');");
+                    await ExportCarToSqlite(sqliteConnection, catPoet);
+                    await sqliteConnection.ExecuteAsync("COMMIT;");
+
                 }
 
 
@@ -73,6 +78,24 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<string>(null, exp.ToString());
             }
+        }
+
+        private async Task ExportCarToSqlite(SqliteConnection sqliteConnection, GanjoorCat cat)
+        {
+            int parentId = cat.ParentId == null ? 0 : (int)cat.ParentId;
+            await sqliteConnection.ExecuteAsync($"INSERT INTO cat (id, poet_id, text, parent_id, url) VALUES ({cat.Id}, {cat.PoetId}, '{cat.Title}', {parentId}, 'https://ganjoor.net{cat.FullUrl}');");
+            
+            var poems = await _context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == cat.Id).ToListAsync();
+            foreach(var poem in poems)
+            {
+                await sqliteConnection.ExecuteAsync($"INSERT INTO poem (id, cat_id, title, url) VALUES ({poem.Id}, {poem.CatId}, '{poem.Title}', 'https://ganjoor.net{poem.FullUrl}');");
+                foreach (var verse in await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync())
+                    await sqliteConnection.ExecuteAsync($"INSERT INTO verse (poem_id, vorder, position, text) VALUES ({poem.Id}, {verse.VOrder}, {(int)verse.VersePosition}, '{verse.Text}');");
+            }
+
+            foreach (var child in await _context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == cat.Id).ToListAsync())
+                await ExportCarToSqlite(sqliteConnection, child);
+                    
         }
 
         /// <summary>

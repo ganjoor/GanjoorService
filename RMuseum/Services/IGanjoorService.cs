@@ -306,6 +306,13 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> ImportFromSqlite(int poetId, IFormFile file);
 
         /// <summary>
+        /// export to sqlite
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<string>> ExportToSqlite(int poetId);
+
+        /// <summary>
         /// import GanjoorPage entity data from MySql
         /// </summary>
         /// <returns></returns>

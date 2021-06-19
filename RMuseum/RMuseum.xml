@@ -1002,6 +1002,13 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ExportToSqlite(System.Int32)">
+            <summary>
+            export a poet to sqlite database
+            </summary>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ImportFromMySql">
             <summary>
             imports data from ganjoor MySql database
@@ -7430,6 +7437,13 @@
             </summary>
             <param name="poetId"></param>
             <param name="file"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ExportToSqlite(System.Int32)">
+            <summary>
+            export to sqlite
+            </summary>
+            <param name="poetId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.ImportFromMySql">
