@@ -25,6 +25,57 @@ namespace RMuseum.Services.Implementation
     {
 
         /// <summary>
+        /// export to sqlite
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<string>> ExportToSqlite(int poetId)
+        {
+            try
+            {
+                var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync();
+                var cat = await _context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poetId && c.ParentId == null).SingleAsync();
+
+                string dir = Path.Combine($"{_configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteExports");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                string filePath = Path.Combine(dir, $"{cat.UrlSlug}.gdb");
+
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+
+                SqliteConnectionStringBuilder connectionStringBuilder = new SqliteConnectionStringBuilder();
+                connectionStringBuilder.DataSource = filePath;
+                connectionStringBuilder.Mode = SqliteOpenMode.ReadWriteCreate;
+
+                using (SqliteConnection sqliteConnection = new SqliteConnection(connectionStringBuilder.ToString()))
+                {
+                    await sqliteConnection.OpenAsync();
+
+                    string sql = "BEGIN TRANSACTION;" +
+                                "CREATE TABLE [cat] ([id] INTEGER  PRIMARY KEY NOT NULL,[poet_id] INTEGER  NULL,[text] NVARCHAR(100)  NULL,[parent_id] INTEGER  NULL,[url] NVARCHAR(255)  NULL);"
+                                +
+                                "CREATE TABLE poem (id INTEGER PRIMARY KEY, cat_id INTEGER, title NVARCHAR(255), url NVARCHAR(255));"
+                                +
+                                "CREATE TABLE [poet] ([id] INTEGER  PRIMARY KEY NOT NULL,[name] NVARCHAR(20)  NULL,[cat_id] INTEGER  NULL  NULL);"
+                                +
+                                "CREATE TABLE [verse] ([poem_id] INTEGER  NULL,[vorder] INTEGER  NULL,[position] INTEGER  NULL,[text] TEXT  NULL);"
+                                +
+                                "COMMIT;";
+                    await sqliteConnection.ExecuteAsync(sql);
+                }
+
+
+                return new RServiceResult<string>(filePath);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<string>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// import from sqlite
         /// </summary>
         /// <param name="poetId"></param>

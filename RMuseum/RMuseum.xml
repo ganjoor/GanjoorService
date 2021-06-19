@@ -8510,6 +8510,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportToSqlite(System.Int32)">
+            <summary>
+            export to sqlite
+            </summary>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile)">
             <summary>
             import from sqlite
