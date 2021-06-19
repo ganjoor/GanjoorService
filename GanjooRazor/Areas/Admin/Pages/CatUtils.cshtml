@@ -15,8 +15,14 @@
     </p>
 }
 
+@if (Model.PageInformation != null)
+{
+    <p>@Model.PageInformation.FullTitle</p>
+}
+
 @if (Model.Cat != null)
 {
+
     <h2>زیربخش‌ها</h2>
     <table>
         @foreach (var cat in Model.Cat.Cat.Children)
