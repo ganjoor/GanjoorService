@@ -272,7 +272,7 @@ namespace RMuseum.Services.Implementation
                                                         
                                                         await context.SaveChangesAsync();
 
-                                                        var poemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poetId).OrderBy(v => v.VOrder).ToListAsync();
+                                                        var poemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
 
                                                         bool needsNewVOrder = false;
                                                         for (int i = 1; i <= poemVerses.Count; i++)
@@ -294,12 +294,19 @@ namespace RMuseum.Services.Implementation
                                                         dbPage.Title = dbPoem.Title;
                                                         dbPage.FullTitle = dbPoem.FullTitle;
 
-                                                        var poemRhymeLettersRes = LanguageUtils.FindRhyme(poemVerses);
-                                                        if (!string.IsNullOrEmpty(poemRhymeLettersRes.Rhyme))
+                                                        try
                                                         {
-                                                            dbPoem.RhymeLetters = poemRhymeLettersRes.Rhyme;
-                                                            
+                                                            var poemRhymeLettersRes = LanguageUtils.FindRhyme(poemVerses);
+                                                            if (!string.IsNullOrEmpty(poemRhymeLettersRes.Rhyme))
+                                                            {
+                                                                dbPoem.RhymeLetters = poemRhymeLettersRes.Rhyme;
+                                                            }
                                                         }
+                                                        catch
+                                                        {
+
+                                                        }
+                                                        
 
                                                         context.GanjoorPoems.Update(dbPoem);
                                                         context.GanjoorPages.Update(dbPage);
@@ -388,9 +395,18 @@ namespace RMuseum.Services.Implementation
 
                                             await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Importing");
 
-                                            await _ImportSQLiteCatChildren(context, sqlite, poetId, await sqlite.QuerySingleAsync<int>($"SELECT id FROM cat WHERE parent_id = 0") , cat, poet.Nickname, jobProgressServiceEF, job, catPage.Id);
+                                            var resImport = await _ImportSQLiteCatChildren(context, sqlite, poetId, await sqlite.QuerySingleAsync<int>($"SELECT id FROM cat WHERE parent_id = 0") , cat, poet.Nickname, jobProgressServiceEF, job, catPage.Id);
 
-                                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                            if(string.IsNullOrEmpty(resImport))
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                            }
+                                            else
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, resImport);
+                                            }
+
+                                            
                                         }
                                     }
                                     catch (Exception exp)
@@ -436,7 +452,12 @@ namespace RMuseum.Services.Implementation
                     };
                     context.GanjoorCategories.Add(dbCat);
 
-                    var catPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
+                    var maxPageId = await context.GanjoorPages.MaxAsync(p => p.Id);
+
+                    if (await context.GanjoorPoems.MaxAsync(p => p.Id) > maxPageId)
+                        maxPageId = await context.GanjoorPoems.MaxAsync(p => p.Id);
+
+                    var catPageId = 1 + maxPageId;
                     while (await context.GanjoorPoems.Where(p => p.Id == catPageId).AnyAsync())
                         catPageId++;
 
@@ -463,12 +484,14 @@ namespace RMuseum.Services.Implementation
 
                     catHtmlText += $"<p><a href=\"{dbCat.FullUrl}\">{dbCat.Title}</a></p>{Environment.NewLine}";
 
-                    await _ImportSQLiteCatChildren(context, sqlite, poetId, (int)cat.id, dbCat, $"{parentFullTitle} » {dbCat.Title}", jobProgressServiceEF, job, dbPageCat.Id);
+                    var resChild = await _ImportSQLiteCatChildren(context, sqlite, poetId, (int)cat.id, dbCat, $"{parentFullTitle} » {dbCat.Title}", jobProgressServiceEF, job, dbPageCat.Id);
+                    if (!string.IsNullOrEmpty(resChild))
+                        return resChild;
                 }
-
-                var poemId = 1 + await context.GanjoorPoems.MaxAsync(p => p.Id);
-                while (await context.GanjoorPages.Where(p => p.Id == poemId).AnyAsync())
-                    poemId++;
+                var maxPoemId = await context.GanjoorPoems.MaxAsync(p => p.Id);
+                if (await context.GanjoorPages.MaxAsync(p => p.Id) > maxPoemId)
+                    maxPoemId = await context.GanjoorPages.MaxAsync(p => p.Id);
+                var poemId = 1 + maxPoemId;
 
                 int poemNumber = 0;
                 foreach (var poem in await sqlite.QueryAsync($"SELECT * FROM poem WHERE cat_id = {sqliteParentCatId} ORDER BY id"))
@@ -520,13 +543,20 @@ namespace RMuseum.Services.Implementation
                         await context.SaveChangesAsync();//id set should be in order
                     }
 
-
-                    var poemRhymeLettersRes = LanguageUtils.FindRhyme(poemVerses);
-                    if(!string.IsNullOrEmpty(poemRhymeLettersRes.Rhyme))
+                    try
                     {
-                        dbPoem.RhymeLetters = poemRhymeLettersRes.Rhyme;
-                        context.GanjoorPoems.Update(dbPoem);
+                        var poemRhymeLettersRes = LanguageUtils.FindRhyme(poemVerses);
+                        if (!string.IsNullOrEmpty(poemRhymeLettersRes.Rhyme))
+                        {
+                            dbPoem.RhymeLetters = poemRhymeLettersRes.Rhyme;
+                            context.GanjoorPoems.Update(dbPoem);
+                        }
                     }
+                    catch
+                    {
+
+                    }
+                    
 
 
                     GanjoorPage dbPoemPage = new GanjoorPage()
