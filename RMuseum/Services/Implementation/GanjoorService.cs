@@ -674,7 +674,7 @@ namespace RMuseum.Services.Implementation
 
                 if(string.IsNullOrEmpty(userRes.Result.NickName))
                 {
-                    return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "لطفاً با مراجعه به پیشخان کاربری (دکمهٔ گوشهٔ پایین سمت راست) «نام مستعار» خود را مشخص کنید و سپس اقدام به ارسال حاشیه بفرمایید.");
+                    return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "لطفاً با مراجعه به پیشخان کاربری (دکمهٔ گوشهٔ پایین سمت چپ) «نام مستعار» خود را مشخص کنید و سپس اقدام به ارسال حاشیه بفرمایید.");
                 }
 
                 content = content.ApplyCorrectYeKe();

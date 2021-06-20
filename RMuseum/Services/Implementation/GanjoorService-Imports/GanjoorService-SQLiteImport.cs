@@ -154,7 +154,7 @@ namespace RMuseum.Services.Implementation
                                                 poemNumber++;
                                                 await jobProgressServiceEF.UpdateJob(job.Id, poemNumber, "", false);
 
-                                                int poemId = poem.id;
+                                                int poemId = (int)poem.id;
 
                                                 GanjoorPoem dbPoem = await context.GanjoorPoems.Include(p => p.Cat).Where(p => p.Id == poemId).SingleOrDefaultAsync();
 
@@ -164,10 +164,10 @@ namespace RMuseum.Services.Implementation
                                                 if (dbPoem.Cat.PoetId != poetId)
                                                     continue;
 
-                                                string comment = $"تغییرات حاصل از پردازش {note}{Environment.NewLine}";
+                                                string comment = $"<p>تغییرات حاصل از پردازش {note}</p>{Environment.NewLine}";
                                                 bool anyChanges = false;
 
-                                                var dbPage = await _context.GanjoorPages.Where(p => p.Id == poemId).SingleOrDefaultAsync();
+                                                var dbPage = await context.GanjoorPages.Where(p => p.Id == poemId).SingleOrDefaultAsync();
 
                                                 GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
                                                 {
@@ -184,7 +184,7 @@ namespace RMuseum.Services.Implementation
                                                 if(poemTitle != dbPoem.Title)
                                                 {
                                                     anyChanges = true;
-                                                    comment += $"تغییر عنوان از «{dbPoem.Title}» به «{poemTitle}»{Environment.NewLine}";
+                                                    comment += $"<p>تغییر عنوان از «{dbPoem.Title}» به «{poemTitle}»</p>{Environment.NewLine}";
                                                     dbPoem.Title = poemTitle;
                                                     dbPoem.FullTitle = $"{dbPoem.Cat.FullUrl} » {dbPoem.Title}";
                                                     context.GanjoorPoems.Update(dbPoem);
@@ -203,12 +203,16 @@ namespace RMuseum.Services.Implementation
                                                         break;
                                                     }
 
-                                                    string text = sqliteVerses[vIndex].text.Replace("ـ", "").Replace("  ", " ").ApplyCorrectYeKe().Trim();
+                                                    string text = sqliteVerses[vIndex].text;
+                                                    text = text.Replace("ـ", "").Replace("  ", " ").ApplyCorrectYeKe().Trim();
 
                                                     if (text == dbVerses[vIndex].Text)
+                                                    {
+                                                        vIndex++;
                                                         continue;
+                                                    }
 
-                                                    comment += $"تغییر مصرع {vIndex + 1} از «{dbVerses[vIndex].Text}» به «{text}»{Environment.NewLine}".ToPersianNumbers();
+                                                    comment += $"<p>تغییر مصرع {vIndex + 1} از «{dbVerses[vIndex].Text}» به «{text}»</p>{Environment.NewLine}".ToPersianNumbers();
 
                                                     dbVerses[vIndex].Text = text;
 
@@ -222,7 +226,7 @@ namespace RMuseum.Services.Implementation
                                                 {
                                                     while (vIndex < dbVerses.Count)
                                                     {
-                                                        comment += $"حذف مصرع {vIndex + 1} با متن «{dbVerses[vIndex].Text}»{Environment.NewLine}".ToPersianNumbers();
+                                                        comment += $"<p>حذف مصرع {vIndex + 1} با متن «{dbVerses[vIndex].Text}»</p>{Environment.NewLine}".ToPersianNumbers();
                                                         context.GanjoorVerses.Remove(dbVerses[vIndex]);
                                                         vIndex++;
                                                         anyChanges = true;
@@ -230,10 +234,11 @@ namespace RMuseum.Services.Implementation
 
                                                     while (vIndex < sqliteVerses.Count)
                                                     {
-                                                        string text = sqliteVerses[vIndex].text.Replace("ـ", "").Replace("  ", " ").ApplyCorrectYeKe().Trim();
+                                                        string text = sqliteVerses[vIndex].text;
+                                                        text = text.Replace("ـ", "").Replace("  ", " ").ApplyCorrectYeKe().Trim();
                                                         int vOrder = int.Parse(sqliteVerses[vIndex].vorder.ToString());
                                                         int position = int.Parse(sqliteVerses[vIndex].position.ToString());
-                                                        comment += $"اضافه شدن مصرع {vIndex + 1} با متن «{text}»{Environment.NewLine}".ToPersianNumbers();
+                                                        comment += $"<p>اضافه شدن مصرع {vIndex + 1} با متن «{text}»</p>{Environment.NewLine}".ToPersianNumbers();
                                                         context.GanjoorVerses.Add
                                                         (
                                                             new GanjoorVerse()
@@ -267,8 +272,22 @@ namespace RMuseum.Services.Implementation
                                                         
                                                         await context.SaveChangesAsync();
 
-                                                        var poemVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poetId).OrderBy(v => v.VOrder).ToListAsync();
-                                                        
+                                                        var poemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poetId).OrderBy(v => v.VOrder).ToListAsync();
+
+                                                        bool needsNewVOrder = false;
+                                                        for (int i = 1; i <= poemVerses.Count; i++)
+                                                        {
+                                                            if(poemVerses[i].VOrder != i)
+                                                            {
+                                                                poemVerses[i].VOrder = i;
+                                                                needsNewVOrder = true;
+                                                            }
+                                                        }
+                                                        if(needsNewVOrder)
+                                                        {
+                                                            context.GanjoorVerses.UpdateRange(poemVerses);
+                                                        }
+
                                                         dbPoem.PlainText = PreparePlainText(poemVerses);
                                                         dbPoem.HtmlText = PrepareHtmlText(poemVerses);
                                                         dbPage.HtmlText = dbPoem.HtmlText;

@@ -53,6 +53,17 @@ namespace GanjooRazor.Areas.Admin.Pages
         public IFormFile SQLiteDb { get; set; }
 
 
+        public class SQLiteCorrecionDbModel
+        {
+            public IFormFile Db { get; set; }
+
+            public string Note { get; set; }
+        }
+
+        [BindProperty]
+        public SQLiteCorrecionDbModel CorrecionDbModel { get; set; }
+
+
         private async Task PreparePoet()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}");
@@ -185,6 +196,35 @@ namespace GanjooRazor.Areas.Admin.Pages
                     form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Poet.Nickname, SQLiteDb.FileName);
 
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqliteimport/{Request.Query["id"]}", form);
+                    response.EnsureSuccessStatusCode();
+
+                    LastResult = "پایگاه داده‌ها بارگذاری شد.";
+
+                }
+            }
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostUploadCorrectionDbAsync(SQLiteCorrecionDbModel CorrecionDbModel)
+        {
+            LastResult = "";
+            await PreparePoet();
+
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
+
+                MultipartFormDataContent form = new MultipartFormDataContent();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    await CorrecionDbModel.Db.CopyToAsync(stream);
+                    var fileContent = stream.ToArray();
+                    form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Poet.Nickname, CorrecionDbModel.Db.FileName);
+
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqliteupdate/{Request.Query["id"]}?note={CorrecionDbModel.Note}", form);
                     response.EnsureSuccessStatusCode();
 
                     LastResult = "پایگاه داده‌ها بارگذاری شد.";
