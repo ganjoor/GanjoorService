@@ -306,6 +306,15 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> ImportFromSqlite(int poetId, IFormFile file);
 
         /// <summary>
+        /// Apply corrections from sqlite
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="file"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ApplyCorrectionsFromSqlite(int poetId, IFormFile file, string note);
+
+        /// <summary>
         /// export to sqlite
         /// </summary>
         /// <param name="poetId"></param>

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
+using RMuseum.Models.Artifact;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Generic;
@@ -96,6 +97,224 @@ namespace RMuseum.Services.Implementation
             foreach (var child in await _context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == cat.Id).ToListAsync())
                 await ExportCarToSqlite(sqliteConnection, child);
                     
+        }
+
+        /// <summary>
+        /// Apply corrections from sqlite
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="file"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ApplyCorrectionsFromSqlite(int poetId, IFormFile file, string note)
+        {
+            try
+            {
+                string dir = Path.Combine($"{_configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteImports");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                string filePath = Path.Combine(dir, file.FileName);
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+                using (FileStream fsMain = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fsMain);
+                }
+
+                string email = $"{_configuration.GetSection("Ganjoor")["SystemEmail"]}";
+                var userId = (await _appUserService.FindUserByEmail(email)).Result.Id;
+
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                                {
+                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                    var job = (await jobProgressServiceEF.NewJob("ImportFromSqlite", "Query data")).Result;
+
+                                    try
+                                    {
+                                        SqliteConnectionStringBuilder connectionStringBuilder = new SqliteConnectionStringBuilder();
+                                        connectionStringBuilder.DataSource = filePath;
+                                        using (SqliteConnection sqliteConnection = new SqliteConnection(connectionStringBuilder.ToString()))
+                                        {
+                                            await sqliteConnection.OpenAsync();
+                                            IDbConnection sqlite = sqliteConnection;
+                                            var poets = (await sqlite.QueryAsync("SELECT * FROM poet")).ToList();
+                                            if (poets.Count != 1)
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, "poets count in sqlite db is not equal to 1");
+                                            }
+
+                                            int poemNumber = 0;
+                                            foreach (var poem in await sqlite.QueryAsync($"SELECT * FROM poem ORDER BY id"))
+                                            {
+                                                poemNumber++;
+                                                await jobProgressServiceEF.UpdateJob(job.Id, poemNumber, "", false);
+
+                                                int poemId = poem.id;
+
+                                                GanjoorPoem dbPoem = await context.GanjoorPoems.Include(p => p.Cat).Where(p => p.Id == poemId).SingleOrDefaultAsync();
+
+                                                if (dbPoem == null)
+                                                    continue;
+
+                                                if (dbPoem.Cat.PoetId != poetId)
+                                                    continue;
+
+                                                string comment = $"تغییرات حاصل از پردازش {note}{Environment.NewLine}";
+                                                bool anyChanges = false;
+
+                                                var dbPage = await _context.GanjoorPages.Where(p => p.Id == poemId).SingleOrDefaultAsync();
+
+                                                GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
+                                                {
+                                                    GanjoorPageId = poemId,
+                                                    MadeObsoleteByUserId = (Guid)userId,
+                                                    RecordDate = DateTime.Now,
+                                                    Note = note,
+                                                    Title = dbPage.Title,
+                                                    UrlSlug = dbPage.UrlSlug,
+                                                    HtmlText = dbPage.HtmlText,
+                                                };
+
+                                                string poemTitle = poem.title;
+                                                if(poemTitle != dbPoem.Title)
+                                                {
+                                                    anyChanges = true;
+                                                    comment += $"تغییر عنوان از «{dbPoem.Title}» به «{poemTitle}»{Environment.NewLine}";
+                                                    dbPoem.Title = poemTitle;
+                                                    dbPoem.FullTitle = $"{dbPoem.Cat.FullUrl} » {dbPoem.Title}";
+                                                    context.GanjoorPoems.Update(dbPoem);
+                                                }
+
+
+                                                var sqliteVerses = new List<dynamic>(await sqlite.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder"));
+                                                var dbVerses = await context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
+
+                                                int vIndex = 0;
+                                                while(vIndex < sqliteVerses.Count && vIndex < dbVerses.Count)
+                                                {
+                                                    if (sqliteVerses[vIndex].vorder != dbVerses[vIndex].VOrder)
+                                                    {
+                                                        vIndex = -1;
+                                                        break;
+                                                    }
+
+                                                    string text = sqliteVerses[vIndex].text.Replace("ـ", "").Replace("  ", " ").ApplyCorrectYeKe().Trim();
+
+                                                    if (text == dbVerses[vIndex].Text)
+                                                        continue;
+
+                                                    comment += $"تغییر مصرع {vIndex + 1} از «{dbVerses[vIndex].Text}» به «{text}»{Environment.NewLine}".ToPersianNumbers();
+
+                                                    dbVerses[vIndex].Text = text;
+
+                                                    context.GanjoorVerses.Update(dbVerses[vIndex]);
+
+                                                    anyChanges = true;
+                                                    vIndex++;
+                                                }
+
+                                                if(vIndex != -1)
+                                                {
+                                                    while (vIndex < dbVerses.Count)
+                                                    {
+                                                        comment += $"حذف مصرع {vIndex + 1} با متن «{dbVerses[vIndex].Text}»{Environment.NewLine}".ToPersianNumbers();
+                                                        context.GanjoorVerses.Remove(dbVerses[vIndex]);
+                                                        vIndex++;
+                                                        anyChanges = true;
+                                                    }
+
+                                                    while (vIndex < sqliteVerses.Count)
+                                                    {
+                                                        string text = sqliteVerses[vIndex].text.Replace("ـ", "").Replace("  ", " ").ApplyCorrectYeKe().Trim();
+                                                        int vOrder = int.Parse(sqliteVerses[vIndex].vorder.ToString());
+                                                        int position = int.Parse(sqliteVerses[vIndex].position.ToString());
+                                                        comment += $"اضافه شدن مصرع {vIndex + 1} با متن «{text}»{Environment.NewLine}".ToPersianNumbers();
+                                                        context.GanjoorVerses.Add
+                                                        (
+                                                            new GanjoorVerse()
+                                                            {
+                                                                PoemId = poemId,
+                                                                VOrder = vOrder,
+                                                                VersePosition = (VersePosition)position,
+                                                                Text = text
+                                                            }
+                                                        );
+                                                        vIndex++;
+                                                        anyChanges = true;
+                                                    }
+
+                                                    
+
+                                                    if (anyChanges)
+                                                    {
+                                                        GanjoorComment sysComment = new GanjoorComment()
+                                                        {
+                                                            UserId = userId,
+                                                            AuthorIpAddress = "127.0.0.1",
+                                                            CommentDate = DateTime.Now,
+                                                            HtmlComment = comment,
+                                                            PoemId = poemId,
+                                                            Status = PublishStatus.Published,
+                                                        };
+                                                        context.GanjoorComments.Add(sysComment);
+
+                                                        context.GanjoorPageSnapshots.Add(snapshot);
+                                                        
+                                                        await context.SaveChangesAsync();
+
+                                                        var poemVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poetId).OrderBy(v => v.VOrder).ToListAsync();
+                                                        
+                                                        dbPoem.PlainText = PreparePlainText(poemVerses);
+                                                        dbPoem.HtmlText = PrepareHtmlText(poemVerses);
+                                                        dbPage.HtmlText = dbPoem.HtmlText;
+                                                        dbPage.Title = dbPoem.Title;
+                                                        dbPage.FullTitle = dbPoem.FullTitle;
+
+                                                        var poemRhymeLettersRes = LanguageUtils.FindRhyme(poemVerses);
+                                                        if (!string.IsNullOrEmpty(poemRhymeLettersRes.Rhyme))
+                                                        {
+                                                            dbPoem.RhymeLetters = poemRhymeLettersRes.Rhyme;
+                                                            
+                                                        }
+
+                                                        context.GanjoorPoems.Update(dbPoem);
+                                                        context.GanjoorPages.Update(dbPage);
+
+                                                        await context.SaveChangesAsync();
+
+                                                        
+
+                                                    }
+                                                }
+
+                                            }
+
+                                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                        }
+                                    }
+                                    catch (Exception exp)
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                    }
+                                }
+
+                                File.Delete(filePath);
+                            }
+                            );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+
+
+
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>

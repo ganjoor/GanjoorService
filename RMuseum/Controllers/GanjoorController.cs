@@ -1176,6 +1176,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Apply corrections from sqlite
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("sqliteupdate/{poetId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ApplyCorrectionsFromSqlite(int poetId, string note)
+        {
+            IFormFile file = Request.Form.Files[0];
+
+            RServiceResult<bool> res =
+                await _ganjoorService.ApplyCorrectionsFromSqlite(poetId, file, note);
+            if (res.Result)
+                return Ok();
+            return BadRequest(res.ExceptionString);
+        }
+
+        /// <summary>
         /// export a poet to sqlite database
         /// </summary>
         /// <param name="poetId"></param>

@@ -1002,6 +1002,14 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ApplyCorrectionsFromSqlite(System.Int32,System.String)">
+            <summary>
+            Apply corrections from sqlite
+            </summary>
+            <param name="poetId"></param>
+            <param name="note"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ExportToSqlite(System.Int32)">
             <summary>
             export a poet to sqlite database
@@ -7439,6 +7447,15 @@
             <param name="file"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ApplyCorrectionsFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile,System.String)">
+            <summary>
+            Apply corrections from sqlite
+            </summary>
+            <param name="poetId"></param>
+            <param name="file"></param>
+            <param name="note"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.ExportToSqlite(System.Int32)">
             <summary>
             export to sqlite
@@ -8529,6 +8546,15 @@
             export to sqlite
             </summary>
             <param name="poetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ApplyCorrectionsFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile,System.String)">
+            <summary>
+            Apply corrections from sqlite
+            </summary>
+            <param name="poetId"></param>
+            <param name="file"></param>
+            <param name="note"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile)">
