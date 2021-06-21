@@ -275,11 +275,11 @@ namespace RMuseum.Services.Implementation
                                                         var poemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
 
                                                         bool needsNewVOrder = false;
-                                                        for (int i = 1; i <= poemVerses.Count; i++)
+                                                        for (int i = 0; i < poemVerses.Count; i++)
                                                         {
-                                                            if(poemVerses[i].VOrder != i)
+                                                            if(poemVerses[i].VOrder != (i + 1))
                                                             {
-                                                                poemVerses[i].VOrder = i;
+                                                                poemVerses[i].VOrder = i + 1;
                                                                 needsNewVOrder = true;
                                                             }
                                                         }
