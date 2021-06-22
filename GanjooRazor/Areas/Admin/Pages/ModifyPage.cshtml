@@ -127,11 +127,15 @@
                 <a role="button" href="/Admin/CatUtils?url=@Model.PageInformation.FullUrl" class="actionlink">مدیریت بخش متناظر</a>
             </td>
         </tr>
-        <tr>
-            <td colspan="2">
-                <a role="button" href="/Admin/Poet?id=@Model.PageInformation.PoetOrCat.Poet.Id" class="actionlink">شاعر</a>
-            </td>
-        </tr>
+        @if (Model.PageInformation.PoetOrCat != null)
+        {
+            <tr>
+                <td colspan="2">
+                    <a role="button" href="/Admin/Poet?id=@Model.PageInformation.PoetOrCat.Poet.Id" class="actionlink">شاعر</a>
+                </td>
+            </tr>
+        }
+
     </table>
 </form>
 
