@@ -67,7 +67,7 @@ namespace RMuseum.Services.Implementation
                     await sqliteConnection.ExecuteAsync(q);
                     await sqliteConnection.ExecuteAsync("BEGIN;");
                     await sqliteConnection.ExecuteAsync($"INSERT INTO poet (id, name, cat_id, description) VALUES ({poet.Id}, '{poet.Nickname}', {catPoet.Id}, '{poet.Description}');");
-                    await ExportCarToSqlite(sqliteConnection, catPoet);
+                    await ExportCatToSqlite(sqliteConnection, catPoet);
                     await sqliteConnection.ExecuteAsync("COMMIT;");
 
                 }
@@ -81,7 +81,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task ExportCarToSqlite(SqliteConnection sqliteConnection, GanjoorCat cat)
+        private async Task ExportCatToSqlite(SqliteConnection sqliteConnection, GanjoorCat cat)
         {
             int parentId = cat.ParentId == null ? 0 : (int)cat.ParentId;
             await sqliteConnection.ExecuteAsync($"INSERT INTO cat (id, poet_id, text, parent_id, url) VALUES ({cat.Id}, {cat.PoetId}, '{cat.Title}', {parentId}, 'https://ganjoor.net{cat.FullUrl}');");
@@ -95,7 +95,7 @@ namespace RMuseum.Services.Implementation
             }
 
             foreach (var child in await _context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == cat.Id).ToListAsync())
-                await ExportCarToSqlite(sqliteConnection, child);
+                await ExportCatToSqlite(sqliteConnection, child);
                     
         }
 
