@@ -149,9 +149,11 @@ namespace RMuseum.Services.Implementation
                                             }
 
                                             int poemNumber = 0;
+                                            int count = 0;
                                             foreach (var poem in await sqlite.QueryAsync($"SELECT * FROM poem ORDER BY id"))
                                             {
                                                 poemNumber++;
+
                                                 await jobProgressServiceEF.UpdateJob(job.Id, poemNumber, "", false);
 
                                                 int poemId = (int)poem.id;
@@ -257,6 +259,13 @@ namespace RMuseum.Services.Implementation
 
                                                     if (anyChanges)
                                                     {
+                                                        count++;
+                                                        if(count>10)
+                                                        {
+                                                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                                            return;
+                                                        }
+
                                                         GanjoorComment sysComment = new GanjoorComment()
                                                         {
                                                             UserId = userId,
