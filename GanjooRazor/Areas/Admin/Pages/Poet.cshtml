@@ -75,6 +75,11 @@
             </form>
         </td>
     </tr>
+    <tr>
+        <td colspan="2">
+            <a role="button" href="/Admin/Poet?id=@Model.Poet.Id" class="actionlink">برگشت به شاعر</a>
+        </td>
+    </tr>
 </table>
 
 <table>
@@ -86,6 +91,11 @@
                 <input asp-for="CorrecionDbModel.Note" size="50" />
                 <input type="submit" value="بارگذاری" />
             </form>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <a role="button" href="/Admin/Poet?id=@Model.Poet.Id" class="actionlink">برگشت به شاعر</a>
         </td>
     </tr>
 </table>
