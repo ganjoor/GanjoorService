@@ -1160,7 +1160,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
 
         [HttpPost]
-        [Route("sqliteimport/{poetId}")]
+        [Route("sqlite/import/{poetId}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -1182,7 +1182,7 @@ namespace RMuseum.Controllers
         /// <param name="note"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("sqliteupdate/{poetId}")]
+        [Route("sqlite/update/{poetId}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -1203,7 +1203,7 @@ namespace RMuseum.Controllers
         /// <param name="poetId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("sqliteexport/{poetId}")]
+        [Route("sqlite/export/{poetId}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -1222,7 +1222,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [Route("mysqlimport")]
+        [Route("mysql/import")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]

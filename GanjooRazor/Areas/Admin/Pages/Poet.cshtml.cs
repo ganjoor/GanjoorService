@@ -138,7 +138,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         _memoryCache.Remove(cacheKey2);
                     }
 
-                    LastResult = "ویرایش انجام شد.";
+                    LastResult = $"ویرایش انجام شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش شاعر</a>";
 
                     await PreparePoet();
 
@@ -169,7 +169,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/poet/image/{Request.Query["id"]}", form);
                     response.EnsureSuccessStatusCode();
 
-                    LastResult = "تصویر بارگذاری شد.";
+                    LastResult = $"تصویر بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش شاعر</a>";
 
                 }
             }
@@ -195,10 +195,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var fileContent = stream.ToArray();
                     form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Poet.Nickname, SQLiteDb.FileName);
 
-                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqliteimport/{Request.Query["id"]}", form);
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqlite/import/{Request.Query["id"]}", form);
                     response.EnsureSuccessStatusCode();
 
-                    LastResult = "پایگاه داده‌ها بارگذاری شد.";
+                    LastResult = $"پایگاه داده‌ها بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش شاعر</a>";
 
                 }
             }
@@ -224,10 +224,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var fileContent = stream.ToArray();
                     form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Poet.Nickname, CorrecionDbModel.Db.FileName);
 
-                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqliteupdate/{Request.Query["id"]}?note={CorrecionDbModel.Note}", form);
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqlite/update/{Request.Query["id"]}?note={CorrecionDbModel.Note}", form);
                     response.EnsureSuccessStatusCode();
 
-                    LastResult = "پایگاه داده‌ها بارگذاری شد.";
+                    LastResult = $"پایگاه داده‌های اصلاحی بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش شاعر</a>";
 
                 }
             }

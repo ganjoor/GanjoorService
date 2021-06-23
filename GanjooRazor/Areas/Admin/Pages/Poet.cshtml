@@ -11,7 +11,7 @@
 @if(!string.IsNullOrEmpty(Model.LastResult))
 {
     <p>
-        @Model.LastResult
+        @Html.Raw(Model.LastResult)
     </p>
 }
 
@@ -75,27 +75,17 @@
             </form>
         </td>
     </tr>
-    <tr>
-        <td colspan="2">
-            <a role="button" href="/Admin/Poet?id=@Model.Poet.Id" class="actionlink">برگشت به شاعر</a>
-        </td>
-    </tr>
 </table>
 
 <table>
     <tr>
-        <td>تصحیح از طریق دیتابیس:</td>
+        <td>تصحیح از طریق پایگاه داده‌ها:</td>
         <td>
             <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadCorrectionDb&id=@Model.Poet.Id">
                 <input type="file" asp-for="CorrecionDbModel.Db" />
                 <input asp-for="CorrecionDbModel.Note" size="50" />
                 <input type="submit" value="بارگذاری" />
             </form>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <a role="button" href="/Admin/Poet?id=@Model.Poet.Id" class="actionlink">برگشت به شاعر</a>
         </td>
     </tr>
 </table>

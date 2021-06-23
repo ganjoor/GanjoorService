@@ -132,7 +132,7 @@ namespace RMuseum.Services.Implementation
                                 using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                 {
                                     LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                    var job = (await jobProgressServiceEF.NewJob("ImportFromSqlite", "Query data")).Result;
+                                    var job = (await jobProgressServiceEF.NewJob("ApplyCorrectionsFromSqlite", "Query data")).Result;
 
                                     try
                                     {
