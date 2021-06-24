@@ -3142,14 +3142,6 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private static string PrepareTOCChar(string poemLastChar)
-        {
-            string s = GPersianTextSync.Farglisize(poemLastChar);
-            if (s == "s")
-                return "ss"; //prevent an ID conflict
-            return s;
-        }
-
         /// <summary>
         /// generate category TOC
         /// </summary>
@@ -3202,23 +3194,29 @@ namespace RMuseum.Services.Implementation
                         var randomPoemVerses = await _context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == randomPoem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
                         if(randomPoemVerses.Length > 2)
                         {
-                            html += $"<p>مثلاً برای پیدا کردن شعری که مصرع <em>{randomPoemVerses[1].Text}</em> مصرع دوم یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ PrepareTOCChar(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
+                            html += $"<p>مثلاً برای پیدا کردن شعری که مصرع <em>{randomPoemVerses[1].Text}</em> مصرع دوم یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
                         }
 
                         html += $"<h3><a id=\"index\">دسترسی سریع به حروف</a></h3>{Environment.NewLine}";
                         html += $"<p>{Environment.NewLine}";
                         string lastChar = "";
+                        List<string> visitedLastChart = new List<string>();
                         foreach(var poem in taggedPoems)
                         {
                             string poemLastChar = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
                             if(poemLastChar != lastChar)
                             {
-                                if(lastChar != "")
+                                if(visitedLastChart.IndexOf(poemLastChar) == -1)
                                 {
-                                    html += " | ";
+                                    if (lastChar != "")
+                                    {
+                                        html += " | ";
+                                    }
+                                    html += $"<a href=\"#{GPersianTextSync.UniquelyFarglisize(poemLastChar)}\">{poemLastChar}</a>";
+                                    lastChar = poemLastChar;
+
+                                    visitedLastChart.Add(poemLastChar);
                                 }
-                                html += $"<a href=\"#{PrepareTOCChar(poemLastChar)}\">{poemLastChar}</a>";
-                                lastChar = poemLastChar;
                             }
                         }
                         html += $"</p>{Environment.NewLine}";
@@ -3226,7 +3224,8 @@ namespace RMuseum.Services.Implementation
                 }
 
                 string last = "";
-                foreach(var poem in poems)
+                List<string> visitedLast = new List<string>();
+                foreach (var poem in poems)
                 {
                     if
                     (
@@ -3243,8 +3242,12 @@ namespace RMuseum.Services.Implementation
                             string poemLast = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
                             if (poemLast != last)
                             {
-                                html += $"<h3><a href=\"#index\" id=\"{PrepareTOCChar(poemLast)}\">{poemLast}</a></h3>{Environment.NewLine}";
-                                last = poemLast;
+                                if(visitedLast.IndexOf(poemLast) == -1)
+                                {
+                                    html += $"<h3><a href=\"#index\" id=\"{GPersianTextSync.UniquelyFarglisize(poemLast)}\">{poemLast}</a></h3>{Environment.NewLine}";
+                                    last = poemLast;
+                                    visitedLast.Add(poemLast);
+                                }
                             }
                         }
                     }

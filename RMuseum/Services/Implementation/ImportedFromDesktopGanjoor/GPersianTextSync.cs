@@ -22,6 +22,7 @@ namespace RMuseum.Services.Implementation.ImportedFromDesktopGanjoor
             return outStr;
         }
 
+
         /// <summary>
         /// equaivalnet for persian characters
         /// </summary>
@@ -64,6 +65,53 @@ namespace RMuseum.Services.Implementation.ImportedFromDesktopGanjoor
             {'أ', "A"},
             {'إ', "E"},
             {' ', "-"},
+        };
+
+        public static string UniquelyFarglisize(string inputStr)
+        {
+            string outStr = "";
+            string s;
+            foreach (char c in inputStr)
+                if (_UniqueAlphaNames.TryGetValue(c, out s))
+                    outStr += s;
+            return outStr;
+        }
+
+
+        private static Dictionary<char, string> _UniqueAlphaNames = new Dictionary<char, string>()
+        {
+            {'ا', "a"},
+            {'آ', "a"},
+            {'ب', "b"},
+            {'پ', "p"},
+            {'ت', "t"},
+            {'ث', "th"},
+            {'ج', "j"},
+            {'چ', "ch"},
+            {'ح', "hh"},
+            {'خ', "kh"},
+            {'د', "d"},
+            {'ذ', "the"},
+            {'ر', "r"},
+            {'ز', "z"},
+            {'س', "si"},
+            {'ش', "sh"},
+            {'ط', "tt"},
+            {'ظ', "zz"},
+            {'ص', "ss"},
+            {'ض', "zzz"},
+            {'ع', "e"},
+            {'غ', "gh2"},
+            {'ف', "f"},
+            {'ق', "gh"},
+            {'ک', "k"},
+            {'گ', "g"},
+            {'ل', "l"},
+            {'م', "m"},
+            {'ن', "n"},
+            {'ه', "h"},
+            {'و', "v"},
+            {'ی', "y"},
         };
     }
 }
