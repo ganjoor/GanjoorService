@@ -2667,7 +2667,7 @@ namespace RMuseum.Services.Implementation
                 var pageText = "";
                 foreach(var line in poet.Description.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    pageText += $"<p>{line}</p>";
+                    pageText += $"<p>{line}</p>{Environment.NewLine}";
                 }
 
                 GanjoorPage dbPage = new GanjoorPage()
@@ -3187,7 +3187,7 @@ namespace RMuseum.Services.Implementation
                                 using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                 {
                                     LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                    var job = (await jobProgressServiceEF.NewJob($"eneratingSubCatsTOC {catId}", "Query data")).Result;
+                                    var job = (await jobProgressServiceEF.NewJob($"GeneratingSubCatsTOC {catId}", "Query data")).Result;
                                     try
                                     {
                                         await _GeneratingSubCatsTOC(userId, context, jobProgressServiceEF, job, catId);
