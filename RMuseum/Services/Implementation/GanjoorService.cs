@@ -21,6 +21,7 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Net.Http;
 using System.Web;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
+using RSecurityBackend.Models.Generic.Db;
 
 namespace RMuseum.Services.Implementation
 {
@@ -3142,6 +3143,72 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        private async Task _GeneratingSubCatsTOC(Guid userId, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int catId)
+        {
+            foreach(var cat in await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).ToListAsync())
+            {
+                await jobProgressServiceEF.UpdateJob(job.Id, cat.Id);
+                var page = await context.GanjoorPages.Where(p => p.FullUrl == cat.FullUrl).SingleAsync();
+
+                context.GanjoorPageSnapshots.Add
+                           (
+                           new GanjoorPageSnapshot()
+                           {
+                               GanjoorPageId = page.Id,
+                               MadeObsoleteByUserId = userId,
+                               HtmlText = page.HtmlText,
+                               Note = "تولید گروهی فهرستهای زیربخشها",
+                               RecordDate = DateTime.Now
+                           }
+                           );
+
+                page.HtmlText = (await _GenerateTableOfContents(context, cat.Id, GanjoorTOC.TitlesAndFirstVerse)).Result;
+                context.GanjoorPages.Update(page);
+                await context.SaveChangesAsync();
+
+                await _GeneratingSubCatsTOC(userId, context, jobProgressServiceEF, job, cat.Id);
+            }
+        }
+
+        /// <summary>
+        /// start generating sub cats TOC
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public RServiceResult<bool> StartGeneratingSubCatsTOC(Guid userId, int catId)
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                                {
+                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                    var job = (await jobProgressServiceEF.NewJob($"eneratingSubCatsTOC {catId}", "Query data")).Result;
+                                    try
+                                    {
+                                        await _GeneratingSubCatsTOC(userId, context, jobProgressServiceEF, job, catId);
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                    }
+                                    catch (Exception exp)
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                    }
+
+                                }
+                            });
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
         /// <summary>
         /// generate category TOC
         /// </summary>
@@ -3150,17 +3217,23 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<string>> GenerateTableOfContents(int catId, GanjoorTOC options)
         {
+            return await _GenerateTableOfContents(_context, catId, options);
+        }
+
+       
+        private async Task<RServiceResult<string>> _GenerateTableOfContents(RMuseumDbContext context, int catId, GanjoorTOC options)
+        {
             try
             {
                 string html = "";
-                var subCats = await _context.GanjoorCategories.Where(c => c.ParentId == catId).OrderBy(c => c.Id).AsNoTracking().ToArrayAsync();
+                var subCats = await context.GanjoorCategories.Where(c => c.ParentId == catId).OrderBy(c => c.Id).AsNoTracking().ToArrayAsync();
 
                 foreach(var cat in subCats)
                 {
                     html += $"<p><a href=\"{cat.FullUrl}\">{cat.Title}</a></p>{Environment.NewLine}";
                 }
 
-                var poems = await _context.GanjoorPoems.Where(p => p.CatId == catId).OrderBy(p => p.Id).AsNoTracking().ToArrayAsync();
+                var poems = await context.GanjoorPoems.Where(p => p.CatId == catId).OrderBy(p => p.Id).AsNoTracking().ToArrayAsync();
 
                 if(poems.Length > 0)
                 {
@@ -3191,7 +3264,7 @@ namespace RMuseum.Services.Implementation
                     {
                         html += $"<p>فهرست شعرها به ترتیب آخر حرف قافیه گردآوری شده است. برای پیدا کردن یک شعر کافی است حرف آخر قافیهٔ آن را در نظر بگیرید تا بتوانید آن  را پیدا کنید.</p>{Environment.NewLine}";
                         var randomPoem = taggedPoems[new Random(DateTime.Now.Millisecond).Next(taggedPoems.Length)];
-                        var randomPoemVerses = await _context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == randomPoem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
+                        var randomPoemVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == randomPoem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
                         if(randomPoemVerses.Length > 2)
                         {
                             html += $"<p>مثلاً برای پیدا کردن شعری که مصرع <em>{randomPoemVerses[1].Text}</em> مصرع دوم یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
@@ -3254,7 +3327,7 @@ namespace RMuseum.Services.Implementation
 
                     html += $"<p><a href=\"{poem.FullUrl}\">{poem.Title}</a>";
 
-                    var verses = await _context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
+                    var verses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
 
                     if(verses.Length > 0)
                     {
@@ -3317,7 +3390,7 @@ namespace RMuseum.Services.Implementation
                     }
                     
 
-                    html += $"</p>";
+                    html += $"</p>{Environment.NewLine}";
                 }
                 
 

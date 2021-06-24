@@ -795,6 +795,13 @@
             <param name="options"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartGeneratingSubCatsTOC(System.Int32)">
+            <summary>
+            start generating sub cats TOC
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPageByUrl(System.String,System.Boolean)">
             <summary>
             page by url
@@ -7573,6 +7580,14 @@
             <param name="options"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartGeneratingSubCatsTOC(System.Guid,System.Int32)">
+            <summary>
+            start generating sub cats TOC
+            </summary>
+            <param name="userId"></param>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -8958,6 +8973,14 @@
             <param name="catId"></param>
             <param name="retag"></param>
             <param name="rhythm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingSubCatsTOC(System.Guid,System.Int32)">
+            <summary>
+            start generating sub cats TOC
+            </summary>
+            <param name="userId"></param>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GenerateTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">

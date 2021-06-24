@@ -144,6 +144,20 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new OkObjectResult(false);
         }
 
+        public async Task<IActionResult> OnPostStartGeneratingSubCatsTOCAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/subcats/startgentoc/{id}", null);
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
         public async Task<IActionResult> OnPostStartRhythmAnalysisAsync(int id, string rhythm)
         {
             using (HttpClient secureClient = new HttpClient())

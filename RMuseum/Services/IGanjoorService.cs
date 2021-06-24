@@ -431,5 +431,13 @@ namespace RMuseum.Services
         /// <param name="options"></param>
         /// <returns></returns>
         Task<RServiceResult<string>> GenerateTableOfContents(int catId, GanjoorTOC options);
+
+        /// <summary>
+        /// start generating sub cats TOC
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartGeneratingSubCatsTOC(Guid userId, int catId);
     }
 }

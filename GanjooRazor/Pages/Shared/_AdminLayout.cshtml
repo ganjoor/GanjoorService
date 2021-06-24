@@ -76,6 +76,28 @@
             });
         }
 
+        function startTocGenerationForSubCats(catId) {
+            if (!confirm('آیا از شروع کار تولید مجدد فهرست همهٔ زیربخشها اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=StartGeneratingSubCatsTOC';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    id: catId
+                },
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('کار تولید مجدد فهرست همهٔ زیربخشهای بخش شروع شد.')
+                },
+
+            });
+        }
+
         function tagCatWithRhymes(catId) {
             if (!confirm('آیا از شروع کار قافیه‌یابی اطمینان دارید؟'))
                 return;

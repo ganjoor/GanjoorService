@@ -490,6 +490,29 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// start generating sub cats TOC
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpPut("cat/subcats/startgentoc/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public IActionResult StartGeneratingSubCatsTOC(int id)
+        {
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = _ganjoorService.StartGeneratingSubCatsTOC(userId, id);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok();
+        }
+
+        /// <summary>
         /// page by url
         /// </summary>
         /// <param name="url"></param>
