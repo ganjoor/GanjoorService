@@ -3172,7 +3172,7 @@ namespace RMuseum.Services.Implementation
                         }
                         else
                         {
-                            options = GanjoorTOC.TitlesAndExcerpt;
+                            options = GanjoorTOC.TitlesAndFirstVerse;
                         }
                     }
                 }
@@ -3258,12 +3258,12 @@ namespace RMuseum.Services.Implementation
 
                     if(verses.Length > 0)
                     {
-                        if (options == GanjoorTOC.TitlesAndExcerpt || options == GanjoorTOC.AlphabeticWithFirstVerse)
+                        if (options == GanjoorTOC.TitlesAndFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerse)
                         {
                             html += $": {verses[0].Text}";
                         }
                         else
-                        if(options == GanjoorTOC.AlphabeticWithSecondVerse)
+                        if(options == GanjoorTOC.AlphabeticWithSecondVerse || options == GanjoorTOC.TitlesAndSecondVerse)
                         {
                             if(verses.Length > 1)
                             {
@@ -3275,11 +3275,39 @@ namespace RMuseum.Services.Implementation
                             }
                         }
                         else
-                        if(options == GanjoorTOC.AlphabeticWithFirstCouplet)
+                        if(options == GanjoorTOC.AlphabeticWithFirstCouplet || options == GanjoorTOC.TitlesAndFirstCouplet)
                         {
                             if (verses.Length > 1)
                             {
                                 html += $": {verses[0].Text} - {verses[1].Text}";
+                            }
+                            else
+                            {
+                                html += $": {verses[0].Text}";
+                            }
+                        }
+                        else
+                        if(options == GanjoorTOC.TitlesAndFirstCenteredVerse)
+                        {
+                            if (verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any() )
+                            {
+                                html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text}";
+                            }
+                            else
+                            {
+                                html += $": {verses[0].Text}";
+                            }
+                        }
+                        else
+                        if (options == GanjoorTOC.TitlesAndFirstCenteredCouplet)
+                        {
+                            if (
+                                verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any() 
+                                &&
+                                verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).Any()
+                                )
+                            {
+                                html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text} - {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).First().Text}";
                             }
                             else
                             {
