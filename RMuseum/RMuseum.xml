@@ -1095,6 +1095,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.UpdateStatsPage">
+            <summary>
+            regenerate stats page
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
             <summary>
             Ganjoor Service
@@ -7600,6 +7606,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.UpdateStatsPage(System.Guid)">
+            <summary>
+            build sitemap
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -8445,20 +8457,6 @@
             Show Donating Information (temporary switch off/on)
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.DonationService.FormatMoney(System.Decimal)">
-            <summary>
-            format money
-            </summary>
-            <param name="amount"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.DonationService.FormatDate(System.DateTime)">
-            <summary>
-            format datetime
-            </summary>
-            <param name="dateTime"></param>
-            <returns></returns>
-        </member>
         <member name="F:RMuseum.Services.Implementation.DonationService._context">
             <summary>
             Database Context
@@ -8564,6 +8562,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportFromMySql">
             <summary>
@@ -8606,6 +8607,12 @@
             make html text
             </summary>
             <param name="verses"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateStatsPage(System.Guid)">
+            <summary>
+            build sitemap
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean,System.Boolean)">
@@ -9138,6 +9145,20 @@
             </summary>
             <param name="verses"></param>
             <param name="secondPhase"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.LanguageUtils.FormatMoney(System.Decimal)">
+            <summary>
+            format money
+            </summary>
+            <param name="amount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.LanguageUtils.FormatDate(System.DateTime)">
+            <summary>
+            format datetime
+            </summary>
+            <param name="dateTime"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.MusicCatalogueService">

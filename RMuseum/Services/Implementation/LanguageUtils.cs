@@ -1,6 +1,9 @@
-﻿using RMuseum.Models.Ganjoor;
+﻿using DNTPersianUtils.Core;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace RMuseum.Services.Implementation
@@ -217,6 +220,28 @@ namespace RMuseum.Services.Implementation
             }
 
             return new GanjooRhymeAnalysisResult() { Rhyme = "", FailVerse = "" };
+        }
+
+
+        /// <summary>
+        /// format money
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+
+        public static string FormatMoney(decimal amount)
+        {
+            return amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers();
+        }
+
+        /// <summary>
+        /// format datetime
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static string FormatDate(DateTime dateTime)
+        {
+            return $"{dateTime.ToPersianYearMonthDay().Day.ToPersianNumbers()}م {PersianCulture.GetPersianMonthName(dateTime.ToPersianYearMonthDay().Month)} {dateTime.ToPersianYearMonthDay().Year.ToPersianNumbers()}";
         }
     }
 }

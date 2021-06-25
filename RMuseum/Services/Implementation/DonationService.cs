@@ -34,11 +34,11 @@ namespace RMuseum.Services.Implementation
             {
                 var d = new GanjoorDonation()
                 {
-                    DateString = FormatDate(donation.RecordDate),
+                    DateString = LanguageUtils.FormatDate(donation.RecordDate),
                     RecordDate = donation.RecordDate,
                     Amount = donation.Amount,
                     Unit = donation.Unit,
-                    AmountString = FormatMoney(donation.Amount),
+                    AmountString = LanguageUtils.FormatMoney(donation.Amount),
                     DonorName = donation.DonorName,
                     Remaining = donation.Amount,
                     ExpenditureDesc = "",
@@ -78,11 +78,11 @@ namespace RMuseum.Services.Implementation
 
                         expense.DonationExpenditures.Add(n);
                         _context.GanjoorExpenses.Update(expense);
-                        var amount = d.Remaining == d.Amount && remaining == d.Remaining ? "" : d.Remaining == remaining ? "" : $"مبلغ {FormatMoney(remaining)} {d.Unit} آن ";
+                        var amount = d.Remaining == d.Amount && remaining == d.Remaining ? "" : d.Remaining == remaining ? "" : $"مبلغ {LanguageUtils.FormatMoney(remaining)} {d.Unit} آن ";
                         var part = expense.DonationExpenditures.Count == 0 && remaining == expense.Amount ? "" : "بخشی از ";
                         if (!string.IsNullOrEmpty(d.ExpenditureDesc))
                             d.ExpenditureDesc += " ";
-                        d.ExpenditureDesc += $"{amount}جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {FormatMoney(expense.Amount)} {d.Unit} صرف شد ({FormatDate(expense.ExpenseDate)}).";
+                        d.ExpenditureDesc += $"{amount}جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {LanguageUtils.FormatMoney(expense.Amount)} {d.Unit} صرف شد ({LanguageUtils.FormatDate(expense.ExpenseDate)}).";
                         d.Remaining -= remaining;
                         _context.GanjoorDonations.Update(d);
                         await _context.SaveChangesAsync();
@@ -122,7 +122,7 @@ namespace RMuseum.Services.Implementation
             {
                 var donation = await _context.GanjoorDonations.Where(d => d.Id == id).SingleAsync();
                 donation.RecordDate = updateModel.Date;
-                donation.DateString = FormatDate(donation.RecordDate);
+                donation.DateString = LanguageUtils.FormatDate(donation.RecordDate);
                 donation.DonorName = updateModel.Description;
                 _context.GanjoorDonations.Update(donation);
                 await _context.SaveChangesAsync();
@@ -212,11 +212,11 @@ namespace RMuseum.Services.Implementation
                         expense.DonationExpenditures.Add(n);
                         _context.GanjoorExpenses.Update(expense);
 
-                        var amount = d.Remaining == d.Amount && remaining == d.Remaining ? "" : d.Remaining == remaining ? "باقیماندهٔ آن " : $"مبلغ {FormatMoney(remaining)} {d.Unit} آن ";
+                        var amount = d.Remaining == d.Amount && remaining == d.Remaining ? "" : d.Remaining == remaining ? "باقیماندهٔ آن " : $"مبلغ {LanguageUtils.FormatMoney(remaining)} {d.Unit} آن ";
                         var part = expense.DonationExpenditures.Count == 1 && remaining == expenseRemaining ? "" : "بخشی از ";
                         if (!string.IsNullOrEmpty(d.ExpenditureDesc))
                             d.ExpenditureDesc += " ";
-                        d.ExpenditureDesc += $"{amount}جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {FormatMoney(expense.Amount)} {d.Unit} صرف شد ({FormatDate(expense.ExpenseDate)}).";
+                        d.ExpenditureDesc += $"{amount}جهت تأمین {part}هزینهٔ {expense.Description} به مبلغ {LanguageUtils.FormatMoney(expense.Amount)} {d.Unit} صرف شد ({LanguageUtils.FormatDate(expense.ExpenseDate)}).";
                         d.Remaining -= remaining;
                         _context.GanjoorDonations.Update(d);
 
@@ -227,7 +227,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                await RegenerateDonationsPage(editingUserId, $"ثبت هزینهٔ {expense.Description} به مبلغ {FormatMoney(expense.Amount)} {expense.Unit}");//ignore possible errors here!
+                await RegenerateDonationsPage(editingUserId, $"ثبت هزینهٔ {expense.Description} به مبلغ {LanguageUtils.FormatMoney(expense.Amount)} {expense.Unit}");//ignore possible errors here!
 
                 return new RServiceResult<GanjoorExpense>(expense);
             }
@@ -265,7 +265,7 @@ namespace RMuseum.Services.Implementation
 
                 await RegenerateDonationsExpenditureDesc(donations);
 
-                await RegenerateDonationsPage(editingUserId, $"ویرایش هزینهٔ {expense.Description} به مبلغ {FormatMoney(expense.Amount)} {expense.Unit}");//ignore possible errors here!
+                await RegenerateDonationsPage(editingUserId, $"ویرایش هزینهٔ {expense.Description} به مبلغ {LanguageUtils.FormatMoney(expense.Amount)} {expense.Unit}");//ignore possible errors here!
 
                 return new RServiceResult<bool>(true);
 
@@ -295,11 +295,11 @@ namespace RMuseum.Services.Implementation
                         foreach (var donationExpenditure in donationExpense.DonationExpenditures)
                             if (donationExpenditure.GanjoorDonationId == donation.Id)
                             {
-                                var amount = donation.Remaining == donation.Amount && donationExpenditure.Amount == donation.Remaining ? "" : donation.Remaining == donationExpenditure.Amount ? "باقیماندهٔ آن " : $"مبلغ {FormatMoney(donationExpenditure.Amount)} {donation.Unit} آن ";
+                                var amount = donation.Remaining == donation.Amount && donationExpenditure.Amount == donation.Remaining ? "" : donation.Remaining == donationExpenditure.Amount ? "باقیماندهٔ آن " : $"مبلغ {LanguageUtils.FormatMoney(donationExpenditure.Amount)} {donation.Unit} آن ";
                                 var part = donationExpense.DonationExpenditures.Count == 1 && donationExpenditure.Amount == donationExpense.Amount ? "" : "بخشی از ";
                                 if (!string.IsNullOrEmpty(donation.ExpenditureDesc))
                                     donation.ExpenditureDesc += " ";
-                                donation.ExpenditureDesc += $"{amount}جهت تأمین {part}هزینهٔ {donationExpense.Description} به مبلغ {FormatMoney(donationExpense.Amount)} {donation.Unit} صرف شد ({FormatDate(donationExpense.ExpenseDate)}).";
+                                donation.ExpenditureDesc += $"{amount}جهت تأمین {part}هزینهٔ {donationExpense.Description} به مبلغ {LanguageUtils.FormatMoney(donationExpense.Amount)} {donation.Unit} صرف شد ({LanguageUtils.FormatDate(donationExpense.ExpenseDate)}).";
                                 donation.Remaining -= donationExpenditure.Amount;
                             }
 
@@ -321,7 +321,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var expense = await _context.GanjoorExpenses.Include(e => e.DonationExpenditures).Where(e => e.Id == id).SingleAsync();
-                string note = $"حذف هزینهٔ {expense.Description} به مبلغ {FormatMoney(expense.Amount)} {expense.Unit}";
+                string note = $"حذف هزینهٔ {expense.Description} به مبلغ {LanguageUtils.FormatMoney(expense.Amount)} {expense.Unit}";
 
                 List<GanjoorDonation> donations = new List<GanjoorDonation>();
                 foreach(var expenditure in expense.DonationExpenditures)
@@ -711,8 +711,8 @@ namespace RMuseum.Services.Implementation
 
                 DateTime last = dateLastDonation > dateLastExpense ? dateLastDonation : dateLastExpense;
 
-                var dateString = FormatDate(last);
-                htmlText += $"باقیماندهٔ قابل هزینهٔ کمکهای دریافتی تا {dateString} برابر {FormatMoney(remSum)} تومان است.{Environment.NewLine}";
+                var dateString = LanguageUtils.FormatDate(last);
+                htmlText += $"باقیماندهٔ قابل هزینهٔ کمکهای دریافتی تا {dateString} برابر {LanguageUtils.FormatMoney(remSum)} تومان است.{Environment.NewLine}";
                 htmlText += $"</p>{Environment.NewLine}";
 
                 var expenses =
@@ -750,10 +750,10 @@ namespace RMuseum.Services.Implementation
 
                         htmlText += $"<tr{cssClass}>{Environment.NewLine}";
                         htmlText += $"<td class=\"drow\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                        htmlText += $"<td class=\"ddate\">{FormatDate(expense.ExpenseDate)}</td>{Environment.NewLine}";
-                        htmlText += $"<td class=\"damount\">{FormatMoney(expense.Amount)} {expense.Unit}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"ddate\">{LanguageUtils.FormatDate(expense.ExpenseDate)}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"damount\">{LanguageUtils.FormatMoney(expense.Amount)} {expense.Unit}</td>{Environment.NewLine}";
                         htmlText += $"<td class=\"ddonator\">{expense.Description}</td>{Environment.NewLine}";
-                        htmlText += $"<td class=\"drem\">{FormatMoney(expenseRem)} {expense.Unit}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"drem\">{LanguageUtils.FormatMoney(expenseRem)} {expense.Unit}</td>{Environment.NewLine}";
                         htmlText += $"</tr>{Environment.NewLine}";
                     }
 
@@ -788,7 +788,7 @@ namespace RMuseum.Services.Implementation
                     htmlText += $"<td class=\"damount\">{donation.AmountString}</td>{Environment.NewLine}";
                     htmlText += $"<td class=\"ddonator\">{donation.DonorName}</td>{Environment.NewLine}";
                     htmlText += $"<td class=\"dusage\">{(string.IsNullOrEmpty(donation.ExpenditureDesc) ? "هنوز هزینه نشده." : donation.ExpenditureDesc)}</td>{Environment.NewLine}";
-                    htmlText += $"<td class=\"drem\">{(donation.Remaining == 0 || string.IsNullOrEmpty(donation.Unit) ? FormatMoney(donation.Remaining) : $"{FormatMoney(donation.Remaining)} {donation.Unit}")}</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"drem\">{(donation.Remaining == 0 || string.IsNullOrEmpty(donation.Unit) ? LanguageUtils.FormatMoney(donation.Remaining) : $"{LanguageUtils.FormatMoney(donation.Remaining)} {donation.Unit}")}</td>{Environment.NewLine}";
                     htmlText += $"</tr>{Environment.NewLine}";
 
                 }
@@ -831,26 +831,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        /// <summary>
-        /// format money
-        /// </summary>
-        /// <param name="amount"></param>
-        /// <returns></returns>
-
-        public static string FormatMoney(decimal amount)
-        {
-            return amount.ToString("N0", new CultureInfo("fa-IR")).ToPersianNumbers();
-        }
-
-        /// <summary>
-        /// format datetime
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        public static string FormatDate(DateTime dateTime)
-        {
-            return $"{dateTime.ToPersianYearMonthDay().Day.ToPersianNumbers()}م {PersianCulture.GetPersianMonthName(dateTime.ToPersianYearMonthDay().Month)} {dateTime.ToPersianYearMonthDay().Year.ToPersianNumbers()}";
-        }
+ 
 
 
         /// <summary>

@@ -1465,6 +1465,32 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// regenerate stats page
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("regen/statspage")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> UpdateStatsPage()
+        {
+            try
+            {
+                Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+                var res = await _ganjoorService.UpdateStatsPage(userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Ganjoor Service
         /// </summary>
 

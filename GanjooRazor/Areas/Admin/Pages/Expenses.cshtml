@@ -73,8 +73,8 @@
         @foreach (var expense in Model.Expenses)
         {
             <tr id="tr-@expense.Id">
-                <td>@RMuseum.Services.Implementation.DonationService.FormatDate(expense.ExpenseDate)</td>
-                <td>@RMuseum.Services.Implementation.DonationService.FormatMoney(expense.Amount)</td>
+                <td>@RMuseum.Services.Implementation.LanguageUtils.FormatDate(expense.ExpenseDate)</td>
+                <td>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(expense.Amount)</td>
                 <td>@expense.Description</td>
                 <td>
                     <a role="button" href="/Admin/ExpenseEdit/?id=@expense.Id" class="actionlink" title="ویرایش">✎</a>
