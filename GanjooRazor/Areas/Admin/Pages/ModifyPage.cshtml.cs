@@ -107,6 +107,14 @@ namespace GanjooRazor.Areas.Admin.Pages
             return Page();
         }
 
+        public async Task<IActionResult> OnGetComputeRhymeAsync(int id)
+        {
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/analysisrhyme/{id}");
+            response.EnsureSuccessStatusCode();
+            var rhyme = JsonConvert.DeserializeObject<GanjooRhymeAnalysisResult>(await response.Content.ReadAsStringAsync());
+            return new OkObjectResult(rhyme.Rhyme);
+        }
+
         public async Task<IActionResult> OnPostAsync(GanjoorModifyPageViewModel ModifyModel)
         {
             using (HttpClient secureClient = new HttpClient())

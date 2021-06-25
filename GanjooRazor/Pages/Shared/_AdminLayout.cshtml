@@ -167,6 +167,23 @@
             });
         }
 
+        function computePoemRhyme(poemId, elementId) {
+            $.ajax({
+                type: "GET",
+                url: '?Handler=ComputeRhyme',
+                data: {
+                    id: poemId
+                },
+                error: function () {
+                    alert('خطا رخ داد.');
+                },
+                success: function (rhyme) {
+                    $(elementId).val(rhyme);
+                    return false;
+                },
+            });
+        }
+
 
     </script>
 </head>

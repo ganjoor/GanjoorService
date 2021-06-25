@@ -98,7 +98,7 @@
             </td>
             <td>
                 <input asp-for="ModifyModel.RhymeLetters" />
-
+                <a role="button" onclick="computePoemRhyme(@Request.Query["id"], '#ModifyModel_RhymeLetters')" class="actionlink">محاسبه</a>
             </td>
         </tr>
         <tr>
