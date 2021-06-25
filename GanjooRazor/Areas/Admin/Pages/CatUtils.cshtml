@@ -17,7 +17,7 @@
 
 @if (Model.PageInformation != null)
 {
-    <p>@Model.PageInformation.FullTitle</p>
+    <p><a href="@Model.PageInformation.FullUrl">@Model.PageInformation.FullTitle</a></p>
 }
 
 @if (Model.Cat != null)
