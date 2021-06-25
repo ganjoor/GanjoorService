@@ -439,5 +439,12 @@ namespace RMuseum.Services
         /// <param name="catId"></param>
         /// <returns></returns>
         RServiceResult<bool> StartGeneratingSubCatsTOC(Guid userId, int catId);
+
+
+        /// <summary>
+        /// build sitemap
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartBuildingSitemap();
     }
 }

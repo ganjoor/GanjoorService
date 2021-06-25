@@ -1445,6 +1445,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// start building sitemap
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpPost("sitemap")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public IActionResult StartBuildingSitemap()
+        {
+            var res = _ganjoorService.StartBuildingSitemap();
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok();
+        }
+
+        /// <summary>
         /// Ganjoor Service
         /// </summary>
 
