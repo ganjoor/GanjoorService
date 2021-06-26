@@ -40,6 +40,83 @@ namespace RMuseum.Services.Implementation
             await context.SaveChangesAsync();
         }
 
+        private async Task _UpdatePoetStatsPage(Guid editingUserId, GanjoorPoet poet, List<GanjoorMetre> rhythms, RMuseumDbContext context)
+        {
+            var rhythmsCoupletCounts =
+                            await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).AsNoTracking()
+                            .Where(v => v.Poem.Cat.PoetId == poet.Id && (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1))
+                            .GroupBy(v => new { v.Poem.GanjoorMetreId })
+                            .Select(g => new { GanjoorMetreId = g.Key.GanjoorMetreId, Count = g.Count() })
+                            .ToListAsync();
+            rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
+            var sumRhythmsCouplets = rhythmsCoupletCounts.Sum(c => c.Count);
+
+            string htmlText = $"<p>این آمار از میان {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر موجود در گنجور از {poet.Name} استخراج شده است.</p>{Environment.NewLine}";
+            htmlText += $"<p>توجه فرمایید که این آمار به دلایل مختلف تقریبی و حدودی است و افزونگی دارد. علت آن یکی این است که آثار بعضی شعرا به شکل تکراری در گنجور وجود دارد. دیگر آن که مصرع‌های بندهای اشعار ترکیبی نیز یک بیت محسوب شده‌اند. وزنیابی دستی در بیشتر موارد با ملاحظهٔ تنها یک مصرع از شعر صورت گرفته امکان وجود اشکال در آن (مخصوصاً درج اشتباهی وزنهای قابل تبدیل از قبیل درج وزن مثنوی مولوی به جای وزن عروضی سریع مطوی مکشوف (مفتعلن مفتعلن فاعلن)) وجود دارد. وزنیابی ماشینی نیز که جدیداً با استفاده از امکانات پایگاه سرود اضافه شده بعضاً خطا دارد. برخی از بخشها شامل اشعار با بیش از یک وزن هستند که در این صورت عمدتاً وزن ابیات آغازین و برای بعضی منظومه‌ها وزن غالب منظومه به عنوان وزن آن بخش منظور شده است.</p>{Environment.NewLine}";
+            htmlText += $"<table>{Environment.NewLine}" +
+                                            $"<tr class=\"h\">{Environment.NewLine}" +
+                                            $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                                            $"<td class=\"c2\">وزن</td>{Environment.NewLine}" +
+                                            $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
+                                            $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                                            $"</tr>{Environment.NewLine}";
+
+            for (int i = 0; i < rhythmsCoupletCounts.Count; i++)
+            {
+                if (i % 2 == 0)
+                    htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                else
+                    htmlText += $"<tr>{Environment.NewLine}";
+
+                htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                string rhythm = rhythmsCoupletCounts[i].GanjoorMetreId == null ? "وزنیابی نشده" :
+                                $"<a href=\"/vazn/?v={Uri.EscapeUriString(rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm)}&amp;a={poet.Id}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
+                htmlText += $"<td class=\"c2\">{rhythm}</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(rhythmsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"c4\">{(rhythmsCoupletCounts[i].Count * 100.0 / sumRhythmsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                htmlText += $"</tr>{Environment.NewLine}";
+            }
+            htmlText += $"</table>{Environment.NewLine}";
+
+            var poetUrl = (await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == poet.Id).SingleAsync()).FullUrl;
+
+            var pageUrl = $"{poetUrl}/vazn";
+
+            var dbPage = await context.GanjoorPages.Where(p => p.FullUrl == pageUrl).SingleOrDefaultAsync();
+
+            if(dbPage != null)
+            {
+                await _UpdatePageHtmlText(context, editingUserId, dbPage, "به روزرسانی خودکار صفحهٔ آمار وزنها", htmlText);
+            }
+            else
+            {
+                var maxPageId = await context.GanjoorPoems.MaxAsync(p => p.Id);
+                if (await context.GanjoorPages.MaxAsync(p => p.Id) > maxPageId)
+                    maxPageId = await context.GanjoorPages.MaxAsync(p => p.Id);
+                var pageId = 1 + maxPageId;
+                GanjoorPage dbPoemPage = new GanjoorPage()
+                {
+                    Id = pageId,
+                    GanjoorPageType = GanjoorPageType.ProsodyAndStats,
+                    Published = true,
+                    PageOrder = -1,
+                    Title = "آمار اوزان عروضی",
+                    FullTitle = $"{poet.Nickname} » آمار اوزان عروضی",
+                    UrlSlug = "vazn",
+                    FullUrl = pageUrl,
+                    HtmlText = htmlText,
+                    PoetId = poet.Id,
+                    PostDate = DateTime.Now,
+                    ParentId = (await context.GanjoorPages.Where(p => p.FullUrl == poetUrl).SingleAsync()).Id
+                };
+                context.GanjoorPages.Add(dbPoemPage);
+                await context.SaveChangesAsync();
+            }
+
+
+        }
+
         /// <summary>
         /// start updating stats page
         /// </summary>
@@ -82,6 +159,7 @@ namespace RMuseum.Services.Implementation
                                         var poets = await context.GanjoorPoets.ToListAsync();
 
                                         string htmlText = $"<p>تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} مجموعاً {LanguageUtils.FormatMoney(sumPoetsCouplets)} بیت شعر از طریق سایت گنجور در دسترس قرار گرفته است. در جدول زیر با کلیک بر روی نام شاعران -که بر اساس تعداد ابیات اشعار آنها به صورت نزولی مرتب شده- می‌توانید آمار اوزان دیوان آنها را مشاهده کنید.</p>{Environment.NewLine}";
+                                        htmlText += $"<p>توجه فرمایید که این آمار به دلایل مختلف تقریبی و حدودی است و افزونگی دارد. علت آن یکی این است که آثار بعضی شعرا به شکل تکراری در گنجور وجود دارد مثلاً دو نسخه از رباعیات خیام در دسترس است و هفت اورنگ جامی به شکل خلاصه و به شکل کامل در دسترس است. دیگر آن که مصرع‌های بندهای اشعار ترکیبی نیز یک بیت محسوب شده‌اند.</p>{Environment.NewLine}";
 
                                         htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
@@ -129,16 +207,24 @@ namespace RMuseum.Services.Implementation
                                                 htmlText += $"<tr>{Environment.NewLine}";
 
                                             htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                                            string rhythm = rhythmsCoupletCounts[i].GanjoorMetreId == null ? "وزنیابی نشده" : rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm;
+                                            string rhythm = rhythmsCoupletCounts[i].GanjoorMetreId == null ? "وزنیابی نشده" :
+                                                         $"<a href=\"/vazn/?v={Uri.EscapeUriString(rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm)}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
                                             htmlText += $"<td class=\"c2\">{rhythm}</td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(rhythmsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
-                                            htmlText += $"<td class=\"c4\">{(rhythmsCoupletCounts[i].Count * 100.0 / sumPoetsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c4\">{(rhythmsCoupletCounts[i].Count * 100.0 / sumRhythmsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
                                             htmlText += $"</tr>{Environment.NewLine}";
                                         }
                                         htmlText += $"</table>{Environment.NewLine}";
 
                                         await _UpdatePageHtmlText(context, editingUserId, dbPage, "به روزرسانی خودکار صفحهٔ آمار وزنها", htmlText);
+
+                                        foreach (var poetInfo in poetsCoupletCounts)
+                                        {
+                                            var poet = poets.Where(p => p.Id == poetInfo.PoetId).Single();
+                                            await jobProgressServiceEF.UpdateJob(job.Id, poetInfo.PoetId, poet.Nickname);
+                                            await _UpdatePoetStatsPage(editingUserId, poet, rhythms, context);
+                                        }
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                     }
