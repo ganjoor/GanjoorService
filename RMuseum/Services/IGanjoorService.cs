@@ -448,9 +448,9 @@ namespace RMuseum.Services
         RServiceResult<bool> StartBuildingSitemap();
 
         /// <summary>
-        /// build sitemap
+        /// start updating stats page
         /// </summary>
         /// <returns></returns>
-        Task<RServiceResult<bool>> UpdateStatsPage(Guid editingUserId);
+        RServiceResult<bool> StartUpdatingStatsPage(Guid editingUserId);
     }
 }

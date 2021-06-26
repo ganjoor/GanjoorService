@@ -8,6 +8,7 @@ using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,65 +22,98 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
 
+        private async Task _UpdatePageHtmlText(RMuseumDbContext context, Guid userId, GanjoorPage page, string note, string htmlText)
+        {
+            context.GanjoorPageSnapshots.Add
+                           (
+                           new GanjoorPageSnapshot()
+                           {
+                               GanjoorPageId = page.Id,
+                               MadeObsoleteByUserId = userId,
+                               HtmlText = page.HtmlText,
+                               Note = note,
+                               RecordDate = DateTime.Now
+                           }
+                           );
+            page.HtmlText = htmlText;
+            context.GanjoorPages.Update(page);
+            await context.SaveChangesAsync();
+        }
+
         /// <summary>
-        /// build sitemap
+        /// start updating stats page
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> UpdateStatsPage(Guid editingUserId)
+        public RServiceResult<bool> StartUpdatingStatsPage(Guid editingUserId)
         {
             try
             {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                                {
+                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                    var job = (await jobProgressServiceEF.NewJob("UpdateStatsPage", "Total Poets Stats")).Result;
 
-                var poetsCoupletCounts =
-                                        await _context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).AsNoTracking()
+                                    try
+                                    {
+                                        var poetsCoupletCounts =
+                                        await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).AsNoTracking()
                                         .Where(v => v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
                                         .GroupBy(v => new { v.Poem.Cat.PoetId })
                                         .Select(g => new { PoetId = g.Key.PoetId, Count = g.Count() })
                                         .ToListAsync();
 
-                poetsCoupletCounts.Sort((a, b) => b.Count - a.Count);
+                                        poetsCoupletCounts.Sort((a, b) => b.Count - a.Count);
 
-                var dbPage = await _context.GanjoorPages.Where(p => p.FullUrl == "/vazn").SingleAsync();
+                                        var dbPage = await context.GanjoorPages.Where(p => p.FullUrl == "/vazn").SingleAsync();
 
-                var poets = await _context.GanjoorPoets.ToListAsync();
+                                        var poets = await context.GanjoorPoets.ToListAsync();
 
-                var sum = poetsCoupletCounts.Sum(c => c.Count);
+                                        var sum = poetsCoupletCounts.Sum(c => c.Count);
 
-                string htmlText = $"<p>تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} مجموعاً {LanguageUtils.FormatMoney(sum)} بیت شعر از طریق سایت گنجور در دسترس قرار گرفته است. در جدول زیر با کلیک بر روی نام شاعران -که بر اساس تعداد ابیات اشعار آنها به صورت نزولی مرتب شده- می‌توانید آمار اوزان دیوان آنها را مشاهده کنید.</p>{Environment.NewLine}";
+                                        string htmlText = $"<p>تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} مجموعاً {LanguageUtils.FormatMoney(sum)} بیت شعر از طریق سایت گنجور در دسترس قرار گرفته است. در جدول زیر با کلیک بر روی نام شاعران -که بر اساس تعداد ابیات اشعار آنها به صورت نزولی مرتب شده- می‌توانید آمار اوزان دیوان آنها را مشاهده کنید.</p>{Environment.NewLine}";
 
-                htmlText += $"<table>{Environment.NewLine}" +
-                    $"<tr class=\"h\">{Environment.NewLine}" +
-                    $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
-                    $"<td class=\"c2\">شاعر</td>{Environment.NewLine}" +
-                    $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
-                    $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                    $"</tr>{Environment.NewLine}";
+                                        htmlText += $"<table>{Environment.NewLine}" +
+                                            $"<tr class=\"h\">{Environment.NewLine}" +
+                                            $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                                            $"<td class=\"c2\">شاعر</td>{Environment.NewLine}" +
+                                            $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
+                                            $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                                            $"</tr>{Environment.NewLine}";
 
-                for (int i = 0; i < poetsCoupletCounts.Count; i++)
-                {
-                    if(i%2 == 0)
-                        htmlText += $"<tr class=\"e\">{Environment.NewLine}";
-                    else
-                        htmlText += $"<tr>{Environment.NewLine}";
+                                        for (int i = 0; i < poetsCoupletCounts.Count; i++)
+                                        {
+                                            if (i % 2 == 0)
+                                                htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                                            else
+                                                htmlText += $"<tr>{Environment.NewLine}";
 
-                    htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                    htmlText += $"<td class=\"c2\">{poets.Where(p => p.Id == poetsCoupletCounts[i].PoetId).Single().Nickname}</td>{Environment.NewLine}";
-                    htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(poetsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
-                    htmlText += $"<td class=\"c4\">{LanguageUtils.FormatMoney(poetsCoupletCounts[i].Count * 100 / sum)}</td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c2\"><a href=\"{(await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == poetsCoupletCounts[i].PoetId).SingleAsync()).FullUrl}\">{poets.Where(p => p.Id == poetsCoupletCounts[i].PoetId).Single().Nickname}</a></td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(poetsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c4\">{(poetsCoupletCounts[i].Count * 100.0 / sum).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
-                    htmlText += $"</tr>{Environment.NewLine}";
-                }
-                htmlText += $"</table>{Environment.NewLine}";
+                                            htmlText += $"</tr>{Environment.NewLine}";
+                                        }
+                                        htmlText += $"</table>{Environment.NewLine}";
 
-                await UpdatePageAsync(dbPage.Id, editingUserId,
-                 new GanjoorModifyPageViewModel()
-                 {
-                     Title = dbPage.Title,
-                     HtmlText = htmlText,
-                     Note = "به روزرسانی خودکار صفحهٔ آمار وزنها",
-                     UrlSlug = dbPage.UrlSlug,
-                 }
-                 );
+                                        await _UpdatePageHtmlText(context, editingUserId, dbPage, "به روزرسانی خودکار صفحهٔ آمار وزنها", htmlText);
+
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                    }
+                                    catch (Exception exp)
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                    }
+                                }
+
+                            }
+                            );
+
+                
                 return new RServiceResult<bool>(true);
             }
             catch (Exception exp)

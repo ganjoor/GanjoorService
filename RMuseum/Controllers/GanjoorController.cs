@@ -1469,17 +1469,17 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("regen/statspage")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModifyOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public async Task<IActionResult> UpdateStatsPage()
+        public IActionResult StartUpdatingStatsPage()
         {
             try
             {
                 Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
-                var res = await _ganjoorService.UpdateStatsPage(userId);
+                var res = _ganjoorService.StartUpdatingStatsPage(userId);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 return Ok();

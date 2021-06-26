@@ -1095,7 +1095,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.UpdateStatsPage">
+        <member name="M:RMuseum.Controllers.GanjoorController.StartUpdatingStatsPage">
             <summary>
             regenerate stats page
             </summary>
@@ -7606,9 +7606,9 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.UpdateStatsPage(System.Guid)">
+        <member name="M:RMuseum.Services.IGanjoorService.StartUpdatingStatsPage(System.Guid)">
             <summary>
-            build sitemap
+            start updating stats page
             </summary>
             <returns></returns>
         </member>
@@ -8609,9 +8609,9 @@
             <param name="verses"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateStatsPage(System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartUpdatingStatsPage(System.Guid)">
             <summary>
-            build sitemap
+            start updating stats page
             </summary>
             <returns></returns>
         </member>
