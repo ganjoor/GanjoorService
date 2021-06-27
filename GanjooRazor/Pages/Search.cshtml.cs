@@ -178,37 +178,57 @@ namespace GanjooRazor.Pages
 
                 foreach (var poem in Poems)
                 {
-                   
-
-                    int firstIndex = poem.PlainText.Length;
-                    for (int i = 0; i < queryParts.Length; i++)
+                    string[] lines = poem.PlainText.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+                    List<int> linesInExcerpt = new List<int>();
+                    for (int i = 0; i < lines.Length; i++)
                     {
-                        if (poem.PlainText.IndexOf(queryParts[i]) < firstIndex)
+                        foreach (var queryPart in queryParts)
                         {
-                            if (firstIndex >= 0)
+                            if(lines[i].IndexOf(queryPart) != -1)
                             {
-                                firstIndex = poem.PlainText.IndexOf(queryParts[i]);
+                                if (i > 0)
+                                {
+                                    if (linesInExcerpt.IndexOf(i - 1) == -1)
+                                    {
+                                        linesInExcerpt.Add(i - 1);
+                                    }
+                                }
+                                if(linesInExcerpt.IndexOf(i) == -1)
+                                {
+                                    linesInExcerpt.Add(i);
+                                }
+
+                                if (i < (lines.Length - 1))
+                                    linesInExcerpt.Add(i + 1);
+                                
+                                break;
                             }
                         }
                     }
 
 
+                    string plainText = "";
+                    for (int i = 0; i < linesInExcerpt.Count; i++)
+                    {
+                        if (linesInExcerpt[i] > 0 && linesInExcerpt.IndexOf(linesInExcerpt[i] - 1) == -1)
+                            plainText += "... ";
+                        plainText += $"{lines[linesInExcerpt[i]]}";
+                        if (linesInExcerpt[i] < (lines.Length - 1) && linesInExcerpt.IndexOf(linesInExcerpt[i] + 1) == -1)
+                            plainText += " ...";
+                        plainText += $"{Environment.NewLine}";
+                    }
 
-                    if (firstIndex < 0)
-                        firstIndex = 0;
-                    _preparePoemExcerpt(poem, firstIndex);
-
-
+                    string finalPlainText = "";
+                    foreach (string line in plainText.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        finalPlainText += $"<p>{line}</p>";
+                    }
+                    poem.PlainText = finalPlainText;
 
                     for (int i = 0; i < queryParts.Length; i++)
                     {
                         string cssClass = i % 3 == 0 ? "hilite" : i % 3 == 1 ? "hilite2" : "hilite3";
-                        string finalPlainText = "";
-                        foreach(string line in poem.PlainText.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
-                        {
-                            finalPlainText += $"<p>{line}</p>";
-                        }
-                        poem.PlainText = Regex.Replace(finalPlainText, queryParts[i], $"<span class=\"{cssClass}\">{queryParts[i]}</span>", RegexOptions.IgnoreCase | RegexOptions.RightToLeft); ;
+                        poem.PlainText = Regex.Replace(poem.PlainText, queryParts[i], $"<span class=\"{cssClass}\">{queryParts[i]}</span>", RegexOptions.IgnoreCase | RegexOptions.RightToLeft); ;
                     }
 
 
@@ -231,33 +251,6 @@ namespace GanjooRazor.Pages
            
 
             return Page();
-        }
-
-        private void _preparePoemExcerpt(GanjoorPoemCompleteViewModel poem, int leastIndex)
-        {
-            if (poem == null)
-            {
-                return;
-            }
-            if (leastIndex > 10)
-            {
-                leastIndex -= 10;
-            }
-            poem.PlainText = "..." + poem.PlainText.Substring(leastIndex);
-
-            if (poem.PlainText.Length > 300)
-            {
-                poem.PlainText = poem.PlainText.Substring(0, 250);
-                int n = poem.PlainText.LastIndexOf(' ');
-                if (n >= 0)
-                {
-                    poem.PlainText = poem.PlainText.Substring(0, n) + " ...";
-                }
-                else
-                {
-                    poem.PlainText += "...";
-                }
-            }
         }
 
         private string GeneratePagingBarHtml(PaginationMetadata paginationMetadata, string routeStartWithQueryStrings)
