@@ -204,6 +204,26 @@
         }
 
 
+        function rebuildStats() {
+            if (!confirm('آیا از بازسازی صفحات آمار اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=RebuildStats';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('فرایند بازسازی صفحات آمار شروع شد.')
+                },
+
+            });
+        }
+
+
     </script>
 </head>
 

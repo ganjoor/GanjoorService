@@ -1468,7 +1468,7 @@ namespace RMuseum.Controllers
         /// regenerate stats page
         /// </summary>
         /// <returns></returns>
-        [HttpPut("regen/statspage")]
+        [HttpPut("rebuild/stats")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
