@@ -184,6 +184,25 @@
             });
         }
 
+        function rebuildSitemap() {
+            if (!confirm('آیا از بازسازی نقشهٔ سایت اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=RebuildSitemap';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('فرایند بازسازی نقشهٔ سایت شروع شد.')
+                },
+
+            });
+        }
+
 
     </script>
 </head>

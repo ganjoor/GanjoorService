@@ -163,5 +163,19 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             return Page();
         }
+
+        public async Task<IActionResult> OnPostRebuildSitemapAsync()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sitemap", null);
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
     }
 }
