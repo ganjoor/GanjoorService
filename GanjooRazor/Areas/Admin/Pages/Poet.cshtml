@@ -100,7 +100,13 @@
 
 <table>
     <tr>
-        <a role="button" href="/Admin/PoetDel/?id=@Model.Poet.Id" class="actionlink">حذف شاعر</a>
+        <td><a role="button" href="/Admin/Poet/?Handler=DownloadSqliteDb&id=@Model.Poet.Id" class="actionlink">sqlite</a></td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <td><a role="button" href="/Admin/PoetDel/?id=@Model.Poet.Id" class="actionlink">حذف شاعر</a></td>
     </tr>
 </table>
 

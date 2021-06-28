@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -233,6 +234,22 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnGetDownloadSqliteDbAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                LastResult = "";
+                await PreparePoet();
+
+                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
+
+                var content = await secureClient.GetStreamAsync($"{APIRoot.Url}/api/ganjoor/sqlite/export/{id}");
+                var contentType = "Application/octet-stream";
+                var fileName = $"{GPersianTextSync.Farglisize(Poet.Name)}.gdb";
+                return File(content, contentType, fileName);
+            }
         }
     }
 }
