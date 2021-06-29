@@ -62,7 +62,7 @@ namespace RMuseum.Services.Implementation
                                         {
                                             var singer = singers[nSinger];
                                             htmlText += $"<p><br style=\"clear: both;\" /></p>{Environment.NewLine}";
-                                            htmlText += $"<h2>{nSinger.ToPersianNumbers()}. <a href=\"{singer.ArtistUrl}\">";
+                                            htmlText += $"<h2>{(nSinger + 1).ToPersianNumbers()}. <a href=\"{singer.ArtistUrl}\">";
                                             htmlText += $"{singer.ArtistName} ({singer.TrackCount.ToPersianNumbers()} قطعه)</a></h2>{Environment.NewLine}";
                                             htmlText += "<div class=\"spacer\">&nbsp;</div>";
 
