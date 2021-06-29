@@ -163,12 +163,15 @@ else
     </form>
 
 
-    
+
 }
 
-@if(ViewData.ContainsKey("ganjoor-songrevu"))
-{ 
+@if (ViewData.ContainsKey("ganjoor-songrevu"))
+{
     <a class="nav-link text-dark" asp-area="User" asp-page="/AddSong">اضافه کردن آهنگ از منبع دلخواه</a>
 }
+
+<p><a role="button" onclick="rebuildMundex()" class="actionlink" title="بازسازی صفحات نمایهٔ موسیقی">بازسازی صفحات نمایهٔ موسیقی</a></p>
+
 
 

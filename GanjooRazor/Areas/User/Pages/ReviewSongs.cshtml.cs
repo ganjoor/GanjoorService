@@ -152,5 +152,19 @@ namespace GanjooRazor.Areas.User.Pages
             return Redirect($"/User/ReviewSongs/?skip={Skip}");
 
         }
+
+        public async Task<IActionResult> OnPostRebuildMundexAsync()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/rebuild/mundex", null);
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
     }
 }

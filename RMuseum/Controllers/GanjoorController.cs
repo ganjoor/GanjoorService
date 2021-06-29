@@ -1491,6 +1491,32 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// start updating mundex page
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("rebuild/mundex")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ReviewSongs)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult StartUpdatingMundexPage()
+        {
+            try
+            {
+                Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+                var res = _ganjoorService.StartUpdatingMundexPage(userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Ganjoor Service
         /// </summary>
 

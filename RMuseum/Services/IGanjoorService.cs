@@ -452,5 +452,11 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         RServiceResult<bool> StartUpdatingStatsPage(Guid editingUserId);
+
+        /// <summary>
+        /// start updating mundex page
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartUpdatingMundexPage(Guid editingUserId);
     }
 }
