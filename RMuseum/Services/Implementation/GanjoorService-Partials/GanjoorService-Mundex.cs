@@ -42,8 +42,6 @@ namespace RMuseum.Services.Implementation
                                         await context.GanjoorPoemMusicTracks
                                         .Where(m => 
                                             m.TrackType == PoemMusicTrackType.BeepTunesOrKhosousi 
-                                            && 
-                                            m.AlbumUrl != "http://khosousi.com"
                                             &&
                                             m.Approved)
                                             .ToListAsync();
@@ -53,7 +51,7 @@ namespace RMuseum.Services.Implementation
 
                                         string htmlText = $"<p>در این صفحه فهرست اشعار استفاده شده در آلبومهای موسیقی را با استفاده از اطلاعات جمع‌آوری شده در <a href=\"http://blog.ganjoor.net/1395/06/28/bptags/\">این پروژه</a> به تفکیک خواننده و به ترتیب نزولی تعداد قطعات مرتبط گرد آورده‌ایم." +
                                         $" تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} ارتباط {poemMusicTracks.Count.ToPersianNumbers()} قطعهٔ موسیقی از {poemMusicTracks.GroupBy(m => m.ArtistName).Count().ToPersianNumbers()} هنرمند با {poemMusicTracks.GroupBy(m => m.PoemId).Count().ToPersianNumbers()} شعر در پایگاه گنجور ثبت و تأیید شده است.  </p>{Environment.NewLine}";
-                                        htmlText += $"<p>جهت مشاهدهٔ این اطلاعات به تفکیک شاعران <small>(به همراه اطلاعات مجموعهٔ گلها، سایت اسپاتیفای و اجراهای خصوصی)</small> <a href=\"/mundex/bypoet/\" > این صفحه</a> را ببینید.</p>{Environment.NewLine}";
+                                        htmlText += $"<p>جهت مشاهدهٔ این اطلاعات به تفکیک شاعران <small>(به همراه اطلاعات مجموعهٔ گلها و سایت اسپاتیفای)</small> <a href=\"/mundex/bypoet/\" > این صفحه</a> را ببینید.</p>{Environment.NewLine}";
                                         htmlText += $"<p>جهت کمک به تکمیل این مجموعه <a href=\"http://blog.ganjoor.net/1395/06/28/bptags/\">این مطلب</a> را مطالعه بفرمایید و <a href=\"http://www.aparat.com/v/kxGre\">این فیلم</a> را مشاهده کنید.</p>{Environment.NewLine}";
                                         
                                         var singers = poemMusicTracks.GroupBy(m => new { m.ArtistName, m.ArtistUrl })

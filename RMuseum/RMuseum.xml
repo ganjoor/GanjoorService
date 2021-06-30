@@ -818,6 +818,13 @@
             <param name="page"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.CacheCleanForPageById(System.Int32)">
+            <summary>
+            clean cache by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetOlderVersionsOfPage(System.Int32)">
             <summary>
             older versions of a page (modifications history except for current version)

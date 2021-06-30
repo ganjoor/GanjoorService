@@ -224,6 +224,29 @@
         }
 
 
+        function cleanCache(id) {
+            if (!confirm('آیا از حذف کش این صفحه اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=CleanCache';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    id: id
+                },
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('کش صفحه پاک شد.')
+                },
+
+            });
+        }
+
+
     </script>
 </head>
 

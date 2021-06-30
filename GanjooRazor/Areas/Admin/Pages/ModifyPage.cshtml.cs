@@ -191,5 +191,22 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             return new OkObjectResult(false);
         }
+
+        public async Task<IActionResult> OnPostCleanCacheAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/page/cache/{id}");
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
+
+        
     }
 }
