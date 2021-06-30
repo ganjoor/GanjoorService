@@ -1,5 +1,7 @@
 ﻿using DNTPersianUtils.Core;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
@@ -7,6 +9,7 @@ using RSecurityBackend.Services.Implementation;
 using System;
 using System.Data;
 using System.Linq;
+using System.Net.Http;
 
 namespace RMuseum.Services.Implementation
 {
@@ -57,14 +60,36 @@ namespace RMuseum.Services.Implementation
                                                         .Select(g => new { ArtistName = g.Key.ArtistName, ArtistUrl = g.Key.ArtistUrl, TrackCount = g.Count() })
                                                         .OrderByDescending(g => g.TrackCount)
                                                         .ToList();
-
+                                        using(HttpClient httpClient = new HttpClient())
                                         for (int nSinger = 0; nSinger < singers.Count; nSinger++)
                                         {
                                             var singer = singers[nSinger];
+
+                                           
+
                                             htmlText += $"<p><br style=\"clear: both;\" /></p>{Environment.NewLine}";
                                             htmlText += $"<h2>{(nSinger + 1).ToPersianNumbers()}. <a href=\"{singer.ArtistUrl}\">";
                                             htmlText += $"{singer.ArtistName} ({singer.TrackCount.ToPersianNumbers()} قطعه)</a></h2>{Environment.NewLine}";
                                             htmlText += "<div class=\"spacer\">&nbsp;</div>";
+
+
+                                            if (singer.ArtistUrl.Contains("beeptunes.com/artist/"))
+                                            {
+                                                var beepId = singer.ArtistUrl.Substring(singer.ArtistUrl.LastIndexOf("/") + 1);
+                                                var response = await httpClient.GetAsync($"https://newapi.beeptunes.com/public/artist/info/?artistId={beepId}");
+                                                if(response.IsSuccessStatusCode)
+                                                {
+                                                    dynamic bpArtist = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+                                                    if (bpArtist.artistImage != null)
+                                                    {
+                                                        htmlText += $"<div style=\"width:240px;margin:auto\">{Environment.NewLine}" +
+                                                        $"<a href=\"{singer.ArtistUrl}\">{Environment.NewLine}" +
+                                                        $"<img src=\"{bpArtist.artistImage}\" alt=\"{singer.ArtistName}\"/>{Environment.NewLine}" +
+                                                        $"</a>{Environment.NewLine}" +
+                                                        $"</div>{Environment.NewLine}";
+                                                    }
+                                                }
+                                            }
 
                                             htmlText += $"<ol>{Environment.NewLine}";
 
