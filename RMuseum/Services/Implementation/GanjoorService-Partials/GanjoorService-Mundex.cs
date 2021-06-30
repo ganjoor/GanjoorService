@@ -63,7 +63,12 @@ namespace RMuseum.Services.Implementation
                                         {
                                             var singer = singers[nSinger];
 
-                                           
+                                            var tracks = poemMusicTracks.
+                                                                Where(m => m.ArtistName == singer.ArtistName && m.ArtistUrl == singer.ArtistUrl)
+                                                                .OrderBy(m => m.PoemId)
+                                                                .ToList();
+                                                if (tracks.Count != singer.TrackCount)
+                                                    continue;//!!! a weird situration I cannot figure out now!
 
                                             htmlText += $"<p><br style=\"clear: both;\" /></p>{Environment.NewLine}";
                                             htmlText += $"<h2>{(nSinger + 1).ToPersianNumbers()}. <a href=\"{singer.ArtistUrl}\">";
@@ -94,7 +99,7 @@ namespace RMuseum.Services.Implementation
 
                                             htmlText += $"<ol>{Environment.NewLine}";
 
-                                            foreach (var song in poemMusicTracks.Where(m => m.ArtistName == singer.ArtistName && m.ArtistUrl == singer.ArtistUrl).OrderBy(m => m.PoemId).ToList())
+                                            foreach (var song in tracks)
                                             {
                                                 htmlText += $"<li><p>{Environment.NewLine}";
                                                 var poem = await context.GanjoorPoems.Where(p => p.Id == song.PoemId).SingleAsync();
