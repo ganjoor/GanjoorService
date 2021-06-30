@@ -75,7 +75,10 @@ namespace RMuseum.Services.Implementation
 
                                             if (singer.ArtistUrl.Contains("beeptunes.com/artist/"))
                                             {
-                                                var beepId = singer.ArtistUrl.Substring(singer.ArtistUrl.LastIndexOf("/") + 1);
+                                                var bUrl = singer.ArtistUrl;
+                                                if (bUrl.LastIndexOf('/') == (bUrl.Length - 1))
+                                                    bUrl = bUrl.Substring(0, (bUrl.Length - 1));
+                                                var beepId = bUrl.Substring(bUrl.LastIndexOf("/") + 1);
                                                 var response = await httpClient.GetAsync($"https://newapi.beeptunes.com/public/artist/info/?artistId={beepId}");
                                                 if(response.IsSuccessStatusCode)
                                                 {
