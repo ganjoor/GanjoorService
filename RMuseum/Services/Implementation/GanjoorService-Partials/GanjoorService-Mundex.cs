@@ -57,7 +57,11 @@ namespace RMuseum.Services.Implementation
                         context.GanjoorPoemMusicTracks.Update(poemMusicTrack);
                     }
 
-                    var singer = context.GanjoorSingers.Where(s => s.Url == poemMusicTrack.ArtistUrl).FirstOrDefault();
+                    var singer =
+                        poemMusicTrack.SingerId != null ?
+                        context.GanjoorSingers.Where(s => s.Id == poemMusicTrack.SingerId).FirstOrDefault()
+                        :
+                        context.GanjoorSingers.Where(s => s.Url == poemMusicTrack.ArtistUrl).FirstOrDefault();
                     if (singer == null)
                     {
                         singer = new GanjoorSinger()
@@ -67,6 +71,12 @@ namespace RMuseum.Services.Implementation
                         };
                         context.GanjoorSingers.Add(singer);
                         await context.SaveChangesAsync();
+                    }
+
+                    if(poemMusicTrack.SingerId == null)
+                    {
+                        poemMusicTrack.SingerId = singer.Id;
+                        context.GanjoorPoemMusicTracks.Update(poemMusicTrack);
                     }
 
                     //singer image:
@@ -98,7 +108,6 @@ namespace RMuseum.Services.Implementation
                                                     await context.SaveChangesAsync();
                                                 }
                                             }
-                                            
                                         }
                                     }
                                 }
@@ -129,8 +138,8 @@ namespace RMuseum.Services.Implementation
             htmlText += $"<p>جهت مشاهدهٔ این اطلاعات به تفکیک شاعران <small>(به همراه اطلاعات مجموعهٔ گلها و سایت اسپاتیفای)</small> <a href=\"/mundex/bypoet/\" > این صفحه</a> را ببینید.</p>{Environment.NewLine}";
             htmlText += $"<p>جهت کمک به تکمیل این مجموعه <a href=\"http://blog.ganjoor.net/1395/06/28/bptags/\">این مطلب</a> را مطالعه بفرمایید و <a href=\"http://www.aparat.com/v/kxGre\">این فیلم</a> را مشاهده کنید.</p>{Environment.NewLine}";
 
-            var singers = poemMusicTracks.GroupBy(m => new { m.ArtistName, m.ArtistUrl })
-                            .Select(g => new { ArtistName = g.Key.ArtistName, ArtistUrl = g.Key.ArtistUrl, TrackCount = g.Count() })
+            var singers = poemMusicTracks.GroupBy(m => new { m.SingerId })
+                            .Select(g => new { SingerId = g.Key.SingerId, TrackCount = g.Count() })
                             .OrderByDescending(g => g.TrackCount)
                             .ToList();
             using (HttpClient httpClient = new HttpClient())
@@ -138,38 +147,30 @@ namespace RMuseum.Services.Implementation
                 {
                     var singer = singers[nSinger];
 
+                    var dbSinger = await context.GanjoorSingers.Where(s => s.Id == singer.SingerId).SingleAsync();
+
                     var tracks = poemMusicTracks.
-                                        Where(m => m.ArtistName == singer.ArtistName && m.ArtistUrl == singer.ArtistUrl)
+                                        Where(m => m.SingerId == singer.SingerId)
                                         .OrderBy(m => m.PoemId)
                                         .ToList();
                     if (tracks.Count != singer.TrackCount)
                         continue;//!!! a weird situration I cannot figure out now!
 
+
                     htmlText += $"<p><br style=\"clear: both;\" /></p>{Environment.NewLine}";
-                    htmlText += $"<h2>{(nSinger + 1).ToPersianNumbers()}. <a href=\"{singer.ArtistUrl}\">";
-                    htmlText += $"{singer.ArtistName} ({singer.TrackCount.ToPersianNumbers()} قطعه)</a></h2>{Environment.NewLine}";
+                    htmlText += $"<h2>{(nSinger + 1).ToPersianNumbers()}. <a href=\"{dbSinger.Url}\">";
+                    htmlText += $"{dbSinger.Name} ({singer.TrackCount.ToPersianNumbers()} قطعه)</a></h2>{Environment.NewLine}";
                     htmlText += "<div class=\"spacer\">&nbsp;</div>";
 
 
-                    if (singer.ArtistUrl.Contains("beeptunes.com/artist/"))
+                    if (dbSinger.RImageId != null)
                     {
-                        var bUrl = singer.ArtistUrl;
-                        if (bUrl.LastIndexOf('/') == (bUrl.Length - 1))
-                            bUrl = bUrl.Substring(0, (bUrl.Length - 1));
-                        var beepId = bUrl.Substring(bUrl.LastIndexOf("/") + 1);
-                        var response = await httpClient.GetAsync($"https://newapi.beeptunes.com/public/artist/info/?artistId={beepId}");
-                        if (response.IsSuccessStatusCode)
-                        {
-                            dynamic bpArtist = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
-                            if (bpArtist.artistImage != null)
-                            {
-                                htmlText += $"<div style=\"width:240px;margin:auto\">{Environment.NewLine}" +
-                                $"<a href=\"{singer.ArtistUrl}\">{Environment.NewLine}" +
-                                $"<img src=\"{bpArtist.artistImage}\" alt=\"{singer.ArtistName}\"/>{Environment.NewLine}" +
-                                $"</a>{Environment.NewLine}" +
-                                $"</div>{Environment.NewLine}";
-                            }
-                        }
+                        var imageUrl = $"https://ganjgah.ir/api/rimages/{dbSinger.RImageId}.jpg";
+                        htmlText += $"<div style=\"width:240px;margin:auto\">{Environment.NewLine}" +
+                            $"<a href=\"{dbSinger.Url}\">{Environment.NewLine}" +
+                            $"<img src=\"{imageUrl}\" alt=\"{dbSinger.Name}\"/>{Environment.NewLine}" +
+                            $"</a>{Environment.NewLine}" +
+                            $"</div>{Environment.NewLine}";
                     }
 
                     htmlText += $"<ol>{Environment.NewLine}";
