@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using RMuseum.Models.Artifact;
 using RMuseum.Models.Bookmark;
 using RMuseum.Models.GanjoorAudio;
@@ -12,7 +11,6 @@ using RSecurityBackend.Models.Auth.Db;
 using System;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.MusicCatalogue;
-using System.IO;
 using RMuseum.Models.Accounting;
 
 namespace RMuseum.DbContext

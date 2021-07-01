@@ -3751,6 +3751,16 @@
             display this image on poem page
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.OriginalSourceUrl">
+            <summary>
+            original source url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.LinkToOriginalSource">
+            <summary>
+            link to original source
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.LinkType">
             <summary>
             Link Type
@@ -7668,6 +7678,15 @@
             <summary>
             IArtifactService implementation
             </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartFillingGanjoorLinkOriginalSources">
+            <summary>
+            start updating stats page
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHarvardDirectly(System.String,System.String,System.String)">
             <summary>

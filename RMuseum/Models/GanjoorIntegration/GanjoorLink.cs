@@ -93,5 +93,15 @@ namespace RMuseum.Models.GanjoorIntegration
         /// display this image on poem page
         /// </summary>
         public bool DisplayOnPage { get; set; }
+
+        /// <summary>
+        /// original source url
+        /// </summary>
+        public string OriginalSourceUrl { get; set; }
+
+        /// <summary>
+        /// link to original source
+        /// </summary>
+        public bool LinkToOriginalSource { get; set; }
     }
 }

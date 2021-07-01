@@ -1141,7 +1141,7 @@ namespace RMuseum.Services.Implementation
                      {
                          PoemRelatedImageType = PoemRelatedImageType.MuseumLink,
                          ThumbnailImageUrl = $"https://ganjgah.ir/api/images/thumb/{link.Item.Images.First().Id}.jpg",
-                         TargetPageUrl = $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                         TargetPageUrl = link.LinkToOriginalSource ? link.OriginalSourceUrl : $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
                          AltText = $"{link.Artifact.Name} » {link.Item.Name}",
                      };
                 List<PoemRelatedImage> museumImages = await museumSrc.ToListAsync();
