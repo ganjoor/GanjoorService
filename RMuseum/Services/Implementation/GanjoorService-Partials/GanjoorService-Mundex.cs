@@ -110,7 +110,7 @@ namespace RMuseum.Services.Implementation
 
             string htmlText = $"<p>در این صفحه فهرست اشعار استفاده شده در آلبومهای موسیقی را با استفاده از اطلاعات جمع‌آوری شده در <a href=\"http://blog.ganjoor.net/1395/06/28/bptags/\">این پروژه</a> به تفکیک شاعر و به ترتیب نزولی تعداد اشعار مرتبط گرد آورده‌ایم." +
             $" تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} ارتباط {poemMusicTracks.GroupBy(m => m.PoemId).Count().ToPersianNumbers()} شعر از {poemMusicTracks.GroupBy(m => m.Poem.Cat.PoetId).Count().ToPersianNumbers()} شاعر با {poemMusicTracks.Count.ToPersianNumbers()} قطعهٔ موسیقی در پایگاه گنجور ثبت و تأیید شده است.  </p>{Environment.NewLine}";
-            htmlText += $"<p>جهت مشاهدهٔ این اطلاعات به تفکیک هنرمندان <small>(بدون اطلاعات مجموعهٔ گلها، سایت اسپاتیفای و اجراهای خصوصی)</small> <a href=\"/mundex/\" > این صفحه</a> را ببینید.</p>{Environment.NewLine}";
+            htmlText += $"<p>جهت مشاهدهٔ این اطلاعات به تفکیک هنرمندان <small>(بدون اطلاعات مجموعهٔ گلها و سایت اسپاتیفای)</small> <a href=\"/mundex/\" > این صفحه</a> را ببینید.</p>{Environment.NewLine}";
             htmlText += $"<p>جهت کمک به تکمیل این مجموعه <a href=\"http://blog.ganjoor.net/1395/06/28/bptags/\">این مطلب</a> را مطالعه بفرمایید و <a href=\"http://www.aparat.com/v/kxGre\">این فیلم</a> را مشاهده کنید.</p>{Environment.NewLine}";
 
             var poetIdsAndTrackCounts = poemMusicTracks.GroupBy(m => new { m.Poem.Cat.PoetId })
@@ -132,7 +132,7 @@ namespace RMuseum.Services.Implementation
                     var poetCat = await context.GanjoorCategories.Where(c => c.PoetId == poetIdAndTrackCount.PoetId && c.ParentId == null).AsNoTracking().SingleAsync();
 
                     htmlText += $"<p><br style=\"clear: both;\" /></p>{Environment.NewLine}";
-                    htmlText += $"<h2>{nPoetIndex+1}. <a href=\"{poetCat.FullUrl}\">{poet.Nickname}</a></h2>{Environment.NewLine}";
+                    htmlText += $"<h2>{(nPoetIndex+1).ToPersianNumbers()}. <a href=\"{poetCat.FullUrl}\">{poet.Nickname}</a></h2>{Environment.NewLine}";
                     htmlText += $"<div class=\"spacer\">&nbsp;</div>{Environment.NewLine}";
                     htmlText += $"<div style=\"width:82px;margin:auto\"><a href=\"{poetCat.FullUrl}\"><img src=\"https://ganjgah.ir/api/ganjoor/poet/image/{poetCat.UrlSlug}.gif\" alt=\"{poet.Nickname}\" /></a></div>{Environment.NewLine}";
                     htmlText += $"<div style=\"width:100%;margin:auto\"><a href=\"/{poetCat.FullUrl}\" >{poet.Nickname}</a> ({tracks.Count.ToPersianNumbers()} قطعه)</div>{Environment.NewLine}" +
