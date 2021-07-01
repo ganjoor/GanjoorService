@@ -1,18 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 using RMuseum.DbContext;
-using RMuseum.Models.Artifact;
-using RMuseum.Models.ImportJob;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
 {
@@ -22,7 +13,7 @@ namespace RMuseum.Services.Implementation
     public partial class ArtifactService : IArtifactService
     {
         /// <summary>
-        /// start updating stats page
+        /// start filling GanjoorLink table OriginalSource values
         /// </summary>
         /// <returns></returns>
         public RServiceResult<bool> StartFillingGanjoorLinkOriginalSources()
@@ -36,7 +27,7 @@ namespace RMuseum.Services.Implementation
                             using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                             {
                                 LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                var job = (await jobProgressServiceEF.NewJob("UpdateStatsPage", "Total Poets Stats")).Result;
+                                var job = (await jobProgressServiceEF.NewJob("FillingGanjoorLinkOriginalSources", "Updating")).Result;
 
                                 try
                                 {
@@ -74,7 +65,6 @@ namespace RMuseum.Services.Implementation
                                     await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
                                 }
                             }
-
             }
             );
 

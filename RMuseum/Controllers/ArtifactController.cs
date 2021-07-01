@@ -1840,7 +1840,31 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
-        
+        /// <summary>
+        /// start filling GanjoorLink table OriginalSource values
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("ganjoorlink/fillsource")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult StartFillingGanjoorLinkOriginalSources()
+        {
+            try
+            {
+                var res = _artifactService.StartFillingGanjoorLinkOriginalSources();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+
 
         /// <summary>
         /// constructor

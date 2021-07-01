@@ -520,5 +520,11 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<bool>> RemoveArtifactHavingNoNoteAndBookmarks(Guid artifactId, bool checkJobs);
 
+        /// <summary>
+        /// start filling GanjoorLink table OriginalSource values
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartFillingGanjoorLinkOriginalSources();
+
     }
 }

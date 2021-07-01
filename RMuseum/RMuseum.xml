@@ -542,6 +542,12 @@
             <param name="linkId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.StartFillingGanjoorLinkOriginalSources">
+            <summary>
+            start filling GanjoorLink table OriginalSource values
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.ArtifactController.#ctor(RMuseum.Services.IArtifactService,RSecurityBackend.Services.IUserPermissionChecker,Microsoft.Extensions.Caching.Memory.IMemoryCache,RSecurityBackend.Services.ICaptchaService)">
             <summary>
             constructor
@@ -7093,6 +7099,12 @@
             <param name="checkJobs"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartFillingGanjoorLinkOriginalSources">
+            <summary>
+            start filling GanjoorLink table OriginalSource values
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>
             donation service
@@ -7684,7 +7696,7 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartFillingGanjoorLinkOriginalSources">
             <summary>
-            start updating stats page
+            start filling GanjoorLink table OriginalSource values
             </summary>
             <returns></returns>
         </member>
