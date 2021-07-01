@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using RSecurityBackend.Models.Image;
+using System;
+using System.Collections.Generic;
 
 namespace RMuseum.Models.MusicCatalogue
 {
@@ -21,10 +23,21 @@ namespace RMuseum.Models.MusicCatalogue
         /// url
         /// </summary>
         public string Url { get; set; }
-                
+
+        /// <summary>
+        /// poet image
+        /// </summary>
+        public virtual RImage RImage { get; set; }
+
+        /// <summary>
+        /// user image id
+        /// </summary>
+        public Guid? RImageId { get; set; }
+
         /// <summary>
         /// albums
         /// </summary>
         public ICollection<GanjoorAlbum> Albums { get; set; }
+
     }
 }

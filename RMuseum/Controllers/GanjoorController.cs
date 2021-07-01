@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Auth.ViewModel;
@@ -304,7 +305,7 @@ namespace RMuseum.Controllers
             {
                 var poet = await _ganjoorService.GetPoetById(id);
                 IFormFile file = Request.Form.Files[0];
-                RServiceResult<RImage> image = await _imageFileService.Add(file, null, file.FileName, $"C:\\PoetImages\\{poet.Result.Cat.UrlSlug}.png");
+                RServiceResult<RImage> image = await _imageFileService.Add(file, null, file.FileName, Path.Combine(_configuration.GetSection("PictureFileService")["StoragePath"], "PoetImages"));
                 if (!string.IsNullOrEmpty(image.ExceptionString))
                 {
                     return BadRequest(image.ExceptionString);
@@ -1558,6 +1559,11 @@ namespace RMuseum.Controllers
         protected readonly IMemoryCache _memoryCache;
 
         /// <summary>
+        /// Configuration
+        /// </summary>
+        protected IConfiguration _configuration { get; }
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="ganjoorService"></param>
@@ -1565,13 +1571,22 @@ namespace RMuseum.Controllers
         /// <param name="httpContextAccessor"></param>
         /// <param name="imageFileService"></param>
         /// <param name="memoryCache"></param>
-        public GanjoorController(IGanjoorService ganjoorService, IAppUserService appUserService, IHttpContextAccessor httpContextAccessor, IImageFileService imageFileService, IMemoryCache memoryCache)
+        /// <param name="configuration"></param>
+        public GanjoorController(
+            IGanjoorService ganjoorService, 
+            IAppUserService appUserService, 
+            IHttpContextAccessor httpContextAccessor, 
+            IImageFileService imageFileService, 
+            IMemoryCache memoryCache,
+            IConfiguration configuration
+            )
         {
             _ganjoorService = ganjoorService;
             _appUserService = appUserService;
             _httpContextAccessor = httpContextAccessor;
             _imageFileService = imageFileService;
             _memoryCache = memoryCache;
+            _configuration = configuration;
         }
     }
 }

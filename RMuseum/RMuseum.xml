@@ -1145,7 +1145,12 @@
             IMemoryCache
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
+        <member name="P:RMuseum.Controllers.GanjoorController._configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             constructor
             </summary>
@@ -1154,6 +1159,7 @@
             <param name="httpContextAccessor"></param>
             <param name="imageFileService"></param>
             <param name="memoryCache"></param>
+            <param name="configuration"></param>
         </member>
         <member name="M:RMuseum.Controllers.ImageController.Get(System.Guid,System.String)">
             <summary>
@@ -5946,6 +5952,16 @@
         <member name="P:RMuseum.Models.MusicCatalogue.GanjoorSinger.Url">
             <summary>
             url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorSinger.RImage">
+            <summary>
+            poet image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.MusicCatalogue.GanjoorSinger.RImageId">
+            <summary>
+            user image id
             </summary>
         </member>
         <member name="P:RMuseum.Models.MusicCatalogue.GanjoorSinger.Albums">

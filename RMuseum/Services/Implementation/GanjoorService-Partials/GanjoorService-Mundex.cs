@@ -1,13 +1,17 @@
 ﻿using DNTPersianUtils.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.MusicCatalogue;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Generic.Db;
+using RSecurityBackend.Models.Image;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -19,15 +23,103 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        private async Task _PerformMundexHouseKeepingAndPreparation(RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        {
+            var singers = await context.GanjoorSingers.ToListAsync();
+            foreach(var singer in singers)
+                if(!string.IsNullOrEmpty(singer.Url) && singer.Url.Length > 0 && singer.Url[singer.Url.Length - 1] == '/')
+                {
+                    singer.Url = singer.Url.Substring(0, singer.Url.Length - 1);
+                    context.GanjoorSingers.Update(singer);
+                }
+            await context.SaveChangesAsync();
+            await jobProgressServiceEF.UpdateJob(job.Id, 2);
+
+            var poemMusicTracks =
+                                await context.GanjoorPoemMusicTracks
+                                .Where(m =>
+                                    m.TrackType == PoemMusicTrackType.BeepTunesOrKhosousi
+                                    &&
+                                    m.Approved)
+                                    .ToListAsync();
+
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                                          .SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json")
+                                          .Build();
+            ImageFileServiceEF imageFileService = new ImageFileServiceEF(context, configuration);
+
+            using (HttpClient httpClient = new HttpClient())
+                foreach (var poemMusicTrack in poemMusicTracks)
+                {
+                    if (!string.IsNullOrEmpty(poemMusicTrack.ArtistUrl) && poemMusicTrack.ArtistUrl.Length > 0 && poemMusicTrack.ArtistUrl[poemMusicTrack.ArtistUrl.Length - 1] == '/')
+                    {
+                        poemMusicTrack.ArtistUrl = poemMusicTrack.ArtistUrl.Substring(0, poemMusicTrack.ArtistUrl.Length - 1);
+                        context.GanjoorPoemMusicTracks.Update(poemMusicTrack);
+                    }
+
+                    var singer = context.GanjoorSingers.Where(s => s.Url == poemMusicTrack.ArtistUrl).FirstOrDefault();
+                    if (singer == null)
+                    {
+                        singer = new GanjoorSinger()
+                        {
+                            Name = poemMusicTrack.ArtistName,
+                            Url = poemMusicTrack.ArtistUrl
+                        };
+                        context.GanjoorSingers.Add(singer);
+                        await context.SaveChangesAsync();
+                    }
+
+                    //singer image:
+                    if (singer.Url.Contains("beeptunes.com/artist/"))
+                    {
+                        if (singer.RImageId == null)
+                        {
+                            var bUrl = singer.Url;
+                            var beepId = bUrl.Substring(bUrl.LastIndexOf("/") + 1);
+                            var response = await httpClient.GetAsync($"https://newapi.beeptunes.com/public/artist/info/?artistId={beepId}");
+                            if (response.IsSuccessStatusCode)
+                            {
+                                dynamic bpArtist = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+                                if (bpArtist.artistImage != null)
+                                {
+                                    var imageResult = await httpClient.GetAsync(bpArtist.artistImage.ToString());
+                                    if (imageResult.IsSuccessStatusCode)
+                                    {
+                                        using (Stream imageStream = await imageResult.Content.ReadAsStreamAsync())
+                                        {
+                                            RServiceResult<RImage> image = await imageFileService.Add(null, imageStream, $"{beepId}.jpg", Path.Combine(configuration.GetSection("PictureFileService")["StoragePath"], "SingerImages"));
+                                            if (string.IsNullOrEmpty(image.ExceptionString))
+                                            {
+                                                image = await imageFileService.Store(image.Result);
+                                                if (string.IsNullOrEmpty(image.ExceptionString))
+                                                {
+                                                    singer.RImageId = image.Result.Id;
+                                                    context.GanjoorSingers.Update(singer);
+                                                    await context.SaveChangesAsync();
+                                                }
+                                            }
+                                            
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            await context.SaveChangesAsync();
+            await jobProgressServiceEF.UpdateJob(job.Id, 3);
+
+        }
         private async Task _UpdateMundexPage(Guid editingUserId, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
         {
+
             var poemMusicTracks =
-                                        await context.GanjoorPoemMusicTracks
-                                        .Where(m =>
-                                            m.TrackType == PoemMusicTrackType.BeepTunesOrKhosousi
-                                            &&
-                                            m.Approved)
-                                            .ToListAsync();
+                                await context.GanjoorPoemMusicTracks
+                                .Where(m =>
+                                    m.TrackType == PoemMusicTrackType.BeepTunesOrKhosousi
+                                    &&
+                                    m.Approved)
+                                    .ToListAsync();
 
             var dbPage = await context.GanjoorPages.Where(p => p.FullUrl == "/mundex").SingleAsync();
 
@@ -181,13 +273,14 @@ namespace RMuseum.Services.Implementation
                                 using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                 {
                                     LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                    var job = (await jobProgressServiceEF.NewJob("UpdateMundexPage", "Mundex Page")).Result;
+                                    var job = (await jobProgressServiceEF.NewJob("UpdateMundexPage", "House Keeping")).Result;
 
                                     try
                                     {
-
+                                        await _PerformMundexHouseKeepingAndPreparation(context, jobProgressServiceEF, job);
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 10, "Mundex Page");
                                         await _UpdateMundexPage(editingUserId, context, jobProgressServiceEF, job);
-                                        await jobProgressServiceEF.UpdateJob(job.Id, 50, "Mundex by poet page");
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 60, "Mundex by poet page");
                                         await _UpdateMundexByPoetPage(editingUserId, context, jobProgressServiceEF, job);
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
