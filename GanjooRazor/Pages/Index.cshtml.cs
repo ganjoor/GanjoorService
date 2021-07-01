@@ -499,6 +499,11 @@ namespace GanjooRazor.Pages
                 return Redirect(pageUrl);
             }
 
+            if(Request.Path.ToString().IndexOf("index.php") != -1)
+            {
+                return Redirect($"{Request.Path.ToString().Replace("index.php", "search")}{Request.QueryString}");
+            }
+
             await preparePoets();
 
             if (!IsHomePage)
