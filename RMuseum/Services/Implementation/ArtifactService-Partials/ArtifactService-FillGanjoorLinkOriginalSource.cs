@@ -35,8 +35,6 @@ namespace RMuseum.Services.Implementation
 
                                     for (int i = 0; i < links.Count; i++)
                                     {
-                                        await jobProgressServiceEF.UpdateJob(job.Id, i);
-
                                         var link = links[i];
 
                                         var itemInfo = await context.Items

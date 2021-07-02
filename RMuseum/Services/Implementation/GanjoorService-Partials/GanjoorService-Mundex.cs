@@ -92,23 +92,30 @@ namespace RMuseum.Services.Implementation
                                 dynamic bpArtist = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
                                 if (bpArtist.artistImage != null)
                                 {
-                                    var imageResult = await httpClient.GetAsync(bpArtist.artistImage.ToString());
-                                    if (imageResult.IsSuccessStatusCode)
+                                    try
                                     {
-                                        using (Stream imageStream = await imageResult.Content.ReadAsStreamAsync())
+                                        var imageResult = await httpClient.GetAsync(bpArtist.artistImage.ToString());
+                                        if (imageResult.IsSuccessStatusCode)
                                         {
-                                            RServiceResult<RImage> image = await imageFileService.Add(null, imageStream, $"{beepId}.jpg", Path.Combine(configuration.GetSection("PictureFileService")["StoragePath"], "SingerImages"));
-                                            if (string.IsNullOrEmpty(image.ExceptionString))
+                                            using (Stream imageStream = await imageResult.Content.ReadAsStreamAsync())
                                             {
-                                                image = await imageFileService.Store(image.Result);
+                                                RServiceResult<RImage> image = await imageFileService.Add(null, imageStream, $"{beepId}.jpg", Path.Combine(configuration.GetSection("PictureFileService")["StoragePath"], "SingerImages"));
                                                 if (string.IsNullOrEmpty(image.ExceptionString))
                                                 {
-                                                    singer.RImageId = image.Result.Id;
-                                                    context.GanjoorSingers.Update(singer);
-                                                    await context.SaveChangesAsync();
+                                                    image = await imageFileService.Store(image.Result);
+                                                    if (string.IsNullOrEmpty(image.ExceptionString))
+                                                    {
+                                                        singer.RImageId = image.Result.Id;
+                                                        context.GanjoorSingers.Update(singer);
+                                                        await context.SaveChangesAsync();
+                                                    }
                                                 }
                                             }
                                         }
+                                    }
+                                    catch
+                                    {
+
                                     }
                                 }
                             }
