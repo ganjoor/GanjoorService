@@ -85,7 +85,7 @@ namespace RMuseum.Services.Implementation
                                               urls
                                               );
 
-                                       foreach (var poet in await context.GanjoorPoets.ToListAsync())
+                                       foreach (var poet in await context.GanjoorPoets.Where(p => p.Published).ToListAsync())
                                        {
                                            await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, "", false);
 
