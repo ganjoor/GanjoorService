@@ -2,17 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
-using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace RMuseum.Services.Implementation
 {
@@ -52,7 +49,9 @@ namespace RMuseum.Services.Implementation
             var sumRhythmsCouplets = rhythmsCoupletCounts.Sum(c => c.Count);
 
             string htmlText = $"<p>این آمار از میان {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر موجود در گنجور از {poet.Name} استخراج شده است.</p>{Environment.NewLine}";
-            htmlText += $"<p>توجه فرمایید که این آمار به دلایل مختلف تقریبی و حدودی است و افزونگی دارد. علت آن یکی این است که آثار بعضی شعرا به شکل تکراری در گنجور وجود دارد. دیگر آن که مصرع‌های بندهای اشعار ترکیبی نیز یک بیت محسوب شده‌اند. وزنیابی دستی در بیشتر موارد با ملاحظهٔ تنها یک مصرع از شعر صورت گرفته امکان وجود اشکال در آن (مخصوصاً درج اشتباهی وزنهای قابل تبدیل از قبیل درج وزن مثنوی مولوی به جای وزن عروضی سریع مطوی مکشوف (مفتعلن مفتعلن فاعلن)) وجود دارد. وزنیابی ماشینی نیز که جدیداً با استفاده از امکانات پایگاه سرود اضافه شده بعضاً خطا دارد. برخی از بخشها شامل اشعار با بیش از یک وزن هستند که در این صورت عمدتاً وزن ابیات آغازین و برای بعضی منظومه‌ها وزن غالب منظومه به عنوان وزن آن بخش منظور شده است.</p>{Environment.NewLine}";
+            htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در سایت (مثل آثار خیام یا وجود متن خلاصه و کامل هفت اورنگ جامی) و همینطور یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمسها تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
+            htmlText += $"<p>آمار همهٔ شعرهای گنجور را <a href=\"/vazn\">اینجا</a> ببینید.</p>{Environment.NewLine}";
+            htmlText += $"<p>وزنیابی دستی در بیشتر موارد با ملاحظهٔ تنها یک مصرع از شعر صورت گرفته و امکان وجود اشکال در آن (مخصوصاً اشتباه در تشخیص وزنهای قابل تبدیل از قبیل وزن مثنوی مولوی به جای وزن عروضی سریع مطوی مکشوف) وجود دارد. وزنیابی ماشینی نیز که جدیداً با استفاده از امکانات <a href=\"http://www.sorud.info/\">تارنمای سرود</a> اضافه شده بعضاً خطا دارد. برخی از بخشها شامل اشعاری با بیش از یک وزن هستند که در این صورت عمدتاً وزن ابیات آغازین و برای بعضی منظومه‌ها وزن غالب منظومه به عنوان وزن آن بخش منظور شده است.</p>{Environment.NewLine}";
             htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
@@ -161,8 +160,8 @@ namespace RMuseum.Services.Implementation
 
                                         var poets = await context.GanjoorPoets.ToListAsync();
 
-                                        string htmlText = $"<p>تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} مجموعاً {LanguageUtils.FormatMoney(sumPoetsCouplets)} بیت شعر از طریق سایت گنجور در دسترس قرار گرفته است. در جدول زیر با کلیک بر روی نام شاعران -که بر اساس تعداد ابیات اشعار آنها به صورت نزولی مرتب شده- می‌توانید آمار اوزان دیوان آنها را مشاهده کنید.</p>{Environment.NewLine}";
-                                        htmlText += $"<p>توجه فرمایید که این آمار به دلایل مختلف تقریبی و حدودی است و افزونگی دارد. علت آن یکی این است که آثار بعضی شعرا به شکل تکراری در گنجور وجود دارد مثلاً دو نسخه از رباعیات خیام در دسترس است و هفت اورنگ جامی به شکل خلاصه و به شکل کامل در دسترس است. دیگر آن که مصرع‌های بندهای اشعار ترکیبی نیز یک بیت محسوب شده‌اند.</p>{Environment.NewLine}";
+                                        string htmlText = $"<p>تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} مجموعاً {LanguageUtils.FormatMoney(sumPoetsCouplets)} بیت شعر از طریق سایت گنجور در دسترس قرار گرفته است. در جدول زیر که شاعران در آنها بر اساس تعداد ابیات اشعارشان به صورت نزولی مرتب شده‌اند با کلیک بر روی نام هر شاعر می‌توانید آمار اوزان اشعار او را مشاهده کنید.</p>{Environment.NewLine}";
+                                        htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در سایت (مثل آثار خیام یا وجود متن خلاصه و کامل هفت اورنگ جامی) و همینطور یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمسها تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
 
                                         htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
