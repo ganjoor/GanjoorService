@@ -137,8 +137,11 @@ namespace RMuseum.Services.Implementation
                                     try
                                     {
                                         var poetsCoupletCounts =
-                                                    await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).AsNoTracking()
-                                                    .Where(v => v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                                                    await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
+                                                    .Where(v => 
+                                                    v.Poem.Cat.Poet.Published
+                                                    &&
+                                                    (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1))
                                                     .GroupBy(v => new { v.Poem.Cat.PoetId })
                                                     .Select(g => new { PoetId = g.Key.PoetId, Count = g.Count() })
                                                     .ToListAsync();
