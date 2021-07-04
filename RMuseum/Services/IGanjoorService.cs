@@ -322,6 +322,12 @@ namespace RMuseum.Services
         Task<RServiceResult<string>> ExportToSqlite(int poetId);
 
         /// <summary>
+        /// start generating gdb files
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartBatchGenerateGDBFiles();
+
+        /// <summary>
         /// import GanjoorPage entity data from MySql
         /// </summary>
         /// <returns></returns>

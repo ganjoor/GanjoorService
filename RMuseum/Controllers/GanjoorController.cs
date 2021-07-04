@@ -1255,6 +1255,31 @@ namespace RMuseum.Controllers
             return new FileStreamResult(new FileStream(res.Result, FileMode.Open, FileAccess.Read), "application/octet-stream");
         }
 
+        /// <summary>
+        /// start exporting all poets
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("sqlite/batchexport")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ReviewSongs)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult StartBatchGenerateGDBFiles()
+        {
+            try
+            {
+
+                var res = _ganjoorService.StartBatchGenerateGDBFiles();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// imports data from ganjoor MySql database

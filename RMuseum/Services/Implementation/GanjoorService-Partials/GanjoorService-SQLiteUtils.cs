@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DNTPersianUtils.Core;
+using ganjoor;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,22 +28,155 @@ namespace RMuseum.Services.Implementation
     {
 
         /// <summary>
+        /// start generating gdb files
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> StartBatchGenerateGDBFiles()
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                                {
+                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                    var job = (await jobProgressServiceEF.NewJob("BatchGenerateGDBFiles", "Query Data")).Result;
+
+                                    try
+                                    {
+                                        string outDir = _configuration.GetSection("Ganjoor")["GDBStorage"];
+                                        string imgDir = _configuration.GetSection("Ganjoor")["GDBStorageImageSource"];
+                                        string xmlFile = _configuration.GetSection("Ganjoor")["GDBListXMLFile"];
+
+                                        var poets = await context.GanjoorPoets.AsNoTracking().ToListAsync();
+
+                                        List<GDBInfo> lstFiles = new List<GDBInfo>();
+
+                                        foreach (var poet in poets)
+                                        {
+                                            if (!await context.GanjoorPoems
+                                                                        .Include(p => p.Cat)
+                                                                        .Where(p => p.Cat.PoetId == poet.Id).AnyAsync())
+                                                continue;
+
+                                            await jobProgressServiceEF.UpdateJob(job.Id, poet.Id);
+
+                                            string gdbFile = (await _ExportToSqlite(context, poet.Id, outDir)).Result;
+
+                                            using (var archiveStream = new MemoryStream())
+                                            {
+                                                using (var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, true))
+                                                {
+                                                    var zipGDBFileEntry = archive.CreateEntry(Path.GetFileName(gdbFile), CompressionLevel.Optimal);
+                                                    using (var zipStream = zipGDBFileEntry.Open())
+                                                    {
+                                                        var gdbBytes = File.ReadAllBytes(gdbFile);
+                                                        zipStream.Write(gdbBytes, 0, gdbBytes.Length);
+                                                    }
+
+                                                    string pngFile = Path.Combine(imgDir,  $"{poet.Id}.png");
+                                                    if (File.Exists(pngFile))
+                                                    {
+                                                        var zipImgFileEntry = archive.CreateEntry(Path.GetFileName(pngFile), CompressionLevel.Optimal);
+                                                        using (var zipStream = zipImgFileEntry.Open())
+                                                        {
+                                                            var gdbBytes = File.ReadAllBytes(gdbFile);
+                                                            zipStream.Write(gdbBytes, 0, gdbBytes.Length);
+                                                        }
+                                                    }
+                                                }
+
+                                                string zipFile = Path.Combine(outDir, Path.GetFileNameWithoutExtension(gdbFile) + ".zip");
+                                                if (File.Exists(zipFile))
+                                                    File.Delete(zipFile);
+
+                                                byte[] zipArray = archiveStream.ToArray();
+
+                                                File.WriteAllBytes(zipFile, zipArray);
+
+                                                var catPoet = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id && c.ParentId == null).SingleAsync();
+
+                                                var lowestPoemID = await context.GanjoorPoems
+                                                                        .Include(p => p.Cat)
+                                                                        .Where(p => p.Cat.PoetId == poet.Id)
+                                                                        .MinAsync(p => p.Id);
+
+                                                lstFiles.Add
+                                                (
+                                                    new GDBInfo()
+                                                    {
+                                                        CatName = poet.Nickname,
+                                                        CatID = catPoet.Id,
+                                                        PoetID = poet.Id,
+                                                        DownloadUrl = $"http://i.ganjoor.net/android/gdb/{Path.GetFileName(zipFile)}",
+                                                        BlogUrl = "",
+                                                        FileExt = ".zip",
+                                                        ImageUrl = $"http://i.ganjoor.net/android/img/{poet.Id}.png",
+                                                        FileSizeInByte = zipArray.Length,
+                                                        LowestPoemID = lowestPoemID,
+                                                        PubDate = DateTime.Now
+                                                    }
+                                                );
+
+                                            }
+                                            File.Delete(gdbFile);
+
+                                            
+                                        }
+
+                                        if (File.Exists(xmlFile))
+                                            File.Delete(xmlFile);
+
+                                        GDBListProcessor.Save(xmlFile, "مجموعه‌های متناظر شاعران سایت", "", "", lstFiles);
+
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                    }
+                                    catch (Exception exp)
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                    }
+                                }
+
+                            }
+                            );
+
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// export to sqlite
         /// </summary>
         /// <param name="poetId"></param>
         /// <returns></returns>
         public async Task<RServiceResult<string>> ExportToSqlite(int poetId)
         {
+            return await _ExportToSqlite(_context, poetId, Path.Combine($"{_configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteExports"));
+        }
+        
+        private async Task<RServiceResult<string>> _ExportToSqlite(RMuseumDbContext context, int poetId, string dir, string fileName = null)
+        {
             try
             {
-                var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync();
-                var catPoet = await _context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poetId && c.ParentId == null).SingleAsync();
+                var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync();
+                var catPoet = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poetId && c.ParentId == null).SingleAsync();
 
-                string dir = Path.Combine($"{_configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteExports");
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 
-                string filePath = Path.Combine(dir, $"{catPoet.UrlSlug}.gdb");
+                if(fileName == null)
+                {
+                    fileName = catPoet.UrlSlug;
+                }
+
+                string filePath = Path.Combine(dir, $"{fileName}.gdb");
 
                 if (File.Exists(filePath))
                     File.Delete(filePath);
@@ -67,7 +202,7 @@ namespace RMuseum.Services.Implementation
                     await sqliteConnection.ExecuteAsync(q);
                     await sqliteConnection.ExecuteAsync("BEGIN;");
                     await sqliteConnection.ExecuteAsync($"INSERT INTO poet (id, name, cat_id, description) VALUES ({poet.Id}, '{poet.Nickname}', {catPoet.Id}, '{poet.Description}');");
-                    await ExportCatToSqlite(sqliteConnection, catPoet);
+                    await ExportCatToSqlite(context, sqliteConnection, catPoet);
                     await sqliteConnection.ExecuteAsync("COMMIT;");
 
                 }
@@ -81,21 +216,21 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task ExportCatToSqlite(SqliteConnection sqliteConnection, GanjoorCat cat)
+        private async Task ExportCatToSqlite(RMuseumDbContext context, SqliteConnection sqliteConnection, GanjoorCat cat)
         {
             int parentId = cat.ParentId == null ? 0 : (int)cat.ParentId;
             await sqliteConnection.ExecuteAsync($"INSERT INTO cat (id, poet_id, text, parent_id, url) VALUES ({cat.Id}, {cat.PoetId}, '{cat.Title}', {parentId}, 'https://ganjoor.net{cat.FullUrl}');");
             
-            var poems = await _context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == cat.Id).ToListAsync();
+            var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == cat.Id).ToListAsync();
             foreach(var poem in poems)
             {
                 await sqliteConnection.ExecuteAsync($"INSERT INTO poem (id, cat_id, title, url) VALUES ({poem.Id}, {poem.CatId}, '{poem.Title}', 'https://ganjoor.net{poem.FullUrl}');");
-                foreach (var verse in await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync())
+                foreach (var verse in await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync())
                     await sqliteConnection.ExecuteAsync($"INSERT INTO verse (poem_id, vorder, position, text) VALUES ({poem.Id}, {verse.VOrder}, {(int)verse.VersePosition}, '{verse.Text}');");
             }
 
-            foreach (var child in await _context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == cat.Id).ToListAsync())
-                await ExportCatToSqlite(sqliteConnection, child);
+            foreach (var child in await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == cat.Id).ToListAsync())
+                await ExportCatToSqlite(context, sqliteConnection, child);
                     
         }
 

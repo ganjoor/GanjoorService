@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class PoetsModel : PageModel
     {
         /// <summary>
@@ -42,6 +43,24 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostExportAllAsync()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqlite/batchexport", null);
+                    response.EnsureSuccessStatusCode();
+
+                    return new OkObjectResult(true);
+
+
+                }
+            }
+
+            return new OkObjectResult(false);
         }
     }
 }

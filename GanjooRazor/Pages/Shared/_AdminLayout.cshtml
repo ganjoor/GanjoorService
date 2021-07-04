@@ -224,6 +224,29 @@
         }
 
 
+
+        
+
+        function exportAll() {
+            if (!confirm('آیا از تولید مجدد همهٔ فایلهای گنجور رومیزی اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=ExportAll';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('فرایند تولید مجدد همهٔ فایلهای گنجور رومیزی شروع شد.')
+                },
+
+            });
+        }
+
+
         function cleanCache(id) {
             if (!confirm('آیا از حذف کش این صفحه اطمینان دارید؟'))
                 return;

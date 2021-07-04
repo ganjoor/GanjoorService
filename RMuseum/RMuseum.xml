@@ -1037,6 +1037,12 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartBatchGenerateGDBFiles">
+            <summary>
+            start exporting all poets
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ImportFromMySql">
             <summary>
             imports data from ganjoor MySql database
@@ -7533,6 +7539,12 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartBatchGenerateGDBFiles">
+            <summary>
+            start generating gdb files
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.ImportFromMySql">
             <summary>
             import GanjoorPage entity data from MySql
@@ -8650,6 +8662,12 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBuildingSitemap">
             <summary>
             build sitemap
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBatchGenerateGDBFiles">
+            <summary>
+            start generating gdb files
             </summary>
             <returns></returns>
         </member>
@@ -10113,6 +10131,22 @@
             </summary>
             <param name="operation"></param>
             <param name="context"></param>
+        </member>
+        <member name="T:ganjoor.GDBListProcessor">
+            <summary>
+            جهت ذخیره، دریافت و پردازش مخازن مجموعه های شعرها به کار می رود
+            </summary>
+        </member>
+        <member name="M:ganjoor.GDBListProcessor.Save(System.String,System.String,System.String,System.String,System.Collections.Generic.List{ganjoor.GDBInfo})">
+            <summary>
+            ذخیرۀ لیستی از GDBInfoها در یک فایل xml
+            </summary>
+            <param name="FileName"></param>
+            <param name="Name"></param>
+            <param name="Description"></param>
+            <param name="MoreInfoUrl"></param>
+            <param name="List"></param>
+            <returns></returns>
         </member>
         <member name="T:ganjoor.PoemAudio">
             <summary>
