@@ -63,7 +63,7 @@ namespace RMuseum.Services.Implementation
 
                                             await jobProgressServiceEF.UpdateJob(job.Id, poet.Id);
 
-                                            string gdbFile = (await _ExportToSqlite(context, poet.Id, outDir)).Result;
+                                            string gdbFile = (await _ExportToSqlite(context, poet.Id, outDir, null, true)).Result;
                                             string pngFile = Path.Combine(imgDir, $"{poet.Id}.png");
                                             bool hasImage = File.Exists(pngFile);
 
@@ -163,7 +163,7 @@ namespace RMuseum.Services.Implementation
             return await _ExportToSqlite(_context, poetId, Path.Combine($"{_configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteExports"));
         }
         
-        private async Task<RServiceResult<string>> _ExportToSqlite(RMuseumDbContext context, int poetId, string dir, string fileName = null)
+        private async Task<RServiceResult<string>> _ExportToSqlite(RMuseumDbContext context, int poetId, string dir, string fileName = null, bool ignoreBio = false)
         {
             try
             {
@@ -203,7 +203,7 @@ namespace RMuseum.Services.Implementation
                                 "COMMIT;";
                     await sqliteConnection.ExecuteAsync(q);
                     await sqliteConnection.ExecuteAsync("BEGIN;");
-                    await sqliteConnection.ExecuteAsync($"INSERT INTO poet (id, name, cat_id, description) VALUES ({poet.Id}, '{poet.Nickname}', {catPoet.Id}, '{poet.Description}');");
+                    await sqliteConnection.ExecuteAsync($"INSERT INTO poet (id, name, cat_id, description) VALUES ({poet.Id}, '{poet.Nickname}', {catPoet.Id}, '{(ignoreBio ? "" : poet.Description)}');");
                     await ExportCatToSqlite(context, sqliteConnection, catPoet);
                     await sqliteConnection.ExecuteAsync("COMMIT;");
 
