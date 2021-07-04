@@ -110,7 +110,7 @@ namespace RMuseum.Services.Implementation
                                                         CatName = poet.Nickname,
                                                         CatID = catPoet.Id,
                                                         PoetID = poet.Id,
-                                                        DownloadUrl = $"http://i.ganjoor.net/android/gdb/{Path.GetFileName(zipFile)}",
+                                                        DownloadUrl = $"http://i.ganjoor.net/android/sgdb/{Path.GetFileName(zipFile)}",
                                                         BlogUrl = "",
                                                         FileExt = ".zip",
                                                         ImageUrl = $"http://i.ganjoor.net/android/img/{poet.Id}.png",
