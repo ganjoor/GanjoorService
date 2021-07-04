@@ -64,6 +64,8 @@ namespace RMuseum.Services.Implementation
                                             await jobProgressServiceEF.UpdateJob(job.Id, poet.Id);
 
                                             string gdbFile = (await _ExportToSqlite(context, poet.Id, outDir)).Result;
+                                            string pngFile = Path.Combine(imgDir, $"{poet.Id}.png");
+                                            bool hasImage = File.Exists(pngFile);
 
                                             using (var archiveStream = new MemoryStream())
                                             {
@@ -76,8 +78,8 @@ namespace RMuseum.Services.Implementation
                                                         zipStream.Write(gdbBytes, 0, gdbBytes.Length);
                                                     }
 
-                                                    string pngFile = Path.Combine(imgDir,  $"{poet.Id}.png");
-                                                    if (File.Exists(pngFile))
+                                                    
+                                                    if (hasImage)
                                                     {
                                                         var zipImgFileEntry = archive.CreateEntry(Path.GetFileName(pngFile), CompressionLevel.Optimal);
                                                         using (var zipStream = zipImgFileEntry.Open())
@@ -113,7 +115,7 @@ namespace RMuseum.Services.Implementation
                                                         DownloadUrl = $"http://i.ganjoor.net/android/sgdb/{Path.GetFileName(zipFile)}",
                                                         BlogUrl = "",
                                                         FileExt = ".zip",
-                                                        ImageUrl = $"http://i.ganjoor.net/android/img/{poet.Id}.png",
+                                                        ImageUrl = (hasImage ? $"http://i.ganjoor.net/android/img/{poet.Id}.png" : ""),
                                                         FileSizeInByte = zipArray.Length,
                                                         LowestPoemID = lowestPoemID,
                                                         PubDate = DateTime.Now
