@@ -73,6 +73,14 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<string>> GetPageUrlById(int id);
 
+
+        /// <summary>
+        /// delete page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePageAsync(int id);
+
         /// <summary>
         /// Get Poem By Id
         /// </summary>

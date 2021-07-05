@@ -831,6 +831,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeletePageAsync(System.Int32)">
+            <summary>
+            delete page
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetOlderVersionsOfPage(System.Int32)">
             <summary>
             older versions of a page (modifications history except for current version)
@@ -7292,6 +7299,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePageAsync(System.Int32)">
+            <summary>
+            delete page
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
@@ -9044,6 +9058,13 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartDeletePoet(System.Int32)">
             <summary>
             delete poet
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePageAsync(System.Int32)">
+            <summary>
+            delete page
             </summary>
             <param name="id"></param>
             <returns></returns>

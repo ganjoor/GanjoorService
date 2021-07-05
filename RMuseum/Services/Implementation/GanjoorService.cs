@@ -2757,6 +2757,35 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// delete page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePageAsync(int id)
+        {
+            try
+            {
+                var firstChild = await _context.GanjoorPages.Where(p => p.ParentId == id).FirstOrDefaultAsync();
+                if(firstChild != null)
+                {
+                    return new RServiceResult<bool>(false, "Please delete children of the page first.");
+                }
+                var page = await _context.GanjoorPages.Where(p => p.Id == id).SingleAsync();
+                if (page.PoemId != null)
+                {
+                    return new RServiceResult<bool>(false, "Poem related page can nor be deleted.");
+                }
+                _context.GanjoorPages.Remove(page);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// chaneg poet image
         /// </summary>
         /// <param name="poetId"></param>
