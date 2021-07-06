@@ -1,0 +1,40 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.PageDelModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "حذف صفحه";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (!string.IsNullOrEmpty(Model.LastResult))
+{
+    <p>
+        @Model.LastResult
+    </p>
+    <p>
+        <a role="button" href="/" class="actionlink">برگشت</a>
+    </p>
+}
+else
+{
+    <table>
+        <tr>
+            <td colspan="2">
+                آیا از حذف @Model.PageInformation.FullTitle اطمینان دارید؟
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <form method="post" action="/Admin/PageDel?id=@Model.PageInformation.Id">
+                    <input type="submit" value="بله" />
+                </form>
+            </td>
+            <td>
+                <a role="button" href="/Admin/ModifyPage?id=@Model.PageInformation.Id" class="actionlink">خیر / برگشت</a>
+            </td>
+        </tr>
+    </table>
+}
+

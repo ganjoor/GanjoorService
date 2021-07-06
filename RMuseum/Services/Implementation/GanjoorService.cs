@@ -2775,6 +2775,11 @@ namespace RMuseum.Services.Implementation
                 {
                     return new RServiceResult<bool>(false, "Poem related page can nor be deleted.");
                 }
+                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == page.FullUrl).FirstOrDefaultAsync();
+                if(cat != null)
+                {
+                    return new RServiceResult<bool>(false, "Cat related page can nor be deleted.");
+                }
                 _context.GanjoorPages.Remove(page);
                 await _context.SaveChangesAsync();
                 return new RServiceResult<bool>(true);
