@@ -8,6 +8,7 @@ using RSecurityBackend.Models.Generic.Db;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class LongRunningJobsModel : PageModel
     {
         public RLongRunningJobStatus[] Jobs { get; set; }
@@ -25,8 +26,20 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                 }
             }
-
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostCleanupJobsAsync()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/rjobs/cleanup");
+                    response.EnsureSuccessStatusCode();
+                }
+            }
+            return new JsonResult(true);
         }
     }
 }

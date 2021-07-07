@@ -440,6 +440,12 @@
             <param name="failed"></param>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Controllers.RLongRunningJobsControllerBase.CleanUp">
+            <summary>
+            clean up old jobs
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Controllers.RLongRunningJobsControllerBase.#ctor(RSecurityBackend.Services.ILongRunningJobProgressService)">
             <summary>
             constructor

@@ -269,6 +269,24 @@
             });
         }
 
+        function cleanUpJobs() {
+
+            if (!confirm('آیا از حذف همهٔ کارهای موفق و ناموفق تکمیل شده اطمینان دارید؟'))
+                return;
+
+
+            $.ajax({
+                type: "POST",
+                url: '?handler=CleanupJobs',
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('انجام شد.')
+                },
+            });
+        }
+
 
     </script>
 </head>

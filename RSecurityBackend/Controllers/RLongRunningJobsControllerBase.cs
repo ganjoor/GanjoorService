@@ -35,6 +35,22 @@ namespace RSecurityBackend.Controllers
         }
 
         /// <summary>
+        /// clean up old jobs
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("cleanup")]
+        [Authorize(Policy = SecurableItem.AuditLogEntityShortName + ":" + SecurableItem.ViewOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RLongRunningJobStatus>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> CleanUp()
+        {
+            var res = await _jobService.CleanUp(true, true);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="jobService">
