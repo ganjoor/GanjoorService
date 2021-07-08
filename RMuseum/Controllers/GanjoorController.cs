@@ -406,7 +406,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
 
         [HttpPut]
-        [Route("cat/renamepoems/{id}")]
+        [Route("cat/recaptionpoems/{id}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
