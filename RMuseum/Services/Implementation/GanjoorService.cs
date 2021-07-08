@@ -2827,6 +2827,8 @@ namespace RMuseum.Services.Implementation
                 if (poems.Count == 0)
                     return new RServiceResult<string[]>(new string[] { });
 
+                var catPage = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleAsync();
+
                 if(model.RemovePreviousPattern)
                 {
                     char[] numbers = "0123456789۰۱۲۳۴۵۶۷۸۹".ToArray();
@@ -2880,6 +2882,8 @@ namespace RMuseum.Services.Implementation
                     {
                         poems[i].Title = $"{model.StartWithNotIncludingSpaces} {(i + 1).ToPersianNumbers()}";
                     }
+
+                    poems[i].FullTitle = $"{catPage.FullTitle} » {poems[i].Title}";
                     
                 }
 
@@ -2889,6 +2893,7 @@ namespace RMuseum.Services.Implementation
                     {
                         var page = await _context.GanjoorPages.Where(p => p.Id == poem.Id).SingleAsync();
                         page.Title = poem.Title;
+                        page.FullTitle = poem.FullTitle;
                         _context.GanjoorPages.Update(page);
                     }
 

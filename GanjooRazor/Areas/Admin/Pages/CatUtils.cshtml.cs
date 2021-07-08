@@ -111,6 +111,11 @@ namespace GanjooRazor.Areas.Admin.Pages
             return Page();
         }
 
+        /// <summary>
+        /// تغییر عنوان گروهی
+        /// </summary>
+        /// <param name="NamingModel"></param>
+        /// <returns></returns>
         public async Task<IActionResult> OnPostAsync(GanjoorBatchNamingModel NamingModel)
         {
             await GetInformationAsync();
@@ -119,7 +124,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 
-                HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/renamepoems/{Cat.Cat.Id}", new StringContent(JsonConvert.SerializeObject(NamingModel), Encoding.UTF8, "application/json"));
+                HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/recaptionpoems/{Cat.Cat.Id}", new StringContent(JsonConvert.SerializeObject(NamingModel), Encoding.UTF8, "application/json"));
                 response.EnsureSuccessStatusCode();
 
                 RenamingOutput = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
