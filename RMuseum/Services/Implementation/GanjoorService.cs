@@ -578,8 +578,8 @@ namespace RMuseum.Services.Implementation
                          Mp3SizeInBytes = audio.Mp3SizeInBytes,
                          PublishDate = audio.ReviewDate,
                          FileLastUpdated = audio.FileLastUpdated,
-                         Mp3Url = $"https://ganjgah.ir/api/audio/file/{audio.Id}.mp3",
-                         XmlText = $"https://ganjgah.ir/api/audio/xml/{audio.Id}",
+                         Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                         XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                          PlainText = "", //poem.PlainText 
                          HtmlText = "",//poem.HtmlText
                      };
@@ -1118,7 +1118,7 @@ namespace RMuseum.Services.Implementation
 
         /// <summary>
         /// get poem images by id (some fields are intentionally field with blank or null),
-        /// EntityImageId : the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg or https://ganjgah.ir/api/images/norm/{EntityImageId}.jpg
+        /// EntityImageId : the most important data field, image url is {WebServiceUrl.Url}/api/images/thumb/{EntityImageId}.jpg or {WebServiceUrl.Url}/api/images/norm/{EntityImageId}.jpg
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -1140,7 +1140,7 @@ namespace RMuseum.Services.Implementation
                      select new PoemRelatedImage()
                      {
                          PoemRelatedImageType = PoemRelatedImageType.MuseumLink,
-                         ThumbnailImageUrl = $"https://ganjgah.ir/api/images/thumb/{link.Item.Images.First().Id}.jpg",
+                         ThumbnailImageUrl = $"{WebServiceUrl.Url}/api/images/thumb/{link.Item.Images.First().Id}.jpg",
                          TargetPageUrl = link.LinkToOriginalSource ? link.OriginalSourceUrl : $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
                          AltText = $"{link.Artifact.Name} » {link.Item.Name}",
                      };
@@ -1158,7 +1158,7 @@ namespace RMuseum.Services.Implementation
                      select new PoemRelatedImage()
                      {
                          PoemRelatedImageType = PoemRelatedImageType.ExternalLink,
-                         ThumbnailImageUrl = $"https://ganjgah.ir/api/images/thumb/{link.Item.Images.First().Id}.jpg",
+                         ThumbnailImageUrl = $"{WebServiceUrl.Url}/api/images/thumb/{link.Item.Images.First().Id}.jpg",
                          TargetPageUrl = link.PinterestUrl,
                          AltText = link.AltText,
                      };

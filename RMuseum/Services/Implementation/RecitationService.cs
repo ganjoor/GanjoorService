@@ -122,8 +122,8 @@ namespace RMuseum.Services.Implementationa
                          Mp3SizeInBytes = audio.Mp3SizeInBytes,
                          PublishDate = audio.ReviewDate,
                          FileLastUpdated = audio.FileLastUpdated,
-                         Mp3Url = $"https://ganjgah.ir/api/audio/file/{audio.Id}.mp3",
-                         XmlText = $"https://ganjgah.ir/api/audio/xml/{audio.Id}",
+                         Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                         XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                          PlainText = poem.PlainText,
                          HtmlText = poem.HtmlText
                      };
@@ -170,8 +170,8 @@ namespace RMuseum.Services.Implementationa
                          Mp3SizeInBytes = audio.Mp3SizeInBytes,
                          PublishDate = audio.ReviewDate,
                          FileLastUpdated = audio.FileLastUpdated,
-                         Mp3Url = $"https://ganjgah.ir/api/audio/file/{audio.Id}.mp3",
-                         XmlText = $"https://ganjgah.ir/api/audio/xml/{audio.Id}",
+                         Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                         XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                          PlainText = poem.PlainText,
                          HtmlText = poem.HtmlText
                      };

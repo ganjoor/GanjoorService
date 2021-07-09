@@ -83,7 +83,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         public string Mp3Url { get; set; }
 
         /// <summary>
-        /// Xml Text, xml file url is https://ganjgah.ir/api/audio/file/{audio.Id}.xml
+        /// Xml Text, xml file url is {WebServiceUrl.Url}/api/audio/file/{audio.Id}.xml
         /// </summary>
         public string XmlText { get; set; }
 

@@ -255,20 +255,7 @@ namespace RMuseum.Services.Implementation
                                                 //foreach (JToken segment in segmentsArray)
                                                 for (int pageIndex = 1; pageIndex <= pageCount; pageIndex++)
                                                 {
-                                                    /*
-                                                    using (var fakeClient = new HttpClient())
-                                                    {
-
-                                                        using (var fakeRes = await fakeClient.GetAsync("https://ganjgah.ir/api/artifacts/keep-alive"))
-                                                        {
-                                                            if (fakeRes.IsSuccessStatusCode)
-                                                            {
-                                                                await fakeRes.Content.ReadAsStringAsync();
-                                                            }
-                                                        }
-                                                    }
-                                                    */
-
+                                                   
                                                     using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                                     {
                                                         job.ProgressPercent = order * 100 / (decimal)pageCount;

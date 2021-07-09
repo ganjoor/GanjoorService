@@ -3303,7 +3303,7 @@
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.XmlText">
             <summary>
-            Xml Text, xml file url is https://ganjgah.ir/api/audio/file/{audio.Id}.xml
+            Xml Text, xml file url is {WebServiceUrl.Url}/api/audio/file/{audio.Id}.xml
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.PlainText">
@@ -7348,7 +7348,7 @@
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemImages(System.Int32)">
             <summary>
             get poem images by id (some fields are intentionally field with blank or null),
-            EntityImageId : the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg or https://ganjgah.ir/api/images/norm/{EntityImageId}.jpg
+            EntityImageId : the most important data field, image url is {WebServiceUrl.Url}/api/images/thumb/{EntityImageId}.jpg or {WebServiceUrl.Url}/api/images/norm/{EntityImageId}.jpg
             </summary>
             <param name="id"></param>
             <returns></returns>
@@ -8886,7 +8886,7 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemImages(System.Int32)">
             <summary>
             get poem images by id (some fields are intentionally field with blank or null),
-            EntityImageId : the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg or https://ganjgah.ir/api/images/norm/{EntityImageId}.jpg
+            EntityImageId : the most important data field, image url is {WebServiceUrl.Url}/api/images/thumb/{EntityImageId}.jpg or {WebServiceUrl.Url}/api/images/norm/{EntityImageId}.jpg
             </summary>
             <param name="id"></param>
             <returns></returns>
@@ -10152,6 +10152,11 @@
             </summary>
             <param name="operation"></param>
             <param name="context"></param>
+        </member>
+        <member name="P:RMuseum.WebServiceUrl.Url">
+            <summary>
+            url
+            </summary>
         </member>
         <member name="T:ganjoor.GDBListProcessor">
             <summary>

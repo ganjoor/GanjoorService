@@ -122,7 +122,7 @@ namespace RMuseum.Services
 
         /// <summary>
         /// get poem images by id (some fields are intentionally field with blank or null),
-        /// EntityImageId : the most important data field, image url is https://ganjgah.ir/api/images/thumb/{EntityImageId}.jpg or https://ganjgah.ir/api/images/norm/{EntityImageId}.jpg
+        /// EntityImageId : the most important data field, image url is {WebServiceUrl.Url}/api/images/thumb/{EntityImageId}.jpg or {WebServiceUrl.Url}/api/images/norm/{EntityImageId}.jpg
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

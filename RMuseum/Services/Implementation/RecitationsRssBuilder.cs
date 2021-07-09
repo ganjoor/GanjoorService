@@ -35,7 +35,7 @@ namespace RMuseum.Services.Implementation
             builder.AppendLine("<channel>");
 
             builder.AppendLine("    <title>خوانش‌های گنجور</title>");
-            builder.AppendLine($"    <atom:link href=\"https://ganjgah.ir/api/audio/published/rss\" rel=\"self\" type=\"application/rss+xml\" />");
+            builder.AppendLine($"    <atom:link href=\"{WebServiceUrl.Url}/api/audio/published/rss\" rel=\"self\" type=\"application/rss+xml\" />");
             builder.AppendLine("    <link>http://ava.ganjoor.net</link>");
             builder.AppendLine("    <description>دکلمه‌های صوتی اشعار گنجور</description>");
 

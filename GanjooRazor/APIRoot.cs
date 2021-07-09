@@ -6,7 +6,7 @@ namespace GanjooRazor
     /// <summary>
     /// API Root
     /// </summary>
-    public class APIRoot
+    public static class APIRoot
     {
         /// <summary>
         /// url

@@ -172,7 +172,7 @@ namespace RMuseum.Services.Implementation
 
                     if (dbSinger.RImageId != null)
                     {
-                        var imageUrl = $"https://ganjgah.ir/api/rimages/{dbSinger.RImageId}.jpg";
+                        var imageUrl = $"{WebServiceUrl.Url}/api/rimages/{dbSinger.RImageId}.jpg";
                         htmlText += $"<div style=\"width:240px;margin:auto\">{Environment.NewLine}" +
                             $"<a href=\"{dbSinger.Url}\">{Environment.NewLine}" +
                             $"<img src=\"{imageUrl}\" alt=\"{dbSinger.Name}\"/>{Environment.NewLine}" +
@@ -234,7 +234,7 @@ namespace RMuseum.Services.Implementation
                     htmlText += $"<p><br style=\"clear: both;\" /></p>{Environment.NewLine}";
                     htmlText += $"<h2>{(nPoetIndex+1).ToPersianNumbers()}. <a href=\"{poetCat.FullUrl}\">{poet.Nickname}</a></h2>{Environment.NewLine}";
                     htmlText += $"<div class=\"spacer\">&nbsp;</div>{Environment.NewLine}";
-                    htmlText += $"<div style=\"width:82px;margin:auto\"><a href=\"{poetCat.FullUrl}\"><img src=\"https://ganjgah.ir/api/ganjoor/poet/image/{poetCat.UrlSlug}.gif\" alt=\"{poet.Nickname}\" /></a></div>{Environment.NewLine}";
+                    htmlText += $"<div style=\"width:82px;margin:auto\"><a href=\"{poetCat.FullUrl}\"><img src=\"{WebServiceUrl.Url}/api/ganjoor/poet/image/{poetCat.UrlSlug}.gif\" alt=\"{poet.Nickname}\" /></a></div>{Environment.NewLine}";
                     htmlText += $"<div style=\"width:100%;margin:auto\"><a href=\"/{poetCat.FullUrl}\" >{poet.Nickname}</a> ({tracks.Count.ToPersianNumbers()} قطعه)</div>{Environment.NewLine}" +
                         $"<div class=\"spacer\">&nbsp;</div>{Environment.NewLine}";
 
