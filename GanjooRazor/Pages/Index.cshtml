@@ -69,7 +69,7 @@
                 //<![CDATA[
                 $(document).ready(function () {
                     var jlist = prepaudio(
-                        "@Html.Raw($"https://ganjgah.ir/api/audio/file/{Model.GanjoorPage.Poem.Recitations[0].Id}.xml")",
+                        "@Html.Raw($"{GanjooRazor.APIRoot.Url}/api/audio/file/{Model.GanjoorPage.Poem.Recitations[0].Id}.xml")",
                         "@Html.Raw(Model.GanjoorPage.Poem.Recitations[0].AudioTitle)",
                         "@Html.Raw(Model.getAudioDesc(Model.GanjoorPage.Poem.Recitations[0], true))",
                         "",
@@ -80,7 +80,7 @@
                     {
                         <text>
                     addpaudio(@x, jlist,
-                        "@Html.Raw($"https://ganjgah.ir/api/audio/file/{Model.GanjoorPage.Poem.Recitations[x].Id}.xml")",
+                        "@Html.Raw($"{GanjooRazor.APIRoot.Url}/api/audio/file/{Model.GanjoorPage.Poem.Recitations[x].Id}.xml")",
                         "@Html.Raw(Model.GanjoorPage.Poem.Recitations[x].AudioTitle)",
                         "@Html.Raw(Model.getAudioDesc(Model.GanjoorPage.Poem.Recitations[x], false))",
                         "",

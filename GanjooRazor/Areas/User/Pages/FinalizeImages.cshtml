@@ -25,12 +25,12 @@
     </tr>
     <tr>
         <td>
-            <img src="https://ganjgah.ir/api/images/thumb/@(Model.MainImage.EntityImageId).jpg" />
+            <img src="@GanjooRazor.APIRoot.Url/api/images/thumb/@(Model.MainImage.EntityImageId).jpg" />
         </td>
         <td>
             @if (Model.PreviouslyLinkedImage != null)
             {
-                <img src="https://ganjgah.ir/api/images/thumb/@(Model.PreviouslyLinkedImage.EntityImageId).jpg" />
+                <img src="@GanjooRazor.APIRoot.Url/api/images/thumb/@(Model.PreviouslyLinkedImage.EntityImageId).jpg" />
             }
         </td>
     </tr>
