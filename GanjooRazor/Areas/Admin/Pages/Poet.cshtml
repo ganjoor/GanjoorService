@@ -104,6 +104,9 @@
     </tr>
 </table>
 
+
+<p><a role="button" onclick="$('#Poet_Description').val($('#Poet_Description').text().replace(/<\/?[^>]+(>|$)/g, ''))" class="actionlink" title="حذف تگها">حذف تگهای زندگینامه</a></p>
+
 <table>
     <tr>
         <td><a role="button" href="/Admin/PoetDel/?id=@Model.Poet.Id" class="actionlink">حذف شاعر</a></td>
