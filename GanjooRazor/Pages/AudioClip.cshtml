@@ -287,7 +287,7 @@
         //<![CDATA[
         $(document).ready(function () {
 
-            prepareclip('@Html.Raw($"{GanjooRazor.APIRoot.Url}/api/audio/file/{Model.Recitation.Id}.xml")', '@Model.Recitation.AudioTitle',
+            prepareclip('@Html.Raw($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.Recitation.Id}.xml")', '@Model.Recitation.AudioTitle',
                 'به خوانش @Model.Recitation.AudioArtist', '', '@Model.Recitation.Mp3Url', verses);
 
 
