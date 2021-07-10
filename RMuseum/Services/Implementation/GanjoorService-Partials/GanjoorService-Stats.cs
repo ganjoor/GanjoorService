@@ -148,8 +148,11 @@ namespace RMuseum.Services.Implementation
                                         var sumPoetsCouplets = poetsCoupletCounts.Sum(c => c.Count);
 
                                         var rhythmsCoupletCounts =
-                                                   await context.GanjoorVerses.Include(v => v.Poem).AsNoTracking()
-                                                   .Where(v => v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                                                   await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
+                                                   .Where(v =>
+                                                    v.Poem.Cat.Poet.Published
+                                                    &&
+                                                    (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1))
                                                    .GroupBy(v => new { v.Poem.GanjoorMetreId })
                                                    .Select(g => new { GanjoorMetreId = g.Key.GanjoorMetreId, Count = g.Count() })
                                                    .ToListAsync();
