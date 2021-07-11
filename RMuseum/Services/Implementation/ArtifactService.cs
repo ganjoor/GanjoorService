@@ -2907,6 +2907,8 @@ namespace RMuseum.Services.Implementation
                     link.DisplayOnPage = true;
                     link.Synchronized = true;
 
+                    
+
                     await _ganjoorService.CacheCleanForPageById(link.GanjoorPostId);
                 }//if not user must decide through UI for this link
 
@@ -2914,8 +2916,22 @@ namespace RMuseum.Services.Implementation
 
                 if(link.ReviewResult == ReviewResult.Approved)
                 {
-                    
 
+                    var itemInfo = await _context.Items
+                                            .Include(i => i.Tags)
+                                            .ThenInclude(t => t.RTag)
+                                            .Where(i => i.Id == link.ItemId).SingleAsync();
+
+                    var sourceTag = itemInfo.Tags.Where(t => t.RTag.FriendlyUrl == "source").FirstOrDefault();
+
+                    if (sourceTag != null)
+                    {
+                        if (!string.IsNullOrEmpty(sourceTag.ValueSupplement) && (sourceTag.ValueSupplement.IndexOf("http") == 0))
+                        {
+                            link.OriginalSourceUrl = sourceTag.ValueSupplement;
+                            link.LinkToOriginalSource = false;
+                        }
+                    }
 
                     RTagValue tag = await TagHandler.PrepareAttribute(_context, "Ganjoor Link", link.GanjoorTitle, 1);
                     tag.ValueSupplement = link.GanjoorUrl;
