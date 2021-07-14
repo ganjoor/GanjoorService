@@ -785,17 +785,23 @@ namespace RMuseum.Services.Implementation
 
                     string[] lines = v.Text.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
+                    string cssClass = v.VersePosition == VersePosition.Paragraph ? "n" : "l";
+
                     if (lines.Length != 0)
                     {
                         if (v.Text.Length / lines.Length < 150)
                         {
-                            htmlText += $"<div class=\"n\"><p>{v.Text.Replace("\r\n", " ")}</p></div>{Environment.NewLine}";
+                            htmlText += $"<div class=\"{cssClass}\"><p>{v.Text.Replace("\r\n", " ")}</p></div>{Environment.NewLine}";
                         }
                         else
                         {
                             foreach (string line in lines)
-                                htmlText += $"<div class=\"n\"><p>{line}</p></div>{Environment.NewLine}";
+                                htmlText += $"<div class=\"{cssClass}\"><p>{line}</p></div>{Environment.NewLine}";
                         }
+                    }
+                    else
+                    {
+                        htmlText += $"<div class=\"{cssClass}\"><p>{v.Text}</p></div>{Environment.NewLine}";//empty line!
                     }
                 }
             }

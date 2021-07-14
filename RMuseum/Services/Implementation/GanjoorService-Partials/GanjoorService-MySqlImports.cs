@@ -835,7 +835,10 @@ namespace RMuseum.Services.Implementation
             poemtext = poemtext.Replace("<div class=\"b\">", "b");
             poemtext = poemtext.Replace("<div class=\"m1\">", "m");
             poemtext = poemtext.Replace("<div class=\"m2\">", "n");
-            poemtext = poemtext.Replace("<div class=\"n\">", "");
+            poemtext = poemtext.Replace("<div class=\"n\"><p>", "s");
+            poemtext = poemtext.Replace("<div class=\"n\">", "s");
+            poemtext = poemtext.Replace("<div class=\"l\"><p>", "l");
+            poemtext = poemtext.Replace("<div class=\"l\">", "l");
             poemtext = poemtext.Replace("<p>", "p");
             poemtext = poemtext.Replace("bmp", "b");
             poemtext = poemtext.Replace("np", "n");
@@ -849,13 +852,14 @@ namespace RMuseum.Services.Implementation
             if (poemtext.Length > 0)
             {
 
-                int idx = poemtext.IndexOfAny(new char[] { 'a', 'b', 'm', 'n', 'p' });
+                int idx = poemtext.IndexOfAny(new char[] { 'a', 'b', 'm', 'n', 'p', 's', 'l' });
                 bool preWasBand = false;
                 while (idx != -1)
                 {
                     GanjoorVerse verse = new GanjoorVerse();
                     verse.PoemId = poemId;
                     verse.VOrder = verses.Count + 1;
+                   
                     switch (poemtext[idx])
                     {
                         case 'p':
@@ -877,8 +881,16 @@ namespace RMuseum.Services.Implementation
                             verse.VersePosition = VersePosition.CenteredVerse1;
                             preWasBand = true;
                             break;
+                        case 's':
+                            verse.VersePosition = VersePosition.Paragraph;
+                            preWasBand = false;
+                            break;
+                        case 'l':
+                            verse.VersePosition = VersePosition.Single;
+                            preWasBand = false;
+                            break;
                     }
-                    int nextIdx = poemtext.IndexOfAny(new char[] { 'a', 'b', 'm', 'n', 'p' }, idx + 1);
+                    int nextIdx = poemtext.IndexOfAny(new char[] { 'a', 'b', 'm', 'n', 'p', 's', 'l' }, idx + 1);
                     if (nextIdx == -1)
                     {
                         verse.Text = poemtext.Substring(idx + 1).Replace("یییییییییییییییییییی", "Adaptation du milieu").Replace("ببببببببب", "Empirique");
@@ -887,6 +899,8 @@ namespace RMuseum.Services.Implementation
                     {
                         verse.Text = poemtext.Substring(idx + 1, nextIdx - idx - 1).Replace("یییییییییییییییییییی", "Adaptation du milieu").Replace("ببببببببب", "Empirique");
                     }
+
+                    verse.Text = verse.Text.Trim();
 
                     verses.Add(verse);
 

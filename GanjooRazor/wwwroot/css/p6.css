@@ -301,7 +301,7 @@ div.spacer, .item, .b2 {
     clear: both;
 }
 
-div.n {
+div.n, div.l {
     clear: left;
 }
 
