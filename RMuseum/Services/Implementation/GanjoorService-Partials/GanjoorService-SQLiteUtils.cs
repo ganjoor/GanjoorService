@@ -801,7 +801,15 @@ namespace RMuseum.Services.Implementation
                     }
                     else
                     {
-                        htmlText += $"<div class=\"{cssClass}\"><p>{v.Text}</p></div>{Environment.NewLine}";//empty line!
+                        if(string.IsNullOrEmpty(v.Text))
+                        {
+                            htmlText += $"<div class=\"{cssClass}\"><p>&nbsp;</p></div>{Environment.NewLine}";//empty line!
+                        }
+                        else
+                        {
+                            htmlText += $"<div class=\"{cssClass}\"><p>{v.Text}</p></div>{Environment.NewLine}";//not brave enough to ignore it!
+                        }
+                        
                     }
                 }
             }

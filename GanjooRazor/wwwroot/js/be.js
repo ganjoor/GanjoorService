@@ -10,7 +10,7 @@ function btshmr() {
     }
    return true;
    }
-    var msr1s = getElements( "m1" , "b2", "n");
+    var msr1s = getElements( "m1" , "b2", "n", "l");
     if ( msr1s.length == 0 )  return true;
 	var j=0;
 	var k=1;
@@ -60,7 +60,7 @@ function isMember(element, classname) {
          }
          return false;
      }
-function getElements(classname, classname2, classname3, tagname, root) {
+function getElements(classname, classname2, classname3, classname4, tagname, root) {
      if (!root) root = document;
      else if (typeof root == "string") root = document.getElementById(root);
      if (!tagname) tagname = "*";
@@ -69,7 +69,7 @@ function getElements(classname, classname2, classname3, tagname, root) {
      var elements = [];  
      for(var i = 0; i < all.length; i++) {
          var element = all[i];
-         if (isMember(element, classname) || isMember(element, classname2) || isMember(element, classname3)) 
+		 if (isMember(element, classname) || isMember(element, classname2) || isMember(element, classname3) || isMember(element, classname4))
              elements.push(element);       
      }
      return elements;
