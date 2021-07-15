@@ -119,7 +119,7 @@ namespace RSecurityBackend.Services
         /// all users informations
         /// </summary>
         /// <returns></returns>
-        Task<RServiceResult<PublicRAppUser[]>> GetAllUsersInformation();
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRAppUser[] Items)>> GetAllUsersInformation(PagingParameterModel paging);
 
         /// <summary>
         /// all users having a certain permission

@@ -103,10 +103,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get">
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
-            All Users Information (if user does not have user:view permission list only contains him/her information)
+            Paginated Users Information (if user does not have user:view permission list only contains him/her information)
             </summary>
+            <param name="paging"></param>
             <returns>All Users Information</returns>
         </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get(System.Guid)">
@@ -2176,7 +2177,7 @@
             <param name="userId"></param>        
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.IAppUserService.GetAllUsersInformation">
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetAllUsersInformation(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             all users informations
             </summary>
@@ -2570,7 +2571,7 @@
             <param name="userId"></param>        
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetAllUsersInformation">
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetAllUsersInformation(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             all users informations
             </summary>

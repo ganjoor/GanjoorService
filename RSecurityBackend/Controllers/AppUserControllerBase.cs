@@ -169,14 +169,15 @@ namespace RSecurityBackend.Controllers
 
 
         /// <summary>
-        /// All Users Information (if user does not have user:view permission list only contains him/her information)
+        /// Paginated Users Information (if user does not have user:view permission list only contains him/her information)
         /// </summary>
+        /// <param name="paging"></param>
         /// <returns>All Users Information</returns>
         [HttpGet]
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PublicRAppUser>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] PagingParameterModel paging)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -192,12 +193,16 @@ namespace RSecurityBackend.Controllers
                 return BadRequest(canViewAllUsersInformation.ExceptionString);
             if (canViewAllUsersInformation.Result)
             {
-                RServiceResult<PublicRAppUser[]> usersInfo = await _appUserService.GetAllUsersInformation();
-                if (usersInfo.Result == null)
+                RServiceResult<(PaginationMetadata PagingMeta, PublicRAppUser[] Items)> usersInfo
+                = await _appUserService.GetAllUsersInformation(paging);
+                if (!string.IsNullOrEmpty(usersInfo.ExceptionString))
                 {
                     return BadRequest(usersInfo.ExceptionString);
                 }
-                return Ok(usersInfo.Result);
+                // Paging Header
+                HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(usersInfo.Result.PagingMeta));
+
+                return Ok(usersInfo.Result.Items);
             }
             else
             {
@@ -208,6 +213,16 @@ namespace RSecurityBackend.Controllers
                         return NotFound();
                     return BadRequest(userInfo.ExceptionString);
                 }
+                HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(new PaginationMetadata()
+                {
+                    currentPage = 1,
+                    hasNextPage = false,
+                    hasPreviousPage = false,
+                    pageSize = 1,
+                    totalCount = 1,
+                    totalPages = 1
+                }));
+
                 return Ok(new PublicRAppUser[] { userInfo.Result });
             }
         }

@@ -375,40 +375,33 @@ namespace RSecurityBackend.Services.Implementation
         /// all users informations
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<RServiceResult<PublicRAppUser[]>> GetAllUsersInformation()
+        public virtual async Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRAppUser[] Items)>> GetAllUsersInformation(PagingParameterModel paging)
         {
             try
             {
-
-                
-                RAppUser[] appUsers = await _userManager.Users.ToArrayAsync();
-                List<PublicRAppUser> lstPublicUsersInfo = new List<PublicRAppUser>();
-
-                
-                foreach(RAppUser appUser in appUsers)
+                var source = _userManager.Users.Select(appUser => new PublicRAppUser()
                 {
-                    lstPublicUsersInfo.Add(
-                        new PublicRAppUser()
-                        {
-                            Id = appUser.Id,
-                            Username = appUser.UserName,
-                            Email = appUser.Email,
-                            FirstName = appUser.FirstName,
-                            SureName = appUser.SureName,
-                            PhoneNumber = appUser.PhoneNumber,
-                            RImageId = appUser.RImageId,
-                            Status = appUser.Status,
-                            NickName = appUser.NickName,
-                            Website = appUser.Website,
-                            Bio = appUser.Bio,
-                            EmailConfirmed = appUser.EmailConfirmed
-                        });
-                }
-                return new RServiceResult<PublicRAppUser[]>(lstPublicUsersInfo.ToArray());
+                    Id = appUser.Id,
+                    Username = appUser.UserName,
+                    Email = appUser.Email,
+                    FirstName = appUser.FirstName,
+                    SureName = appUser.SureName,
+                    PhoneNumber = appUser.PhoneNumber,
+                    RImageId = appUser.RImageId,
+                    Status = appUser.Status,
+                    NickName = appUser.NickName,
+                    Website = appUser.Website,
+                    Bio = appUser.Bio,
+                    EmailConfirmed = appUser.EmailConfirmed
+                });
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, PublicRAppUser[] Items)>(
+                    await QueryablePaginator<PublicRAppUser>.Paginate(source, paging));
+               
             }
             catch (Exception exp)
             {
-                return new RServiceResult<PublicRAppUser[]>(null, exp.ToString());
+                return new RServiceResult<(PaginationMetadata PagingMeta, PublicRAppUser[] Items)>((PagingMeta: null, Items: null), exp.ToString());
             }
         }
 
