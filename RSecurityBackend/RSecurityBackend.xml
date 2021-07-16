@@ -103,11 +103,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
             <summary>
             Paginated Users Information (if user does not have user:view permission list only contains him/her information)
             </summary>
             <param name="paging"></param>
+            <param name="filterByEmail"></param>
             <returns>All Users Information</returns>
         </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get(System.Guid)">
@@ -2177,10 +2178,12 @@
             <param name="userId"></param>        
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.IAppUserService.GetAllUsersInformation(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetAllUsersInformation(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
             <summary>
             all users informations
             </summary>
+            <param name="paging"></param>
+            <param name="filterByEmail"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.IAppUserService.GetUsersHavingPermission(System.String,System.String)">
@@ -2571,10 +2574,12 @@
             <param name="userId"></param>        
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetAllUsersInformation(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetAllUsersInformation(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
             <summary>
             all users informations
             </summary>
+            <param name="paging"></param>
+            <param name="filterByEmail"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetUserSessions(System.Nullable{System.Guid})">

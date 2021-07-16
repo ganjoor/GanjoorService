@@ -374,12 +374,17 @@ namespace RSecurityBackend.Services.Implementation
         /// <summary>
         /// all users informations
         /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="filterByEmail"></param>
         /// <returns></returns>
-        public virtual async Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRAppUser[] Items)>> GetAllUsersInformation(PagingParameterModel paging)
+        public virtual async Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRAppUser[] Items)>> 
+            GetAllUsersInformation(PagingParameterModel paging, string filterByEmail)
         {
             try
             {
-                var source = _userManager.Users.Select(appUser => new PublicRAppUser()
+                var source = _userManager.Users
+                    .Where(appUser => string.IsNullOrEmpty(filterByEmail) || ( !string.IsNullOrEmpty(filterByEmail) && appUser.Email.Contains(filterByEmail)))
+                    .Select(appUser => new PublicRAppUser()
                 {
                     Id = appUser.Id,
                     Username = appUser.UserName,

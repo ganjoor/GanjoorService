@@ -172,12 +172,13 @@ namespace RSecurityBackend.Controllers
         /// Paginated Users Information (if user does not have user:view permission list only contains him/her information)
         /// </summary>
         /// <param name="paging"></param>
+        /// <param name="filterByEmail"></param>
         /// <returns>All Users Information</returns>
         [HttpGet]
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PublicRAppUser>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> Get([FromQuery] PagingParameterModel paging)
+        public async Task<IActionResult> Get([FromQuery] PagingParameterModel paging, string filterByEmail = null)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -185,7 +186,7 @@ namespace RSecurityBackend.Controllers
                 await _userPermissionChecker.Check
                 (
                     loggedOnUserId,
-                    new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value),
+                    new Guid(User.Claims.FirstOrDefault(c => c.Type ==   "SessionId").Value),
                     SecurableItem.UserEntityShortName,
                     SecurableItem.ViewAllOperationShortName
                     );
@@ -193,8 +194,10 @@ namespace RSecurityBackend.Controllers
                 return BadRequest(canViewAllUsersInformation.ExceptionString);
             if (canViewAllUsersInformation.Result)
             {
+                if (!string.IsNullOrEmpty(filterByEmail))
+                    filterByEmail = filterByEmail.Trim();
                 RServiceResult<(PaginationMetadata PagingMeta, PublicRAppUser[] Items)> usersInfo
-                = await _appUserService.GetAllUsersInformation(paging);
+                    = await _appUserService.GetAllUsersInformation(paging, filterByEmail);
                 if (!string.IsNullOrEmpty(usersInfo.ExceptionString))
                 {
                     return BadRequest(usersInfo.ExceptionString);
