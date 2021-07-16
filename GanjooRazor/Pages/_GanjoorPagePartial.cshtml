@@ -333,13 +333,9 @@
                                 <p>🎜 <small><a href="@Html.Raw($"/spotify/?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">معرفی آهنگهای دیگری که در متن آنها از این شعر استفاده شده است</a> ...</small></p>
                             }
 
-                            @if (Model.GanjoorPage.Poem.Images.Length == 0)
-                            {
-                                <p>
-                                    <small>📷 <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی</a>، 📖 <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور</a></small>
-                                </p>
-                            }
-                            else
+
+
+                            @if (Model.GanjoorPage.Poem.Images.Length > 0)
                             {
                                 <h3>تصاویر مرتبط در گنجینهٔ گنجور</h3>
                                 <div style="display: flex;clear: both;width:auto;margin:auto;flex-flow:wrap;text-align:center">
@@ -351,6 +347,10 @@
                                     }
                                 </div>
                             }
+
+                            <p>
+                                <small>📷 <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی</a>، 📖 <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور</a></small>
+                            </p>
 
                             <h3>حاشیه‌ها</h3>
 
