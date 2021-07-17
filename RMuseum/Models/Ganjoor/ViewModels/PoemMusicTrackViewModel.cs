@@ -1,4 +1,6 @@
-﻿namespace RMuseum.Models.Ganjoor.ViewModels
+﻿using System;
+
+namespace RMuseum.Models.Ganjoor.ViewModels
 {
     /// <summary>
     /// Ganjoor Poem related music track model
@@ -79,6 +81,16 @@
         /// rejection cause
         /// </summary>
         public string RejectionCause { get; set; }
+
+        /// <summary>
+        /// Suggested by user id (only filled for review)
+        /// </summary>
+        public Guid? SuggestedById { get; set; }
+
+        /// <summary>
+        /// Suggested by user name (only filled for review)
+        /// </summary>
+        public string SuggestedByNickName { get; set; }
 
         /// <summary>
         /// to string

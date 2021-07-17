@@ -5851,6 +5851,16 @@
             rejection cause
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.SuggestedById">
+            <summary>
+            Suggested by user id (only filled for review)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.SuggestedByNickName">
+            <summary>
+            Suggested by user name (only filled for review)
+            </summary>
+        </member>
         <member name="M:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel.ToString">
             <summary>
             to string

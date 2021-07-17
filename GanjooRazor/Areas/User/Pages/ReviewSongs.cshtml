@@ -37,6 +37,14 @@ else
                 </td>
             </tr>
             <tr>
+                <td>
+                    <span class="inputlabel">پیشنهاد دهنده: </span>
+                </td>
+                <td>
+                    <a href="/hashieha/?userid=@Model.PoemMusicTrackViewModel.SuggestedById" target="_blank">@Model.PoemMusicTrackViewModel.SuggestedByNickName</a>
+                </td>
+            </tr>
+            <tr>
                 <td colspan="2">
                     @{
                         switch (Model.PoemMusicTrackViewModel.TrackType)

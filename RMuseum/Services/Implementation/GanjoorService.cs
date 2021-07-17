@@ -1583,7 +1583,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var song = await _context.GanjoorPoemMusicTracks
+                var song = await _context.GanjoorPoemMusicTracks.Include(song => song.SuggestedBy)
                     .Where(p => p.Approved == false && p.Rejected == false && (suggestedById == Guid.Empty || p.SuggestedById == suggestedById))
                     .OrderBy(p => p.Id).Skip(skip).AsNoTracking().FirstOrDefaultAsync();
                 if (song != null)
@@ -1606,7 +1606,9 @@ namespace RMuseum.Services.Implementation
                             BrokenLink = song.BrokenLink,
                             Approved = song.Approved,
                             Rejected = song.Rejected,
-                            RejectionCause = song.RejectionCause
+                            RejectionCause = song.RejectionCause,
+                            SuggestedById = song.SuggestedById,
+                            SuggestedByNickName = song.SuggestedBy.NickName
                         }
                         );
                 }
