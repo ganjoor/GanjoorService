@@ -4,9 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -24,13 +28,19 @@ namespace GanjooRazor.Pages
         private readonly HttpClient _httpClient;
 
         /// <summary>
+        /// configuration
+        /// </summary>
+        private readonly IConfiguration _configuration;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        /// <param name="ganjoorService"></param>
-        public SpotifyModel(HttpClient httpClient)
+        /// <param name="configuration"></param>
+        public SpotifyModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -146,9 +156,52 @@ namespace GanjooRazor.Pages
         /// search by artists name
         /// </summary>
         /// <param name="search"></param>
+        /// <param name="secondtime"></param>
         /// <returns></returns>
-        public async Task<IActionResult> OnPostSearchByArtistNameAsync(string search)
+        public async Task<IActionResult> OnPostSearchByArtistNameAsync(string search, bool secondtime = false)
         {
+            string spotifyToken = _configuration.GetSection("Spofify")["AccessToken"];//we need to store these values in another place
+            var request = new HttpRequestMessage(HttpMethod.Get,
+                $"https://api.spotify.com/v1/search?q={search}&type=artist");
+                request.Headers.Add("Authorization", spotifyToken);
+            var response = await _httpClient.SendAsync(request);
+            List<NameIdUrlImage> artists = new List<NameIdUrlImage>();
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                var parsed = JObject.Parse(json);
+                
+                foreach (JToken artist in parsed.SelectTokens("artists.items[*]"))
+                {
+                    string imageUrl = "";
+                    foreach (JToken image in artist.SelectTokens("images[*].url"))
+                    {
+                        imageUrl = image.Value<string>();
+                        break;
+                    }
+                    artists.Add(
+                        new NameIdUrlImage()
+                        {
+                            Name = artist.SelectToken("name").Value<string>(),
+                            Id = artist.SelectToken("id").Value<string>(),
+                            Url = artist.SelectToken("external_urls.spotify").Value<string>(),
+                            Image = imageUrl
+                        }
+                        );
+                }
+
+            }
+            else
+            {
+                if (!secondtime)
+                {
+                    await RefreshToken();
+                    return await OnPostSearchByArtistNameAsync(search, true);
+                }
+                return BadRequest(response.ToString());
+            }
+
+            /*
             //Warning: This is a private wrapper around the spotify API, created only for this project and incapable of
             //         responding large number of requests (both server and Spotify user limitations),
             //         so please do not use this proxy in other projects because you will cause this proxy to become unavailable for me
@@ -161,6 +214,7 @@ namespace GanjooRazor.Pages
             {
                 artists = JsonConvert.DeserializeObject<NameIdUrlImage[]>(await response.Content.ReadAsStringAsync());
             }
+            */
 
 
             return new PartialViewResult()
@@ -170,10 +224,34 @@ namespace GanjooRazor.Pages
                 {
                     Model = new _SpotifySearchPartialModel()
                     {
-                        Artists = artists
+                        Artists = artists.ToArray()
                     }
                 }
             };
+        }
+
+        private async Task RefreshToken()
+        {
+            string refresh_token = _configuration.GetSection("Spofify")["RefreshToken"];//we need to store these values in another place
+            var nvc = new List<KeyValuePair<string, string>>();
+            nvc.Add(new KeyValuePair<string, string>("grant_type", "refresh_token"));
+            nvc.Add(new KeyValuePair<string, string>("refresh_token", refresh_token));
+            var formContent = new FormUrlEncodedContent(nvc);
+            var request = new HttpRequestMessage(HttpMethod.Post,
+            "https://accounts.spotify.com/api/token");
+            request.Content = formContent;
+            string authValue = Convert.ToBase64String(new ASCIIEncoding().GetBytes($"{_configuration.GetSection("Spofify")["ClientID"]}:{_configuration.GetSection("Spofify")["ClientSecret"]}"));
+            request.Headers.Add("Authorization", $"Basic {authValue}");
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                var parsed = JObject.Parse(json);
+                string access_token = parsed.SelectToken("access_token").Value<string>();
+
+
+                _configuration.GetSection("Spofify")["AccessToken"] = access_token;
+            }
         }
 
         /// <summary>
