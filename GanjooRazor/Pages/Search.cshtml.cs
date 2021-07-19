@@ -241,7 +241,12 @@ namespace GanjooRazor.Pages
                     if (!string.IsNullOrEmpty(paginationMetadataJsonValue))
                     {
                         PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginationMetadataJsonValue);
-                        PagingToolsHtml = GeneratePagingBarHtml(paginationMetadata, $"/search?s={Query}&author={PoetId}");
+                        string catQuery = "";
+                        if(!string.IsNullOrEmpty(Request.Query["cat"]))
+                        {
+                            catQuery = $"&cat={Request.Query["cat"]}";
+                        }
+                        PagingToolsHtml = GeneratePagingBarHtml(paginationMetadata, $"/search?s={Query}&author={PoetId}{catQuery}");
                     }
                 }
 
