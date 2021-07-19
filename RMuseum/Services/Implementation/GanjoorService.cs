@@ -1608,7 +1608,7 @@ namespace RMuseum.Services.Implementation
                             Rejected = song.Rejected,
                             RejectionCause = song.RejectionCause,
                             SuggestedById = song.SuggestedById,
-                            SuggestedByNickName = song.SuggestedBy.NickName
+                            SuggestedByNickName = string.IsNullOrEmpty(song.SuggestedBy.NickName) ? song.SuggestedBy.Id.ToString() : song.SuggestedBy.NickName
                         }
                         );
                 }
