@@ -643,6 +643,11 @@
             Notifications
             </summary>
         </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.Options">
+            <summary>
+            Options
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Models.Audit.Db.REvent">
             <summary>
             Audit Event
@@ -1743,6 +1748,26 @@
             <summary>
             Amount
             </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Generic.Db.RGenericOption">
+            <summary>
+            generic option
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RGenericOption.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RGenericOption.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RGenericOption.Value">
+             <summary>
+            value
+             </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus">
             <summary>
@@ -3270,6 +3295,37 @@
             </summary>
             <param name="connectionString"></param>
         </member>
+        <member name="T:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF">
+            <summary>
+            generic options service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF.SetAsync(System.String,System.String)">
+            <summary>
+            modify an option or add a new one if an option with the requested name does not exist
+            </summary>
+            <param name="optionName"></param>
+            <param name="optionValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF.GetValueAsync(System.String)">
+            <summary>
+            get option value
+            </summary>
+            <param name="optionName"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF._context">
+            <summary>
+            Database Contetxt
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF.#ctor(RSecurityBackend.DbContext.RSecurityDbContext{RSecurityBackend.Models.Auth.Db.RAppUser,RSecurityBackend.Models.Auth.Db.RAppRole,System.Guid})">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+        </member>
         <member name="T:RSecurityBackend.Services.Implementation.RNotificationService">
             <summary>
             Internal messaging system implementation
@@ -3471,6 +3527,26 @@
             constructor
             </summary>
             <param name="appUserService"></param>
+        </member>
+        <member name="T:RSecurityBackend.Services.IRGenericOptionsService">
+            <summary>
+            generic options service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.IRGenericOptionsService.SetAsync(System.String,System.String)">
+            <summary>
+            modify an option or add a new one if an option with the requested name does not exist
+            </summary>
+            <param name="optionName"></param>
+            <param name="optionValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IRGenericOptionsService.GetValueAsync(System.String)">
+            <summary>
+            get option value
+            </summary>
+            <param name="optionName"></param>
+            <returns></returns>
         </member>
         <member name="T:RSecurityBackend.Services.IRNotificationService">
             <summary>

@@ -62,9 +62,12 @@ namespace RSecurityBackend.DbContext
             builder.Entity<RVerifyQueueItem>()
                 .HasIndex(u => u.Secret)
                 .IsUnique();
+
+            builder.Entity<RGenericOption>()
+                .HasIndex(o => o.Name)
+                .IsUnique();
         }        
 
-        #region Auth        
         /// <summary>
         /// Permissions
         /// </summary>
@@ -91,29 +94,24 @@ namespace RSecurityBackend.DbContext
         /// </summary>
         public DbSet<RCaptchaImage> CaptchaImages { get; set; }
 
-
-        #endregion
-
-        #region Audit
-
         /// <summary>
         /// Audit Logs Events
         /// </summary>
         public DbSet<REvent> AuditLogs { get; set; }
-        #endregion
 
-        #region
         /// <summary>
         /// long running jobs
         /// </summary>
         public DbSet<RLongRunningJobStatus> LongRunningJobs { get; set; }
-        #endregion
 
-        #region Notifications
         /// <summary>
         /// Notifications
         /// </summary>
         public DbSet<RUserNotification> Notifications { get; set; }
-        #endregion
+
+        /// <summary>
+        /// Options
+        /// </summary>
+        public DbSet<RGenericOption> Options { get; set; }
     }
 }
