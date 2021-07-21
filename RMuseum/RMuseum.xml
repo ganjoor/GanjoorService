@@ -1473,11 +1473,12 @@
             options
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.RGenericOptionsController.#ctor(RSecurityBackend.Services.IRGenericOptionsService)">
+        <member name="M:RMuseum.Controllers.RGenericOptionsController.#ctor(RSecurityBackend.Services.IRGenericOptionsService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
             <summary>
             constructor
             </summary>
             <param name="optionsService"></param>
+            <param name="memoryCache"></param>
         </member>
         <member name="T:RMuseum.Controllers.RImageController">
             <summary>

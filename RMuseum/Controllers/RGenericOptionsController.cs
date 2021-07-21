@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using RSecurityBackend.Controllers;
 using RSecurityBackend.Services;
 
@@ -15,7 +16,8 @@ namespace RMuseum.Controllers
         /// constructor
         /// </summary>
         /// <param name="optionsService"></param>
-        public RGenericOptionsController(IRGenericOptionsService optionsService) : base(optionsService)
+        /// <param name="memoryCache"></param>
+        public RGenericOptionsController(IRGenericOptionsService optionsService, IMemoryCache memoryCache) : base(optionsService, memoryCache)
         {
         }
     }

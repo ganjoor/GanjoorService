@@ -429,16 +429,21 @@
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.#ctor(RSecurityBackend.Services.IRGenericOptionsService)">
+        <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.#ctor(RSecurityBackend.Services.IRGenericOptionsService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
             <summary>
             constructor
             </summary>
-            <param name="optionsService">
-            </param>
+            <param name="optionsService"></param>
+            <param name="memoryCache"></param>
         </member>
         <member name="F:RSecurityBackend.Controllers.RGenericOptionsControllerBase._optionsService">
             <summary>
             Options Service
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.RGenericOptionsControllerBase._memoryCache">
+            <summary>
+            IMemoryCache
             </summary>
         </member>
         <member name="T:RSecurityBackend.Controllers.RImageControllerBase">
