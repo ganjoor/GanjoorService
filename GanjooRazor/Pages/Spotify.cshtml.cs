@@ -196,21 +196,7 @@ namespace GanjooRazor.Pages
                 return BadRequest(response.ToString());
             }
 
-            /*
-            //Warning: This is a private wrapper around the spotify API, created only for this project and incapable of
-            //         responding large number of requests (both server and Spotify user limitations),
-            //         so please do not use this proxy in other projects because you will cause this proxy to become unavailable for me
-            //         Thanks!
-            var response = await _httpClient.GetAsync($"http://spotify.ganjoor.net/spotifyapi/search/artists/{HttpUtility.UrlEncode(search)}");
-
-            NameIdUrlImage[] artists = new NameIdUrlImage[] { };
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                artists = JsonConvert.DeserializeObject<NameIdUrlImage[]>(await response.Content.ReadAsStringAsync());
-            }
-            */
-
+           
 
             return new PartialViewResult()
             {
@@ -315,20 +301,7 @@ namespace GanjooRazor.Pages
 
             albums.Sort((a, b) => a.Name.CompareTo(b.Name));
 
-            /*
-            //Warning: This is a private wrapper around the spotify API, created only for this project and incapable of
-            //         responding large number of requests (both server and Spotify user limitations),
-            //         so please do not use this proxy in other projects because you will cause this proxy to become unavailable for me
-            //         Thanks!
-            var response = await _httpClient.GetAsync($"http://spotify.ganjoor.net/spotifyapi/artists/{artist}/albums");
-
-            NameIdUrlImage[] albums = new NameIdUrlImage[] { };
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                albums = JsonConvert.DeserializeObject<NameIdUrlImage[]>(await response.Content.ReadAsStringAsync());
-            }
-            */
+            
             return new OkObjectResult(albums.ToArray());
         }
 
@@ -381,20 +354,7 @@ namespace GanjooRazor.Pages
                 }
                 return BadRequest(response.ToString());
             }
-            /*
-            //Warning: This is a private wrapper around the spotify API, created only for this project and incapable of
-            //         responding large number of requests (both server and Spotify user limitations),
-            //         so please do not use this proxy in other projects because you will cause this proxy to become unavailable for me
-            //         Thanks!
-            var response = await _httpClient.GetAsync($"http://spotify.ganjoor.net/spotifyapi/albums/{album}/tracks");
-
-            NameIdUrlImage[] tracks = new NameIdUrlImage[] { };
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                tracks = JsonConvert.DeserializeObject<NameIdUrlImage[]>(await response.Content.ReadAsStringAsync());
-            }
-            */
+           
             return new OkObjectResult(tracks.ToArray());
         }
 
@@ -486,20 +446,7 @@ namespace GanjooRazor.Pages
                 return BadRequest(response.ToString());
             }
 
-            /*
-            //Warning: This is a private wrapper around the spotify API, created only for this project and incapable of
-            //         responding large number of requests (both server and Spotify user limitations),
-            //         so please do not use this proxy in other projects because you will cause this proxy to become unavailable for me
-            //         Thanks!
-            var response = await _httpClient.GetAsync($"http://spotify.ganjoor.net/spotifyapi/search/tracks/{search}");
-
-            TrackQueryResult[] tracks = new TrackQueryResult[] { };
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                tracks = JsonConvert.DeserializeObject<TrackQueryResult[]>(await response.Content.ReadAsStringAsync());
-            }
-            */
+            
 
             return new PartialViewResult()
             {
