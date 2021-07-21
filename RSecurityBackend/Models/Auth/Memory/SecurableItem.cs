@@ -117,7 +117,6 @@
                         Description = "تنظیمات عمومی",
                         Operations = new SecurableItemOperation[]
                         {
-                            new SecurableItemOperation(ViewOperationShortName, "مشاهده", false),
                             new SecurableItemOperation(ModifyOperationShortName, "اصلاح", false),
                         }
                     }

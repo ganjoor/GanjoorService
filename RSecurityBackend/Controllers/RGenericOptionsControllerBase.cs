@@ -50,7 +50,7 @@ namespace RSecurityBackend.Controllers
         }
 
         /// <summary>
-        /// get user level option
+        /// get user level option, Security Warning: every authenticated user could see value of global options, so do not store sensitive data into them
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
@@ -70,13 +70,13 @@ namespace RSecurityBackend.Controllers
         }
 
         /// <summary>
-        /// get global option value
+        /// get global option value, Security Warning: every authenticated user could see value of global options, so do not store sensitive data into them
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
 
         [HttpGet("global/{name}")]
-        [Authorize(Policy = SecurableItem.GlobalOptionsEntityShortName + ":" + SecurableItem.ViewOperationShortName)]
+        [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetGlobalOptionValue(string name)

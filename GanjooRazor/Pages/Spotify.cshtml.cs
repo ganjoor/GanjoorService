@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
@@ -13,9 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace GanjooRazor.Pages
 {
@@ -27,20 +26,17 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly HttpClient _httpClient;
 
-        /// <summary>
-        /// configuration
-        /// </summary>
-        private readonly IConfiguration _configuration;
+       
 
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        /// <param name="configuration"></param>
-        public SpotifyModel(HttpClient httpClient, IConfiguration configuration)
+
+        public SpotifyModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _configuration = configuration;
+            
         }
 
         /// <summary>
@@ -160,7 +156,7 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnPostSearchByArtistNameAsync(string search, bool secondtime = false)
         {
-            string spotifyToken = _configuration.GetSection("Spofify")["AccessToken"];//we need to store these values in another place
+            string spotifyToken = $"Bearer {Options["access_token"]}";
             var request = new HttpRequestMessage(HttpMethod.Get,
                 $"https://api.spotify.com/v1/search?q={search}&type=artist");
             request.Headers.Add("Authorization", spotifyToken);
@@ -232,7 +228,7 @@ namespace GanjooRazor.Pages
 
         private async Task _RefreshSpotifyToken()
         {
-            string refresh_token = _configuration.GetSection("Spofify")["RefreshToken"];//we need to store these values in another place
+            string refresh_token = Options["refresh_token"];
             var nvc = new List<KeyValuePair<string, string>>();
             nvc.Add(new KeyValuePair<string, string>("grant_type", "refresh_token"));
             nvc.Add(new KeyValuePair<string, string>("refresh_token", refresh_token));
@@ -240,7 +236,7 @@ namespace GanjooRazor.Pages
             var request = new HttpRequestMessage(HttpMethod.Post,
             "https://accounts.spotify.com/api/token");
             request.Content = formContent;
-            string authValue = Convert.ToBase64String(new ASCIIEncoding().GetBytes($"{_configuration.GetSection("Spofify")["ClientID"]}:{_configuration.GetSection("Spofify")["ClientSecret"]}"));
+            string authValue = Convert.ToBase64String(new ASCIIEncoding().GetBytes($"{Options["client_id"]}:{Options["client_secret"]}"));
             request.Headers.Add("Authorization", $"Basic {authValue}");
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -249,8 +245,9 @@ namespace GanjooRazor.Pages
                 var parsed = JObject.Parse(json);
                 string access_token = parsed.SelectToken("access_token").Value<string>();
 
-
-                _configuration.GetSection("Spofify")["AccessToken"] = access_token;
+                var options = Options;
+                options["access_token"] = access_token;
+                Options = options;
             }
         }
 
@@ -261,7 +258,7 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnPostFillAlbumsAsync(string artist, bool secondtime = false)
         {
-            string spotifyToken = _configuration.GetSection("Spofify")["AccessToken"];//we need to store these values in another place
+            string spotifyToken = $"Bearer {Options["access_token"]}";
             List<NameIdUrlImage> albums = new List<NameIdUrlImage>();
             int offest = 0;
             int limit = 50;
@@ -343,7 +340,7 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnPostFillTracksAsync(string album, bool secondtime = false)
         {
-            string spotifyToken = _configuration.GetSection("Spofify")["AccessToken"];//we need to store these values in another place
+            string spotifyToken = $"Bearer {Options["access_token"]}";
 
             var request = new HttpRequestMessage(HttpMethod.Get,
             $"https://api.spotify.com/v1/albums/{album}/tracks?limit=50");
@@ -409,7 +406,7 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnPostSearchByTrackTitleAsync(string search, bool secondtime = false)
         {
-            string spotifyToken = _configuration.GetSection("Spofify")["AccessToken"];//we need to store these values in another place
+            string spotifyToken = $"Bearer {Options["access_token"]}";
 
             var request = new HttpRequestMessage(HttpMethod.Get,
             $"https://api.spotify.com/v1/search?q={search}&type=track");
@@ -517,5 +514,56 @@ namespace GanjooRazor.Pages
                 }
             };
         }
+
+        private const string OptionFilePath = @"C:\Tools\NewSpotifyOptions\config.txt";
+
+        public static Dictionary<string, string> Options
+        {
+            get
+            {
+                if (_cachedOptions != null)
+                    return _cachedOptions;
+                Dictionary<string, string> options = new Dictionary<string, string>();
+                options.Add("access_token", "");
+                options.Add("refresh_token", "");
+                options.Add("client_id", "");
+                options.Add("client_secret", "");
+                if (System.IO.File.Exists(OptionFilePath))
+                {
+                    string[] lines = System.IO.File.ReadAllLines(OptionFilePath);
+                    int i = 0;
+                    while (i < lines.Length)
+                    {
+                        if (options.ContainsKey(lines[i]))
+                        {
+                            if ((i + 1) < lines.Length)
+                            {
+                                options[lines[i]] = lines[i + 1];
+                            }
+                            i += 2;
+                        }
+                        else
+                        {
+                            i++;
+                        }
+                    }
+                }
+                _cachedOptions = options;
+                return options;
+            }
+            set
+            {
+                _cachedOptions = null;
+                List<string> lines = new List<string>();
+                foreach (string key in value.Keys)
+                {
+                    lines.Add(key);
+                    lines.Add(value[key]);
+                }
+                System.IO.File.WriteAllLines(OptionFilePath, lines);
+            }
+        }
+
+        private static Dictionary<string, string> _cachedOptions = null;
     }
 }
