@@ -1468,6 +1468,17 @@
             IAppUserService instance
             </summary>
         </member>
+        <member name="T:RMuseum.Controllers.RGenericOptionsController">
+            <summary>
+            options
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.RGenericOptionsController.#ctor(RSecurityBackend.Services.IRGenericOptionsService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="optionsService"></param>
+        </member>
         <member name="T:RMuseum.Controllers.RImageController">
             <summary>
             Generic Image Provider

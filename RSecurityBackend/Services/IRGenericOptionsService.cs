@@ -1,5 +1,6 @@
 ﻿using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Generic.Db;
+using System;
 using System.Threading.Tasks;
 
 namespace RSecurityBackend.Services
@@ -14,14 +15,16 @@ namespace RSecurityBackend.Services
         /// </summary>
         /// <param name="optionName"></param>
         /// <param name="optionValue"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<RGenericOption>> SetAsync(string optionName, string optionValue);
+        Task<RServiceResult<RGenericOption>> SetAsync(string optionName, string optionValue, Guid? userId);
 
         /// <summary>
         /// get option value
         /// </summary>
         /// <param name="optionName"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<string>> GetValueAsync(string optionName);
+        Task<RServiceResult<string>> GetValueAsync(string optionName, Guid? userId);
     }
 }

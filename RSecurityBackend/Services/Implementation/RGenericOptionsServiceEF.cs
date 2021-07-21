@@ -19,10 +19,11 @@ namespace RSecurityBackend.Services.Implementation
         /// </summary>
         /// <param name="optionName"></param>
         /// <param name="optionValue"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<RGenericOption>> SetAsync(string optionName, string optionValue)
+        public async Task<RServiceResult<RGenericOption>> SetAsync(string optionName, string optionValue, Guid? userId)
         {
-            var existing = await _context.Options.Where(o => o.Name == optionName).SingleOrDefaultAsync();
+            var existing = await _context.Options.Where(o => o.Name == optionName && o.RAppUserId == userId).SingleOrDefaultAsync();
             if (existing != null)
             {
                 existing.Value = optionValue;
@@ -35,7 +36,8 @@ namespace RSecurityBackend.Services.Implementation
             var option = new RGenericOption()
             {
                 Name = optionName,
-                Value = optionValue
+                Value = optionValue,
+                RAppUserId = userId
             };
 
             _context.Options.Add(option);
@@ -48,12 +50,13 @@ namespace RSecurityBackend.Services.Implementation
         /// get option value
         /// </summary>
         /// <param name="optionName"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<string>> GetValueAsync(string optionName)
+        public async Task<RServiceResult<string>> GetValueAsync(string optionName, Guid? userId)
         {
-            var option = await _context.Options.AsNoTracking().Where(o => o.Name == optionName).SingleOrDefaultAsync();
+            var option = await _context.Options.AsNoTracking().Where(o => o.Name == optionName && o.RAppUserId == userId).SingleOrDefaultAsync();
             if (option == null)
-                return new RServiceResult<string>(null, $"option '{optionName}' not found!");
+                return new RServiceResult<string>(""); //empty value
             return new RServiceResult<string>(option.Value);
         }
 

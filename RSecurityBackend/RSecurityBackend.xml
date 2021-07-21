@@ -394,6 +394,53 @@
             </summary>
             <param name="notificationService"></param>
         </member>
+        <member name="T:RSecurityBackend.Controllers.RGenericOptionsControllerBase">
+            <summary>
+            options controller
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.GetValue(System.String)">
+            <summary>
+            get user level option
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.SetValue(System.String,System.String)">
+            <summary>
+            get user level option
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.GetGlobalOptionValue(System.String)">
+            <summary>
+            get global option value
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.SetGlobalOptionValue(System.String,System.String)">
+            <summary>
+            set global option value
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.#ctor(RSecurityBackend.Services.IRGenericOptionsService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="optionsService">
+            </param>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.RGenericOptionsControllerBase._optionsService">
+            <summary>
+            Options Service
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Controllers.RImageControllerBase">
             <summary>
             Generic Image Provider
@@ -457,7 +504,7 @@
         </member>
         <member name="F:RSecurityBackend.Controllers.RLongRunningJobsControllerBase._jobService">
             <summary>
-            Artifact Service
+            Jobs Service
             </summary>
         </member>
         <member name="T:RSecurityBackend.Controllers.RoleControllerBase">
@@ -1001,6 +1048,11 @@
         <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.AuditLogEntityShortName">
             <summary>
             audit
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.GlobalOptionsEntityShortName">
+            <summary>
+            global options
             </summary>
         </member>
         <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.ViewOperationShortName">
@@ -1768,6 +1820,16 @@
              <summary>
             value
              </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RGenericOption.RAppUserId">
+            <summary>
+            user id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RGenericOption.RAppUser">
+            <summary>
+            user
+            </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus">
             <summary>
@@ -3300,19 +3362,21 @@
             generic options service
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF.SetAsync(System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF.SetAsync(System.String,System.String,System.Nullable{System.Guid})">
             <summary>
             modify an option or add a new one if an option with the requested name does not exist
             </summary>
             <param name="optionName"></param>
             <param name="optionValue"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF.GetValueAsync(System.String)">
+        <member name="M:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF.GetValueAsync(System.String,System.Nullable{System.Guid})">
             <summary>
             get option value
             </summary>
             <param name="optionName"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="F:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF._context">
@@ -3533,19 +3597,21 @@
             generic options service
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Services.IRGenericOptionsService.SetAsync(System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.IRGenericOptionsService.SetAsync(System.String,System.String,System.Nullable{System.Guid})">
             <summary>
             modify an option or add a new one if an option with the requested name does not exist
             </summary>
             <param name="optionName"></param>
             <param name="optionValue"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.IRGenericOptionsService.GetValueAsync(System.String)">
+        <member name="M:RSecurityBackend.Services.IRGenericOptionsService.GetValueAsync(System.String,System.Nullable{System.Guid})">
             <summary>
             get option value
             </summary>
             <param name="optionName"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="T:RSecurityBackend.Services.IRNotificationService">

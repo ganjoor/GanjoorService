@@ -276,6 +276,9 @@ namespace RMuseum
             //long running job service
             services.AddTransient<ILongRunningJobProgressService, LongRunningJobProgressServiceEF>();
 
+            //generic options service
+            services.AddTransient<IRGenericOptionsService, RGenericOptionsServiceEF>();
+
             //site banner service
             services.AddTransient<ISiteBannersService, SiteBannersService>();
 

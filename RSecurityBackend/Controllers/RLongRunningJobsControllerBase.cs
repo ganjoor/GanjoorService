@@ -61,7 +61,7 @@ namespace RSecurityBackend.Controllers
         }
 
         /// <summary>
-        /// Artifact Service
+        /// Jobs Service
         /// </summary>
         protected readonly ILongRunningJobProgressService _jobService;
     }

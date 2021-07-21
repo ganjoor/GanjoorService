@@ -64,8 +64,9 @@ namespace RSecurityBackend.DbContext
                 .IsUnique();
 
             builder.Entity<RGenericOption>()
-                .HasIndex(o => o.Name)
+                .HasIndex(o => new { o.RAppUserId, o.Name })
                 .IsUnique();
+                
         }        
 
         /// <summary>

@@ -19,6 +19,11 @@
         /// </summary>
         public const string AuditLogEntityShortName = "audit";
 
+        /// <summary>
+        /// global options
+        /// </summary>
+        public const string GlobalOptionsEntityShortName = "option";
+
 
         /// <summary>
         /// view
@@ -104,6 +109,16 @@
                         Operations = new SecurableItemOperation[]
                         {
                             new SecurableItemOperation(ViewOperationShortName, "مشاهده", false),
+                        }
+                    },
+                    new SecurableItem()
+                    {
+                        ShortName = GlobalOptionsEntityShortName,
+                        Description = "تنظیمات عمومی",
+                        Operations = new SecurableItemOperation[]
+                        {
+                            new SecurableItemOperation(ViewOperationShortName, "مشاهده", false),
+                            new SecurableItemOperation(ModifyOperationShortName, "اصلاح", false),
                         }
                     }
                 };

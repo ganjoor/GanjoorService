@@ -1,4 +1,7 @@
-﻿namespace RSecurityBackend.Models.Generic.Db
+﻿using RSecurityBackend.Models.Auth.Db;
+using System;
+
+namespace RSecurityBackend.Models.Generic.Db
 {
     /// <summary>
     /// generic option
@@ -19,5 +22,15 @@
         ///value
         /// </summary>
         public string Value { get; set; }
+
+        /// <summary>
+        /// user id
+        /// </summary>
+        public Guid? RAppUserId { get; set; }
+
+        /// <summary>
+        /// user
+        /// </summary>
+        public virtual RAppUser RAppUser { get; set; }
     }
 }
