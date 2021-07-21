@@ -1,0 +1,11 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.SpotifyLoginModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "ورود به اسپاتیفای";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>Click <a href="@Model.SpotifyUrl">ورود</a></p>
