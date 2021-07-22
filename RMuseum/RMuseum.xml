@@ -4997,7 +4997,7 @@
         </member>
         <member name="F:RMuseum.Models.Ganjoor.PoemMusicTrackType.BeepTunesOrKhosousi">
             <summary>
-            https://beeptunes.com/or http://khosousi.com
+            https://beeptunes.com/or https://khosousi.com
             </summary>
         </member>
         <member name="F:RMuseum.Models.Ganjoor.PoemMusicTrackType.Golha">
