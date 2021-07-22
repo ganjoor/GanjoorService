@@ -147,6 +147,25 @@
 
             });
         }
+
+        function cleanMundexCache() {
+            if (!confirm('آیا از حذف کش صفحات موسیقی اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=CleanMundexCache';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('کش صفخات پاک شد.')
+                },
+
+            });
+        }
     </script>
 </head>
 

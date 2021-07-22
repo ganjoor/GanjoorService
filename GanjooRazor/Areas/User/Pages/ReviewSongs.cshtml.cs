@@ -166,5 +166,23 @@ namespace GanjooRazor.Areas.User.Pages
             }
             return new OkObjectResult(false);
         }
+
+        public async Task<IActionResult> OnPostCleanMundexCacheAsync()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/page/cache/64899");// =>/mundex
+                    response.EnsureSuccessStatusCode();
+
+                    response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/page/cache/70833");// =>mundex/bypoet
+                    response.EnsureSuccessStatusCode();
+
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
     }
 }
