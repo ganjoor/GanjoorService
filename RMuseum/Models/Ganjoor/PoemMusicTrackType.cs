@@ -10,7 +10,7 @@
         /// </summary>
         All = -1,
         /// <summary>
-        /// https://beeptunes.com/or http://khosousi.com
+        /// https://beeptunes.com/or https://khosousi.com
         /// </summary>
         BeepTunesOrKhosousi = 0,
         /// <summary>
