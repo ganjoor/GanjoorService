@@ -76,7 +76,7 @@ function getElements(classname, classname2, classname3, classname4, tagname, roo
      
 } 
 
-function hilightverse(vnum, clr, sc){
+function hilightverse(vnum, clr, sc, forceScroll){
      var root = document;
      if (typeof root == "string") root = document.getElementById(root);
 	var all = root.getElementsByTagName("*");
@@ -105,7 +105,8 @@ function hilightverse(vnum, clr, sc){
 					}
 					};										
 					element.firstChild.appendChild(btn);          
-				
+
+					if (forceScroll)
 					if (!!element && element.scrollIntoView) {
 						   element.scrollIntoView();
 					   }				
@@ -139,7 +140,8 @@ function hilightverse(vnum, clr, sc){
 						}
 						};										
 						ptags[p].appendChild(btn);          
-					
+
+						if (forceScroll)
 						if (!!element && element.scrollIntoView) {
 							   element.scrollIntoView();
 						   }				
@@ -217,10 +219,10 @@ function prepaudio(xmlfilename, poemtitle, auartist, oggurl, mp3url){
 		  if(curTime > 0){		  
 		  for(i = 0; i<=vCount; i++){
 			if(curTime >= verseStart[i] && curTime <= verseEnd[i]){				
-				hilightverse(verseIndex[i], "red", true);
+				hilightverse(verseIndex[i], "red", true, false);
 				
 				if(nLastHighlight != verseIndex[i] && nLastHighlight != -1)
-					hilightverse(nLastHighlight, "black", false);
+					hilightverse(nLastHighlight, "black", false, false);
 				nLastHighlight = verseIndex[i];
 				break;
 			}
@@ -230,7 +232,7 @@ function prepaudio(xmlfilename, poemtitle, auartist, oggurl, mp3url){
 	   },
 		ended:function(event) { // 4Hz
 			if(nLastHighlight != -1)
-					hilightverse(nLastHighlight, "black", false);
+					hilightverse(nLastHighlight, "black", false, false);
 		},
 		swfPath: "dist/jplayer",
 		supplied: "oga, mp3",
