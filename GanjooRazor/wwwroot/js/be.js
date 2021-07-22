@@ -219,7 +219,7 @@ function prepaudio(xmlfilename, poemtitle, auartist, oggurl, mp3url){
 		  if(curTime > 0){		  
 		  for(i = 0; i<=vCount; i++){
 			if(curTime >= verseStart[i] && curTime <= verseEnd[i]){				
-				hilightverse(verseIndex[i], "red", true, false);
+				hilightverse(verseIndex[i], "red", true, playerScrollLock);
 				
 				if(nLastHighlight != verseIndex[i] && nLastHighlight != -1)
 					hilightverse(nLastHighlight, "black", false, false);

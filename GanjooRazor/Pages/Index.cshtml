@@ -54,6 +54,9 @@
 
 
     <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        var playerScrollLock = false;
+    </script>
     <script src="/js/be.js"></script>
     <script src="/js/vaabd.js"></script>
 
@@ -88,6 +91,24 @@
                     );
                         </text>
                     }
+
+                    if (playerScrollLock) {
+                        $('#scroll-lock').text('🔒');
+                    }
+                    else {
+                        $('#scroll-lock').text('🔓');
+                    }
+
+                    $('#scroll-lock').click(function () {
+                        playerScrollLock = !playerScrollLock;
+                        if (playerScrollLock) {
+
+                            $('#scroll-lock').text('🔒');
+                        }
+                        else {
+                            $('#scroll-lock').text('🔓');
+                        }
+                    });
 
                 });
                 //]]>
