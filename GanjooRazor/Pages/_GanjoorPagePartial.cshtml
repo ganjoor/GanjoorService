@@ -315,7 +315,7 @@
                             <h3>این شعر را چه کسی در کدام آهنگ خوانده است؟</h3>
                             @if (Model.GanjoorPage.Poem.Songs.Length == 0)
                             {
-                                <p>🎜 <small><a href="@Html.Raw($"/spotify/?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است</a> ...</small></p>
+                                <p>🎜 <small><a href="@Html.Raw($"/bp?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است</a> ...</small></p>
                             }
                             else
                             {
@@ -331,7 +331,7 @@
                                     </p>
                                 }
 
-                                <p>🎜 <small><a href="@Html.Raw($"/spotify/?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">معرفی آهنگهای دیگری که در متن آنها از این شعر استفاده شده است</a> ...</small></p>
+                                <p>🎜 <small><a href="@Html.Raw($"/bp?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">معرفی آهنگهای دیگری که در متن آنها از این شعر استفاده شده است</a> ...</small></p>
                             }
 
 
