@@ -29,45 +29,37 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorSiteBannerViewModel>> AddSiteBanner(Stream imageStream, string fileName, string alternateText, string targetUrl, bool active)
         {
-            try
-            {
-                RServiceResult<RImage> image = await _imageFileService.Add(null, imageStream, fileName, "SiteBanners");
+            RServiceResult<RImage> image = await _imageFileService.Add(null, imageStream, fileName, "SiteBanners");
 
-                if (!string.IsNullOrEmpty(image.ExceptionString))
+            if (!string.IsNullOrEmpty(image.ExceptionString))
+            {
+                return new RServiceResult<GanjoorSiteBannerViewModel>(null, image.ExceptionString);
+            }
+
+            GanjoorSiteBanner banner = new GanjoorSiteBanner()
+            {
+                RImage = image.Result,
+                AlternateText = alternateText,
+                TargetUrl = targetUrl,
+                Active = active
+            };
+
+            _context.GanjoorSiteBanners.Add(banner);
+            await _context.SaveChangesAsync();
+
+            await CleanBannersCache();
+
+            return new RServiceResult<GanjoorSiteBannerViewModel>
+                (
+                new GanjoorSiteBannerViewModel()
                 {
-                    return new RServiceResult<GanjoorSiteBannerViewModel>(null, image.ExceptionString);
+                    Id = banner.Id,
+                    ImageUrl = $"api/rimages/{banner.RImageId}.jpg",
+                    AlternateText = banner.AlternateText,
+                    TargetUrl = banner.TargetUrl,
+                    Active = banner.Active
                 }
-
-                GanjoorSiteBanner banner = new GanjoorSiteBanner()
-                {
-                    RImage = image.Result,
-                    AlternateText = alternateText,
-                    TargetUrl = targetUrl,
-                    Active = active
-                };
-
-                _context.GanjoorSiteBanners.Add(banner);
-                await _context.SaveChangesAsync();
-
-                await CleanBannersCache();
-
-                return new RServiceResult<GanjoorSiteBannerViewModel>
-                    (
-                    new GanjoorSiteBannerViewModel()
-                    {
-                        Id = banner.Id,
-                        ImageUrl = $"api/rimages/{banner.RImageId}.jpg",
-                        AlternateText = banner.AlternateText,
-                        TargetUrl = banner.TargetUrl,
-                        Active = banner.Active
-                    }
-                    );
-
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjoorSiteBannerViewModel>(null, exp.ToString());
-            }
+                );
         }
 
         /// <summary>
@@ -80,29 +72,21 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> ModifySiteBanner(int id, string alternateText, string targetUrl, bool active)
         {
-            try
-            {
-                GanjoorSiteBanner target = await _context.GanjoorSiteBanners.Where(b => b.Id == id).SingleOrDefaultAsync();
-                if (target == null)
-                    return new RServiceResult<bool>(false);//not found
+            GanjoorSiteBanner target = await _context.GanjoorSiteBanners.Where(b => b.Id == id).SingleOrDefaultAsync();
+            if (target == null)
+                return new RServiceResult<bool>(false);//not found
 
-                target.AlternateText = alternateText;
-                target.TargetUrl = targetUrl;
-                target.Active = active;
+            target.AlternateText = alternateText;
+            target.TargetUrl = targetUrl;
+            target.Active = active;
 
-                _context.GanjoorSiteBanners.Update(target);
+            _context.GanjoorSiteBanners.Update(target);
 
-                await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-                await CleanBannersCache();
+            await CleanBannersCache();
 
-                return new RServiceResult<bool>(true);
-
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -112,25 +96,17 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> DeleteSiteBanner(int id)
         {
-            try
-            {
-                GanjoorSiteBanner target = await _context.GanjoorSiteBanners.Where(b => b.Id == id).SingleOrDefaultAsync();
-                if (target == null)
-                    return new RServiceResult<bool>(false);//not found
+            GanjoorSiteBanner target = await _context.GanjoorSiteBanners.Where(b => b.Id == id).SingleOrDefaultAsync();
+            if (target == null)
+                return new RServiceResult<bool>(false);//not found
 
-                _context.GanjoorSiteBanners.Remove(target);
+            _context.GanjoorSiteBanners.Remove(target);
 
-                await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-                await CleanBannersCache();
+            await CleanBannersCache();
 
-                return new RServiceResult<bool>(true);
-
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -139,24 +115,17 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorSiteBannerViewModel[]>> GetSiteBanners()
         {
-            try
-            {
-                return new RServiceResult<GanjoorSiteBannerViewModel[]>(
-                    await _context.GanjoorSiteBanners
-                    .Select(b => new GanjoorSiteBannerViewModel()
-                    {
-                        Id = b.Id,
-                        ImageUrl = $"api/rimages/{b.RImageId}.jpg",
-                        AlternateText = b.AlternateText,
-                        TargetUrl = b.TargetUrl,
-                        Active = b.Active
-                    }).ToArrayAsync()
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjoorSiteBannerViewModel[]>(null, exp.ToString());
-            }
+            return new RServiceResult<GanjoorSiteBannerViewModel[]>(
+                await _context.GanjoorSiteBanners
+                .Select(b => new GanjoorSiteBannerViewModel()
+                {
+                    Id = b.Id,
+                    ImageUrl = $"api/rimages/{b.RImageId}.jpg",
+                    AlternateText = b.AlternateText,
+                    TargetUrl = b.TargetUrl,
+                    Active = b.Active
+                }).ToArrayAsync()
+                );
         }
 
         private const string _cacheKeyForIdSet = "SiteBannersService::GetARandomActiveSiteBanner::idSet";
@@ -169,10 +138,10 @@ namespace RMuseum.Services.Implementation
         private async Task CleanBannersCache()
         {
             int[] idSet = await _context.GanjoorSiteBanners.Select(b => b.Id).ToArrayAsync();
-            foreach(int id in idSet)
+            foreach (int id in idSet)
             {
                 var cacheKey = GetBannerCacheKey(id);
-                if(_memoryCache.TryGetValue(id, out GanjoorSiteBannerViewModel o))
+                if (_memoryCache.TryGetValue(id, out GanjoorSiteBannerViewModel o))
                 {
                     _memoryCache.Remove(id);
                 }
@@ -189,45 +158,37 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorSiteBannerViewModel>> GetARandomActiveSiteBanner()
         {
-            try
+            if (!_memoryCache.TryGetValue(_cacheKeyForIdSet, out int[] idSet))
             {
-                if (!_memoryCache.TryGetValue(_cacheKeyForIdSet, out int[] idSet))
-                {
-                    idSet = await _context.GanjoorSiteBanners.Where(b => b.Active == true).Select(b => b.Id).ToArrayAsync();
-                    _memoryCache.Set(_cacheKeyForIdSet, idSet);
-                }
-                if (idSet.Length == 0)
-                    return new RServiceResult<GanjoorSiteBannerViewModel>(null);//no active banner
-
-                Random rnd = new Random(DateTime.Now.Millisecond);
-                int id = idSet[rnd.Next(0, idSet.Length)];
-
-                var cachKey = GetBannerCacheKey(id);
-                if (!_memoryCache.TryGetValue(cachKey, out GanjoorSiteBannerViewModel banner))
-                {
-                    banner =
-                        await _context.GanjoorSiteBanners
-                        .Where(b => b.Id == id)
-                        .Select(b => new GanjoorSiteBannerViewModel()
-                        {
-                            Id = b.Id,
-                            ImageUrl = $"api/rimages/{b.RImageId}.jpg",
-                            AlternateText = b.AlternateText,
-                            TargetUrl = b.TargetUrl,
-                            Active = b.Active
-                        })
-                        .AsNoTracking()
-                        .SingleAsync();
-                    _memoryCache.Set(cachKey, banner);
-                }
-
-                return new RServiceResult<GanjoorSiteBannerViewModel>(banner);
-
+                idSet = await _context.GanjoorSiteBanners.Where(b => b.Active == true).Select(b => b.Id).ToArrayAsync();
+                _memoryCache.Set(_cacheKeyForIdSet, idSet);
             }
-            catch (Exception exp)
+            if (idSet.Length == 0)
+                return new RServiceResult<GanjoorSiteBannerViewModel>(null);//no active banner
+
+            Random rnd = new Random(DateTime.Now.Millisecond);
+            int id = idSet[rnd.Next(0, idSet.Length)];
+
+            var cachKey = GetBannerCacheKey(id);
+            if (!_memoryCache.TryGetValue(cachKey, out GanjoorSiteBannerViewModel banner))
             {
-                return new RServiceResult<GanjoorSiteBannerViewModel>(null, exp.ToString());
+                banner =
+                    await _context.GanjoorSiteBanners
+                    .Where(b => b.Id == id)
+                    .Select(b => new GanjoorSiteBannerViewModel()
+                    {
+                        Id = b.Id,
+                        ImageUrl = $"api/rimages/{b.RImageId}.jpg",
+                        AlternateText = b.AlternateText,
+                        TargetUrl = b.TargetUrl,
+                        Active = b.Active
+                    })
+                    .AsNoTracking()
+                    .SingleAsync();
+                _memoryCache.Set(cachKey, banner);
             }
+
+            return new RServiceResult<GanjoorSiteBannerViewModel>(banner);
         }
 
         /// <summary>
@@ -253,7 +214,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="context"></param>
         /// <param name="imageFileService"></param>
         /// <param name="memoryCache"></param>
-        public SiteBannersService(RMuseumDbContext context,IImageFileService imageFileService, IMemoryCache memoryCache)
+        public SiteBannersService(RMuseumDbContext context, IImageFileService imageFileService, IMemoryCache memoryCache)
         {
             _context = context;
             _imageFileService = imageFileService;

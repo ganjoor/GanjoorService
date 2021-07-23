@@ -27,25 +27,18 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GolhaProgramViewModel[]>> GetGolhaCollectionPrograms(int id)
         {
-            try
-            {
-                return new RServiceResult<GolhaProgramViewModel[]>
-                    (
-                    await _context.GolhaPrograms.Where(p => p.GolhaCollectionId == id).OrderBy(p => p.Id)
-                        .Select(p => new GolhaProgramViewModel()
-                        {
-                            Id = p.Id,
-                            Title = p.Title,
-                            Url = p.Url,
-                            ProgramOrder = p.ProgramOrder,
-                            Mp3 = p.Mp3
-                        }).ToArrayAsync()
-                    ); ;
-            }
-            catch(Exception exp)
-            {
-                return new RServiceResult<GolhaProgramViewModel[]>(null, exp.ToString());
-            }
+            return new RServiceResult<GolhaProgramViewModel[]>
+                (
+                await _context.GolhaPrograms.Where(p => p.GolhaCollectionId == id).OrderBy(p => p.Id)
+                    .Select(p => new GolhaProgramViewModel()
+                    {
+                        Id = p.Id,
+                        Title = p.Title,
+                        Url = p.Url,
+                        ProgramOrder = p.ProgramOrder,
+                        Mp3 = p.Mp3
+                    }).ToArrayAsync()
+                );
         }
 
 
@@ -56,24 +49,17 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GolhaTrackViewModel[]>> GetGolhaProgramTracks(int id)
         {
-            try
-            {
-                return new RServiceResult<GolhaTrackViewModel[]>
-                    (
-                    await _context.GolhaTracks.Where(p => p.GolhaProgramId == id).OrderBy(p => p.Id)
-                        .Select(p => new GolhaTrackViewModel()
-                        {
-                            Id = p.Id,
-                            TrackNo = p.TrackNo,
-                            Timing = p.Timing,
-                            Title = p.Title,
-                        }).ToArrayAsync()
-                    ); ;
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GolhaTrackViewModel[]>(null, exp.ToString());
-            }
+            return new RServiceResult<GolhaTrackViewModel[]>
+                (
+                await _context.GolhaTracks.Where(p => p.GolhaProgramId == id).OrderBy(p => p.Id)
+                    .Select(p => new GolhaTrackViewModel()
+                    {
+                        Id = p.Id,
+                        TrackNo = p.TrackNo,
+                        Timing = p.Timing,
+                        Title = p.Title,
+                    }).ToArrayAsync()
+                ); ;
         }
 
         /// <summary>
@@ -87,11 +73,11 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                
+
 
                 using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                 {
-                    if(await context.GolhaCollections.AnyAsync())
+                    if (await context.GolhaCollections.AnyAsync())
                     {
                         job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - golha collections are already imported")).Result;
                         return new RServiceResult<bool>(true);
@@ -278,7 +264,7 @@ namespace RMuseum.Services.Implementation
 
                 return new RServiceResult<bool>(true);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, exp.ToString());
 

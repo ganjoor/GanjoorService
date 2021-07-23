@@ -40,62 +40,55 @@ namespace RMuseum.Services.Implementation
             string title, string description, int order, string srcurl, string orignalFilePath, string normalFilePath, string thumbFilePath, string originalFileNameForStreams, string imageFolderName
             )
         {
-            try
+            RPictureFile pictureFile =
+                new RPictureFile()
+                {
+                    Title = title,
+                    TitleInEnglish = title,
+                    Description = description,
+                    DescriptionInEnglish = description,
+                    Order = order,
+                    SrcUrl = srcurl,
+                    Status = PublishStatus.Draft,
+                    DataTime = DateTime.Now,
+                    LastModified = DateTime.Now,
+                    LastModifiedMeta = DateTime.Now,
+                    FolderName = string.IsNullOrEmpty(imageFolderName) ? DateTime.Now.ToString("yyyy-MM") : imageFolderName,
+                    ContentType = "image/jpeg",
+                    OriginalFileName = originalFileNameForStreams,
+                    StoredFileName = orignalFilePath,
+                    NormalSizeImageStoredFileName = normalFilePath,
+                    ThumbnailImageStoredFileName = thumbFilePath,
+                    FileSizeInBytes = (await File.ReadAllBytesAsync(orignalFilePath)).Length
+
+                };
+
+            using (Image img = Image.FromFile(orignalFilePath))
             {
-                RPictureFile pictureFile =                    
-                    new RPictureFile()
-                    {
-                        Title = title,
-                        TitleInEnglish = title,
-                        Description = description,
-                        DescriptionInEnglish = description,
-                        Order = order,
-                        SrcUrl = srcurl,
-                        Status = PublishStatus.Draft,
-                        DataTime = DateTime.Now,
-                        LastModified = DateTime.Now,
-                        LastModifiedMeta = DateTime.Now,
-                        FolderName = string.IsNullOrEmpty(imageFolderName) ? DateTime.Now.ToString("yyyy-MM") : imageFolderName,
-                        ContentType = "image/jpeg",
-                        OriginalFileName = originalFileNameForStreams,
-                        StoredFileName = orignalFilePath,
-                        NormalSizeImageStoredFileName = normalFilePath,
-                        ThumbnailImageStoredFileName = thumbFilePath,
-                        FileSizeInBytes = (await File.ReadAllBytesAsync(orignalFilePath)).Length                        
-
-                    };
-
-                using(Image img = Image.FromFile(orignalFilePath))
-                {
-                    pictureFile.ImageWidth = img.Width;
-                    pictureFile.ImageHeight = img.Height;
-                }
-
-                using (Image img = Image.FromFile(normalFilePath))
-                {
-                    pictureFile.NormalSizeImageWidth = img.Width;
-                    pictureFile.NormalSizeImageHeight = img.Height;
-                }
-
-                using (Image img = Image.FromFile(thumbFilePath))
-                {
-                    pictureFile.ThumbnailImageWidth = img.Width;
-                    pictureFile.ThumbnailImageHeight = img.Height;
-                }
-
-
-                //here is a problem, this method could be called from a background service where _context is disposed, so I need to renew it
-                /*using(RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
-                {
-                    await context.PictureFiles.AddAsync(pictureFile.Result);
-                    await context.SaveChangesAsync();
-                }*/
-                return new RServiceResult<RPictureFile>(pictureFile);
+                pictureFile.ImageWidth = img.Width;
+                pictureFile.ImageHeight = img.Height;
             }
-            catch (Exception exp)
+
+            using (Image img = Image.FromFile(normalFilePath))
             {
-                return new RServiceResult<RPictureFile>(null, exp.ToString());
+                pictureFile.NormalSizeImageWidth = img.Width;
+                pictureFile.NormalSizeImageHeight = img.Height;
             }
+
+            using (Image img = Image.FromFile(thumbFilePath))
+            {
+                pictureFile.ThumbnailImageWidth = img.Width;
+                pictureFile.ThumbnailImageHeight = img.Height;
+            }
+
+
+            //here is a problem, this method could be called from a background service where _context is disposed, so I need to renew it
+            /*using(RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+            {
+                await context.PictureFiles.AddAsync(pictureFile.Result);
+                await context.SaveChangesAsync();
+            }*/
+            return new RServiceResult<RPictureFile>(pictureFile);
         }
 
         /// <summary>
@@ -115,47 +108,39 @@ namespace RMuseum.Services.Implementation
             string title, string description, int order, IFormFile file, string srcurl, Stream stream, string originalFileNameForStreams, string imageFolderName
             )
         {
-            try
+            RServiceResult<RPictureFile>
+                pictureFile =
+                await ProcessImage
+                (
+                    file,
+                    new RPictureFile()
+                    {
+                        Title = title,
+                        TitleInEnglish = title,
+                        Description = description,
+                        DescriptionInEnglish = description,
+                        Order = order,
+                        SrcUrl = srcurl,
+                        Status = PublishStatus.Draft,
+                        DataTime = DateTime.Now,
+                        LastModified = DateTime.Now,
+                        LastModifiedMeta = DateTime.Now,
+                        FolderName = string.IsNullOrEmpty(imageFolderName) ? DateTime.Now.ToString("yyyy-MM") : imageFolderName
+
+                    },
+                    stream,
+                    originalFileNameForStreams
+                    );
+            if (!string.IsNullOrEmpty(pictureFile.ExceptionString))
+                return new RServiceResult<RPictureFile>(null, pictureFile.ExceptionString);
+
+            //here is a problem, this method could be called from a background service where _context is disposed, so I need to renew it
+            /*using(RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
             {
-
-                RServiceResult<RPictureFile>
-                    pictureFile =
-                    await ProcessImage
-                    (
-                        file,
-                        new RPictureFile()
-                        {
-                            Title = title,
-                            TitleInEnglish = title,
-                            Description = description,
-                            DescriptionInEnglish = description,
-                            Order = order,
-                            SrcUrl = srcurl,
-                            Status = PublishStatus.Draft,
-                            DataTime = DateTime.Now,
-                            LastModified = DateTime.Now,
-                            LastModifiedMeta = DateTime.Now,
-                            FolderName = string.IsNullOrEmpty(imageFolderName) ? DateTime.Now.ToString("yyyy-MM") : imageFolderName
-
-                        }, 
-                        stream,
-                        originalFileNameForStreams
-                        );
-                if (!string.IsNullOrEmpty(pictureFile.ExceptionString))
-                    return new RServiceResult<RPictureFile>(null, pictureFile.ExceptionString);
-
-                //here is a problem, this method could be called from a background service where _context is disposed, so I need to renew it
-                /*using(RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
-                {
-                    await context.PictureFiles.AddAsync(pictureFile.Result);
-                    await context.SaveChangesAsync();
-                }*/
-                return new RServiceResult<RPictureFile>(pictureFile.Result);
-            }
-            catch(Exception exp)
-            {
-                return new RServiceResult<RPictureFile>(null, exp.ToString());
-            }
+                await context.PictureFiles.AddAsync(pictureFile.Result);
+                await context.SaveChangesAsync();
+            }*/
+            return new RServiceResult<RPictureFile>(pictureFile.Result);
         }
 
         /// <summary>
@@ -165,25 +150,18 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RPictureFile>> GetImage(Guid id)
         {
-            try
+            var cachKey = $"PictureFileService::GetImage::{id}";
+            if (!_memoryCache.TryGetValue(cachKey, out RPictureFile pictureFile))
             {
-                var cachKey = $"PictureFileService::GetImage::{id}";
-                if(!_memoryCache.TryGetValue(cachKey, out RPictureFile pictureFile))
-                {
-                    pictureFile = await _context.PictureFiles.AsNoTracking()
-                         .Where(p => p.Id == id)
-                         .SingleOrDefaultAsync();
-                    _memoryCache.Set(cachKey, pictureFile);
-                }
+                pictureFile = await _context.PictureFiles.AsNoTracking()
+                     .Where(p => p.Id == id)
+                     .SingleOrDefaultAsync();
+                _memoryCache.Set(cachKey, pictureFile);
+            }
 
-                return new RServiceResult<RPictureFile>(
-                   pictureFile
-                         );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RPictureFile>(null, exp.ToString());
-            }
+            return new RServiceResult<RPictureFile>(
+               pictureFile
+                     );
         }
 
         /// <summary>
@@ -194,68 +172,58 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RPictureFile>> RotateImage(Guid id, int degIn90mul)
         {
-            try
+            if (degIn90mul != 90 && degIn90mul != 180 && degIn90mul != 270)
             {
-                if(degIn90mul != 90 && degIn90mul != 180 && degIn90mul != 270)
-                {
-                    return new RServiceResult<RPictureFile>(null, "degIn90mul could only be equal to these 3 values: 90, 180 and 270");
-                }
-                RPictureFile rPictureFile =
-                    await _context.PictureFiles
-                         .Where(p => p.Id == id)
-                         .SingleOrDefaultAsync();
-
-                string origPath = GetImagePath(rPictureFile).Result;
-                using(MemoryStream msRotated = new MemoryStream())
-                {
-                    using (Image img = Image.FromFile(origPath))
-                    {
-                        img.RotateFlip(degIn90mul == 90 ? RotateFlipType.Rotate90FlipNone : degIn90mul == 180 ? RotateFlipType.Rotate180FlipNone : RotateFlipType.Rotate270FlipNone);
-
-                        ImageCodecInfo jpgEncoder = GetEncoder(ImageFormat.Jpeg);
-
-                        Encoder myEncoder =
-                            Encoder.Quality;
-                        EncoderParameters jpegParameters = new EncoderParameters(1);
-
-                        EncoderParameter qualityParameter = new EncoderParameter(myEncoder, 92L);
-                        jpegParameters.Param[0] = qualityParameter;
-
-                        img.Save(msRotated, jpgEncoder, jpegParameters);
-                    }
-
-                    File.Move(GetImagePath(rPictureFile, "thumb").Result, GetImagePath(rPictureFile, "thumb").Result + ".bak");
-                    File.Move(GetImagePath(rPictureFile, "norm").Result, GetImagePath(rPictureFile, "norm").Result + ".bak");
-                    File.Move(origPath, origPath + ".bak");
-
-                    RServiceResult<RPictureFile>
-                       result =
-                       await ProcessImage
-                       (
-                           null,
-                           rPictureFile,
-                           msRotated,
-                           rPictureFile.OriginalFileName
-                           );
-                    if (!string.IsNullOrEmpty(result.ExceptionString))
-                        return new RServiceResult<RPictureFile>(null, result.ExceptionString);
-                    result.Result.LastModified = DateTime.Now;
-                    _context.PictureFiles.Update(result.Result);
-                    await _context.SaveChangesAsync();
-
-                    File.Delete(GetImagePath(rPictureFile, "thumb").Result + ".bak");
-                    File.Delete(GetImagePath(rPictureFile, "norm").Result + ".bak");
-                    File.Delete(origPath + ".bak");
-
-                    return result;
-
-                }              
-
-                
+                return new RServiceResult<RPictureFile>(null, "degIn90mul could only be equal to these 3 values: 90, 180 and 270");
             }
-            catch (Exception exp)
+            RPictureFile rPictureFile =
+                await _context.PictureFiles
+                     .Where(p => p.Id == id)
+                     .SingleOrDefaultAsync();
+
+            string origPath = GetImagePath(rPictureFile).Result;
+            using (MemoryStream msRotated = new MemoryStream())
             {
-                return new RServiceResult<RPictureFile>(null, exp.ToString());
+                using (Image img = Image.FromFile(origPath))
+                {
+                    img.RotateFlip(degIn90mul == 90 ? RotateFlipType.Rotate90FlipNone : degIn90mul == 180 ? RotateFlipType.Rotate180FlipNone : RotateFlipType.Rotate270FlipNone);
+
+                    ImageCodecInfo jpgEncoder = GetEncoder(ImageFormat.Jpeg);
+
+                    Encoder myEncoder =
+                        Encoder.Quality;
+                    EncoderParameters jpegParameters = new EncoderParameters(1);
+
+                    EncoderParameter qualityParameter = new EncoderParameter(myEncoder, 92L);
+                    jpegParameters.Param[0] = qualityParameter;
+
+                    img.Save(msRotated, jpgEncoder, jpegParameters);
+                }
+
+                File.Move(GetImagePath(rPictureFile, "thumb").Result, GetImagePath(rPictureFile, "thumb").Result + ".bak");
+                File.Move(GetImagePath(rPictureFile, "norm").Result, GetImagePath(rPictureFile, "norm").Result + ".bak");
+                File.Move(origPath, origPath + ".bak");
+
+                RServiceResult<RPictureFile>
+                   result =
+                   await ProcessImage
+                   (
+                       null,
+                       rPictureFile,
+                       msRotated,
+                       rPictureFile.OriginalFileName
+                       );
+                if (!string.IsNullOrEmpty(result.ExceptionString))
+                    return new RServiceResult<RPictureFile>(null, result.ExceptionString);
+                result.Result.LastModified = DateTime.Now;
+                _context.PictureFiles.Update(result.Result);
+                await _context.SaveChangesAsync();
+
+                File.Delete(GetImagePath(rPictureFile, "thumb").Result + ".bak");
+                File.Delete(GetImagePath(rPictureFile, "norm").Result + ".bak");
+                File.Delete(origPath + ".bak");
+
+                return result;
             }
         }
 
@@ -286,15 +254,8 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>        
         public RServiceResult<string> GetImagePath(RPictureFile image, string sz = "orig")
         {
-            try
-            {
-                string fileName = sz == "thumb" ? image.ThumbnailImageStoredFileName : sz == "norm" ? image.NormalSizeImageStoredFileName : image.StoredFileName;
-                return new RServiceResult<string>(Path.Combine(ImageStoragePath, image.FolderName, fileName));
-            }
-            catch(Exception exp)
-            {
-                return new RServiceResult<string>(null, exp.ToString());
-            }                         
+            string fileName = sz == "thumb" ? image.ThumbnailImageStoredFileName : sz == "norm" ? image.NormalSizeImageStoredFileName : image.StoredFileName;
+            return new RServiceResult<string>(Path.Combine(ImageStoragePath, image.FolderName, fileName));
         }
 
         /// <summary>
@@ -340,7 +301,7 @@ namespace RMuseum.Services.Implementation
             pictureFile.FileSizeInBytes = uploadedImage == null ? stream.Length : uploadedImage.Length;
             pictureFile.OriginalFileName = uploadedImage == null ? originalFileNameForStreams : uploadedImage.FileName;
 
-                      
+
 
             string fullDirStorePath = Path.Combine(ImageStoragePath, pictureFile.FolderName);
             string originalStorePath = Path.Combine(fullDirStorePath, "orig");
@@ -348,7 +309,7 @@ namespace RMuseum.Services.Implementation
             string thumbStorePath = Path.Combine(fullDirStorePath, "thumb");
 
 
-            foreach(string path in new string[]
+            foreach (string path in new string[]
             {
                 fullDirStorePath,
                 originalStorePath,
@@ -378,7 +339,7 @@ namespace RMuseum.Services.Implementation
             string originalFileStorePath = Path.Combine(originalStorePath, pictureFile.StoredFileName);
             while (File.Exists(originalFileStorePath))
             {
-                pictureFile.StoredFileName = Path.GetFileNameWithoutExtension(pictureFile.OriginalFileName)+ "-" + Guid.NewGuid().ToString() + ext;
+                pictureFile.StoredFileName = Path.GetFileNameWithoutExtension(pictureFile.OriginalFileName) + "-" + Guid.NewGuid().ToString() + ext;
                 originalFileStorePath = Path.Combine(originalStorePath, pictureFile.StoredFileName);
             }
             pictureFile.StoredFileName = $@"orig\{pictureFile.StoredFileName}";
@@ -427,7 +388,7 @@ namespace RMuseum.Services.Implementation
 
                         //روی خود img تأثیر می گذارد
                         Image resized = new Bitmap(pictureFile.NormalSizeImageWidth, pictureFile.NormalSizeImageHeight);
-                        using(Graphics gResized = Graphics.FromImage(resized))
+                        using (Graphics gResized = Graphics.FromImage(resized))
                         {
                             gResized.DrawImage(img, 0, 0, pictureFile.NormalSizeImageWidth, pictureFile.NormalSizeImageHeight);
                         }
@@ -441,7 +402,7 @@ namespace RMuseum.Services.Implementation
 
                         while (File.Exists(normalFileStorePath))
                         {
-                            pictureFile.NormalSizeImageStoredFileName = Path.GetFileNameWithoutExtension(pictureFile.OriginalFileName) +  "-" + Guid.NewGuid().ToString() + ".jpg";
+                            pictureFile.NormalSizeImageStoredFileName = Path.GetFileNameWithoutExtension(pictureFile.OriginalFileName) + "-" + Guid.NewGuid().ToString() + ".jpg";
                             normalFileStorePath = Path.Combine(normalStorePath, pictureFile.NormalSizeImageStoredFileName);
                         }
                         pictureFile.NormalSizeImageStoredFileName = $@"norm\{pictureFile.NormalSizeImageStoredFileName}";
@@ -456,7 +417,7 @@ namespace RMuseum.Services.Implementation
                     pictureFile.ThumbnailImageWidth = ThumbnailImageWidth;
                     pictureFile.ThumbnailImageHeight = ThumbnailImageWidth * pictureFile.ImageHeight / pictureFile.ImageWidth;
 
-                    if(pictureFile.ThumbnailImageHeight > ThumbnailImageMaxHeight)
+                    if (pictureFile.ThumbnailImageHeight > ThumbnailImageMaxHeight)
                     {
                         pictureFile.ThumbnailImageHeight = ThumbnailImageMaxHeight;
                         pictureFile.ThumbnailImageWidth = pictureFile.ThumbnailImageHeight * pictureFile.ImageWidth / pictureFile.ImageHeight;
@@ -506,61 +467,50 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RImage>> GenerateCroppedImageBasedOnThumbnailCoordinates(Guid id, decimal left, decimal top, decimal width, decimal height)
         {
-            try
+            RPictureFile rPictureFile =
+                await _context.PictureFiles
+                     .Where(p => p.Id == id)
+                     .SingleOrDefaultAsync();
+
+            int adjustedImageWidth = (int)(width * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth);
+            if (adjustedImageWidth > rPictureFile.ThumbnailImageWidth)
+                adjustedImageWidth = rPictureFile.ThumbnailImageWidth;
+
+            int adjustedImageHeight = (int)(height * adjustedImageWidth / width);
+            int adjusttedLeft = (int)(left * adjustedImageWidth / width);
+            int adjusttedTop = (int)(top * adjustedImageHeight / height);
+
+            string normalImagePath = GetImagePath(rPictureFile, "norm").Result;
+            using (Image targetImage = new Bitmap(adjustedImageWidth, adjustedImageHeight))
             {
-                RPictureFile rPictureFile =
-                    await _context.PictureFiles
-                         .Where(p => p.Id == id)
-                         .SingleOrDefaultAsync();
-
-                int adjustedImageWidth = (int)(width * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth);
-                if (adjustedImageWidth > rPictureFile.ThumbnailImageWidth)
-                    adjustedImageWidth = rPictureFile.ThumbnailImageWidth;
-
-                int adjustedImageHeight = (int)(height * adjustedImageWidth / width);
-                int adjusttedLeft = (int)(left * adjustedImageWidth / width);
-                int adjusttedTop = (int)(top * adjustedImageHeight / height);
-
-                string normalImagePath = GetImagePath(rPictureFile, "norm").Result;
-                using (Image targetImage = new Bitmap(adjustedImageWidth, adjustedImageHeight))
+                using (Graphics g = Graphics.FromImage(targetImage))
                 {
-                    using(Graphics g = Graphics.FromImage(targetImage))
+                    using (Image img = Image.FromFile(normalImagePath))
                     {
-                        using (Image img = Image.FromFile(normalImagePath))
-                        {
-                            g.DrawImage(img, new Rectangle(0, 0, adjustedImageWidth, adjustedImageHeight),
-                                (int)(left * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth),
-                                (int)(top * rPictureFile.NormalSizeImageHeight / rPictureFile.ThumbnailImageHeight),
-                                (int)(width * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth),
-                                (int)(height * rPictureFile.NormalSizeImageHeight / rPictureFile.ThumbnailImageHeight),
-                                GraphicsUnit.Pixel,
-                                new ImageAttributes()
-                                );
-                        }
-                    }
-                    using(MemoryStream ms = new MemoryStream())
-                    {
-                        targetImage.Save(ms, ImageFormat.Jpeg);
-                        ms.Position = 0;
-                        RServiceResult<RImage> res = await _simpleImageStorage.Add(null, ms, $"{Path.GetFileNameWithoutExtension(rPictureFile.OriginalFileName)}-cropped-{left}-{top}-{width}-{height}.jpg", "CroppedImages");
-                        if(string.IsNullOrEmpty(res.ExceptionString))
-                        {
-                            RImage image = res.Result;
-                            _context.GeneralImages.Add(image);
-                            await _context.SaveChangesAsync();
-                            return new RServiceResult<RImage>(image);
-                        }
-                        return res;
+                        g.DrawImage(img, new Rectangle(0, 0, adjustedImageWidth, adjustedImageHeight),
+                            (int)(left * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth),
+                            (int)(top * rPictureFile.NormalSizeImageHeight / rPictureFile.ThumbnailImageHeight),
+                            (int)(width * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth),
+                            (int)(height * rPictureFile.NormalSizeImageHeight / rPictureFile.ThumbnailImageHeight),
+                            GraphicsUnit.Pixel,
+                            new ImageAttributes()
+                            );
                     }
                 }
-               
-
-
-                
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RImage>(null, exp.ToString());
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    targetImage.Save(ms, ImageFormat.Jpeg);
+                    ms.Position = 0;
+                    RServiceResult<RImage> res = await _simpleImageStorage.Add(null, ms, $"{Path.GetFileNameWithoutExtension(rPictureFile.OriginalFileName)}-cropped-{left}-{top}-{width}-{height}.jpg", "CroppedImages");
+                    if (string.IsNullOrEmpty(res.ExceptionString))
+                    {
+                        RImage image = res.Result;
+                        _context.GeneralImages.Add(image);
+                        await _context.SaveChangesAsync();
+                        return new RServiceResult<RImage>(image);
+                    }
+                    return res;
+                }
             }
         }
 
