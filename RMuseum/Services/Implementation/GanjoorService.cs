@@ -39,50 +39,40 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoetViewModel[]>> GetPoets(bool published, bool includeBio = true)
         {
-           
-            try
+            var cacheKey = $"/api/ganjoor/poets?published={published}&includeBio={includeBio}";
+            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetViewModel[] poets))
             {
-                var cacheKey = $"/api/ganjoor/poets?published={published}&includeBio={includeBio}";
-                if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetViewModel[] poets))
-                {
-                    var res =
-                     await
-                     (from poet in _context.GanjoorPoets
-                      join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
-                      on poet.Id equals cat.PoetId
-                      where !published || poet.Published
-                      select new GanjoorPoetViewModel()
-                      {
-                          Id = poet.Id,
-                          Name = poet.Name,
-                          Description = includeBio ? poet.Description : null,
-                          FullUrl = cat.FullUrl,
-                          RootCatId = cat.Id,
-                          Nickname = poet.Nickname,
-                          Published = poet.Published,
-                          ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.gif"
-                      }
-                      )
-                      .AsNoTracking()
-                     .ToListAsync();
+                var res =
+                 await
+                 (from poet in _context.GanjoorPoets
+                  join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
+                  on poet.Id equals cat.PoetId
+                  where !published || poet.Published
+                  select new GanjoorPoetViewModel()
+                  {
+                      Id = poet.Id,
+                      Name = poet.Name,
+                      Description = includeBio ? poet.Description : null,
+                      FullUrl = cat.FullUrl,
+                      RootCatId = cat.Id,
+                      Nickname = poet.Nickname,
+                      Published = poet.Published,
+                      ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.gif"
+                  }
+                  )
+                  .AsNoTracking()
+                 .ToListAsync();
 
-                    StringComparer fa = StringComparer.Create(new CultureInfo("fa-IR"), true);
-                    res.Sort((a, b) => fa.Compare(a.Nickname, b.Nickname));
-                    poets = res.ToArray();
-                    _memoryCache.Set(cacheKey, poets);
-                }
-
-                
-
-                return new RServiceResult<GanjoorPoetViewModel[]>
-                    (
-                        poets
-                    );
+                StringComparer fa = StringComparer.Create(new CultureInfo("fa-IR"), true);
+                res.Sort((a, b) => fa.Compare(a.Nickname, b.Nickname));
+                poets = res.ToArray();
+                _memoryCache.Set(cacheKey, poets);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjoorPoetViewModel[]>(null, exp.ToString());
-            }
+
+            return new RServiceResult<GanjoorPoetViewModel[]>
+                (
+                    poets
+                );
         }
 
         /// <summary>
@@ -92,29 +82,21 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetById(int id)
         {
-           
-            try
-            {
-                var cacheKey = $"/api/ganjoor/poet/{id}";
+            var cacheKey = $"/api/ganjoor/poet/{id}";
 
-                if(!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poetCat))
-                {
-                    var poet = await _context.GanjoorPoets.Where(p => p.Id == id).AsNoTracking().FirstOrDefaultAsync();
-                    if (poet == null)
-                        return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
-                    var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).AsNoTracking().FirstOrDefaultAsync();
-                    poetCat = (await GetCatById(cat.Id)).Result;
-                    if(poetCat != null)
-                    {
-                        _memoryCache.Set(cacheKey, poetCat);
-                    }
-                }
-                return new RServiceResult<GanjoorPoetCompleteViewModel>(poetCat);
-            }
-            catch (Exception exp)
+            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poetCat))
             {
-                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
+                var poet = await _context.GanjoorPoets.Where(p => p.Id == id).AsNoTracking().FirstOrDefaultAsync();
+                if (poet == null)
+                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
+                var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).AsNoTracking().FirstOrDefaultAsync();
+                poetCat = (await GetCatById(cat.Id)).Result;
+                if (poetCat != null)
+                {
+                    _memoryCache.Set(cacheKey, poetCat);
+                }
             }
+            return new RServiceResult<GanjoorPoetCompleteViewModel>(poetCat);
         }
 
         /// <summary>
@@ -124,22 +106,15 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetByUrl(string url)
         {
-            try
+            // /hafez/ => /hafez :
+            if (url.LastIndexOf('/') == url.Length - 1)
             {
-                // /hafez/ => /hafez :
-                if (url.LastIndexOf('/') == url.Length - 1)
-                {
-                    url = url.Substring(0, url.Length - 1);
-                }
-                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url && c.ParentId == null).AsNoTracking().SingleOrDefaultAsync();
-                if (cat == null)
-                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
-                return await GetCatById(cat.Id);
+                url = url.Substring(0, url.Length - 1);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
-            }
+            var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url && c.ParentId == null).AsNoTracking().SingleOrDefaultAsync();
+            if (cat == null)
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
+            return await GetCatById(cat.Id);
         }
 
         /// <summary>
@@ -149,23 +124,16 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<Guid>> GetPoetImageIdByUrl(string url)
         {
-            try
+            // /hafez/ => /hafez :
+            if (url.LastIndexOf('/') == url.Length - 1)
             {
-                // /hafez/ => /hafez :
-                if (url.LastIndexOf('/') == url.Length - 1)
-                {
-                    url = url.Substring(0, url.Length - 1);
-                }
-                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url && c.ParentId == null).AsNoTracking().SingleOrDefaultAsync();
-                if (cat == null)
-                    return new RServiceResult<Guid>(Guid.Empty);
-                var poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId).AsNoTracking().SingleOrDefaultAsync();
-                return new RServiceResult<Guid>((Guid)poet.RImageId);
+                url = url.Substring(0, url.Length - 1);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<Guid>(Guid.Empty, exp.ToString());
-            }
+            var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url && c.ParentId == null).AsNoTracking().SingleOrDefaultAsync();
+            if (cat == null)
+                return new RServiceResult<Guid>(Guid.Empty);
+            var poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId).AsNoTracking().SingleOrDefaultAsync();
+            return new RServiceResult<Guid>((Guid)poet.RImageId);
         }
 
         /// <summary>
@@ -176,22 +144,15 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = true)
         {
-            try
+            // /hafez/ => /hafez :
+            if (url.LastIndexOf('/') == url.Length - 1)
             {
-                // /hafez/ => /hafez :
-                if (url.LastIndexOf('/') == url.Length - 1)
-                {
-                    url = url.Substring(0, url.Length - 1);
-                }
-                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
-                if (cat == null)
-                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
-                return await GetCatById(cat.Id);
+                url = url.Substring(0, url.Length - 1);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
-            }
+            var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
+            if (cat == null)
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
+            return await GetCatById(cat.Id);
         }
 
         /// <summary>
@@ -202,133 +163,124 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = true)
         {
-            try
+            var cat = await _context.GanjoorCategories.Include(c => c.Poet).Include(c => c.Parent).Where(c => c.Id == id).AsNoTracking().FirstOrDefaultAsync();
+            if (cat == null)
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
+
+            List<GanjoorCatViewModel> ancetors = new List<GanjoorCatViewModel>();
+
+            var parent = cat.Parent;
+            while (parent != null)
             {
-
-                var cat = await _context.GanjoorCategories.Include(c => c.Poet).Include(c => c.Parent).Where(c => c.Id == id).AsNoTracking().FirstOrDefaultAsync();
-                if (cat == null)
-                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
-
-                List<GanjoorCatViewModel> ancetors = new List<GanjoorCatViewModel>();
-
-                var parent = cat.Parent;
-                while (parent != null)
+                ancetors.Insert(0, new GanjoorCatViewModel()
                 {
-                    ancetors.Insert(0, new GanjoorCatViewModel()
-                    {
-                        Id = parent.Id,
-                        Title = parent.Title,
-                        UrlSlug = parent.UrlSlug,
-                        FullUrl = parent.FullUrl
-                    });
+                    Id = parent.Id,
+                    Title = parent.Title,
+                    UrlSlug = parent.UrlSlug,
+                    FullUrl = parent.FullUrl
+                });
 
-                    parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).AsNoTracking().FirstOrDefaultAsync();
-                }
+                parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).AsNoTracking().FirstOrDefaultAsync();
+            }
 
 
-                int nextCatId =
-                    await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id > id).AnyAsync() ?
-                    await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id > id).MinAsync(c => c.Id)
-                    :
-                    0;
-                var nextCat = nextCatId == 0 ? null : await _context
-                                            .GanjoorCategories
-                                            .Where(c => c.Id == nextCatId)
-                                            .Select
-                                            (
-                                                c =>
-                                                    new GanjoorCatViewModel()
-                                                    {
-                                                        Id = c.Id,
-                                                        Title = c.Title,
-                                                        UrlSlug = c.UrlSlug,
-                                                        FullUrl = c.FullUrl
+            int nextCatId =
+                await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id > id).AnyAsync() ?
+                await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id > id).MinAsync(c => c.Id)
+                :
+                0;
+            var nextCat = nextCatId == 0 ? null : await _context
+                                        .GanjoorCategories
+                                        .Where(c => c.Id == nextCatId)
+                                        .Select
+                                        (
+                                            c =>
+                                                new GanjoorCatViewModel()
+                                                {
+                                                    Id = c.Id,
+                                                    Title = c.Title,
+                                                    UrlSlug = c.UrlSlug,
+                                                    FullUrl = c.FullUrl
                                                         //other fields null
                                                     }
-                                            ).AsNoTracking().SingleOrDefaultAsync();
+                                        ).AsNoTracking().SingleOrDefaultAsync();
 
-                int preCatId =
-                     await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id < id).AnyAsync() ?
-                    await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id < id).MaxAsync(c => c.Id)
-                    :
-                    0;
-                var preCat = preCatId == 0 ? null : await _context
-                                            .GanjoorCategories
-                                            .Where(c => c.Id == preCatId)
-                                            .Select
-                                            (
-                                                c =>
-                                                    new GanjoorCatViewModel()
-                                                    {
-                                                        Id = c.Id,
-                                                        Title = c.Title,
-                                                        UrlSlug = c.UrlSlug,
-                                                        FullUrl = c.FullUrl
+            int preCatId =
+                 await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id < id).AnyAsync() ?
+                await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id < id).MaxAsync(c => c.Id)
+                :
+                0;
+            var preCat = preCatId == 0 ? null : await _context
+                                        .GanjoorCategories
+                                        .Where(c => c.Id == preCatId)
+                                        .Select
+                                        (
+                                            c =>
+                                                new GanjoorCatViewModel()
+                                                {
+                                                    Id = c.Id,
+                                                    Title = c.Title,
+                                                    UrlSlug = c.UrlSlug,
+                                                    FullUrl = c.FullUrl
                                                         //other fields null
                                                     }
-                                            ).AsNoTracking().SingleOrDefaultAsync();
+                                        ).AsNoTracking().SingleOrDefaultAsync();
 
-                GanjoorCatViewModel catViewModel = new GanjoorCatViewModel()
-                {
-                    Id = cat.Id,
-                    Title = cat.Title,
-                    UrlSlug = cat.UrlSlug,
-                    FullUrl = cat.FullUrl,
-                    Next = nextCat,
-                    Previous = preCat,
-                    Ancestors = ancetors,
-                    Children = await _context.GanjoorCategories.Where(c => c.ParentId == cat.Id).OrderBy(cat => cat.Id).Select
-                     (
-                     c => new GanjoorCatViewModel()
+            GanjoorCatViewModel catViewModel = new GanjoorCatViewModel()
+            {
+                Id = cat.Id,
+                Title = cat.Title,
+                UrlSlug = cat.UrlSlug,
+                FullUrl = cat.FullUrl,
+                Next = nextCat,
+                Previous = preCat,
+                Ancestors = ancetors,
+                Children = await _context.GanjoorCategories.Where(c => c.ParentId == cat.Id).OrderBy(cat => cat.Id).Select
+                 (
+                 c => new GanjoorCatViewModel()
+                 {
+                     Id = c.Id,
+                     Title = c.Title,
+                     UrlSlug = c.UrlSlug,
+                     FullUrl = c.FullUrl
+                 }
+                 ).AsNoTracking().ToListAsync(),
+                Poems = poems ? await _context.GanjoorPoems.Include(p => p.GanjoorMetre)
+                .Where(p => p.CatId == cat.Id).OrderBy(p => p.Id).Select
+                 (
+                     p => new GanjoorPoemSummaryViewModel()
                      {
-                         Id = c.Id,
-                         Title = c.Title,
-                         UrlSlug = c.UrlSlug,
-                         FullUrl = c.FullUrl
+                         Id = p.Id,
+                         Title = p.Title,
+                         UrlSlug = p.UrlSlug,
+                         Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text,
+                         Rhythm = p.GanjoorMetre.Rhythm,
+                         RhymeLetters = p.RhymeLetters
                      }
-                     ).AsNoTracking().ToListAsync(),
-                    Poems = poems ? await _context.GanjoorPoems.Include(p => p.GanjoorMetre)
-                    .Where(p => p.CatId == cat.Id).OrderBy(p => p.Id).Select
-                     (
-                         p => new GanjoorPoemSummaryViewModel()
-                         {
-                             Id = p.Id,
-                             Title = p.Title,
-                             UrlSlug = p.UrlSlug,
-                             Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text,
-                             Rhythm = p.GanjoorMetre.Rhythm,
-                             RhymeLetters = p.RhymeLetters
-                         }
-                     ).AsNoTracking().ToListAsync()
-                     :
-                     null
-                };
+                 ).AsNoTracking().ToListAsync()
+                 :
+                 null
+            };
 
-                return new RServiceResult<GanjoorPoetCompleteViewModel>
-                   (
-                   new GanjoorPoetCompleteViewModel()
-                   {
-                       Poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId)
-                                            .Select(p => new GanjoorPoetViewModel()
-                                            {
-                                                Id = p.Id,
-                                                Name = p.Name,
-                                                Description = p.Description,
-                                                FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl,
-                                                RootCatId = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().Id,
-                                                Nickname = p.Nickname,
-                                                Published = p.Published,
-                                                ImageUrl = p.RImageId == null ? "" : $"/api/ganjoor/poet/image{_context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl}.gif"
-                                            }).AsNoTracking().FirstOrDefaultAsync(),
-                       Cat = catViewModel
-                   }
-                   );
-
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
-            }
+            return new RServiceResult<GanjoorPoetCompleteViewModel>
+               (
+               new GanjoorPoetCompleteViewModel()
+               {
+                   Poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId)
+                                        .Select(p => new GanjoorPoetViewModel()
+                                        {
+                                            Id = p.Id,
+                                            Name = p.Name,
+                                            Description = p.Description,
+                                            FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl,
+                                            RootCatId = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().Id,
+                                            Nickname = p.Nickname,
+                                            Published = p.Published,
+                                            ImageUrl = p.RImageId == null ? "" : $"/api/ganjoor/poet/image{_context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl}.gif"
+                                        }).AsNoTracking().FirstOrDefaultAsync(),
+                   Cat = catViewModel
+               }
+               );
         }
 
         /// <summary>
@@ -338,17 +290,10 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<string>> GetPageUrlById(int id)
         {
-            try
-            {
-                var dbPage = await _context.GanjoorPages.Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
-                if (dbPage == null)
-                    return new RServiceResult<string>(null); //not found
-                return new RServiceResult<string>(dbPage.FullUrl);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<string>(null, exp.ToString());
-            }
+            var dbPage = await _context.GanjoorPages.Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
+            if (dbPage == null)
+                return new RServiceResult<string>(null); //not found
+            return new RServiceResult<string>(dbPage.FullUrl);
         }
 
         /// <summary>
@@ -377,7 +322,7 @@ namespace RMuseum.Services.Implementation
                 _memoryCache.Remove(cachKey);
 
                 var poemCachKey = $"GetPoemById({page.Id}, {true}, {false}, {true}, {true}, {true}, {true}, {true}, {true}, {true})";
-                if(_memoryCache.TryGetValue(poemCachKey, out GanjoorPoemCompleteViewModel p))
+                if (_memoryCache.TryGetValue(poemCachKey, out GanjoorPoemCompleteViewModel p))
                 {
                     _memoryCache.Remove(poemCachKey);
                 }
@@ -392,7 +337,7 @@ namespace RMuseum.Services.Implementation
         public async Task CacheCleanForComment(int commentId)
         {
             var comment = await _context.GanjoorComments.Where(c => c.Id == commentId).SingleOrDefaultAsync();
-            if(comment != null)
+            if (comment != null)
             {
                 await CacheCleanForPageById(comment.PoemId);
             }
@@ -406,140 +351,132 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = true)
         {
-            try
+            if (url.IndexOf('?') != -1)
             {
-                if (url.IndexOf('?') != -1)
-                {
-                    url = url.Substring(0, url.IndexOf('?'));
-                }
-
-                // /hafez/ => /hafez :
-                if (url.LastIndexOf('/') == url.Length - 1)
-                {
-                    url = url.Substring(0, url.Length - 1);
-                }
-
-                url = url.Replace("//", "/"); //duplicated slashes would be merged
-
-                var cachKey = $"GanjoorService::GetPageByUrl::{url}";
-                if (!_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
-                {
-                    var dbPage = await _context.GanjoorPages.Where(p => p.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
-                    if (dbPage == null)
-                        return new RServiceResult<GanjoorPageCompleteViewModel>(null); //not found
-                    var secondPoet = dbPage.SecondPoetId == null ? null :
-                         await
-                         (from poet in _context.GanjoorPoets
-                          join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
-                          on poet.Id equals cat.PoetId
-                          where poet.Id == (int)dbPage.SecondPoetId
-                          orderby poet.Name descending
-                          select new GanjoorPoetViewModel()
-                          {
-                              Id = poet.Id,
-                              Name = poet.Name,
-                              FullUrl = cat.FullUrl,
-                              RootCatId = cat.Id,
-                              Nickname = poet.Nickname,
-                              Published = poet.Published,
-                              ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.gif"
-                          }
-                          )
-                         .AsNoTracking().SingleAsync();
-                    page = new GanjoorPageCompleteViewModel()
-                    {
-                        Id = dbPage.Id,
-                        GanjoorPageType = dbPage.GanjoorPageType,
-                        Title = dbPage.Title,
-                        FullTitle = dbPage.FullTitle,
-                        UrlSlug = dbPage.UrlSlug,
-                        FullUrl = dbPage.FullUrl,
-                        HtmlText = dbPage.HtmlText,
-                        SecondPoet = secondPoet
-
-                    };
-                    switch (page.GanjoorPageType)
-                    {
-                        case GanjoorPageType.PoemPage:
-                            {
-                                var poemRes = await GetPoemById((int)dbPage.PoemId);
-                                if (!string.IsNullOrEmpty(poemRes.ExceptionString))
-                                {
-                                    return new RServiceResult<GanjoorPageCompleteViewModel>(null, poemRes.ExceptionString);
-                                }
-                                page.Poem = poemRes.Result;
-                            }
-                            break;
-
-                        case GanjoorPageType.CatPage:
-                            {
-                                var catRes = await GetCatById((int)dbPage.CatId);
-                                if (!string.IsNullOrEmpty(catRes.ExceptionString))
-                                {
-                                    return new RServiceResult<GanjoorPageCompleteViewModel>(null, catRes.ExceptionString);
-                                }
-                                page.PoetOrCat = catRes.Result;
-                            }
-                            break;
-                        default:
-                            {
-                                if (dbPage.PoetId != null)
-                                {
-                                    var poetRes = await GetPoetById((int)dbPage.PoetId);
-                                    if (!string.IsNullOrEmpty(poetRes.ExceptionString))
-                                    {
-                                        return new RServiceResult<GanjoorPageCompleteViewModel>(null, poetRes.ExceptionString);
-                                    }
-                                    page.PoetOrCat = poetRes.Result;
-
-                                    var pre = await _context.GanjoorPages.Where(p => p.GanjoorPageType == page.GanjoorPageType && p.ParentId == dbPage.ParentId && p.PoetId == dbPage.PoetId &&
-                                        ((p.PageOrder < dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id < dbPage.Id)))
-                                        .OrderByDescending(p => p.PageOrder)
-                                        .ThenByDescending(p => p.Id)
-                                        .AsNoTracking()
-                                        .FirstOrDefaultAsync();
-                                    if (pre != null)
-                                    {
-                                        page.Previous = new GanjoorPageSummaryViewModel()
-                                        {
-                                            Id = pre.Id,
-                                            Title = pre.Title,
-                                            FullUrl = pre.FullUrl
-                                        };
-                                    }
-
-                                    var next = await _context.GanjoorPages.Where(p => p.GanjoorPageType == page.GanjoorPageType && p.ParentId == dbPage.ParentId && p.PoetId == dbPage.PoetId &&
-                                        ((p.PageOrder > dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id > dbPage.Id)))
-                                        .OrderBy(p => p.PageOrder)
-                                        .ThenBy(p => p.Id)
-                                        .AsNoTracking()
-                                        .FirstOrDefaultAsync();
-                                    if (next != null)
-                                    {
-                                        page.Next = new GanjoorPageSummaryViewModel()
-                                        {
-                                            Id = next.Id,
-                                            Title = next.Title,
-                                            FullUrl = next.FullUrl
-                                        };
-                                    }
-                                }
-                            }
-                            break;
-                    }
-                    if(page.FullUrl != "/hashieha" && page.FullUrl != "/vazn" && page.FullUrl != "/simi" && page.FullUrl != "/audioclip")
-                    {
-                        _memoryCache.Set(cachKey, page);
-                    }
-                }
-                
-                return new RServiceResult<GanjoorPageCompleteViewModel>(page);
-
+                url = url.Substring(0, url.IndexOf('?'));
             }
-            catch (Exception exp)
+
+            // /hafez/ => /hafez :
+            if (url.LastIndexOf('/') == url.Length - 1)
             {
-                return new RServiceResult<GanjoorPageCompleteViewModel>(null, exp.ToString());
+                url = url.Substring(0, url.Length - 1);
             }
+
+            url = url.Replace("//", "/"); //duplicated slashes would be merged
+
+            var cachKey = $"GanjoorService::GetPageByUrl::{url}";
+            if (!_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
+            {
+                var dbPage = await _context.GanjoorPages.Where(p => p.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
+                if (dbPage == null)
+                    return new RServiceResult<GanjoorPageCompleteViewModel>(null); //not found
+                var secondPoet = dbPage.SecondPoetId == null ? null :
+                     await
+                     (from poet in _context.GanjoorPoets
+                      join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
+                      on poet.Id equals cat.PoetId
+                      where poet.Id == (int)dbPage.SecondPoetId
+                      orderby poet.Name descending
+                      select new GanjoorPoetViewModel()
+                      {
+                          Id = poet.Id,
+                          Name = poet.Name,
+                          FullUrl = cat.FullUrl,
+                          RootCatId = cat.Id,
+                          Nickname = poet.Nickname,
+                          Published = poet.Published,
+                          ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.gif"
+                      }
+                      )
+                     .AsNoTracking().SingleAsync();
+                page = new GanjoorPageCompleteViewModel()
+                {
+                    Id = dbPage.Id,
+                    GanjoorPageType = dbPage.GanjoorPageType,
+                    Title = dbPage.Title,
+                    FullTitle = dbPage.FullTitle,
+                    UrlSlug = dbPage.UrlSlug,
+                    FullUrl = dbPage.FullUrl,
+                    HtmlText = dbPage.HtmlText,
+                    SecondPoet = secondPoet
+
+                };
+                switch (page.GanjoorPageType)
+                {
+                    case GanjoorPageType.PoemPage:
+                        {
+                            var poemRes = await GetPoemById((int)dbPage.PoemId);
+                            if (!string.IsNullOrEmpty(poemRes.ExceptionString))
+                            {
+                                return new RServiceResult<GanjoorPageCompleteViewModel>(null, poemRes.ExceptionString);
+                            }
+                            page.Poem = poemRes.Result;
+                        }
+                        break;
+
+                    case GanjoorPageType.CatPage:
+                        {
+                            var catRes = await GetCatById((int)dbPage.CatId);
+                            if (!string.IsNullOrEmpty(catRes.ExceptionString))
+                            {
+                                return new RServiceResult<GanjoorPageCompleteViewModel>(null, catRes.ExceptionString);
+                            }
+                            page.PoetOrCat = catRes.Result;
+                        }
+                        break;
+                    default:
+                        {
+                            if (dbPage.PoetId != null)
+                            {
+                                var poetRes = await GetPoetById((int)dbPage.PoetId);
+                                if (!string.IsNullOrEmpty(poetRes.ExceptionString))
+                                {
+                                    return new RServiceResult<GanjoorPageCompleteViewModel>(null, poetRes.ExceptionString);
+                                }
+                                page.PoetOrCat = poetRes.Result;
+
+                                var pre = await _context.GanjoorPages.Where(p => p.GanjoorPageType == page.GanjoorPageType && p.ParentId == dbPage.ParentId && p.PoetId == dbPage.PoetId &&
+                                    ((p.PageOrder < dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id < dbPage.Id)))
+                                    .OrderByDescending(p => p.PageOrder)
+                                    .ThenByDescending(p => p.Id)
+                                    .AsNoTracking()
+                                    .FirstOrDefaultAsync();
+                                if (pre != null)
+                                {
+                                    page.Previous = new GanjoorPageSummaryViewModel()
+                                    {
+                                        Id = pre.Id,
+                                        Title = pre.Title,
+                                        FullUrl = pre.FullUrl
+                                    };
+                                }
+
+                                var next = await _context.GanjoorPages.Where(p => p.GanjoorPageType == page.GanjoorPageType && p.ParentId == dbPage.ParentId && p.PoetId == dbPage.PoetId &&
+                                    ((p.PageOrder > dbPage.PageOrder) || (p.PageOrder == dbPage.PageOrder && p.Id > dbPage.Id)))
+                                    .OrderBy(p => p.PageOrder)
+                                    .ThenBy(p => p.Id)
+                                    .AsNoTracking()
+                                    .FirstOrDefaultAsync();
+                                if (next != null)
+                                {
+                                    page.Next = new GanjoorPageSummaryViewModel()
+                                    {
+                                        Id = next.Id,
+                                        Title = next.Title,
+                                        FullUrl = next.FullUrl
+                                    };
+                                }
+                            }
+                        }
+                        break;
+                }
+                if (page.FullUrl != "/hashieha" && page.FullUrl != "/vazn" && page.FullUrl != "/simi" && page.FullUrl != "/audioclip")
+                {
+                    _memoryCache.Set(cachKey, page);
+                }
+            }
+
+            return new RServiceResult<GanjoorPageCompleteViewModel>(page);
         }
 
 
@@ -551,44 +488,37 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemRecitations(int id)
         {
-            try
-            {
-                var source =
-                     from audio in _context.Recitations
-                     join poem in _context.GanjoorPoems
-                     on audio.GanjoorPostId equals poem.Id
-                     where
-                     audio.ReviewStatus == AudioReviewStatus.Approved
-                     &&
-                     poem.Id == id
-                     orderby audio.AudioOrder
-                     select new PublicRecitationViewModel()
-                     {
-                         Id = audio.Id,
-                         PoemId = audio.GanjoorPostId,
-                         PoemFullTitle = poem.FullTitle,
-                         PoemFullUrl = poem.FullUrl,
-                         AudioTitle = audio.AudioTitle,
-                         AudioArtist = audio.AudioArtist,
-                         AudioArtistUrl = audio.AudioArtistUrl,
-                         AudioSrc = audio.AudioSrc,
-                         AudioSrcUrl = audio.AudioSrcUrl,
-                         LegacyAudioGuid = audio.LegacyAudioGuid,
-                         Mp3FileCheckSum = audio.Mp3FileCheckSum,
-                         Mp3SizeInBytes = audio.Mp3SizeInBytes,
-                         PublishDate = audio.ReviewDate,
-                         FileLastUpdated = audio.FileLastUpdated,
-                         Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
-                         XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
-                         PlainText = "", //poem.PlainText 
+            var source =
+                 from audio in _context.Recitations
+                 join poem in _context.GanjoorPoems
+                 on audio.GanjoorPostId equals poem.Id
+                 where
+                 audio.ReviewStatus == AudioReviewStatus.Approved
+                 &&
+                 poem.Id == id
+                 orderby audio.AudioOrder
+                 select new PublicRecitationViewModel()
+                 {
+                     Id = audio.Id,
+                     PoemId = audio.GanjoorPostId,
+                     PoemFullTitle = poem.FullTitle,
+                     PoemFullUrl = poem.FullUrl,
+                     AudioTitle = audio.AudioTitle,
+                     AudioArtist = audio.AudioArtist,
+                     AudioArtistUrl = audio.AudioArtistUrl,
+                     AudioSrc = audio.AudioSrc,
+                     AudioSrcUrl = audio.AudioSrcUrl,
+                     LegacyAudioGuid = audio.LegacyAudioGuid,
+                     Mp3FileCheckSum = audio.Mp3FileCheckSum,
+                     Mp3SizeInBytes = audio.Mp3SizeInBytes,
+                     PublishDate = audio.ReviewDate,
+                     FileLastUpdated = audio.FileLastUpdated,
+                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                     XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
+                     PlainText = "", //poem.PlainText 
                          HtmlText = "",//poem.HtmlText
                      };
-                return new RServiceResult<PublicRecitationViewModel[]>(await source.AsNoTracking().ToArrayAsync());
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<PublicRecitationViewModel[]>(null, exp.ToString());
-            }
+            return new RServiceResult<PublicRecitationViewModel[]>(await source.AsNoTracking().ToArrayAsync());
         }
 
 
@@ -601,47 +531,39 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId)
         {
-            try
+            var source =
+                  from comment in _context.GanjoorComments.Include(c => c.User)
+                  where
+                  (comment.Status == PublishStatus.Published || (userId != Guid.Empty && comment.Status == PublishStatus.Awaiting && comment.UserId == userId))
+                  &&
+                  comment.PoemId == poemId
+                  orderby comment.CommentDate
+                  select new GanjoorCommentSummaryViewModel()
+                  {
+                      Id = comment.Id,
+                      AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.NickName}",
+                      AuthorUrl = comment.AuthorUrl,
+                      CommentDate = comment.CommentDate,
+                      HtmlComment = comment.HtmlComment,
+                      PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
+                      InReplyToId = comment.InReplyToId,
+                      UserId = comment.UserId
+                  };
+
+            GanjoorCommentSummaryViewModel[] allComments = await source.AsNoTracking().ToArrayAsync();
+
+            foreach (GanjoorCommentSummaryViewModel comment in allComments)
             {
-                var source =
-                      from comment in _context.GanjoorComments.Include(c => c.User)
-                      where
-                      (comment.Status == PublishStatus.Published || (userId != Guid.Empty && comment.Status == PublishStatus.Awaiting && comment.UserId == userId))
-                      &&
-                      comment.PoemId == poemId
-                      orderby comment.CommentDate
-                      select new GanjoorCommentSummaryViewModel()
-                      {
-                          Id = comment.Id,
-                          AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.NickName}",
-                          AuthorUrl = comment.AuthorUrl,
-                          CommentDate = comment.CommentDate,
-                          HtmlComment = comment.HtmlComment,
-                          PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
-                          InReplyToId = comment.InReplyToId,
-                          UserId = comment.UserId
-                      };
-
-                GanjoorCommentSummaryViewModel[] allComments = await source.AsNoTracking().ToArrayAsync();
-
-                foreach (GanjoorCommentSummaryViewModel comment in allComments)
-                {
-                    comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
-                }
-
-                GanjoorCommentSummaryViewModel[] rootComments = allComments.Where(c => c.InReplyToId == null).ToArray();
-
-                foreach (GanjoorCommentSummaryViewModel comment in rootComments)
-                {
-                    _FindReplies(comment, allComments);
-                }
-
-                return new RServiceResult<GanjoorCommentSummaryViewModel[]>(rootComments);
+                comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
             }
-            catch (Exception exp)
+
+            GanjoorCommentSummaryViewModel[] rootComments = allComments.Where(c => c.InReplyToId == null).ToArray();
+
+            foreach (GanjoorCommentSummaryViewModel comment in rootComments)
             {
-                return new RServiceResult<GanjoorCommentSummaryViewModel[]>(null, exp.ToString());
+                _FindReplies(comment, allComments);
             }
+            return new RServiceResult<GanjoorCommentSummaryViewModel[]>(rootComments);
         }
 
         private void _FindReplies(GanjoorCommentSummaryViewModel comment, GanjoorCommentSummaryViewModel[] allComments)
@@ -664,76 +586,69 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorCommentSummaryViewModel>> NewComment(Guid userId, string ip, int poemId, string content, int? inReplyTo)
         {
-            try
+            if (string.IsNullOrEmpty(content))
             {
-                if (string.IsNullOrEmpty(content))
-                {
-                    return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه خالی است.");
-                }
-
-                var userRes = await _appUserService.GetUserInformation(userId);
-
-                if(string.IsNullOrEmpty(userRes.Result.NickName))
-                {
-                    return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "لطفاً با مراجعه به پیشخان کاربری (دکمهٔ گوشهٔ پایین سمت چپ) «نام مستعار» خود را مشخص کنید و سپس اقدام به ارسال حاشیه بفرمایید.");
-                }
-
-                content = content.ApplyCorrectYeKe();
-
-                GanjoorComment comment = new GanjoorComment()
-                {
-                    UserId = userId,
-                    AuthorIpAddress = ip,
-                    CommentDate = DateTime.Now,
-                    HtmlComment = content,
-                    InReplyToId = inReplyTo,
-                    PoemId = poemId,
-                    Status = PublishStatus.Published,
-                };
-                _context.GanjoorComments.Add(comment);
-                await _context.SaveChangesAsync();
-
-                if(inReplyTo != null)
-                {
-                    GanjoorComment refComment = await _context.GanjoorComments.Where(c => c.Id == (int)inReplyTo).SingleAsync();
-                    if(refComment.UserId != null)
-                    {
-
-                        var poem = await _context.GanjoorPoems.Where(p => p.Id == comment.PoemId).SingleAsync();
-
-                        await _notificationService.PushNotification((Guid)refComment.UserId,
-                                           "پاسخ به حاشیهٔ شما",
-                                           $"{userRes.Result.NickName} برای حاشیهٔ شما روی <a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> این پاسخ را نوشته است: {Environment.NewLine}" +
-                                           $"{content}" +
-                                           $"این متن حاشیهٔ خود شماست: {Environment.NewLine}" +
-                                           $"{refComment.HtmlComment}"
-                                           );
-                    }
-                }
-
-                await CacheCleanForPageById(poemId);
-
-
-                return new RServiceResult<GanjoorCommentSummaryViewModel>
-                    (
-                    new GanjoorCommentSummaryViewModel()
-                    {
-                        Id = comment.Id,
-                        AuthorName = $"{userRes.Result.NickName}",
-                        AuthorUrl = comment.AuthorUrl,
-                        CommentDate = comment.CommentDate,
-                        HtmlComment = comment.HtmlComment,
-                        PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
-                        InReplyToId = comment.InReplyToId,
-                        UserId = comment.UserId,
-                        Replies = new GanjoorCommentSummaryViewModel[] { }
-                    }
-                    );
+                return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه خالی است.");
             }
-            catch (Exception exp)
+
+            var userRes = await _appUserService.GetUserInformation(userId);
+
+            if (string.IsNullOrEmpty(userRes.Result.NickName))
             {
-                return new RServiceResult<GanjoorCommentSummaryViewModel>(null, exp.ToString());
+                return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "لطفاً با مراجعه به پیشخان کاربری (دکمهٔ گوشهٔ پایین سمت چپ) «نام مستعار» خود را مشخص کنید و سپس اقدام به ارسال حاشیه بفرمایید.");
             }
+
+            content = content.ApplyCorrectYeKe();
+
+            GanjoorComment comment = new GanjoorComment()
+            {
+                UserId = userId,
+                AuthorIpAddress = ip,
+                CommentDate = DateTime.Now,
+                HtmlComment = content,
+                InReplyToId = inReplyTo,
+                PoemId = poemId,
+                Status = PublishStatus.Published,
+            };
+            _context.GanjoorComments.Add(comment);
+            await _context.SaveChangesAsync();
+
+            if (inReplyTo != null)
+            {
+                GanjoorComment refComment = await _context.GanjoorComments.Where(c => c.Id == (int)inReplyTo).SingleAsync();
+                if (refComment.UserId != null)
+                {
+
+                    var poem = await _context.GanjoorPoems.Where(p => p.Id == comment.PoemId).SingleAsync();
+
+                    await _notificationService.PushNotification((Guid)refComment.UserId,
+                                       "پاسخ به حاشیهٔ شما",
+                                       $"{userRes.Result.NickName} برای حاشیهٔ شما روی <a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> این پاسخ را نوشته است: {Environment.NewLine}" +
+                                       $"{content}" +
+                                       $"این متن حاشیهٔ خود شماست: {Environment.NewLine}" +
+                                       $"{refComment.HtmlComment}"
+                                       );
+                }
+            }
+
+            await CacheCleanForPageById(poemId);
+
+
+            return new RServiceResult<GanjoorCommentSummaryViewModel>
+                (
+                new GanjoorCommentSummaryViewModel()
+                {
+                    Id = comment.Id,
+                    AuthorName = $"{userRes.Result.NickName}",
+                    AuthorUrl = comment.AuthorUrl,
+                    CommentDate = comment.CommentDate,
+                    HtmlComment = comment.HtmlComment,
+                    PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
+                    InReplyToId = comment.InReplyToId,
+                    UserId = comment.UserId,
+                    Replies = new GanjoorCommentSummaryViewModel[] { }
+                }
+                );
         }
 
         /// <summary>
@@ -745,29 +660,22 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> EditMyComment(Guid userId, int commentId, string htmlComment)
         {
-            try
+            GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == commentId && c.UserId == userId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
+            if (comment == null)
             {
-                GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == commentId && c.UserId == userId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
-                if (comment == null)
-                {
-                    return new RServiceResult<bool>(false); //not found
-                }
-
-                await CacheCleanForComment(commentId);
-
-                htmlComment = htmlComment.ApplyCorrectYeKe();
-
-                comment.HtmlComment = htmlComment;
-
-                _context.GanjoorComments.Update(comment);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<bool>(true);
+                return new RServiceResult<bool>(false); //not found
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+
+            await CacheCleanForComment(commentId);
+
+            htmlComment = htmlComment.ApplyCorrectYeKe();
+
+            comment.HtmlComment = htmlComment;
+
+            _context.GanjoorComments.Update(comment);
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -777,98 +685,91 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> DeleteModerateComment(int repordId)
         {
-            try
+            GanjoorCommentAbuseReport report = await _context.GanjoorReportedComments.Where(r => r.Id == repordId).SingleOrDefaultAsync();
+            if (report == null)
             {
-                GanjoorCommentAbuseReport report = await _context.GanjoorReportedComments.Where(r => r.Id == repordId).SingleOrDefaultAsync();
-                if (report == null)
+                return new RServiceResult<bool>(false);
+            }
+
+
+            GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == report.GanjoorCommentId).SingleOrDefaultAsync();
+            if (comment == null)
+            {
+                return new RServiceResult<bool>(false); //not found
+            }
+
+            var commentId = report.GanjoorCommentId;
+
+
+            if (comment.UserId != null)
+            {
+                string reason = "";
+                switch (report.ReasonCode)
                 {
-                    return new RServiceResult<bool>(false);
+                    case "offensive":
+                        reason = "توهین‌آمیز است.";
+                        break;
+                    case "religious":
+                        reason = "بحث مذهبی کرده.";
+                        break;
+                    case "repeated":
+                        reason = "تکراری است.";
+                        break;
+                    case "unrelated":
+                        reason = "به این شعر ربطی ندارد.";
+                        break;
+                    case "brokenlink":
+                        reason = "لینک شکسته است.";
+                        break;
+                    case "ad":
+                        reason = "تبلیغاتی است.";
+                        break;
+                    case "bogus":
+                        reason = "نامفهوم است.";
+                        break;
+                    case "latin":
+                        reason = "فارسی ننوشته.";
+                        break;
+                    case "other":
+                        reason = "دلیل دیگر";
+                        break;
                 }
+                if (!string.IsNullOrEmpty(report.ReasonText))
+                    reason += $" {report.ReasonText}";
+                reason = reason.Trim();
+                reason = string.IsNullOrEmpty(reason) ? "" : $"علت ارائه شده برای حذف یا متن گزارش کاربر شاکی: {Environment.NewLine}" +
+                                       $"{reason} {Environment.NewLine}";
+                await _notificationService.PushNotification((Guid)comment.UserId,
+                                       "حذف حاشیهٔ شما",
+                                       $"حاشیهٔ شما به دلیل ناسازگاری با قوانین حاشیه‌گذاری گنجور و طبق گزارشات دیگر کاربران حذف شده است..{Environment.NewLine}" +
+                                       $"{reason}" +
+                                       $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
+                                       $"{comment.HtmlComment}"
+                                       );
+            }
 
-
-                GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == report.GanjoorCommentId).SingleOrDefaultAsync();
-                if (comment == null)
+            //if user has got replies, delete them and notify their owners of what happened
+            var replies = await _FindReplies(comment);
+            for (int i = replies.Count - 1; i >= 0; i--)
+            {
+                if (replies[i].UserId != null)
                 {
-                    return new RServiceResult<bool>(false); //not found
-                }
-
-                var commentId = report.GanjoorCommentId;
-               
-
-                if (comment.UserId != null)
-                {
-                    string reason = "";
-                    switch (report.ReasonCode)
-                    {
-                        case "offensive":
-                            reason = "توهین‌آمیز است.";
-                            break;
-                        case "religious":
-                            reason = "بحث مذهبی کرده.";
-                            break;
-                        case "repeated":
-                            reason = "تکراری است.";
-                            break;
-                        case "unrelated":
-                            reason = "به این شعر ربطی ندارد.";
-                            break;
-                        case "brokenlink":
-                            reason = "لینک شکسته است.";
-                            break;
-                        case "ad":
-                            reason = "تبلیغاتی است.";
-                            break;
-                        case "bogus":
-                            reason = "نامفهوم است.";
-                            break;
-                        case "latin":
-                            reason = "فارسی ننوشته.";
-                            break;
-                        case "other":
-                            reason = "دلیل دیگر";
-                            break;
-                    }
-                    if (!string.IsNullOrEmpty(report.ReasonText))
-                        reason += $" {report.ReasonText}";
-                    reason = reason.Trim();
-                    reason = string.IsNullOrEmpty(reason) ? "" : $"علت ارائه شده برای حذف یا متن گزارش کاربر شاکی: {Environment.NewLine}" +
-                                           $"{reason} {Environment.NewLine}";
-                    await _notificationService.PushNotification((Guid)comment.UserId,
-                                           "حذف حاشیهٔ شما",
-                                           $"حاشیهٔ شما به دلیل ناسازگاری با قوانین حاشیه‌گذاری گنجور و طبق گزارشات دیگر کاربران حذف شده است..{Environment.NewLine}" +
-                                           $"{reason}" +
+                    await _notificationService.PushNotification((Guid)replies[i].UserId,
+                                           "حذف پاسخ شما به حاشیه",
+                                           $"پاسخ شما به یکی از حاشیه‌های گنجور به دلیل حذف زنجیرهٔ حاشیه توسط یکی از حاشیه‌گذاران حذف شده است.{Environment.NewLine}" +
                                            $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
-                                           $"{comment.HtmlComment}"
+                                           $"{replies[i].HtmlComment}"
                                            );
                 }
-
-                //if user has got replies, delete them and notify their owners of what happened
-                var replies = await _FindReplies(comment);
-                for (int i = replies.Count - 1; i >= 0; i--)
-                {
-                    if (replies[i].UserId != null)
-                    {
-                        await _notificationService.PushNotification((Guid)replies[i].UserId,
-                                               "حذف پاسخ شما به حاشیه",
-                                               $"پاسخ شما به یکی از حاشیه‌های گنجور به دلیل حذف زنجیرهٔ حاشیه توسط یکی از حاشیه‌گذاران حذف شده است.{Environment.NewLine}" +
-                                               $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
-                                               $"{replies[i].HtmlComment}"
-                                               );
-                    }
-                    _context.GanjoorComments.Remove(replies[i]);
-                }
-
-                _context.GanjoorComments.Remove(comment);
-                await _context.SaveChangesAsync();
-
-                await CacheCleanForComment(report.GanjoorCommentId);
-
-                return new RServiceResult<bool>(true);
+                _context.GanjoorComments.Remove(replies[i]);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+
+            _context.GanjoorComments.Remove(comment);
+            await _context.SaveChangesAsync();
+
+            await CacheCleanForComment(report.GanjoorCommentId);
+
+            return new RServiceResult<bool>(true);
         }
 
 
@@ -880,41 +781,34 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> DeleteMyComment(Guid userId, int commentId)
         {
-            try
+            GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == commentId && c.UserId == userId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
+            if (comment == null)
             {
-                GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == commentId && c.UserId == userId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
-                if (comment == null)
-                {
-                    return new RServiceResult<bool>(false); //not found
-                }
-
-                await CacheCleanForComment(commentId);
-
-                //if user has got replies, delete them and notify their owners of what happened
-                var replies = await _FindReplies(comment);
-                for (int i = replies.Count - 1; i >= 0; i--)
-                {
-                    if (replies[i].UserId != null && replies[i].UserId != userId)
-                    {
-                        await _notificationService.PushNotification((Guid)replies[i].UserId,
-                                               "حذف پاسخ شما به حاشیه",
-                                               $"پاسخ شما به یکی از حاشیه‌های گنجور به دلیل حذف زنجیرهٔ حاشیه توسط یکی از حاشیه‌گذاران حذف شده است.{Environment.NewLine}" +
-                                               $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
-                                               $"{replies[i].HtmlComment}"
-                                               );
-                    }
-                    _context.GanjoorComments.Remove(replies[i]);
-                }
-
-                _context.GanjoorComments.Remove(comment);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<bool>(true);
+                return new RServiceResult<bool>(false); //not found
             }
-            catch (Exception exp)
+
+            await CacheCleanForComment(commentId);
+
+            //if user has got replies, delete them and notify their owners of what happened
+            var replies = await _FindReplies(comment);
+            for (int i = replies.Count - 1; i >= 0; i--)
             {
-                return new RServiceResult<bool>(false, exp.ToString());
+                if (replies[i].UserId != null && replies[i].UserId != userId)
+                {
+                    await _notificationService.PushNotification((Guid)replies[i].UserId,
+                                           "حذف پاسخ شما به حاشیه",
+                                           $"پاسخ شما به یکی از حاشیه‌های گنجور به دلیل حذف زنجیرهٔ حاشیه توسط یکی از حاشیه‌گذاران حذف شده است.{Environment.NewLine}" +
+                                           $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
+                                           $"{replies[i].HtmlComment}"
+                                           );
+                }
+                _context.GanjoorComments.Remove(replies[i]);
             }
+
+            _context.GanjoorComments.Remove(comment);
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<bool>(true);
         }
 
         private async Task<List<GanjoorComment>> _FindReplies(GanjoorComment comment)
@@ -925,7 +819,7 @@ namespace RMuseum.Services.Implementation
             {
                 replyToReplies.AddRange(await _FindReplies(reply));
             }
-            if(replyToReplies.Count > 0)
+            if (replyToReplies.Count > 0)
             {
                 replies.AddRange(replyToReplies);
             }
@@ -942,59 +836,52 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging, Guid filterUserId, bool onlyPublished)
         {
-            try
-            {
-                var source =
-                     from comment in _context.GanjoorComments.Include(c => c.Poem).Include(c => c.User).Include(c => c.InReplyTo).ThenInclude(r => r.User)
-                     where
-                      ((comment.Status == PublishStatus.Published) || !onlyPublished)
-                     &&
-                     ((filterUserId == Guid.Empty) || (filterUserId != Guid.Empty && comment.UserId == filterUserId))
-                     orderby comment.CommentDate descending
-                     select new GanjoorCommentFullViewModel()
-                     {
-                         Id = comment.Id,
-                         AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.NickName}",
-                         AuthorUrl = comment.AuthorUrl,
-                         CommentDate = comment.CommentDate,
-                         HtmlComment = comment.HtmlComment,
-                         PublishStatus = "",//invalid!
+            var source =
+                 from comment in _context.GanjoorComments.Include(c => c.Poem).Include(c => c.User).Include(c => c.InReplyTo).ThenInclude(r => r.User)
+                 where
+                  ((comment.Status == PublishStatus.Published) || !onlyPublished)
+                 &&
+                 ((filterUserId == Guid.Empty) || (filterUserId != Guid.Empty && comment.UserId == filterUserId))
+                 orderby comment.CommentDate descending
+                 select new GanjoorCommentFullViewModel()
+                 {
+                     Id = comment.Id,
+                     AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.NickName}",
+                     AuthorUrl = comment.AuthorUrl,
+                     CommentDate = comment.CommentDate,
+                     HtmlComment = comment.HtmlComment,
+                     PublishStatus = "",//invalid!
                          UserId = comment.UserId,
-                         InReplayTo = comment.InReplyTo == null ? null :
-                            new GanjoorCommentSummaryViewModel()
-                            {
-                                Id = comment.InReplyTo.Id,
-                                AuthorName = comment.InReplyTo.User == null ? comment.InReplyTo.AuthorName : $"{comment.InReplyTo.User.NickName}",
-                                AuthorUrl = comment.InReplyTo.AuthorUrl,
-                                CommentDate = comment.InReplyTo.CommentDate,
-                                HtmlComment = comment.InReplyTo.HtmlComment,
-                                PublishStatus = "",
-                                UserId = comment.InReplyTo.UserId
-                            },
-                         Poem = new GanjoorPoemSummaryViewModel()
-                         {
-                             Id = comment.Poem.Id,
-                             Title = comment.Poem.FullTitle,
-                             UrlSlug = comment.Poem.FullUrl,
-                             Excerpt = ""
-                         }
-                     };
+                     InReplayTo = comment.InReplyTo == null ? null :
+                        new GanjoorCommentSummaryViewModel()
+                        {
+                            Id = comment.InReplyTo.Id,
+                            AuthorName = comment.InReplyTo.User == null ? comment.InReplyTo.AuthorName : $"{comment.InReplyTo.User.NickName}",
+                            AuthorUrl = comment.InReplyTo.AuthorUrl,
+                            CommentDate = comment.InReplyTo.CommentDate,
+                            HtmlComment = comment.InReplyTo.HtmlComment,
+                            PublishStatus = "",
+                            UserId = comment.InReplyTo.UserId
+                        },
+                     Poem = new GanjoorPoemSummaryViewModel()
+                     {
+                         Id = comment.Poem.Id,
+                         Title = comment.Poem.FullTitle,
+                         UrlSlug = comment.Poem.FullUrl,
+                         Excerpt = ""
+                     }
+                 };
 
-                (PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items) paginatedResult =
-                    await QueryablePaginator<GanjoorCommentFullViewModel>.Paginate(source, paging);
+            (PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items) paginatedResult =
+                await QueryablePaginator<GanjoorCommentFullViewModel>.Paginate(source, paging);
 
 
-                foreach (GanjoorCommentFullViewModel comment in paginatedResult.Items)
-                {
-                    comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
-                }
-
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>(paginatedResult);
-            }
-            catch (Exception exp)
+            foreach (GanjoorCommentFullViewModel comment in paginatedResult.Items)
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+                comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
             }
+
+            return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>(paginatedResult);
         }
 
         /// <summary>
@@ -1005,23 +892,16 @@ namespace RMuseum.Services.Implementation
         /// <returns>id of report record</returns>
         public async Task<RServiceResult<int>> ReportComment(Guid userId, GanjoorPostReportCommentViewModel report)
         {
-            try
+            GanjoorCommentAbuseReport r = new GanjoorCommentAbuseReport()
             {
-                GanjoorCommentAbuseReport r = new GanjoorCommentAbuseReport()
-                {
-                    GanjoorCommentId = report.CommentId,
-                    ReportedById = userId,
-                    ReasonCode = report.ReasonCode,
-                    ReasonText = report.ReasonText,
-                };
-                _context.GanjoorReportedComments.Add(r);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<int>(r.GanjoorCommentId);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<int>(0, exp.ToString());
-            }
+                GanjoorCommentId = report.CommentId,
+                ReportedById = userId,
+                ReasonCode = report.ReasonCode,
+                ReasonText = report.ReasonText,
+            };
+            _context.GanjoorReportedComments.Add(r);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<int>(r.GanjoorCommentId);
         }
 
         /// <summary>
@@ -1031,21 +911,14 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> DeleteReport(int id)
         {
-            try
+            GanjoorCommentAbuseReport report = await _context.GanjoorReportedComments.Where(r => r.Id == id).SingleOrDefaultAsync();
+            if (report == null)
             {
-                GanjoorCommentAbuseReport report = await _context.GanjoorReportedComments.Where(r => r.Id == id).SingleOrDefaultAsync();
-                if(report == null)
-                {
-                    return new RServiceResult<bool>(false);
-                }
-                _context.GanjoorReportedComments.Remove(report);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<bool>(true);
+                return new RServiceResult<bool>(false);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            _context.GanjoorReportedComments.Remove(report);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -1055,64 +928,57 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items)>> GetReportedComments(PagingParameterModel paging)
         {
-            try
-            {
-                var source =
-                     from report in _context.GanjoorReportedComments
-                     join comment in _context.GanjoorComments.Include(c => c.Poem).Include(c => c.User).Include(c => c.InReplyTo).ThenInclude(r => r.User)
-                     on report.GanjoorCommentId equals comment.Id
-                     orderby report.Id descending
-                     select
-                     new GanjoorCommentAbuseReportViewModel()
+            var source =
+                 from report in _context.GanjoorReportedComments
+                 join comment in _context.GanjoorComments.Include(c => c.Poem).Include(c => c.User).Include(c => c.InReplyTo).ThenInclude(r => r.User)
+                 on report.GanjoorCommentId equals comment.Id
+                 orderby report.Id descending
+                 select
+                 new GanjoorCommentAbuseReportViewModel()
+                 {
+                     Id = report.Id,
+                     ReasonCode = report.ReasonCode,
+                     ReasonText = report.ReasonText,
+                     Comment = new GanjoorCommentFullViewModel()
                      {
-                         Id = report.Id,
-                         ReasonCode = report.ReasonCode,
-                         ReasonText = report.ReasonText,
-                         Comment = new GanjoorCommentFullViewModel()
-                         {
-                             Id = comment.Id,
-                             AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.NickName}",
-                             AuthorUrl = comment.AuthorUrl,
-                             CommentDate = comment.CommentDate,
-                             HtmlComment = comment.HtmlComment,
-                             PublishStatus = "",//invalid!
+                         Id = comment.Id,
+                         AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.NickName}",
+                         AuthorUrl = comment.AuthorUrl,
+                         CommentDate = comment.CommentDate,
+                         HtmlComment = comment.HtmlComment,
+                         PublishStatus = "",//invalid!
                              UserId = comment.UserId,
-                             InReplayTo = comment.InReplyTo == null ? null :
-                            new GanjoorCommentSummaryViewModel()
-                            {
-                                Id = comment.InReplyTo.Id,
-                                AuthorName = comment.InReplyTo.User == null ? comment.InReplyTo.AuthorName : $"{comment.InReplyTo.User.NickName}",
-                                AuthorUrl = comment.InReplyTo.AuthorUrl,
-                                CommentDate = comment.InReplyTo.CommentDate,
-                                HtmlComment = comment.InReplyTo.HtmlComment,
-                                PublishStatus = "",
-                                UserId = comment.InReplyTo.UserId
-                            },
-                             Poem = new GanjoorPoemSummaryViewModel()
-                             {
-                                 Id = comment.Poem.Id,
-                                 Title = comment.Poem.FullTitle,
-                                 UrlSlug = comment.Poem.FullUrl,
-                                 Excerpt = ""
-                             }
+                         InReplayTo = comment.InReplyTo == null ? null :
+                        new GanjoorCommentSummaryViewModel()
+                        {
+                            Id = comment.InReplyTo.Id,
+                            AuthorName = comment.InReplyTo.User == null ? comment.InReplyTo.AuthorName : $"{comment.InReplyTo.User.NickName}",
+                            AuthorUrl = comment.InReplyTo.AuthorUrl,
+                            CommentDate = comment.InReplyTo.CommentDate,
+                            HtmlComment = comment.InReplyTo.HtmlComment,
+                            PublishStatus = "",
+                            UserId = comment.InReplyTo.UserId
+                        },
+                         Poem = new GanjoorPoemSummaryViewModel()
+                         {
+                             Id = comment.Poem.Id,
+                             Title = comment.Poem.FullTitle,
+                             UrlSlug = comment.Poem.FullUrl,
+                             Excerpt = ""
                          }
-                     };
+                     }
+                 };
 
-                (PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items) paginatedResult =
-                    await QueryablePaginator<GanjoorCommentAbuseReportViewModel>.Paginate(source, paging);
+            (PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items) paginatedResult =
+                await QueryablePaginator<GanjoorCommentAbuseReportViewModel>.Paginate(source, paging);
 
 
-                foreach (GanjoorCommentAbuseReportViewModel report in paginatedResult.Items)
-                {
-                    report.Comment.AuthorName = report.Comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
-                }
-
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items)>(paginatedResult);
-            }
-            catch (Exception exp)
+            foreach (GanjoorCommentAbuseReportViewModel report in paginatedResult.Items)
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items)>((PagingMeta: null, Items: null), exp.ToString());
+                report.Comment.AuthorName = report.Comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
             }
+
+            return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentAbuseReportViewModel[] Items)>(paginatedResult);
         }
 
 
@@ -1124,62 +990,53 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PoemRelatedImage[]>> GetPoemImages(int id)
         {
-            try
+            var museumSrc =
+                 from link in _context.GanjoorLinks.Include(l => l.Artifact).Include(l => l.Item).ThenInclude(i => i.Images)
+                 join poem in _context.GanjoorPoems
+                 on link.GanjoorPostId equals poem.Id
+                 where
+                 link.DisplayOnPage == true
+                 &&
+                 link.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                 &&
+                 poem.Id == id
+                 orderby link.ReviewDate
+                 select new PoemRelatedImage()
+                 {
+                     PoemRelatedImageType = PoemRelatedImageType.MuseumLink,
+                     ThumbnailImageUrl = $"{WebServiceUrl.Url}/api/images/thumb/{link.Item.Images.First().Id}.jpg",
+                     TargetPageUrl = link.LinkToOriginalSource ? link.OriginalSourceUrl : $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                     AltText = $"{link.Artifact.Name} » {link.Item.Name}",
+                 };
+            List<PoemRelatedImage> museumImages = await museumSrc.ToListAsync();
+
+            var externalSrc =
+                 from link in _context.PinterestLinks
+                 join poem in _context.GanjoorPoems
+                 on link.GanjoorPostId equals poem.Id
+                 where
+                 link.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                 &&
+                 poem.Id == id
+                 orderby link.ReviewDate
+                 select new PoemRelatedImage()
+                 {
+                     PoemRelatedImageType = PoemRelatedImageType.ExternalLink,
+                     ThumbnailImageUrl = $"{WebServiceUrl.Url}/api/images/thumb/{link.Item.Images.First().Id}.jpg",
+                     TargetPageUrl = link.PinterestUrl,
+                     AltText = link.AltText,
+                 };
+
+            museumImages.AddRange(await externalSrc.AsNoTracking().ToListAsync());
+
+            for (int i = 0; i < museumImages.Count; i++)
             {
-                var museumSrc =
-                     from link in _context.GanjoorLinks.Include(l => l.Artifact).Include(l => l.Item).ThenInclude(i => i.Images)
-                     join poem in _context.GanjoorPoems
-                     on link.GanjoorPostId equals poem.Id
-                     where
-                     link.DisplayOnPage == true
-                     &&
-                     link.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
-                     &&
-                     poem.Id == id
-                     orderby link.ReviewDate
-                     select new PoemRelatedImage()
-                     {
-                         PoemRelatedImageType = PoemRelatedImageType.MuseumLink,
-                         ThumbnailImageUrl = $"{WebServiceUrl.Url}/api/images/thumb/{link.Item.Images.First().Id}.jpg",
-                         TargetPageUrl = link.LinkToOriginalSource ? link.OriginalSourceUrl : $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
-                         AltText = $"{link.Artifact.Name} » {link.Item.Name}",
-                     };
-                List<PoemRelatedImage> museumImages = await museumSrc.ToListAsync();
-
-                var externalSrc =
-                     from link in _context.PinterestLinks
-                     join poem in _context.GanjoorPoems
-                     on link.GanjoorPostId equals poem.Id
-                     where
-                     link.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
-                     &&
-                     poem.Id == id
-                     orderby link.ReviewDate
-                     select new PoemRelatedImage()
-                     {
-                         PoemRelatedImageType = PoemRelatedImageType.ExternalLink,
-                         ThumbnailImageUrl = $"{WebServiceUrl.Url}/api/images/thumb/{link.Item.Images.First().Id}.jpg",
-                         TargetPageUrl = link.PinterestUrl,
-                         AltText = link.AltText,
-                     };
-
-                museumImages.AddRange(await externalSrc.AsNoTracking().ToListAsync());
-
-                for (int i = 0; i < museumImages.Count; i++)
-                {
-                    museumImages[i].ImageOrder = 0;
-                }
-
-
-                return new RServiceResult<PoemRelatedImage[]>(museumImages.ToArray());
+                museumImages[i].ImageOrder = 0;
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<PoemRelatedImage[]>(null, exp.ToString());
-            }
+            return new RServiceResult<PoemRelatedImage[]>(museumImages.ToArray());
         }
 
-                /// <summary>
+        /// <summary>
         /// Get Poem By Url
         /// </summary>
         /// <param name="url"></param>
@@ -1195,24 +1052,17 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemByUrl(string url, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true)
         {
-            try
+            // /hafez/ => /hafez :
+            if (url.LastIndexOf('/') == url.Length - 1)
             {
-                // /hafez/ => /hafez :
-                if (url.LastIndexOf('/') == url.Length - 1)
-                {
-                    url = url.Substring(0, url.Length - 1);
-                }
-                var poem = await _context.GanjoorPoems.Where(p => p.FullUrl == url).SingleOrDefaultAsync();
-                if (poem == null)
-                {
-                    return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
-                }
-                return await GetPoemById(poem.Id, catInfo, catPoems, rhymes, recitations, images, songs, comments, verseDetails, navigation);
+                url = url.Substring(0, url.Length - 1);
             }
-            catch (Exception exp)
+            var poem = await _context.GanjoorPoems.Where(p => p.FullUrl == url).SingleOrDefaultAsync();
+            if (poem == null)
             {
-                return new RServiceResult<GanjoorPoemCompleteViewModel>(null, exp.ToString());
+                return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
             }
+            return await GetPoemById(poem.Id, catInfo, catPoems, rhymes, recitations, images, songs, comments, verseDetails, navigation);
         }
 
         /// <summary>
@@ -1231,183 +1081,172 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true)
         {
-            try
+            var cachKey = $"GetPoemById({id}, {catInfo}, {catPoems}, {rhymes}, {recitations}, {images}, {songs}, {comments}, {verseDetails}, {navigation})";
+            if (!_memoryCache.TryGetValue(cachKey, out GanjoorPoemCompleteViewModel poemViewModel))
             {
-                var cachKey = $"GetPoemById({id}, {catInfo}, {catPoems}, {rhymes}, {recitations}, {images}, {songs}, {comments}, {verseDetails}, {navigation})";
-                if(!_memoryCache.TryGetValue(cachKey, out GanjoorPoemCompleteViewModel poemViewModel))
+                var poem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
+                if (poem == null)
                 {
-                    var poem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
-                    if (poem == null)
-                    {
-                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
-                    }
-                    GanjoorPoetCompleteViewModel cat = null;
-                    if (catInfo)
-                    {
-                        var catRes = await GetCatById(poem.CatId, catPoems);
-                        if (!string.IsNullOrEmpty(catRes.ExceptionString))
-                        {
-                            return new RServiceResult<GanjoorPoemCompleteViewModel>(null, catRes.ExceptionString);
-                        }
-                        cat = catRes.Result;
-                    }
-
-                    GanjoorPoemSummaryViewModel next = null;
-                    if (navigation)
-                    {
-                        int nextId =
-                            await _context.GanjoorPoems
-                                                           .Where(p => p.CatId == poem.CatId && p.Id > poem.Id)
-                                                           .AnyAsync()
-                                                           ?
-                            await _context.GanjoorPoems
-                                                           .Where(p => p.CatId == poem.CatId && p.Id > poem.Id)
-                                                           .MinAsync(p => p.Id)
-                                                           :
-                                                           0;
-                        if (nextId != 0)
-                        {
-                            next = await _context.GanjoorPoems.Where(p => p.Id == nextId).Select
-                                (
-                                p =>
-                                new GanjoorPoemSummaryViewModel()
-                                {
-                                    Id = p.Id,
-                                    Title = p.Title,
-                                    UrlSlug = p.UrlSlug,
-                                    Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
-                                }
-                                ).AsNoTracking().SingleAsync();
-                        }
-
-                    }
-
-                    GanjoorPoemSummaryViewModel previous = null;
-                    if (navigation)
-                    {
-                        int preId =
-                            await _context.GanjoorPoems
-                                                           .Where(p => p.CatId == poem.CatId && p.Id < poem.Id)
-                                                           .AnyAsync()
-                                                           ?
-                            await _context.GanjoorPoems
-                                                           .Where(p => p.CatId == poem.CatId && p.Id < poem.Id)
-                                                           .MaxAsync(p => p.Id)
-                                                           :
-                                                           0;
-                        if (preId != 0)
-                        {
-                            previous = await _context.GanjoorPoems.Where(p => p.Id == preId).Select
-                                (
-                                p =>
-                                new GanjoorPoemSummaryViewModel()
-                                {
-                                    Id = p.Id,
-                                    Title = p.Title,
-                                    UrlSlug = p.UrlSlug,
-                                    Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
-                                }
-                                ).AsNoTracking().SingleAsync();
-                        }
-
-                    }
-
-                    PublicRecitationViewModel[] rc = null;
-                    if (recitations)
-                    {
-                        var rcRes = await GetPoemRecitations(id);
-                        if (!string.IsNullOrEmpty(rcRes.ExceptionString))
-                            return new RServiceResult<GanjoorPoemCompleteViewModel>(null, rcRes.ExceptionString);
-                        rc = rcRes.Result;
-                    }
-
-                    PoemRelatedImage[] imgs = null;
-                    if (images)
-                    {
-                        var imgsRes = await GetPoemImages(id);
-                        if (!string.IsNullOrEmpty(imgsRes.ExceptionString))
-                            return new RServiceResult<GanjoorPoemCompleteViewModel>(null, imgsRes.ExceptionString);
-                        imgs = imgsRes.Result;
-                    }
-
-                    GanjoorVerseViewModel[] verses = null;
-                    if (verseDetails)
-                    {
-                        verses = await _context.GanjoorVerses
-                                                        .Where(v => v.PoemId == id)
-                                                        .OrderBy(v => v.VOrder)
-                                                        .Select
-                                                        (
-                                                            v => new GanjoorVerseViewModel()
-                                                            {
-                                                                Id = v.Id,
-                                                                VOrder = v.VOrder,
-                                                                VersePosition = v.VersePosition,
-                                                                Text = v.Text
-                                                            }
-                                                        ).AsNoTracking().ToArrayAsync();
-                    };
-
-
-                    PoemMusicTrackViewModel[] tracks = null;
-                    if (songs)
-                    {
-                        var songsRes = await GetPoemSongs(id, true, PoemMusicTrackType.All);
-                        if (!string.IsNullOrEmpty(songsRes.ExceptionString))
-                            return new RServiceResult<GanjoorPoemCompleteViewModel>(null, songsRes.ExceptionString);
-                        tracks = songsRes.Result;
-                    }
-
-                    GanjoorCommentSummaryViewModel[] poemComments = null;
-
-                    if (comments)
-                    {
-                        var commentsRes = await GetPoemComments(id, Guid.Empty);
-                        if (!string.IsNullOrEmpty(commentsRes.ExceptionString))
-                            return new RServiceResult<GanjoorPoemCompleteViewModel>(null, commentsRes.ExceptionString);
-                        poemComments = commentsRes.Result;
-                    }
-
-                    poemViewModel = new GanjoorPoemCompleteViewModel()
-                    {
-                        Id = poem.Id,
-                        Title = poem.Title,
-                        FullTitle = poem.FullTitle,
-                        FullUrl = poem.FullUrl,
-                        UrlSlug = poem.UrlSlug,
-                        HtmlText = poem.HtmlText,
-                        PlainText = poem.PlainText,
-                        GanjoorMetre = poem.GanjoorMetre,
-                        RhymeLetters = poem.RhymeLetters,
-                        SourceName = poem.SourceName,
-                        SourceUrlSlug = poem.SourceUrlSlug,
-                        OldTag = poem.OldTag,
-                        OldTagPageUrl = poem.OldTagPageUrl,
-                        Category = cat,
-                        Next = next,
-                        Previous = previous,
-                        Recitations = rc,
-                        Images = imgs,
-                        Verses = verses,
-                        Songs = tracks,
-                        Comments = poemComments
-                    };
-
-                    _memoryCache.Set(cachKey, poemViewModel);
+                    return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
                 }
-                
+                GanjoorPoetCompleteViewModel cat = null;
+                if (catInfo)
+                {
+                    var catRes = await GetCatById(poem.CatId, catPoems);
+                    if (!string.IsNullOrEmpty(catRes.ExceptionString))
+                    {
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, catRes.ExceptionString);
+                    }
+                    cat = catRes.Result;
+                }
+
+                GanjoorPoemSummaryViewModel next = null;
+                if (navigation)
+                {
+                    int nextId =
+                        await _context.GanjoorPoems
+                                                       .Where(p => p.CatId == poem.CatId && p.Id > poem.Id)
+                                                       .AnyAsync()
+                                                       ?
+                        await _context.GanjoorPoems
+                                                       .Where(p => p.CatId == poem.CatId && p.Id > poem.Id)
+                                                       .MinAsync(p => p.Id)
+                                                       :
+                                                       0;
+                    if (nextId != 0)
+                    {
+                        next = await _context.GanjoorPoems.Where(p => p.Id == nextId).Select
+                            (
+                            p =>
+                            new GanjoorPoemSummaryViewModel()
+                            {
+                                Id = p.Id,
+                                Title = p.Title,
+                                UrlSlug = p.UrlSlug,
+                                Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
+                            }
+                            ).AsNoTracking().SingleAsync();
+                    }
+
+                }
+
+                GanjoorPoemSummaryViewModel previous = null;
+                if (navigation)
+                {
+                    int preId =
+                        await _context.GanjoorPoems
+                                                       .Where(p => p.CatId == poem.CatId && p.Id < poem.Id)
+                                                       .AnyAsync()
+                                                       ?
+                        await _context.GanjoorPoems
+                                                       .Where(p => p.CatId == poem.CatId && p.Id < poem.Id)
+                                                       .MaxAsync(p => p.Id)
+                                                       :
+                                                       0;
+                    if (preId != 0)
+                    {
+                        previous = await _context.GanjoorPoems.Where(p => p.Id == preId).Select
+                            (
+                            p =>
+                            new GanjoorPoemSummaryViewModel()
+                            {
+                                Id = p.Id,
+                                Title = p.Title,
+                                UrlSlug = p.UrlSlug,
+                                Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
+                            }
+                            ).AsNoTracking().SingleAsync();
+                    }
+
+                }
+
+                PublicRecitationViewModel[] rc = null;
+                if (recitations)
+                {
+                    var rcRes = await GetPoemRecitations(id);
+                    if (!string.IsNullOrEmpty(rcRes.ExceptionString))
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, rcRes.ExceptionString);
+                    rc = rcRes.Result;
+                }
+
+                PoemRelatedImage[] imgs = null;
+                if (images)
+                {
+                    var imgsRes = await GetPoemImages(id);
+                    if (!string.IsNullOrEmpty(imgsRes.ExceptionString))
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, imgsRes.ExceptionString);
+                    imgs = imgsRes.Result;
+                }
+
+                GanjoorVerseViewModel[] verses = null;
+                if (verseDetails)
+                {
+                    verses = await _context.GanjoorVerses
+                                                    .Where(v => v.PoemId == id)
+                                                    .OrderBy(v => v.VOrder)
+                                                    .Select
+                                                    (
+                                                        v => new GanjoorVerseViewModel()
+                                                        {
+                                                            Id = v.Id,
+                                                            VOrder = v.VOrder,
+                                                            VersePosition = v.VersePosition,
+                                                            Text = v.Text
+                                                        }
+                                                    ).AsNoTracking().ToArrayAsync();
+                };
 
 
+                PoemMusicTrackViewModel[] tracks = null;
+                if (songs)
+                {
+                    var songsRes = await GetPoemSongs(id, true, PoemMusicTrackType.All);
+                    if (!string.IsNullOrEmpty(songsRes.ExceptionString))
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, songsRes.ExceptionString);
+                    tracks = songsRes.Result;
+                }
 
-                return new RServiceResult<GanjoorPoemCompleteViewModel>
-                    (
-                    poemViewModel
-                    );
+                GanjoorCommentSummaryViewModel[] poemComments = null;
+
+                if (comments)
+                {
+                    var commentsRes = await GetPoemComments(id, Guid.Empty);
+                    if (!string.IsNullOrEmpty(commentsRes.ExceptionString))
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, commentsRes.ExceptionString);
+                    poemComments = commentsRes.Result;
+                }
+
+                poemViewModel = new GanjoorPoemCompleteViewModel()
+                {
+                    Id = poem.Id,
+                    Title = poem.Title,
+                    FullTitle = poem.FullTitle,
+                    FullUrl = poem.FullUrl,
+                    UrlSlug = poem.UrlSlug,
+                    HtmlText = poem.HtmlText,
+                    PlainText = poem.PlainText,
+                    GanjoorMetre = poem.GanjoorMetre,
+                    RhymeLetters = poem.RhymeLetters,
+                    SourceName = poem.SourceName,
+                    SourceUrlSlug = poem.SourceUrlSlug,
+                    OldTag = poem.OldTag,
+                    OldTagPageUrl = poem.OldTagPageUrl,
+                    Category = cat,
+                    Next = next,
+                    Previous = previous,
+                    Recitations = rc,
+                    Images = imgs,
+                    Verses = verses,
+                    Songs = tracks,
+                    Comments = poemComments
+                };
+
+                _memoryCache.Set(cachKey, poemViewModel);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjoorPoemCompleteViewModel>(null, exp.ToString());
-            }
+            return new RServiceResult<GanjoorPoemCompleteViewModel>
+                (
+                poemViewModel
+                );
         }
 
 
@@ -1420,50 +1259,43 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PoemMusicTrackViewModel[]>> GetPoemSongs(int id, bool approved, PoemMusicTrackType trackType)
         {
-            try
-            {
-                return new RServiceResult<PoemMusicTrackViewModel[]>
-                    (
-                    await _context.GanjoorPoemMusicTracks
-                                                    .Where
-                                                    (
-                                                        t => t.PoemId == id
-                                                        &&
-                                                        t.Approved == approved
-                                                        &&
-                                                        t.Rejected == false
-                                                        &&
-                                                        (trackType == PoemMusicTrackType.All || t.TrackType == trackType)
-                                                    )
-                                                    .OrderBy(t => t.SongOrder)
-                                                    .Select
-                                                    (
-                                                     t => new PoemMusicTrackViewModel()
-                                                     {
-                                                         Id = t.Id,
-                                                         PoemId = t.PoemId,
-                                                         TrackType = t.TrackType,
-                                                         ArtistName = t.ArtistName,
-                                                         ArtistUrl = t.ArtistUrl,
-                                                         AlbumName = t.AlbumName,
-                                                         AlbumUrl = t.AlbumUrl,
-                                                         TrackName = t.TrackName,
-                                                         TrackUrl = t.TrackUrl,
-                                                         Description = t.Description,
-                                                         BrokenLink = t.BrokenLink,
-                                                         GolhaTrackId = t.GolhaTrackId == null ? 0 : (int)t.GolhaTrackId,
-                                                         Approved = t.Approved,
-                                                         Rejected = t.Rejected,
-                                                         RejectionCause = t.RejectionCause
+            return new RServiceResult<PoemMusicTrackViewModel[]>
+                (
+                await _context.GanjoorPoemMusicTracks
+                                                .Where
+                                                (
+                                                    t => t.PoemId == id
+                                                    &&
+                                                    t.Approved == approved
+                                                    &&
+                                                    t.Rejected == false
+                                                    &&
+                                                    (trackType == PoemMusicTrackType.All || t.TrackType == trackType)
+                                                )
+                                                .OrderBy(t => t.SongOrder)
+                                                .Select
+                                                (
+                                                 t => new PoemMusicTrackViewModel()
+                                                 {
+                                                     Id = t.Id,
+                                                     PoemId = t.PoemId,
+                                                     TrackType = t.TrackType,
+                                                     ArtistName = t.ArtistName,
+                                                     ArtistUrl = t.ArtistUrl,
+                                                     AlbumName = t.AlbumName,
+                                                     AlbumUrl = t.AlbumUrl,
+                                                     TrackName = t.TrackName,
+                                                     TrackUrl = t.TrackUrl,
+                                                     Description = t.Description,
+                                                     BrokenLink = t.BrokenLink,
+                                                     GolhaTrackId = t.GolhaTrackId == null ? 0 : (int)t.GolhaTrackId,
+                                                     Approved = t.Approved,
+                                                     Rejected = t.Rejected,
+                                                     RejectionCause = t.RejectionCause
 
-                                                     }
-                                                    ).AsNoTracking().ToArrayAsync()
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<PoemMusicTrackViewModel[]>(null, exp.ToString());
-            }
+                                                 }
+                                                ).AsNoTracking().ToArrayAsync()
+                );
         }
 
         /// <summary>
@@ -1474,83 +1306,76 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PoemMusicTrackViewModel>> SuggestSong(Guid userId, PoemMusicTrackViewModel song)
         {
-            try
+            song.Approved = false;
+            song.Rejected = false;
+            song.RejectionCause = "";
+            song.BrokenLink = false;
+            if (song.TrackType == PoemMusicTrackType.Golha)
             {
-                song.Approved = false;
-                song.Rejected = false;
-                song.RejectionCause = "";
-                song.BrokenLink = false;
-                if (song.TrackType == PoemMusicTrackType.Golha)
+                var golhaTrack = await _context.GolhaTracks.Include(g => g.GolhaProgram).ThenInclude(p => p.GolhaCollection).Where(g => g.Id == song.GolhaTrackId).FirstOrDefaultAsync();
+                if (golhaTrack == null)
                 {
-                    var golhaTrack = await _context.GolhaTracks.Include(g => g.GolhaProgram).ThenInclude(p => p.GolhaCollection).Where(g => g.Id == song.GolhaTrackId).FirstOrDefaultAsync();
-                    if (golhaTrack == null)
-                    {
-                        return new RServiceResult<PoemMusicTrackViewModel>(null, "مشخصات قطعهٔ گلها درست نیست.");
-                    }
-                    var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && t.GolhaTrackId == song.GolhaTrackId && (t.Approved || (!t.Approved && !t.Rejected) )).FirstOrDefaultAsync();
-                    if (alreadySuggestedSong != null)
-                    {
-                        return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر پیشنهاد داده شده است.");
-                    }
-
-                    song.ArtistName = "";
-                    song.ArtistUrl = "";
-                    song.AlbumName = $"{golhaTrack.GolhaProgram.GolhaCollection.Name} » شمارهٔ {golhaTrack.GolhaProgram.Title.ToPersianNumbers().ApplyCorrectYeKe()}";
-                    song.AlbumUrl = "";
-                    song.TrackName = $"{golhaTrack.Timing.ToPersianNumbers().ApplyCorrectYeKe()} {golhaTrack.Title}";
-                    song.TrackUrl = golhaTrack.GolhaProgram.Url;
+                    return new RServiceResult<PoemMusicTrackViewModel>(null, "مشخصات قطعهٔ گلها درست نیست.");
                 }
-                else
+                var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && t.GolhaTrackId == song.GolhaTrackId && (t.Approved || (!t.Approved && !t.Rejected))).FirstOrDefaultAsync();
+                if (alreadySuggestedSong != null)
                 {
-                    var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && (t.TrackUrl == song.TrackUrl || t.TrackUrl == song.TrackUrl.Replace("https", "http")) && (t.Approved || (!t.Approved && !t.Rejected))).FirstOrDefaultAsync();
-                    if (alreadySuggestedSong != null)
-                    {
-                        return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر پیشنهاد داده شده است.");
-                    }
-
-                }
-                var sug =
-                    new PoemMusicTrack()
-                    {
-                        TrackType = song.TrackType,
-                        PoemId = song.PoemId,
-                        ArtistName = song.ArtistName,
-                        ArtistUrl = song.ArtistUrl,
-                        AlbumName = song.AlbumName,
-                        AlbumUrl = song.AlbumUrl,
-                        TrackName = song.TrackName,
-                        TrackUrl = song.TrackUrl,
-                        SuggestedById = userId,
-                        Description = song.Description,
-                        GolhaTrackId = song.TrackType == PoemMusicTrackType.Golha ? song.GolhaTrackId : (int?)null,
-                        Approved = false,
-                        Rejected = false,
-                        RejectionCause = ""
-                    };
-
-                GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == song.ArtistUrl).FirstOrDefaultAsync();
-                if (singer != null)
-                {
-                    sug.SingerId = singer.Id;
+                    return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر پیشنهاد داده شده است.");
                 }
 
-                _context.GanjoorPoemMusicTracks.Add
-                    (
-                    sug
-                    );
-
-                await _context.SaveChangesAsync();
-                sug.SongOrder = sug.Id;
-                _context.GanjoorPoemMusicTracks.Update(sug);
-                await _context.SaveChangesAsync();
-                song.Id = sug.Id;
-               
-                return new RServiceResult<PoemMusicTrackViewModel>(song);
+                song.ArtistName = "";
+                song.ArtistUrl = "";
+                song.AlbumName = $"{golhaTrack.GolhaProgram.GolhaCollection.Name} » شمارهٔ {golhaTrack.GolhaProgram.Title.ToPersianNumbers().ApplyCorrectYeKe()}";
+                song.AlbumUrl = "";
+                song.TrackName = $"{golhaTrack.Timing.ToPersianNumbers().ApplyCorrectYeKe()} {golhaTrack.Title}";
+                song.TrackUrl = golhaTrack.GolhaProgram.Url;
             }
-            catch (Exception exp)
+            else
             {
-                return new RServiceResult<PoemMusicTrackViewModel>(null, exp.ToString());
+                var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && (t.TrackUrl == song.TrackUrl || t.TrackUrl == song.TrackUrl.Replace("https", "http")) && (t.Approved || (!t.Approved && !t.Rejected))).FirstOrDefaultAsync();
+                if (alreadySuggestedSong != null)
+                {
+                    return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر پیشنهاد داده شده است.");
+                }
+
             }
+            var sug =
+                new PoemMusicTrack()
+                {
+                    TrackType = song.TrackType,
+                    PoemId = song.PoemId,
+                    ArtistName = song.ArtistName,
+                    ArtistUrl = song.ArtistUrl,
+                    AlbumName = song.AlbumName,
+                    AlbumUrl = song.AlbumUrl,
+                    TrackName = song.TrackName,
+                    TrackUrl = song.TrackUrl,
+                    SuggestedById = userId,
+                    Description = song.Description,
+                    GolhaTrackId = song.TrackType == PoemMusicTrackType.Golha ? song.GolhaTrackId : (int?)null,
+                    Approved = false,
+                    Rejected = false,
+                    RejectionCause = ""
+                };
+
+            GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == song.ArtistUrl).FirstOrDefaultAsync();
+            if (singer != null)
+            {
+                sug.SingerId = singer.Id;
+            }
+
+            _context.GanjoorPoemMusicTracks.Add
+                (
+                sug
+                );
+
+            await _context.SaveChangesAsync();
+            sug.SongOrder = sug.Id;
+            _context.GanjoorPoemMusicTracks.Update(sug);
+            await _context.SaveChangesAsync();
+            song.Id = sug.Id;
+
+            return new RServiceResult<PoemMusicTrackViewModel>(song);
         }
 
         /// <summary>
@@ -1560,16 +1385,9 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<int>> GetUnreviewedSongsCount(Guid suggestedById)
         {
-            try
-            {
-                return new RServiceResult<int>(await _context.GanjoorPoemMusicTracks
-                   .Where(p => p.Approved == false && p.Rejected == false && (suggestedById == Guid.Empty || p.SuggestedById == suggestedById))
-                   .CountAsync());
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<int>(0, exp.ToString());
-            }
+            return new RServiceResult<int>(await _context.GanjoorPoemMusicTracks
+               .Where(p => p.Approved == false && p.Rejected == false && (suggestedById == Guid.Empty || p.SuggestedById == suggestedById))
+               .CountAsync());
         }
 
 
@@ -1581,43 +1399,36 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PoemMusicTrackViewModel>> GetNextUnreviewedSong(int skip, Guid suggestedById)
         {
-            try
+            var song = await _context.GanjoorPoemMusicTracks.Include(song => song.SuggestedBy)
+                .Where(p => p.Approved == false && p.Rejected == false && (suggestedById == Guid.Empty || p.SuggestedById == suggestedById))
+                .OrderBy(p => p.Id).Skip(skip).AsNoTracking().FirstOrDefaultAsync();
+            if (song != null)
             {
-                var song = await _context.GanjoorPoemMusicTracks.Include(song => song.SuggestedBy)
-                    .Where(p => p.Approved == false && p.Rejected == false && (suggestedById == Guid.Empty || p.SuggestedById == suggestedById))
-                    .OrderBy(p => p.Id).Skip(skip).AsNoTracking().FirstOrDefaultAsync();
-                if (song != null)
-                {
-                    return new RServiceResult<PoemMusicTrackViewModel>
-                        (
-                        new PoemMusicTrackViewModel()
-                        {
-                            Id = song.Id,
-                            TrackType = song.TrackType,
-                            PoemId = song.PoemId,
-                            ArtistName = song.ArtistName,
-                            ArtistUrl = song.ArtistUrl,
-                            AlbumName = song.AlbumName,
-                            AlbumUrl = song.AlbumUrl,
-                            TrackName = song.TrackName,
-                            TrackUrl = song.TrackUrl,
-                            Description = song.Description,
-                            GolhaTrackId = song.TrackType == PoemMusicTrackType.Golha ? (int)song.GolhaTrackId : 0,
-                            BrokenLink = song.BrokenLink,
-                            Approved = song.Approved,
-                            Rejected = song.Rejected,
-                            RejectionCause = song.RejectionCause,
-                            SuggestedById = song.SuggestedById,
-                            SuggestedByNickName = string.IsNullOrEmpty(song.SuggestedBy.NickName) ? song.SuggestedBy.Id.ToString() : song.SuggestedBy.NickName
-                        }
-                        );
-                }
-                return new RServiceResult<PoemMusicTrackViewModel>(null); //not found
+                return new RServiceResult<PoemMusicTrackViewModel>
+                    (
+                    new PoemMusicTrackViewModel()
+                    {
+                        Id = song.Id,
+                        TrackType = song.TrackType,
+                        PoemId = song.PoemId,
+                        ArtistName = song.ArtistName,
+                        ArtistUrl = song.ArtistUrl,
+                        AlbumName = song.AlbumName,
+                        AlbumUrl = song.AlbumUrl,
+                        TrackName = song.TrackName,
+                        TrackUrl = song.TrackUrl,
+                        Description = song.Description,
+                        GolhaTrackId = song.TrackType == PoemMusicTrackType.Golha ? (int)song.GolhaTrackId : 0,
+                        BrokenLink = song.BrokenLink,
+                        Approved = song.Approved,
+                        Rejected = song.Rejected,
+                        RejectionCause = song.RejectionCause,
+                        SuggestedById = song.SuggestedById,
+                        SuggestedByNickName = string.IsNullOrEmpty(song.SuggestedBy.NickName) ? song.SuggestedBy.Id.ToString() : song.SuggestedBy.NickName
+                    }
+                    );
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<PoemMusicTrackViewModel>(null, exp.ToString());
-            }
+            return new RServiceResult<PoemMusicTrackViewModel>(null); //not found
         }
 
         /// <summary>
@@ -1627,101 +1438,94 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PoemMusicTrackViewModel>> ReviewSong(PoemMusicTrackViewModel song)
         {
-            try
-            {
-                if (song.Approved && song.Rejected)
-                    return new RServiceResult<PoemMusicTrackViewModel>(null, "song.Approved && song.Rejected");
+            if (song.Approved && song.Rejected)
+                return new RServiceResult<PoemMusicTrackViewModel>(null, "song.Approved && song.Rejected");
 
-                if(song.Approved)
+            if (song.Approved)
+            {
+                if (song.TrackType == PoemMusicTrackType.Golha)
                 {
-                    if (song.TrackType == PoemMusicTrackType.Golha)
+                    var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && t.GolhaTrackId == song.GolhaTrackId && t.Approved).FirstOrDefaultAsync();
+                    if (alreadySuggestedSong != null)
                     {
-                        var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && t.GolhaTrackId == song.GolhaTrackId && t.Approved).FirstOrDefaultAsync();
-                        if (alreadySuggestedSong != null)
-                        {
-                            return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر تأیید شده است.");
-                        }
-                    }
-                    else
-                    {
-                        var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && (t.TrackUrl == song.TrackUrl || t.TrackUrl == song.TrackUrl.Replace("https", "http")) && t.Approved).FirstOrDefaultAsync();
-                        if (alreadySuggestedSong != null)
-                        {
-                            return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر تأیید شده است.");
-                        }
+                        return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر تأیید شده است.");
                     }
                 }
-               
-
-                var track = await _context.GanjoorPoemMusicTracks.Where(t => t.Id == song.Id).SingleOrDefaultAsync();
-
-                track.TrackType = song.TrackType;
-                track.ArtistName = song.ArtistName;
-                track.ArtistUrl = song.ArtistUrl;
-                track.AlbumName = song.AlbumName;
-                track.AlbumUrl = song.AlbumUrl;
-                track.TrackName = song.TrackName;
-                track.TrackUrl = song.TrackUrl;
-                if (!track.Approved && song.Approved)
+                else
                 {
-                    track.ApprovalDate = DateTime.Now;
+                    var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && (t.TrackUrl == song.TrackUrl || t.TrackUrl == song.TrackUrl.Replace("https", "http")) && t.Approved).FirstOrDefaultAsync();
+                    if (alreadySuggestedSong != null)
+                    {
+                        return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر تأیید شده است.");
+                    }
                 }
-                track.Approved = song.Approved;
-                track.Rejected = song.Rejected;
-                track.RejectionCause = song.RejectionCause;
-                track.BrokenLink = song.BrokenLink;
-                if(track.TrackType == PoemMusicTrackType.Golha)
-                {
-                    track.GolhaTrackId = song.GolhaTrackId;
-                }
-                
-
-                GanjoorSinger singer = await _context.GanjoorSingers.AsNoTracking().Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
-                if (singer != null)
-                {
-                    track.SingerId = singer.Id;
-                }
-
-                _context.GanjoorPoemMusicTracks.Update(track);
-
-                await _context.SaveChangesAsync();
-
-                if(track.Approved)
-                {
-                    await CacheCleanForPageById(track.PoemId);
-                }
-
-                var poem = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == track.PoemId).SingleAsync();
-
-                if (track.Approved)
-                {
-                    await _notificationService.PushNotification(
-                        (Guid)track.SuggestedById,
-                                      "تأیید آهنگ پیشنهادی",
-                                      $"آهنگ پیشنهادی شما («{track.TrackName}» برای «<a href='{poem.FullUrl}'>{poem.FullTitle}</a>») تأیید شد.  {Environment.NewLine}" +
-                                      $"از این که به تکمیل اطلاعات گنجور کمک کردید سپاسگزاریم."
-                                      );
-                }
-                else if (track.Rejected)
-                {
-                    await _notificationService.PushNotification(
-                        (Guid)track.SuggestedById,
-                                      "رد آهنگ پیشنهادی",
-                                      $"آهنگ پیشنهادی شما («{track.TrackName}» برای «<a href='{poem.FullUrl}'>{poem.FullTitle}</a>») تأیید نشد. {Environment.NewLine}" +
-                                      $"علت عدم تأیید: {Environment.NewLine}" +
-                                      $"«{track.RejectionCause}» {Environment.NewLine}" +
-                                      $"توجه کنید که در پیشنهاد آهنگ می‌بایست دقیقا قطعه‌ای را مشخص کنید که شعر در آن خوانده شده و پیشنهاد خواننده یا آلبوم یا برنامهٔ گلها به طور کلی فایده‌ای ندارد.{Environment.NewLine}" +
-                                      $"اگر تصور می‌کنید اشتباهی رخ داده لطفا مجددا آهنگ را پیشنهاد دهید و در بخش توضیحات دلیل خود را بنویسید.{Environment.NewLine}با سپاس"
-                                      );
-                }
-                    
-
-                return new RServiceResult<PoemMusicTrackViewModel>(song);
             }
-            catch (Exception exp)
+
+
+            var track = await _context.GanjoorPoemMusicTracks.Where(t => t.Id == song.Id).SingleOrDefaultAsync();
+
+            track.TrackType = song.TrackType;
+            track.ArtistName = song.ArtistName;
+            track.ArtistUrl = song.ArtistUrl;
+            track.AlbumName = song.AlbumName;
+            track.AlbumUrl = song.AlbumUrl;
+            track.TrackName = song.TrackName;
+            track.TrackUrl = song.TrackUrl;
+            if (!track.Approved && song.Approved)
             {
-                return new RServiceResult<PoemMusicTrackViewModel>(null, exp.ToString());
+                track.ApprovalDate = DateTime.Now;
             }
+            track.Approved = song.Approved;
+            track.Rejected = song.Rejected;
+            track.RejectionCause = song.RejectionCause;
+            track.BrokenLink = song.BrokenLink;
+            if (track.TrackType == PoemMusicTrackType.Golha)
+            {
+                track.GolhaTrackId = song.GolhaTrackId;
+            }
+
+
+            GanjoorSinger singer = await _context.GanjoorSingers.AsNoTracking().Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
+            if (singer != null)
+            {
+                track.SingerId = singer.Id;
+            }
+
+            _context.GanjoorPoemMusicTracks.Update(track);
+
+            await _context.SaveChangesAsync();
+
+            if (track.Approved)
+            {
+                await CacheCleanForPageById(track.PoemId);
+            }
+
+            var poem = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == track.PoemId).SingleAsync();
+
+            if (track.Approved)
+            {
+                await _notificationService.PushNotification(
+                    (Guid)track.SuggestedById,
+                                  "تأیید آهنگ پیشنهادی",
+                                  $"آهنگ پیشنهادی شما («{track.TrackName}» برای «<a href='{poem.FullUrl}'>{poem.FullTitle}</a>») تأیید شد.  {Environment.NewLine}" +
+                                  $"از این که به تکمیل اطلاعات گنجور کمک کردید سپاسگزاریم."
+                                  );
+            }
+            else if (track.Rejected)
+            {
+                await _notificationService.PushNotification(
+                    (Guid)track.SuggestedById,
+                                  "رد آهنگ پیشنهادی",
+                                  $"آهنگ پیشنهادی شما («{track.TrackName}» برای «<a href='{poem.FullUrl}'>{poem.FullTitle}</a>») تأیید نشد. {Environment.NewLine}" +
+                                  $"علت عدم تأیید: {Environment.NewLine}" +
+                                  $"«{track.RejectionCause}» {Environment.NewLine}" +
+                                  $"توجه کنید که در پیشنهاد آهنگ می‌بایست دقیقا قطعه‌ای را مشخص کنید که شعر در آن خوانده شده و پیشنهاد خواننده یا آلبوم یا برنامهٔ گلها به طور کلی فایده‌ای ندارد.{Environment.NewLine}" +
+                                  $"اگر تصور می‌کنید اشتباهی رخ داده لطفا مجددا آهنگ را پیشنهاد دهید و در بخش توضیحات دلیل خود را بنویسید.{Environment.NewLine}با سپاس"
+                                  );
+            }
+
+
+            return new RServiceResult<PoemMusicTrackViewModel>(song);
         }
 
         /// <summary>
@@ -1731,78 +1535,70 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PoemMusicTrackViewModel>> DirectInsertSong(PoemMusicTrackViewModel song)
         {
-            try
+            var poem = await _context.GanjoorPoems.Where(p => p.Id == song.PoemId).SingleOrDefaultAsync();
+            if (poem == null)
+                return new RServiceResult<PoemMusicTrackViewModel>(null, "poem == null");
+
+            if
+                (
+                string.IsNullOrEmpty(song.ArtistName)
+                ||
+                string.IsNullOrEmpty(song.ArtistUrl)
+                ||
+                string.IsNullOrEmpty(song.AlbumName)
+                ||
+                string.IsNullOrEmpty(song.AlbumUrl)
+                ||
+                string.IsNullOrEmpty(song.TrackName)
+                ||
+                string.IsNullOrEmpty(song.TrackUrl)
+                ||
+                song.TrackType != PoemMusicTrackType.BeepTunesOrKhosousi
+                )
             {
-
-                var poem = await _context.GanjoorPoems.Where(p => p.Id == song.PoemId).SingleOrDefaultAsync();
-                if (poem == null)
-                    return new RServiceResult<PoemMusicTrackViewModel>(null, "poem == null");
-
-                if
-                    (
-                    string.IsNullOrEmpty(song.ArtistName)
-                    ||
-                    string.IsNullOrEmpty(song.ArtistUrl)
-                    ||
-                    string.IsNullOrEmpty(song.AlbumName)
-                    ||
-                    string.IsNullOrEmpty(song.AlbumUrl)
-                    ||
-                    string.IsNullOrEmpty(song.TrackName)
-                    ||
-                    string.IsNullOrEmpty(song.TrackUrl)
-                    ||
-                    song.TrackType != PoemMusicTrackType.BeepTunesOrKhosousi
-                    )
-                {
-                    return new RServiceResult<PoemMusicTrackViewModel>(null, "data validation err");
-                }
-
-                var duplicated = await _context.GanjoorPoemMusicTracks.Where(m => m.PoemId == song.PoemId && m.TrackUrl == song.TrackUrl).FirstOrDefaultAsync();
-                if (duplicated != null)
-                {
-                    return new RServiceResult<PoemMusicTrackViewModel>(null, "duplicated song url for this poem");
-                }
-
-
-                PoemMusicTrack track = new PoemMusicTrack();
-
-                track.PoemId = song.PoemId;
-                track.TrackType = song.TrackType;
-                track.ArtistName = song.ArtistName;
-                track.ArtistUrl = song.ArtistUrl;
-                track.AlbumName = song.AlbumName;
-                track.AlbumUrl = song.AlbumUrl;
-                track.TrackName = song.TrackName;
-                track.TrackUrl = song.TrackUrl;
-                track.ApprovalDate = DateTime.Now;
-                track.Approved = true;
-                track.Rejected = false;
-                track.BrokenLink = song.BrokenLink;
-
-                GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
-                if (singer != null)
-                {
-                    track.SingerId = singer.Id;
-                }
-
-                _context.GanjoorPoemMusicTracks.Add(track);
-
-                await _context.SaveChangesAsync();
-
-                track.SongOrder = track.Id;
-                song.Id = track.Id;
-                _context.GanjoorPoemMusicTracks.Update(track);
-                await _context.SaveChangesAsync();
-
-                await CacheCleanForPageById(track.PoemId);
-
-                return new RServiceResult<PoemMusicTrackViewModel>(song);
+                return new RServiceResult<PoemMusicTrackViewModel>(null, "data validation err");
             }
-            catch (Exception exp)
+
+            var duplicated = await _context.GanjoorPoemMusicTracks.Where(m => m.PoemId == song.PoemId && m.TrackUrl == song.TrackUrl).FirstOrDefaultAsync();
+            if (duplicated != null)
             {
-                return new RServiceResult<PoemMusicTrackViewModel>(null, exp.ToString());
+                return new RServiceResult<PoemMusicTrackViewModel>(null, "duplicated song url for this poem");
             }
+
+
+            PoemMusicTrack track = new PoemMusicTrack();
+
+            track.PoemId = song.PoemId;
+            track.TrackType = song.TrackType;
+            track.ArtistName = song.ArtistName;
+            track.ArtistUrl = song.ArtistUrl;
+            track.AlbumName = song.AlbumName;
+            track.AlbumUrl = song.AlbumUrl;
+            track.TrackName = song.TrackName;
+            track.TrackUrl = song.TrackUrl;
+            track.ApprovalDate = DateTime.Now;
+            track.Approved = true;
+            track.Rejected = false;
+            track.BrokenLink = song.BrokenLink;
+
+            GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
+            if (singer != null)
+            {
+                track.SingerId = singer.Id;
+            }
+
+            _context.GanjoorPoemMusicTracks.Add(track);
+
+            await _context.SaveChangesAsync();
+
+            track.SongOrder = track.Id;
+            song.Id = track.Id;
+            _context.GanjoorPoemMusicTracks.Update(track);
+            await _context.SaveChangesAsync();
+
+            await CacheCleanForPageById(track.PoemId);
+
+            return new RServiceResult<PoemMusicTrackViewModel>(song);
         }
 
 
@@ -1815,7 +1611,7 @@ namespace RMuseum.Services.Implementation
             if (loopBreaker > 10)
                 return 0;
             Random r = new Random(DateTime.Now.Millisecond);
-            
+
             switch (poetId)
             {
                 case 2://حافظ
@@ -1892,7 +1688,7 @@ namespace RMuseum.Services.Implementation
             };
 
             return _GetRandomPoemId(poetIdArray[r.Next(0, poetIdArray.Length - 1)], loopBreaker++);
-            
+
         }
 
 
@@ -1905,29 +1701,22 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> Faal(int poetId = 2, bool recitation = true)
         {
-            try
+            int poemId = _GetRandomPoemId(poetId);
+            var poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
+            PublicRecitationViewModel[] recitations = poem == null || !recitation ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
+            int loopPreventer = 0;
+            while (poem == null || (recitation && recitations.Length == 0))
             {
-                int poemId = _GetRandomPoemId(poetId);
-                var poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
-                PublicRecitationViewModel[] recitations = poem == null || !recitation ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
-                int loopPreventer = 0;
-                while (poem == null || (recitation && recitations.Length == 0))
+                poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
+                recitations = poem == null ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
+                loopPreventer++;
+                if (loopPreventer > 5)
                 {
-                    poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
-                    recitations = poem == null ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
-                    loopPreventer++;
-                    if (loopPreventer > 5)
-                    {
-                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
-                    }
+                    return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
                 }
+            }
 
-                return await GetPoemById(poemId, false, false, false, recitation, false, false, false, true /*verse details*/, false);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjoorPoemCompleteViewModel>(null, exp.ToString());
-            }
+            return await GetPoemById(poemId, false, false, false, recitation, false, false, false, true /*verse details*/, false);
         }
 
         /// <summary>
@@ -1940,81 +1729,73 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId)
         {
-            try
-            {
-                if (string.IsNullOrEmpty(rhyme))
-                    rhyme = "";
-                var source =
-                    _context.GanjoorPoems.Include(p => p.Cat).ThenInclude(c => c.Poet).Include(p => p.GanjoorMetre)
-                    .Where(p =>
-                            (poetId == null || p.Cat.PoetId == poetId)
-                            &&
-                            (p.GanjoorMetre.Rhythm == metre)
-                            &&
-                            (rhyme == "" || p.RhymeLetters == rhyme)
-                            )
-                    .OrderBy(p => p.CatId).ThenBy(p => p.Id)
-                    .Select
-                    (
-                        poem =>
-                        new GanjoorPoemCompleteViewModel()
+            if (string.IsNullOrEmpty(rhyme))
+                rhyme = "";
+            var source =
+                _context.GanjoorPoems.Include(p => p.Cat).ThenInclude(c => c.Poet).Include(p => p.GanjoorMetre)
+                .Where(p =>
+                        (poetId == null || p.Cat.PoetId == poetId)
+                        &&
+                        (p.GanjoorMetre.Rhythm == metre)
+                        &&
+                        (rhyme == "" || p.RhymeLetters == rhyme)
+                        )
+                .OrderBy(p => p.CatId).ThenBy(p => p.Id)
+                .Select
+                (
+                    poem =>
+                    new GanjoorPoemCompleteViewModel()
+                    {
+                        Id = poem.Id,
+                        Title = poem.Title,
+                        FullTitle = poem.FullTitle,
+                        FullUrl = poem.FullUrl,
+                        UrlSlug = poem.UrlSlug,
+                        HtmlText = poem.HtmlText,
+                        PlainText = poem.PlainText,
+                        GanjoorMetre = poem.GanjoorMetre,
+                        RhymeLetters = poem.RhymeLetters,
+                        Category = new GanjoorPoetCompleteViewModel()
                         {
-                            Id = poem.Id,
-                            Title = poem.Title,
-                            FullTitle = poem.FullTitle,
-                            FullUrl = poem.FullUrl,
-                            UrlSlug = poem.UrlSlug,
-                            HtmlText = poem.HtmlText,
-                            PlainText = poem.PlainText,
-                            GanjoorMetre = poem.GanjoorMetre,
-                            RhymeLetters = poem.RhymeLetters,
-                            Category = new GanjoorPoetCompleteViewModel()
+                            Poet = new GanjoorPoetViewModel()
                             {
-                                Poet = new GanjoorPoetViewModel()
-                                {
-                                    Id = poem.Cat.Poet.Id,
-                                }
-                            },
-                            
-                        }
-                    ).AsNoTracking();
+                                Id = poem.Cat.Poet.Id,
+                            }
+                        },
+
+                    }
+                ).AsNoTracking();
 
 
-                (PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items) paginatedResult =
-                   await QueryablePaginator<GanjoorPoemCompleteViewModel>.Paginate(source, paging);
+            (PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items) paginatedResult =
+               await QueryablePaginator<GanjoorPoemCompleteViewModel>.Paginate(source, paging);
 
 
-                Dictionary<int, GanjoorPoetCompleteViewModel> cachedPoets = new Dictionary<int, GanjoorPoetCompleteViewModel>();
+            Dictionary<int, GanjoorPoetCompleteViewModel> cachedPoets = new Dictionary<int, GanjoorPoetCompleteViewModel>();
 
-                foreach (var item in paginatedResult.Items)
+            foreach (var item in paginatedResult.Items)
+            {
+                if (cachedPoets.TryGetValue(item.Category.Poet.Id, out GanjoorPoetCompleteViewModel poet))
                 {
-                    if(cachedPoets.TryGetValue(item.Category.Poet.Id, out GanjoorPoetCompleteViewModel poet))
-                    {
-                        item.Category = poet;
-                    }
-                    else
-                    {
-                        poet = (await GetPoetById(item.Category.Poet.Id)).Result;
+                    item.Category = poet;
+                }
+                else
+                {
+                    poet = (await GetPoetById(item.Category.Poet.Id)).Result;
 
-                        cachedPoets.Add(item.Category.Poet.Id, poet);
+                    cachedPoets.Add(item.Category.Poet.Id, poet);
 
-                        item.Category = poet;
-                    }
-                    
+                    item.Category = poet;
                 }
 
+            }
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
-            }
-            catch(Exception exp)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), exp.ToString());
-            }
+            return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
         }
         private async Task _populateCategoryChildren(int catId, List<int> catListId)
         {
             var catRes = await GetCatById(catId, false);
-            foreach(var c in catRes.Result.Cat.Children)
+            foreach (var c in catRes.Result.Cat.Children)
             {
                 catListId.Add(c.Id);
                 await _populateCategoryChildren(c.Id, catListId);
@@ -2039,135 +1820,128 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> Search(PagingParameterModel paging, string term, int? poetId, int? catId)
         {
-            try
+            term = term.Trim().ApplyCorrectYeKe();
+
+            if (string.IsNullOrEmpty(term))
             {
-                term = term.Trim().ApplyCorrectYeKe();
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), "خطای جستجوی عبارت خالی");
+            }
 
-                if (string.IsNullOrEmpty(term))
+            term = term.Replace("‌", " ");//replace zwnj with space
+
+
+            string searchConditions;
+            if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
+            {
+                searchConditions = term.Replace("\"", "").Replace("'", "");
+                searchConditions = $"\"{searchConditions}\"";
+            }
+            else
+            {
+                string[] words = term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                searchConditions = "";
+                string emptyOrAnd = "";
+                foreach (string word in words)
                 {
-                    return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), "خطای جستجوی عبارت خالی");
+                    searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
+                    emptyOrAnd = " AND ";
                 }
+            }
+            if (poetId == null)
+            {
+                catId = null;
+            }
+            if (poetId != null && catId == null)
+            {
+                var poetRes = await GetPoetById((int)poetId);
+                if (!string.IsNullOrEmpty(poetRes.ExceptionString))
+                    return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), poetRes.ExceptionString);
+                catId = poetRes.Result.Cat.Id;
+            }
+            List<int> catIdList = new List<int>();
+            if (catId != null)
+            {
+                catIdList.Add((int)catId);
+                await _populateCategoryChildren((int)catId, catIdList);
+            }
 
-                term = term.Replace("‌", " ");//replace zwnj with space
+            var source =
+                _context.GanjoorPoems
+                .Where(p =>
+                        (catId == null || catIdList.Contains(p.CatId))
+                        &&
+                       EF.Functions.Contains(p.PlainText, searchConditions)
+                        )
+                .Include(p => p.Cat)
+                .OrderBy(p => p.CatId).ThenBy(p => p.Id)
+                .Select
+                (
+                    poem =>
+                    new GanjoorPoemCompleteViewModel()
+                    {
+                        Id = poem.Id,
+                        Title = poem.Title,
+                        FullTitle = poem.FullTitle,
+                        FullUrl = poem.FullUrl,
+                        UrlSlug = poem.UrlSlug,
+                        HtmlText = poem.HtmlText,
+                        PlainText = poem.PlainText,
+                        GanjoorMetre = poem.GanjoorMetre,
+                        RhymeLetters = poem.RhymeLetters,
+                        Category = new GanjoorPoetCompleteViewModel()
+                        {
+                            Poet = new GanjoorPoetViewModel()
+                            {
+                                Id = poem.Cat.Poet.Id,
+                            }
+                        },
+                    }
+                ).AsNoTracking();
 
 
-                string searchConditions;
-                if(term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
+
+            (PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items) paginatedResult =
+               await QueryablePaginator<GanjoorPoemCompleteViewModel>.Paginate(source, paging);
+
+
+            Dictionary<int, GanjoorPoetCompleteViewModel> cachedPoets = new Dictionary<int, GanjoorPoetCompleteViewModel>();
+
+            foreach (var item in paginatedResult.Items)
+            {
+                if (cachedPoets.TryGetValue(item.Category.Poet.Id, out GanjoorPoetCompleteViewModel poet))
                 {
-                    searchConditions = term.Replace("\"", "").Replace("'", "");
-                    searchConditions = $"\"{searchConditions}\"";
+                    item.Category = poet;
                 }
                 else
                 {
-                    string[] words =term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    poet = (await GetPoetById(item.Category.Poet.Id)).Result;
 
-                    searchConditions = "";
-                    string emptyOrAnd = "";
-                    foreach (string word in words)
-                    {
-                        searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
-                        emptyOrAnd = " AND ";
-                    }
-                }
-                if (poetId == null)
-                {
-                    catId = null;
-                }
-                if(poetId != null && catId == null)
-                {
-                    var poetRes = await GetPoetById((int)poetId);
-                    if (!string.IsNullOrEmpty(poetRes.ExceptionString))
-                        return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), poetRes.ExceptionString);
-                    catId = poetRes.Result.Cat.Id;
-                }
-                List<int> catIdList = new List<int>();
-                if(catId != null)
-                {
-                    catIdList.Add((int)catId);
-                    await _populateCategoryChildren((int)catId, catIdList);
+                    cachedPoets.Add(item.Category.Poet.Id, poet);
+
+                    item.Category = poet;
                 }
 
-                var source =
-                    _context.GanjoorPoems
-                    .Where(p =>
-                            (catId == null || catIdList.Contains(p.CatId))
-                            &&
-                           EF.Functions.Contains(p.PlainText, searchConditions)
-                            )
-                    .Include(p => p.Cat)
-                    .OrderBy(p => p.CatId).ThenBy(p => p.Id)
-                    .Select
-                    (
-                        poem =>
-                        new GanjoorPoemCompleteViewModel()
-                        {
-                            Id = poem.Id,
-                            Title = poem.Title,
-                            FullTitle = poem.FullTitle,
-                            FullUrl = poem.FullUrl,
-                            UrlSlug = poem.UrlSlug,
-                            HtmlText = poem.HtmlText,
-                            PlainText = poem.PlainText,
-                            GanjoorMetre = poem.GanjoorMetre,
-                            RhymeLetters = poem.RhymeLetters,
-                            Category = new GanjoorPoetCompleteViewModel()
-                            {
-                                Poet = new GanjoorPoetViewModel()
-                                {
-                                    Id = poem.Cat.Poet.Id,
-                                }
-                            },
-                        }
-                    ).AsNoTracking();
-
-
-
-                (PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items) paginatedResult =
-                   await QueryablePaginator<GanjoorPoemCompleteViewModel>.Paginate(source, paging);
-
-
-                Dictionary<int, GanjoorPoetCompleteViewModel> cachedPoets = new Dictionary<int, GanjoorPoetCompleteViewModel>();
-
-                foreach (var item in paginatedResult.Items)
-                {
-                    if (cachedPoets.TryGetValue(item.Category.Poet.Id, out GanjoorPoetCompleteViewModel poet))
-                    {
-                        item.Category = poet;
-                    }
-                    else
-                    {
-                        poet = (await GetPoetById(item.Category.Poet.Id)).Result;
-
-                        cachedPoets.Add(item.Category.Poet.Id, poet);
-
-                        item.Category = poet;
-                    }
-
-                }
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), exp.ToString());
-            }
+            return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
         }
 
         private async Task _UpdatePageChildrenTitleAndUrl(RMuseumDbContext context, GanjoorPage dbPage, bool messWithTitles, bool messWithUrls)
         {
             var children = await context.GanjoorPages.Where(p => p.ParentId == dbPage.Id).ToListAsync();
-            foreach(var child in children)
+            foreach (var child in children)
             {
                 child.FullUrl = dbPage.FullUrl + "/" + child.UrlSlug;
                 child.FullTitle = dbPage.FullTitle + " » " + child.Title;
-                
-                switch(child.GanjoorPageType)
+
+                switch (child.GanjoorPageType)
                 {
                     case GanjoorPageType.PoemPage:
                         {
                             GanjoorPoem poem = await context.GanjoorPoems.Where(p => p.Id == child.Id).SingleAsync();
-                            if(messWithTitles)
-                             poem.FullTitle = child.FullTitle;
-                            if(messWithUrls)
+                            if (messWithTitles)
+                                poem.FullTitle = child.FullTitle;
+                            if (messWithUrls)
                                 poem.FullUrl = child.FullUrl;
 
                             context.GanjoorPoems.Update(poem);
@@ -2181,7 +1955,7 @@ namespace RMuseum.Services.Implementation
                                 cat.FullUrl = child.FullUrl;
                                 context.GanjoorCategories.Update(cat);
                             }
-                           
+
                         }
                         break;
                 }
@@ -2203,215 +1977,208 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPageCompleteViewModel>> UpdatePageAsync(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData)
         {
-            try
+            var dbPage = await _context.GanjoorPages.Where(p => p.Id == id).SingleOrDefaultAsync();
+            if (dbPage == null)
+                return new RServiceResult<GanjoorPageCompleteViewModel>(null);//not found
+
+
+
+            GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
             {
-                var dbPage = await _context.GanjoorPages.Where(p => p.Id == id).SingleOrDefaultAsync();
-                if (dbPage == null)
-                    return new RServiceResult<GanjoorPageCompleteViewModel>(null);//not found
+                GanjoorPageId = id,
+                MadeObsoleteByUserId = editingUserId,
+                RecordDate = DateTime.Now,
+                Note = pageData.Note,
+                Title = dbPage.Title,
+                UrlSlug = dbPage.UrlSlug,
+                HtmlText = dbPage.HtmlText,
+            };
 
-               
+            GanjoorPoem dbPoem = null;
 
-                GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
+            if (dbPage.GanjoorPageType == GanjoorPageType.PoemPage)
+            {
+                dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).SingleOrDefaultAsync();
+
+                snapshot.SourceName = dbPoem.SourceName;
+                snapshot.SourceUrlSlug = dbPoem.SourceUrlSlug;
+                snapshot.Rhythm = dbPoem.GanjoorMetre == null ? null : dbPoem.GanjoorMetre.Rhythm;
+                snapshot.RhymeLetters = dbPoem.RhymeLetters;
+                snapshot.OldTag = dbPoem.OldTag;
+                snapshot.OldTagPageUrl = dbPoem.OldTagPageUrl;
+            }
+
+            _context.GanjoorPageSnapshots.Add(snapshot);
+            await _context.SaveChangesAsync();
+
+            dbPage.HtmlText = pageData.HtmlText;
+            bool messWithTitles = dbPage.Title != pageData.Title;
+            bool messWithUrls = dbPage.UrlSlug != pageData.UrlSlug;
+
+            if (messWithTitles || messWithUrls)
+            {
+
+                dbPage.Title = pageData.Title;
+                dbPage.UrlSlug = pageData.UrlSlug;
+
+                if (dbPage.ParentId != null)
                 {
-                    GanjoorPageId = id,
-                    MadeObsoleteByUserId = editingUserId,
-                    RecordDate = DateTime.Now,
-                    Note = pageData.Note,
-                    Title = dbPage.Title,
-                    UrlSlug = dbPage.UrlSlug,
-                    HtmlText = dbPage.HtmlText,
-                };
-
-                GanjoorPoem dbPoem = null;
-
-                if (dbPage.GanjoorPageType == GanjoorPageType.PoemPage)
-                {
-                    dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).SingleOrDefaultAsync();
-
-                    snapshot.SourceName = dbPoem.SourceName;
-                    snapshot.SourceUrlSlug = dbPoem.SourceUrlSlug;
-                    snapshot.Rhythm = dbPoem.GanjoorMetre == null ? null : dbPoem.GanjoorMetre.Rhythm;
-                    snapshot.RhymeLetters = dbPoem.RhymeLetters;
-                    snapshot.OldTag = dbPoem.OldTag;
-                    snapshot.OldTagPageUrl = dbPoem.OldTagPageUrl;
-                }
-
-                _context.GanjoorPageSnapshots.Add(snapshot);
-                await _context.SaveChangesAsync();
-
-                dbPage.HtmlText = pageData.HtmlText;
-                bool messWithTitles = dbPage.Title != pageData.Title;
-                bool messWithUrls = dbPage.UrlSlug != pageData.UrlSlug;
-
-                if (messWithTitles || messWithUrls)
-                {
-                   
-                    dbPage.Title = pageData.Title;
-                    dbPage.UrlSlug = pageData.UrlSlug;
-
-                    if (dbPage.ParentId != null)
-                    {
-                        GanjoorPage parent = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == dbPage.ParentId).SingleAsync();
-                        if(messWithUrls)
-                        {
-                            dbPage.FullUrl = parent.FullUrl + "/" + pageData.UrlSlug;
-                        }
-                        if(messWithTitles)
-                        {
-                            dbPage.FullTitle = parent.FullTitle + " » " + pageData.Title;
-                        }
-                    }
-                    else
-                    {
-                        if (messWithUrls)
-                        {
-                            dbPage.FullUrl = "/" + pageData.UrlSlug;
-                        }
-
-                        if (messWithTitles)
-                        {
-                            dbPage.FullTitle = pageData.Title;
-                        }
-                            
-                    }
-
-                    switch(dbPage.GanjoorPageType)
-                    {
-                        case GanjoorPageType.CatPage:
-                            {
-                                GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
-                                if (messWithTitles)
-                                    cat.Title = dbPage.Title;
-                                if(messWithUrls)
-                                {
-                                    cat.UrlSlug = dbPage.UrlSlug;
-                                    cat.FullUrl = dbPage.FullUrl;
-                                }
-
-                                _context.GanjoorCategories.Update(cat);
-                                await _context.SaveChangesAsync();
-                            }
-                            break;
-                    }
-                    _backgroundTaskQueue.QueueBackgroundWorkItem
-                       (
-                       async token =>
-                       {
-                           using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
-                           {
-                               LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                               var job = (await jobProgressServiceEF.NewJob($"Updating PageChildren for {dbPage.Id}", "Updating")).Result;
-                               try
-                               {
-
-
-                                   await _UpdatePageChildrenTitleAndUrl(context, dbPage, messWithTitles, messWithUrls);
-
-                                   await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
-                               }
-                               catch (Exception expUpdateBatch)
-                               {
-                                   await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, expUpdateBatch.ToString());
-                               }
-                           }
-                          
-                       }
-                       );
-                  
-                }
-
-                if(dbPage.GanjoorPageType == GanjoorPageType.PoetPage && (messWithTitles || messWithUrls))
-                {
-                    if (messWithTitles)
-                    {
-                        GanjoorPoet poet = await _context.GanjoorPoets.Where(p => p.Id == dbPage.PoetId).SingleAsync();
-                        poet.Nickname = dbPage.Title;
-                        //poet.Description = dbPage.HtmlText; -- description might become html free
-                        _context.GanjoorPoets.Update(poet);
-                    }
-                        
-
-                    GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
-                    if(messWithTitles)
-                    {
-                        cat.Title = dbPage.Title;
-                    }
+                    GanjoorPage parent = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == dbPage.ParentId).SingleAsync();
                     if (messWithUrls)
                     {
-                        cat.UrlSlug = dbPage.UrlSlug;
-                        cat.FullUrl = dbPage.FullUrl;
+                        dbPage.FullUrl = parent.FullUrl + "/" + pageData.UrlSlug;
                     }
-                   
+                    if (messWithTitles)
+                    {
+                        dbPage.FullTitle = parent.FullTitle + " » " + pageData.Title;
+                    }
+                }
+                else
+                {
+                    if (messWithUrls)
+                    {
+                        dbPage.FullUrl = "/" + pageData.UrlSlug;
+                    }
 
-                    _context.GanjoorCategories.Update(cat);
+                    if (messWithTitles)
+                    {
+                        dbPage.FullTitle = pageData.Title;
+                    }
 
-                    await _context.SaveChangesAsync();
-
-                    CleanPoetCache((int)dbPage.PoetId);
                 }
 
-                _context.GanjoorPages.Update(dbPage);
-
-                if(dbPoem != null)
+                switch (dbPage.GanjoorPageType)
                 {
-                    dbPoem.SourceName = pageData.SourceName;
-                    dbPoem.SourceUrlSlug = pageData.SourceUrlSlug;
-                    if(string.IsNullOrEmpty(pageData.Rhythm))
-                    {
-                        dbPoem.GanjoorMetreId = null;
-                    }
-                    else
-                    {
-                        var metre = await _context.GanjoorMetres.Where(m => m.Rhythm == pageData.Rhythm).SingleOrDefaultAsync();
-                        if (metre == null)
+                    case GanjoorPageType.CatPage:
                         {
-                            metre = new GanjoorMetre()
+                            GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
+                            if (messWithTitles)
+                                cat.Title = dbPage.Title;
+                            if (messWithUrls)
                             {
-                                Rhythm = pageData.Rhythm,
-                                VerseCount = 0
-                            };
-                            _context.GanjoorMetres.Add(metre);
+                                cat.UrlSlug = dbPage.UrlSlug;
+                                cat.FullUrl = dbPage.FullUrl;
+                            }
+
+                            _context.GanjoorCategories.Update(cat);
                             await _context.SaveChangesAsync();
                         }
-                        dbPoem.GanjoorMetreId = metre.Id;
-                    }
-                    dbPoem.RhymeLetters = pageData.RhymeLetters;
-                    dbPoem.OldTag = pageData.OldTag;
-                    dbPoem.OldTagPageUrl = pageData.OldTagPageUrl;
-
-                    dbPoem.HtmlText = pageData.HtmlText;
-                    dbPoem.Title = pageData.Title;
-                    dbPoem.UrlSlug = pageData.UrlSlug;
-                    dbPoem.FullUrl = dbPage.FullUrl;
-                    dbPoem.FullTitle = dbPoem.FullTitle;
-
-                    List<GanjoorVerse> verses = _extractVersesFromPoemHtmlText(id, pageData.HtmlText);
-
-
-                    dbPoem.PlainText = PreparePlainText(verses);
-
-                    _context.GanjoorPoems.Update(dbPoem);
-
-
-                    var oldVerses = await _context.GanjoorVerses.Where(v => v.PoemId == id).ToListAsync();
-                    _context.GanjoorVerses.RemoveRange(oldVerses);
-
-                    _context.GanjoorVerses.AddRange(verses);
-
+                        break;
                 }
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                   (
+                   async token =>
+                   {
+                       using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                           {
+                           LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                           var job = (await jobProgressServiceEF.NewJob($"Updating PageChildren for {dbPage.Id}", "Updating")).Result;
+                           try
+                           {
+
+
+                               await _UpdatePageChildrenTitleAndUrl(context, dbPage, messWithTitles, messWithUrls);
+
+                               await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                           }
+                           catch (Exception expUpdateBatch)
+                           {
+                               await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, expUpdateBatch.ToString());
+                           }
+                       }
+
+                   }
+                   );
+
+            }
+
+            if (dbPage.GanjoorPageType == GanjoorPageType.PoetPage && (messWithTitles || messWithUrls))
+            {
+                if (messWithTitles)
+                {
+                    GanjoorPoet poet = await _context.GanjoorPoets.Where(p => p.Id == dbPage.PoetId).SingleAsync();
+                    poet.Nickname = dbPage.Title;
+                    //poet.Description = dbPage.HtmlText; -- description might become html free
+                    _context.GanjoorPoets.Update(poet);
+                }
+
+
+                GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
+                if (messWithTitles)
+                {
+                    cat.Title = dbPage.Title;
+                }
+                if (messWithUrls)
+                {
+                    cat.UrlSlug = dbPage.UrlSlug;
+                    cat.FullUrl = dbPage.FullUrl;
+                }
+
+
+                _context.GanjoorCategories.Update(cat);
 
                 await _context.SaveChangesAsync();
 
-
-                CacheCleanForPageByUrl(dbPage.FullUrl);
-
-
-                return await GetPageByUrl(dbPage.FullUrl);
+                CleanPoetCache((int)dbPage.PoetId);
             }
-            catch(Exception exp)
+
+            _context.GanjoorPages.Update(dbPage);
+
+            if (dbPoem != null)
             {
-                return new RServiceResult<GanjoorPageCompleteViewModel>(null, exp.ToString());
+                dbPoem.SourceName = pageData.SourceName;
+                dbPoem.SourceUrlSlug = pageData.SourceUrlSlug;
+                if (string.IsNullOrEmpty(pageData.Rhythm))
+                {
+                    dbPoem.GanjoorMetreId = null;
+                }
+                else
+                {
+                    var metre = await _context.GanjoorMetres.Where(m => m.Rhythm == pageData.Rhythm).SingleOrDefaultAsync();
+                    if (metre == null)
+                    {
+                        metre = new GanjoorMetre()
+                        {
+                            Rhythm = pageData.Rhythm,
+                            VerseCount = 0
+                        };
+                        _context.GanjoorMetres.Add(metre);
+                        await _context.SaveChangesAsync();
+                    }
+                    dbPoem.GanjoorMetreId = metre.Id;
+                }
+                dbPoem.RhymeLetters = pageData.RhymeLetters;
+                dbPoem.OldTag = pageData.OldTag;
+                dbPoem.OldTagPageUrl = pageData.OldTagPageUrl;
+
+                dbPoem.HtmlText = pageData.HtmlText;
+                dbPoem.Title = pageData.Title;
+                dbPoem.UrlSlug = pageData.UrlSlug;
+                dbPoem.FullUrl = dbPage.FullUrl;
+                dbPoem.FullTitle = dbPoem.FullTitle;
+
+                List<GanjoorVerse> verses = _extractVersesFromPoemHtmlText(id, pageData.HtmlText);
+
+
+                dbPoem.PlainText = PreparePlainText(verses);
+
+                _context.GanjoorPoems.Update(dbPoem);
+
+
+                var oldVerses = await _context.GanjoorVerses.Where(v => v.PoemId == id).ToListAsync();
+                _context.GanjoorVerses.RemoveRange(oldVerses);
+
+                _context.GanjoorVerses.AddRange(verses);
+
             }
+
+            await _context.SaveChangesAsync();
+
+
+            CacheCleanForPageByUrl(dbPage.FullUrl);
+
+
+            return await GetPageByUrl(dbPage.FullUrl);
         }
 
         /// <summary>
@@ -2421,31 +2188,24 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPageSnapshotSummaryViewModel[]>> GetOlderVersionsOfPage(int pageId)
         {
-            try
-            {
-                return
-                    new RServiceResult<GanjoorPageSnapshotSummaryViewModel[]>
-                    (
-                        await _context.GanjoorPageSnapshots.AsNoTracking()
-                                        .Where(s => s.GanjoorPageId == pageId)
-                                        .OrderByDescending(s => s.RecordDate)
-                                        .Select
-                                        (
-                                            s =>
-                                                new GanjoorPageSnapshotSummaryViewModel()
-                                                {
-                                                    Id = s.Id,
-                                                    RecordDate = s.RecordDate,
-                                                    Note = s.Note
-                                                }
-                                        )
-                                        .ToArrayAsync()
-                    );
-            }
-            catch(Exception exp)
-            {
-                return new RServiceResult<GanjoorPageSnapshotSummaryViewModel[]>(null, exp.ToString());
-            }
+            return
+                new RServiceResult<GanjoorPageSnapshotSummaryViewModel[]>
+                (
+                    await _context.GanjoorPageSnapshots.AsNoTracking()
+                                    .Where(s => s.GanjoorPageId == pageId)
+                                    .OrderByDescending(s => s.RecordDate)
+                                    .Select
+                                    (
+                                        s =>
+                                            new GanjoorPageSnapshotSummaryViewModel()
+                                            {
+                                                Id = s.Id,
+                                                RecordDate = s.RecordDate,
+                                                Note = s.Note
+                                            }
+                                    )
+                                    .ToArrayAsync()
+                );
         }
 
         /// <summary>
@@ -2455,36 +2215,29 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorModifyPageViewModel>> GetOldVersionOfPage(int id)
         {
-            try
-            {
-                return new RServiceResult<GanjoorModifyPageViewModel>
-                    (
-                    await _context.GanjoorPageSnapshots.AsNoTracking()
-                                  .Where(s => s.Id == id)
-                                  .Select
-                                  (
-                                    s =>
-                                        new GanjoorModifyPageViewModel()
-                                        {
-                                            HtmlText = s.HtmlText,
-                                            Note = s.Note,
-                                            OldTag = s.OldTag,
-                                            OldTagPageUrl = s.OldTagPageUrl,
-                                            RhymeLetters = s.RhymeLetters,
-                                            Rhythm = s.Rhythm,
-                                            SourceName = s.SourceName,
-                                            SourceUrlSlug = s.SourceUrlSlug,
-                                            Title = s.Title,
-                                            UrlSlug = s.UrlSlug
-                                        }
-                                  )
-                                  .SingleOrDefaultAsync()
-                    );
-            }
-            catch(Exception exp)
-            {
-                return new RServiceResult<GanjoorModifyPageViewModel>(null, exp.ToString());
-            }
+            return new RServiceResult<GanjoorModifyPageViewModel>
+                (
+                await _context.GanjoorPageSnapshots.AsNoTracking()
+                              .Where(s => s.Id == id)
+                              .Select
+                              (
+                                s =>
+                                    new GanjoorModifyPageViewModel()
+                                    {
+                                        HtmlText = s.HtmlText,
+                                        Note = s.Note,
+                                        OldTag = s.OldTag,
+                                        OldTagPageUrl = s.OldTagPageUrl,
+                                        RhymeLetters = s.RhymeLetters,
+                                        Rhythm = s.Rhythm,
+                                        SourceName = s.SourceName,
+                                        SourceUrlSlug = s.SourceUrlSlug,
+                                        Title = s.Title,
+                                        UrlSlug = s.UrlSlug
+                                    }
+                              )
+                              .SingleOrDefaultAsync()
+                );
         }
 
         /// <summary>
@@ -2493,14 +2246,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorMetre[]>> GetGanjoorMetres()
         {
-            try
-            {
-                return new RServiceResult<GanjoorMetre[]>(await _context.GanjoorMetres.OrderBy(m => m.Rhythm).AsNoTracking().ToArrayAsync());
-            }
-            catch(Exception exp)
-            {
-                return new RServiceResult<GanjoorMetre[]>(null, exp.ToString());
-            }
+            return new RServiceResult<GanjoorMetre[]>(await _context.GanjoorMetres.OrderBy(m => m.Rhythm).AsNoTracking().ToArrayAsync());
         }
 
         private void CleanPoetCache(int poetId)
@@ -2516,7 +2262,7 @@ namespace RMuseum.Services.Implementation
             {
                 _memoryCache.Remove(cachKeyPoets2);
             }
-            
+
             var cacheKeyPoet = $"/api/ganjoor/poet/{poetId}";
             if (_memoryCache.TryGetValue(cacheKeyPoet, out GanjoorPoetCompleteViewModel poetCat))
             {
@@ -2538,65 +2284,51 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> UpdatePoetAsync(GanjoorPoetViewModel poet, Guid editingUserId)
         {
-            try
+            var dbPoet = await _context.GanjoorPoets.Where(p => p.Id == poet.Id).SingleAsync();
+            var dbPoetPage = await _context.GanjoorPages.Where(page => page.PoetId == poet.Id && page.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
+            if (dbPoet.Nickname != poet.Nickname || dbPoetPage.FullUrl != poet.FullUrl)
             {
-                var dbPoet = await _context.GanjoorPoets.Where(p => p.Id == poet.Id).SingleAsync();
+                var resPageEdit =
+                    await UpdatePageAsync
+                    (
+                    dbPoetPage.Id,
+                    editingUserId,
+                    new GanjoorModifyPageViewModel()
+                    {
+                        Title = poet.Nickname,
+                        HtmlText = dbPoetPage.HtmlText,
+                        Note = "ویرایش مستقیم مشخصات شاعر",
+                        UrlSlug = poet.FullUrl.Substring(1),
+                    }
+                    );
+                if (!string.IsNullOrEmpty(resPageEdit.ExceptionString))
+                    new RServiceResult<bool>(false, resPageEdit.ExceptionString);
 
-                var dbPoetPage = await _context.GanjoorPages.Where(page => page.PoetId == poet.Id && page.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
+                dbPoet.Nickname = poet.Nickname;
+            }
+            dbPoet.Name = poet.Name;
+            dbPoet.Description = poet.Description;
+            bool publishedChange = dbPoet.Published != poet.Published;
+            dbPoet.Published = poet.Published;
+            _context.GanjoorPoets.Update(dbPoet);
+            await _context.SaveChangesAsync();
 
-                if (dbPoet.Nickname != poet.Nickname || dbPoetPage.FullUrl != poet.FullUrl)
+            if (publishedChange)
+            {
+                var pages = await _context.GanjoorPages.Where(p => p.PoemId == poet.Id).ToListAsync();
+                foreach (var page in pages)
                 {
-                    var resPageEdit =
-                        await UpdatePageAsync
-                        (
-                        dbPoetPage.Id,
-                        editingUserId,
-                        new GanjoorModifyPageViewModel()
-                        {
-                            Title = poet.Nickname,
-                            HtmlText = dbPoetPage.HtmlText,
-                            Note = "ویرایش مستقیم مشخصات شاعر",
-                            UrlSlug = poet.FullUrl.Substring(1),
-                        }
-                        );
-                    if(!string.IsNullOrEmpty(resPageEdit.ExceptionString))
-                        new RServiceResult<bool>(false, resPageEdit.ExceptionString);
-
-                    dbPoet.Nickname = poet.Nickname;
+                    page.Published = poet.Published;
                 }
 
-                dbPoet.Name = poet.Name;
-                dbPoet.Description = poet.Description;
-
-                bool publishedChange = dbPoet.Published != poet.Published;
-
-                dbPoet.Published = poet.Published;
-
-                _context.GanjoorPoets.Update(dbPoet);
+                _context.GanjoorPages.UpdateRange(pages);
 
                 await _context.SaveChangesAsync();
-
-                if(publishedChange)
-                {
-                    var pages = await _context.GanjoorPages.Where(p => p.PoemId == poet.Id).ToListAsync();
-                    foreach(var page in pages)
-                    {
-                        page.Published = poet.Published;
-                    }
-
-                    _context.GanjoorPages.UpdateRange(pages);
-
-                    await _context.SaveChangesAsync();
-                }
-
-                CleanPoetCache(poet.Id);
-
-                return new RServiceResult<bool>(true);
             }
-            catch(Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+
+            CleanPoetCache(poet.Id);
+
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -2607,112 +2339,105 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> AddPoetAsync(GanjoorPoetViewModel poet, Guid editingUserId)
         {
-            try
+            if (await _context.GanjoorPoets.Where(p => p.Nickname == poet.Nickname || p.Name == poet.Name).AnyAsync())
             {
-                if(await _context.GanjoorPoets.Where(p => p.Nickname == poet.Nickname || p.Name == poet.Name).AnyAsync())
-                {
-                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "conflicting poet");
-                }
-
-                if(await _context.GanjoorCategories.Where(c => c.FullUrl == poet.FullUrl).AnyAsync())
-                {
-                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "conflicting cat");
-                }
-
-                if (await _context.GanjoorPages.Where(p => p.FullUrl == poet.FullUrl).AnyAsync())
-                {
-                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "conflicting page");
-                }
-
-                if(poet.FullUrl.IndexOf('/') != 0)
-                {
-                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "Invalid FullUrl, it must start with /");
-                }
-
-                if(poet.FullUrl.Substring(1).IndexOf('/') >= 0)
-                {
-                    return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "Invalid FullUrl, it must contain only one /");
-                }
-
-                var id = 1 + await _context.GanjoorPoets.MaxAsync(p => p.Id);
-
-                if (string.IsNullOrEmpty(poet.Description))
-                    poet.Description = "";
-
-                GanjoorPoet dbPoet = new GanjoorPoet()
-                {
-                    Id = id,
-                    Name = poet.Name,
-                    Nickname = poet.Nickname,
-                    Description = poet.Description,
-                    Published = poet.Published
-                };
-
-                _context.GanjoorPoets.Add(dbPoet);
-
-                var poetCatId = 1 + await _context.GanjoorCategories.MaxAsync(c => c.Id);
-
-                GanjoorCat dbCat = new GanjoorCat()
-                {
-                    Id = poetCatId,
-                    PoetId = id,
-                    Title = poet.Nickname,
-                    UrlSlug = poet.FullUrl.Substring(1),
-                    FullUrl = poet.FullUrl
-                };
-                _context.GanjoorCategories.Add(dbCat);
-
-                var poetPageId = 1 + await _context.GanjoorPages.MaxAsync(p => p.Id);
-                while (await _context.GanjoorPoems.Where(p => p.Id == poetPageId).AnyAsync())
-                    poetPageId++;
-
-                var pageText = "";
-                foreach(var line in poet.Description.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    pageText += $"<p>{line}</p>{Environment.NewLine}";
-                }
-
-                GanjoorPage dbPage = new GanjoorPage()
-                {
-                    Id = poetPageId,
-                    GanjoorPageType = GanjoorPageType.PoetPage,
-                    Published = poet.Published,
-                    PageOrder = -1,
-                    Title = poet.Nickname,
-                    FullTitle = poet.Nickname,
-                    UrlSlug = poet.FullUrl.Substring(1),
-                    FullUrl = poet.FullUrl,
-                    HtmlText = pageText,
-                    PoetId = id,
-                    CatId = poetCatId,
-                    PostDate = DateTime.Now
-                };
-
-                _context.GanjoorPages.Add(dbPage);
-
-                GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
-                {
-                    GanjoorPageId = poetPageId,
-                    MadeObsoleteByUserId = editingUserId,
-                    RecordDate = DateTime.Now,
-                    Note = "ایجاد شاعر",
-                    Title = dbPage.Title,
-                    UrlSlug = dbPage.UrlSlug,
-                    HtmlText = dbPage.HtmlText,
-                };
-
-                _context.GanjoorPageSnapshots.Add(snapshot);
-
-                await _context.SaveChangesAsync();
-
-                CleanPoetCache(0);
-
-                return await GetPoetById(id);
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "conflicting poet");
             }
-            catch (Exception exp)
+
+            if (await _context.GanjoorCategories.Where(c => c.FullUrl == poet.FullUrl).AnyAsync())
             {
-                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, exp.ToString());
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "conflicting cat");
             }
+
+            if (await _context.GanjoorPages.Where(p => p.FullUrl == poet.FullUrl).AnyAsync())
+            {
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "conflicting page");
+            }
+
+            if (poet.FullUrl.IndexOf('/') != 0)
+            {
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "Invalid FullUrl, it must start with /");
+            }
+
+            if (poet.FullUrl.Substring(1).IndexOf('/') >= 0)
+            {
+                return new RServiceResult<GanjoorPoetCompleteViewModel>(null, "Invalid FullUrl, it must contain only one /");
+            }
+
+            var id = 1 + await _context.GanjoorPoets.MaxAsync(p => p.Id);
+
+            if (string.IsNullOrEmpty(poet.Description))
+                poet.Description = "";
+
+            GanjoorPoet dbPoet = new GanjoorPoet()
+            {
+                Id = id,
+                Name = poet.Name,
+                Nickname = poet.Nickname,
+                Description = poet.Description,
+                Published = poet.Published
+            };
+
+            _context.GanjoorPoets.Add(dbPoet);
+
+            var poetCatId = 1 + await _context.GanjoorCategories.MaxAsync(c => c.Id);
+
+            GanjoorCat dbCat = new GanjoorCat()
+            {
+                Id = poetCatId,
+                PoetId = id,
+                Title = poet.Nickname,
+                UrlSlug = poet.FullUrl.Substring(1),
+                FullUrl = poet.FullUrl
+            };
+            _context.GanjoorCategories.Add(dbCat);
+
+            var poetPageId = 1 + await _context.GanjoorPages.MaxAsync(p => p.Id);
+            while (await _context.GanjoorPoems.Where(p => p.Id == poetPageId).AnyAsync())
+                poetPageId++;
+
+            var pageText = "";
+            foreach (var line in poet.Description.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
+            {
+                pageText += $"<p>{line}</p>{Environment.NewLine}";
+            }
+
+            GanjoorPage dbPage = new GanjoorPage()
+            {
+                Id = poetPageId,
+                GanjoorPageType = GanjoorPageType.PoetPage,
+                Published = poet.Published,
+                PageOrder = -1,
+                Title = poet.Nickname,
+                FullTitle = poet.Nickname,
+                UrlSlug = poet.FullUrl.Substring(1),
+                FullUrl = poet.FullUrl,
+                HtmlText = pageText,
+                PoetId = id,
+                CatId = poetCatId,
+                PostDate = DateTime.Now
+            };
+
+            _context.GanjoorPages.Add(dbPage);
+
+            GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
+            {
+                GanjoorPageId = poetPageId,
+                MadeObsoleteByUserId = editingUserId,
+                RecordDate = DateTime.Now,
+                Note = "ایجاد شاعر",
+                Title = dbPage.Title,
+                UrlSlug = dbPage.UrlSlug,
+                HtmlText = dbPage.HtmlText,
+            };
+
+            _context.GanjoorPageSnapshots.Add(snapshot);
+
+            await _context.SaveChangesAsync();
+
+            CleanPoetCache(0);
+
+            return await GetPoetById(id);
         }
 
         /// <summary>
@@ -2722,40 +2447,33 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public RServiceResult<bool> StartDeletePoet(int id)
         {
-            try
-            {
-                _backgroundTaskQueue.QueueBackgroundWorkItem
-                            (
-                            async token =>
-                            {
-                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                        (
+                        async token =>
+                        {
+                            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                 {
-                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                    var job = (await jobProgressServiceEF.NewJob($"Deleting Poet {id}", "Query data")).Result;
-                                    try
-                                    {
-                                        var pages = await context.GanjoorPages.Where(p => p.PoetId == id).ToListAsync();
-                                        context.GanjoorPages.RemoveRange(pages);
-                                        var poet = await context.GanjoorPoets.Where(p => p.Id == id).SingleAsync();
-                                        context.GanjoorPoets.Remove(poet);
-                                        await jobProgressServiceEF.UpdateJob(job.Id, 99);
-                                        await context.SaveChangesAsync();
-                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
-                                    }
-                                    catch(Exception exp)
-                                    {
-                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
-                                    }
-
+                                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                var job = (await jobProgressServiceEF.NewJob($"Deleting Poet {id}", "Query data")).Result;
+                                try
+                                {
+                                    var pages = await context.GanjoorPages.Where(p => p.PoetId == id).ToListAsync();
+                                    context.GanjoorPages.RemoveRange(pages);
+                                    var poet = await context.GanjoorPoets.Where(p => p.Id == id).SingleAsync();
+                                    context.GanjoorPoets.Remove(poet);
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 99);
+                                    await context.SaveChangesAsync();
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                 }
-                            });
-               
-                return new RServiceResult<bool>(true);
-            }
-            catch(Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+                                catch (Exception exp)
+                                {
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                }
+
+                            }
+                        });
+
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -2765,31 +2483,24 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> DeletePageAsync(int id)
         {
-            try
+            var firstChild = await _context.GanjoorPages.Where(p => p.ParentId == id).FirstOrDefaultAsync();
+            if (firstChild != null)
             {
-                var firstChild = await _context.GanjoorPages.Where(p => p.ParentId == id).FirstOrDefaultAsync();
-                if(firstChild != null)
-                {
-                    return new RServiceResult<bool>(false, "Please delete children of the page first.");
-                }
-                var page = await _context.GanjoorPages.Where(p => p.Id == id).SingleAsync();
-                if (page.PoemId != null)
-                {
-                    return new RServiceResult<bool>(false, "Poem related pages can not be deleted.");
-                }
-                var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == page.FullUrl).FirstOrDefaultAsync();
-                if(cat != null)
-                {
-                    return new RServiceResult<bool>(false, "Category related pages can not be deleted.");
-                }
-                _context.GanjoorPages.Remove(page);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<bool>(true);
+                return new RServiceResult<bool>(false, "Please delete children of the page first.");
             }
-            catch(Exception exp)
+            var page = await _context.GanjoorPages.Where(p => p.Id == id).SingleAsync();
+            if (page.PoemId != null)
             {
-                return new RServiceResult<bool>(false, exp.ToString());
+                return new RServiceResult<bool>(false, "Poem related pages can not be deleted.");
             }
+            var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == page.FullUrl).FirstOrDefaultAsync();
+            if (cat != null)
+            {
+                return new RServiceResult<bool>(false, "Category related pages can not be deleted.");
+            }
+            _context.GanjoorPages.Remove(page);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -2800,18 +2511,11 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> ChangePoetImageAsync(int poetId, Guid imageId)
         {
-            try
-            {
-                var dbPoet = await _context.GanjoorPoets.Where(p => p.Id == poetId).SingleAsync();
-                dbPoet.RImageId = imageId;
-                _context.GanjoorPoets.Update(dbPoet);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<bool>(true);
-            }
-            catch(Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            var dbPoet = await _context.GanjoorPoets.Where(p => p.Id == poetId).SingleAsync();
+            dbPoet.RImageId = imageId;
+            _context.GanjoorPoets.Update(dbPoet);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -2823,107 +2527,93 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<string[]>> BatchRenameCatPoemTitles(int catId, GanjoorBatchNamingModel model, Guid userId)
         {
-            try
+            var poems = await _context.GanjoorPoems.Where(p => p.CatId == catId).OrderBy(p => p.Id).ToListAsync();
+            if (poems.Count == 0)
+                return new RServiceResult<string[]>(new string[] { });
+
+            var catPage = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleAsync();
+
+            if (model.RemovePreviousPattern)
             {
-                var poems = await _context.GanjoorPoems.Where(p => p.CatId == catId).OrderBy(p => p.Id).ToListAsync();
-                if (poems.Count == 0)
-                    return new RServiceResult<string[]>(new string[] { });
-
-                var catPage = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleAsync();
-
-                if(model.RemovePreviousPattern)
+                char[] numbers = "0123456789۰۱۲۳۴۵۶۷۸۹".ToArray();
+                foreach (var poem in poems)
                 {
-                    char[] numbers = "0123456789۰۱۲۳۴۵۶۷۸۹".ToArray();
-                    foreach(var poem in poems)
-                    {
-                        _context.GanjoorPageSnapshots.Add
-                            (
-                            new GanjoorPageSnapshot()
-                            {
-                                GanjoorPageId = poem.Id,
-                                MadeObsoleteByUserId = userId,
-                                Title = poem.Title,
-                                Note = "تغییر نام گروهی اشعار بخش",
-                                RecordDate = DateTime.Now
-                            }
-                            );
-                        int index = poem.Title.IndexOfAny(numbers);
-                        if (index != 0)
+                    _context.GanjoorPageSnapshots.Add
+                        (
+                        new GanjoorPageSnapshot()
                         {
-                            while ((index + 1) < poem.Title.Length)
-                            {
-                                if (numbers.Contains(poem.Title[index + 1]))
-                                    index++;
-                                else
-                                    break;
-                            }
-                            poem.Title = poem.Title[(index + 1)..].Trim();
-                            if (poem.Title.IndexOf('-') == 0)
-                            {
-                                poem.Title = poem.Title[1..].Trim();
-                            }
+                            GanjoorPageId = poem.Id,
+                            MadeObsoleteByUserId = userId,
+                            Title = poem.Title,
+                            Note = "تغییر نام گروهی اشعار بخش",
+                            RecordDate = DateTime.Now
                         }
-
-                        if (!string.IsNullOrEmpty(model.RemoveSetOfCharacters))
+                        );
+                    int index = poem.Title.IndexOfAny(numbers);
+                    if (index != 0)
+                    {
+                        while ((index + 1) < poem.Title.Length)
                         {
-                            foreach (var c in model.RemoveSetOfCharacters)
-                            {
-                                poem.Title = poem.Title.Replace($"{c}", "");
-                            }
+                            if (numbers.Contains(poem.Title[index + 1]))
+                                index++;
+                            else
+                                break;
+                        }
+                        poem.Title = poem.Title[(index + 1)..].Trim();
+                        if (poem.Title.IndexOf('-') == 0)
+                        {
+                            poem.Title = poem.Title[1..].Trim();
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(model.RemoveSetOfCharacters))
+                    {
+                        foreach (var c in model.RemoveSetOfCharacters)
+                        {
+                            poem.Title = poem.Title.Replace($"{c}", "");
                         }
                     }
                 }
-
-                for (int i = 0; i < poems.Count; i++)
-                {
-                    if(poems[i].Title.Length > 0)
-                    {
-                        poems[i].Title = $"{model.StartWithNotIncludingSpaces} {(i + 1).ToPersianNumbers()} - {poems[i].Title}";
-                    }
-                    else
-                    {
-                        poems[i].Title = $"{model.StartWithNotIncludingSpaces} {(i + 1).ToPersianNumbers()}";
-                    }
-
-                    poems[i].FullTitle = $"{catPage.FullTitle} » {poems[i].Title}";
-                    
-                }
-
-                if(!model.Simulate)
-                {
-                    foreach (var poem in poems)
-                    {
-                        var page = await _context.GanjoorPages.Where(p => p.Id == poem.Id).SingleAsync();
-                        page.Title = poem.Title;
-                        page.FullTitle = poem.FullTitle;
-                        _context.GanjoorPages.Update(page);
-                    }
-
-                    _context.GanjoorPoems.UpdateRange(poems);
-
-                    await _context.SaveChangesAsync();
-                }
-
-                return new RServiceResult<string[]>(poems.Select(p => p.Title).ToArray());
             }
-            catch (Exception exp)
+
+            for (int i = 0; i < poems.Count; i++)
             {
-                return new RServiceResult<string[]>(null, exp.ToString());
+                if (poems[i].Title.Length > 0)
+                {
+                    poems[i].Title = $"{model.StartWithNotIncludingSpaces} {(i + 1).ToPersianNumbers()} - {poems[i].Title}";
+                }
+                else
+                {
+                    poems[i].Title = $"{model.StartWithNotIncludingSpaces} {(i + 1).ToPersianNumbers()}";
+                }
+
+                poems[i].FullTitle = $"{catPage.FullTitle} » {poems[i].Title}";
+
             }
+
+            if (!model.Simulate)
+            {
+                foreach (var poem in poems)
+                {
+                    var page = await _context.GanjoorPages.Where(p => p.Id == poem.Id).SingleAsync();
+                    page.Title = poem.Title;
+                    page.FullTitle = poem.FullTitle;
+                    _context.GanjoorPages.Update(page);
+                }
+
+                _context.GanjoorPoems.UpdateRange(poems);
+
+                await _context.SaveChangesAsync();
+            }
+
+            return new RServiceResult<string[]>(poems.Select(p => p.Title).ToArray());
         }
 
         private async Task<RServiceResult<GanjooRhymeAnalysisResult>> _FindPoemRhyme(int id, RMuseumDbContext context)
         {
-            try
-            {
-                return new RServiceResult<GanjooRhymeAnalysisResult>(
-                    LanguageUtils.FindRhyme(await context.GanjoorVerses.Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync())
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjooRhymeAnalysisResult>(null, exp.ToString());
-            }
+            return new RServiceResult<GanjooRhymeAnalysisResult>(
+                LanguageUtils.FindRhyme(await context.GanjoorVerses.Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync())
+                );
         }
 
         /// <summary>
@@ -2980,21 +2670,14 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public RServiceResult<bool> FindCategoryPoemsRhymes(int catId, bool retag)
         {
-            try
-            {
-                _backgroundTaskQueue.QueueBackgroundWorkItem
-                            (
-                            async token =>
-                            {
-                                await _FindCategoryPoemsRhymesInternal(catId, retag);
-                            });
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                        (
+                        async token =>
+                        {
+                            await _FindCategoryPoemsRhymesInternal(catId, retag);
+                        });
 
-                return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -3004,15 +2687,8 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<string>> FindPoemRhythm(int id)
         {
-            try
-            {
-                var metres = (await GetGanjoorMetres()).Result.Select(m => m.Rhythm).ToArray();
-                return await _FindPoemRhythm(id, _context, _httpClient, metres);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<string>(null, exp.ToString());
-            }
+            var metres = (await GetGanjoorMetres()).Result.Select(m => m.Rhythm).ToArray();
+            return await _FindPoemRhythm(id, _context, _httpClient, metres);
         }
         private async Task<RServiceResult<string>> _FindPoemRhythm(int id, RMuseumDbContext context, HttpClient httpClient, string[] metres)
         {
@@ -3022,7 +2698,7 @@ namespace RMuseum.Services.Implementation
 
                 Dictionary<string, int> rhytmCounter = new Dictionary<string, int>();
 
-                foreach(var verse in verses)
+                foreach (var verse in verses)
                 {
                     try
                     {
@@ -3079,11 +2755,11 @@ namespace RMuseum.Services.Implementation
                         if (rhytmCounter.TryGetValue(rhythm, out int count))
                         {
                             count++;
-                            if(count > 10 || (count * 100.0 / verses.Count > 60))
+                            if (count > 10 || (count * 100.0 / verses.Count > 60))
                             {
                                 return new RServiceResult<string>(rhythm);
                             }
-                            
+
                         }
                         else
                         {
@@ -3099,7 +2775,7 @@ namespace RMuseum.Services.Implementation
 
                 return new RServiceResult<string>("");
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<string>(null, exp.ToString());
             }
@@ -3121,7 +2797,7 @@ namespace RMuseum.Services.Implementation
                     var poems = await context.GanjoorPoems.Where(p => p.CatId == catId).ToListAsync();
 
                     int i = 0;
-                    using(HttpClient httpClient = new HttpClient())
+                    using (HttpClient httpClient = new HttpClient())
                     {
                         foreach (var poem in poems)
                         {
@@ -3148,7 +2824,7 @@ namespace RMuseum.Services.Implementation
                         }
                     }
                     await jobProgressServiceEF.UpdateJob(job.Id, 99);
-                    
+
                     await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                 }
                 catch (Exception exp)
@@ -3167,26 +2843,19 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public RServiceResult<bool> FindCategoryPoemsRhythms(int catId, bool retag, string rhythm = "")
         {
-            try
-            {
-                _backgroundTaskQueue.QueueBackgroundWorkItem
-                            (
-                            async token =>
-                            {
-                                await _FindCategoryPoemsRhythmsInternal(catId, retag, rhythm);
-                            });
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                        (
+                        async token =>
+                        {
+                            await _FindCategoryPoemsRhythmsInternal(catId, retag, rhythm);
+                        });
 
-                return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            return new RServiceResult<bool>(true);
         }
 
         private async Task _GeneratingSubCatsTOC(Guid userId, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int catId)
         {
-            foreach(var cat in await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).ToListAsync())
+            foreach (var cat in await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).ToListAsync())
             {
                 await jobProgressServiceEF.UpdateJob(job.Id, cat.Id);
                 var page = await context.GanjoorPages.Where(p => p.FullUrl == cat.FullUrl).SingleAsync();
@@ -3219,35 +2888,28 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public RServiceResult<bool> StartGeneratingSubCatsTOC(Guid userId, int catId)
         {
-            try
-            {
-                _backgroundTaskQueue.QueueBackgroundWorkItem
-                            (
-                            async token =>
-                            {
-                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                        (
+                        async token =>
+                        {
+                            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                 {
-                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                    var job = (await jobProgressServiceEF.NewJob($"GeneratingSubCatsTOC {catId}", "Query data")).Result;
-                                    try
-                                    {
-                                        await _GeneratingSubCatsTOC(userId, context, jobProgressServiceEF, job, catId);
-                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
-                                    }
-                                    catch (Exception exp)
-                                    {
-                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
-                                    }
-
+                                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                var job = (await jobProgressServiceEF.NewJob($"GeneratingSubCatsTOC {catId}", "Query data")).Result;
+                                try
+                                {
+                                    await _GeneratingSubCatsTOC(userId, context, jobProgressServiceEF, job, catId);
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                 }
-                            });
+                                catch (Exception exp)
+                                {
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                }
 
-                return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+                            }
+                        });
+
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -3261,187 +2923,177 @@ namespace RMuseum.Services.Implementation
             return await _GenerateTableOfContents(_context, catId, options);
         }
 
-       
+
         private async Task<RServiceResult<string>> _GenerateTableOfContents(RMuseumDbContext context, int catId, GanjoorTOC options)
         {
-            try
-            {
-                string html = "";
-                var subCats = await context.GanjoorCategories.Where(c => c.ParentId == catId).OrderBy(c => c.Id).AsNoTracking().ToArrayAsync();
+            string html = "";
+            var subCats = await context.GanjoorCategories.Where(c => c.ParentId == catId).OrderBy(c => c.Id).AsNoTracking().ToArrayAsync();
 
-                foreach(var cat in subCats)
+            foreach (var cat in subCats)
+            {
+                html += $"<p><a href=\"{cat.FullUrl}\">{cat.Title}</a></p>{Environment.NewLine}";
+            }
+
+            var poems = await context.GanjoorPoems.Where(p => p.CatId == catId).OrderBy(p => p.Id).AsNoTracking().ToArrayAsync();
+
+            if (poems.Length > 0)
+            {
+                if (options == GanjoorTOC.Analyse)
                 {
-                    html += $"<p><a href=\"{cat.FullUrl}\">{cat.Title}</a></p>{Environment.NewLine}";
+                    if (poems.Where(p => !string.IsNullOrEmpty(p.RhymeLetters)).Count() * 100 / poems.Length > 50)
+                    {
+                        options = GanjoorTOC.AlphabeticWithFirstVerse;
+                    }
+                    else
+                    {
+                        options = GanjoorTOC.TitlesAndFirstVerse;
+                    }
+                }
+            }
+
+            if
+                (
+                options == GanjoorTOC.AlphabeticWithFirstCouplet
+                ||
+                options == GanjoorTOC.AlphabeticWithFirstVerse
+                ||
+                options == GanjoorTOC.AlphabeticWithSecondVerse
+                )
+            {
+                var taggedPoems = poems.Where(p => !string.IsNullOrEmpty(p.RhymeLetters)).ToArray();
+                if (taggedPoems.Length > 0)
+                {
+                    html += $"<p>فهرست شعرها به ترتیب آخر حرف قافیه گردآوری شده است. برای پیدا کردن یک شعر کافی است حرف آخر قافیهٔ آن را در نظر بگیرید تا بتوانید آن  را پیدا کنید.</p>{Environment.NewLine}";
+                    var randomPoem = taggedPoems[new Random(DateTime.Now.Millisecond).Next(taggedPoems.Length)];
+                    var randomPoemVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == randomPoem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
+                    if (randomPoemVerses.Length > 2)
+                    {
+                        html += $"<p>مثلاً برای پیدا کردن شعری که مصرع <em>{randomPoemVerses[1].Text}</em> مصرع دوم یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
+                    }
+
+                    html += $"<h3><a id=\"index\">دسترسی سریع به حروف</a></h3>{Environment.NewLine}";
+                    html += $"<p>{Environment.NewLine}";
+                    string lastChar = "";
+                    List<string> visitedLastChart = new List<string>();
+                    foreach (var poem in taggedPoems)
+                    {
+                        string poemLastChar = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
+                        if (poemLastChar != lastChar)
+                        {
+                            if (visitedLastChart.IndexOf(poemLastChar) == -1)
+                            {
+                                if (lastChar != "")
+                                {
+                                    html += " | ";
+                                }
+                                html += $"<a href=\"#{GPersianTextSync.UniquelyFarglisize(poemLastChar)}\">{poemLastChar}</a>";
+                                lastChar = poemLastChar;
+
+                                visitedLastChart.Add(poemLastChar);
+                            }
+                        }
+                    }
+                    html += $"</p>{Environment.NewLine}";
+                }
+            }
+
+            string last = "";
+            List<string> visitedLast = new List<string>();
+            foreach (var poem in poems)
+            {
+                if
+                (
+                options == GanjoorTOC.AlphabeticWithFirstCouplet
+                ||
+                options == GanjoorTOC.AlphabeticWithFirstVerse
+                ||
+                options == GanjoorTOC.AlphabeticWithSecondVerse
+                )
+                {
+
+                    if (!string.IsNullOrEmpty(poem.RhymeLetters))
+                    {
+                        string poemLast = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
+                        if (poemLast != last)
+                        {
+                            if (visitedLast.IndexOf(poemLast) == -1)
+                            {
+                                html += $"<h3><a href=\"#index\" id=\"{GPersianTextSync.UniquelyFarglisize(poemLast)}\">{poemLast}</a></h3>{Environment.NewLine}";
+                                last = poemLast;
+                                visitedLast.Add(poemLast);
+                            }
+                        }
+                    }
                 }
 
-                var poems = await context.GanjoorPoems.Where(p => p.CatId == catId).OrderBy(p => p.Id).AsNoTracking().ToArrayAsync();
+                html += $"<p><a href=\"{poem.FullUrl}\">{poem.Title}</a>";
 
-                if(poems.Length > 0)
+                var verses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
+
+                if (verses.Length > 0)
                 {
-                    if (options == GanjoorTOC.Analyse)
+                    if (options == GanjoorTOC.TitlesAndFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerse)
                     {
-                        if( poems.Where(p => !string.IsNullOrEmpty(p.RhymeLetters)).Count() * 100 / poems.Length > 50 )
+                        html += $": {verses[0].Text}";
+                    }
+                    else
+                    if (options == GanjoorTOC.AlphabeticWithSecondVerse || options == GanjoorTOC.TitlesAndSecondVerse)
+                    {
+                        if (verses.Length > 1)
                         {
-                            options = GanjoorTOC.AlphabeticWithFirstVerse;
+                            html += $": {verses[1].Text}";
                         }
                         else
-                        {
-                            options = GanjoorTOC.TitlesAndFirstVerse;
-                        }
-                    }
-                }
-
-                if
-                    (
-                    options == GanjoorTOC.AlphabeticWithFirstCouplet
-                    ||
-                    options == GanjoorTOC.AlphabeticWithFirstVerse
-                    ||
-                    options == GanjoorTOC.AlphabeticWithSecondVerse
-                    )
-                {
-                    var taggedPoems = poems.Where(p => !string.IsNullOrEmpty(p.RhymeLetters)).ToArray();
-                    if(taggedPoems.Length > 0)
-                    {
-                        html += $"<p>فهرست شعرها به ترتیب آخر حرف قافیه گردآوری شده است. برای پیدا کردن یک شعر کافی است حرف آخر قافیهٔ آن را در نظر بگیرید تا بتوانید آن  را پیدا کنید.</p>{Environment.NewLine}";
-                        var randomPoem = taggedPoems[new Random(DateTime.Now.Millisecond).Next(taggedPoems.Length)];
-                        var randomPoemVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == randomPoem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
-                        if(randomPoemVerses.Length > 2)
-                        {
-                            html += $"<p>مثلاً برای پیدا کردن شعری که مصرع <em>{randomPoemVerses[1].Text}</em> مصرع دوم یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
-                        }
-
-                        html += $"<h3><a id=\"index\">دسترسی سریع به حروف</a></h3>{Environment.NewLine}";
-                        html += $"<p>{Environment.NewLine}";
-                        string lastChar = "";
-                        List<string> visitedLastChart = new List<string>();
-                        foreach(var poem in taggedPoems)
-                        {
-                            string poemLastChar = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
-                            if(poemLastChar != lastChar)
-                            {
-                                if(visitedLastChart.IndexOf(poemLastChar) == -1)
-                                {
-                                    if (lastChar != "")
-                                    {
-                                        html += " | ";
-                                    }
-                                    html += $"<a href=\"#{GPersianTextSync.UniquelyFarglisize(poemLastChar)}\">{poemLastChar}</a>";
-                                    lastChar = poemLastChar;
-
-                                    visitedLastChart.Add(poemLastChar);
-                                }
-                            }
-                        }
-                        html += $"</p>{Environment.NewLine}";
-                    }
-                }
-
-                string last = "";
-                List<string> visitedLast = new List<string>();
-                foreach (var poem in poems)
-                {
-                    if
-                    (
-                    options == GanjoorTOC.AlphabeticWithFirstCouplet
-                    ||
-                    options == GanjoorTOC.AlphabeticWithFirstVerse
-                    ||
-                    options == GanjoorTOC.AlphabeticWithSecondVerse
-                    )
-                    {
-                        
-                        if(!string.IsNullOrEmpty(poem.RhymeLetters))
-                        {
-                            string poemLast = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
-                            if (poemLast != last)
-                            {
-                                if(visitedLast.IndexOf(poemLast) == -1)
-                                {
-                                    html += $"<h3><a href=\"#index\" id=\"{GPersianTextSync.UniquelyFarglisize(poemLast)}\">{poemLast}</a></h3>{Environment.NewLine}";
-                                    last = poemLast;
-                                    visitedLast.Add(poemLast);
-                                }
-                            }
-                        }
-                    }
-
-                    html += $"<p><a href=\"{poem.FullUrl}\">{poem.Title}</a>";
-
-                    var verses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
-
-                    if(verses.Length > 0)
-                    {
-                        if (options == GanjoorTOC.TitlesAndFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerse)
                         {
                             html += $": {verses[0].Text}";
                         }
-                        else
-                        if(options == GanjoorTOC.AlphabeticWithSecondVerse || options == GanjoorTOC.TitlesAndSecondVerse)
+                    }
+                    else
+                    if (options == GanjoorTOC.AlphabeticWithFirstCouplet || options == GanjoorTOC.TitlesAndFirstCouplet)
+                    {
+                        if (verses.Length > 1)
                         {
-                            if(verses.Length > 1)
-                            {
-                                html += $": {verses[1].Text}";
-                            }
-                            else
-                            {
-                                html += $": {verses[0].Text}";
-                            }
+                            html += $": {verses[0].Text} - {verses[1].Text}";
                         }
                         else
-                        if(options == GanjoorTOC.AlphabeticWithFirstCouplet || options == GanjoorTOC.TitlesAndFirstCouplet)
                         {
-                            if (verses.Length > 1)
-                            {
-                                html += $": {verses[0].Text} - {verses[1].Text}";
-                            }
-                            else
-                            {
-                                html += $": {verses[0].Text}";
-                            }
-                        }
-                        else
-                        if(options == GanjoorTOC.TitlesAndFirstCenteredVerse)
-                        {
-                            if (verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any() )
-                            {
-                                html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text}";
-                            }
-                            else
-                            {
-                                html += $": {verses[0].Text}";
-                            }
-                        }
-                        else
-                        if (options == GanjoorTOC.TitlesAndFirstCenteredCouplet)
-                        {
-                            if (
-                                verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any() 
-                                &&
-                                verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).Any()
-                                )
-                            {
-                                html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text} - {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).First().Text}";
-                            }
-                            else
-                            {
-                                html += $": {verses[0].Text}";
-                            }
+                            html += $": {verses[0].Text}";
                         }
                     }
-                    
-
-                    html += $"</p>{Environment.NewLine}";
+                    else
+                    if (options == GanjoorTOC.TitlesAndFirstCenteredVerse)
+                    {
+                        if (verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any())
+                        {
+                            html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text}";
+                        }
+                        else
+                        {
+                            html += $": {verses[0].Text}";
+                        }
+                    }
+                    else
+                    if (options == GanjoorTOC.TitlesAndFirstCenteredCouplet)
+                    {
+                        if (
+                            verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any()
+                            &&
+                            verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).Any()
+                            )
+                        {
+                            html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text} - {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).First().Text}";
+                        }
+                        else
+                        {
+                            html += $": {verses[0].Text}";
+                        }
+                    }
                 }
-                
 
 
-               return new RServiceResult<string>(html);
+                html += $"</p>{Environment.NewLine}";
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<string>(null, exp.ToString());
-            }
+            return new RServiceResult<string>(html);
         }
 
 
@@ -3467,60 +3119,53 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public RServiceResult<bool> RegerneratePoemsPlainText()
         {
-            try
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+            (
+            async token =>
             {
-                _backgroundTaskQueue.QueueBackgroundWorkItem
-                (
-                async token =>
-                {
-                    using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                     {
-                        LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                        var job = (await jobProgressServiceEF.NewJob("RegerneratePoemsPlainText", "Query data")).Result;
+                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                    var job = (await jobProgressServiceEF.NewJob("RegerneratePoemsPlainText", "Query data")).Result;
 
-                        try
+                    try
+                    {
+                        var poems = await context.GanjoorPoems.ToArrayAsync();
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating PlainText");
+
+                        int percent = 0;
+                        for (int i = 0; i < poems.Length; i++)
                         {
-                            var poems = await context.GanjoorPoems.ToArrayAsync();
-
-                            await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating PlainText");
-
-                            int percent = 0;
-                            for (int i = 0; i < poems.Length; i++)
+                            if (i * 100 / poems.Length > percent)
                             {
-                                if (i * 100 / poems.Length > percent)
-                                {
-                                    percent++;
-                                    await jobProgressServiceEF.UpdateJob(job.Id, percent);
-                                }
-
-                                var poem = poems[i];
-
-                                poem.PlainText = PreparePlainText(await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.Id).ToListAsync());
+                                percent++;
+                                await jobProgressServiceEF.UpdateJob(job.Id, percent);
                             }
 
-                            await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Finalizing PlainText");
+                            var poem = poems[i];
 
-                            context.GanjoorPoems.UpdateRange(poems);
-
-                            await context.SaveChangesAsync();
-
-                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
-                        }
-                        catch (Exception exp)
-                        {
-                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                            poem.PlainText = PreparePlainText(await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.Id).ToListAsync());
                         }
 
+                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Finalizing PlainText");
+
+                        context.GanjoorPoems.UpdateRange(poems);
+
+                        await context.SaveChangesAsync();
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                     }
-                }
-                );
+                    catch (Exception exp)
+                    {
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                    }
 
-                return new RServiceResult<bool>(true);
+                }
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            );
+
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -3529,99 +3174,92 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public RServiceResult<bool> HealthCheckContents()
         {
-            try
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+            (
+            async token =>
             {
-                _backgroundTaskQueue.QueueBackgroundWorkItem
-                (
-                async token =>
-                {
-                    using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                     {
-                        LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                        var job = (await jobProgressServiceEF.NewJob("HealthCheckContents", "Query data")).Result;
+                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                    var job = (await jobProgressServiceEF.NewJob("HealthCheckContents", "Query data")).Result;
 
-                        try
+                    try
+                    {
+                        var pages = await context.GanjoorPages.ToArrayAsync();
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Examining Pages");
+
+                        var previousErrors = await context.GanjoorHealthCheckErrors.ToArrayAsync();
+                        context.RemoveRange(previousErrors);
+                        await context.SaveChangesAsync();
+                        int percent = 0;
+                        for (int i = 0; i < pages.Length; i++)
                         {
-                            var pages = await context.GanjoorPages.ToArrayAsync();
-
-                            await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Examining Pages");
-
-                            var previousErrors = await context.GanjoorHealthCheckErrors.ToArrayAsync();
-                            context.RemoveRange(previousErrors);
-                            await context.SaveChangesAsync();
-                            int percent = 0;
-                            for (int i = 0; i < pages.Length; i++)
+                            if (i * 100 / pages.Length > percent)
                             {
-                                if (i * 100 / pages.Length > percent)
+                                percent++;
+                                await jobProgressServiceEF.UpdateJob(job.Id, percent);
+                            }
+
+                            var hrefs = pages[i].HtmlText.Split(new[] { "href=\"" }, StringSplitOptions.RemoveEmptyEntries).Where(o => o.StartsWith("http")).Select(o => o.Substring(0, o.IndexOf("\"")));
+
+                            foreach (string url in hrefs)
+                            {
+                                if (url == "https://ganjoor.net" || url == "https://ganjoor.net/" || url.IndexOf("https://ganjoor.net/vazn/?") == 0 || url.IndexOf("https://ganjoor.net/simi/?v") == 0)
+                                    continue;
+                                if (url.IndexOf("http://ganjoor.net") == 0)
                                 {
-                                    percent++;
-                                    await jobProgressServiceEF.UpdateJob(job.Id, percent);
+                                    context.GanjoorHealthCheckErrors.Add
+                                    (
+                                        new GanjoorHealthCheckError()
+                                        {
+                                            ReferrerPageUrl = pages[i].FullUrl,
+                                            TargetUrl = url,
+                                            BrokenLink = false,
+                                            MulipleTargets = false
+                                        }
+                                     );
+
+                                    await context.SaveChangesAsync();
                                 }
-
-                                var hrefs = pages[i].HtmlText.Split(new[] { "href=\"" }, StringSplitOptions.RemoveEmptyEntries).Where(o => o.StartsWith("http")).Select(o => o.Substring(0, o.IndexOf("\"")));
-
-                                foreach (string url in hrefs)
+                                else
+                                if (url.IndexOf("https://ganjoor.net") == 0)
                                 {
-                                    if (url == "https://ganjoor.net" || url == "https://ganjoor.net/" || url.IndexOf("https://ganjoor.net/vazn/?") == 0 || url.IndexOf("https://ganjoor.net/simi/?v") == 0)
-                                        continue;
-                                    if (url.IndexOf("http://ganjoor.net") == 0)
+                                    var testUrl = url.Substring("https://ganjoor.net".Length);
+                                    if (testUrl[testUrl.Length - 1] == '/')
+                                        testUrl = testUrl.Substring(0, testUrl.Length - 1);
+                                    var pageCount = await context.GanjoorPages.Where(p => p.FullUrl == testUrl).CountAsync();
+                                    if (pageCount != 1)
                                     {
                                         context.GanjoorHealthCheckErrors.Add
-                                        (
-                                            new GanjoorHealthCheckError()
-                                            {
-                                                ReferrerPageUrl = pages[i].FullUrl,
-                                                TargetUrl = url,
-                                                BrokenLink = false,
-                                                MulipleTargets = false
-                                            }
-                                         );
+                                     (
+                                         new GanjoorHealthCheckError()
+                                         {
+                                             ReferrerPageUrl = pages[i].FullUrl,
+                                             TargetUrl = url,
+                                             BrokenLink = pageCount == 0,
+                                             MulipleTargets = pageCount != 0
+                                         }
+                                      );
 
                                         await context.SaveChangesAsync();
                                     }
-                                    else
-                                    if (url.IndexOf("https://ganjoor.net") == 0)
-                                    {
-                                        var testUrl = url.Substring("https://ganjoor.net".Length);
-                                        if (testUrl[testUrl.Length - 1] == '/')
-                                            testUrl = testUrl.Substring(0, testUrl.Length - 1);
-                                        var pageCount = await context.GanjoorPages.Where(p => p.FullUrl == testUrl).CountAsync();
-                                        if (pageCount != 1)
-                                        {
-                                            context.GanjoorHealthCheckErrors.Add
-                                         (
-                                             new GanjoorHealthCheckError()
-                                             {
-                                                 ReferrerPageUrl = pages[i].FullUrl,
-                                                 TargetUrl = url,
-                                                 BrokenLink = pageCount == 0,
-                                                 MulipleTargets = pageCount != 0
-                                             }
-                                          );
-
-                                            await context.SaveChangesAsync();
-                                        }
-                                    }
                                 }
                             }
-
-                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
-                        }
-                        catch(Exception exp)
-                        {
-                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
                         }
 
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                     }
-                }
-                );
+                    catch (Exception exp)
+                    {
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                    }
 
-                return new RServiceResult<bool>(true);
+                }
             }
-            catch(Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            );
+
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
