@@ -42,26 +42,15 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items)>> GetAll(PagingParameterModel paging, PublishStatus[] statusArray)
         {
-            try
-            {
-                var source =
-                     _context.Artifacts
-                     .Include(a => a.CoverImage)
-                     .Where(a => statusArray.Contains(a.Status))
-                    .OrderByDescending(t => t.DateTime)
-                    .AsQueryable();
-
-                (PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items) paginatedResult =
-                    await QueryablePaginator<RArtifactMasterRecord>.Paginate(source, paging);
-
-
-
-                return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items)>(paginatedResult);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items)>((PagingMeta: null, Items: null), exp.ToString());
-            }
+            var source =
+                 _context.Artifacts
+                 .Include(a => a.CoverImage)
+                 .Where(a => statusArray.Contains(a.Status))
+                .OrderByDescending(t => t.DateTime)
+                .AsQueryable();
+            (PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items) paginatedResult =
+                await QueryablePaginator<RArtifactMasterRecord>.Paginate(source, paging);
+            return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items)>(paginatedResult);
         }
 
         /// <summary>
@@ -73,33 +62,26 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RArtifactMasterRecord[]>> GetByTagValue(string tagUrl, string valueUrl, PublishStatus[] statusArray)
         {
-            try
-            {
-                RTag tag =
-                            await _context.Tags
-                            .Where(a => a.FriendlyUrl == tagUrl)
-                        .SingleOrDefaultAsync();
-                if (tag == null)
-                    return new RServiceResult<RArtifactMasterRecord[]>(new RArtifactMasterRecord[] { });
+            RTag tag =
+                        await _context.Tags
+                        .Where(a => a.FriendlyUrl == tagUrl)
+                    .SingleOrDefaultAsync();
+            if (tag == null)
+                return new RServiceResult<RArtifactMasterRecord[]>(new RArtifactMasterRecord[] { });
 
 
-                RArtifactMasterRecord[] taggedItems =
-                    await _context.Artifacts.Include(a => a.Tags)
-                     .Include(a => a.CoverImage)
-                    .Where(a => statusArray.Contains(a.Status) && a.Tags != null && a.Tags.Any(v => v.RTagId == tag.Id && v.FriendlyUrl == valueUrl))
-                    .OrderByDescending(t => t.DateTime)
-                    .AsNoTracking()
-                    .ToArrayAsync();
+            RArtifactMasterRecord[] taggedItems =
+                await _context.Artifacts.Include(a => a.Tags)
+                 .Include(a => a.CoverImage)
+                .Where(a => statusArray.Contains(a.Status) && a.Tags != null && a.Tags.Any(v => v.RTagId == tag.Id && v.FriendlyUrl == valueUrl))
+                .OrderByDescending(t => t.DateTime)
+                .AsNoTracking()
+                .ToArrayAsync();
 
-                foreach (RArtifactMasterRecord taggedItem in taggedItems)
-                    taggedItem.Tags = null;
+            foreach (RArtifactMasterRecord taggedItem in taggedItems)
+                taggedItem.Tags = null;
 
-                return new RServiceResult<RArtifactMasterRecord[]>(taggedItems);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RArtifactMasterRecord[]>(null, exp.ToString());
-            }
+            return new RServiceResult<RArtifactMasterRecord[]>(taggedItems);
         }
 
 
@@ -111,31 +93,24 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RArtifactMasterRecordViewModel>> GetByFriendlyUrl(string friendlyUrl, PublishStatus[] statusArray)
         {
-            try
+            RArtifactMasterRecord artifact =
+                 await _context.Artifacts
+                 .Include(a => a.CoverImage)
+                 .Include(a => a.Items).ThenInclude(i => i.Images)
+                 .Include(a => a.Items).ThenInclude(i => i.Tags).ThenInclude(t => t.RTag)
+                 .Include(a => a.Tags).ThenInclude(t => t.RTag)
+                 .Where(a => statusArray.Contains(a.Status) && a.FriendlyUrl == friendlyUrl)
+                 .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+            if (artifact != null)
             {
-                RArtifactMasterRecord artifact =
-                     await _context.Artifacts
-                     .Include(a => a.CoverImage)
-                     .Include(a => a.Items).ThenInclude(i => i.Images)
-                     .Include(a => a.Items).ThenInclude(i => i.Tags).ThenInclude(t => t.RTag)
-                     .Include(a => a.Tags).ThenInclude(t => t.RTag)
-                     .Where(a => statusArray.Contains(a.Status) && a.FriendlyUrl == friendlyUrl)
-                     .AsNoTracking()
-                    .SingleOrDefaultAsync();
 
-                if (artifact != null)
-                {
-
-                    return new RServiceResult<RArtifactMasterRecordViewModel>(RArtifactMasterRecord.ToViewModel(artifact));
-                }
-
-
-                return new RServiceResult<RArtifactMasterRecordViewModel>(null);
+                return new RServiceResult<RArtifactMasterRecordViewModel>(RArtifactMasterRecord.ToViewModel(artifact));
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RArtifactMasterRecordViewModel>(null, exp.ToString());
-            }
+
+
+            return new RServiceResult<RArtifactMasterRecordViewModel>(null);
         }
 
         /// <summary>
@@ -148,48 +123,39 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RArtifactMasterRecordViewModel>> GetByFriendlyUrlFilterItemsByTag(string friendlyUrl, PublishStatus[] statusArray, string tagFriendlyUrl, string tagValueFriendlyUrl)
         {
-            try
+            RTag rTag = await _context.Tags.Where(t => t.FriendlyUrl == tagFriendlyUrl).SingleOrDefaultAsync();
+
+            if (rTag == null)
+                return new RServiceResult<RArtifactMasterRecordViewModel>(null, "Tag not found!");
+
+            RArtifactMasterRecord artifact =
+                 await _context.Artifacts
+                 .Include(a => a.CoverImage)
+                 .Include(a => a.Items).ThenInclude(i => i.Images)
+                 .Include(a => a.Items).ThenInclude(i => i.Tags)
+                 .Include(a => a.Tags).ThenInclude(t => t.RTag)
+                 .Where(a => statusArray.Contains(a.Status) && a.FriendlyUrl == friendlyUrl)
+                 .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+            if (artifact != null)
             {
-                RTag rTag = await _context.Tags.Where(t => t.FriendlyUrl == tagFriendlyUrl).SingleOrDefaultAsync();
+                List<RArtifactItemRecord> filteredItems = new List<RArtifactItemRecord>();
 
-                if (rTag == null)
-                    return new RServiceResult<RArtifactMasterRecordViewModel>(null, "Tag not found!");
-
-                RArtifactMasterRecord artifact =
-                     await _context.Artifacts
-                     .Include(a => a.CoverImage)
-                     .Include(a => a.Items).ThenInclude(i => i.Images)
-                     .Include(a => a.Items).ThenInclude(i => i.Tags)
-                     .Include(a => a.Tags).ThenInclude(t => t.RTag)
-                     .Where(a => statusArray.Contains(a.Status) && a.FriendlyUrl == friendlyUrl)
-                     .AsNoTracking()
-                    .SingleOrDefaultAsync();
-
-                if (artifact != null)
+                foreach (RArtifactItemRecord item in artifact.Items)
                 {
-                    List<RArtifactItemRecord> filteredItems = new List<RArtifactItemRecord>();
-
-                    foreach (RArtifactItemRecord item in artifact.Items)
+                    if (item.Tags.Any(v => v.RTagId == rTag.Id && (string.IsNullOrEmpty(tagValueFriendlyUrl) || v.FriendlyUrl == tagValueFriendlyUrl)))
                     {
-                        if (item.Tags.Any(v => v.RTagId == rTag.Id && (string.IsNullOrEmpty(tagValueFriendlyUrl) || v.FriendlyUrl == tagValueFriendlyUrl)))
-                        {
-                            item.Tags = null;
-                            filteredItems.Add(item);
-                        }
+                        item.Tags = null;
+                        filteredItems.Add(item);
                     }
-
-                    artifact.Items = filteredItems;
-
-                    return new RServiceResult<RArtifactMasterRecordViewModel>(RArtifactMasterRecord.ToViewModel(artifact));
                 }
 
+                artifact.Items = filteredItems;
 
-                return new RServiceResult<RArtifactMasterRecordViewModel>(null);
+                return new RServiceResult<RArtifactMasterRecordViewModel>(RArtifactMasterRecord.ToViewModel(artifact));
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RArtifactMasterRecordViewModel>(null, exp.ToString());
-            }
+            return new RServiceResult<RArtifactMasterRecordViewModel>(null);
         }
 
         /// <summary>
@@ -201,64 +167,54 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RArtifactMasterRecord>> EditMasterRecord(RArtifactMasterRecord edited, bool canChangeStatusToAwaiting, bool canPublish)
         {
-            try
+            if (string.IsNullOrEmpty(edited.Name))
             {
+                return new RServiceResult<RArtifactMasterRecord>(null, "Name could not be empty.");
+            }
 
-                if (string.IsNullOrEmpty(edited.Name))
+            RArtifactMasterRecord item =
+                 await _context.Artifacts
+                 .Where(a => a.Id == edited.Id)
+                .SingleOrDefaultAsync();
+
+
+            if (item != null)
+            {
+                if (item.Status != edited.Status)
                 {
-                    return new RServiceResult<RArtifactMasterRecord>(null, "Name could not be empty.");
-                }
-
-                RArtifactMasterRecord item =
-                     await _context.Artifacts
-                     .Where(a => a.Id == edited.Id)
-                    .SingleOrDefaultAsync();
-
-
-                if (item != null)
-                {
-                    if (item.Status != edited.Status)
+                    if (!canChangeStatusToAwaiting)
                     {
-                        if (!canChangeStatusToAwaiting)
-                        {
-                            return new RServiceResult<RArtifactMasterRecord>(null, "User should be able to change status to Awaiting to complete this operation.");
-                        }
-
-                        if (
-                            !
-                            (
-                            (item.Status == PublishStatus.Draft && edited.Status == PublishStatus.Awaiting)
-                            ||
-                            (item.Status == PublishStatus.Awaiting && edited.Status == PublishStatus.Draft)
-                            )
-                            )
-                        {
-                            if (!canPublish)
-                            {
-                                return new RServiceResult<RArtifactMasterRecord>(null, "User should have Publish permission to complete this operation.");
-                            }
-                        }
+                        return new RServiceResult<RArtifactMasterRecord>(null, "User should be able to change status to Awaiting to complete this operation.");
                     }
 
-                    item.FriendlyUrl = edited.FriendlyUrl;
-                    item.Status = edited.Status;
-                    item.Name = edited.Name;
-                    item.NameInEnglish = edited.Name;
-                    item.Description = edited.Description;
-                    item.DescriptionInEnglish = edited.DescriptionInEnglish;
-                    item.LastModified = DateTime.Now;
-
-                    _context.Update(item);
-                    await _context.SaveChangesAsync();
+                    if (
+                        !
+                        (
+                        (item.Status == PublishStatus.Draft && edited.Status == PublishStatus.Awaiting)
+                        ||
+                        (item.Status == PublishStatus.Awaiting && edited.Status == PublishStatus.Draft)
+                        )
+                        )
+                    {
+                        if (!canPublish)
+                        {
+                            return new RServiceResult<RArtifactMasterRecord>(null, "User should have Publish permission to complete this operation.");
+                        }
+                    }
                 }
 
+                item.FriendlyUrl = edited.FriendlyUrl;
+                item.Status = edited.Status;
+                item.Name = edited.Name;
+                item.NameInEnglish = edited.Name;
+                item.Description = edited.Description;
+                item.DescriptionInEnglish = edited.DescriptionInEnglish;
+                item.LastModified = DateTime.Now;
 
-                return new RServiceResult<RArtifactMasterRecord>(item);
+                _context.Update(item);
+                await _context.SaveChangesAsync();
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RArtifactMasterRecord>(null, exp.ToString());
-            }
+            return new RServiceResult<RArtifactMasterRecord>(item);
         }
 
         /// <summary>
@@ -269,35 +225,28 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> SetArtifactCoverItemIndex(Guid artifactId, int itemIndex)
         {
-            try
-            {
-                RArtifactMasterRecord artifact = await _context
-                    .Artifacts.Where(a => a.Id == artifactId)
-                    .Include(a => a.Items).ThenInclude(i => i.Images)
-                    .SingleOrDefaultAsync();
-                if (artifact == null)
-                    return new RServiceResult<bool>(false, "Artifact not found.");
+            RArtifactMasterRecord artifact = await _context
+                .Artifacts.Where(a => a.Id == artifactId)
+                .Include(a => a.Items).ThenInclude(i => i.Images)
+                .SingleOrDefaultAsync();
+            if (artifact == null)
+                return new RServiceResult<bool>(false, "Artifact not found.");
 
-                if (itemIndex == artifact.CoverItemIndex)
-                    return new RServiceResult<bool>(true);
-
-                if (itemIndex < 0 || itemIndex >= artifact.Items.Count())
-                    return new RServiceResult<bool>(false, "Item not found.");
-
-                artifact.CoverItemIndex = itemIndex;
-                artifact.CoverImage = RPictureFile.Duplicate(artifact.Items.ToArray()[itemIndex].Images.First());
-
-                artifact.LastModified = DateTime.Now;
-
-                _context.Artifacts.Update(artifact);
-                await _context.SaveChangesAsync();
-
+            if (itemIndex == artifact.CoverItemIndex)
                 return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+
+            if (itemIndex < 0 || itemIndex >= artifact.Items.Count())
+                return new RServiceResult<bool>(false, "Item not found.");
+
+            artifact.CoverItemIndex = itemIndex;
+            artifact.CoverImage = RPictureFile.Duplicate(artifact.Items.ToArray()[itemIndex].Images.First());
+
+            artifact.LastModified = DateTime.Now;
+
+            _context.Artifacts.Update(artifact);
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -307,56 +256,47 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RTagBundleViewModel>> GetTagBundleByFiendlyUrl(string friendlyUrl)
         {
-            try
-            {
-                RTag tag =
-                     await _context.Tags
-                     .Where(a => a.FriendlyUrl == friendlyUrl)
-                     .AsNoTracking()
-                    .SingleOrDefaultAsync();
+            RTag tag =
+                 await _context.Tags
+                 .Where(a => a.FriendlyUrl == friendlyUrl)
+                 .AsNoTracking()
+                .SingleOrDefaultAsync();
 
-                if (tag != null)
+            if (tag != null)
+            {
+                RTagBundleViewModel viewModel = new RTagBundleViewModel()
                 {
-                    RTagBundleViewModel viewModel = new RTagBundleViewModel()
-                    {
-                        Id = tag.Id,
-                        Name = tag.Name,
-                        PluralName = tag.PluralName,
-                        FriendlyUrl = friendlyUrl
-                    };
-                    List<RTagBundleValueViewModel>
-                        values = new List<RTagBundleValueViewModel>(
-                        await _context.TagValues
-                            .Where(value => value.RTagId == tag.Id && !string.IsNullOrEmpty(value.FriendlyUrl))
-                            .GroupBy(value => new { value.Value, value.FriendlyUrl, value.RTagId })
-                            .Select
-                            (
-                            g =>
-                            new RTagBundleValueViewModel()
-                            {
-                                FriendlyUrl = g.Key.FriendlyUrl,
-                                Name = g.Key.Value,
-                                Count = g.Count(),
-                                ImageId = _context.Artifacts.Include(a => a.Tags).Where(a => a.Status == PublishStatus.Published && a.Tags.Any(t => t.RTagId == g.Key.RTagId && t.Value == g.Key.Value)).FirstOrDefault().CoverImageId
-                            }
-                            )
-                            .OrderByDescending(g => g.Count)
-                            .ToArrayAsync()
-                            );
+                    Id = tag.Id,
+                    Name = tag.Name,
+                    PluralName = tag.PluralName,
+                    FriendlyUrl = friendlyUrl
+                };
+                List<RTagBundleValueViewModel>
+                    values = new List<RTagBundleValueViewModel>(
+                    await _context.TagValues
+                        .Where(value => value.RTagId == tag.Id && !string.IsNullOrEmpty(value.FriendlyUrl))
+                        .GroupBy(value => new { value.Value, value.FriendlyUrl, value.RTagId })
+                        .Select
+                        (
+                        g =>
+                        new RTagBundleValueViewModel()
+                        {
+                            FriendlyUrl = g.Key.FriendlyUrl,
+                            Name = g.Key.Value,
+                            Count = g.Count(),
+                            ImageId = _context.Artifacts.Include(a => a.Tags).Where(a => a.Status == PublishStatus.Published && a.Tags.Any(t => t.RTagId == g.Key.RTagId && t.Value == g.Key.Value)).FirstOrDefault().CoverImageId
+                        }
+                        )
+                        .OrderByDescending(g => g.Count)
+                        .ToArrayAsync()
+                        );
 
 
-                    viewModel.Values = values.ToArray();
+                viewModel.Values = values.ToArray();
 
-                    return new RServiceResult<RTagBundleViewModel>(viewModel);
-                }
-
-
-                return new RServiceResult<RTagBundleViewModel>(null);
+                return new RServiceResult<RTagBundleViewModel>(viewModel);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RTagBundleViewModel>(null, exp.ToString());
-            }
+            return new RServiceResult<RTagBundleViewModel>(null);
         }
 
         /// <summary>
@@ -365,14 +305,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<DateTime>> GetMaxArtifactLastModified()
         {
-            try
-            {
-                return new RServiceResult<DateTime>(await _context.Artifacts.MaxAsync(a => a.LastModified));
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<DateTime>(DateTime.Now, exp.ToString());
-            }
+            return new RServiceResult<DateTime>(await _context.Artifacts.MaxAsync(a => a.LastModified));
         }
 
         /// <summary>
@@ -382,24 +315,13 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, RTag[] Items)>> GetAllTags(PagingParameterModel paging)
         {
-            try
-            {
-                var source =
-                     _context.Tags
-                    .OrderByDescending(t => t.Order)
-                    .AsQueryable();
-
-                (PaginationMetadata PagingMeta, RTag[] Items) paginatedResult =
-                    await QueryablePaginator<RTag>.Paginate(source, paging);
-
-
-
-                return new RServiceResult<(PaginationMetadata PagingMeta, RTag[] Items)>(paginatedResult);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, RTag[] Items)>((PagingMeta: null, Items: null), exp.ToString());
-            }
+            var source =
+                 _context.Tags
+                .OrderByDescending(t => t.Order)
+                .AsQueryable();
+            (PaginationMetadata PagingMeta, RTag[] Items) paginatedResult =
+                await QueryablePaginator<RTag>.Paginate(source, paging);
+            return new RServiceResult<(PaginationMetadata PagingMeta, RTag[] Items)>(paginatedResult);
         }
 
         /// <summary>
@@ -409,14 +331,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RTag>> GetTagByFriendlyUrl(string friendlyUrl)
         {
-            try
-            {
-                return new RServiceResult<RTag>(await _context.Tags.Where(t => t.FriendlyUrl == friendlyUrl).SingleOrDefaultAsync());
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RTag>(null, exp.ToString());
-            }
+            return new RServiceResult<RTag>(await _context.Tags.Where(t => t.FriendlyUrl == friendlyUrl).SingleOrDefaultAsync());
         }
 
         /// <summary>
@@ -427,17 +342,10 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RTagValue>> GetTagValueByFriendlyUrl(Guid tagId, string friendlyUrl)
         {
-            try
-            {
-                RTagValue value = await _context.TagValues.Where(t => t.RTagId == tagId && t.FriendlyUrl == friendlyUrl).FirstOrDefaultAsync();
-                if (value != null)
-                    return new RServiceResult<RTagValue>(value);
-                return new RServiceResult<RTagValue>(null, "Tag value not found");
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RTagValue>(null, exp.ToString());
-            }
+            RTagValue value = await _context.TagValues.Where(t => t.RTagId == tagId && t.FriendlyUrl == friendlyUrl).FirstOrDefaultAsync();
+            if (value != null)
+                return new RServiceResult<RTagValue>(value);
+            return new RServiceResult<RTagValue>(null, "Tag value not found");
         }
 
         /// <summary>
@@ -446,44 +354,35 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RTag>> AddTag(string tagName)
         {
-            try
+            if (string.IsNullOrEmpty(tagName))
             {
-
-                if (string.IsNullOrEmpty(tagName))
-                {
-                    return new RServiceResult<RTag>(null, "Name could not be empty.");
-                }
-
-                RTag existingTag =
-                     await _context.Tags
-                     .Where(a => a.Name == tagName || a.NameInEnglish == tagName)
-                    .SingleOrDefaultAsync();
-                if (existingTag != null)
-                {
-                    return new RServiceResult<RTag>(null, "Duplicated Name or English Name for tag.");
-                }
-
-                int maxOrder = await _context.Tags.CountAsync() == 0 ? 0 : await _context.Tags.MaxAsync(a => a.Order);
-                RTag type = new RTag()
-                {
-                    Name = tagName,
-                    NameInEnglish = tagName,
-                    PluralName = $"{tagName}s",
-                    PluralNameInEnglish = $"{tagName}s",
-                    Order = maxOrder + 1,
-                    Status = PublishStatus.Published,
-                    GlobalValue = true
-                };
-                await _context.Tags.AddAsync(type);
-                await _context.SaveChangesAsync();
-
-
-                return new RServiceResult<RTag>(type);
+                return new RServiceResult<RTag>(null, "Name could not be empty.");
             }
-            catch (Exception exp)
+
+            RTag existingTag =
+                 await _context.Tags
+                 .Where(a => a.Name == tagName || a.NameInEnglish == tagName)
+                .SingleOrDefaultAsync();
+            if (existingTag != null)
             {
-                return new RServiceResult<RTag>(null, exp.ToString());
+                return new RServiceResult<RTag>(null, "Duplicated Name or English Name for tag.");
             }
+
+            int maxOrder = await _context.Tags.CountAsync() == 0 ? 0 : await _context.Tags.MaxAsync(a => a.Order);
+            RTag type = new RTag()
+            {
+                Name = tagName,
+                NameInEnglish = tagName,
+                PluralName = $"{tagName}s",
+                PluralNameInEnglish = $"{tagName}s",
+                Order = maxOrder + 1,
+                Status = PublishStatus.Published,
+                GlobalValue = true
+            };
+            await _context.Tags.AddAsync(type);
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<RTag>(type);
         }
 
 
@@ -494,68 +393,59 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RTag>> EditTag(RTag edited)
         {
-            try
+            if (string.IsNullOrEmpty(edited.Name))
             {
-                if (string.IsNullOrEmpty(edited.Name))
+                return new RServiceResult<RTag>(null, "Name could not be empty.");
+            }
+
+            RTag tag =
+                 await _context.Tags
+                 .Where(a => a.Id == edited.Id)
+                .SingleOrDefaultAsync();
+
+
+            if (tag != null)
+            {
+                tag.Name = edited.Name;
+                tag.Order = edited.Order;
+                tag.FriendlyUrl = edited.FriendlyUrl;
+                tag.TagType = edited.TagType;
+                tag.Status = edited.Status;
+                tag.NameInEnglish = edited.NameInEnglish;
+                tag.GlobalValue = edited.GlobalValue;
+                tag.PluralName = edited.PluralName;
+                tag.PluralNameInEnglish = edited.PluralNameInEnglish;
+                _context.Update(tag);
+
+
+
+                RArtifactMasterRecord[] taggedItems =
+                    await _context.Artifacts.Include(a => a.Tags)
+                    .Where(a => a.Tags != null && a.Tags.Any(v => v.RTagId == tag.Id))
+                    .ToArrayAsync();
+
+                foreach (RArtifactMasterRecord taggedItem in taggedItems)
                 {
-                    return new RServiceResult<RTag>(null, "Name could not be empty.");
+                    taggedItem.LastModified = DateTime.Now;
+                    _context.Update(taggedItem);
                 }
 
-                RTag tag =
-                     await _context.Tags
-                     .Where(a => a.Id == edited.Id)
-                    .SingleOrDefaultAsync();
+                RArtifactItemRecord[] taggedPages =
+                    await _context.Items.Include(a => a.Tags)
+                    .Where(a => a.Tags != null && a.Tags.Any(v => v.RTagId == tag.Id))
+                    .ToArrayAsync();
 
-
-                if (tag != null)
+                foreach (RArtifactItemRecord taggedItem in taggedPages)
                 {
-                    tag.Name = edited.Name;
-                    tag.Order = edited.Order;
-                    tag.FriendlyUrl = edited.FriendlyUrl;
-                    tag.TagType = edited.TagType;
-                    tag.Status = edited.Status;
-                    tag.NameInEnglish = edited.NameInEnglish;
-                    tag.GlobalValue = edited.GlobalValue;
-                    tag.PluralName = edited.PluralName;
-                    tag.PluralNameInEnglish = edited.PluralNameInEnglish;
-                    _context.Update(tag);
-
-
-
-                    RArtifactMasterRecord[] taggedItems =
-                        await _context.Artifacts.Include(a => a.Tags)
-                        .Where(a => a.Tags != null && a.Tags.Any(v => v.RTagId == tag.Id))
-                        .ToArrayAsync();
-
-                    foreach (RArtifactMasterRecord taggedItem in taggedItems)
-                    {
-                        taggedItem.LastModified = DateTime.Now;
-                        _context.Update(taggedItem);
-                    }
-
-                    RArtifactItemRecord[] taggedPages =
-                        await _context.Items.Include(a => a.Tags)
-                        .Where(a => a.Tags != null && a.Tags.Any(v => v.RTagId == tag.Id))
-                        .ToArrayAsync();
-
-                    foreach (RArtifactItemRecord taggedItem in taggedPages)
-                    {
-                        taggedItem.LastModified = DateTime.Now;
-                        _context.Update(taggedItem);
-                    }
-
-                    await UpdateTaggedItems(tag);
-
-                    await _context.SaveChangesAsync();
+                    taggedItem.LastModified = DateTime.Now;
+                    _context.Update(taggedItem);
                 }
 
+                await UpdateTaggedItems(tag);
 
-                return new RServiceResult<RTag>(tag);
+                await _context.SaveChangesAsync();
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RTag>(null, exp.ToString());
-            }
+            return new RServiceResult<RTag>(tag);
         }
 
         /// <summary>
@@ -597,61 +487,52 @@ namespace RMuseum.Services.Implementation
         /// <returns>the other tag which its Order has been changed</returns>
         public async Task<RServiceResult<Guid?>> EditTagOrderBasedOnArtifact(Guid tagId, Guid artifactId, bool up)
         {
-            try
+            RArtifactMasterRecord artifact =
+                 await _context.Artifacts
+                 .Include(a => a.Tags).ThenInclude(t => t.RTag)
+                 .Where(a => a.Id == artifactId)
+                 .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+            if (artifact == null)
             {
-                RArtifactMasterRecord artifact =
-                     await _context.Artifacts
-                     .Include(a => a.Tags).ThenInclude(t => t.RTag)
-                     .Where(a => a.Id == artifactId)
-                     .AsNoTracking()
-                    .SingleOrDefaultAsync();
-
-                if (artifact == null)
-                {
-                    return new RServiceResult<Guid?>(null, "artifact not found");
-                }
-
-                RArtifactMasterRecordViewModel viewModel = RArtifactMasterRecord.ToViewModel(artifact); //tags are sorted in this method
-
-                int tagOrder = viewModel.ArtifactTags.Where(tag => tag.Id == tagId).FirstOrDefault().Order;
-                RArtifactTagViewModel otherTagViewModel;
-                if (up)
-                {
-                    otherTagViewModel = viewModel.ArtifactTags.Where(tag => tag.Order < tagOrder).OrderByDescending(tag => tag.Order).FirstOrDefault();
-                }
-                else
-                {
-                    otherTagViewModel = viewModel.ArtifactTags.Where(tag => tag.Order > tagOrder).OrderBy(tag => tag.Order).FirstOrDefault();
-                }
-
-                if (otherTagViewModel == null)
-                {
-                    return new RServiceResult<Guid?>(null, "Invalid movement");
-                }
-
-                RTag rTag1 = await _context.Tags.Where(tag => tag.Id == tagId).FirstOrDefaultAsync();
-                RTag rTag2 = await _context.Tags.Where(tag => tag.Id == otherTagViewModel.Id).FirstOrDefaultAsync();
-
-                rTag1.Order = otherTagViewModel.Order;
-                rTag2.Order = tagOrder;
-
-
-                _context.Tags.UpdateRange(new RTag[] { rTag1, rTag2 });
-
-
-                await UpdateTaggedItems(rTag1);
-                await UpdateTaggedItems(rTag2);
-
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<Guid?>((Guid?)rTag2.Id);
-
-
+                return new RServiceResult<Guid?>(null, "artifact not found");
             }
-            catch (Exception exp)
+
+            RArtifactMasterRecordViewModel viewModel = RArtifactMasterRecord.ToViewModel(artifact); //tags are sorted in this method
+
+            int tagOrder = viewModel.ArtifactTags.Where(tag => tag.Id == tagId).FirstOrDefault().Order;
+            RArtifactTagViewModel otherTagViewModel;
+            if (up)
             {
-                return new RServiceResult<Guid?>(null, exp.ToString());
+                otherTagViewModel = viewModel.ArtifactTags.Where(tag => tag.Order < tagOrder).OrderByDescending(tag => tag.Order).FirstOrDefault();
             }
+            else
+            {
+                otherTagViewModel = viewModel.ArtifactTags.Where(tag => tag.Order > tagOrder).OrderBy(tag => tag.Order).FirstOrDefault();
+            }
+
+            if (otherTagViewModel == null)
+            {
+                return new RServiceResult<Guid?>(null, "Invalid movement");
+            }
+
+            RTag rTag1 = await _context.Tags.Where(tag => tag.Id == tagId).FirstOrDefaultAsync();
+            RTag rTag2 = await _context.Tags.Where(tag => tag.Id == otherTagViewModel.Id).FirstOrDefaultAsync();
+
+            rTag1.Order = otherTagViewModel.Order;
+            rTag2.Order = tagOrder;
+
+
+            _context.Tags.UpdateRange(new RTag[] { rTag1, rTag2 });
+
+
+            await UpdateTaggedItems(rTag1);
+            await UpdateTaggedItems(rTag2);
+
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<Guid?>((Guid?)rTag2.Id);
         }
 
 
@@ -664,62 +545,53 @@ namespace RMuseum.Services.Implementation
         /// <returns>the other tag which its Order has been changed</returns>
         public async Task<RServiceResult<Guid?>> EditTagOrderBasedOnItem(Guid tagId, Guid itemId, bool up)
         {
-            try
+            RArtifactItemRecord item =
+                 await _context.Items
+                 .Include(a => a.Tags).ThenInclude(t => t.RTag)
+                 .Where(a => a.Id == itemId)
+                 .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+            if (item == null)
             {
-                RArtifactItemRecord item =
-                     await _context.Items
-                     .Include(a => a.Tags).ThenInclude(t => t.RTag)
-                     .Where(a => a.Id == itemId)
-                     .AsNoTracking()
-                    .SingleOrDefaultAsync();
-
-                if (item == null)
-                {
-                    return new RServiceResult<Guid?>(null, "item not found");
-                }
-
-                RArtifactItemRecordViewModel viewModel = new RArtifactItemRecordViewModel(); //tags are sorted in this method
-                viewModel.Item = item;
-
-                int tagOrder = viewModel.FormattedTags.Where(tag => tag.Id == tagId).FirstOrDefault().Order;
-                RArtifactTagViewModel otherTagViewModel;
-                if (up)
-                {
-                    otherTagViewModel = viewModel.FormattedTags.Where(tag => tag.Order < tagOrder).OrderByDescending(tag => tag.Order).FirstOrDefault();
-                }
-                else
-                {
-                    otherTagViewModel = viewModel.FormattedTags.Where(tag => tag.Order > tagOrder).OrderBy(tag => tag.Order).FirstOrDefault();
-                }
-
-                if (otherTagViewModel == null)
-                {
-                    return new RServiceResult<Guid?>(null, "Invalid movement");
-                }
-
-                RTag rTag1 = await _context.Tags.Where(tag => tag.Id == tagId).FirstOrDefaultAsync();
-                RTag rTag2 = await _context.Tags.Where(tag => tag.Id == otherTagViewModel.Id).FirstOrDefaultAsync();
-
-                rTag1.Order = otherTagViewModel.Order;
-                rTag2.Order = tagOrder;
-
-
-                _context.Tags.UpdateRange(new RTag[] { rTag1, rTag2 });
-
-
-                await UpdateTaggedItems(rTag1);
-                await UpdateTaggedItems(rTag2);
-
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<Guid?>((Guid?)rTag2.Id);
-
-
+                return new RServiceResult<Guid?>(null, "item not found");
             }
-            catch (Exception exp)
+
+            RArtifactItemRecordViewModel viewModel = new RArtifactItemRecordViewModel(); //tags are sorted in this method
+            viewModel.Item = item;
+
+            int tagOrder = viewModel.FormattedTags.Where(tag => tag.Id == tagId).FirstOrDefault().Order;
+            RArtifactTagViewModel otherTagViewModel;
+            if (up)
             {
-                return new RServiceResult<Guid?>(null, exp.ToString());
+                otherTagViewModel = viewModel.FormattedTags.Where(tag => tag.Order < tagOrder).OrderByDescending(tag => tag.Order).FirstOrDefault();
             }
+            else
+            {
+                otherTagViewModel = viewModel.FormattedTags.Where(tag => tag.Order > tagOrder).OrderBy(tag => tag.Order).FirstOrDefault();
+            }
+
+            if (otherTagViewModel == null)
+            {
+                return new RServiceResult<Guid?>(null, "Invalid movement");
+            }
+
+            RTag rTag1 = await _context.Tags.Where(tag => tag.Id == tagId).FirstOrDefaultAsync();
+            RTag rTag2 = await _context.Tags.Where(tag => tag.Id == otherTagViewModel.Id).FirstOrDefaultAsync();
+
+            rTag1.Order = otherTagViewModel.Order;
+            rTag2.Order = tagOrder;
+
+
+            _context.Tags.UpdateRange(new RTag[] { rTag1, rTag2 });
+
+
+            await UpdateTaggedItems(rTag1);
+            await UpdateTaggedItems(rTag2);
+
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<Guid?>((Guid?)rTag2.Id);
         }
 
 
@@ -731,50 +603,39 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RArtifactTagViewModel>> GetTagValueBundleByFiendlyUrl(string friendlyUrl, string valueUrl)
         {
-            try
+            RTag tag =
+                 await _context.Tags
+                 .Where(a => a.FriendlyUrl == friendlyUrl)
+                 .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+            if (tag != null)
             {
-                RTag tag =
-                     await _context.Tags
-                     .Where(a => a.FriendlyUrl == friendlyUrl)
-                     .AsNoTracking()
-                    .SingleOrDefaultAsync();
+                RArtifactTagViewModel viewModel
+                    = new RArtifactTagViewModel()
+                    {
+                        Id = tag.Id,
+                        Order = tag.Order,
+                        TagType = tag.TagType,
+                        FriendlyUrl = tag.FriendlyUrl,
+                        Status = tag.Status,
+                        Name = tag.Name,
+                        NameInEnglish = tag.NameInEnglish,
+                        GlobalValue = tag.GlobalValue,
+                        PluralName = tag.PluralName,
+                        PluralNameInEnglish = tag.PluralNameInEnglish
+                    };
 
-                if (tag != null)
-                {
-                    RArtifactTagViewModel viewModel
-                        = new RArtifactTagViewModel()
-                        {
-                            Id = tag.Id,
-                            Order = tag.Order,
-                            TagType = tag.TagType,
-                            FriendlyUrl = tag.FriendlyUrl,
-                            Status = tag.Status,
-                            Name = tag.Name,
-                            NameInEnglish = tag.NameInEnglish,
-                            GlobalValue = tag.GlobalValue,
-                            PluralName = tag.PluralName,
-                            PluralNameInEnglish = tag.PluralNameInEnglish
-                        };
-
-                    viewModel.Values =
-                        new RTagValue[]
-                        {
+                viewModel.Values =
+                    new RTagValue[]
+                    {
                         await _context.TagValues
                             .Where(value => value.RTagId == tag.Id && value.FriendlyUrl == valueUrl)
                             .FirstOrDefaultAsync()
-                        };
-
-
-                    return new RServiceResult<RArtifactTagViewModel>(viewModel);
-                }
-
-
-                return new RServiceResult<RArtifactTagViewModel>(null);
+                    };
+                return new RServiceResult<RArtifactTagViewModel>(viewModel);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RArtifactTagViewModel>(null, exp.ToString());
-            }
+            return new RServiceResult<RArtifactTagViewModel>(null);
         }
 
         /// <summary>
@@ -785,36 +646,29 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RTagValue>> TagArtifact(Guid artifactId, RTag rTag)
         {
-            try
+            RTag type = await _context.Tags.Where(a => a.Id == rTag.Id).SingleOrDefaultAsync();
+
+            RArtifactMasterRecord item = await _context.Artifacts.Include(i => i.Tags).Where(i => i.Id == artifactId).SingleOrDefaultAsync();
+
+            int order = item.Tags.Where(t => t.RTagId == type.Id).Count() == 0 ? 1 : item.Tags.Where(t => t.RTagId == type.Id).OrderByDescending(t => t.Order).FirstOrDefault().Order + 1;
+
+            RTagValue tag =
+            new RTagValue()
             {
-                RTag type = await _context.Tags.Where(a => a.Id == rTag.Id).SingleOrDefaultAsync();
+                Order = order,
+                Value = "",
+                ValueInEnglish = "",
+                ValueSupplement = "",
+                RTag = type,
+                Status = PublishStatus.Published
+            };
 
-                RArtifactMasterRecord item = await _context.Artifacts.Include(i => i.Tags).Where(i => i.Id == artifactId).SingleOrDefaultAsync();
+            item.Tags.Add(tag);
+            item.LastModified = DateTime.Now;
+            _context.Artifacts.Update(item);
+            await _context.SaveChangesAsync();
 
-                int order = item.Tags.Where(t => t.RTagId == type.Id).Count() == 0 ? 1 : item.Tags.Where(t => t.RTagId == type.Id).OrderByDescending(t => t.Order).FirstOrDefault().Order + 1;
-
-                RTagValue tag =
-                new RTagValue()
-                {
-                    Order = order,
-                    Value = "",
-                    ValueInEnglish = "",
-                    ValueSupplement = "",
-                    RTag = type,
-                    Status = PublishStatus.Published
-                };
-
-                item.Tags.Add(tag);
-                item.LastModified = DateTime.Now;
-                _context.Artifacts.Update(item);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<RTagValue>(tag);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RTagValue>(null, exp.ToString());
-            }
+            return new RServiceResult<RTagValue>(tag);
         }
 
         /// <summary>
@@ -825,21 +679,13 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> UnTagArtifact(Guid artifactId, Guid tagValueId)
         {
-            try
-            {
+            RArtifactMasterRecord item = await _context.Artifacts.Include(i => i.Tags).Where(i => i.Id == artifactId).SingleOrDefaultAsync();
+            item.Tags.Remove(item.Tags.Where(t => t.Id == tagValueId).SingleOrDefault());
+            item.LastModified = DateTime.Now;
+            _context.Artifacts.Update(item);
+            await _context.SaveChangesAsync();
 
-                RArtifactMasterRecord item = await _context.Artifacts.Include(i => i.Tags).Where(i => i.Id == artifactId).SingleOrDefaultAsync();
-                item.Tags.Remove(item.Tags.Where(t => t.Id == tagValueId).SingleOrDefault());
-                item.LastModified = DateTime.Now;
-                _context.Artifacts.Update(item);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            return new RServiceResult<bool>(true);
         }
 
 
@@ -852,84 +698,75 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RTagValue>> EditTagValue(Guid artifactId, RTagValue edited, bool global)
         {
-            try
+            if (string.IsNullOrEmpty(edited.Value))
             {
-                if (string.IsNullOrEmpty(edited.Value))
+                return new RServiceResult<RTagValue>(null, "Value could not be empty.");
+            }
+
+            RArtifactMasterRecord artifact =
+                await _context.Artifacts
+                 .Include(a => a.Tags)
+                 .Where(a => a.Id == artifactId)
+                .SingleOrDefaultAsync();
+            if (artifact == null)
+                return new RServiceResult<RTagValue>(null);
+
+            RTagValue tag =
+                artifact.Tags.Where(a => a.Id == edited.Id)
+                .SingleOrDefault();
+
+
+            if (tag != null)
+            {
+                tag.Order = edited.Order;
+                tag.ValueSupplement = edited.ValueSupplement;
+                _context.Update(tag);
+
+                if (global)
                 {
-                    return new RServiceResult<RTagValue>(null, "Value could not be empty.");
+                    RTagValue[] sameValueTags = await _context.TagValues.Where(v => v.Value == tag.Value && v.RTagId == tag.RTagId).ToArrayAsync();
+                    foreach (RTagValue sameValueTag in sameValueTags)
+                    {
+                        sameValueTag.Value = edited.Value;
+                        sameValueTag.ValueInEnglish = edited.ValueInEnglish;
+                        sameValueTag.Status = edited.Status;
+                        sameValueTag.FriendlyUrl = edited.FriendlyUrl;
+                        _context.Update(sameValueTag);
+
+                        RArtifactMasterRecord correspondingArtifact =
+                            await _context.Artifacts.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
+                        if (correspondingArtifact != null)
+                        {
+                            correspondingArtifact.LastModified = DateTime.Now;
+                            _context.Update(correspondingArtifact);
+                        }
+
+                        RArtifactItemRecord correspondingItem =
+                            await _context.Items.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
+                        if (correspondingItem != null)
+                        {
+                            correspondingItem.LastModified = DateTime.Now;
+                            _context.Update(correspondingItem);
+                        }
+
+                    }
+                    await _context.SaveChangesAsync();
                 }
-
-                RArtifactMasterRecord artifact =
-                    await _context.Artifacts
-                     .Include(a => a.Tags)
-                     .Where(a => a.Id == artifactId)
-                    .SingleOrDefaultAsync();
-                if (artifact == null)
-                    return new RServiceResult<RTagValue>(null);
-
-                RTagValue tag =
-                    artifact.Tags.Where(a => a.Id == edited.Id)
-                    .SingleOrDefault();
-
-
-                if (tag != null)
+                else
                 {
+                    tag.Value = edited.Value;
+                    tag.ValueInEnglish = edited.ValueInEnglish;
                     tag.Order = edited.Order;
+                    tag.FriendlyUrl = edited.FriendlyUrl;
+                    tag.Status = edited.Status;
                     tag.ValueSupplement = edited.ValueSupplement;
                     _context.Update(tag);
-
-                    if (global)
-                    {
-                        RTagValue[] sameValueTags = await _context.TagValues.Where(v => v.Value == tag.Value && v.RTagId == tag.RTagId).ToArrayAsync();
-                        foreach (RTagValue sameValueTag in sameValueTags)
-                        {
-                            sameValueTag.Value = edited.Value;
-                            sameValueTag.ValueInEnglish = edited.ValueInEnglish;
-                            sameValueTag.Status = edited.Status;
-                            sameValueTag.FriendlyUrl = edited.FriendlyUrl;
-                            _context.Update(sameValueTag);
-
-                            RArtifactMasterRecord correspondingArtifact =
-                                await _context.Artifacts.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
-                            if (correspondingArtifact != null)
-                            {
-                                correspondingArtifact.LastModified = DateTime.Now;
-                                _context.Update(correspondingArtifact);
-                            }
-
-                            RArtifactItemRecord correspondingItem =
-                                await _context.Items.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
-                            if (correspondingItem != null)
-                            {
-                                correspondingItem.LastModified = DateTime.Now;
-                                _context.Update(correspondingItem);
-                            }
-
-                        }
-                        await _context.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        tag.Value = edited.Value;
-                        tag.ValueInEnglish = edited.ValueInEnglish;
-                        tag.Order = edited.Order;
-                        tag.FriendlyUrl = edited.FriendlyUrl;
-                        tag.Status = edited.Status;
-                        tag.ValueSupplement = edited.ValueSupplement;
-                        _context.Update(tag);
-                        artifact.LastModified = DateTime.Now;
-                        _context.Update(artifact);
-                        await _context.SaveChangesAsync();
-                    }
+                    artifact.LastModified = DateTime.Now;
+                    _context.Update(artifact);
+                    await _context.SaveChangesAsync();
                 }
-
-
-                return new RServiceResult<RTagValue>(tag);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RTagValue>(null, exp.ToString());
-            }
+            return new RServiceResult<RTagValue>(tag);
         }
 
 
@@ -941,36 +778,29 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RTagValue>> TagItem(Guid itemId, RTag rTag)
         {
-            try
+            RTag type = await _context.Tags.Where(a => a.Id == rTag.Id).SingleOrDefaultAsync();
+
+            RArtifactItemRecord item = await _context.Items.Include(i => i.Tags).Where(i => i.Id == itemId).SingleOrDefaultAsync();
+
+            int order = item.Tags.Where(t => t.RTagId == type.Id).Count() == 0 ? 1 : item.Tags.Where(t => t.RTagId == type.Id).OrderByDescending(t => t.Order).FirstOrDefault().Order + 1;
+
+            RTagValue tag =
+            new RTagValue()
             {
-                RTag type = await _context.Tags.Where(a => a.Id == rTag.Id).SingleOrDefaultAsync();
+                Order = order,
+                Value = "",
+                ValueInEnglish = "",
+                ValueSupplement = "",
+                RTag = type,
+                Status = PublishStatus.Published
+            };
 
-                RArtifactItemRecord item = await _context.Items.Include(i => i.Tags).Where(i => i.Id == itemId).SingleOrDefaultAsync();
+            item.Tags.Add(tag);
+            item.LastModified = DateTime.Now;
+            _context.Items.Update(item);
+            await _context.SaveChangesAsync();
 
-                int order = item.Tags.Where(t => t.RTagId == type.Id).Count() == 0 ? 1 : item.Tags.Where(t => t.RTagId == type.Id).OrderByDescending(t => t.Order).FirstOrDefault().Order + 1;
-
-                RTagValue tag =
-                new RTagValue()
-                {
-                    Order = order,
-                    Value = "",
-                    ValueInEnglish = "",
-                    ValueSupplement = "",
-                    RTag = type,
-                    Status = PublishStatus.Published
-                };
-
-                item.Tags.Add(tag);
-                item.LastModified = DateTime.Now;
-                _context.Items.Update(item);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<RTagValue>(tag);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RTagValue>(null, exp.ToString());
-            }
+            return new RServiceResult<RTagValue>(tag);
         }
 
         /// <summary>
@@ -981,21 +811,12 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> UnTagItem(Guid itemId, Guid tagValueId)
         {
-            try
-            {
-
-                RArtifactItemRecord item = await _context.Items.Include(i => i.Tags).Where(i => i.Id == itemId).SingleOrDefaultAsync();
-                item.Tags.Remove(item.Tags.Where(t => t.Id == tagValueId).SingleOrDefault());
-                item.LastModified = DateTime.Now;
-                _context.Items.Update(item);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            RArtifactItemRecord item = await _context.Items.Include(i => i.Tags).Where(i => i.Id == itemId).SingleOrDefaultAsync();
+            item.Tags.Remove(item.Tags.Where(t => t.Id == tagValueId).SingleOrDefault());
+            item.LastModified = DateTime.Now;
+            _context.Items.Update(item);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<bool>(true);
         }
 
 
@@ -1008,85 +829,76 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RTagValue>> EditItemTagValue(Guid itemtId, RTagValue edited, bool global)
         {
-            try
+            if (string.IsNullOrEmpty(edited.Value))
             {
-                if (string.IsNullOrEmpty(edited.Value))
+                return new RServiceResult<RTagValue>(null, "Value could not be empty.");
+            }
+
+            RArtifactItemRecord item =
+                await _context.Items
+                 .Include(a => a.Tags)
+                 .Where(a => a.Id == itemtId)
+                .SingleOrDefaultAsync();
+            if (item == null)
+                return new RServiceResult<RTagValue>(null);
+
+            RTagValue tag =
+                item.Tags.Where(a => a.Id == edited.Id)
+                .SingleOrDefault();
+
+
+            if (tag != null)
+            {
+                tag.Order = edited.Order;
+                tag.ValueSupplement = edited.ValueSupplement;
+                _context.Update(tag);
+
+                if (global)
                 {
-                    return new RServiceResult<RTagValue>(null, "Value could not be empty.");
+                    RTagValue[] sameValueTags = await _context.TagValues.Where(v => v.Value == tag.Value && v.RTagId == tag.RTagId).ToArrayAsync();
+                    foreach (RTagValue sameValueTag in sameValueTags)
+                    {
+                        sameValueTag.Value = edited.Value;
+                        sameValueTag.ValueInEnglish = edited.ValueInEnglish;
+                        sameValueTag.Status = edited.Status;
+                        sameValueTag.FriendlyUrl = edited.FriendlyUrl;
+
+                        _context.Update(sameValueTag);
+
+                        RArtifactMasterRecord correspondingArtifact =
+                            await _context.Artifacts.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
+                        if (correspondingArtifact != null)
+                        {
+                            correspondingArtifact.LastModified = DateTime.Now;
+                            _context.Update(correspondingArtifact);
+                        }
+
+                        RArtifactItemRecord correspondingItem =
+                            await _context.Items.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
+                        if (correspondingItem != null)
+                        {
+                            correspondingItem.LastModified = DateTime.Now;
+                            _context.Update(correspondingItem);
+                        }
+
+                    }
+                    await _context.SaveChangesAsync();
                 }
-
-                RArtifactItemRecord item =
-                    await _context.Items
-                     .Include(a => a.Tags)
-                     .Where(a => a.Id == itemtId)
-                    .SingleOrDefaultAsync();
-                if (item == null)
-                    return new RServiceResult<RTagValue>(null);
-
-                RTagValue tag =
-                    item.Tags.Where(a => a.Id == edited.Id)
-                    .SingleOrDefault();
-
-
-                if (tag != null)
+                else
                 {
+                    tag.Value = edited.Value;
+                    tag.ValueInEnglish = edited.ValueInEnglish;
                     tag.Order = edited.Order;
+                    tag.FriendlyUrl = edited.FriendlyUrl;
+                    tag.Status = edited.Status;
                     tag.ValueSupplement = edited.ValueSupplement;
                     _context.Update(tag);
-
-                    if (global)
-                    {
-                        RTagValue[] sameValueTags = await _context.TagValues.Where(v => v.Value == tag.Value && v.RTagId == tag.RTagId).ToArrayAsync();
-                        foreach (RTagValue sameValueTag in sameValueTags)
-                        {
-                            sameValueTag.Value = edited.Value;
-                            sameValueTag.ValueInEnglish = edited.ValueInEnglish;
-                            sameValueTag.Status = edited.Status;
-                            sameValueTag.FriendlyUrl = edited.FriendlyUrl;
-
-                            _context.Update(sameValueTag);
-
-                            RArtifactMasterRecord correspondingArtifact =
-                                await _context.Artifacts.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
-                            if (correspondingArtifact != null)
-                            {
-                                correspondingArtifact.LastModified = DateTime.Now;
-                                _context.Update(correspondingArtifact);
-                            }
-
-                            RArtifactItemRecord correspondingItem =
-                                await _context.Items.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
-                            if (correspondingItem != null)
-                            {
-                                correspondingItem.LastModified = DateTime.Now;
-                                _context.Update(correspondingItem);
-                            }
-
-                        }
-                        await _context.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        tag.Value = edited.Value;
-                        tag.ValueInEnglish = edited.ValueInEnglish;
-                        tag.Order = edited.Order;
-                        tag.FriendlyUrl = edited.FriendlyUrl;
-                        tag.Status = edited.Status;
-                        tag.ValueSupplement = edited.ValueSupplement;
-                        _context.Update(tag);
-                        item.LastModified = DateTime.Now;
-                        _context.Update(item);
-                        await _context.SaveChangesAsync();
-                    }
+                    item.LastModified = DateTime.Now;
+                    _context.Update(item);
+                    await _context.SaveChangesAsync();
                 }
-
-
-                return new RServiceResult<RTagValue>(tag);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RTagValue>(null, exp.ToString());
-            }
+            return new RServiceResult<RTagValue>(tag);
         }
 
         /// <summary>
@@ -1099,58 +911,49 @@ namespace RMuseum.Services.Implementation
         /// <returns>the other tag value which its Order has been changed</returns>
         public async Task<RServiceResult<Guid?>> EditTagValueOrder(Guid artifactId, Guid tagId, Guid valueId, bool up)
         {
-            try
+            RArtifactMasterRecord artifact =
+                 await _context.Artifacts
+                 .Include(a => a.Tags).ThenInclude(t => t.RTag)
+                 .Where(a => a.Id == artifactId)
+                .SingleOrDefaultAsync();
+
+            if (artifact == null)
             {
-                RArtifactMasterRecord artifact =
-                     await _context.Artifacts
-                     .Include(a => a.Tags).ThenInclude(t => t.RTag)
-                     .Where(a => a.Id == artifactId)
-                    .SingleOrDefaultAsync();
-
-                if (artifact == null)
-                {
-                    return new RServiceResult<Guid?>(null, "artifact not found");
-                }
-
-                RArtifactMasterRecordViewModel viewModel = RArtifactMasterRecord.ToViewModel(artifact); //tags are sorted in this method
-
-                RArtifactTagViewModel tag = viewModel.ArtifactTags.Where(t => t.Id == tagId).FirstOrDefault();
-                RTagValue value1 = tag.Values.Where(v => v.Id == valueId).FirstOrDefault();
-                RTagValue value2;
-                if (up)
-                {
-                    value2 = tag.Values.Where(v => v.Order < value1.Order).OrderByDescending(v => v.Order).FirstOrDefault();
-                }
-                else
-                {
-                    value2 = tag.Values.Where(v => v.Order > value1.Order).OrderBy(v => v.Order).FirstOrDefault();
-                }
-
-                if (value2 == null)
-                {
-                    return new RServiceResult<Guid?>(null, "Invalid movement");
-                }
-
-
-                int nOrder = value1.Order;
-                value1.Order = value2.Order;
-                value2.Order = nOrder;
-
-                _context.TagValues.UpdateRange(new RTagValue[] { value1, value2 });
-
-                artifact.LastModified = DateTime.Now;
-                _context.Artifacts.Update(artifact);
-
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<Guid?>((Guid?)value2.Id);
-
-
+                return new RServiceResult<Guid?>(null, "artifact not found");
             }
-            catch (Exception exp)
+
+            RArtifactMasterRecordViewModel viewModel = RArtifactMasterRecord.ToViewModel(artifact); //tags are sorted in this method
+
+            RArtifactTagViewModel tag = viewModel.ArtifactTags.Where(t => t.Id == tagId).FirstOrDefault();
+            RTagValue value1 = tag.Values.Where(v => v.Id == valueId).FirstOrDefault();
+            RTagValue value2;
+            if (up)
             {
-                return new RServiceResult<Guid?>(null, exp.ToString());
+                value2 = tag.Values.Where(v => v.Order < value1.Order).OrderByDescending(v => v.Order).FirstOrDefault();
             }
+            else
+            {
+                value2 = tag.Values.Where(v => v.Order > value1.Order).OrderBy(v => v.Order).FirstOrDefault();
+            }
+
+            if (value2 == null)
+            {
+                return new RServiceResult<Guid?>(null, "Invalid movement");
+            }
+
+
+            int nOrder = value1.Order;
+            value1.Order = value2.Order;
+            value2.Order = nOrder;
+
+            _context.TagValues.UpdateRange(new RTagValue[] { value1, value2 });
+
+            artifact.LastModified = DateTime.Now;
+            _context.Artifacts.Update(artifact);
+
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<Guid?>((Guid?)value2.Id);
         }
 
         /// <summary>
@@ -1163,59 +966,50 @@ namespace RMuseum.Services.Implementation
         /// <returns>the other tag value which its Order has been changed</returns>
         public async Task<RServiceResult<Guid?>> EditItemTagValueOrder(Guid itemId, Guid tagId, Guid valueId, bool up)
         {
-            try
+            RArtifactItemRecord item =
+                 await _context.Items
+                 .Include(a => a.Tags).ThenInclude(t => t.RTag)
+                 .Where(a => a.Id == itemId)
+                .SingleOrDefaultAsync();
+
+            if (item == null)
             {
-                RArtifactItemRecord item =
-                     await _context.Items
-                     .Include(a => a.Tags).ThenInclude(t => t.RTag)
-                     .Where(a => a.Id == itemId)
-                    .SingleOrDefaultAsync();
-
-                if (item == null)
-                {
-                    return new RServiceResult<Guid?>(null, "item not found");
-                }
-
-                RArtifactItemRecordViewModel viewModel = new RArtifactItemRecordViewModel(); //tags are sorted in this method
-                viewModel.Item = item;
-
-                RArtifactTagViewModel tag = viewModel.FormattedTags.Where(t => t.Id == tagId).FirstOrDefault();
-                RTagValue value1 = tag.Values.Where(v => v.Id == valueId).FirstOrDefault();
-                RTagValue value2;
-                if (up)
-                {
-                    value2 = tag.Values.Where(v => v.Order < value1.Order).OrderByDescending(v => v.Order).FirstOrDefault();
-                }
-                else
-                {
-                    value2 = tag.Values.Where(v => v.Order > value1.Order).OrderBy(v => v.Order).FirstOrDefault();
-                }
-
-                if (value2 == null)
-                {
-                    return new RServiceResult<Guid?>(null, "Invalid movement");
-                }
-
-
-                int nOrder = value1.Order;
-                value1.Order = value2.Order;
-                value2.Order = nOrder;
-
-                _context.TagValues.UpdateRange(new RTagValue[] { value1, value2 });
-
-                item.LastModified = DateTime.Now;
-                _context.Items.Update(item);
-
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<Guid?>((Guid?)value2.Id);
-
-
+                return new RServiceResult<Guid?>(null, "item not found");
             }
-            catch (Exception exp)
+
+            RArtifactItemRecordViewModel viewModel = new RArtifactItemRecordViewModel(); //tags are sorted in this method
+            viewModel.Item = item;
+
+            RArtifactTagViewModel tag = viewModel.FormattedTags.Where(t => t.Id == tagId).FirstOrDefault();
+            RTagValue value1 = tag.Values.Where(v => v.Id == valueId).FirstOrDefault();
+            RTagValue value2;
+            if (up)
             {
-                return new RServiceResult<Guid?>(null, exp.ToString());
+                value2 = tag.Values.Where(v => v.Order < value1.Order).OrderByDescending(v => v.Order).FirstOrDefault();
             }
+            else
+            {
+                value2 = tag.Values.Where(v => v.Order > value1.Order).OrderBy(v => v.Order).FirstOrDefault();
+            }
+
+            if (value2 == null)
+            {
+                return new RServiceResult<Guid?>(null, "Invalid movement");
+            }
+
+
+            int nOrder = value1.Order;
+            value1.Order = value2.Order;
+            value2.Order = nOrder;
+
+            _context.TagValues.UpdateRange(new RTagValue[] { value1, value2 });
+
+            item.LastModified = DateTime.Now;
+            _context.Items.Update(item);
+
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<Guid?>((Guid?)value2.Id);
         }
 
         /// <summary>
@@ -1227,62 +1021,54 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RArtifactItemRecordViewModel>> GetArtifactItemByFrienlyUrl(string artifactUrl, string itemUrl, PublishStatus[] statusArray)
         {
-            try
+            RArtifactMasterRecord parent =
+                 await _context.Artifacts
+                 .Include(a => a.CoverImage)
+                 .Include(a => a.Items).ThenInclude(i => i.Images)
+                 .Include(a => a.Items).ThenInclude(i => i.Tags).ThenInclude(t => t.RTag)
+                 .Where(a => statusArray.Contains(a.Status) && a.FriendlyUrl == artifactUrl)
+                 .AsNoTracking()
+                 .SingleOrDefaultAsync();
+
+            if (parent == null)
+                return new RServiceResult<RArtifactItemRecordViewModel>(null);
+
+            if (parent.Items != null)
+                parent.Items = parent.Items.OrderBy(i => i.Order).ToArray();
+            if (parent.Tags != null)
+                parent.Tags = parent.Tags.OrderBy(a => a.RTag.Order).ToArray();
+
+
+
+            RArtifactItemRecord item =
+                 parent.Items
+                 .Where(i => i.FriendlyUrl == itemUrl)
+                 .SingleOrDefault();
+
+            if (item == null)
+                return new RServiceResult<RArtifactItemRecordViewModel>(null);
+
+            if (item.Images != null)
+                item.Images = item.Images.OrderBy(i => i.Order).ToArray();
+            if (item.Tags != null)
+                item.Tags = item.Tags.OrderBy(a => a.RTag.Order).ToArray();
+
+            RArtifactItemRecord nextItem = parent.Items.Where(i => i.Order > item.Order).OrderBy(i => i.Order).FirstOrDefault();
+            RArtifactItemRecord prevItem = parent.Items.Where(i => i.Order < item.Order).OrderByDescending(i => i.Order).FirstOrDefault();
+
+            RArtifactItemRecordViewModel res = new RArtifactItemRecordViewModel()
             {
-                RArtifactMasterRecord parent =
-                     await _context.Artifacts
-                     .Include(a => a.CoverImage)
-                     .Include(a => a.Items).ThenInclude(i => i.Images)
-                     .Include(a => a.Items).ThenInclude(i => i.Tags).ThenInclude(t => t.RTag)
-                     .Where(a => statusArray.Contains(a.Status) && a.FriendlyUrl == artifactUrl)
-                     .AsNoTracking()
-                     .SingleOrDefaultAsync();
-
-                if (parent == null)
-                    return new RServiceResult<RArtifactItemRecordViewModel>(null);
-
-                if (parent.Items != null)
-                    parent.Items = parent.Items.OrderBy(i => i.Order).ToArray();
-                if (parent.Tags != null)
-                    parent.Tags = parent.Tags.OrderBy(a => a.RTag.Order).ToArray();
-
-
-
-                RArtifactItemRecord item =
-                     parent.Items
-                     .Where(i => i.FriendlyUrl == itemUrl)
-                     .SingleOrDefault();
-
-                if (item == null)
-                    return new RServiceResult<RArtifactItemRecordViewModel>(null);
-
-                if (item.Images != null)
-                    item.Images = item.Images.OrderBy(i => i.Order).ToArray();
-                if (item.Tags != null)
-                    item.Tags = item.Tags.OrderBy(a => a.RTag.Order).ToArray();
-
-                RArtifactItemRecord nextItem = parent.Items.Where(i => i.Order > item.Order).OrderBy(i => i.Order).FirstOrDefault();
-                RArtifactItemRecord prevItem = parent.Items.Where(i => i.Order < item.Order).OrderByDescending(i => i.Order).FirstOrDefault();
-
-                RArtifactItemRecordViewModel res = new RArtifactItemRecordViewModel()
-                {
-                    Item = item,
-                    ParentFriendlyUrl = parent.FriendlyUrl,
-                    ParentName = parent.Name,
-                    ParentImageId = parent.CoverImage.Id,
-                    ParentItemCount = parent.Items.Count(),
-                    NextItemFriendlyUrl = nextItem == null ? "" : nextItem.FriendlyUrl,
-                    NextItemImageId = nextItem == null ? (Guid?)null : nextItem.Images.First().Id,
-                    PreviousItemFriendlyUrl = prevItem == null ? "" : prevItem.FriendlyUrl,
-                    PrevItemImageId = prevItem == null ? (Guid?)null : prevItem.Images.First().Id,
-                };
-
-                return new RServiceResult<RArtifactItemRecordViewModel>(res);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RArtifactItemRecordViewModel>(null, exp.ToString());
-            }
+                Item = item,
+                ParentFriendlyUrl = parent.FriendlyUrl,
+                ParentName = parent.Name,
+                ParentImageId = parent.CoverImage.Id,
+                ParentItemCount = parent.Items.Count(),
+                NextItemFriendlyUrl = nextItem == null ? "" : nextItem.FriendlyUrl,
+                NextItemImageId = nextItem == null ? (Guid?)null : nextItem.Images.First().Id,
+                PreviousItemFriendlyUrl = prevItem == null ? "" : prevItem.FriendlyUrl,
+                PrevItemImageId = prevItem == null ? (Guid?)null : prevItem.Images.First().Id,
+            };
+            return new RServiceResult<RArtifactItemRecordViewModel>(res);
         }
 
 
@@ -1305,46 +1091,39 @@ namespace RMuseum.Services.Implementation
             string pictitle, string picdescription, IFormFile file, string picsrcurl, Stream stream
             )
         {
-            try
+            RServiceResult<RPictureFile> picture = await _pictureFileService.Add(pictitle, picdescription, 1, file, picsrcurl, stream, "", "");
+            if (picture.Result == null)
             {
-                RServiceResult<RPictureFile> picture = await _pictureFileService.Add(pictitle, picdescription, 1, file, picsrcurl, stream, "", "");
-                if (picture.Result == null)
-                {
-                    return new RServiceResult<RArtifactMasterRecord>(null, $"_pictureFileService.Add : {picture.ExceptionString}");
-                }
-
-                RArtifactItemRecord item = new RArtifactItemRecord()
-                {
-                    Order = 1,
-                    CoverImageIndex = 0,
-                    Images = new RPictureFile[] { picture.Result }
-                };
-
-                RArtifactMasterRecord artifact = new RArtifactMasterRecord(name, description)
-                {
-                    Name = name,
-                    NameInEnglish = name,
-                    Description = description,
-                    DescriptionInEnglish = description,
-                    Status = PublishStatus.Draft,
-                    DateTime = DateTime.Now,
-                    LastModified = DateTime.Now,
-                    CoverItemIndex = 0,
-                    Items = new RArtifactItemRecord[] { item },
-                    ItemCount = 1,
-                    CoverImage = picture.Result
-                };
-
-
-                await _context.Artifacts.AddAsync(artifact);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<RArtifactMasterRecord>(artifact);
+                return new RServiceResult<RArtifactMasterRecord>(null, $"_pictureFileService.Add : {picture.ExceptionString}");
             }
-            catch (Exception exp)
+
+            RArtifactItemRecord item = new RArtifactItemRecord()
             {
-                return new RServiceResult<RArtifactMasterRecord>(null, exp.ToString());
-            }
+                Order = 1,
+                CoverImageIndex = 0,
+                Images = new RPictureFile[] { picture.Result }
+            };
+
+            RArtifactMasterRecord artifact = new RArtifactMasterRecord(name, description)
+            {
+                Name = name,
+                NameInEnglish = name,
+                Description = description,
+                DescriptionInEnglish = description,
+                Status = PublishStatus.Draft,
+                DateTime = DateTime.Now,
+                LastModified = DateTime.Now,
+                CoverItemIndex = 0,
+                Items = new RArtifactItemRecord[] { item },
+                ItemCount = 1,
+                CoverImage = picture.Result
+            };
+
+
+            await _context.Artifacts.AddAsync(artifact);
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<RArtifactMasterRecord>(artifact);
 
         }
 
@@ -1399,52 +1178,44 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> RescheduleJobs()
         {
-            try
+
+            ImportJob[] jobs = await _context.ImportJobs.Where(j => j.Status != ImportJobStatus.Succeeded && j.JobType == JobType.ChesterBeatty).OrderByDescending(j => j.ProgressPercent).ToArrayAsync();
+
+            List<string> scheduled = new List<string>();
+
+            foreach (ImportJob job in jobs)
             {
-
-
-                ImportJob[] jobs = await _context.ImportJobs.Where(j => j.Status != ImportJobStatus.Succeeded && j.JobType == JobType.ChesterBeatty).OrderByDescending(j => j.ProgressPercent).ToArrayAsync();
-
-                List<string> scheduled = new List<string>();
-
-                foreach (ImportJob job in jobs)
+                if (job.Status != ImportJobStatus.Failed)
                 {
-                    if (job.Status != ImportJobStatus.Failed)
+                    job.Status = ImportJobStatus.Aborted;
+                    job.EndTime = DateTime.Now;
+                    job.Exception = "Aborted by RescheduleJobs";
+                    _context.Update(job);
+                    await _context.SaveChangesAsync();
+                }
+
+                if (
+                    await _context.ImportJobs.Where(j => j.ResourceNumber == job.ResourceNumber && j.Status == ImportJobStatus.Succeeded).SingleOrDefaultAsync()
+                    !=
+                    null
+                    )
+                    continue;
+
+                if (scheduled.IndexOf(job.ResourceNumber) == -1)
+                {
+                    scheduled.Add(job.ResourceNumber);
+
+                    RServiceResult<bool> rescheduled = await StartImportingFromChesterBeatty(job.ResourceNumber, job.FriendlyUrl);
+                    if (rescheduled.Result)
                     {
-                        job.Status = ImportJobStatus.Aborted;
-                        job.EndTime = DateTime.Now;
-                        job.Exception = "Aborted by RescheduleJobs";
-                        _context.Update(job);
+                        _context.ImportJobs.Remove(job);
                         await _context.SaveChangesAsync();
                     }
 
-                    if (
-                        await _context.ImportJobs.Where(j => j.ResourceNumber == job.ResourceNumber && j.Status == ImportJobStatus.Succeeded).SingleOrDefaultAsync()
-                        !=
-                        null
-                        )
-                        continue;
-
-                    if (scheduled.IndexOf(job.ResourceNumber) == -1)
-                    {
-                        scheduled.Add(job.ResourceNumber);
-
-                        RServiceResult<bool> rescheduled = await StartImportingFromChesterBeatty(job.ResourceNumber, job.FriendlyUrl);
-                        if (rescheduled.Result)
-                        {
-                            _context.ImportJobs.Remove(job);
-                            await _context.SaveChangesAsync();
-                        }
-
-                    }
                 }
+            }
 
-                return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(true, exp.ToString());
-            }
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -1455,56 +1226,49 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> RemoveArtifactHavingNoNoteAndBookmarks(Guid artifactId, bool checkJobs)
         {
-            try
+            RArtifactMasterRecord record = await _context.Artifacts
+                    .Include(a => a.Items).ThenInclude(i => i.Images)
+                    .Include(a => a.Items).ThenInclude(i => i.Tags)
+                    .Include(a => a.Tags)
+                    .Where(a => a.Id == artifactId)
+                    .SingleOrDefaultAsync();
+            if (record == null)
             {
-                RArtifactMasterRecord record = await _context.Artifacts
-                        .Include(a => a.Items).ThenInclude(i => i.Images)
-                        .Include(a => a.Items).ThenInclude(i => i.Tags)
-                        .Include(a => a.Tags)
-                        .Where(a => a.Id == artifactId)
-                        .SingleOrDefaultAsync();
-                if (record == null)
-                {
-                    return new RServiceResult<bool>(false, "Artifact not found.");
-                }
-                if (record.Status == PublishStatus.Published)
-                {
-                    return new RServiceResult<bool>(false, "Can not delete published artifact");
-                }
-
-                if (checkJobs)
-                {
-                    var jobs = await _context.ImportJobs.Where(j => j.ArtifactId == artifactId).ToArrayAsync();
-                    if (jobs.Length > 0)
-                    {
-                        _context.ImportJobs.RemoveRange(jobs);
-                    }
-                }
-
-                var pins = await _context.PinterestLinks.Where(j => j.ArtifactId == artifactId).ToArrayAsync();
-                if (pins.Length > 0)
-                {
-                    _context.PinterestLinks.RemoveRange(pins);
-                }
-
-
-                foreach (RArtifactItemRecord item in record.Items)
-                {
-                    _context.PictureFiles.RemoveRange(item.Images);
-                    _context.TagValues.RemoveRange(item.Tags);
-                }
-
-                _context.Items.RemoveRange(record.Items);
-                _context.TagValues.RemoveRange(record.Tags);
-                _context.Artifacts.Remove(record);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<bool>(true);
+                return new RServiceResult<bool>(false, "Artifact not found.");
             }
-            catch (Exception exp)
+            if (record.Status == PublishStatus.Published)
             {
-                return new RServiceResult<bool>(false, exp.ToString());
+                return new RServiceResult<bool>(false, "Can not delete published artifact");
             }
+
+            if (checkJobs)
+            {
+                var jobs = await _context.ImportJobs.Where(j => j.ArtifactId == artifactId).ToArrayAsync();
+                if (jobs.Length > 0)
+                {
+                    _context.ImportJobs.RemoveRange(jobs);
+                }
+            }
+
+            var pins = await _context.PinterestLinks.Where(j => j.ArtifactId == artifactId).ToArrayAsync();
+            if (pins.Length > 0)
+            {
+                _context.PinterestLinks.RemoveRange(pins);
+            }
+
+
+            foreach (RArtifactItemRecord item in record.Items)
+            {
+                _context.PictureFiles.RemoveRange(item.Images);
+                _context.TagValues.RemoveRange(item.Tags);
+            }
+
+            _context.Items.RemoveRange(record.Items);
+            _context.TagValues.RemoveRange(record.Tags);
+            _context.Artifacts.Remove(record);
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<bool>(true);
         }
 
 
@@ -1601,25 +1365,15 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, ImportJob[] Jobs)>> GetImportJobs(PagingParameterModel paging)
         {
-            try
-            {
-                var source =
-                     _context.ImportJobs
-                     .Select(j => new ImportJob() { Id = j.Id, Artifact = j.Artifact, ArtifactId = j.ArtifactId, EndTime = j.EndTime, Exception = j.Exception, ProgressPercent = j.ProgressPercent, QueueTime = j.QueueTime, FriendlyUrl = j.FriendlyUrl, JobType = j.JobType, ResourceNumber = j.ResourceNumber, SrcContent = "--omitted--", SrcUrl = j.SrcUrl, StartTime = j.StartTime, Status = j.Status })
-                    .OrderByDescending(t => t.QueueTime)
-                    .AsQueryable();
+            var source =
+                 _context.ImportJobs
+                 .Select(j => new ImportJob() { Id = j.Id, Artifact = j.Artifact, ArtifactId = j.ArtifactId, EndTime = j.EndTime, Exception = j.Exception, ProgressPercent = j.ProgressPercent, QueueTime = j.QueueTime, FriendlyUrl = j.FriendlyUrl, JobType = j.JobType, ResourceNumber = j.ResourceNumber, SrcContent = "--omitted--", SrcUrl = j.SrcUrl, StartTime = j.StartTime, Status = j.Status })
+                .OrderByDescending(t => t.QueueTime)
+                .AsQueryable();
+            (PaginationMetadata PagingMeta, ImportJob[] Items) paginatedResult =
+                await QueryablePaginator<ImportJob>.Paginate(source, paging);
 
-                (PaginationMetadata PagingMeta, ImportJob[] Items) paginatedResult =
-                    await QueryablePaginator<ImportJob>.Paginate(source, paging);
-
-
-
-                return new RServiceResult<(PaginationMetadata PagingMeta, ImportJob[] Items)>(paginatedResult);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, ImportJob[] Items)>((PagingMeta: null, Items: null), exp.ToString());
-            }
+            return new RServiceResult<(PaginationMetadata PagingMeta, ImportJob[] Items)>(paginatedResult);
         }
 
         /// <summary>
@@ -1631,32 +1385,25 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserBookmark>> BookmarkArtifact(Guid artifactId, Guid userId, RBookmarkType type)
         {
-            try
+            if ((await _context.UserBookmarks.Where(b => b.RAppUserId == userId && b.RArtifactMasterRecordId == artifactId && b.RBookmarkType == type).SingleOrDefaultAsync()) != null)
             {
-                if ((await _context.UserBookmarks.Where(b => b.RAppUserId == userId && b.RArtifactMasterRecordId == artifactId && b.RBookmarkType == type).SingleOrDefaultAsync()) != null)
+                return new RServiceResult<RUserBookmark>(null, "Artifact is already bookmarked/faved.");
+            }
+
+            RUserBookmark bookmark =
+                new RUserBookmark()
                 {
-                    return new RServiceResult<RUserBookmark>(null, "Artifact is already bookmarked/faved.");
-                }
+                    RAppUserId = userId,
+                    RArtifactMasterRecordId = artifactId,
+                    RBookmarkType = type,
+                    DateTime = DateTime.Now,
+                    Note = ""
+                };
 
-                RUserBookmark bookmark =
-                    new RUserBookmark()
-                    {
-                        RAppUserId = userId,
-                        RArtifactMasterRecordId = artifactId,
-                        RBookmarkType = type,
-                        DateTime = DateTime.Now,
-                        Note = ""
-                    };
+            _context.UserBookmarks.Add(bookmark);
+            await _context.SaveChangesAsync();
 
-                _context.UserBookmarks.Add(bookmark);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<RUserBookmark>(bookmark);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserBookmark>(null, exp.ToString());
-            }
+            return new RServiceResult<RUserBookmark>(bookmark);
         }
 
         /// <summary>
@@ -1667,15 +1414,8 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserBookmark[]>> GetArtifactUserBookmarks(Guid artifactId, Guid userId)
         {
-            try
-            {
-                RUserBookmark[] bookmarks = await _context.UserBookmarks.Where(b => b.RArtifactMasterRecordId == artifactId && b.RAppUserId == userId).ToArrayAsync();
-                return new RServiceResult<RUserBookmark[]>(bookmarks);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserBookmark[]>(null, exp.ToString());
-            }
+            RUserBookmark[] bookmarks = await _context.UserBookmarks.Where(b => b.RArtifactMasterRecordId == artifactId && b.RAppUserId == userId).ToArrayAsync();
+            return new RServiceResult<RUserBookmark[]>(bookmarks);
         }
 
         /// <summary>
@@ -1687,32 +1427,25 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserBookmark>> BookmarkItem(Guid itemId, Guid userId, RBookmarkType type)
         {
-            try
+            if ((await _context.UserBookmarks.Where(b => b.RAppUserId == userId && b.RArtifactItemRecordId == itemId && b.RBookmarkType == type).SingleOrDefaultAsync()) != null)
             {
-                if ((await _context.UserBookmarks.Where(b => b.RAppUserId == userId && b.RArtifactItemRecordId == itemId && b.RBookmarkType == type).SingleOrDefaultAsync()) != null)
+                return new RServiceResult<RUserBookmark>(null, "Item is already bookmarked/faved.");
+            }
+
+            RUserBookmark bookmark =
+                new RUserBookmark()
                 {
-                    return new RServiceResult<RUserBookmark>(null, "Item is already bookmarked/faved.");
-                }
+                    RAppUserId = userId,
+                    RArtifactItemRecordId = itemId,
+                    RBookmarkType = type,
+                    DateTime = DateTime.Now,
+                    Note = ""
+                };
 
-                RUserBookmark bookmark =
-                    new RUserBookmark()
-                    {
-                        RAppUserId = userId,
-                        RArtifactItemRecordId = itemId,
-                        RBookmarkType = type,
-                        DateTime = DateTime.Now,
-                        Note = ""
-                    };
+            _context.UserBookmarks.Add(bookmark);
+            await _context.SaveChangesAsync();
 
-                _context.UserBookmarks.Add(bookmark);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<RUserBookmark>(bookmark);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserBookmark>(null, exp.ToString());
-            }
+            return new RServiceResult<RUserBookmark>(bookmark);
         }
 
         /// <summary>
@@ -1723,15 +1456,8 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserBookmark[]>> GeItemUserBookmarks(Guid itemId, Guid userId)
         {
-            try
-            {
-                RUserBookmark[] bookmarks = await _context.UserBookmarks.Where(b => b.RArtifactItemRecordId == itemId && b.RAppUserId == userId).ToArrayAsync();
-                return new RServiceResult<RUserBookmark[]>(bookmarks);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserBookmark[]>(null, exp.ToString());
-            }
+            RUserBookmark[] bookmarks = await _context.UserBookmarks.Where(b => b.RArtifactItemRecordId == itemId && b.RAppUserId == userId).ToArrayAsync();
+            return new RServiceResult<RUserBookmark[]>(bookmarks);
         }
 
         /// <summary>
@@ -1742,22 +1468,15 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> UpdateUserBookmark(Guid bookmarkId, string note)
         {
-            try
+            RUserBookmark bookmark = await _context.UserBookmarks.Where(b => b.Id == bookmarkId).SingleOrDefaultAsync();
+            if (bookmark == null)
             {
-                RUserBookmark bookmark = await _context.UserBookmarks.Where(b => b.Id == bookmarkId).SingleOrDefaultAsync();
-                if (bookmark == null)
-                {
-                    return new RServiceResult<bool>(false, "bookmark not found");
-                }
-                bookmark.Note = note;
-                _context.UserBookmarks.Update(bookmark);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<bool>(true);
+                return new RServiceResult<bool>(false, "bookmark not found");
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            bookmark.Note = note;
+            _context.UserBookmarks.Update(bookmark);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -1767,21 +1486,14 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> DeleteUserBookmark(Guid bookmarkId)
         {
-            try
+            RUserBookmark bookmark = await _context.UserBookmarks.Where(b => b.Id == bookmarkId).SingleOrDefaultAsync();
+            if (bookmark == null)
             {
-                RUserBookmark bookmark = await _context.UserBookmarks.Where(b => b.Id == bookmarkId).SingleOrDefaultAsync();
-                if (bookmark == null)
-                {
-                    return new RServiceResult<bool>(false, "bookmark not found");
-                }
-                _context.UserBookmarks.Remove(bookmark);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<bool>(true);
+                return new RServiceResult<bool>(false, "bookmark not found");
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            _context.UserBookmarks.Remove(bookmark);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -1794,66 +1506,57 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, RUserBookmarkViewModel[] Bookmarks)>> GetBookmarks(PagingParameterModel paging, Guid userId, RBookmarkType type, PublishStatus[] statusArray)
         {
-            try
+            var source =
+                 _context.UserBookmarks
+                 .Include(b => b.RArtifactMasterRecord).ThenInclude(a => a.CoverImage)
+                 .Include(b => b.RArtifactItemRecord).ThenInclude(b => b.Images)
+                 .Where(b => b.RAppUserId == userId && b.RBookmarkType == type)
+                .OrderByDescending(b => b.DateTime)
+                .AsQueryable();
+
+            (PaginationMetadata PagingMeta, RUserBookmark[] Bookmarks) paginatedResult1 =
+                await QueryablePaginator<RUserBookmark>.Paginate(source, paging);
+
+
+            List<RUserBookmarkViewModel> finalList = new List<RUserBookmarkViewModel>();
+            foreach (RUserBookmark bookmark in paginatedResult1.Bookmarks)
             {
-                var source =
-                     _context.UserBookmarks
-                     .Include(b => b.RArtifactMasterRecord).ThenInclude(a => a.CoverImage)
-                     .Include(b => b.RArtifactItemRecord).ThenInclude(b => b.Images)
-                     .Where(b => b.RAppUserId == userId && b.RBookmarkType == type)
-                    .OrderByDescending(b => b.DateTime)
-                    .AsQueryable();
-
-                (PaginationMetadata PagingMeta, RUserBookmark[] Bookmarks) paginatedResult1 =
-                    await QueryablePaginator<RUserBookmark>.Paginate(source, paging);
-
-
-                List<RUserBookmarkViewModel> finalList = new List<RUserBookmarkViewModel>();
-                foreach (RUserBookmark bookmark in paginatedResult1.Bookmarks)
+                RUserBookmarkViewModel model = new RUserBookmarkViewModel()
                 {
-                    RUserBookmarkViewModel model = new RUserBookmarkViewModel()
-                    {
-                        Id = bookmark.Id,
-                        RAppUserId = bookmark.RAppUserId,
-                        RArtifactMasterRecord = bookmark.RArtifactMasterRecord,
-                        RArtifactItemRecord = null,//this should be filled by an external call              
-                        DateTime = bookmark.DateTime,
-                        RBookmarkType = bookmark.RBookmarkType,
-                        Note = bookmark.Note
-                    };
-                    if (bookmark.RArtifactMasterRecord != null)
-                    {
-                        if (!statusArray.Contains(bookmark.RArtifactMasterRecord.Status))
-                            continue; //this may result in paging bugs
-                    }
-                    if (bookmark.RArtifactItemRecord != null)
-                    {
-                        RArtifactMasterRecord parent =
-                             await _context.Artifacts
-                             .Where(a => statusArray.Contains(a.Status) && a.Id == bookmark.RArtifactItemRecord.RArtifactMasterRecordId)
-                             .AsNoTracking()
-                             .SingleOrDefaultAsync();
-
-                        if (parent == null)
-                            continue;
-
-                        model.RArtifactItemRecord = new RArtifactItemRecordViewModel()
-                        {
-                            Item = bookmark.RArtifactItemRecord
-                        };
-                        model.RArtifactItemRecord.ParentFriendlyUrl = parent.FriendlyUrl;
-                        model.RArtifactItemRecord.ParentName = parent.Name;
-                    }
-                    finalList.Add(model);
+                    Id = bookmark.Id,
+                    RAppUserId = bookmark.RAppUserId,
+                    RArtifactMasterRecord = bookmark.RArtifactMasterRecord,
+                    RArtifactItemRecord = null,//this should be filled by an external call              
+                    DateTime = bookmark.DateTime,
+                    RBookmarkType = bookmark.RBookmarkType,
+                    Note = bookmark.Note
+                };
+                if (bookmark.RArtifactMasterRecord != null)
+                {
+                    if (!statusArray.Contains(bookmark.RArtifactMasterRecord.Status))
+                        continue; //this may result in paging bugs
                 }
+                if (bookmark.RArtifactItemRecord != null)
+                {
+                    RArtifactMasterRecord parent =
+                         await _context.Artifacts
+                         .Where(a => statusArray.Contains(a.Status) && a.Id == bookmark.RArtifactItemRecord.RArtifactMasterRecordId)
+                         .AsNoTracking()
+                         .SingleOrDefaultAsync();
 
+                    if (parent == null)
+                        continue;
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, RUserBookmarkViewModel[] Bookmarks)>((paginatedResult1.PagingMeta, finalList.ToArray()));
+                    model.RArtifactItemRecord = new RArtifactItemRecordViewModel()
+                    {
+                        Item = bookmark.RArtifactItemRecord
+                    };
+                    model.RArtifactItemRecord.ParentFriendlyUrl = parent.FriendlyUrl;
+                    model.RArtifactItemRecord.ParentName = parent.Name;
+                }
+                finalList.Add(model);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, RUserBookmarkViewModel[] Bookmarks)>((PagingMeta: null, Bookmarks: null), exp.ToString());
-            }
+            return new RServiceResult<(PaginationMetadata PagingMeta, RUserBookmarkViewModel[] Bookmarks)>((paginatedResult1.PagingMeta, finalList.ToArray()));
         }
 
         /// <summary>
@@ -1867,77 +1570,69 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserNoteViewModel>> AddUserNoteToArtifact(Guid artifactId, Guid userId, RNoteType type, string noteContents, Guid? referenceNoteId)
         {
-            try
-            {
+            RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(userId);
+            if (!string.IsNullOrEmpty(userInfo.ExceptionString))
+                return new RServiceResult<RUserNoteViewModel>(null, userInfo.ExceptionString);
 
-                RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(userId);
-                if (!string.IsNullOrEmpty(userInfo.ExceptionString))
-                    return new RServiceResult<RUserNoteViewModel>(null, userInfo.ExceptionString);
-
-                RUserNote note =
-                    new RUserNote()
-                    {
-                        RAppUserId = userId,
-                        RArtifactMasterRecordId = artifactId,
-                        NoteType = type,
-                        HtmlContent = noteContents,
-                        DateTime = DateTime.Now,
-                        LastModified = DateTime.Now,
-                        Modified = false,
-                        Status = PublishStatus.Published,
-                        ReferenceNoteId = referenceNoteId
-                    };
-
-                _context.UserNotes.Add(note);
-                await _context.SaveChangesAsync(); //we need note.Id for the next step
-
-                if (referenceNoteId != null)
+            RUserNote note =
+                new RUserNote()
                 {
-                    RUserNote referenceNote = await _context.UserNotes.Where(n => n.Id == referenceNoteId).SingleOrDefaultAsync();
-                    if (referenceNote == null)
-                    {
-                        return new RServiceResult<RUserNoteViewModel>(null, "Reference note not found!");
-                    }
+                    RAppUserId = userId,
+                    RArtifactMasterRecordId = artifactId,
+                    NoteType = type,
+                    HtmlContent = noteContents,
+                    DateTime = DateTime.Now,
+                    LastModified = DateTime.Now,
+                    Modified = false,
+                    Status = PublishStatus.Published,
+                    ReferenceNoteId = referenceNoteId
+                };
 
-                    if (referenceNote.RAppUserId != userId)
-                    {
-                        RArtifactMasterRecord artificat = await _context.Artifacts.Where(a => a.Id == artifactId).SingleOrDefaultAsync();
-                        await _notificationService.PushNotification
-                            (
-                            referenceNote.RAppUserId,
-                            $"پاسخگویی {userInfo.Result.NickName} به یادداشت شما دربارهٔ {artificat.Name}",
-                            $"برای مشاهدهٔ پاسخ ارائه شده <a href=\"/items/{artificat.FriendlyUrl}#{note.Id}\">اینجا</a> را ببینید.<br />" +
-                            $"پاسخ داده شده: <br />" +
-                            $"<blockquote cite=\"/item/{artificat.FriendlyUrl}#{note.Id}\">{note.HtmlContent}</blockquote><br />" +
-                            $"یادداشت شما: <br />" +
-                            $"<blockquote cite=\"/item/{artificat.FriendlyUrl}#{referenceNote.Id}\">{referenceNote.HtmlContent}</blockquote>"
-                            );
-                    }
+            _context.UserNotes.Add(note);
+            await _context.SaveChangesAsync(); //we need note.Id for the next step
+
+            if (referenceNoteId != null)
+            {
+                RUserNote referenceNote = await _context.UserNotes.Where(n => n.Id == referenceNoteId).SingleOrDefaultAsync();
+                if (referenceNote == null)
+                {
+                    return new RServiceResult<RUserNoteViewModel>(null, "Reference note not found!");
                 }
 
-                return new RServiceResult<RUserNoteViewModel>
-                    (
-                    new RUserNoteViewModel()
-                    {
-                        Id = note.Id,
-                        RAppUserId = note.RAppUserId,
-                        UserName = userInfo.Result.NickName,
-                        RUserImageId = userInfo.Result.RImageId,
-                        Modified = note.Modified,
-                        NoteType = note.NoteType,
-                        HtmlContent = note.HtmlContent,
-                        ReferenceNoteId = note.ReferenceNoteId,
-                        Status = note.Status,
-                        Notes = new RUserNoteViewModel[] { },
-                        DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
-                        LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
-                    }
-                    );
+                if (referenceNote.RAppUserId != userId)
+                {
+                    RArtifactMasterRecord artificat = await _context.Artifacts.Where(a => a.Id == artifactId).SingleOrDefaultAsync();
+                    await _notificationService.PushNotification
+                        (
+                        referenceNote.RAppUserId,
+                        $"پاسخگویی {userInfo.Result.NickName} به یادداشت شما دربارهٔ {artificat.Name}",
+                        $"برای مشاهدهٔ پاسخ ارائه شده <a href=\"/items/{artificat.FriendlyUrl}#{note.Id}\">اینجا</a> را ببینید.<br />" +
+                        $"پاسخ داده شده: <br />" +
+                        $"<blockquote cite=\"/item/{artificat.FriendlyUrl}#{note.Id}\">{note.HtmlContent}</blockquote><br />" +
+                        $"یادداشت شما: <br />" +
+                        $"<blockquote cite=\"/item/{artificat.FriendlyUrl}#{referenceNote.Id}\">{referenceNote.HtmlContent}</blockquote>"
+                        );
+                }
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNoteViewModel>(null, exp.ToString());
-            }
+
+            return new RServiceResult<RUserNoteViewModel>
+                (
+                new RUserNoteViewModel()
+                {
+                    Id = note.Id,
+                    RAppUserId = note.RAppUserId,
+                    UserName = userInfo.Result.NickName,
+                    RUserImageId = userInfo.Result.RImageId,
+                    Modified = note.Modified,
+                    NoteType = note.NoteType,
+                    HtmlContent = note.HtmlContent,
+                    ReferenceNoteId = note.ReferenceNoteId,
+                    Status = note.Status,
+                    Notes = new RUserNoteViewModel[] { },
+                    DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                    LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                }
+                );
         }
 
         /// <summary>
@@ -1951,79 +1646,71 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserNoteViewModel>> AddUserNoteToArtifactItem(Guid itemId, Guid userId, RNoteType type, string noteContents, Guid? referenceNoteId)
         {
-            try
-            {
+            RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(userId);
+            if (!string.IsNullOrEmpty(userInfo.ExceptionString))
+                return new RServiceResult<RUserNoteViewModel>(null, userInfo.ExceptionString);
 
-                RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(userId);
-                if (!string.IsNullOrEmpty(userInfo.ExceptionString))
-                    return new RServiceResult<RUserNoteViewModel>(null, userInfo.ExceptionString);
-
-                RUserNote note =
-                    new RUserNote()
-                    {
-                        RAppUserId = userId,
-                        RArtifactItemRecordId = itemId,
-                        NoteType = type,
-                        HtmlContent = noteContents,
-                        DateTime = DateTime.Now,
-                        LastModified = DateTime.Now,
-                        Modified = false,
-                        Status = PublishStatus.Published,
-                        ReferenceNoteId = referenceNoteId
-                    };
-
-                _context.UserNotes.Add(note);
-                await _context.SaveChangesAsync();//we need note.Id for the next step
-
-                if (referenceNoteId != null)
+            RUserNote note =
+                new RUserNote()
                 {
-                    RUserNote referenceNote = await _context.UserNotes.Where(n => n.Id == referenceNoteId).SingleOrDefaultAsync();
-                    if (referenceNote == null)
-                    {
-                        return new RServiceResult<RUserNoteViewModel>(null, "Reference note not found!");
-                    }
+                    RAppUserId = userId,
+                    RArtifactItemRecordId = itemId,
+                    NoteType = type,
+                    HtmlContent = noteContents,
+                    DateTime = DateTime.Now,
+                    LastModified = DateTime.Now,
+                    Modified = false,
+                    Status = PublishStatus.Published,
+                    ReferenceNoteId = referenceNoteId
+                };
 
-                    if (referenceNote.RAppUserId != userId)
-                    {
-                        RArtifactItemRecord item = await _context.Items.Where(a => a.Id == itemId).SingleOrDefaultAsync();
-                        RArtifactMasterRecord artificat = await _context.Artifacts.Where(a => a.Id == item.RArtifactMasterRecordId).SingleOrDefaultAsync();
-                        await _notificationService.PushNotification
-                            (
-                            referenceNote.RAppUserId,
-                            $"پاسخگویی {userInfo.Result.NickName} به یادداشت شما دربارهٔ {artificat.Name} « {item.Name}",
-                            $"برای مشاهدهٔ پاسخ ارائه شده <a href=\"/items/{artificat.FriendlyUrl}/{item.FriendlyUrl}#{note.Id}\">اینجا</a> را ببینید.<br />" +
-                            $"پاسخ داده شده: <br />" +
-                            $"<blockquote cite=\"/item/{artificat.FriendlyUrl}/{item.FriendlyUrl}#{note.Id}\">{note.HtmlContent}</blockquote><br />" +
-                            $"یادداشت شما: <br />" +
-                            $"<blockquote cite=\"/item/{artificat.FriendlyUrl}/{item.FriendlyUrl}#{referenceNote.Id}\">{referenceNote.HtmlContent}</blockquote>"
-                            );
-                    }
+            _context.UserNotes.Add(note);
+            await _context.SaveChangesAsync();//we need note.Id for the next step
+
+            if (referenceNoteId != null)
+            {
+                RUserNote referenceNote = await _context.UserNotes.Where(n => n.Id == referenceNoteId).SingleOrDefaultAsync();
+                if (referenceNote == null)
+                {
+                    return new RServiceResult<RUserNoteViewModel>(null, "Reference note not found!");
                 }
 
+                if (referenceNote.RAppUserId != userId)
+                {
+                    RArtifactItemRecord item = await _context.Items.Where(a => a.Id == itemId).SingleOrDefaultAsync();
+                    RArtifactMasterRecord artificat = await _context.Artifacts.Where(a => a.Id == item.RArtifactMasterRecordId).SingleOrDefaultAsync();
+                    await _notificationService.PushNotification
+                        (
+                        referenceNote.RAppUserId,
+                        $"پاسخگویی {userInfo.Result.NickName} به یادداشت شما دربارهٔ {artificat.Name} « {item.Name}",
+                        $"برای مشاهدهٔ پاسخ ارائه شده <a href=\"/items/{artificat.FriendlyUrl}/{item.FriendlyUrl}#{note.Id}\">اینجا</a> را ببینید.<br />" +
+                        $"پاسخ داده شده: <br />" +
+                        $"<blockquote cite=\"/item/{artificat.FriendlyUrl}/{item.FriendlyUrl}#{note.Id}\">{note.HtmlContent}</blockquote><br />" +
+                        $"یادداشت شما: <br />" +
+                        $"<blockquote cite=\"/item/{artificat.FriendlyUrl}/{item.FriendlyUrl}#{referenceNote.Id}\">{referenceNote.HtmlContent}</blockquote>"
+                        );
+                }
+            }
 
-                return new RServiceResult<RUserNoteViewModel>
-                    (
-                    new RUserNoteViewModel()
-                    {
-                        Id = note.Id,
-                        RAppUserId = note.RAppUserId,
-                        UserName = userInfo.Result.NickName,
-                        RUserImageId = userInfo.Result.RImageId,
-                        Modified = note.Modified,
-                        NoteType = note.NoteType,
-                        HtmlContent = note.HtmlContent,
-                        ReferenceNoteId = note.ReferenceNoteId,
-                        Status = note.Status,
-                        Notes = new RUserNoteViewModel[] { },
-                        DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
-                        LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
-                    }
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNoteViewModel>(null, exp.ToString());
-            }
+
+            return new RServiceResult<RUserNoteViewModel>
+                (
+                new RUserNoteViewModel()
+                {
+                    Id = note.Id,
+                    RAppUserId = note.RAppUserId,
+                    UserName = userInfo.Result.NickName,
+                    RUserImageId = userInfo.Result.RImageId,
+                    Modified = note.Modified,
+                    NoteType = note.NoteType,
+                    HtmlContent = note.HtmlContent,
+                    ReferenceNoteId = note.ReferenceNoteId,
+                    Status = note.Status,
+                    Notes = new RUserNoteViewModel[] { },
+                    DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                    LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                }
+                );
         }
 
         /// <summary>
@@ -2035,40 +1722,119 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserNoteViewModel>> EditUserNote(Guid noteId, Guid? userId, string noteContents)
         {
-            try
+            RUserNote note = await _context.UserNotes.
+                Where(n => n.Id == noteId).
+                SingleOrDefaultAsync();
+            if (note == null)
             {
-                RUserNote note = await _context.UserNotes.
-                    Where(n => n.Id == noteId).
-                    SingleOrDefaultAsync();
-                if (note == null)
+                return new RServiceResult<RUserNoteViewModel>(null, "Note not found.");
+            }
+
+            if (userId != null) //sending null here means user is a moderator
+            {
+                if (userId != note.RAppUserId)
                 {
-                    return new RServiceResult<RUserNoteViewModel>(null, "Note not found.");
+                    return new RServiceResult<RUserNoteViewModel>(null, "Note only can be edited by its owner");
                 }
+            }
 
-                if (userId != null) //sending null here means user is a moderator
+            RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(note.RAppUserId);
+            if (!string.IsNullOrEmpty(userInfo.ExceptionString))
+                return new RServiceResult<RUserNoteViewModel>(null, userInfo.ExceptionString);
+
+
+
+            note.HtmlContent = noteContents;
+            note.LastModified = DateTime.Now;
+
+            _context.UserNotes.Update(note);
+            await _context.SaveChangesAsync();
+
+
+            return new RServiceResult<RUserNoteViewModel>
+                (
+                new RUserNoteViewModel()
                 {
-                    if (userId != note.RAppUserId)
-                    {
-                        return new RServiceResult<RUserNoteViewModel>(null, "Note only can be edited by its owner");
-                    }
+                    Id = note.Id,
+                    RAppUserId = note.RAppUserId,
+                    UserName = userInfo.Result.NickName,
+                    RUserImageId = userInfo.Result.RImageId,
+                    Modified = note.Modified,
+                    NoteType = note.NoteType,
+                    HtmlContent = note.HtmlContent,
+                    ReferenceNoteId = note.ReferenceNoteId,
+                    Status = note.Status,
+                    Notes = new RUserNoteViewModel[] { },
+                    DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                    LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
                 }
+                );
+        }
+
+        /// <summary>
+        /// delete note
+        /// </summary>
+        /// <param name="noteId"></param>
+        /// <param name="userId">sending null here means user is a moderator or the note is being deleted in a recursive delete of referenced notes</param>
+        /// <returns>list of notes deleted</returns>
+        public async Task<RServiceResult<Guid[]>> DeleteUserNote(Guid noteId, Guid? userId)
+        {
+            RUserNote note = await _context.UserNotes.
+                Where(n => n.Id == noteId).
+                SingleOrDefaultAsync();
+            if (note == null)
+            {
+                return new RServiceResult<Guid[]>(null, "Note not found.");
+            }
+
+            if (userId != null) //sending null here means user is a moderator or the note is being deleted in a recursive delete of referenced notes
+            {
+                if (userId != note.RAppUserId)
+                {
+                    return new RServiceResult<Guid[]>(null, "Note only can be deleted by its owner");
+                }
+            }
+
+            List<Guid> deletedNotesIdSet = new List<Guid>();
+
+            RUserNote[] relatedNotes = await _context.UserNotes.Where(n => n.ReferenceNoteId == noteId).ToArrayAsync();
+            foreach (RUserNote relatedNote in relatedNotes)
+            {
+                deletedNotesIdSet.Add(relatedNote.Id);
+
+                RServiceResult<Guid[]> refDel = await DeleteUserNote(relatedNote.Id, null);
+                if (!string.IsNullOrEmpty(refDel.ExceptionString))
+                    return new RServiceResult<Guid[]>(null, refDel.ExceptionString);
+            }
+
+            deletedNotesIdSet.Add(noteId);
+
+            _context.UserNotes.Remove(note);
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<Guid[]>(deletedNotesIdSet.ToArray());
+        }
 
 
+        /// <summary>
+        /// get artifact private user notes
+        /// </summary>
+        /// <param name="artifactId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RUserNoteViewModel[]>> GetArtifactUserNotes(Guid artifactId, Guid userId)
+        {
+            RUserNote[] notes = await _context.UserNotes.
+                Where(b => b.RArtifactMasterRecordId == artifactId && b.RAppUserId == userId && b.NoteType == RNoteType.Private).
+                OrderBy(n => n.DateTime).ToArrayAsync();
 
-                RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(note.RAppUserId);
-                if (!string.IsNullOrEmpty(userInfo.ExceptionString))
-                    return new RServiceResult<RUserNoteViewModel>(null, userInfo.ExceptionString);
+            RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(userId);
+            if (!string.IsNullOrEmpty(userInfo.ExceptionString))
+                return new RServiceResult<RUserNoteViewModel[]>(null, userInfo.ExceptionString);
 
-
-
-                note.HtmlContent = noteContents;
-                note.LastModified = DateTime.Now;
-
-                _context.UserNotes.Update(note);
-                await _context.SaveChangesAsync();
-
-
-                return new RServiceResult<RUserNoteViewModel>
+            List<RUserNoteViewModel> res = new List<RUserNoteViewModel>();
+            foreach (RUserNote note in notes)
+                res.Add
                     (
                     new RUserNoteViewModel()
                     {
@@ -2086,110 +1852,8 @@ namespace RMuseum.Services.Implementation
                         LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
                     }
                     );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNoteViewModel>(null, exp.ToString());
-            }
-        }
 
-        /// <summary>
-        /// delete note
-        /// </summary>
-        /// <param name="noteId"></param>
-        /// <param name="userId">sending null here means user is a moderator or the note is being deleted in a recursive delete of referenced notes</param>
-        /// <returns>list of notes deleted</returns>
-        public async Task<RServiceResult<Guid[]>> DeleteUserNote(Guid noteId, Guid? userId)
-        {
-            try
-            {
-                RUserNote note = await _context.UserNotes.
-                    Where(n => n.Id == noteId).
-                    SingleOrDefaultAsync();
-                if (note == null)
-                {
-                    return new RServiceResult<Guid[]>(null, "Note not found.");
-                }
-
-                if (userId != null) //sending null here means user is a moderator or the note is being deleted in a recursive delete of referenced notes
-                {
-                    if (userId != note.RAppUserId)
-                    {
-                        return new RServiceResult<Guid[]>(null, "Note only can be deleted by its owner");
-                    }
-                }
-
-                List<Guid> deletedNotesIdSet = new List<Guid>();
-
-                RUserNote[] relatedNotes = await _context.UserNotes.Where(n => n.ReferenceNoteId == noteId).ToArrayAsync();
-                foreach (RUserNote relatedNote in relatedNotes)
-                {
-                    deletedNotesIdSet.Add(relatedNote.Id);
-
-                    RServiceResult<Guid[]> refDel = await DeleteUserNote(relatedNote.Id, null);
-                    if (!string.IsNullOrEmpty(refDel.ExceptionString))
-                        return new RServiceResult<Guid[]>(null, refDel.ExceptionString);
-                }
-
-                deletedNotesIdSet.Add(noteId);
-
-                _context.UserNotes.Remove(note);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<Guid[]>(deletedNotesIdSet.ToArray());
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<Guid[]>(null, exp.ToString());
-            }
-        }
-
-
-        /// <summary>
-        /// get artifact private user notes
-        /// </summary>
-        /// <param name="artifactId"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<RUserNoteViewModel[]>> GetArtifactUserNotes(Guid artifactId, Guid userId)
-        {
-            try
-            {
-                RUserNote[] notes = await _context.UserNotes.
-                    Where(b => b.RArtifactMasterRecordId == artifactId && b.RAppUserId == userId && b.NoteType == RNoteType.Private).
-                    OrderBy(n => n.DateTime).ToArrayAsync();
-
-                RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(userId);
-                if (!string.IsNullOrEmpty(userInfo.ExceptionString))
-                    return new RServiceResult<RUserNoteViewModel[]>(null, userInfo.ExceptionString);
-
-                List<RUserNoteViewModel> res = new List<RUserNoteViewModel>();
-                foreach (RUserNote note in notes)
-                    res.Add
-                        (
-                        new RUserNoteViewModel()
-                        {
-                            Id = note.Id,
-                            RAppUserId = note.RAppUserId,
-                            UserName = userInfo.Result.NickName,
-                            RUserImageId = userInfo.Result.RImageId,
-                            Modified = note.Modified,
-                            NoteType = note.NoteType,
-                            HtmlContent = note.HtmlContent,
-                            ReferenceNoteId = note.ReferenceNoteId,
-                            Status = note.Status,
-                            Notes = new RUserNoteViewModel[] { },
-                            DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
-                            LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
-                        }
-                        );
-
-                return new RServiceResult<RUserNoteViewModel[]>(res.ToArray());
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNoteViewModel[]>(null, exp.ToString());
-            }
+            return new RServiceResult<RUserNoteViewModel[]>(res.ToArray());
         }
 
         /// <summary>
@@ -2259,14 +1923,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserNoteViewModel[]>> GetArtifactPublicNotes(Guid artifactId)
         {
-            try
-            {
-                return new RServiceResult<RUserNoteViewModel[]>(await _GetArtifactPublicNotes(artifactId, null));
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNoteViewModel[]>(null, exp.ToString());
-            }
+            return new RServiceResult<RUserNoteViewModel[]>(await _GetArtifactPublicNotes(artifactId, null));
         }
 
         /// <summary>
@@ -2277,43 +1934,36 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserNoteViewModel[]>> GetArtifactItemUserNotes(Guid itemId, Guid userId)
         {
-            try
-            {
-                RUserNote[] notes = await _context.UserNotes.
-                    Where(b => b.RArtifactItemRecordId == itemId && b.RAppUserId == userId && b.NoteType == RNoteType.Private).
-                    OrderBy(n => n.DateTime).ToArrayAsync();
+            RUserNote[] notes = await _context.UserNotes.
+                Where(b => b.RArtifactItemRecordId == itemId && b.RAppUserId == userId && b.NoteType == RNoteType.Private).
+                OrderBy(n => n.DateTime).ToArrayAsync();
 
-                RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(userId);
-                if (!string.IsNullOrEmpty(userInfo.ExceptionString))
-                    return new RServiceResult<RUserNoteViewModel[]>(null, userInfo.ExceptionString);
+            RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(userId);
+            if (!string.IsNullOrEmpty(userInfo.ExceptionString))
+                return new RServiceResult<RUserNoteViewModel[]>(null, userInfo.ExceptionString);
 
-                List<RUserNoteViewModel> res = new List<RUserNoteViewModel>();
-                foreach (RUserNote note in notes)
-                    res.Add
-                        (
-                        new RUserNoteViewModel()
-                        {
-                            Id = note.Id,
-                            RAppUserId = note.RAppUserId,
-                            UserName = userInfo.Result.NickName,
-                            RUserImageId = userInfo.Result.RImageId,
-                            Modified = note.Modified,
-                            NoteType = note.NoteType,
-                            HtmlContent = note.HtmlContent,
-                            ReferenceNoteId = note.ReferenceNoteId,
-                            Status = note.Status,
-                            Notes = new RUserNoteViewModel[] { },
-                            DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
-                            LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
-                        }
-                        );
+            List<RUserNoteViewModel> res = new List<RUserNoteViewModel>();
+            foreach (RUserNote note in notes)
+                res.Add
+                    (
+                    new RUserNoteViewModel()
+                    {
+                        Id = note.Id,
+                        RAppUserId = note.RAppUserId,
+                        UserName = userInfo.Result.NickName,
+                        RUserImageId = userInfo.Result.RImageId,
+                        Modified = note.Modified,
+                        NoteType = note.NoteType,
+                        HtmlContent = note.HtmlContent,
+                        ReferenceNoteId = note.ReferenceNoteId,
+                        Status = note.Status,
+                        Notes = new RUserNoteViewModel[] { },
+                        DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                        LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                    }
+                    );
 
-                return new RServiceResult<RUserNoteViewModel[]>(res.ToArray());
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNoteViewModel[]>(null, exp.ToString());
-            }
+            return new RServiceResult<RUserNoteViewModel[]>(res.ToArray());
         }
 
         /// <summary>
@@ -2382,15 +2032,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserNoteViewModel[]>> GetArtifactItemPublicNotes(Guid itemId)
         {
-            try
-            {
-
-                return new RServiceResult<RUserNoteViewModel[]>(await _GetArtifactItemPublicNotes(itemId, null));
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNoteViewModel[]>(null, exp.ToString());
-            }
+            return new RServiceResult<RUserNoteViewModel[]>(await _GetArtifactItemPublicNotes(itemId, null));
         }
 
         /// <summary>
@@ -2403,84 +2045,77 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>> GetUserNotes(Guid userId, PagingParameterModel paging, RNoteType type, PublishStatus[] statusArray)
         {
-            try
+            var source =
+                 _context.UserNotes
+                 .Include(b => b.RArtifactMasterRecord).ThenInclude(a => a.CoverImage)
+                 .Include(b => b.RArtifactItemRecord).ThenInclude(b => b.Images)
+                 .Where(b => b.RAppUserId == userId && b.NoteType == type)
+                .OrderByDescending(b => b.DateTime)
+                .AsQueryable();
+
+            (PaginationMetadata PagingMeta, RUserNote[] Notes) paginatedResult1 =
+                await QueryablePaginator<RUserNote>.Paginate(source, paging);
+
+            RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(userId);
+            if (!string.IsNullOrEmpty(userInfo.ExceptionString))
+                return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>((PagingMeta: null, Notes: null), userInfo.ExceptionString);
+
+            PublicRAppUser user = userInfo.Result;
+
+            List<RUserNoteViewModel> finalList = new List<RUserNoteViewModel>();
+            foreach (RUserNote note in paginatedResult1.Notes)
             {
-                var source =
-                     _context.UserNotes
-                     .Include(b => b.RArtifactMasterRecord).ThenInclude(a => a.CoverImage)
-                     .Include(b => b.RArtifactItemRecord).ThenInclude(b => b.Images)
-                     .Where(b => b.RAppUserId == userId && b.NoteType == type)
-                    .OrderByDescending(b => b.DateTime)
-                    .AsQueryable();
-
-                (PaginationMetadata PagingMeta, RUserNote[] Notes) paginatedResult1 =
-                    await QueryablePaginator<RUserNote>.Paginate(source, paging);
-
-                RServiceResult<PublicRAppUser> userInfo = await _userService.GetUserInformation(userId);
-                if (!string.IsNullOrEmpty(userInfo.ExceptionString))
-                    return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>((PagingMeta: null, Notes: null), userInfo.ExceptionString);
-
-                PublicRAppUser user = userInfo.Result;
-
-                List<RUserNoteViewModel> finalList = new List<RUserNoteViewModel>();
-                foreach (RUserNote note in paginatedResult1.Notes)
+                RUserNoteViewModel model =
+                    new RUserNoteViewModel()
+                    {
+                        Id = note.Id,
+                        RAppUserId = note.RAppUserId,
+                        UserName = user.NickName,
+                        RUserImageId = user.RImageId,
+                        Modified = note.Modified,
+                        NoteType = note.NoteType,
+                        HtmlContent = note.HtmlContent,
+                        ReferenceNoteId = note.ReferenceNoteId,
+                        Status = note.Status,
+                        Notes = new RUserNoteViewModel[] { },
+                        DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                        LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                    };
+                if (note.RArtifactMasterRecord != null)
                 {
-                    RUserNoteViewModel model =
-                        new RUserNoteViewModel()
-                        {
-                            Id = note.Id,
-                            RAppUserId = note.RAppUserId,
-                            UserName = user.NickName,
-                            RUserImageId = user.RImageId,
-                            Modified = note.Modified,
-                            NoteType = note.NoteType,
-                            HtmlContent = note.HtmlContent,
-                            ReferenceNoteId = note.ReferenceNoteId,
-                            Status = note.Status,
-                            Notes = new RUserNoteViewModel[] { },
-                            DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
-                            LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
-                        };
-                    if (note.RArtifactMasterRecord != null)
-                    {
-                        if (!statusArray.Contains(note.RArtifactMasterRecord.Status))
-                            continue; //this may result in paging bugs
-                    }
-
-                    if (note.RArtifactItemRecord != null)
-                    {
-
-                        RArtifactMasterRecord parent =
-                             await _context.Artifacts
-                             .Where(a => statusArray.Contains(a.Status) && a.Id == note.RArtifactItemRecord.RArtifactMasterRecordId)
-                             .AsNoTracking()
-                             .SingleOrDefaultAsync();
-
-                        if (parent == null)
-                            continue;
-
-                        model.RelatedEntityName = note.RArtifactItemRecord.Name;
-                        model.RelatedEntityImageId = note.RArtifactItemRecord.Images.FirstOrDefault().Id;
-                        model.RelatedEntityFriendlyUrl = parent.FriendlyUrl + "/" + note.RArtifactItemRecord.FriendlyUrl;
-                        model.RelatedItemParentName = parent.Name;
-                    }
-
-                    if (note.RArtifactMasterRecord != null)
-                    {
-                        model.RelatedEntityName = note.RArtifactMasterRecord.Name;
-                        model.RelatedEntityImageId = note.RArtifactMasterRecord.CoverImage.Id;
-                        model.RelatedEntityFriendlyUrl = note.RArtifactMasterRecord.FriendlyUrl;
-                    }
-                    finalList.Add(model);
+                    if (!statusArray.Contains(note.RArtifactMasterRecord.Status))
+                        continue; //this may result in paging bugs
                 }
 
+                if (note.RArtifactItemRecord != null)
+                {
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>((paginatedResult1.PagingMeta, finalList.ToArray()));
+                    RArtifactMasterRecord parent =
+                         await _context.Artifacts
+                         .Where(a => statusArray.Contains(a.Status) && a.Id == note.RArtifactItemRecord.RArtifactMasterRecordId)
+                         .AsNoTracking()
+                         .SingleOrDefaultAsync();
+
+                    if (parent == null)
+                        continue;
+
+                    model.RelatedEntityName = note.RArtifactItemRecord.Name;
+                    model.RelatedEntityImageId = note.RArtifactItemRecord.Images.FirstOrDefault().Id;
+                    model.RelatedEntityFriendlyUrl = parent.FriendlyUrl + "/" + note.RArtifactItemRecord.FriendlyUrl;
+                    model.RelatedItemParentName = parent.Name;
+                }
+
+                if (note.RArtifactMasterRecord != null)
+                {
+                    model.RelatedEntityName = note.RArtifactMasterRecord.Name;
+                    model.RelatedEntityImageId = note.RArtifactMasterRecord.CoverImage.Id;
+                    model.RelatedEntityFriendlyUrl = note.RArtifactMasterRecord.FriendlyUrl;
+                }
+                finalList.Add(model);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>((PagingMeta: null, Notes: null), exp.ToString());
-            }
+
+
+            return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>((paginatedResult1.PagingMeta, finalList.ToArray()));
         }
 
         /// <summary>
@@ -2490,102 +2125,93 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>> GetAllPublicNotes(PagingParameterModel paging)
         {
-            try
+            var source =
+                 _context.UserNotes
+                 .Include(b => b.RArtifactMasterRecord).ThenInclude(a => a.CoverImage)
+                 .Include(b => b.RArtifactItemRecord).ThenInclude(b => b.Images)
+                 .Include(n => n.RAppUser)
+                 .Where(b => b.NoteType == RNoteType.Public)
+                .OrderByDescending(b => b.DateTime)
+                .AsQueryable();
+
+            (PaginationMetadata PagingMeta, RUserNote[] Notes) paginatedResult1 =
+                await QueryablePaginator<RUserNote>.Paginate(source, paging);
+
+
+
+            List<RUserNoteViewModel> finalList = new List<RUserNoteViewModel>();
+            foreach (RUserNote note in paginatedResult1.Notes)
             {
-                var source =
-                     _context.UserNotes
-                     .Include(b => b.RArtifactMasterRecord).ThenInclude(a => a.CoverImage)
-                     .Include(b => b.RArtifactItemRecord).ThenInclude(b => b.Images)
-                     .Include(n => n.RAppUser)
-                     .Where(b => b.NoteType == RNoteType.Public)
-                    .OrderByDescending(b => b.DateTime)
-                    .AsQueryable();
+                RAppUser appUser = note.RAppUser;
 
-                (PaginationMetadata PagingMeta, RUserNote[] Notes) paginatedResult1 =
-                    await QueryablePaginator<RUserNote>.Paginate(source, paging);
+                var user =
+                    new PublicRAppUser()
+                    {
+                        Id = appUser.Id,
+                        Username = appUser.UserName,
+                        Email = appUser.Email,
+                        FirstName = appUser.FirstName,
+                        SureName = appUser.SureName,
+                        PhoneNumber = appUser.PhoneNumber,
+                        RImageId = appUser.RImageId,
+                        Status = appUser.Status,
+                        NickName = appUser.NickName,
+                        Website = appUser.Website,
+                        Bio = appUser.Bio,
+                        EmailConfirmed = appUser.EmailConfirmed
+                    };
 
+                RUserNoteViewModel model
+                    =
+                    new RUserNoteViewModel()
+                    {
+                        Id = note.Id,
+                        RAppUserId = note.RAppUserId,
+                        UserName = user.NickName,
+                        RUserImageId = user.RImageId,
+                        Modified = note.Modified,
+                        NoteType = note.NoteType,
+                        HtmlContent = note.HtmlContent,
+                        ReferenceNoteId = note.ReferenceNoteId,
+                        Status = note.Status,
+                        Notes = new RUserNoteViewModel[] { },
+                        DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                        LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                    };
 
-
-                List<RUserNoteViewModel> finalList = new List<RUserNoteViewModel>();
-                foreach (RUserNote note in paginatedResult1.Notes)
+                if (note.RArtifactMasterRecord != null)
                 {
-                    RAppUser appUser = note.RAppUser;
-
-                    var user =
-                        new PublicRAppUser()
-                        {
-                            Id = appUser.Id,
-                            Username = appUser.UserName,
-                            Email = appUser.Email,
-                            FirstName = appUser.FirstName,
-                            SureName = appUser.SureName,
-                            PhoneNumber = appUser.PhoneNumber,
-                            RImageId = appUser.RImageId,
-                            Status = appUser.Status,
-                            NickName = appUser.NickName,
-                            Website = appUser.Website,
-                            Bio = appUser.Bio,
-                            EmailConfirmed = appUser.EmailConfirmed
-                        };
-
-                    RUserNoteViewModel model
-                        =
-                        new RUserNoteViewModel()
-                        {
-                            Id = note.Id,
-                            RAppUserId = note.RAppUserId,
-                            UserName = user.NickName,
-                            RUserImageId = user.RImageId,
-                            Modified = note.Modified,
-                            NoteType = note.NoteType,
-                            HtmlContent = note.HtmlContent,
-                            ReferenceNoteId = note.ReferenceNoteId,
-                            Status = note.Status,
-                            Notes = new RUserNoteViewModel[] { },
-                            DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
-                            LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
-                        };
-
-                    if (note.RArtifactMasterRecord != null)
-                    {
-                        if (note.RArtifactMasterRecord.Status != PublishStatus.Published)
-                            continue; //this may result in paging bugs
-                    }
-
-                    if (note.RArtifactItemRecord != null)
-                    {
-
-                        RArtifactMasterRecord parent =
-                             await _context.Artifacts
-                             .Where(a => a.Status == PublishStatus.Published && a.Id == note.RArtifactItemRecord.RArtifactMasterRecordId)
-                             .AsNoTracking()
-                             .SingleOrDefaultAsync();
-
-                        if (parent == null)
-                            continue;
-
-                        model.RelatedEntityName = note.RArtifactItemRecord.Name;
-                        model.RelatedEntityImageId = note.RArtifactItemRecord.Images.FirstOrDefault().Id;
-                        model.RelatedEntityFriendlyUrl = parent.FriendlyUrl + "/" + note.RArtifactItemRecord.FriendlyUrl;
-                        model.RelatedItemParentName = parent.Name;
-                    }
-
-                    if (note.RArtifactMasterRecord != null)
-                    {
-                        model.RelatedEntityName = note.RArtifactMasterRecord.Name;
-                        model.RelatedEntityImageId = note.RArtifactMasterRecord.CoverImage.Id;
-                        model.RelatedEntityFriendlyUrl = note.RArtifactMasterRecord.FriendlyUrl;
-                    }
-                    finalList.Add(model);
+                    if (note.RArtifactMasterRecord.Status != PublishStatus.Published)
+                        continue; //this may result in paging bugs
                 }
 
+                if (note.RArtifactItemRecord != null)
+                {
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>((paginatedResult1.PagingMeta, finalList.ToArray()));
+                    RArtifactMasterRecord parent =
+                         await _context.Artifacts
+                         .Where(a => a.Status == PublishStatus.Published && a.Id == note.RArtifactItemRecord.RArtifactMasterRecordId)
+                         .AsNoTracking()
+                         .SingleOrDefaultAsync();
+
+                    if (parent == null)
+                        continue;
+
+                    model.RelatedEntityName = note.RArtifactItemRecord.Name;
+                    model.RelatedEntityImageId = note.RArtifactItemRecord.Images.FirstOrDefault().Id;
+                    model.RelatedEntityFriendlyUrl = parent.FriendlyUrl + "/" + note.RArtifactItemRecord.FriendlyUrl;
+                    model.RelatedItemParentName = parent.Name;
+                }
+
+                if (note.RArtifactMasterRecord != null)
+                {
+                    model.RelatedEntityName = note.RArtifactMasterRecord.Name;
+                    model.RelatedEntityImageId = note.RArtifactMasterRecord.CoverImage.Id;
+                    model.RelatedEntityFriendlyUrl = note.RArtifactMasterRecord.FriendlyUrl;
+                }
+                finalList.Add(model);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>((PagingMeta: null, Notes: null), exp.ToString());
-            }
+            return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>((paginatedResult1.PagingMeta, finalList.ToArray()));
         }
 
 
@@ -2598,86 +2224,79 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorLinkViewModel>> SuggestGanjoorLink(Guid userId, LinkSuggestion link)
         {
-            try
-            {
-                RArtifactMasterRecord artifact = await _context.Artifacts.Where(a => a.FriendlyUrl == link.ArtifactFriendlyUrl).SingleOrDefaultAsync();
+            RArtifactMasterRecord artifact = await _context.Artifacts.Where(a => a.FriendlyUrl == link.ArtifactFriendlyUrl).SingleOrDefaultAsync();
 
-                GanjoorLink alreaySuggest =
-                await _context.GanjoorLinks.
-                    Where(l => l.GanjoorPostId == link.GanjoorPostId && l.ArtifactId == artifact.Id && l.ItemId == link.ItemId && l.ReviewResult != ReviewResult.Rejected)
-                    .SingleOrDefaultAsync();
-                if (alreaySuggest != null)
-                    return new RServiceResult<GanjoorLinkViewModel>(null, "این مورد پیشتر پیشنهاد شده است.");
+            GanjoorLink alreaySuggest =
+            await _context.GanjoorLinks.
+                Where(l => l.GanjoorPostId == link.GanjoorPostId && l.ArtifactId == artifact.Id && l.ItemId == link.ItemId && l.ReviewResult != ReviewResult.Rejected)
+                .SingleOrDefaultAsync();
+            if (alreaySuggest != null)
+                return new RServiceResult<GanjoorLinkViewModel>(null, "این مورد پیشتر پیشنهاد شده است.");
 
-                GanjoorLink suggestion =
-                    new GanjoorLink()
-                    {
-                        GanjoorPostId = link.GanjoorPostId,
-                        GanjoorTitle = link.GanjoorTitle,
-                        GanjoorUrl = link.GanjoorUrl,
-                        ArtifactId = artifact.Id,
-                        ItemId = link.ItemId,
-                        SuggestedById = userId,
-                        SuggestionDate = DateTime.Now,
-                        ReviewResult = ReviewResult.Awaiting
-                    };
-
-                _context.GanjoorLinks.Add(suggestion);
-                await _context.SaveChangesAsync();
-
-                string entityName, entityFriendlyUrl;
-                Guid entityImageId;
-
-                if (suggestion.ItemId == null)
+            GanjoorLink suggestion =
+                new GanjoorLink()
                 {
-                    entityName = artifact.Name;
-                    entityFriendlyUrl = $"/items/{artifact.FriendlyUrl}";
-                    entityImageId = artifact.CoverImageId;
-                }
-                else
-                {
-                    RArtifactItemRecord item = await _context.Items.Include(i => i.Images).Where(i => i.Id == suggestion.ItemId).SingleOrDefaultAsync();
-                    entityName = artifact.Name + " » " + item.Name;
-                    entityFriendlyUrl = $"/items/{artifact.FriendlyUrl}/{item.FriendlyUrl}";
-                    entityImageId = item.Images.First().Id;
-                }
+                    GanjoorPostId = link.GanjoorPostId,
+                    GanjoorTitle = link.GanjoorTitle,
+                    GanjoorUrl = link.GanjoorUrl,
+                    ArtifactId = artifact.Id,
+                    ItemId = link.ItemId,
+                    SuggestedById = userId,
+                    SuggestionDate = DateTime.Now,
+                    ReviewResult = ReviewResult.Awaiting
+                };
 
-                var user = (await _userService.GetUserInformation(userId)).Result;
+            _context.GanjoorLinks.Add(suggestion);
+            await _context.SaveChangesAsync();
 
-                GanjoorLinkViewModel viewModel
-                    = new GanjoorLinkViewModel()
-                    {
-                        Id = suggestion.Id,
-                        GanjoorPostId = suggestion.GanjoorPostId,
-                        GanjoorUrl = suggestion.GanjoorUrl,
-                        GanjoorTitle = suggestion.GanjoorTitle,
-                        EntityName = entityName,
-                        EntityFriendlyUrl = entityFriendlyUrl,
-                        EntityImageId = entityImageId,
-                        ReviewResult = suggestion.ReviewResult,
-                        Synchronized = suggestion.Synchronized,
-                        SuggestedBy = new PublicRAppUser()
-                        {
-                            Id = user.Id,
-                            Username = user.Username,
-                            Email = user.Email,
-                            FirstName = user.FirstName,
-                            SureName = user.SureName,
-                            PhoneNumber = user.PhoneNumber,
-                            RImageId = user.RImageId,
-                            Status = user.Status,
-                            NickName = user.NickName,
-                            Website = user.Website,
-                            Bio = user.Bio,
-                            EmailConfirmed = user.EmailConfirmed
-                        }
-                    };
-                return new RServiceResult<GanjoorLinkViewModel>(viewModel);
-            }
-            catch (Exception exp)
+            string entityName, entityFriendlyUrl;
+            Guid entityImageId;
+
+            if (suggestion.ItemId == null)
             {
-                return new RServiceResult<GanjoorLinkViewModel>(null, exp.ToString());
+                entityName = artifact.Name;
+                entityFriendlyUrl = $"/items/{artifact.FriendlyUrl}";
+                entityImageId = artifact.CoverImageId;
             }
+            else
+            {
+                RArtifactItemRecord item = await _context.Items.Include(i => i.Images).Where(i => i.Id == suggestion.ItemId).SingleOrDefaultAsync();
+                entityName = artifact.Name + " » " + item.Name;
+                entityFriendlyUrl = $"/items/{artifact.FriendlyUrl}/{item.FriendlyUrl}";
+                entityImageId = item.Images.First().Id;
+            }
+
+            var user = (await _userService.GetUserInformation(userId)).Result;
+
+            GanjoorLinkViewModel viewModel
+                = new GanjoorLinkViewModel()
+                {
+                    Id = suggestion.Id,
+                    GanjoorPostId = suggestion.GanjoorPostId,
+                    GanjoorUrl = suggestion.GanjoorUrl,
+                    GanjoorTitle = suggestion.GanjoorTitle,
+                    EntityName = entityName,
+                    EntityFriendlyUrl = entityFriendlyUrl,
+                    EntityImageId = entityImageId,
+                    ReviewResult = suggestion.ReviewResult,
+                    Synchronized = suggestion.Synchronized,
+                    SuggestedBy = new PublicRAppUser()
+                    {
+                        Id = user.Id,
+                        Username = user.Username,
+                        Email = user.Email,
+                        FirstName = user.FirstName,
+                        SureName = user.SureName,
+                        PhoneNumber = user.PhoneNumber,
+                        RImageId = user.RImageId,
+                        Status = user.Status,
+                        NickName = user.NickName,
+                        Website = user.Website,
+                        Bio = user.Bio,
+                        EmailConfirmed = user.EmailConfirmed
+                    }
+                };
+            return new RServiceResult<GanjoorLinkViewModel>(viewModel);
         }
 
         /// <summary>
@@ -2686,22 +2305,15 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<int>> GetUnsynchronizedSuggestedLinksCount()
         {
-            try
-            {
-                return new RServiceResult<int>
-                    (
-                      await _context.GanjoorLinks.AsNoTracking()
-                     .Include(l => l.SuggestedBy)
-                     .Include(l => l.Artifact)
-                     .Include(l => l.Item).ThenInclude(i => i.Images)
-                     .Where(l => l.ReviewResult == ReviewResult.Approved && !l.Synchronized)
-                     .CountAsync()
-                     );
-            }
-            catch(Exception exp)
-            {
-                return new RServiceResult<int>(-1, exp.ToString());
-            }
+            return new RServiceResult<int>
+                (
+                  await _context.GanjoorLinks.AsNoTracking()
+                 .Include(l => l.SuggestedBy)
+                 .Include(l => l.Artifact)
+                 .Include(l => l.Item).ThenInclude(i => i.Images)
+                 .Where(l => l.ReviewResult == ReviewResult.Approved && !l.Synchronized)
+                 .CountAsync()
+                 );
         }
 
         /// <summary>
@@ -2711,97 +2323,90 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorLinkViewModel[]>> GetNextUnsynchronizedSuggestedLinkWithAlreadySynchedOneForPoem(int skip)
         {
-            try
+            GanjoorLink link =
+            await _context.GanjoorLinks.AsNoTracking()
+                 .Include(l => l.SuggestedBy)
+                 .Include(l => l.Artifact)
+                 .Include(l => l.Item).ThenInclude(i => i.Images)
+                 .Where(l => l.ReviewResult == ReviewResult.Approved && !l.Synchronized)
+                 .OrderBy(l => l.SuggestionDate)
+                 .Skip(skip)
+                 .FirstOrDefaultAsync();
+            if (link == null)
+                return new RServiceResult<GanjoorLinkViewModel[]>(null);
+            List<GanjoorLinkViewModel> result = new List<GanjoorLinkViewModel>();
+            result.Add
+                     (
+                     new GanjoorLinkViewModel()
+                     {
+                         Id = link.Id,
+                         GanjoorPostId = link.GanjoorPostId,
+                         GanjoorUrl = link.GanjoorUrl,
+                         GanjoorTitle = link.GanjoorTitle,
+                         EntityName = link.Item == null ? link.Artifact.Name : link.Artifact.Name + " » " + link.Item.Name,
+                         EntityFriendlyUrl = link.Item == null ? $"/items/{link.Artifact.FriendlyUrl}" : $"/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                         EntityImageId = link.Item == null ? link.Artifact.CoverImageId : link.Item.Images.First().Id,
+                         ReviewResult = link.ReviewResult,
+                         Synchronized = link.Synchronized,
+                         SuggestedBy = new PublicRAppUser()
+                         {
+                             Id = link.SuggestedBy.Id,
+                             Username = link.SuggestedBy.UserName,
+                             Email = link.SuggestedBy.Email,
+                             FirstName = link.SuggestedBy.FirstName,
+                             SureName = link.SuggestedBy.SureName,
+                             PhoneNumber = link.SuggestedBy.PhoneNumber,
+                             RImageId = link.SuggestedBy.RImageId,
+                             Status = link.SuggestedBy.Status,
+                             NickName = link.SuggestedBy.NickName,
+                             Website = link.SuggestedBy.Website,
+                             Bio = link.SuggestedBy.Bio,
+                             EmailConfirmed = link.SuggestedBy.EmailConfirmed
+                         }
+                     }
+                     );
+            GanjoorLink preLink =
+            await _context.GanjoorLinks.AsNoTracking()
+                 .Include(l => l.SuggestedBy)
+                 .Include(l => l.Artifact)
+                 .Include(l => l.Item).ThenInclude(i => i.Images)
+                 .Where(l => l.ReviewResult == ReviewResult.Approved && l.DisplayOnPage && l.GanjoorPostId == link.GanjoorPostId && l.ArtifactId == link.ArtifactId)
+                 .OrderBy(l => l.SuggestionDate)
+                 .FirstOrDefaultAsync();
+            if (preLink != null)
             {
-                GanjoorLink link =
-                await _context.GanjoorLinks.AsNoTracking()
-                     .Include(l => l.SuggestedBy)
-                     .Include(l => l.Artifact)
-                     .Include(l => l.Item).ThenInclude(i => i.Images)
-                     .Where(l => l.ReviewResult == ReviewResult.Approved && !l.Synchronized)
-                     .OrderBy(l => l.SuggestionDate)
-                     .Skip(skip)
-                     .FirstOrDefaultAsync();
-                if (link == null)
-                    return new RServiceResult<GanjoorLinkViewModel[]>(null);
-                List<GanjoorLinkViewModel> result = new List<GanjoorLinkViewModel>();
                 result.Add
-                         (
-                         new GanjoorLinkViewModel()
+                     (
+                     new GanjoorLinkViewModel()
+                     {
+                         Id = preLink.Id,
+                         GanjoorPostId = preLink.GanjoorPostId,
+                         GanjoorUrl = preLink.GanjoorUrl,
+                         GanjoorTitle = preLink.GanjoorTitle,
+                         EntityName = preLink.Item == null ? preLink.Artifact.Name : preLink.Artifact.Name + " » " + preLink.Item.Name,
+                         EntityFriendlyUrl = preLink.Item == null ? $"/items/{preLink.Artifact.FriendlyUrl}" : $"/items/{preLink.Artifact.FriendlyUrl}/{preLink.Item.FriendlyUrl}",
+                         EntityImageId = preLink.Item == null ? preLink.Artifact.CoverImageId : preLink.Item.Images.First().Id,
+                         ReviewResult = preLink.ReviewResult,
+                         Synchronized = preLink.Synchronized,
+                         SuggestedBy = new PublicRAppUser()
                          {
-                             Id = link.Id,
-                             GanjoorPostId = link.GanjoorPostId,
-                             GanjoorUrl = link.GanjoorUrl,
-                             GanjoorTitle = link.GanjoorTitle,
-                             EntityName = link.Item == null ? link.Artifact.Name : link.Artifact.Name + " » " + link.Item.Name,
-                             EntityFriendlyUrl = link.Item == null ? $"/items/{link.Artifact.FriendlyUrl}" : $"/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
-                             EntityImageId = link.Item == null ? link.Artifact.CoverImageId : link.Item.Images.First().Id,
-                             ReviewResult = link.ReviewResult,
-                             Synchronized = link.Synchronized,
-                             SuggestedBy = new PublicRAppUser()
-                             {
-                                 Id = link.SuggestedBy.Id,
-                                 Username = link.SuggestedBy.UserName,
-                                 Email = link.SuggestedBy.Email,
-                                 FirstName = link.SuggestedBy.FirstName,
-                                 SureName = link.SuggestedBy.SureName,
-                                 PhoneNumber = link.SuggestedBy.PhoneNumber,
-                                 RImageId = link.SuggestedBy.RImageId,
-                                 Status = link.SuggestedBy.Status,
-                                 NickName = link.SuggestedBy.NickName,
-                                 Website = link.SuggestedBy.Website,
-                                 Bio = link.SuggestedBy.Bio,
-                                 EmailConfirmed = link.SuggestedBy.EmailConfirmed
-                             }
+                             Id = preLink.SuggestedBy.Id,
+                             Username = preLink.SuggestedBy.UserName,
+                             Email = preLink.SuggestedBy.Email,
+                             FirstName = preLink.SuggestedBy.FirstName,
+                             SureName = preLink.SuggestedBy.SureName,
+                             PhoneNumber = preLink.SuggestedBy.PhoneNumber,
+                             RImageId = preLink.SuggestedBy.RImageId,
+                             Status = preLink.SuggestedBy.Status,
+                             NickName = preLink.SuggestedBy.NickName,
+                             Website = preLink.SuggestedBy.Website,
+                             Bio = preLink.SuggestedBy.Bio,
+                             EmailConfirmed = preLink.SuggestedBy.EmailConfirmed
                          }
-                         );
-                GanjoorLink preLink =
-                await _context.GanjoorLinks.AsNoTracking()
-                     .Include(l => l.SuggestedBy)
-                     .Include(l => l.Artifact)
-                     .Include(l => l.Item).ThenInclude(i => i.Images)
-                     .Where(l => l.ReviewResult == ReviewResult.Approved && l.DisplayOnPage && l.GanjoorPostId == link.GanjoorPostId && l.ArtifactId == link.ArtifactId)
-                     .OrderBy(l => l.SuggestionDate)
-                     .FirstOrDefaultAsync();
-                if(preLink != null)
-                {
-                    result.Add
-                         (
-                         new GanjoorLinkViewModel()
-                         {
-                             Id = preLink.Id,
-                             GanjoorPostId = preLink.GanjoorPostId,
-                             GanjoorUrl = preLink.GanjoorUrl,
-                             GanjoorTitle = preLink.GanjoorTitle,
-                             EntityName = preLink.Item == null ? preLink.Artifact.Name : preLink.Artifact.Name + " » " + preLink.Item.Name,
-                             EntityFriendlyUrl = preLink.Item == null ? $"/items/{preLink.Artifact.FriendlyUrl}" : $"/items/{preLink.Artifact.FriendlyUrl}/{preLink.Item.FriendlyUrl}",
-                             EntityImageId = preLink.Item == null ? preLink.Artifact.CoverImageId : preLink.Item.Images.First().Id,
-                             ReviewResult = preLink.ReviewResult,
-                             Synchronized = preLink.Synchronized,
-                             SuggestedBy = new PublicRAppUser()
-                             {
-                                 Id = preLink.SuggestedBy.Id,
-                                 Username = preLink.SuggestedBy.UserName,
-                                 Email = preLink.SuggestedBy.Email,
-                                 FirstName = preLink.SuggestedBy.FirstName,
-                                 SureName = preLink.SuggestedBy.SureName,
-                                 PhoneNumber = preLink.SuggestedBy.PhoneNumber,
-                                 RImageId = preLink.SuggestedBy.RImageId,
-                                 Status = preLink.SuggestedBy.Status,
-                                 NickName = preLink.SuggestedBy.NickName,
-                                 Website = preLink.SuggestedBy.Website,
-                                 Bio = preLink.SuggestedBy.Bio,
-                                 EmailConfirmed = preLink.SuggestedBy.EmailConfirmed
-                             }
-                         }
-                         );
-                }
-                return new RServiceResult<GanjoorLinkViewModel[]>(result.ToArray());
+                     }
+                     );
             }
-            catch(Exception exp)
-            {
-                return new RServiceResult<GanjoorLinkViewModel[]>(null, exp.ToString());
-            }
+            return new RServiceResult<GanjoorLinkViewModel[]>(result.ToArray());
         }
 
 
@@ -2813,56 +2418,49 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorLinkViewModel[]>> GetSuggestedLinks(ReviewResult status, bool notSynced)
         {
-            try
+            GanjoorLink[] links =
+            await _context.GanjoorLinks.AsNoTracking()
+                 .Include(l => l.SuggestedBy)
+                 .Include(l => l.Artifact)
+                 .Include(l => l.Item).ThenInclude(i => i.Images)
+                 .Where(l => l.ReviewResult == status && (notSynced == false || !l.Synchronized))
+                 .OrderBy(l => l.SuggestionDate)
+                 .ToArrayAsync();
+            List<GanjoorLinkViewModel> result = new List<GanjoorLinkViewModel>();
+            foreach (GanjoorLink link in links)
             {
-                GanjoorLink[] links =
-                await _context.GanjoorLinks.AsNoTracking()
-                     .Include(l => l.SuggestedBy)
-                     .Include(l => l.Artifact)
-                     .Include(l => l.Item).ThenInclude(i => i.Images)
-                     .Where(l => l.ReviewResult == status && (notSynced == false || !l.Synchronized))
-                     .OrderBy( l => l.SuggestionDate)
-                     .ToArrayAsync();
-                List<GanjoorLinkViewModel> result = new List<GanjoorLinkViewModel>();
-                foreach(GanjoorLink link in links)
-                {
-                    result.Add
-                        (
-                        new GanjoorLinkViewModel()
+                result.Add
+                    (
+                    new GanjoorLinkViewModel()
+                    {
+                        Id = link.Id,
+                        GanjoorPostId = link.GanjoorPostId,
+                        GanjoorUrl = link.GanjoorUrl,
+                        GanjoorTitle = link.GanjoorTitle,
+                        EntityName = link.Item == null ? link.Artifact.Name : link.Artifact.Name + " » " + link.Item.Name,
+                        EntityFriendlyUrl = link.Item == null ? $"/items/{link.Artifact.FriendlyUrl}" : $"/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                        EntityImageId = link.Item == null ? link.Artifact.CoverImageId : link.Item.Images.First().Id,
+                        ReviewResult = link.ReviewResult,
+                        Synchronized = link.Synchronized,
+                        SuggestedBy = new PublicRAppUser()
                         {
-                            Id = link.Id,
-                            GanjoorPostId = link.GanjoorPostId,
-                            GanjoorUrl = link.GanjoorUrl,
-                            GanjoorTitle = link.GanjoorTitle,
-                            EntityName = link.Item == null ? link.Artifact.Name : link.Artifact.Name + " » " + link.Item.Name,
-                            EntityFriendlyUrl = link.Item == null ? $"/items/{link.Artifact.FriendlyUrl}" : $"/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
-                            EntityImageId = link.Item == null ? link.Artifact.CoverImageId : link.Item.Images.First().Id,
-                            ReviewResult = link.ReviewResult,
-                            Synchronized = link.Synchronized,
-                            SuggestedBy = new PublicRAppUser()
-                            {
-                                Id = link.SuggestedBy.Id,
-                                Username = link.SuggestedBy.UserName,
-                                Email = link.SuggestedBy.Email,
-                                FirstName = link.SuggestedBy.FirstName,
-                                SureName = link.SuggestedBy.SureName,
-                                PhoneNumber = link.SuggestedBy.PhoneNumber,
-                                RImageId = link.SuggestedBy.RImageId,
-                                Status = link.SuggestedBy.Status,
-                                NickName = link.SuggestedBy.NickName,
-                                Website = link.SuggestedBy.Website,
-                                Bio = link.SuggestedBy.Bio,
-                                EmailConfirmed = link.SuggestedBy.EmailConfirmed
-                            }
+                            Id = link.SuggestedBy.Id,
+                            Username = link.SuggestedBy.UserName,
+                            Email = link.SuggestedBy.Email,
+                            FirstName = link.SuggestedBy.FirstName,
+                            SureName = link.SuggestedBy.SureName,
+                            PhoneNumber = link.SuggestedBy.PhoneNumber,
+                            RImageId = link.SuggestedBy.RImageId,
+                            Status = link.SuggestedBy.Status,
+                            NickName = link.SuggestedBy.NickName,
+                            Website = link.SuggestedBy.Website,
+                            Bio = link.SuggestedBy.Bio,
+                            EmailConfirmed = link.SuggestedBy.EmailConfirmed
                         }
-                        );
-                }
-                return new RServiceResult<GanjoorLinkViewModel[]>(result.ToArray());
+                    }
+                    );
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjoorLinkViewModel[]>(null, exp.ToString());
-            }
+            return new RServiceResult<GanjoorLinkViewModel[]>(result.ToArray());
         }
 
         /// <summary>
@@ -2874,113 +2472,104 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> ReviewSuggestedLink(Guid linkId, Guid userId, ReviewResult result)
         {
-            try
+            GanjoorLink link =
+            await _context.GanjoorLinks
+                 .Include(l => l.Artifact).ThenInclude(a => a.Tags).ThenInclude(t => t.RTag)
+                 .Include(l => l.Item).ThenInclude(i => i.Tags).ThenInclude(t => t.RTag)
+                 .Where(l => l.Id == linkId)
+                 .SingleOrDefaultAsync();
+
+            var poem = (await _ganjoorService.GetPoemById(link.GanjoorPostId)).Result;//if it fails here nothing is updated
+            string titleInTOC = poem.FullTitle;
+
+            if (poem.Verses.Length > 0)
             {
-                
+                titleInTOC += $" - {poem.Verses[0].Text}";
+            }
 
-                GanjoorLink link =
-                await _context.GanjoorLinks
-                     .Include(l => l.Artifact).ThenInclude(a => a.Tags).ThenInclude(t => t.RTag)
-                     .Include(l => l.Item).ThenInclude(i => i.Tags).ThenInclude(t => t.RTag)
-                     .Where(l => l.Id == linkId)
-                     .SingleOrDefaultAsync();
+            link.ReviewResult = result;
+            link.ReviewerId = userId;
+            link.ReviewDate = DateTime.Now;
 
-                var poem = (await _ganjoorService.GetPoemById(link.GanjoorPostId)).Result;//if it fails here nothing is updated
-                string titleInTOC = poem.FullTitle;
+            //check to see if any other image from this artifact has been added to this poem:
+            if (
+                link.ReviewResult == ReviewResult.Approved
+                &&
+                !await _context.GanjoorLinks.Where(l => l.ArtifactId == link.ArtifactId && l.GanjoorPostId == link.GanjoorPostId && l.ReviewResult == ReviewResult.Approved && l.DisplayOnPage).AnyAsync()
+                )
+            {
+                link.DisplayOnPage = true;
+                link.Synchronized = true;
 
-                if (poem.Verses.Length > 0)
+
+
+                await _ganjoorService.CacheCleanForPageById(link.GanjoorPostId);
+            }//if not user must decide through UI for this link
+
+            _context.GanjoorLinks.Update(link);
+
+            if (link.ReviewResult == ReviewResult.Approved)
+            {
+
+                var itemInfo = await _context.Items
+                                        .Include(i => i.Tags)
+                                        .ThenInclude(t => t.RTag)
+                                        .Where(i => i.Id == link.ItemId).SingleAsync();
+
+                var sourceTag = itemInfo.Tags.Where(t => t.RTag.FriendlyUrl == "source").FirstOrDefault();
+
+                if (sourceTag != null)
                 {
-                    titleInTOC += $" - {poem.Verses[0].Text}";
+                    if (!string.IsNullOrEmpty(sourceTag.ValueSupplement) && (sourceTag.ValueSupplement.IndexOf("http") == 0))
+                    {
+                        link.OriginalSourceUrl = sourceTag.ValueSupplement;
+                        link.LinkToOriginalSource = false;
+                    }
                 }
 
-                link.ReviewResult = result;
-                link.ReviewerId = userId;
-                link.ReviewDate = DateTime.Now;
-
-                //check to see if any other image from this artifact has been added to this poem:
-                if (
-                    link.ReviewResult == ReviewResult.Approved
-                    &&
-                    !await _context.GanjoorLinks.Where(l => l.ArtifactId == link.ArtifactId && l.GanjoorPostId == link.GanjoorPostId && l.ReviewResult == ReviewResult.Approved && l.DisplayOnPage).AnyAsync()
-                    )
+                RTagValue tag = await TagHandler.PrepareAttribute(_context, "Ganjoor Link", link.GanjoorTitle, 1);
+                tag.ValueSupplement = link.GanjoorUrl;
+                if (link.Item == null)
                 {
-                    link.DisplayOnPage = true;
-                    link.Synchronized = true;
-
-                    
-
-                    await _ganjoorService.CacheCleanForPageById(link.GanjoorPostId);
-                }//if not user must decide through UI for this link
-
-                _context.GanjoorLinks.Update(link);
-
-                if(link.ReviewResult == ReviewResult.Approved)
+                    link.Artifact.Tags.Add(tag);
+                    _context.Artifacts.Update(link.Artifact);
+                }
+                else
                 {
+                    link.Item.Tags.Add(tag);
+                    _context.Items.Update(link.Item);
+                }
 
-                    var itemInfo = await _context.Items
-                                            .Include(i => i.Tags)
-                                            .ThenInclude(t => t.RTag)
-                                            .Where(i => i.Id == link.ItemId).SingleAsync();
+                //add TOC:
 
-                    var sourceTag = itemInfo.Tags.Where(t => t.RTag.FriendlyUrl == "source").FirstOrDefault();
 
-                    if (sourceTag != null)
+
+                RTagValue toc = await TagHandler.PrepareAttribute(_context, "Title in TOC", titleInTOC, 1);
+                toc.ValueSupplement = "1";//font size
+                if (link.Item == null)
+                {
+                    if (link.Artifact.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == toc.Value).Count() == 0)
                     {
-                        if (!string.IsNullOrEmpty(sourceTag.ValueSupplement) && (sourceTag.ValueSupplement.IndexOf("http") == 0))
-                        {
-                            link.OriginalSourceUrl = sourceTag.ValueSupplement;
-                            link.LinkToOriginalSource = false;
-                        }
-                    }
-
-                    RTagValue tag = await TagHandler.PrepareAttribute(_context, "Ganjoor Link", link.GanjoorTitle, 1);
-                    tag.ValueSupplement = link.GanjoorUrl;
-                    if(link.Item == null)
-                    {
-                        link.Artifact.Tags.Add(tag);
+                        toc.Order = 1 + link.Artifact.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
+                        link.Artifact.Tags.Add(toc);
                         _context.Artifacts.Update(link.Artifact);
                     }
-                    else
+                }
+                else
+                {
+                    if (link.Item.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == toc.Value).Count() == 0)
                     {
-                        link.Item.Tags.Add(tag);
+                        toc.Order = 1 + link.Item.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
+                        link.Item.Tags.Add(toc);
                         _context.Items.Update(link.Item);
                     }
 
-                    //add TOC:
-
-                   
-
-                    RTagValue toc = await TagHandler.PrepareAttribute(_context, "Title in TOC", titleInTOC, 1);
-                    toc.ValueSupplement = "1";//font size
-                    if (link.Item == null)
-                    {
-                        if (link.Artifact.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == toc.Value).Count() == 0)
-                        {
-                            toc.Order = 1 + link.Artifact.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
-                            link.Artifact.Tags.Add(toc);
-                            _context.Artifacts.Update(link.Artifact);
-                        }
-                    }
-                    else
-                    {
-                        if (link.Item.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == toc.Value).Count() == 0)
-                        {
-                            toc.Order = 1 + link.Item.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
-                            link.Item.Tags.Add(toc);
-                            _context.Items.Update(link.Item);
-                        }
-
-                    }
                 }
-
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<bool>(true);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -2989,60 +2578,50 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<string[]>> AddTOCForSuggestedLinks()
         {
-            try
+            GanjoorLink[] links =
+            await _context.GanjoorLinks
+                 .Include(l => l.Artifact).ThenInclude(a => a.Tags).ThenInclude(t => t.RTag)
+                 .Include(l => l.Item).ThenInclude(i => i.Tags).ThenInclude(t => t.RTag)
+                 .Where(l => l.ReviewResult == ReviewResult.Approved)
+                 .ToArrayAsync();
+
+            List<string> lst = new List<string>();
+
+            foreach (GanjoorLink link in links)
             {
-                GanjoorLink[] links =
-                await _context.GanjoorLinks
-                     .Include(l => l.Artifact).ThenInclude(a => a.Tags).ThenInclude(t => t.RTag)
-                     .Include(l => l.Item).ThenInclude(i => i.Tags).ThenInclude(t => t.RTag)
-                     .Where(l => l.ReviewResult == ReviewResult.Approved)
-                     .ToArrayAsync();
+                var poem = (await _ganjoorService.GetPoemById(link.GanjoorPostId)).Result;//if it fails here nothing is updated
+                string titleInTOC = poem.FullTitle;
 
-                List<string> lst = new List<string>();
-
-                foreach(GanjoorLink link in links)
+                if (poem.Verses.Length > 0)
                 {
-                    var poem = (await _ganjoorService.GetPoemById(link.GanjoorPostId)).Result;//if it fails here nothing is updated
-                    string titleInTOC = poem.FullTitle;
-
-                    if (poem.Verses.Length > 0)
-                    {
-                        titleInTOC += $" - {poem.Verses[0].Text}";
-                    }
-
-                    RTagValue tag = await TagHandler.PrepareAttribute(_context, "Title in TOC", titleInTOC, 1);
-                    tag.ValueSupplement = "1";//font size
-                    if (link.Item == null)
-                    {
-                        if (link.Artifact.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == tag.Value).Count() == 0)
-                        {
-                            tag.Order = 1 + link.Artifact.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
-                            link.Artifact.Tags.Add(tag);
-                            _context.Artifacts.Update(link.Artifact);
-                        }
-                    }
-                    else
-                    {
-                        if (link.Item.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == tag.Value).Count() == 0)
-                        {
-                            tag.Order = 1 + link.Item.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
-                            link.Item.Tags.Add(tag);
-                            _context.Items.Update(link.Item);
-                        }
-
-                    }
+                    titleInTOC += $" - {poem.Verses[0].Text}";
                 }
 
-                
+                RTagValue tag = await TagHandler.PrepareAttribute(_context, "Title in TOC", titleInTOC, 1);
+                tag.ValueSupplement = "1";//font size
+                if (link.Item == null)
+                {
+                    if (link.Artifact.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == tag.Value).Count() == 0)
+                    {
+                        tag.Order = 1 + link.Artifact.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
+                        link.Artifact.Tags.Add(tag);
+                        _context.Artifacts.Update(link.Artifact);
+                    }
+                }
+                else
+                {
+                    if (link.Item.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == tag.Value).Count() == 0)
+                    {
+                        tag.Order = 1 + link.Item.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
+                        link.Item.Tags.Add(tag);
+                        _context.Items.Update(link.Item);
+                    }
 
-                await _context.SaveChangesAsync();
+                }
+            }
+            await _context.SaveChangesAsync();
 
-                return new RServiceResult<string[]>(lst.ToArray());
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<string[]>(null, exp.ToString());
-            }
+            return new RServiceResult<string[]>(lst.ToArray());
         }
 
         /// <summary>
@@ -3053,27 +2632,20 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> SynchronizeSuggestedLink(Guid linkId, bool displayOnPage)
         {
-            try
-            {
-                GanjoorLink link =
-                await _context.GanjoorLinks
-                     .Where(l => l.Id == linkId)
-                     .SingleOrDefaultAsync();
+            GanjoorLink link =
+            await _context.GanjoorLinks
+                 .Where(l => l.Id == linkId)
+                 .SingleOrDefaultAsync();
 
-                link.Synchronized = true;
-                link.DisplayOnPage = displayOnPage;
+            link.Synchronized = true;
+            link.DisplayOnPage = displayOnPage;
 
-                _context.GanjoorLinks.Update(link);
-                await _context.SaveChangesAsync();
+            _context.GanjoorLinks.Update(link);
+            await _context.SaveChangesAsync();
 
-                await _ganjoorService.CacheCleanForPageById(link.GanjoorPostId);
+            await _ganjoorService.CacheCleanForPageById(link.GanjoorPostId);
 
-                return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -3084,95 +2656,19 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PinterestLinkViewModel[]>> GetSuggestedPinterestLinks(ReviewResult status, bool notSynced)
         {
-            try
-            {
-                PinterestLink[] links =
-                await _context.PinterestLinks
-                     .Include(l => l.Artifact)
-                     .Include(l => l.Item).ThenInclude(i => i.Images)
-                     .Where(l => l.ReviewResult == status && (notSynced == false || !l.Synchronized))
-                     .OrderBy(l => l.SuggestionDate)
-                     .ToArrayAsync();
-                List<PinterestLinkViewModel> result = new List<PinterestLinkViewModel>();
-                foreach (PinterestLink link in links)
-                {
-
-                    result.Add
-                         (
-                        new PinterestLinkViewModel()
-                        {
-                            Id = link.Id,
-                            GanjoorPostId = link.GanjoorPostId,
-                            GanjoorUrl = link.GanjoorUrl,
-                            GanjoorTitle = link.GanjoorTitle,
-                            AltText = link.AltText,
-                            LinkType = link.LinkType,
-                            PinterestImageUrl = link.PinterestImageUrl,
-                            PinterestUrl = link.PinterestUrl,
-                            SuggestionDate = link.SuggestionDate,
-                            ReviewerId = link.ReviewerId,
-                            ReviewDate = link.ReviewDate,
-                            ReviewResult = link.ReviewResult,
-                            ReviewDesc = link.ReviewDesc,
-                            ArtifactId = link.ArtifactId,
-                            ItemId = link.ItemId,
-                            Synchronized = link.Synchronized,
-                            EntityName = link.Artifact == null ? null : link.Artifact.Name + " » " + link.Item.Name,
-                            EntityFriendlyUrl = link.Artifact == null ? null : $"/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
-                            EntityImageId = link.Item == null ? Guid.Empty : link.Item.Images.First().Id
-                        }
-                        );
-                }
-                return new RServiceResult<PinterestLinkViewModel[]>(result.ToArray());
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<PinterestLinkViewModel[]>(null, exp.ToString());
-            }
-        }
-
-        /// <summary>
-        /// suggest pinterest link
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="suggestion"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<PinterestLinkViewModel>> SuggestPinterestLink(Guid userId, PinterestSuggestion suggestion)
-        {
-            try
+            PinterestLink[] links =
+            await _context.PinterestLinks
+                 .Include(l => l.Artifact)
+                 .Include(l => l.Item).ThenInclude(i => i.Images)
+                 .Where(l => l.ReviewResult == status && (notSynced == false || !l.Synchronized))
+                 .OrderBy(l => l.SuggestionDate)
+                 .ToArrayAsync();
+            List<PinterestLinkViewModel> result = new List<PinterestLinkViewModel>();
+            foreach (PinterestLink link in links)
             {
 
-                PinterestLink existingLink = 
-                await _context.PinterestLinks.Where
-                    (
-                    p =>
-                    p.GanjoorPostId == suggestion.GanjoorPostId
-                    &&
-                    p.PinterestUrl == suggestion.PinterestUrl
-                    &&
-                    (p.ReviewResult == ReviewResult.Approved || p.ReviewResult == ReviewResult.Awaiting)
-                    ).FirstOrDefaultAsync();
-                if (existingLink != null)
-                    return new RServiceResult<PinterestLinkViewModel>(null, "این مورد پیشتر پیشنهاد شده است.");
-                    
-                PinterestLink link = new PinterestLink()
-                {
-                    GanjoorPostId = suggestion.GanjoorPostId,
-                    GanjoorTitle = suggestion.GanjoorTitle,
-                    GanjoorUrl = suggestion.GanjoorUrl,
-                    AltText = suggestion.AltText,
-                    LinkType = suggestion.LinkType,
-                    PinterestUrl = suggestion.PinterestUrl,
-                    PinterestImageUrl = suggestion.PinterestImageUrl,
-                    ReviewResult = ReviewResult.Awaiting,
-                    SuggestionDate = DateTime.Now,
-                    SuggestedById = userId,
-                    Synchronized = false
-                };
-                _context.PinterestLinks.Add(link);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<PinterestLinkViewModel>
-                    (
+                result.Add
+                     (
                     new PinterestLinkViewModel()
                     {
                         Id = link.Id,
@@ -3191,16 +2687,77 @@ namespace RMuseum.Services.Implementation
                         ArtifactId = link.ArtifactId,
                         ItemId = link.ItemId,
                         Synchronized = link.Synchronized,
-                        EntityName = null,
-                        EntityFriendlyUrl = null,
-                        EntityImageId = Guid.Empty
+                        EntityName = link.Artifact == null ? null : link.Artifact.Name + " » " + link.Item.Name,
+                        EntityFriendlyUrl = link.Artifact == null ? null : $"/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                        EntityImageId = link.Item == null ? Guid.Empty : link.Item.Images.First().Id
                     }
                     );
             }
-            catch (Exception exp)
+            return new RServiceResult<PinterestLinkViewModel[]>(result.ToArray());
+        }
+
+        /// <summary>
+        /// suggest pinterest link
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="suggestion"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PinterestLinkViewModel>> SuggestPinterestLink(Guid userId, PinterestSuggestion suggestion)
+        {
+            PinterestLink existingLink =
+            await _context.PinterestLinks.Where
+                (
+                p =>
+                p.GanjoorPostId == suggestion.GanjoorPostId
+                &&
+                p.PinterestUrl == suggestion.PinterestUrl
+                &&
+                (p.ReviewResult == ReviewResult.Approved || p.ReviewResult == ReviewResult.Awaiting)
+                ).FirstOrDefaultAsync();
+            if (existingLink != null)
+                return new RServiceResult<PinterestLinkViewModel>(null, "این مورد پیشتر پیشنهاد شده است.");
+
+            PinterestLink link = new PinterestLink()
             {
-                return new RServiceResult<PinterestLinkViewModel>(null, exp.ToString());
-            }
+                GanjoorPostId = suggestion.GanjoorPostId,
+                GanjoorTitle = suggestion.GanjoorTitle,
+                GanjoorUrl = suggestion.GanjoorUrl,
+                AltText = suggestion.AltText,
+                LinkType = suggestion.LinkType,
+                PinterestUrl = suggestion.PinterestUrl,
+                PinterestImageUrl = suggestion.PinterestImageUrl,
+                ReviewResult = ReviewResult.Awaiting,
+                SuggestionDate = DateTime.Now,
+                SuggestedById = userId,
+                Synchronized = false
+            };
+            _context.PinterestLinks.Add(link);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<PinterestLinkViewModel>
+                (
+                new PinterestLinkViewModel()
+                {
+                    Id = link.Id,
+                    GanjoorPostId = link.GanjoorPostId,
+                    GanjoorUrl = link.GanjoorUrl,
+                    GanjoorTitle = link.GanjoorTitle,
+                    AltText = link.AltText,
+                    LinkType = link.LinkType,
+                    PinterestImageUrl = link.PinterestImageUrl,
+                    PinterestUrl = link.PinterestUrl,
+                    SuggestionDate = link.SuggestionDate,
+                    ReviewerId = link.ReviewerId,
+                    ReviewDate = link.ReviewDate,
+                    ReviewResult = link.ReviewResult,
+                    ReviewDesc = link.ReviewDesc,
+                    ArtifactId = link.ArtifactId,
+                    ItemId = link.ItemId,
+                    Synchronized = link.Synchronized,
+                    EntityName = null,
+                    EntityFriendlyUrl = null,
+                    EntityImageId = Guid.Empty
+                }
+                );
         }
 
         /// <summary>
@@ -3215,170 +2772,159 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> ReviewSuggestedPinterestLink(Guid linkId, Guid userId, string altText, ReviewResult result, string reviewDesc, string imageUrl)
         {
-            try
+            PinterestLink link =
+            await _context.PinterestLinks
+                 .Where(l => l.Id == linkId)
+                 .SingleOrDefaultAsync();
+
+            link.ReviewResult = result;
+            link.ReviewerId = userId;
+            link.ReviewDate = DateTime.Now;
+            if (!string.IsNullOrEmpty(altText))
+                link.AltText = altText;
+            if (!string.IsNullOrEmpty(imageUrl))
+                link.PinterestImageUrl = imageUrl;
+            link.ReviewDesc = reviewDesc;
+
+            if (link.ReviewResult == ReviewResult.Approved)
             {
-                PinterestLink link =
+                PinterestLink relatedArtifactLink =
                 await _context.PinterestLinks
-                     .Where(l => l.Id == linkId)
-                     .SingleOrDefaultAsync();
-                
-                link.ReviewResult = result;
-                link.ReviewerId = userId;
-                link.ReviewDate = DateTime.Now;
-                if(!string.IsNullOrEmpty(altText))
-                    link.AltText = altText;
-                if (!string.IsNullOrEmpty(imageUrl))
-                    link.PinterestImageUrl = imageUrl;
-                link.ReviewDesc = reviewDesc;
-
-                if (link.ReviewResult == ReviewResult.Approved)
+                    .Where(p => p.PinterestUrl == link.PinterestUrl && p.PinterestImageUrl == link.PinterestImageUrl
+                                               && link.Id != p.Id
+                                               && p.ReviewResult == ReviewResult.Approved)
+                    .FirstOrDefaultAsync();
+                string titleInToc = link.AltText;
+                if (titleInToc.IndexOfAny(new char[] { '\n', '\r' }) != -1)
                 {
-                    PinterestLink relatedArtifactLink =
-                    await _context.PinterestLinks
-                        .Where(p => p.PinterestUrl == link.PinterestUrl && p.PinterestImageUrl == link.PinterestImageUrl
-                                                   && link.Id != p.Id
-                                                   && p.ReviewResult == ReviewResult.Approved)
-                        .FirstOrDefaultAsync();
-                    string titleInToc = link.AltText;
-                    if (titleInToc.IndexOfAny(new char[] { '\n', '\r' }) != -1)
-                    {
-                        string[] lines = titleInToc.Replace('\n', '\r').Split('\r', StringSplitOptions.RemoveEmptyEntries);
-                        titleInToc = lines[0];
-                    }
-                    if (relatedArtifactLink != null)
-                    {
-                        
-                        link.ArtifactId = relatedArtifactLink.ArtifactId;
-                        link.ItemId = relatedArtifactLink.ItemId;
+                    string[] lines = titleInToc.Replace('\n', '\r').Split('\r', StringSplitOptions.RemoveEmptyEntries);
+                    titleInToc = lines[0];
+                }
+                if (relatedArtifactLink != null)
+                {
 
-                        //TODO: append tags to this existing artifact and its items
+                    link.ArtifactId = relatedArtifactLink.ArtifactId;
+                    link.ItemId = relatedArtifactLink.ItemId;
 
-                        
-                    }
-                    else
+                    //TODO: append tags to this existing artifact and its items
+
+
+                }
+                else
+                {
+                    using (var client = new HttpClient())
                     {
-                        using (var client = new HttpClient())
+                        var imageResult = await client.GetAsync(link.PinterestImageUrl);
+
+
+                        int _ImportRetryCount = 5;
+                        int _ImportRetryInitialSleep = 500;
+                        int retryCount = 0;
+                        while (retryCount < _ImportRetryCount && !imageResult.IsSuccessStatusCode && imageResult.StatusCode == HttpStatusCode.ServiceUnavailable)
                         {
-                            var imageResult = await client.GetAsync(link.PinterestImageUrl);
+                            imageResult.Dispose();
+                            Thread.Sleep(_ImportRetryInitialSleep * (retryCount + 1));
+                            imageResult = await client.GetAsync(link.PinterestImageUrl);
+                            retryCount++;
+                        }
 
-
-                            int _ImportRetryCount = 5;
-                            int _ImportRetryInitialSleep = 500;
-                            int retryCount = 0;
-                            while (retryCount < _ImportRetryCount && !imageResult.IsSuccessStatusCode && imageResult.StatusCode == HttpStatusCode.ServiceUnavailable)
+                        if (imageResult.IsSuccessStatusCode)
+                        {
+                            using (Stream imageStream = await imageResult.Content.ReadAsStreamAsync())
                             {
-                                imageResult.Dispose();
-                                Thread.Sleep(_ImportRetryInitialSleep * (retryCount + 1));
-                                imageResult = await client.GetAsync(link.PinterestImageUrl);
-                                retryCount++;
-                            }
-
-                            if (imageResult.IsSuccessStatusCode)
-                            {
-                                using (Stream imageStream = await imageResult.Content.ReadAsStreamAsync())
+                                string friendlyUrl = Guid.NewGuid().ToString();
+                                string fileName = friendlyUrl + ".jpg";
+                                while ((await _context.PictureFiles.Where(p => p.OriginalFileName == fileName).FirstOrDefaultAsync()) != null)
                                 {
-                                    string friendlyUrl = Guid.NewGuid().ToString();
-                                    string fileName = friendlyUrl + ".jpg";
-                                    while((await _context.PictureFiles.Where(p => p.OriginalFileName == fileName).FirstOrDefaultAsync()) != null)
-                                    {
-                                        fileName = Guid.NewGuid() + "-" + friendlyUrl + ".jpg";
-                                    }
-                                    RServiceResult<RPictureFile> picture = await _pictureFileService.Add(link.GanjoorTitle, link.AltText, 1, null, link.PinterestUrl, imageStream, fileName, "Pinterest");
-                                    if (picture.Result == null)
-                                    {
-                                        return new RServiceResult<bool>(false, $"_pictureFileService.Add : {picture.ExceptionString}");
-                                    }
-
-                                    
-
-                                    RArtifactMasterRecord book = new RArtifactMasterRecord(titleInToc, titleInToc)
-                                    {
-                                        Status = PublishStatus.Published,
-                                        DateTime = DateTime.Now,
-                                        LastModified = DateTime.Now,
-                                        CoverItemIndex = 0,
-                                        FriendlyUrl = friendlyUrl
-                                    };
-
-                                    List<RTagValue> meta = new List<RTagValue>();
-
-                                    RTagValue tag = await TagHandler.PrepareAttribute(_context, "Title", titleInToc, 1);
-                                    meta.Add(tag);
-
-                                    tag = await TagHandler.PrepareAttribute(_context, "Description", link.AltText, 1);
-                                    meta.Add(tag);
-
-                                    tag = await TagHandler.PrepareAttribute(_context, "Source", link.LinkType == LinkType.Pinterest ? "Pinterest" : link.LinkType == LinkType.Instagram ? "Instagram" : link.PinterestUrl, 1);
-                                    tag.ValueSupplement = link.PinterestUrl;
-
-                                    meta.Add(tag);
-
-                                    tag = await TagHandler.PrepareAttribute(_context, "Ganjoor Link", link.GanjoorTitle, 1);
-                                    tag.ValueSupplement = link.GanjoorUrl;
-
-                                    meta.Add(tag);
-
-                                    tag = await TagHandler.PrepareAttribute(_context, "Title in TOC", titleInToc, 1);
-                                    tag.ValueSupplement = "1";//font size
-
-                                    meta.Add(tag);
-
-                                    book.Tags = meta.ToArray();
-
-                                    List<RArtifactItemRecord> pages = new List<RArtifactItemRecord>();
-
-                                    int order = 1;
-
-                                    RArtifactItemRecord page = new RArtifactItemRecord()
-                                    {
-                                        Name = titleInToc,
-                                        NameInEnglish = titleInToc,
-                                        Description = link.AltText,
-                                        DescriptionInEnglish = link.AltText,
-                                        Order = order,
-                                        FriendlyUrl = $"p{$"{order}".PadLeft(4, '0')}",
-                                        LastModified = DateTime.Now
-                                    };
-
-                                    page.Images = new RPictureFile[] { picture.Result };
-                                    page.CoverImageIndex = 0;
-
-                                    page.Tags = meta.ToArray();
-
-                                    book.CoverImage = RPictureFile.Duplicate(picture.Result);
-
-                                    pages.Add(page);
-
-                                    book.Items = pages.ToArray();
-                                    book.ItemCount = pages.Count;
-
-                                    await _context.Artifacts.AddAsync(book);
-                                    await _context.SaveChangesAsync();
-
-                                    link.ArtifactId = book.Id;
-                                    link.ItemId = (await _context.Items.Where(i => i.RArtifactMasterRecordId == link.ArtifactId).FirstOrDefaultAsync()).Id;
+                                    fileName = Guid.NewGuid() + "-" + friendlyUrl + ".jpg";
                                 }
-                            }
-                            else
-                            {
-                                return new RServiceResult<bool>(false, $"Http result is not ok (url {link.PinterestImageUrl}");
+                                RServiceResult<RPictureFile> picture = await _pictureFileService.Add(link.GanjoorTitle, link.AltText, 1, null, link.PinterestUrl, imageStream, fileName, "Pinterest");
+                                if (picture.Result == null)
+                                {
+                                    return new RServiceResult<bool>(false, $"_pictureFileService.Add : {picture.ExceptionString}");
+                                }
+
+
+
+                                RArtifactMasterRecord book = new RArtifactMasterRecord(titleInToc, titleInToc)
+                                {
+                                    Status = PublishStatus.Published,
+                                    DateTime = DateTime.Now,
+                                    LastModified = DateTime.Now,
+                                    CoverItemIndex = 0,
+                                    FriendlyUrl = friendlyUrl
+                                };
+
+                                List<RTagValue> meta = new List<RTagValue>();
+
+                                RTagValue tag = await TagHandler.PrepareAttribute(_context, "Title", titleInToc, 1);
+                                meta.Add(tag);
+
+                                tag = await TagHandler.PrepareAttribute(_context, "Description", link.AltText, 1);
+                                meta.Add(tag);
+
+                                tag = await TagHandler.PrepareAttribute(_context, "Source", link.LinkType == LinkType.Pinterest ? "Pinterest" : link.LinkType == LinkType.Instagram ? "Instagram" : link.PinterestUrl, 1);
+                                tag.ValueSupplement = link.PinterestUrl;
+
+                                meta.Add(tag);
+
+                                tag = await TagHandler.PrepareAttribute(_context, "Ganjoor Link", link.GanjoorTitle, 1);
+                                tag.ValueSupplement = link.GanjoorUrl;
+
+                                meta.Add(tag);
+
+                                tag = await TagHandler.PrepareAttribute(_context, "Title in TOC", titleInToc, 1);
+                                tag.ValueSupplement = "1";//font size
+
+                                meta.Add(tag);
+
+                                book.Tags = meta.ToArray();
+
+                                List<RArtifactItemRecord> pages = new List<RArtifactItemRecord>();
+
+                                int order = 1;
+
+                                RArtifactItemRecord page = new RArtifactItemRecord()
+                                {
+                                    Name = titleInToc,
+                                    NameInEnglish = titleInToc,
+                                    Description = link.AltText,
+                                    DescriptionInEnglish = link.AltText,
+                                    Order = order,
+                                    FriendlyUrl = $"p{$"{order}".PadLeft(4, '0')}",
+                                    LastModified = DateTime.Now
+                                };
+
+                                page.Images = new RPictureFile[] { picture.Result };
+                                page.CoverImageIndex = 0;
+
+                                page.Tags = meta.ToArray();
+
+                                book.CoverImage = RPictureFile.Duplicate(picture.Result);
+
+                                pages.Add(page);
+
+                                book.Items = pages.ToArray();
+                                book.ItemCount = pages.Count;
+
+                                await _context.Artifacts.AddAsync(book);
+                                await _context.SaveChangesAsync();
+
+                                link.ArtifactId = book.Id;
+                                link.ItemId = (await _context.Items.Where(i => i.RArtifactMasterRecordId == link.ArtifactId).FirstOrDefaultAsync()).Id;
                             }
                         }
-                        
+                        else
+                        {
+                            return new RServiceResult<bool>(false, $"Http result is not ok (url {link.PinterestImageUrl}");
+                        }
                     }
+
                 }
-
-                _context.PinterestLinks.Update(link);
-
-
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<bool>(true);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            _context.PinterestLinks.Update(link);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -3388,28 +2934,15 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> SynchronizeSuggestedPinterestLink(Guid linkId)
         {
-            try
-            {
-                PinterestLink link =
-                await _context.PinterestLinks
-                     .Where(l => l.Id == linkId)
-                     .SingleOrDefaultAsync();
-
-                link.Synchronized = true;
-
-                _context.PinterestLinks.Update(link);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            PinterestLink link =
+            await _context.PinterestLinks
+                 .Where(l => l.Id == linkId)
+                 .SingleOrDefaultAsync();
+            link.Synchronized = true;
+            _context.PinterestLinks.Update(link);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<bool>(true);
         }
-
-
-
 
         /// <summary>
         /// Database Contetxt
@@ -3420,7 +2953,6 @@ namespace RMuseum.Services.Implementation
         /// Picture File Service
         /// </summary>
         protected readonly IPictureFileService _pictureFileService;
-
 
         /// <summary>
         /// Configuration
