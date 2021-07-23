@@ -27,18 +27,11 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RAppRole[]>> GetAllRoles()
         {
-            try
-            {
-                RAppRole[] rolesInfo = await _roleManager.Roles.Include(r => r.Permissions).ToArrayAsync();
-                return new RServiceResult<RAppRole[]>(rolesInfo);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RAppRole[]>(null, exp.ToString());
-            }
+            RAppRole[] rolesInfo = await _roleManager.Roles.Include(r => r.Permissions).ToArrayAsync();
+            return new RServiceResult<RAppRole[]>(rolesInfo);
         }
 
-        
+
         /// <summary>
         /// returns user role information
         /// </summary>       
@@ -47,17 +40,9 @@ namespace RSecurityBackend.Services.Implementation
         public async Task<RServiceResult<RAppRole>> GetRoleInformation(string roleName)
         {
 
-            try
-            {
-                RAppRole dbUserRoleInfo =
-                    await _roleManager.FindByNameAsync(roleName);
-                return new RServiceResult<RAppRole>(dbUserRoleInfo);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RAppRole>(null, exp.ToString());
-
-            }
+            RAppRole dbUserRoleInfo =
+                await _roleManager.FindByNameAsync(roleName);
+            return new RServiceResult<RAppRole>(dbUserRoleInfo);
         }
 
 
@@ -69,39 +54,27 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> ModifyRole(string roleName, RAppRole updateRoleInfo)
         {
-            try
+            RAppRole existingInfo = await _roleManager.FindByNameAsync(roleName);
+            if (existingInfo == null)
             {
-                RAppRole existingInfo = await _roleManager.FindByNameAsync(roleName);
-                if (existingInfo == null)
+                return new RServiceResult<bool>(false, "role not found");
+            }
+
+            if (existingInfo.Name != updateRoleInfo.Name)
+            {
+
+                RAppRole anotherWithSameName = await _roleManager.Roles.Where(g => g.Name == updateRoleInfo.Name && g.Id != existingInfo.Id).SingleOrDefaultAsync();
+
+                if (anotherWithSameName != null)
                 {
-                    return new RServiceResult<bool>(false, "role not found");
+                    return new RServiceResult<bool>(false, "duplicated role name");
                 }
 
-                if (existingInfo.Name != updateRoleInfo.Name)
-                {
-
-                    RAppRole anotherWithSameName = await _roleManager.Roles.Where(g => g.Name == updateRoleInfo.Name && g.Id != existingInfo.Id).SingleOrDefaultAsync();
-
-                    if (anotherWithSameName != null)
-                    {
-                        return new RServiceResult<bool>(false, "duplicated role name");
-                    }
-
-                    existingInfo.Name = updateRoleInfo.Name;
-                }
-
-
-                existingInfo.Description = updateRoleInfo.Description;
-
-
-                await _roleManager.UpdateAsync(existingInfo);
-
-                return new RServiceResult<bool>(true);
+                existingInfo.Name = updateRoleInfo.Name;
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            existingInfo.Description = updateRoleInfo.Description;
+            await _roleManager.UpdateAsync(existingInfo);
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -111,23 +84,14 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns>true if succeeds</returns>
         public async Task<RServiceResult<bool>> DeleteRole(string roleName)
         {
-            try
+            RAppRole existingInfo = await _roleManager.FindByNameAsync(roleName);
+            if (existingInfo != null)
             {
-                RAppRole existingInfo = await _roleManager.FindByNameAsync(roleName); 
-                if (existingInfo != null)
-                {
-                    await _roleManager.DeleteAsync(existingInfo);
+                await _roleManager.DeleteAsync(existingInfo);
 
-                    return new RServiceResult<bool>(true);
-                }
-              
-               
-                return new RServiceResult<bool>(false, "role not found.");
+                return new RServiceResult<bool>(true);
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            return new RServiceResult<bool>(false, "role not found.");
         }
 
         /// <summary>
@@ -137,22 +101,13 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns>update user role info (id)</returns>
         public async Task<RServiceResult<RAppRole>> AddRole(RAppRole newRoleInfo)
         {
-            try
+            RAppRole existingRole = await _roleManager.Roles.Where(g => g.Name == newRoleInfo.Name).SingleOrDefaultAsync();
+            if (existingRole != null)
             {
-                RAppRole existingRole = await _roleManager.Roles.Where(g => g.Name == newRoleInfo.Name).SingleOrDefaultAsync();
-
-                if(existingRole != null)
-                {
-                    return new RServiceResult<RAppRole>(null, "Role name is in use");
-                }
-
-                await _roleManager.CreateAsync(newRoleInfo);
-                return new RServiceResult<RAppRole>(newRoleInfo);
+                return new RServiceResult<RAppRole>(null, "Role name is in use");
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RAppRole>(null, exp.ToString());
-            }
+            await _roleManager.CreateAsync(newRoleInfo);
+            return new RServiceResult<RAppRole>(newRoleInfo);
         }
 
         /// <summary>
@@ -164,30 +119,22 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> HasPermission(string roleName, string securableItemShortName, string operationShortName)
         {
-            try
+            RAppRole roleByName = await _roleManager.FindByNameAsync(roleName);
+            if (roleByName == null)
             {
-                RAppRole roleByName = await _roleManager.FindByNameAsync(roleName);
-                if (roleByName == null)
-                {
-                 
-                    return new RServiceResult<bool>(false, "role not found");
-                }
-
-                RAppRole role = await _roleManager.Roles.Include(g => g.Permissions)
-                    .Where(g => g.Id == roleByName.Id)
-                    .SingleOrDefaultAsync();
-
-                return
-                    new RServiceResult<bool>(
-                    role.Permissions.Where(p => p.SecurableItemShortName == securableItemShortName && p.OperationShortName == operationShortName)
-                    .SingleOrDefault() != null
-                    );
-                    
+                return new RServiceResult<bool>(false, "role not found");
             }
-            catch(Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+
+            RAppRole role = await _roleManager.Roles.Include(g => g.Permissions)
+                .Where(g => g.Id == roleByName.Id)
+                .SingleOrDefaultAsync();
+
+            return
+                new RServiceResult<bool>(
+                role.Permissions.Where(p => p.SecurableItemShortName == securableItemShortName && p.OperationShortName == operationShortName)
+                .SingleOrDefault() != null
+                );
+
         }
 
         /// <summary>
@@ -198,18 +145,11 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RAppRole[]>> GetRolesHavingPermission(string securableItemShortName, string operationShortName)
         {
-            try
-            {
-                RAppRole[] rolesInfo = await _roleManager.Roles
-                                                            .Include(r => r.Permissions)
-                                                            .Where(r => r.Name == AdministratorRoleName || r.Permissions.Any(p => p.SecurableItemShortName == securableItemShortName && p.OperationShortName == operationShortName) )
-                                                            .ToArrayAsync();
-                return new RServiceResult<RAppRole[]>(rolesInfo);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RAppRole[]>(null, exp.ToString());
-            }
+            RAppRole[] rolesInfo = await _roleManager.Roles
+                                                        .Include(r => r.Permissions)
+                                                        .Where(r => r.Name == AdministratorRoleName || r.Permissions.Any(p => p.SecurableItemShortName == securableItemShortName && p.OperationShortName == operationShortName))
+                                                        .ToArrayAsync();
+            return new RServiceResult<RAppRole[]>(rolesInfo);
         }
 
         /// <summary>
@@ -228,51 +168,38 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<SecurableItem[]>> GetRoleSecurableItemsStatus(string roleName)
         {
-            try
+            RAppRole roleByName = await _roleManager.FindByNameAsync(roleName);
+            if (roleByName == null)
             {
-                RAppRole roleByName = await _roleManager.FindByNameAsync(roleName);
-                if (roleByName == null)
-                {
 
-                    return new RServiceResult<SecurableItem[]>(null, "role not found");
-                }
-                RAppRole role = await _roleManager.Roles.Include(g => g.Permissions).Where(g => g.Id == roleByName.Id).SingleOrDefaultAsync();
-                List<SecurableItem> securableItems = new List<SecurableItem>();
-                foreach(SecurableItem templateItem in GetSecurableItems())
-                {
-                    SecurableItem item = new SecurableItem()
-                    {
-                        ShortName = templateItem.ShortName,
-                        Description = templateItem.Description
-                    };
-
-                    List<SecurableItemOperation> operations = new List<SecurableItemOperation>();
-
-                    foreach(SecurableItemOperation operation in templateItem.Operations)
-                    {
-                        operations.Add(
-                            new SecurableItemOperation()
-                            {
-                                ShortName = operation.ShortName,
-                                Description = operation.Description,
-                                Prerequisites = operation.Prerequisites,
-                                Status = role.Permissions.Where(p => p.SecurableItemShortName == templateItem.ShortName && p.OperationShortName == operation.ShortName).SingleOrDefault() != null
-                            }
-                            );
-                    }
-
-                    item.Operations = operations.ToArray();                    
-
-                    securableItems.Add(item);
-                }
-
-                return new RServiceResult<SecurableItem[]>(securableItems.ToArray());
-
+                return new RServiceResult<SecurableItem[]>(null, "role not found");
             }
-            catch (Exception exp)
+            RAppRole role = await _roleManager.Roles.Include(g => g.Permissions).Where(g => g.Id == roleByName.Id).SingleOrDefaultAsync();
+            List<SecurableItem> securableItems = new List<SecurableItem>();
+            foreach (SecurableItem templateItem in GetSecurableItems())
             {
-                return new RServiceResult<SecurableItem[]>(null, exp.ToString());
+                SecurableItem item = new SecurableItem()
+                {
+                    ShortName = templateItem.ShortName,
+                    Description = templateItem.Description
+                };
+                List<SecurableItemOperation> operations = new List<SecurableItemOperation>();
+                foreach (SecurableItemOperation operation in templateItem.Operations)
+                {
+                    operations.Add(
+                        new SecurableItemOperation()
+                        {
+                            ShortName = operation.ShortName,
+                            Description = operation.Description,
+                            Prerequisites = operation.Prerequisites,
+                            Status = role.Permissions.Where(p => p.SecurableItemShortName == templateItem.ShortName && p.OperationShortName == operation.ShortName).SingleOrDefault() != null
+                        }
+                        );
+                }
+                item.Operations = operations.ToArray();
+                securableItems.Add(item);
             }
+            return new RServiceResult<SecurableItem[]>(securableItems.ToArray());
         }
 
         /// <summary>
@@ -283,46 +210,32 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> SetRoleSecurableItemsStatus(string roleName, SecurableItem[] securableItems)
         {
-            try
+            RAppRole roleByName = await _roleManager.FindByNameAsync(roleName);
+            if (roleByName == null)
             {
-                RAppRole roleByName = await _roleManager.FindByNameAsync(roleName);
-                if (roleByName == null)
+                return new RServiceResult<bool>(false, "role not found");
+            }
+            RAppRole role = await _roleManager.Roles.Include(g => g.Permissions).Where(g => g.Id == roleByName.Id).SingleOrDefaultAsync();
+            role.Permissions.Clear();
+            await _roleManager.UpdateAsync(role);
+            List<RPermission> newPermissionSet = new List<RPermission>();
+            foreach (SecurableItem securableItem in securableItems)
+            {
+                foreach (SecurableItemOperation operation in securableItem.Operations)
                 {
-
-                    return new RServiceResult<bool>(false, "role not found");
-                }
-
-                RAppRole role = await _roleManager.Roles.Include(g => g.Permissions).Where(g => g.Id == roleByName.Id).SingleOrDefaultAsync();
-
-                role.Permissions.Clear();
-                await _roleManager.UpdateAsync(role);
-
-                List<RPermission> newPermissionSet = new List<RPermission>();
-                foreach(SecurableItem securableItem in securableItems)
-                {
-                    foreach (SecurableItemOperation operation in securableItem.Operations)
+                    if (operation.Status)
                     {
-                        if(operation.Status)
+                        newPermissionSet.Add(new RPermission()
                         {
-                            newPermissionSet.Add(new RPermission()
-                            {
-                                SecurableItemShortName = securableItem.ShortName,
-                                OperationShortName = operation.ShortName
-                            });
-                        }                       
+                            SecurableItemShortName = securableItem.ShortName,
+                            OperationShortName = operation.ShortName
+                        });
                     }
                 }
-
-                role.Permissions = newPermissionSet;
-                await _roleManager.UpdateAsync(role);
-
-                return new RServiceResult<bool>(true);
-
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            role.Permissions = newPermissionSet;
+            await _roleManager.UpdateAsync(role);
+            return new RServiceResult<bool>(true);
         }
 
 

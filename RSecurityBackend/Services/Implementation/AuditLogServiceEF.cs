@@ -22,33 +22,21 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, REvent[] Items)>> GetAll(PagingParameterModel paging, string userName, bool orderByTimeDescending)
         {
-            try
-            {
-                userName = userName == null ? "" : userName.Trim();
-                var source =
-                    orderByTimeDescending ?
-                     _context.AuditLogs
-                     .Where(l => string.IsNullOrEmpty(userName) || l.UserName == userName)
-                    .OrderByDescending(l => l.StartDate)
-                    .AsQueryable()
-                    :
-                    _context.AuditLogs
-                     .Where(l => string.IsNullOrEmpty(userName) || l.UserName == userName)
-                    .OrderBy(l => l.StartDate)
-                    .AsQueryable();
-
-
-                (PaginationMetadata PagingMeta, REvent[] Items) paginatedResult =
-                    await QueryablePaginator<REvent>.Paginate(source, paging);
-
-
-
-                return new RServiceResult<(PaginationMetadata PagingMeta, REvent[] Items)>(paginatedResult);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, REvent[] Items)>((PagingMeta: null, Items: null), exp.ToString());
-            }
+            userName = userName == null ? "" : userName.Trim();
+            var source =
+                orderByTimeDescending ?
+                 _context.AuditLogs
+                 .Where(l => string.IsNullOrEmpty(userName) || l.UserName == userName)
+                .OrderByDescending(l => l.StartDate)
+                .AsQueryable()
+                :
+                _context.AuditLogs
+                 .Where(l => string.IsNullOrEmpty(userName) || l.UserName == userName)
+                .OrderBy(l => l.StartDate)
+                .AsQueryable();
+            (PaginationMetadata PagingMeta, REvent[] Items) paginatedResult =
+                await QueryablePaginator<REvent>.Paginate(source, paging);
+            return new RServiceResult<(PaginationMetadata PagingMeta, REvent[] Items)>(paginatedResult);
         }
 
         /// <summary>

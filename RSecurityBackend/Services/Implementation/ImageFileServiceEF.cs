@@ -17,7 +17,7 @@ namespace RSecurityBackend.Services.Implementation
     /// Image File Service
     /// </summary>
     public class ImageFileServiceEF : IImageFileService
-    {       
+    {
         /// <summary>
         /// Add Image File
         /// </summary>
@@ -28,32 +28,24 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RImage>> Add(IFormFile file, Stream stream, string originalFileNameForStreams, string imageFolderName)
         {
-            try
-            {
+            RServiceResult<RImage>
+                pictureFile =
+                await ProcessImage
+                (
+                    file,
+                    new RImage()
+                    {
+                        DataTime = DateTime.Now,
+                        LastModified = DateTime.Now,
+                        FolderName = string.IsNullOrEmpty(imageFolderName) ? DateTime.Now.ToString("yyyy-MM") : imageFolderName
+                    },
+                    stream,
+                    originalFileNameForStreams
+                    );
+            if (pictureFile == null)
+                return new RServiceResult<RImage>(null, pictureFile.ExceptionString);
 
-                RServiceResult<RImage>
-                    pictureFile =
-                    await ProcessImage
-                    (
-                        file,
-                        new RImage()
-                        {
-                            DataTime = DateTime.Now,
-                            LastModified = DateTime.Now,
-                            FolderName = string.IsNullOrEmpty(imageFolderName) ? DateTime.Now.ToString("yyyy-MM") : imageFolderName
-                        },
-                        stream,
-                        originalFileNameForStreams
-                        );
-                if (pictureFile == null)
-                    return new RServiceResult<RImage>(null, pictureFile.ExceptionString);
-
-                return new RServiceResult<RImage>(pictureFile.Result);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RImage>(null, exp.ToString());
-            }
+            return new RServiceResult<RImage>(pictureFile.Result);
         }
 
         /// <summary>
@@ -63,18 +55,10 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RImage>> Store(RImage image)
         {
-            try
-            {
+            _context.GeneralImages.Add(image);
+            await _context.SaveChangesAsync();
 
-                _context.GeneralImages.Add(image);
-                await _context.SaveChangesAsync();
-
-                return new RServiceResult<RImage>(image);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RImage>(null, exp.ToString());
-            }
+            return new RServiceResult<RImage>(image);
         }
 
         private async Task<RServiceResult<RImage>> ProcessImage(IFormFile uploadedImage, RImage pictureFile, Stream stream, string originalFileNameForStreams)
@@ -153,18 +137,11 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RImage>> GetImage(Guid id)
         {
-            try
-            {
-                return new RServiceResult<RImage>(
-                    await _context.GeneralImages.AsNoTracking()
-                         .Where(p => p.Id == id)
-                         .SingleOrDefaultAsync()
-                         );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RImage>(null, exp.ToString());
-            }
+            return new RServiceResult<RImage>(
+                await _context.GeneralImages.AsNoTracking()
+                     .Where(p => p.Id == id)
+                     .SingleOrDefaultAsync()
+                     );
         }
 
         /// <summary>
@@ -174,24 +151,17 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> DeleteImage(Guid id)
         {
-            try
+            RServiceResult<RImage> img = await GetImage(id);
+            if (!string.IsNullOrEmpty(img.ExceptionString))
+                return new RServiceResult<bool>(false, img.ExceptionString);
+            if (img.Result == null)
             {
-                RServiceResult<RImage> img = await GetImage(id);
-                if(!string.IsNullOrEmpty(img.ExceptionString))
-                    return new RServiceResult<bool>(false, img.ExceptionString);
-                if(img.Result == null)
-                {
-                    return new RServiceResult<bool>(false, "image not found");
-                }
-                File.Delete(GetImagePath(img.Result).Result);
-                _context.GeneralImages.Remove(img.Result);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<bool>(true);
+                return new RServiceResult<bool>(false, "image not found");
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            File.Delete(GetImagePath(img.Result).Result);
+            _context.GeneralImages.Remove(img.Result);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<bool>(true);
         }
 
 
@@ -202,14 +172,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public RServiceResult<string> GetImagePath(RImage image)
         {
-            try
-            {
-                return new RServiceResult<string>(Path.Combine(ImageStoragePath, image.FolderName, image.StoredFileName));
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<string>(null, exp.ToString());
-            }
+            return new RServiceResult<string>(Path.Combine(ImageStoragePath, image.FolderName, image.StoredFileName));
         }
 
         /// <summary>

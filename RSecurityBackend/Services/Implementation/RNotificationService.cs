@@ -25,35 +25,28 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserNotificationViewModel>> PushNotification(Guid userId, string subject, string htmlText)
         {
-            try
-            {
-                RUserNotification notification =
-                            new RUserNotification()
-                            {
-                                UserId = userId,
-                                DateTime = DateTime.Now,
-                                Status = NotificationStatus.Unread,
-                                Subject = subject,
-                                HtmlText = htmlText
-                            };
-                _context.Notifications.Add(notification);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<RUserNotificationViewModel>
-                    (
-                    new RUserNotificationViewModel()
-                    {
-                        Id = notification.Id,
-                        DateTime = notification.DateTime,
-                        Status = notification.Status,
-                        Subject = notification.Subject,
-                        HtmlText = notification.HtmlText
-                    }
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNotificationViewModel>(null, exp.ToString());
-            }
+            RUserNotification notification =
+                        new RUserNotification()
+                        {
+                            UserId = userId,
+                            DateTime = DateTime.Now,
+                            Status = NotificationStatus.Unread,
+                            Subject = subject,
+                            HtmlText = htmlText
+                        };
+            _context.Notifications.Add(notification);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<RUserNotificationViewModel>
+                (
+                new RUserNotificationViewModel()
+                {
+                    Id = notification.Id,
+                    DateTime = notification.DateTime,
+                    Status = notification.Status,
+                    Subject = notification.Subject,
+                    HtmlText = notification.HtmlText
+                }
+                );
         }
 
         /// <summary>
@@ -64,30 +57,23 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns>updated notification object</returns>
         public async Task<RServiceResult<RUserNotificationViewModel>> SwitchNotificationStatus(Guid notificationId, Guid userId)
         {
-            try
-            {
-                RUserNotification notification =
-                            await _context.Notifications.Where(n => n.Id == notificationId && n.UserId == userId).SingleAsync();
-                notification.Status = notification.Status == NotificationStatus.Unread ? NotificationStatus.Read : NotificationStatus.Unread;
-                _context.Notifications.Update(notification);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<RUserNotificationViewModel>
-                    (
-                     new RUserNotificationViewModel()
-                     {
-                         Id = notification.Id,
-                         DateTime = notification.DateTime,
-                         Status = notification.Status,
-                         Subject = notification.Subject,
-                         HtmlText = notification.HtmlText
-                     }
+            RUserNotification notification =
+                        await _context.Notifications.Where(n => n.Id == notificationId && n.UserId == userId).SingleAsync();
+            notification.Status = notification.Status == NotificationStatus.Unread ? NotificationStatus.Read : NotificationStatus.Unread;
+            _context.Notifications.Update(notification);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<RUserNotificationViewModel>
+                (
+                 new RUserNotificationViewModel()
+                 {
+                     Id = notification.Id,
+                     DateTime = notification.DateTime,
+                     Status = notification.Status,
+                     Subject = notification.Subject,
+                     HtmlText = notification.HtmlText
+                 }
 
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNotificationViewModel>(null, exp.ToString());
-            }
+                );
         }
 
         /// <summary>
@@ -96,23 +82,16 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="userId"></param>
         /// <param name="status"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>>SetAllNotificationsStatus(Guid userId, NotificationStatus status)
+        public async Task<RServiceResult<bool>> SetAllNotificationsStatus(Guid userId, NotificationStatus status)
         {
-            try
+            var notifications = await _context.Notifications.Where(n => n.UserId == userId).ToListAsync();
+            foreach (var notification in notifications)
             {
-                var notifications = await _context.Notifications.Where(n => n.UserId == userId).ToListAsync();
-                foreach(var notification in notifications)
-                {
-                    notification.Status = status;
-                }
-                _context.UpdateRange(notifications);
-                await _context.SaveChangesAsync();
-                return new RServiceResult<bool>(true);
+                notification.Status = status;
             }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
+            _context.UpdateRange(notifications);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<bool>(true);
         }
 
 
@@ -124,28 +103,21 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> DeleteNotification(Guid notificationId, Guid userId)
         {
-            try
+            if (notificationId == Guid.Empty)
             {
-                if (notificationId == Guid.Empty)
-                {
-                    var notifications = await _context.Notifications.Where(n => n.UserId == userId && n.Status == NotificationStatus.Read).ToListAsync();
-                    _context.Notifications.RemoveRange(notifications);
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    RUserNotification notification =
-                                await _context.Notifications.Where(n => n.Id == notificationId && n.UserId == userId).SingleAsync();
-                    _context.Notifications.Remove(notification);
-                    await _context.SaveChangesAsync();
-                    
-                }
-                return new RServiceResult<bool>(true);
+                var notifications = await _context.Notifications.Where(n => n.UserId == userId && n.Status == NotificationStatus.Read).ToListAsync();
+                _context.Notifications.RemoveRange(notifications);
+                await _context.SaveChangesAsync();
             }
-            catch (Exception exp)
+            else
             {
-                return new RServiceResult<bool>(false, exp.ToString());
+                RUserNotification notification =
+                            await _context.Notifications.Where(n => n.Id == notificationId && n.UserId == userId).SingleAsync();
+                _context.Notifications.Remove(notification);
+                await _context.SaveChangesAsync();
+
             }
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
@@ -155,30 +127,23 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RUserNotificationViewModel[]>> GetUserNotifications(Guid userId)
         {
-            try
-            {
-                return new RServiceResult<RUserNotificationViewModel[]>
-                    (
-                    await _context.Notifications
-                    .Where(notification => notification.UserId == userId)
-                    .OrderByDescending(notification => notification.DateTime)
-                    .Select(notification =>
-                     new RUserNotificationViewModel()
-                     {
-                         Id = notification.Id,
-                         DateTime = notification.DateTime,
-                         Status = notification.Status,
-                         Subject = notification.Subject,
-                         HtmlText = notification.HtmlText
-                     }
-                    )
-                    .ToArrayAsync()
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<RUserNotificationViewModel[]>(null, exp.ToString());
-            }
+            return new RServiceResult<RUserNotificationViewModel[]>
+                (
+                await _context.Notifications
+                .Where(notification => notification.UserId == userId)
+                .OrderByDescending(notification => notification.DateTime)
+                .Select(notification =>
+                 new RUserNotificationViewModel()
+                 {
+                     Id = notification.Id,
+                     DateTime = notification.DateTime,
+                     Status = notification.Status,
+                     Subject = notification.Subject,
+                     HtmlText = notification.HtmlText
+                 }
+                )
+                .ToArrayAsync()
+                );
         }
 
         /// <summary>
@@ -189,33 +154,26 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, RUserNotificationViewModel[] Items)>> GetUserNotificationsPaginated(PagingParameterModel paging, Guid userId)
         {
-            try
-            {
-                var source = _context.Notifications
-                    .Where(notification => notification.UserId == userId)
-                    .OrderByDescending(notification => notification.DateTime)
-                    .Select(notification =>
-                     new RUserNotificationViewModel()
-                     {
-                         Id = notification.Id,
-                         DateTime = notification.DateTime,
-                         Status = notification.Status,
-                         Subject = notification.Subject,
-                         HtmlText = notification.HtmlText
-                     });
+            var source = _context.Notifications
+                .Where(notification => notification.UserId == userId)
+                .OrderByDescending(notification => notification.DateTime)
+                .Select(notification =>
+                 new RUserNotificationViewModel()
+                 {
+                     Id = notification.Id,
+                     DateTime = notification.DateTime,
+                     Status = notification.Status,
+                     Subject = notification.Subject,
+                     HtmlText = notification.HtmlText
+                 });
 
-                (PaginationMetadata PagingMeta, RUserNotificationViewModel[] Items) paginatedResult =
-                    await QueryablePaginator<RUserNotificationViewModel>.Paginate(source, paging);
+            (PaginationMetadata PagingMeta, RUserNotificationViewModel[] Items) paginatedResult =
+                await QueryablePaginator<RUserNotificationViewModel>.Paginate(source, paging);
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, RUserNotificationViewModel[] Items)>
-                    (
-                   paginatedResult
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, RUserNotificationViewModel[] Items)>((null, null), exp.ToString());
-            }
+            return new RServiceResult<(PaginationMetadata PagingMeta, RUserNotificationViewModel[] Items)>
+                (
+               paginatedResult
+                );
         }
 
         /// <summary>
@@ -225,19 +183,12 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<int>> GetUnreadUserNotificationsCount(Guid userId)
         {
-            try
-            {
-                return new RServiceResult<int>
-                    (
-                    await _context.Notifications
-                    .Where(n => n.UserId == userId && n.Status == NotificationStatus.Unread)
-                    .CountAsync()
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<int>(0, exp.ToString());
-            }
+            return new RServiceResult<int>
+                (
+                await _context.Notifications
+                .Where(n => n.UserId == userId && n.Status == NotificationStatus.Unread)
+                .CountAsync()
+                );
         }
 
         /// <summary>
