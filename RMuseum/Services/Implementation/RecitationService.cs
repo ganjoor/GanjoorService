@@ -1614,7 +1614,7 @@ namespace RMuseum.Services.Implementationa
             {
                 try
                 {
-                    return bool.Parse(Configuration.GetSection("AudioUploadService")["Enabled"]);
+                    return bool.Parse(Configuration.GetSection("AudioUploadService")["Enabled"]) && !bool.Parse(Configuration["ReadOnlyMode"]);
                 }
                 catch
                 {

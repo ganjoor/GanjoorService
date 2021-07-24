@@ -237,6 +237,11 @@
             <param name="fpwdViewModel">signUpViewModel</param>
             <returns>result</returns>
         </member>
+        <member name="P:RSecurityBackend.Controllers.AppUserControllerBase.SiteInReadOnlyMode">
+            <summary>
+            read only mode
+            </summary>
+        </member>
         <member name="P:RSecurityBackend.Controllers.AppUserControllerBase.SignupEnabled">
             <summary>
             Is Sign-up enabled?
