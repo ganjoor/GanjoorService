@@ -827,6 +827,9 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> SignUp([FromBody] UnverifiedSignUpViewModel signUpViewModel)
         {
+            if (SiteInReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً برای ثبت نام تلاش کنید.");
+
             if (!SignupEnabled)
                 return BadRequest("ثبت نام غیرفعال است.");
 
@@ -957,6 +960,17 @@ namespace RSecurityBackend.Controllers
             }
 
             return Ok(true);
+        }
+
+        /// <summary>
+        /// read only mode
+        /// </summary>
+        public bool SiteInReadOnlyMode
+        {
+            get
+            {
+                return bool.Parse(Configuration["ReadOnlyMode"]);
+            }
         }
 
 
