@@ -222,8 +222,8 @@ namespace GanjooRazor.Pages
                                     Comment = resComment,
                                     Error = "",
                                     InReplyTo = inReplytoId == 0 ? null : new GanjoorCommentSummaryViewModel(),
-                                    LoggedIn = LoggedIn
-                                }
+                                    LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"])
+                    }
                             }
                         };
                     }
@@ -239,7 +239,7 @@ namespace GanjooRazor.Pages
                                     Comment = null,
                                     Error = await response.Content.ReadAsStringAsync(),
                                     InReplyTo = null,
-                                    LoggedIn = LoggedIn
+                                    LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"])
                                 }
                             }
                         };

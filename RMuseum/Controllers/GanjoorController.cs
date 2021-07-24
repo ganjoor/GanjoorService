@@ -305,7 +305,7 @@ namespace RMuseum.Controllers
             {
                 var poet = await _ganjoorService.GetPoetById(id);
                 IFormFile file = Request.Form.Files[0];
-                RServiceResult<RImage> image = await _imageFileService.Add(file, null, file.FileName, Path.Combine(_configuration.GetSection("PictureFileService")["StoragePath"], "PoetImages"));
+                RServiceResult<RImage> image = await _imageFileService.Add(file, null, file.FileName, Path.Combine(Configuration.GetSection("PictureFileService")["StoragePath"], "PoetImages"));
                 if (!string.IsNullOrEmpty(image.ExceptionString))
                 {
                     return BadRequest(image.ExceptionString);
@@ -796,6 +796,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> SuggestSong([FromBody] PoemMusicTrackViewModel song)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             Guid userId =
                  new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             Guid sessionId =
@@ -880,6 +882,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> ReviewSong([FromBody] PoemMusicTrackViewModel song)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
             var res =
                 await _ganjoorService.ReviewSong(song);
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -900,6 +905,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> DirectInsertSong([FromBody] PoemMusicTrackViewModel song)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             var res =
                 await _ganjoorService.DirectInsertSong(song);
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -1022,6 +1029,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> NewComment([FromBody] GanjoorCommentPostViewModel comment)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
             string clientIPAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
 
             Guid userId =
@@ -1055,7 +1065,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> EditMyComment(int id, [FromBody] string comment)
         {
-
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             Guid userId =
                  new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             Guid sessionId =
@@ -1088,7 +1099,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> DeleteMyComment(int id)
         {
-
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             Guid userId =
                  new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             Guid sessionId =
@@ -1121,6 +1133,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> ReportComment([FromBody] GanjoorPostReportCommentViewModel report)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
             Guid userId =
                  new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             Guid sessionId =
@@ -1152,6 +1167,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> DeleteReport(int id)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             RServiceResult<bool> res = await _ganjoorService.DeleteReport(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
             {
@@ -1202,7 +1219,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> DeleteModerateComment(int reportid)
         {
-
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             var res =
                 await _ganjoorService.DeleteModerateComment(reportid);
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -1578,6 +1596,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// readonly mode
+        /// </summary>
+        public bool ReadOnlyMode
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration["ReadOnlyMode"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
         /// Ganjoor Service
         /// </summary>
 
@@ -1606,7 +1642,7 @@ namespace RMuseum.Controllers
         /// <summary>
         /// Configuration
         /// </summary>
-        protected IConfiguration _configuration { get; }
+        protected IConfiguration Configuration { get; }
 
         /// <summary>
         /// constructor
@@ -1631,7 +1667,7 @@ namespace RMuseum.Controllers
             _httpContextAccessor = httpContextAccessor;
             _imageFileService = imageFileService;
             _memoryCache = memoryCache;
-            _configuration = configuration;
+            Configuration = configuration;
         }
     }
 }

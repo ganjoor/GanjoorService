@@ -1133,6 +1133,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
+            <summary>
+            readonly mode
+            </summary>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorController._ganjoorService">
             <summary>
             Ganjoor Service
@@ -1158,7 +1163,7 @@
             IMemoryCache
             </summary>
         </member>
-        <member name="P:RMuseum.Controllers.GanjoorController._configuration">
+        <member name="P:RMuseum.Controllers.GanjoorController.Configuration">
             <summary>
             Configuration
             </summary>
