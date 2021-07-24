@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
@@ -26,12 +27,19 @@ namespace GanjooRazor.Pages
         private readonly HttpClient _httpClient;
 
         /// <summary>
+        /// configuration
+        /// </summary>
+        private readonly IConfiguration Configuration;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        public BpModel(HttpClient httpClient)
+        /// <param name="configuration"></param>
+        public BpModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            Configuration = configuration;
         }
 
         /// <summary>
@@ -59,6 +67,17 @@ namespace GanjooRazor.Pages
         /// Inserted song Id
         /// </summary>
         public int InsertedSongId { get; set; }
+
+        /// <summary>
+        /// readonly mode
+        /// </summary>
+        public bool ReadOnlyMode
+        {
+            get
+            {
+                return bool.Parse(Configuration["ReadOnlyMode"]);
+            }
+        }
 
         /// <summary>
         /// suggested (unapproved) songs

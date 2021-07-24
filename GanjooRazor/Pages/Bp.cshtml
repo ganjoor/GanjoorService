@@ -36,6 +36,17 @@
 <body>
     <div id="fa">
         <div class="poem">
+            @if (Model.ReadOnlyMode)
+            {
+                <div class="width-100per">
+                    <div class="width-100per text-align-center">
+                        <p class="alert-text">
+                            امکان پیشنهاد قطعه موقتا به دلیل تغییرات سایت و یا انتقال سرور وجود ندارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.
+                        </p>
+                    </div>
+                </div>
+            }
+            else
             @if (Model.PoemId == 0)
             {
                 <div class="width-100per">
@@ -47,7 +58,7 @@
                 </div>
             }
             else
-       if (!Model.LoggedIn)
+      if (!Model.LoggedIn)
             {
                 <div class="width-100per">
                     <div class="width-100per text-align-center">
