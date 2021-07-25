@@ -15,6 +15,7 @@
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/tinymce/tinymce.min.js"></script>
     <script>tinymce.init({ selector: 'textarea.editor', language: 'fa_IR' });</script>
+    <script src="/lib/diff.js"></script>
     <script>
         function moderateReportedComment(reportId) {
             if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
@@ -165,6 +166,37 @@
                 },
 
             });
+        }
+
+        function editorcompare(id) {
+            var a = document.getElementById('original-' + id.toString());
+            var b = document.getElementById('id-' + id.toString());
+            var result = document.getElementById('compare-' + id.toString());
+            var diff = JsDiff.diffChars(a.textContent, b.value);
+            var fragment = document.createDocumentFragment();
+            for (var i = 0; i < diff.length; i++) {
+
+                if (diff[i].added && diff[i + 1] && diff[i + 1].removed) {
+                    var swap = diff[i];
+                    diff[i] = diff[i + 1];
+                    diff[i + 1] = swap;
+                }
+
+                var node;
+                if (diff[i].removed) {
+                    node = document.createElement('del');
+                    node.appendChild(document.createTextNode(diff[i].value));
+                } else if (diff[i].added) {
+                    node = document.createElement('ins');
+                    node.appendChild(document.createTextNode(diff[i].value));
+                } else {
+                    node = document.createTextNode(diff[i].value);
+                }
+                fragment.appendChild(node);
+            }
+
+            result.textContent = '';
+            result.appendChild(fragment);
         }
     </script>
 </head>

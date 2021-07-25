@@ -10,8 +10,4 @@
     <ProjectReference Include="..\RSecurityBackend\RSecurityBackend.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\lib\chosen\" />
-  </ItemGroup>
-
 </Project>

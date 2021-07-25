@@ -38,7 +38,7 @@ else
         </tr>
         <tr>
             <td>
-                <p>@verse.Text</p>
+                <p id="original-@($"{verse.Id}")">@verse.Text</p>
             </td>
         </tr>
         <tr>
@@ -48,7 +48,17 @@ else
         </tr>
         <tr>
             <td>
-                <input type="text" name="name@($"{verse.Id}")" value="@verse.Text" size="100" />
+                <input type="text" id="id-@($"{verse.Id}")" name="name-@($"{verse.Id}")" value="@verse.Text" size="100" oninput="editorcompare(@verse.Id)" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                تغییرات:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <pre id="compare-@($"{verse.Id}")">@verse.Text</pre>
             </td>
         </tr>
 
