@@ -1,0 +1,58 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.EditorModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "ویرایشگر شعر";
+}
+<h1>@ViewData["Title"]</h1>
+
+@if (!string.IsNullOrEmpty(Model.FatalError))
+{
+    <p>@Model.FatalError</p>
+}
+else
+{
+<table>
+    @foreach (var verse in Model.PageInformation.Poem.Verses)
+    {
+        <tr>
+            <td>
+                بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مصرع @verse.VOrder.ToPersianNumbers()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                نوع: @Model.GetVersePosition(verse)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                متن فعلی:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@verse.Text</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ویراستهٔ شما:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="name@($"{verse.Id}")" value="@verse.Text" size="100" />
+            </td>
+        </tr>
+
+    }
+</table>
+
+}
