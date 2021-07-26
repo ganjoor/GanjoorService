@@ -14,6 +14,36 @@
 else
 {
 <table>
+    <tr>
+        <td>
+            عنوان فعلی:
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p id="original-0">@Model.PageInformation.Poem.Title</p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            عنوان ویراستهٔ من:
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" id="id-0" name="id-0" value="@Model.PageInformation.Poem.Title" size="100" oninput="editorcompare(0)" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            تغییرات:
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p id="compare-0">@Model.PageInformation.Poem.Title</p>
+        </td>
+    </tr>
     @foreach (var verse in Model.PageInformation.Poem.Verses)
     {
         <tr>
@@ -43,7 +73,7 @@ else
         </tr>
         <tr>
             <td>
-                ویراستهٔ شما:
+                ویراستهٔ من:
             </td>
         </tr>
         <tr>
