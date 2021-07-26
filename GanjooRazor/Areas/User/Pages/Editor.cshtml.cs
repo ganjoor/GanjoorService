@@ -19,6 +19,11 @@ namespace GanjooRazor.Areas.User.Pages
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
 
         /// <summary>
+        /// rythms
+        /// </summary>
+        public GanjoorMetre[] Rhythms { get; set; }
+
+        /// <summary>
         /// fatal error
         /// </summary>
         public string FatalError { get; set; }
@@ -77,6 +82,10 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+                    var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
+                    rhythmResponse.EnsureSuccessStatusCode();
+                    Rhythms = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
+
                     var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
 
                     pageUrlResponse.EnsureSuccessStatusCode();

@@ -93,6 +93,52 @@ else
         </tr>
 
     }
+
+    <tr>
+        <td>
+            وزن فعلی:
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p id="rhythm-old">@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)</p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            وزن ویراستهٔ من:
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" id="rhythm-new" name="rhythm-new" value="@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)" size="100" list="rythms" />
+            <datalist id="rythms">
+                @if (Model.Rhythms != null)
+                    @foreach (var rhythm in Model.Rhythms)
+                    {
+                        <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                    }
+            </datalist>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            توضیح این ویرایش:
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <input type="text" id="note" name="rnote" value="" size="100" />
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoem(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
+        </td>
+    </tr>
+
 </table>
 
 }
