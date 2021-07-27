@@ -201,8 +201,44 @@
             result.appendChild(fragment);
         }
 
-        function savePoem(id, verseCount) {
-            alert('ok!');
+        function savePoemCorrections(id, verseCount) {
+            var verseOrderText = [];
+            for (var i = 0; i <= verseCount; i++) {
+                var oldElementName = '#original-' + i.toString();
+                var newElementName = '#id-' + i.toString();
+                if ($(newElementName).val() != $(oldElementName).text()) {
+                    verseOrderText.push(i.toString() + ':' + $(newElementName).val());
+                }
+            }
+
+            if (verseOrderText.length == 0) {
+                if ($('#rhythm-old').text() == $('#rhythm-new').val()) {
+                    alert('شما هیچ تغییری در متن نداده‌اید!');
+                    return;
+                }
+            }
+
+            var url = '?handler=SendPoemCorrections';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    id: id,
+                    verseOrderText: verseOrderText,
+                    rythm: $('#rhythm-new').val(),
+                    note: $('#note').val()
+
+                },
+                success: function () {
+                    alert('تصحیحات ارسال شد.')
+                },
+                error: function () {
+                    alert('خطا رخ داد.')
+                }
+
+            });
+
         }
     </script>
 </head>

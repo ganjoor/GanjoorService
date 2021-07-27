@@ -68,7 +68,7 @@ else
         </tr>
         <tr>
             <td>
-                <p id="original-@($"{verse.Id}")">@verse.Text</p>
+                <p id="original-@($"{verse.VOrder}")">@verse.Text</p>
             </td>
         </tr>
         <tr>
@@ -78,7 +78,7 @@ else
         </tr>
         <tr>
             <td>
-                <input type="text" id="id-@($"{verse.Id}")" name="name-@($"{verse.Id}")" value="@verse.Text" size="100" oninput="editorcompare(@verse.Id)" />
+                <input type="text" id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" value="@verse.Text" size="100" oninput="editorcompare(@verse.VOrder)" />
             </td>
         </tr>
         <tr>
@@ -88,7 +88,7 @@ else
         </tr>
         <tr>
             <td>
-                <p id="compare-@($"{verse.Id}")">@verse.Text</p>
+                <p id="compare-@($"{verse.VOrder}")">@verse.Text</p>
             </td>
         </tr>
 
@@ -129,13 +129,13 @@ else
 
     <tr>
         <td>
-            <input type="text" id="note" name="rnote" value="" size="100" />
+            <input type="text" id="note" name="note" value="" size="100" />
         </td>
     </tr>
 
     <tr>
         <td>
-            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoem(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
+            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
         </td>
     </tr>
 

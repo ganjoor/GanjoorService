@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -103,6 +104,11 @@ namespace GanjooRazor.Areas.User.Pages
                 }
             }
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int id, string[] verseOrderText, string rythm, string note)
+        {
+            return new OkObjectResult(false);
         }
     }
 }
