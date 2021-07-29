@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -108,6 +109,58 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, string rhythm, string note)
         {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    string title = null;
+                    List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
+                    foreach(string v in verseOrderText)
+                    {
+                        var vParts = v.Split(':', System.StringSplitOptions.RemoveEmptyEntries);
+                        int vOrder = int.Parse(vParts[0]);
+                        if (vOrder == 0)
+                            title = vParts[1];
+                        else
+                        {
+                            vOrderTexts.Add
+                                (
+                                new GanjoorVerseVOrderText()
+                                {
+                                    VORder = vOrder,
+                                    Text = vParts[1]
+                                }
+                                );
+                        }
+                    }
+
+                    if (title == null && vOrderTexts.Count == 0 && rhythm == null)
+                        return new BadRequestObjectResult("شما هیچ تغییری در متن نداده‌اید!");
+
+                    GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel()
+                    {
+                        PoemId = poemid,
+                        Title = title,
+                        VerseOrderText = vOrderTexts.ToArray(),
+                        Rhythm = rhythm,
+                        Note = note
+                    };
+
+                    HttpResponseMessage response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/poem/correction",
+                        new StringContent(JsonConvert.SerializeObject(correction),
+                        Encoding.UTF8,
+                        "application/json"));
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
             return new OkObjectResult(false);
         }
     }

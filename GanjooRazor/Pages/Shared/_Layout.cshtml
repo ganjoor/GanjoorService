@@ -218,6 +218,11 @@
                 }
             }
 
+            var rhythm_new = $('#rhythm-new').val();
+            if (rhythm_new == $('#rhythm-old').text()) {
+                rhythm_new = null;
+            }
+
             var url = '?handler=SendPoemCorrections';
 
             $.ajax({
@@ -226,15 +231,15 @@
                 data: {
                     poemid: id,
                     verseOrderText: verseOrderText,
-                    rhythm: $('#rhythm-new').val(),
+                    rhythm: rhythm_new,
                     note: $('#note').val()
 
                 },
                 success: function () {
                     alert('تصحیحات ارسال شد.')
                 },
-                error: function () {
-                    alert('خطا رخ داد.')
+                error: function (e) {
+                    alert(e)
                 }
 
             });
