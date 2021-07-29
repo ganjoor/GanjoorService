@@ -98,6 +98,11 @@ namespace RMuseum.Models.Ganjoor
         /// application order for poem
         /// </summary>
         public int ApplicationOrder { get; set; }
+
+        /// <summary>
+        /// review result for title and rhythm
+        /// </summary>
+        public CorrectionReviewResult Result { get; set; }
     }
 
     /// <summary>
@@ -145,6 +150,7 @@ namespace RMuseum.Models.Ganjoor
         NoChanged = 2,
         RejectedBecauseWrong = 3,
         RejectedBecauseVariant = 4,
-        Rejected = 5
+        RejectedBecauseUnnecessaryChange = 5,
+        Rejected = 6
     }
 }
