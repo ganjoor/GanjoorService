@@ -1,11 +1,13 @@
-﻿using System;
+﻿using RSecurityBackend.Models.Auth.Db;
+using System;
+using System.Collections.Generic;
 
-namespace RMuseum.Models.Ganjoor.ViewModels
+namespace RMuseum.Models.Ganjoor
 {
     /// <summary>
-    /// poem correction view model
+    /// poem correction
     /// </summary>
-    public class GanjoorPoemCorrectionViewModel
+    public class GanjoorPoemCorrection
     {
         /// <summary>
         /// Correction Id
@@ -18,9 +20,14 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public int PoemId { get; set; }
 
         /// <summary>
+        /// poem
+        /// </summary>
+        public GanjoorPoem Poem { get; set; }
+
+        /// <summary>
         /// modified verses
         /// </summary>
-        public GanjoorVerseVOrderTextViewModel[] VerseOrderText { get; set; }
+        public ICollection<GanjoorVerseVOrderText> VerseOrderText { get; set; }
 
         /// <summary>
         /// title
@@ -55,12 +62,12 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// <summary>
         /// user Id
         /// </summary>
-        public Guid? UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
-        /// nickname
+        /// user
         /// </summary>
-        public string UserNickname { get; set; }
+        public RAppUser User { get; set; }
 
         /// <summary>
         /// reviewed
@@ -76,12 +83,27 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// review note
         /// </summary>
         public string ReviewNote { get; set; }
+
+        /// <summary>
+        /// reviewer id
+        /// </summary>
+        public Guid? ReviewerUserId { get; set; }
+
+        /// <summary>
+        /// reviwer user id
+        /// </summary>
+        public virtual RAppUser ReviewerUser { get; set; }
+
+        /// <summary>
+        /// application order for poem
+        /// </summary>
+        public int ApplicationOrder { get; set; }
     }
 
     /// <summary>
     /// Verse Vorder / Text
     /// </summary>
-    public class GanjoorVerseVOrderTextViewModel
+    public class GanjoorVerseVOrderText
     {
         /// <summary>
         /// verse order
@@ -107,5 +129,16 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// note
         /// </summary>
         public string ReviewNote { get; set; }
+    }
+
+    /// <summary>
+    /// correction review result
+    /// </summary>
+    public enum CorrectionReviewResult
+    {
+        NotReviewed = 0,
+        Approved = 1,
+        Rejected = 2,
+        NoChanged = 3
     }
 }

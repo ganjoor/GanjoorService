@@ -4744,6 +4744,136 @@
             old collection page url e.g /saadi/tayyebat
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemCorrection">
+            <summary>
+            poem correction
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Id">
+            <summary>
+            Correction Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.PoemId">
+            <summary>
+            poem Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Poem">
+            <summary>
+            poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.VerseOrderText">
+            <summary>
+            modified verses
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.OriginalTitle">
+            <summary>
+            original title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Rhythm">
+            <summary>
+            rhythm
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.OriginalRhythm">
+            <summary>
+            original rhythm
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Note">
+            <summary>
+            note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Date">
+            <summary>
+            date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.UserId">
+            <summary>
+            user Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.User">
+            <summary>
+            user
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Reviewed">
+            <summary>
+            reviewed
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.ReviewDate">
+            <summary>
+            reviewdate
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.ReviewNote">
+            <summary>
+            review note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.ReviewerUserId">
+            <summary>
+            reviewer id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.ReviewerUser">
+            <summary>
+            reviwer user id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.ApplicationOrder">
+            <summary>
+            application order for poem
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText">
+            <summary>
+            Verse Vorder / Text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.VORder">
+            <summary>
+            verse order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.Text">
+            <summary>
+            text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.OriginalText">
+            <summary>
+            original text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.Result">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.ReviewNote">
+            <summary>
+            note
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.CorrectionReviewResult">
+            <summary>
+            correction review result
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">
             <summary>
             Ganjoor Poet
@@ -5599,14 +5729,34 @@
             modified verses
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.OriginalTitle">
+            <summary>
+            original title
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Rhythm">
             <summary>
             rhythm
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.OriginalRhythm">
+            <summary>
+            original rhythm
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Note">
             <summary>
             note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Date">
+            <summary>
+            date
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.UserId">
@@ -5617,6 +5767,21 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.UserNickname">
             <summary>
             nickname
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Reviewed">
+            <summary>
+            reviewed
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.ReviewDate">
+            <summary>
+            reviewdate
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.ReviewNote">
+            <summary>
+            review note
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseVOrderTextViewModel">
@@ -5632,6 +5797,21 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseVOrderTextViewModel.Text">
             <summary>
             text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseVOrderTextViewModel.OriginalText">
+            <summary>
+            original text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseVOrderTextViewModel.Result">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseVOrderTextViewModel.ReviewNote">
+            <summary>
+            note
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel">
