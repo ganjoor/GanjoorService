@@ -1305,6 +1305,12 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> SuggestPoemCorrection(GanjoorPoemCorrectionViewModel correction)
         {
+            //if the user has previously suggested corrections for this poem remove them and save this one as the last one
+            //assuming that his/her corrections are included in this correction
+            var existingsFromSameUser =
+                await _context.GanjoorPoemCorrections
+                    .Where(c => c.PoemId == correction.PoemId && c.UserId == correction.UserId && c.Reviewed == false).ToArrayAsync();
+
             var poem = (await GetPoemById(correction.PoemId, false, false, true, false, false, false, false, true, false)).Result;
             foreach (var verse in correction.VerseOrderText)
             {
@@ -1326,6 +1332,13 @@ namespace RMuseum.Services.Implementation
             _context.GanjoorPoemCorrections.Add(dbCorrection);
             await _context.SaveChangesAsync();
             correction.Id = dbCorrection.Id;
+
+            if (existingsFromSameUser.Length > 0)
+            {
+                _context.GanjoorPoemCorrections.RemoveRange(existingsFromSameUser);
+                await _context.SaveChangesAsync();
+            }
+
             return new RServiceResult<GanjoorPoemCorrectionViewModel>(correction);
         }
 
