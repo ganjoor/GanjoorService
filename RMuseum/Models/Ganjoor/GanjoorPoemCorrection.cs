@@ -106,6 +106,10 @@ namespace RMuseum.Models.Ganjoor
     public class GanjoorVerseVOrderText
     {
         /// <summary>
+        /// record id
+        /// </summary>
+        public int Id { get; set; }
+        /// <summary>
         /// verse order
         /// </summary>
         public int VORder { get; set; }
@@ -138,7 +142,9 @@ namespace RMuseum.Models.Ganjoor
     {
         NotReviewed = 0,
         Approved = 1,
-        Rejected = 2,
-        NoChanged = 3
+        NoChanged = 2,
+        RejectedBecauseWrong = 3,
+        RejectedBecauseVariant = 4,
+        Rejected = 5
     }
 }

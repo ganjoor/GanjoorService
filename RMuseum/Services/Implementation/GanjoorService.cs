@@ -201,8 +201,8 @@ namespace RMuseum.Services.Implementation
                                                     Title = c.Title,
                                                     UrlSlug = c.UrlSlug,
                                                     FullUrl = c.FullUrl
-                                                        //other fields null
-                                                    }
+                                                    //other fields null
+                                                }
                                         ).AsNoTracking().SingleOrDefaultAsync();
 
             int preCatId =
@@ -222,8 +222,8 @@ namespace RMuseum.Services.Implementation
                                                     Title = c.Title,
                                                     UrlSlug = c.UrlSlug,
                                                     FullUrl = c.FullUrl
-                                                        //other fields null
-                                                    }
+                                                    //other fields null
+                                                }
                                         ).AsNoTracking().SingleOrDefaultAsync();
 
             GanjoorCatViewModel catViewModel = new GanjoorCatViewModel()
@@ -516,8 +516,8 @@ namespace RMuseum.Services.Implementation
                      Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                      PlainText = "", //poem.PlainText 
-                         HtmlText = "",//poem.HtmlText
-                     };
+                     HtmlText = "",//poem.HtmlText
+                 };
             return new RServiceResult<PublicRecitationViewModel[]>(await source.AsNoTracking().ToArrayAsync());
         }
 
@@ -851,7 +851,7 @@ namespace RMuseum.Services.Implementation
                      CommentDate = comment.CommentDate,
                      HtmlComment = comment.HtmlComment,
                      PublishStatus = "",//invalid!
-                         UserId = comment.UserId,
+                     UserId = comment.UserId,
                      InReplayTo = comment.InReplyTo == null ? null :
                         new GanjoorCommentSummaryViewModel()
                         {
@@ -947,7 +947,7 @@ namespace RMuseum.Services.Implementation
                          CommentDate = comment.CommentDate,
                          HtmlComment = comment.HtmlComment,
                          PublishStatus = "",//invalid!
-                             UserId = comment.UserId,
+                         UserId = comment.UserId,
                          InReplayTo = comment.InReplyTo == null ? null :
                         new GanjoorCommentSummaryViewModel()
                         {
@@ -1305,7 +1305,28 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> SuggestPoemCorrection(GanjoorPoemCorrectionViewModel correction)
         {
-            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "Not implemented yet");
+            var poem = (await GetPoemById(correction.PoemId, false, false, true, false, false, false, false, true, false)).Result;
+            foreach (var verse in correction.VerseOrderText)
+            {
+                verse.OriginalText = poem.Verses.Where(v => v.VOrder == verse.VORder).Single().Text;
+            }
+            GanjoorPoemCorrection dbCorrection = new GanjoorPoemCorrection()
+            {
+                PoemId = correction.PoemId,
+                UserId = correction.UserId,
+                VerseOrderText = correction.VerseOrderText,
+                Title = correction.Title,
+                OriginalTitle = poem.Title,
+                Rhythm = correction.Rhythm,
+                OriginalRhythm = poem.GanjoorMetre.Rhythm,
+                Note = correction.Note,
+                Date = DateTime.Now,
+                Reviewed = false
+            };
+            _context.GanjoorPoemCorrections.Add(dbCorrection);
+            await _context.SaveChangesAsync();
+            correction.Id = dbCorrection.Id;
+            return new RServiceResult<GanjoorPoemCorrectionViewModel>(correction);
         }
 
         /// <summary>
@@ -2080,7 +2101,7 @@ namespace RMuseum.Services.Implementation
                    async token =>
                    {
                        using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
-                           {
+                       {
                            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                            var job = (await jobProgressServiceEF.NewJob($"Updating PageChildren for {dbPage.Id}", "Updating")).Result;
                            try
@@ -2462,7 +2483,7 @@ namespace RMuseum.Services.Implementation
                         async token =>
                         {
                             using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
-                                {
+                            {
                                 LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                                 var job = (await jobProgressServiceEF.NewJob($"Deleting Poet {id}", "Query data")).Result;
                                 try
@@ -2903,7 +2924,7 @@ namespace RMuseum.Services.Implementation
                         async token =>
                         {
                             using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
-                                {
+                            {
                                 LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                                 var job = (await jobProgressServiceEF.NewJob($"GeneratingSubCatsTOC {catId}", "Query data")).Result;
                                 try
@@ -3134,7 +3155,7 @@ namespace RMuseum.Services.Implementation
             async token =>
             {
                 using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
-                    {
+                {
                     LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                     var job = (await jobProgressServiceEF.NewJob("RegerneratePoemsPlainText", "Query data")).Result;
 
@@ -3189,7 +3210,7 @@ namespace RMuseum.Services.Implementation
             async token =>
             {
                 using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
-                    {
+                {
                     LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                     var job = (await jobProgressServiceEF.NewJob("HealthCheckContents", "Query data")).Result;
 

@@ -20,7 +20,7 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// <summary>
         /// modified verses
         /// </summary>
-        public GanjoorVerseVOrderTextViewModel[] VerseOrderText { get; set; }
+        public GanjoorVerseVOrderText[] VerseOrderText { get; set; }
 
         /// <summary>
         /// title
@@ -55,7 +55,7 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// <summary>
         /// user Id
         /// </summary>
-        public Guid? UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// nickname
@@ -74,37 +74,6 @@ namespace RMuseum.Models.Ganjoor.ViewModels
 
         /// <summary>
         /// review note
-        /// </summary>
-        public string ReviewNote { get; set; }
-    }
-
-    /// <summary>
-    /// Verse Vorder / Text
-    /// </summary>
-    public class GanjoorVerseVOrderTextViewModel
-    {
-        /// <summary>
-        /// verse order
-        /// </summary>
-        public int VORder { get; set; }
-
-        /// <summary>
-        /// text
-        /// </summary>
-        public string Text { get; set; }
-
-        /// <summary>
-        /// original text
-        /// </summary>
-        public string OriginalText { get; set; }
-
-        /// <summary>
-        /// review result
-        /// </summary>
-        public CorrectionReviewResult Result { get; set; }
-
-        /// <summary>
-        /// note
         /// </summary>
         public string ReviewNote { get; set; }
     }
