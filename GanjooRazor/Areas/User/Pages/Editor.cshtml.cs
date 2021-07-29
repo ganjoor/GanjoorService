@@ -106,7 +106,7 @@ namespace GanjooRazor.Areas.User.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int id, string[] verseOrderText, string rhythm, string note)
+        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, string rhythm, string note)
         {
             return new OkObjectResult(false);
         }

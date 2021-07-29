@@ -1299,6 +1299,16 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// send poem correction
+        /// </summary>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> SuggestPoemCorrection(GanjoorPoemCorrectionViewModel correction)
+        {
+            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "Not implemented yet");
+        }
+
+        /// <summary>
         /// suggest song
         /// </summary>
         /// <param name="userId"></param>

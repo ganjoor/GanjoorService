@@ -138,6 +138,13 @@ namespace RMuseum.Services
         Task<RServiceResult<PoemMusicTrackViewModel[]>> GetPoemSongs(int id, bool approved, PoemMusicTrackType trackType = PoemMusicTrackType.All);
 
         /// <summary>
+        /// send poem corrections
+        /// </summary>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemCorrectionViewModel>> SuggestPoemCorrection(GanjoorPoemCorrectionViewModel correction);
+
+        /// <summary>
         /// next unreviewed track
         /// </summary>
         /// <param name="skip"></param>

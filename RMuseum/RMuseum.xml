@@ -914,6 +914,13 @@
             <param name="trackType"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SuggestPoemCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
+            <summary>
+            send poem corrections
+            </summary>
+            <param name="correction"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SuggestSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             suggest song for poem
@@ -5579,6 +5586,11 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Id">
             <summary>
+            Correction Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.PoemId">
+            <summary>
             poem Id
             </summary>
         </member>
@@ -5595,6 +5607,16 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Note">
             <summary>
             note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.UserId">
+            <summary>
+            user Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.UserNickname">
+            <summary>
+            nickname
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseVOrderTextViewModel">
@@ -7429,6 +7451,13 @@
             <param name="trackType"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SuggestPoemCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
+            <summary>
+            send poem corrections
+            </summary>
+            <param name="correction"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedSong(System.Int32,System.Guid)">
             <summary>
             next unreviewed track
@@ -8997,6 +9026,13 @@
             <param name="id"></param>
             <param name="approved"></param>
             <param name="trackType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestPoemCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
+            <summary>
+            send poem correction
+            </summary>
+            <param name="correction"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">

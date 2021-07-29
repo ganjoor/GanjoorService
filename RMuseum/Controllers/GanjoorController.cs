@@ -564,6 +564,7 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+       
         /// <summary>
         /// clean cache by id
         /// </summary>
@@ -779,6 +780,31 @@ namespace RMuseum.Controllers
                 await _ganjoorService.GetPoemSongs(id, approved, trackType);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// send poem corrections
+        /// </summary>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("poem/correction")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> SuggestPoemCorrection([FromBody] GanjoorPoemCorrectionViewModel correction)
+        {
+            correction.UserId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<GanjoorPoemCorrectionViewModel> res =
+                await _ganjoorService.SuggestPoemCorrection(correction);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
             return Ok(res.Result);
         }
 

@@ -1,4 +1,6 @@
-﻿namespace RMuseum.Models.Ganjoor.ViewModels
+﻿using System;
+
+namespace RMuseum.Models.Ganjoor.ViewModels
 {
     /// <summary>
     /// poem correction view model
@@ -6,9 +8,14 @@
     public class GanjoorPoemCorrectionViewModel
     {
         /// <summary>
-        /// poem Id
+        /// Correction Id
         /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// poem Id
+        /// </summary>
+        public int PoemId { get; set; }
 
         /// <summary>
         /// modified verses
@@ -24,6 +31,16 @@
         /// note
         /// </summary>
         public string Note { get; set; }
+
+        /// <summary>
+        /// user Id
+        /// </summary>
+        public Guid? UserId { get; set; }
+
+        /// <summary>
+        /// nickname
+        /// </summary>
+        public string UserNickname { get; set; }
     }
 
     /// <summary>
