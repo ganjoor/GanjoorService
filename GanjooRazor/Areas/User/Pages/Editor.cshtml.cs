@@ -16,6 +16,11 @@ namespace GanjooRazor.Areas.User.Pages
     public class EditorModel : PageModel
     {
         /// <summary>
+        /// my last edit
+        /// </summary>
+        public GanjoorPoemCorrectionViewModel MyLastEdit { get; set; }
+
+        /// <summary>
         /// page
         /// </summary>
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
@@ -84,19 +89,21 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+                    var editResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/correction/last/{Request.Query["id"]}");
+                    editResponse.EnsureSuccessStatusCode();
+                    MyLastEdit = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await editResponse.Content.ReadAsStringAsync());
+
+
                     var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
                     rhythmResponse.EnsureSuccessStatusCode();
                     Rhythms = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
 
                     var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
-
                     pageUrlResponse.EnsureSuccessStatusCode();
-
                     var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
 
                     var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
                     pageQuery.EnsureSuccessStatusCode();
-
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
                 }
                 else

@@ -1339,7 +1339,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetLastUnreviewedUserCorrectionForPoem(Guid userId, int poemId)
         {
-            var dbCorrection = await _context.GanjoorPoemCorrections
+            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText)
                 .Where(c => c.UserId == userId && c.PoemId == poemId && c.Result == CorrectionReviewResult.NotReviewed)
                 .OrderByDescending(c => c.Id)
                 .FirstOrDefaultAsync();
@@ -1353,7 +1353,7 @@ namespace RMuseum.Services.Implementation
                 {
                     PoemId = dbCorrection.PoemId,
                     UserId = dbCorrection.UserId,
-                    VerseOrderText = dbCorrection.VerseOrderText.ToArray(),
+                    VerseOrderText = dbCorrection.VerseOrderText == null ? null : dbCorrection.VerseOrderText.ToArray(),
                     Title = dbCorrection.Title,
                     OriginalTitle = dbCorrection.OriginalTitle,
                     Rhythm = dbCorrection.Rhythm,

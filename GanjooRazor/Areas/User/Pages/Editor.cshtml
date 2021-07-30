@@ -13,72 +13,84 @@
 }
 else
 {
-<table>
-    <tr>
-        <td>
-            عنوان فعلی:
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <p id="original-0">@Model.PageInformation.Poem.Title</p>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            عنوان ویراستهٔ من:
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <input type="text" id="id-0" name="id-0" value="@Model.PageInformation.Poem.Title" size="100" oninput="editorcompare(0)" />
-        </td>
-    </tr>
-    <tr>
-        <td>
-            تغییرات:
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <p id="compare-0">@Model.PageInformation.Poem.Title</p>
-        </td>
-    </tr>
-    @foreach (var verse in Model.PageInformation.Poem.Verses)
+    if (Model.MyLastEdit != null)
     {
+        <table>
+            <tr>
+                <td colspan="2">ویرایشهای من</td>
+            </tr>
+
+            @if (Model.MyLastEdit.Title != null)
+            {
+                <tr>
+                    <td>
+                        <p style="color:red">@Model.MyLastEdit.Title</p>
+                    </td>
+                    <td>
+                        <p style="color:green">@Model.MyLastEdit.OriginalTitle</p>
+                    </td>
+                </tr>
+            }
+            @if (Model.MyLastEdit.Rhythm != null)
+            {
+                <tr>
+                    <td>
+                        <p style="color:red">@Model.MyLastEdit.Rhythm</p>
+                    </td>
+                    <td>
+                        <p style="color:green">@Model.MyLastEdit.OriginalRhythm</p>
+                    </td>
+                </tr>
+            }
+            @if (Model.MyLastEdit.VerseOrderText != null)
+                @foreach (var verse in Model.MyLastEdit.VerseOrderText)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">@verse.OriginalText</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@verse.Text</p>
+                        </td>
+                    </tr>
+                }
+            @if (!string.IsNullOrEmpty(Model.MyLastEdit.Note))
+            {
+                <tr>
+                    <td>یادداشت:</td>
+                    <td>
+                        @Model.MyLastEdit.Note
+                    </td>
+                </tr>
+            }
+
+        </table>
+    }
+
+    <table>
         <tr>
             <td>
-                بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers()
+                <p><strong>ویرایش متن:</strong></p>
             </td>
         </tr>
         <tr>
             <td>
-                مصرع @verse.VOrder.ToPersianNumbers()
+                عنوان فعلی:
             </td>
         </tr>
         <tr>
             <td>
-                نوع: @Model.GetVersePosition(verse)
+                <p id="original-0">@Model.PageInformation.Poem.Title</p>
             </td>
         </tr>
         <tr>
             <td>
-                متن فعلی:
+                عنوان ویراستهٔ من:
             </td>
         </tr>
         <tr>
             <td>
-                <p id="original-@($"{verse.VOrder}")">@verse.Text</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                ویراستهٔ من:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input type="text" id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" value="@verse.Text" size="100" oninput="editorcompare(@verse.VOrder)" />
+                <input type="text" id="id-0" name="id-0" value="@Model.PageInformation.Poem.Title" size="100" oninput="editorcompare(0)" />
             </td>
         </tr>
         <tr>
@@ -88,57 +100,104 @@ else
         </tr>
         <tr>
             <td>
-                <p id="compare-@($"{verse.VOrder}")">@verse.Text</p>
+                <p id="compare-0">@Model.PageInformation.Poem.Title</p>
+            </td>
+        </tr>
+        @foreach (var verse in Model.PageInformation.Poem.Verses)
+        {
+            <tr>
+                <td>
+                    بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers()
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    مصرع @verse.VOrder.ToPersianNumbers()
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    نوع: @Model.GetVersePosition(verse)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    متن فعلی:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p id="original-@($"{verse.VOrder}")">@verse.Text</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    ویراستهٔ من:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" value="@verse.Text" size="100" oninput="editorcompare(@verse.VOrder)" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    تغییرات:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p id="compare-@($"{verse.VOrder}")">@verse.Text</p>
+                </td>
+            </tr>
+
+        }
+
+        <tr>
+            <td>
+                وزن فعلی:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p id="rhythm-old">@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                وزن ویراستهٔ من:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" id="rhythm-new" name="rhythm-new" value="@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)" size="100" list="rythms" />
+                <datalist id="rythms">
+                    @if (Model.Rhythms != null)
+                        @foreach (var rhythm in Model.Rhythms)
+                        {
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                توضیح این ویرایش:
             </td>
         </tr>
 
-    }
+        <tr>
+            <td>
+                <input type="text" id="note" name="note" value="" size="100" />
+            </td>
+        </tr>
 
-    <tr>
-        <td>
-            وزن فعلی:
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <p id="rhythm-old">@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)</p>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            وزن ویراستهٔ من:
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <input type="text" id="rhythm-new" name="rhythm-new" value="@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)" size="100" list="rythms" />
-            <datalist id="rythms">
-                @if (Model.Rhythms != null)
-                    @foreach (var rhythm in Model.Rhythms)
-                    {
-                        <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                    }
-            </datalist>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            توضیح این ویرایش:
-        </td>
-    </tr>
+        <tr>
+            <td>
+                <a role="button" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
+            </td>
+        </tr>
 
-    <tr>
-        <td>
-            <input type="text" id="note" name="note" value="" size="100" />
-        </td>
-    </tr>
-
-    <tr>
-        <td>
-            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
-        </td>
-    </tr>
-
-</table>
+    </table>
 
 }

@@ -791,7 +791,7 @@ namespace RMuseum.Controllers
         [HttpPost]
         [Route("poem/correction")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCorrectionViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> SuggestPoemCorrection([FromBody] GanjoorPoemCorrectionViewModel correction)
@@ -816,7 +816,7 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("poem/correction/last/{id}")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCorrectionViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetLastUnreviewedUserCorrectionForPoem(int id)
