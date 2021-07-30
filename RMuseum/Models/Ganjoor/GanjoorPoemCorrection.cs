@@ -70,7 +70,7 @@ namespace RMuseum.Models.Ganjoor
         public RAppUser User { get; set; }
 
         /// <summary>
-        /// reviewed
+        /// reviewed (this is now unnecessary due to Result field and can be removed)
         /// </summary>
         public bool Reviewed { get; set; }
 

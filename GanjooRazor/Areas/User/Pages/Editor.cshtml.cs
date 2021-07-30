@@ -155,13 +155,13 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         return new BadRequestObjectResult(await response.Content.ReadAsStringAsync());
                     }
+                    return new OkObjectResult(true);
                 }
                 else
                 {
                     return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
-            return new OkObjectResult(false);
         }
     }
 }
