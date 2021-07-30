@@ -161,6 +161,13 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> DeletePoemCorrections(Guid userId, int poemId);
 
         /// <summary>
+        /// get next unreviewed correction
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetNextUnreviewedCorrection(int skip);
+
+        /// <summary>
         /// next unreviewed track
         /// </summary>
         /// <param name="skip"></param>

@@ -855,6 +855,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get next unreviewed correction
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/correction/next")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCorrectionViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetNextUnreviewedCorrection(int skip = 0)
+        {
+            RServiceResult<GanjoorPoemCorrectionViewModel> res =
+                await _ganjoorService.GetNextUnreviewedCorrection(skip);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);//might be null
+        }
+
+        /// <summary>
         /// suggest song for poem
         /// </summary>
         /// <param name="song"></param>

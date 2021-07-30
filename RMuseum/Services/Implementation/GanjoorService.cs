@@ -1376,7 +1376,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetLastUnreviewedUserCorrectionForPoem(Guid userId, int poemId)
         {
-            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText)
+            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
                 .Where(c => c.UserId == userId && c.PoemId == poemId && c.Result == CorrectionReviewResult.NotReviewed)
                 .OrderByDescending(c => c.Id)
                 .FirstOrDefaultAsync();
@@ -1398,7 +1398,44 @@ namespace RMuseum.Services.Implementation
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
-                    Result = dbCorrection.Result
+                    Result = dbCorrection.Result,
+                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                }
+                );
+        }
+
+        /// <summary>
+        /// get next unreviewed correction
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetNextUnreviewedCorrection(int skip)
+        {
+            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText)
+                .Where(c => c.Result == CorrectionReviewResult.NotReviewed)
+                .OrderBy(c => c.Id)
+                .Skip(skip)
+                .FirstOrDefaultAsync();
+
+            if (dbCorrection == null)
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null);
+
+            return new RServiceResult<GanjoorPoemCorrectionViewModel>
+                (
+                new GanjoorPoemCorrectionViewModel()
+                {
+                    PoemId = dbCorrection.PoemId,
+                    UserId = dbCorrection.UserId,
+                    VerseOrderText = dbCorrection.VerseOrderText == null ? null : dbCorrection.VerseOrderText.ToArray(),
+                    Title = dbCorrection.Title,
+                    OriginalTitle = dbCorrection.OriginalTitle,
+                    Rhythm = dbCorrection.Rhythm,
+                    OriginalRhythm = dbCorrection.OriginalRhythm,
+                    Note = dbCorrection.Note,
+                    Date = dbCorrection.Date,
+                    Reviewed = dbCorrection.Reviewed,
+                    Result = dbCorrection.Result,
+                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 );
         }
