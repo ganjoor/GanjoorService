@@ -13,6 +13,7 @@
     <link href="/css/fab.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="/lib/tinymce/tinymce.min.js"></script>
     <script>tinymce.init({ selector: 'textarea.editor', language: 'fa_IR' });</script>
     <script src="/lib/diff.js"></script>
@@ -201,7 +202,33 @@
             result.appendChild(fragment);
         }
 
+        function deletePoemCorrections(id) {
+            if (!confirm('آیا از حذف تغییرات پیشنهادی اطمینان دارید؟'))
+                return;
+
+            $('#deletecorrections').hide();
+            $('#saving').text('در حال ذخیره ...');
+
+            var url = '?handler=DeletePoemCorrections';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    poemid: id,
+                },
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    location.reload(true);
+                },
+
+            });
+        }
+
         function savePoemCorrections(id, verseCount) {
+          
             var verseOrderText = [];
             for (var i = 0; i <= verseCount; i++) {
                 var oldElementName = '#original-' + i.toString();
@@ -217,6 +244,9 @@
                     return;
                 }
             }
+
+            $('#savecorrections').hide();
+            $('#saving').text('در حال ذخیره ...');
 
             var rhythm_new = $('#rhythm-new').val();
             if (rhythm_new == $('#rhythm-old').text()) {
@@ -239,7 +269,9 @@
                     location.reload(true);
                 },
                 error: function (e) {
-                    alert(e)
+                    alert(e);
+                    $('#savecorrections').show();
+                    $('#saving').text('');
                 }
 
             });
@@ -309,8 +341,8 @@
         </main>
     </div>
 
-    
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 

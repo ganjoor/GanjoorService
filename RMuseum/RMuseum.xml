@@ -921,6 +921,13 @@
             <param name="correction"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemCorrections(System.Int32)">
+            <summary>
+            delete unreviewed user corrections for a poem
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetLastUnreviewedUserCorrectionForPoem(System.Int32)">
             <summary>
             returns last unreviewed correction from the user for a poem
@@ -7643,6 +7650,14 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePoemCorrections(System.Guid,System.Int32)">
+            <summary>
+            delete unreviewed user corrections for a poem
+            </summary>
+            <param name="userId"></param>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedSong(System.Int32,System.Guid)">
             <summary>
             next unreviewed track
@@ -9211,6 +9226,14 @@
             <param name="id"></param>
             <param name="approved"></param>
             <param name="trackType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemCorrections(System.Guid,System.Int32)">
+            <summary>
+            delete unreviewed user corrections for a poem
+            </summary>
+            <param name="userId"></param>
+            <param name="poemId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestPoemCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">

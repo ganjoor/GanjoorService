@@ -3,31 +3,47 @@
 @using DNTPersianUtils.Core
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "ویرایشگر شعر";
+    ViewData["Title"] = "ویرایشگر";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
 <h1>@ViewData["Title"]</h1>
-
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
     <p>@Model.FatalError</p>
 }
 else
 {
+    <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
+
+    @if (Model.PageInformation.Poem.Previous != null)
+    {
+            <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id">ویرایش شعر قبل</a></p>
+    }
+    @if (Model.PageInformation.Poem.Next != null)
+    {
+            <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id">ویرایش شعر بعد</a></p>
+    }
+
     if (Model.MyLastEdit != null)
     {
         <table>
             <tr>
-                <td colspan="2">ویرایشهای من</td>
+                <td colspan="2">ویرایشهای بررسی نشدهٔ من</td>
+            </tr>
+
+            <tr>
+                <td>متن اولیه</td>
+                <td>تغییرات من</td>
             </tr>
 
             @if (Model.MyLastEdit.Title != null)
             {
                 <tr>
                     <td>
-                        <p style="color:red">@Model.MyLastEdit.Title</p>
+                        <p style="color:red">@Model.MyLastEdit.OriginalTitle</p>
                     </td>
                     <td>
-                        <p style="color:green">@Model.MyLastEdit.OriginalTitle</p>
+                        <p style="color:green">@Model.MyLastEdit.Title</p>
                     </td>
                 </tr>
             }
@@ -35,10 +51,10 @@ else
             {
                 <tr>
                     <td>
-                        <p style="color:red">@Model.MyLastEdit.Rhythm</p>
+                        <p style="color:red">@Model.MyLastEdit.OriginalRhythm</p>
                     </td>
                     <td>
-                        <p style="color:green">@Model.MyLastEdit.OriginalRhythm</p>
+                        <p style="color:green">@Model.MyLastEdit.Rhythm</p>
                     </td>
                 </tr>
             }
@@ -63,6 +79,12 @@ else
                     </td>
                 </tr>
             }
+
+            <tr>
+                <td colspan="2">
+                    <a role="button" id="deletecorrections" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" onclick="deletePoemCorrections(@Model.PageInformation.Poem.Id)">انصراف و حذف این ویرایش</a>
+                </td>
+            </tr>
 
         </table>
     }
@@ -90,7 +112,19 @@ else
         </tr>
         <tr>
             <td>
-                <input type="text" id="id-0" name="id-0" value="@Model.PageInformation.Poem.Title" size="100" oninput="editorcompare(0)" />
+                @if (Model.MyLastEdit != null && Model.MyLastEdit.Title != null)
+                {
+                    <input type="text" id="id-0" name="id-0" value="@Model.MyLastEdit.Title" size="50" oninput="editorcompare(0)" />
+                    <script>
+                        $(document).ready(function () {
+                            editorcompare(0);
+                        });
+                    </script>
+                }
+                else
+                {
+                    <input type="text" id="id-0" name="id-0" value="@Model.PageInformation.Poem.Title" size="50" oninput="editorcompare(0)" />
+                }
             </td>
         </tr>
         <tr>
@@ -137,7 +171,19 @@ else
             </tr>
             <tr>
                 <td>
-                    <input type="text" id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" value="@verse.Text" size="100" oninput="editorcompare(@verse.VOrder)" />
+                    @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
+                    {
+                        <input type="text" id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" value="@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text" size="50" oninput="editorcompare(@verse.VOrder)" />
+                        <script>
+                            $(document).ready(function () {
+                                editorcompare(@verse.VOrder);
+                            });
+                        </script>
+                    }
+                    else
+                    {
+                        <input type="text" id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" value="@verse.Text" size="50" oninput="editorcompare(@verse.VOrder)" />
+                    }
                 </td>
             </tr>
             <tr>
@@ -170,7 +216,15 @@ else
         </tr>
         <tr>
             <td>
-                <input type="text" id="rhythm-new" name="rhythm-new" value="@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)" size="100" list="rythms" />
+                @if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm != null)
+                {
+                    <input type="text" id="rhythm-new" name="rhythm-new" value="@Model.MyLastEdit.Rhythm" size="50" list="rythms" />
+
+                }
+                else
+                {
+                    <input type="text" id="rhythm-new" name="rhythm-new" value="@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)" size="50" list="rythms" />
+                }
                 <datalist id="rythms">
                     @if (Model.Rhythms != null)
                         @foreach (var rhythm in Model.Rhythms)
@@ -188,16 +242,39 @@ else
 
         <tr>
             <td>
-                <input type="text" id="note" name="note" value="" size="100" />
+                @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.Note))
+                {
+                    <input type="text" id="note" name="note" value="@Model.MyLastEdit.Note" size="50" />
+                }
+                else
+                {
+                    <input type="text" id="note" name="note" value="" size="50" />
+                }
             </td>
         </tr>
 
         <tr>
             <td>
-                <a role="button" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
+                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
             </td>
         </tr>
 
+        <tr>
+            <td><p id="saving">&nbsp;</p></td>
+        </tr>
+
+        @if (Model.PageInformation.Poem.Previous != null)
+        {
+            <tr>
+                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id">ویرایش شعر قبل</a></td>
+            </tr>
+        }
+        @if (Model.PageInformation.Poem.Next != null)
+        {
+            <tr>
+                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id">ویرایش شعر بعد</a></td>
+            </tr>
+        }
     </table>
 
 }

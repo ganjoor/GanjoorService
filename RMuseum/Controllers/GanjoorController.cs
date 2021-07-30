@@ -809,6 +809,29 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// delete unreviewed user corrections for a poem
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("poem/correction/{id}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCorrectionViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> DeletePoemCorrections(int id)
+        {
+            var userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            var res =
+                await _ganjoorService.DeletePoemCorrections(userId, id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// returns last unreviewed correction from the user for a poem
         /// </summary>
         /// <param name="id"></param>

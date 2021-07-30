@@ -114,6 +114,21 @@ namespace GanjooRazor.Areas.User.Pages
             return Page();
         }
 
+        public async Task<IActionResult> OnPostDeletePoemCorrectionsAsync(int poemid)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.DeleteAsync(
+                        $"{APIRoot.Url}/api/ganjoor/poem/correction/{poemid}");
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+            return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+        }
+
         public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, string rhythm, string note)
         {
             using (HttpClient secureClient = new HttpClient())

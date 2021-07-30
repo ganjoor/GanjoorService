@@ -1299,12 +1299,39 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// delete unreviewed user corrections for a poem
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePoemCorrections(Guid userId, int poemId)
+        {
+            var preCorrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText)
+                .Where(c => c.UserId == userId && c.PoemId == poemId && c.Result == CorrectionReviewResult.NotReviewed)
+                .ToListAsync();
+            if (preCorrections.Count > 0)
+            {
+                foreach (var preCorrection in preCorrections)
+                {
+                    preCorrection.VerseOrderText.Clear();
+                }
+                _context.GanjoorPoemCorrections.RemoveRange(preCorrections);
+                await _context.SaveChangesAsync();
+            }
+            return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
         /// send poem correction
         /// </summary>
         /// <param name="correction"></param>
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> SuggestPoemCorrection(GanjoorPoemCorrectionViewModel correction)
         {
+            var preCorrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText)
+                .Where(c => c.UserId == correction.UserId && c.PoemId == correction.PoemId && c.Result == CorrectionReviewResult.NotReviewed)
+                .ToListAsync();
+
             var poem = (await GetPoemById(correction.PoemId, false, false, true, false, false, false, false, true, false)).Result;
             foreach (var verse in correction.VerseOrderText)
             {
@@ -1327,6 +1354,16 @@ namespace RMuseum.Services.Implementation
             _context.GanjoorPoemCorrections.Add(dbCorrection);
             await _context.SaveChangesAsync();
             correction.Id = dbCorrection.Id;
+
+            if(preCorrections.Count > 0)
+            {
+                foreach (var preCorrection in preCorrections)
+                {
+                    preCorrection.VerseOrderText.Clear();
+                }
+                _context.GanjoorPoemCorrections.RemoveRange(preCorrections);
+                await _context.SaveChangesAsync();
+            }
 
             return new RServiceResult<GanjoorPoemCorrectionViewModel>(correction);
         }
