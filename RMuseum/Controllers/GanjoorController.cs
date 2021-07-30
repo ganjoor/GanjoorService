@@ -809,6 +809,29 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// returns last unreviewed correction from the user for a poem
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/correction/last/{id}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetLastUnreviewedUserCorrectionForPoem(int id)
+        {
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<GanjoorPoemCorrectionViewModel> res =
+                await _ganjoorService.GetLastUnreviewedUserCorrectionForPoem(userId, id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);//might be null
+        }
+
+        /// <summary>
         /// suggest song for poem
         /// </summary>
         /// <param name="song"></param>

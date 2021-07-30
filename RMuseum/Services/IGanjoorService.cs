@@ -145,6 +145,14 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoemCorrectionViewModel>> SuggestPoemCorrection(GanjoorPoemCorrectionViewModel correction);
 
         /// <summary>
+        /// last unreviewed user correction for a poem
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetLastUnreviewedUserCorrectionForPoem(Guid userId, int poemId);
+
+        /// <summary>
         /// next unreviewed track
         /// </summary>
         /// <param name="skip"></param>

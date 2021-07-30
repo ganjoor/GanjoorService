@@ -1321,6 +1321,7 @@ namespace RMuseum.Services.Implementation
                 OriginalRhythm = poem.GanjoorMetre.Rhythm,
                 Note = correction.Note,
                 Date = DateTime.Now,
+                Result = CorrectionReviewResult.NotReviewed,
                 Reviewed = false
             };
             _context.GanjoorPoemCorrections.Add(dbCorrection);
@@ -1328,6 +1329,41 @@ namespace RMuseum.Services.Implementation
             correction.Id = dbCorrection.Id;
 
             return new RServiceResult<GanjoorPoemCorrectionViewModel>(correction);
+        }
+
+        /// <summary>
+        /// last unreviewed user correction for a poem
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetLastUnreviewedUserCorrectionForPoem(Guid userId, int poemId)
+        {
+            var dbCorrection = await _context.GanjoorPoemCorrections
+                .Where(c => c.UserId == userId && c.PoemId == poemId && c.Result == CorrectionReviewResult.NotReviewed)
+                .OrderByDescending(c => c.Id)
+                .FirstOrDefaultAsync();
+
+            if (dbCorrection == null)
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null);
+
+            return new RServiceResult<GanjoorPoemCorrectionViewModel>
+                (
+                new GanjoorPoemCorrectionViewModel()
+                {
+                    PoemId = dbCorrection.PoemId,
+                    UserId = dbCorrection.UserId,
+                    VerseOrderText = dbCorrection.VerseOrderText.ToArray(),
+                    Title = dbCorrection.Title,
+                    OriginalTitle = dbCorrection.OriginalTitle,
+                    Rhythm = dbCorrection.Rhythm,
+                    OriginalRhythm = dbCorrection.OriginalRhythm,
+                    Note = dbCorrection.Note,
+                    Date = dbCorrection.Date,
+                    Reviewed = dbCorrection.Reviewed,
+                    Result = dbCorrection.Result
+                }
+                );
         }
 
         /// <summary>
