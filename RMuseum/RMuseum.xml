@@ -935,6 +935,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnreviewedCorrection(System.Int32)">
+            <summary>
+            get next unreviewed correction
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SuggestSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             suggest song for poem
@@ -7658,6 +7665,13 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedCorrection(System.Int32)">
+            <summary>
+            get next unreviewed correction
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedSong(System.Int32,System.Guid)">
             <summary>
             next unreviewed track
@@ -9249,6 +9263,13 @@
             </summary>
             <param name="userId"></param>
             <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedCorrection(System.Int32)">
+            <summary>
+            get next unreviewed correction
+            </summary>
+            <param name="skip"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
