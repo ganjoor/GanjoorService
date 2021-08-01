@@ -1,6 +1,7 @@
 ﻿@page
 @model GanjooRazor.Areas.Admin.Pages.ReviewEditsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using DNTPersianUtils.Core
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "بازبینی ویرایش‌ها";
@@ -17,9 +18,9 @@ else if (@Model.Correction == null)
 }
 else
 {
+    <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
+
     <table>
-
-
         @if (Model.Correction.Title != null)
         {
             <tr>
@@ -29,7 +30,7 @@ else
             </tr>
             <tr>
                 <td>متن اولیه</td>
-                <td>تغییرات</td>
+                <td>پیشنهاد</td>
             </tr>
             <tr>
                 <td>
@@ -49,7 +50,7 @@ else
             </tr>
             <tr>
                 <td>متن اولیه</td>
-                <td>تغییرات</td>
+                <td>پیشنهاد</td>
             </tr>
             <tr>
                 <td>
@@ -65,12 +66,12 @@ else
             {
                 <tr>
                     <td colspan="2">
-                        @verse.VORder
+                        مصرع @verse.VORder.ToPersianNumbers()
                     </td>
                 </tr>
                 <tr>
                     <td>متن اولیه</td>
-                    <td>تغییرات</td>
+                    <td>پیشنهاد</td>
                 </tr>
                 <tr>
                     <td>
