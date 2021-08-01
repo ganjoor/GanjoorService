@@ -871,6 +871,25 @@ namespace RMuseum.Controllers
                 await _ganjoorService.GetNextUnreviewedCorrection(skip);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
+
+            var resCount = await _ganjoorService.GetUnreviewedCorrectionCount();
+            if (!string.IsNullOrEmpty(resCount.ExceptionString))
+                return BadRequest(resCount.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers",
+                JsonConvert.SerializeObject(
+                    new PaginationMetadata()
+                    {
+                        totalCount = resCount.Result,
+                        pageSize = -1,
+                        currentPage = -1,
+                        hasNextPage = false,
+                        hasPreviousPage = false,
+                        totalPages = -1
+                    })
+                );
+
             return Ok(res.Result);//might be null
         }
 

@@ -7,3 +7,90 @@
 }
 
 <h1>@ViewData["Title"]</h1>
+@if (!string.IsNullOrEmpty(Model.FatalError))
+{
+    <p>@Model.FatalError</p>
+}
+else if (@Model.Correction == null)
+{
+    <p>ویرایشی وجود ندارد.</p>
+}
+else
+{
+    <table>
+
+
+        @if (Model.Correction.Title != null)
+        {
+            <tr>
+                <td colspan="2">
+                    عنوان
+                </td>
+            </tr>
+            <tr>
+                <td>متن اولیه</td>
+                <td>تغییرات</td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="color:red">@Model.Correction.OriginalTitle</p>
+                </td>
+                <td>
+                    <p style="color:green">@Model.Correction.Title</p>
+                </td>
+            </tr>
+        }
+        @if (Model.Correction.Rhythm != null)
+        {
+            <tr>
+                <td colspan="2">
+                    وزن
+                </td>
+            </tr>
+            <tr>
+                <td>متن اولیه</td>
+                <td>تغییرات</td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="color:red">@Model.Correction.OriginalRhythm</p>
+                </td>
+                <td>
+                    <p style="color:green">@Model.Correction.Rhythm</p>
+                </td>
+            </tr>
+        }
+        @if (Model.Correction.VerseOrderText != null)
+            @foreach (var verse in Model.Correction.VerseOrderText)
+            {
+                <tr>
+                    <td colspan="2">
+                        @verse.VORder
+                    </td>
+                </tr>
+                <tr>
+                    <td>متن اولیه</td>
+                    <td>تغییرات</td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="color:red">@verse.OriginalText</p>
+                    </td>
+                    <td>
+                        <p style="color:green">@verse.Text</p>
+                    </td>
+                </tr>
+            }
+        @if (!string.IsNullOrEmpty(Model.Correction.Note))
+        {
+            <tr>
+                <td>یادداشت:</td>
+                <td>
+                    @Model.Correction.Note
+                </td>
+            </tr>
+        }
+
+
+    </table>
+}

@@ -7672,6 +7672,12 @@
             <param name="skip"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUnreviewedCorrectionCount">
+            <summary>
+            unreview correction count
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedSong(System.Int32,System.Guid)">
             <summary>
             next unreviewed track
@@ -9270,6 +9276,12 @@
             get next unreviewed correction
             </summary>
             <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedCorrectionCount">
+            <summary>
+            unreview correction count
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">

@@ -168,6 +168,12 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetNextUnreviewedCorrection(int skip);
 
         /// <summary>
+        /// unreview correction count
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<int>> GetUnreviewedCorrectionCount();
+
+        /// <summary>
         /// next unreviewed track
         /// </summary>
         /// <param name="skip"></param>

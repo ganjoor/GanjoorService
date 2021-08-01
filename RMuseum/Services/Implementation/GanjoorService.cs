@@ -1411,7 +1411,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetNextUnreviewedCorrection(int skip)
         {
-            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText)
+            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
                 .Where(c => c.Result == CorrectionReviewResult.NotReviewed)
                 .OrderBy(c => c.Id)
                 .Skip(skip)
@@ -1438,6 +1438,17 @@ namespace RMuseum.Services.Implementation
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 );
+        }
+
+        /// <summary>
+        /// unreview correction count
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> GetUnreviewedCorrectionCount()
+        {
+            return new RServiceResult<int>(await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText)
+                .Where(c => c.Result == CorrectionReviewResult.NotReviewed)
+                .CountAsync());
         }
 
         /// <summary>
