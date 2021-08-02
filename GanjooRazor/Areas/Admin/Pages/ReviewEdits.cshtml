@@ -40,6 +40,18 @@ else
                     <p style="color:green">@Model.Correction.Title</p>
                 </td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="radio" id="Approved" name="title_review_result" value="تأیید می‌شود">
+               
+                    <input type="radio" id="NotChanged" name="title_review_result" value="تغییری نکرده">
+                    <input type="radio" id="RejectedBecauseWrong" name="title_review_result" value="درست نیست">
+                    <input type="radio" id="RejectedBecauseVariant" name="title_review_result" value="مربوط به نسخهٔ دیگری است">
+                    <input type="radio" id="RejectedBecauseUnnecessaryChange" name="title_review_result" value="تغییر سلیقه‌ای یا بی دلیل است">
+                    <input type="radio" id="Rejected" name="title_review_result" value="به دلیل دیگری رد می‌شود">
+                    <input type="text" id="title_review_note" name="title_review_note" value="" size="50" />
+                </td>
+            </tr>
         }
         @if (Model.Correction.Rhythm != null)
         {
@@ -58,6 +70,17 @@ else
                 </td>
                 <td>
                     <p style="color:green">@Model.Correction.Rhythm</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="radio" id="Approved" name="rhythm_review_result" value="تأیید می‌شود">
+                    <input type="radio" id="NotChanged" name="rhythm_review_result" value="تغییری نکرده">
+                    <input type="radio" id="RejectedBecauseWrong" name="rhythm_review_result" value="درست نیست">
+                    <input type="radio" id="RejectedBecauseVariant" name="rhythm_review_result" value="مربوط به نسخهٔ دیگری است">
+                    <input type="radio" id="RejectedBecauseUnnecessaryChange" name="rhythm_review_result" value="تغییر سلیقه‌ای یا بی دلیل است">
+                    <input type="radio" id="Rejected" name="rhythm_review_result" value="به دلیل دیگری رد می‌شود">
+                    <input type="text" id="rhythm_review_note" name="rhythm_review_note" value="" size="50" />
                 </td>
             </tr>
         }
@@ -79,6 +102,23 @@ else
                     </td>
                     <td>
                         <p style="color:green">@verse.Text</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" value="Approved">
+                        <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label><br>
+                        <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" value="NotChanged">
+                        <label for="verse@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
+                        <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse@(verse.VORder)_review_result" value="RejectedBecauseWrong">
+                        <label for="verse@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                        <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseVariant" name="verse@(verse.VORder)_review_result" value="RejectedBecauseVariant">
+                        <label for="verse@(verse.VORder)_review_result_RejectedBecauseVariant">مربوط به نسخهٔ دیگری است</label><br>
+                        <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange" name="verse@(verse.VORder)_review_result" value="RejectedBecauseUnnecessaryChange">
+                        <label for="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
+                        <input type="radio" id="verse@(verse.VORder)_review_result_Rejected" name="verse@(verse.VORder)_review_result" value="Rejected">
+                        <label for="verse@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                        <input type="text" id="verse@(verse.VORder)_review_note" name="verse@(verse.VORder)_review_note" value="" size="50" />
                     </td>
                 </tr>
             }
