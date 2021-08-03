@@ -1399,9 +1399,10 @@ namespace RMuseum.Services.Implementation
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
+                    RhythmResult = dbCorrection.RhythmResult,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
-                );
+                );;
         }
 
         /// <summary>
@@ -1435,6 +1436,7 @@ namespace RMuseum.Services.Implementation
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
+                    RhythmResult = dbCorrection.RhythmResult,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 );

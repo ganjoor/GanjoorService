@@ -103,54 +103,14 @@ namespace RMuseum.Models.Ganjoor
         /// review result for title and rhythm
         /// </summary>
         public CorrectionReviewResult Result { get; set; }
+
+        /// <summary>
+        /// review result for rhythm
+        /// </summary>
+        public CorrectionReviewResult RhythmResult { get; set; }
     }
 
-    /// <summary>
-    /// Verse Vorder / Text
-    /// </summary>
-    public class GanjoorVerseVOrderText
-    {
-        /// <summary>
-        /// record id
-        /// </summary>
-        public int Id { get; set; }
-        /// <summary>
-        /// verse order
-        /// </summary>
-        public int VORder { get; set; }
+    
 
-        /// <summary>
-        /// text
-        /// </summary>
-        public string Text { get; set; }
-
-        /// <summary>
-        /// original text
-        /// </summary>
-        public string OriginalText { get; set; }
-
-        /// <summary>
-        /// review result
-        /// </summary>
-        public CorrectionReviewResult Result { get; set; }
-
-        /// <summary>
-        /// note
-        /// </summary>
-        public string ReviewNote { get; set; }
-    }
-
-    /// <summary>
-    /// correction review result
-    /// </summary>
-    public enum CorrectionReviewResult
-    {
-        NotReviewed = 0,
-        Approved = 1,
-        NoChanged = 2,
-        RejectedBecauseWrong = 3,
-        RejectedBecauseVariant = 4,
-        RejectedBecauseUnnecessaryChange = 5,
-        Rejected = 6
-    }
+    
 }

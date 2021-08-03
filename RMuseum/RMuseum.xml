@@ -4216,6 +4216,11 @@
             pinterest image url
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.CorrectionReviewResult">
+            <summary>
+            correction review result
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorCat">
             <summary>
             Ganjoor Category
@@ -4870,44 +4875,9 @@
             review result for title and rhythm
             </summary>
         </member>
-        <member name="T:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.RhythmResult">
             <summary>
-            Verse Vorder / Text
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.Id">
-            <summary>
-            record id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.VORder">
-            <summary>
-            verse order
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.Text">
-            <summary>
-            text
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.OriginalText">
-            <summary>
-            original text
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.Result">
-            <summary>
-            review result
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.ReviewNote">
-            <summary>
-            note
-            </summary>
-        </member>
-        <member name="T:RMuseum.Models.Ganjoor.CorrectionReviewResult">
-            <summary>
-            correction review result
+            review result for rhythm
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">
@@ -5028,6 +4998,41 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.Text">
             <summary>
             text
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText">
+            <summary>
+            Verse Vorder / Text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.VORder">
+            <summary>
+            verse order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.Text">
+            <summary>
+            text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.OriginalText">
+            <summary>
+            original text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.Result">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.ReviewNote">
+            <summary>
+            note
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemMusicTrack">
@@ -5822,7 +5827,12 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Result">
             <summary>
-            review result for title and rhythm
+            review result for title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.RhythmResult">
+            <summary>
+            review result for rhythm
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel">

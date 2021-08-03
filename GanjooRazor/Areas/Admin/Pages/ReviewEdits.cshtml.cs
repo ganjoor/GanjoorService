@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 
@@ -66,17 +67,25 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     if(Correction.Title != null)
                     {
-                        Correction.OriginalRhythm = PageInformation.Poem.Title;
+                        Correction.OriginalTitle = PageInformation.Poem.Title;
+                        if (Correction.OriginalTitle == PageInformation.Poem.Title)
+                            Correction.Result = CorrectionReviewResult.NotChanged;
                     }
 
                     if(Correction.VerseOrderText != null)
                         foreach(var verse in Correction.VerseOrderText)
                         {
                             verse.OriginalText = PageInformation.Poem.Verses.Where(v => v.VOrder == verse.VORder).Single().Text;
+                            if (verse.OriginalText == verse.Text)
+                                verse.Result = CorrectionReviewResult.NotChanged;
                         }
 
                     if (Correction.Rhythm != null)
+                    {
                         Correction.OriginalRhythm = PageInformation.Poem.GanjoorMetre.Rhythm;
+                        if (Correction.OriginalRhythm == PageInformation.Poem.GanjoorMetre.Rhythm)
+                            Correction.RhythmResult = CorrectionReviewResult.NotChanged;
+                    }
                 }
                 else
                 {

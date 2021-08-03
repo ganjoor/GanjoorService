@@ -78,8 +78,13 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public string ReviewNote { get; set; }
 
         /// <summary>
-        /// review result for title and rhythm
+        /// review result for title
         /// </summary>
         public CorrectionReviewResult Result { get; set; }
+
+        /// <summary>
+        /// review result for rhythm
+        /// </summary>
+        public CorrectionReviewResult RhythmResult { get; set; }
     }
 }
