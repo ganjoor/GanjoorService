@@ -109,10 +109,20 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <p style="color:red">@verse.OriginalText</p>
+                        <p style="color:red" id="verse-original-@verse.VORder">@verse.OriginalText</p>
                     </td>
                     <td>
-                        <p style="color:green">@verse.Text</p>
+                        <p style="color:green" id="verse-edited-@verse.VORder">@verse.Text</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <p id="verse-compare-@verse.VORder">@verse.OriginalText</p>
+                        <script>
+                            $(document).ready(function () {
+                                compareCorrectionBlocks('verse-original-@verse.VORder', 'verse-edited-@verse.VORder', 'verse-compare-@verse.VORder');
+                            });
+                        </script>
                     </td>
                 </tr>
                 <tr>
