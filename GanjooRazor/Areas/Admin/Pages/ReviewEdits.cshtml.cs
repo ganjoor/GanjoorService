@@ -68,7 +68,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if(Correction.Title != null)
                     {
                         Correction.OriginalTitle = PageInformation.Poem.Title;
-                        if (Correction.OriginalTitle == PageInformation.Poem.Title)
+                        if (Correction.OriginalTitle == Correction.Title)
                             Correction.Result = CorrectionReviewResult.NotChanged;
                     }
 
@@ -83,7 +83,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if (Correction.Rhythm != null)
                     {
                         Correction.OriginalRhythm = PageInformation.Poem.GanjoorMetre.Rhythm;
-                        if (Correction.OriginalRhythm == PageInformation.Poem.GanjoorMetre.Rhythm)
+                        if (Correction.OriginalRhythm == Correction.Rhythm)
                             Correction.RhythmResult = CorrectionReviewResult.NotChanged;
                     }
                 }
