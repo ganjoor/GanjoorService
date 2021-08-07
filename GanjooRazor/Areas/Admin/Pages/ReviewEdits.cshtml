@@ -105,7 +105,14 @@ else
                     <label for="rhythm_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
                     <input type="radio" id="rhythm_review_result_Rejected" name="rhythm_review_result" value="Rejected">
                     <label for="rhythm_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
-                    <input type="text" id="rhythm_review_note" name="rhythm_review_note" value="" size="50" />
+                    @if (Model.Correction.Title != null)
+                    {
+                        <p>در صورت نیاز به درج یادداشت برای تغییر وزن آن را در قسمت عنوان وارد فرمایید.</p>
+                    }
+                    else
+                    {
+                        <input type="text" id="title_review_note" name="title_review_note" value="" size="50" />
+                    }
                 </td>
             </tr>
         }
