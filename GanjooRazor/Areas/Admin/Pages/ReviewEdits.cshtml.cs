@@ -56,41 +56,54 @@ namespace GanjooRazor.Areas.Admin.Pages
                         TotalCount = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata).totalCount;
                     }
                     Correction = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await nextResponse.Content.ReadAsStringAsync());
-
-                    var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Correction.PoemId}");
-                    pageUrlResponse.EnsureSuccessStatusCode();
-                    var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
-
-                    var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
-                    pageQuery.EnsureSuccessStatusCode();
-                    PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
-
-                    if(Correction.Title != null)
+                    if(Correction != null)
                     {
-                        Correction.OriginalTitle = PageInformation.Poem.Title;
-                        if (Correction.OriginalTitle == Correction.Title)
-                            Correction.Result = CorrectionReviewResult.NotChanged;
-                    }
+                        var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Correction.PoemId}");
+                        pageUrlResponse.EnsureSuccessStatusCode();
+                        var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
 
-                    if(Correction.VerseOrderText != null)
-                        foreach(var verse in Correction.VerseOrderText)
+                        var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
+                        pageQuery.EnsureSuccessStatusCode();
+                        PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+                        if (Correction.Title != null)
                         {
-                            verse.OriginalText = PageInformation.Poem.Verses.Where(v => v.VOrder == verse.VORder).Single().Text;
-                            if (verse.OriginalText == verse.Text)
-                                verse.Result = CorrectionReviewResult.NotChanged;
+                            Correction.OriginalTitle = PageInformation.Poem.Title;
+                            if (Correction.OriginalTitle == Correction.Title)
+                                Correction.Result = CorrectionReviewResult.NotChanged;
                         }
 
-                    if (Correction.Rhythm != null)
-                    {
-                        Correction.OriginalRhythm = PageInformation.Poem.GanjoorMetre.Rhythm;
-                        if (Correction.OriginalRhythm == Correction.Rhythm)
-                            Correction.RhythmResult = CorrectionReviewResult.NotChanged;
+                        if (Correction.VerseOrderText != null)
+                            foreach (var verse in Correction.VerseOrderText)
+                            {
+                                verse.OriginalText = PageInformation.Poem.Verses.Where(v => v.VOrder == verse.VORder).Single().Text;
+                                if (verse.OriginalText == verse.Text)
+                                    verse.Result = CorrectionReviewResult.NotChanged;
+                            }
+
+                        if (Correction.Rhythm != null)
+                        {
+                            Correction.OriginalRhythm = PageInformation.Poem.GanjoorMetre.Rhythm;
+                            if (Correction.OriginalRhythm == Correction.Rhythm)
+                                Correction.RhythmResult = CorrectionReviewResult.NotChanged;
+                        }
                     }
+                    
                 }
                 else
                 {
                     FatalError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
                 }
+            }
+            return Page();
+        }
+
+        public IActionResult OnPost()
+        {
+            Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
+            if (Request.Form["next"].Count == 1)
+            {
+                return Redirect($"/Admin/ReviewEdits/?skip={Skip + 1}");
             }
             return Page();
         }
