@@ -183,7 +183,7 @@ else
 
     <tr>
         <td>
-            <button type="submit" name="review" id="review" style="width:100%;color:white;background-color:green">بررسی</button>
+            <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderatePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length, @Model.Correction.Id)">بررسی</a>
         </td>
         <td>
             <form method="post">
