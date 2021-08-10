@@ -855,6 +855,29 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get correction by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("correction/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCorrectionViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetCorrectionById(int id)
+        {
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<GanjoorPoemCorrectionViewModel> res =
+                await _ganjoorService.GetCorrectionById(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);//might be null
+        }
+
+        /// <summary>
         /// get next unreviewed correction
         /// </summary>
         /// <param name="skip"></param>

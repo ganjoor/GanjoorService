@@ -935,6 +935,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCorrectionById(System.Int32)">
+            <summary>
+            get correction by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnreviewedCorrection(System.Int32)">
             <summary>
             get next unreviewed correction
@@ -7667,6 +7674,13 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCorrectionById(System.Int32)">
+            <summary>
+            get correction by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.DeletePoemCorrections(System.Guid,System.Int32)">
             <summary>
             delete unreviewed user corrections for a poem
@@ -9279,6 +9293,13 @@
             </summary>
             <param name="userId"></param>
             <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCorrectionById(System.Int32)">
+            <summary>
+            get correction by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedCorrection(System.Int32)">

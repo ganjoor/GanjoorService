@@ -1388,6 +1388,7 @@ namespace RMuseum.Services.Implementation
                 (
                 new GanjoorPoemCorrectionViewModel()
                 {
+                    Id = dbCorrection.Id,
                     PoemId = dbCorrection.PoemId,
                     UserId = dbCorrection.UserId,
                     VerseOrderText = dbCorrection.VerseOrderText == null ? null : dbCorrection.VerseOrderText.ToArray(),
@@ -1402,7 +1403,43 @@ namespace RMuseum.Services.Implementation
                     RhythmResult = dbCorrection.RhythmResult,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
-                );;
+                );
+        }
+
+        /// <summary>
+        /// get correction by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetCorrectionById(int id)
+        {
+            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
+                .Where(c => c.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (dbCorrection == null)
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null);
+
+            return new RServiceResult<GanjoorPoemCorrectionViewModel>
+                (
+                new GanjoorPoemCorrectionViewModel()
+                {
+                    Id = dbCorrection.Id,
+                    PoemId = dbCorrection.PoemId,
+                    UserId = dbCorrection.UserId,
+                    VerseOrderText = dbCorrection.VerseOrderText == null ? null : dbCorrection.VerseOrderText.ToArray(),
+                    Title = dbCorrection.Title,
+                    OriginalTitle = dbCorrection.OriginalTitle,
+                    Rhythm = dbCorrection.Rhythm,
+                    OriginalRhythm = dbCorrection.OriginalRhythm,
+                    Note = dbCorrection.Note,
+                    Date = dbCorrection.Date,
+                    Reviewed = dbCorrection.Reviewed,
+                    Result = dbCorrection.Result,
+                    RhythmResult = dbCorrection.RhythmResult,
+                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                }
+                );
         }
 
         /// <summary>
@@ -1425,6 +1462,7 @@ namespace RMuseum.Services.Implementation
                 (
                 new GanjoorPoemCorrectionViewModel()
                 {
+                    Id = dbCorrection.Id,
                     PoemId = dbCorrection.PoemId,
                     UserId = dbCorrection.UserId,
                     VerseOrderText = dbCorrection.VerseOrderText == null ? null : dbCorrection.VerseOrderText.ToArray(),

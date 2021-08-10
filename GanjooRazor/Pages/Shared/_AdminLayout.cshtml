@@ -322,7 +322,7 @@
             result.appendChild(fragment);
         }
 
-        function moderatePoemCorrections(id, verseCount, correctionId) {
+        function moderatePoemCorrections(verseCount, correctionId) {
 
             var titleReviewResult = 'DontCare';
             if ($('#title_review_result_Approved').length > 0) { //has title
@@ -351,8 +351,6 @@
                     verseReviewNotes.push($('#verse' + (i + 1).toString() + '_review_note').val())
                 }
             }
-
-            alert('a');
 
             var url = '?handler=SendCorrectionsModeration';
 

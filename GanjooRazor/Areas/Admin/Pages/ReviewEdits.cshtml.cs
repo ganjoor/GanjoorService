@@ -12,6 +12,7 @@ using RSecurityBackend.Models.Generic;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class ReviewEditsModel : PageModel
     {
         /// <summary>
@@ -106,6 +107,29 @@ namespace GanjooRazor.Areas.Admin.Pages
                 return Redirect($"/Admin/ReviewEdits/?skip={Skip + 1}");
             }
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId, 
+            string titleReviewResult, string rhythmReviewResult,
+            string titleReviewNote, string[] verseReviewResult,
+            string[] verseReviewNotes)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var correctionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/correction/{correctionId}");
+                    correctionResponse.EnsureSuccessStatusCode();
+                    
+                    Correction = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync());
+                    
+                    return new OkObjectResult(true);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
         }
     }
 }

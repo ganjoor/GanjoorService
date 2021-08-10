@@ -153,6 +153,13 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetLastUnreviewedUserCorrectionForPoem(Guid userId, int poemId);
 
         /// <summary>
+        /// get correction by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetCorrectionById(int id);
+
+        /// <summary>
         /// delete unreviewed user corrections for a poem
         /// </summary>
         /// <param name="userId"></param>
