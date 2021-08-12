@@ -328,10 +328,7 @@
             if ($('#title_review_result_Approved').length > 0) { //has title
                 titleReviewResult = $('input[name=title_review_result]:checked').val()
             }
-            else {
-                titleReviewResult = null;
-            }
-
+           
 
             var rhythmReviewResult = 'DontCare';
             if ($('#rhythm_review_result_Approved').length > 0) { 
@@ -369,7 +366,10 @@
                     location.reload(true);
                 },
                 error: function (e) {
-                    alert(e);
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
                     
                 }
 

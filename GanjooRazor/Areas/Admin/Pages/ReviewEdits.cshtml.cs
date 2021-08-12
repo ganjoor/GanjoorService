@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
@@ -122,6 +123,46 @@ namespace GanjooRazor.Areas.Admin.Pages
                     correctionResponse.EnsureSuccessStatusCode();
                     
                     Correction = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync());
+
+                    if (Correction.Title != null)
+                    {
+                        if(titleReviewResult == null)
+                        {
+                            return new BadRequestObjectResult("لطفا تغییر عنوان را بازبینی کنید.");
+                        }
+                        else
+                        {
+                            Correction.Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), titleReviewResult);
+                            Correction.ReviewNote = titleReviewNote;
+                        }
+                    }
+
+                    if (Correction.Rhythm != null)
+                    {
+                        if(rhythmReviewResult == null)
+                        {
+                            return new BadRequestObjectResult("لطفا تغییر وزن را بازبینی کنید.");
+                        }
+                        else
+                        {
+                            Correction.RhythmResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), rhythmReviewResult);
+                            Correction.ReviewNote = titleReviewNote;
+                        }
+                    }
+
+                    if(verseReviewResult.Length != Correction.VerseOrderText.Length)
+                    {
+                        return new BadRequestObjectResult("لطفا تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
+                    }
+                    else
+                    {
+                        for (int i = 0; i < Correction.VerseOrderText.Length; i++)
+                        {
+                            Correction.VerseOrderText[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
+                            Correction.VerseOrderText[i].ReviewNote = verseReviewNotes[i];
+                        }
+                    }
+
                     
                     return new OkObjectResult(true);
                 }
