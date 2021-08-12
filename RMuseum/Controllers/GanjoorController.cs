@@ -917,6 +917,31 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// moderate poem correction
+        /// </summary>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("poem/correction/moderate")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCorrectionViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> ModeratePoemCorrection([FromBody] GanjoorPoemCorrectionViewModel correction)
+        {
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<GanjoorPoemCorrectionViewModel> res =
+                await _ganjoorService.ModeratePoemCorrection(userId, correction);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// suggest song for poem
         /// </summary>
         /// <param name="song"></param>

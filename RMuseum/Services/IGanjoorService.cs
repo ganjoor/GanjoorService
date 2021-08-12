@@ -181,6 +181,14 @@ namespace RMuseum.Services
         Task<RServiceResult<int>> GetUnreviewedCorrectionCount();
 
         /// <summary>
+        /// moderate poem correction
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemCorrectionViewModel>> ModeratePoemCorrection(Guid userId, GanjoorPoemCorrectionViewModel correction);
+
+        /// <summary>
         /// next unreviewed track
         /// </summary>
         /// <param name="skip"></param>

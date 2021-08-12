@@ -1491,6 +1491,87 @@ namespace RMuseum.Services.Implementation
                 .CountAsync());
         }
 
+
+        /// <summary>
+        /// moderate poem correction
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="moderation"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> ModeratePoemCorrection(Guid userId,
+            GanjoorPoemCorrectionViewModel moderation)
+        {
+            var dbCorrection = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Include(c => c.User)
+                .Where(c => c.Id == moderation.Id)
+                .FirstOrDefaultAsync();
+
+            dbCorrection.ReviewerUserId = userId;
+            dbCorrection.ReviewDate = DateTime.Now;
+            dbCorrection.Reviewed = true;
+
+            if (dbCorrection == null)
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null);
+
+            GanjoorModifyPageViewModel pageViewModel = new GanjoorModifyPageViewModel()
+            {
+                Note = dbCorrection.Note
+            };
+
+            if (dbCorrection.Title != null)
+            {
+                if (moderation.Result == CorrectionReviewResult.NotReviewed)
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات عنوان بررسی نشده است.");
+                dbCorrection.Result = moderation.Result;
+                dbCorrection.ReviewNote = moderation.ReviewNote;
+                if (dbCorrection.Result == CorrectionReviewResult.Approved)
+                {
+                    pageViewModel.Title = moderation.Title;
+                }
+            }
+
+            if(dbCorrection.Rhythm != null)
+            {
+                if (moderation.RhythmResult == CorrectionReviewResult.NotReviewed)
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات وزن بررسی نشده است.");
+                dbCorrection.RhythmResult = moderation.Result;
+                dbCorrection.ReviewNote = moderation.ReviewNote;
+                if (dbCorrection.RhythmResult == CorrectionReviewResult.Approved)
+                {
+                    pageViewModel.Rhythm = moderation.Rhythm;
+                }
+            }
+
+            if(moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count)
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count");
+
+            var poemVerses = await _context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == dbCorrection.PoemId).ToListAsync();
+
+            foreach (var moderatedVerse in moderation.VerseOrderText)
+            {
+                if (moderatedVerse.Result == CorrectionReviewResult.NotReviewed)
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"تغییرات مصرع {moderatedVerse.VORder} بررسی نشده است.");
+                var dbVerse = dbCorrection.VerseOrderText.Where(c => c.VORder == moderatedVerse.VORder).Single();
+                dbVerse.Result = moderatedVerse.Result;
+                dbVerse.ReviewNote = moderatedVerse.ReviewNote;
+                if (dbVerse.Result == CorrectionReviewResult.Approved)
+                {
+                    poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).Single().Text = moderatedVerse.Text;
+                }
+            }
+
+            pageViewModel.HtmlText = PrepareHtmlText(poemVerses);
+
+            var res = await UpdatePageAsync(moderation.PoemId, userId, pageViewModel);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, res.ExceptionString);
+
+
+            _context.GanjoorPoemCorrections.Update(dbCorrection);
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<GanjoorPoemCorrectionViewModel>(moderation);
+        }
+
         /// <summary>
         /// suggest song
         /// </summary>
