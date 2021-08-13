@@ -922,8 +922,8 @@ namespace RMuseum.Controllers
         /// <param name="correction"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("poem/correction/moderate")]
-        [Authorize]
+        [Route("correction/moderate")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCorrectionViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]

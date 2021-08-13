@@ -4856,7 +4856,7 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Reviewed">
             <summary>
-            reviewed (this is now unnecessary due to Result field and can be removed)
+            reviewed
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.ReviewDate">

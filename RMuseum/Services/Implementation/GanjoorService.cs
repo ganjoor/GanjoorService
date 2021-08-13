@@ -1307,7 +1307,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<bool>> DeletePoemCorrections(Guid userId, int poemId)
         {
             var preCorrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText)
-                .Where(c => c.UserId == userId && c.PoemId == poemId && c.Result == CorrectionReviewResult.NotReviewed)
+                .Where(c => c.UserId == userId && c.PoemId == poemId && c.Reviewed == false)
                 .ToListAsync();
             if (preCorrections.Count > 0)
             {
@@ -1329,7 +1329,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> SuggestPoemCorrection(GanjoorPoemCorrectionViewModel correction)
         {
             var preCorrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText)
-                .Where(c => c.UserId == correction.UserId && c.PoemId == correction.PoemId && c.Result == CorrectionReviewResult.NotReviewed)
+                .Where(c => c.UserId == correction.UserId && c.PoemId == correction.PoemId && c.Reviewed == false)
                 .ToListAsync();
 
             var poem = (await GetPoemById(correction.PoemId, false, false, true, false, false, false, false, true, false)).Result;
@@ -1378,7 +1378,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetLastUnreviewedUserCorrectionForPoem(Guid userId, int poemId)
         {
             var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
-                .Where(c => c.UserId == userId && c.PoemId == poemId && c.Result == CorrectionReviewResult.NotReviewed)
+                .Where(c => c.UserId == userId && c.PoemId == poemId && c.Reviewed == false)
                 .OrderByDescending(c => c.Id)
                 .FirstOrDefaultAsync();
 
@@ -1451,7 +1451,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetNextUnreviewedCorrection(int skip)
         {
             var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
-                .Where(c => c.Result == CorrectionReviewResult.NotReviewed)
+                .Where(c => c.Reviewed == false)
                 .OrderBy(c => c.Id)
                 .Skip(skip)
                 .FirstOrDefaultAsync();
@@ -1488,7 +1488,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<int>> GetUnreviewedCorrectionCount()
         {
             return new RServiceResult<int>(await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText)
-                .Where(c => c.Result == CorrectionReviewResult.NotReviewed)
+                .Where(c => c.Reviewed == false)
                 .CountAsync());
         }
 
@@ -1508,15 +1508,26 @@ namespace RMuseum.Services.Implementation
 
             dbCorrection.ReviewerUserId = userId;
             dbCorrection.ReviewDate = DateTime.Now;
-            dbCorrection.ApplicationOrder = 1 + await _context.GanjoorPoemCorrections.Where(c => c.Reviewed).MaxAsync(c => c.ApplicationOrder);
+            dbCorrection.ApplicationOrder = await _context.GanjoorPoemCorrections.Where(c => c.Reviewed).AnyAsync() ? 1 + await _context.GanjoorPoemCorrections.Where(c => c.Reviewed).MaxAsync(c => c.ApplicationOrder) : 1;
             dbCorrection.Reviewed = true;
             dbCorrection.AffectedThePoem = false;
             
             if (dbCorrection == null)
                 return new RServiceResult<GanjoorPoemCorrectionViewModel>(null);
 
+            var dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
+
             GanjoorModifyPageViewModel pageViewModel = new GanjoorModifyPageViewModel()
             {
+                Title = dbPoem.Title,
+                UrlSlug = dbPoem.UrlSlug,
+                OldTag = dbPoem.OldTag,
+                OldTagPageUrl = dbPoem.OldTagPageUrl,
+                RhymeLetters = dbPoem.RhymeLetters,
+                Rhythm = dbPoem.GanjoorMetre.Rhythm,
+                HtmlText = dbPoem.HtmlText,
+                SourceName = dbPoem.SourceName,
+                SourceUrlSlug = dbPoem.SourceUrlSlug,
                 Note = dbCorrection.Note
             };
 
@@ -1549,7 +1560,7 @@ namespace RMuseum.Services.Implementation
             if(moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count)
                 return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count");
 
-            var poemVerses = await _context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == dbCorrection.PoemId).ToListAsync();
+            var poemVerses = await _context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == dbCorrection.PoemId).OrderBy(v => v.VOrder).ToListAsync();
 
             foreach (var moderatedVerse in moderation.VerseOrderText)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -163,7 +164,15 @@ namespace GanjooRazor.Areas.Admin.Pages
                         }
                     }
 
-                    
+                    var moderationResponse = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/correction/moderate",
+                        new StringContent(JsonConvert.SerializeObject(Correction), Encoding.UTF8, "application/json"
+                        ));
+
+                    if(!moderationResponse.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(moderationResponse.Content.ReadAsStringAsync());
+                    }
+
                     return new OkObjectResult(true);
                 }
                 else
