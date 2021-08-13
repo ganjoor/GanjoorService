@@ -108,6 +108,11 @@ namespace RMuseum.Models.Ganjoor
         /// review result for rhythm
         /// </summary>
         public CorrectionReviewResult RhythmResult { get; set; }
+
+        /// <summary>
+        /// had any effect on poem after moderation? effective in history
+        /// </summary>
+        public bool AffectedThePoem { get; set; }
     }
 
     

@@ -4894,6 +4894,11 @@
             review result for rhythm
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.AffectedThePoem">
+            <summary>
+            had any effect on poem after moderation? effective in history
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">
             <summary>
             Ganjoor Poet

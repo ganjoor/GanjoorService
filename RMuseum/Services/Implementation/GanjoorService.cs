@@ -1349,7 +1349,8 @@ namespace RMuseum.Services.Implementation
                 Note = correction.Note,
                 Date = DateTime.Now,
                 Result = CorrectionReviewResult.NotReviewed,
-                Reviewed = false
+                Reviewed = false,
+                AffectedThePoem = false
             };
             _context.GanjoorPoemCorrections.Add(dbCorrection);
             await _context.SaveChangesAsync();
@@ -1507,8 +1508,10 @@ namespace RMuseum.Services.Implementation
 
             dbCorrection.ReviewerUserId = userId;
             dbCorrection.ReviewDate = DateTime.Now;
+            dbCorrection.ApplicationOrder = 1 + await _context.GanjoorPoemCorrections.Where(c => c.Reviewed).MaxAsync(c => c.ApplicationOrder);
             dbCorrection.Reviewed = true;
-
+            dbCorrection.AffectedThePoem = false;
+            
             if (dbCorrection == null)
                 return new RServiceResult<GanjoorPoemCorrectionViewModel>(null);
 
@@ -1525,6 +1528,7 @@ namespace RMuseum.Services.Implementation
                 dbCorrection.ReviewNote = moderation.ReviewNote;
                 if (dbCorrection.Result == CorrectionReviewResult.Approved)
                 {
+                    dbCorrection.AffectedThePoem = true;
                     pageViewModel.Title = moderation.Title;
                 }
             }
@@ -1537,6 +1541,7 @@ namespace RMuseum.Services.Implementation
                 dbCorrection.ReviewNote = moderation.ReviewNote;
                 if (dbCorrection.RhythmResult == CorrectionReviewResult.Approved)
                 {
+                    dbCorrection.AffectedThePoem = true;
                     pageViewModel.Rhythm = moderation.Rhythm;
                 }
             }
@@ -1555,6 +1560,7 @@ namespace RMuseum.Services.Implementation
                 dbVerse.ReviewNote = moderatedVerse.ReviewNote;
                 if (dbVerse.Result == CorrectionReviewResult.Approved)
                 {
+                    dbCorrection.AffectedThePoem = true;
                     poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).Single().Text = moderatedVerse.Text;
                 }
             }
