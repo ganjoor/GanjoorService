@@ -1524,7 +1524,7 @@ namespace RMuseum.Services.Implementation
                 OldTag = dbPoem.OldTag,
                 OldTagPageUrl = dbPoem.OldTagPageUrl,
                 RhymeLetters = dbPoem.RhymeLetters,
-                Rhythm = dbPoem.GanjoorMetre.Rhythm,
+                Rhythm = dbPoem.GanjoorMetre == null ? null : dbPoem.GanjoorMetre.Rhythm,
                 HtmlText = dbPoem.HtmlText,
                 SourceName = dbPoem.SourceName,
                 SourceUrlSlug = dbPoem.SourceUrlSlug,
