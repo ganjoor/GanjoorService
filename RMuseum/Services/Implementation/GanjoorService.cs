@@ -1420,28 +1420,38 @@ namespace RMuseum.Services.Implementation
                          where dbCorrection.UserId == userId
                          orderby dbCorrection.Id descending
                          select
-                          new GanjoorPoemCorrectionViewModel()
-                          {
-                              Id = dbCorrection.Id,
-                              PoemId = dbCorrection.PoemId,
-                              UserId = dbCorrection.UserId,
-                              VerseOrderText = dbCorrection.VerseOrderText == null ? null : dbCorrection.VerseOrderText.ToArray(),
-                              Title = dbCorrection.Title,
-                              OriginalTitle = dbCorrection.OriginalTitle,
-                              Rhythm = dbCorrection.Rhythm,
-                              OriginalRhythm = dbCorrection.OriginalRhythm,
-                              Note = dbCorrection.Note,
-                              Date = dbCorrection.Date,
-                              Reviewed = dbCorrection.Reviewed,
-                              Result = dbCorrection.Result,
-                              RhythmResult = dbCorrection.RhythmResult,
-                              UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
-                          };
+                          dbCorrection;
 
-            (PaginationMetadata, GanjoorPoemCorrectionViewModel[]) paginatedResult =
-                await QueryablePaginator<GanjoorPoemCorrectionViewModel>.Paginate(source, paging);
+            (PaginationMetadata PagingMeta, GanjoorPoemCorrection[] Items) dbPaginatedResult =
+                await QueryablePaginator<GanjoorPoemCorrection>.Paginate(source, paging);
 
-            return new RServiceResult<(PaginationMetadata, GanjoorPoemCorrectionViewModel[])>(paginatedResult);
+            List<GanjoorPoemCorrectionViewModel> list = new List<GanjoorPoemCorrectionViewModel>();
+            foreach (var dbCorrection in dbPaginatedResult.Items)
+            {
+                list.Add
+                    (
+                new GanjoorPoemCorrectionViewModel()
+                {
+                    Id = dbCorrection.Id,
+                    PoemId = dbCorrection.PoemId,
+                    UserId = dbCorrection.UserId,
+                    VerseOrderText = dbCorrection.VerseOrderText == null ? null : dbCorrection.VerseOrderText.ToArray(),
+                    Title = dbCorrection.Title,
+                    OriginalTitle = dbCorrection.OriginalTitle,
+                    Rhythm = dbCorrection.Rhythm,
+                    OriginalRhythm = dbCorrection.OriginalRhythm,
+                    Note = dbCorrection.Note,
+                    Date = dbCorrection.Date,
+                    Reviewed = dbCorrection.Reviewed,
+                    Result = dbCorrection.Result,
+                    RhythmResult = dbCorrection.RhythmResult,
+                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                }
+                );
+            }
+
+            return new RServiceResult<(PaginationMetadata, GanjoorPoemCorrectionViewModel[])>
+                ((dbPaginatedResult.PagingMeta, list.ToArray()));
         }
 
         /// <summary>

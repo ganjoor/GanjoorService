@@ -1,0 +1,176 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.EditsModel
+@using RMuseum.Models.Ganjoor
+@using RMuseum.Services.Implementation
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "ویرایش‌های من";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @foreach (var correction in Model.Corrections)
+    {
+        if (color == "gray")
+            color = "white";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="correction-@correction.Id">
+            <table>
+                <tr>
+                    <td colspan="3"><a href="/?p=@correction.PoemId" target="_blank">مشاهدهٔ متن شعر یا بخش</a></td>
+                </tr>
+
+                <tr>
+                    <td>متن اولیه</td>
+                    <td>تغییرات من</td>
+                    <td>نتیجهٔ بررسی</td>
+                </tr>
+
+                @if (correction.Title != null)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">@correction.OriginalTitle</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.Title</p>
+                        </td>
+                        <td>
+                            @if (correction.Result == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
+                            }
+                            else
+                            @if (correction.Result == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
+                            }
+                            else
+                            {
+                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (correction.Rhythm != null)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">@correction.OriginalRhythm</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.Rhythm</p>
+                        </td>
+                        <td>
+                            @if (correction.RhythmResult == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
+                            }
+                            else
+                            @if (correction.RhythmResult == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
+                            }
+                            else
+                            {
+                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (correction.VerseOrderText != null)
+                    @foreach (var verse in correction.VerseOrderText)
+                    {
+                        <tr>
+                            <td>
+                                <p style="color:red">@verse.OriginalText</p>
+                            </td>
+                            <td>
+                                <p style="color:green">@verse.Text</p>
+                            </td>
+                            <td>
+                                @if (verse.Result == CorrectionReviewResult.Approved)
+                                {
+                                    <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.Result)</p>
+                                }
+                                else
+                                @if (verse.Result == CorrectionReviewResult.Approved)
+                                {
+                                    <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.Result)</p>
+                                }
+                                else
+                                {
+                                    <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.Result)</p>
+                                }
+                            </td>
+                        </tr>
+                    }
+                @if (!string.IsNullOrEmpty(correction.Note))
+                {
+                    <tr>
+                        <td>یادداشت:</td>
+                        <td>
+                            @correction.Note
+                        </td>
+                    </tr>
+                }
+
+                <tr>
+                    <td colspan="3">
+                        @if (correction.Reviewed)
+                        {
+                            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" href="/User/Editor?id=@correction.PoemId">ویرایش مجدد</a>
+                        }
+                        else
+                        {
+                            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:blue;display:block" href="/User/Editor?id=@correction.PoemId">مشاهده</a>
+                        }
+                    </td>
+                </tr>
+
+            </table>
+
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+
+}

@@ -8794,6 +8794,18 @@
             <param name="format"></param>
             <returns></returns>
         </member>
+        <member name="T:RMuseum.Services.Implementation.CorrectionReviewResultConvertor">
+            <summary>
+            تبدیلگر CorrectionReviewResult
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult)">
+            <summary>
+            تبدیل به رشته
+            </summary>
+            <param name="reviewResult"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.DonationService">
             <summary>
             donation service
