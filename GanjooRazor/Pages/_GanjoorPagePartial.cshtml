@@ -24,16 +24,16 @@
                         {
                             if (Model.GanjoorPage.PoetOrCat != null && poet.Id == Model.GanjoorPage.PoetOrCat.Poet.Id)
                             {
-                            <option value="@poet.Id" selected>@Html.Raw(poet.Nickname)</option>
+                                <option value="@poet.Id" selected>@Html.Raw(poet.Nickname)</option>
                             }
                             else
                             {
-                            <option value="@poet.Id">@Html.Raw(poet.Nickname)</option>
-                                }
-
+                                <option value="@poet.Id">@Html.Raw(poet.Nickname)</option>
                             }
+
                         }
                     }
+                }
             </select>
             @{
                 if (!Model.IsPoetPage && Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null)
@@ -53,7 +53,7 @@
                             }
                         }
                     </select>
-                            }
+                }
             }
 
             <input type="submit" value="بیاب" />
@@ -66,12 +66,12 @@
 
         @if (!string.IsNullOrEmpty(Model.LastError))
         {
-        <div class="poem">
-            @if (Model.LastError != null)
-            {
-                @Model.LastError
-            }
-        </div>
+            <div class="poem">
+                @if (Model.LastError != null)
+                {
+                    @Model.LastError
+                }
+            </div>
         }
         else
         {
@@ -289,6 +289,17 @@
                         </nav>
 
                         <div id="comments">
+                            @if (Model.LoggedIn && Model.IsPoemPage)
+                            {
+                                <div class="width-100per">
+                                    <div class="width-100per text-align-center">
+                                        <p>
+                                            <a role="button" style="cursor: pointer; width: 100%; color: white; background-color: #300; display: block; text-align: center; border-color: #300 " href="/User/Editor?id=@Model.GanjoorPage.Id">اصلاح و بهبود متن</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+
                             <p>
                                 <small>🖰 با دو بار کلیک روی واژه‌ها یا انتخاب متن و کلیک روی آنها می‌توانید آنها را در لغتنامهٔ دهخدا جستجو کنید.</small>
                             </p>
@@ -510,7 +521,7 @@
 
                 <div class="spacer">&nbsp;</div>
 
-                @if(Model.Banner != null)
+                @if (Model.Banner != null)
                 {
                     <div style="margin:auto">
                         <a href="@Model.Banner.TargetUrl"><img src="@($"{GanjooRazor.APIRoot.InternetUrl}/{Model.Banner.ImageUrl}")" alt="@Model.Banner.AlternateText" /></a>
