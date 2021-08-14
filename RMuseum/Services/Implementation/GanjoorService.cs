@@ -1356,7 +1356,7 @@ namespace RMuseum.Services.Implementation
             await _context.SaveChangesAsync();
             correction.Id = dbCorrection.Id;
 
-            if(preCorrections.Count > 0)
+            if (preCorrections.Count > 0)
             {
                 foreach (var preCorrection in preCorrections)
                 {
@@ -1405,6 +1405,43 @@ namespace RMuseum.Services.Implementation
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 );
+        }
+
+        /// <summary>
+        /// get user corrections
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCorrectionViewModel[] Items)>> GetUserCorrections(Guid userId, PagingParameterModel paging)
+        {
+            var source = from dbCorrection in
+                             _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
+                         where dbCorrection.UserId == userId
+                         orderby dbCorrection.Id descending
+                         select
+                          new GanjoorPoemCorrectionViewModel()
+                          {
+                              Id = dbCorrection.Id,
+                              PoemId = dbCorrection.PoemId,
+                              UserId = dbCorrection.UserId,
+                              VerseOrderText = dbCorrection.VerseOrderText == null ? null : dbCorrection.VerseOrderText.ToArray(),
+                              Title = dbCorrection.Title,
+                              OriginalTitle = dbCorrection.OriginalTitle,
+                              Rhythm = dbCorrection.Rhythm,
+                              OriginalRhythm = dbCorrection.OriginalRhythm,
+                              Note = dbCorrection.Note,
+                              Date = dbCorrection.Date,
+                              Reviewed = dbCorrection.Reviewed,
+                              Result = dbCorrection.Result,
+                              RhythmResult = dbCorrection.RhythmResult,
+                              UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                          };
+
+            (PaginationMetadata, GanjoorPoemCorrectionViewModel[]) paginatedResult =
+                await QueryablePaginator<GanjoorPoemCorrectionViewModel>.Paginate(source, paging);
+
+            return new RServiceResult<(PaginationMetadata, GanjoorPoemCorrectionViewModel[])>(paginatedResult);
         }
 
         /// <summary>
@@ -1511,7 +1548,7 @@ namespace RMuseum.Services.Implementation
             dbCorrection.ApplicationOrder = await _context.GanjoorPoemCorrections.Where(c => c.Reviewed).AnyAsync() ? 1 + await _context.GanjoorPoemCorrections.Where(c => c.Reviewed).MaxAsync(c => c.ApplicationOrder) : 1;
             dbCorrection.Reviewed = true;
             dbCorrection.AffectedThePoem = false;
-            
+
             if (dbCorrection == null)
                 return new RServiceResult<GanjoorPoemCorrectionViewModel>(null);
 
@@ -1544,7 +1581,7 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-            if(dbCorrection.Rhythm != null)
+            if (dbCorrection.Rhythm != null)
             {
                 if (moderation.RhythmResult == CorrectionReviewResult.NotReviewed)
                     return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات وزن بررسی نشده است.");
@@ -1557,7 +1594,7 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-            if(moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count)
+            if (moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count)
                 return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count");
 
             var poemVerses = await _context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == dbCorrection.PoemId).OrderBy(v => v.VOrder).ToListAsync();

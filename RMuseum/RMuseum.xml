@@ -935,6 +935,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserCorrections(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get list of user suggested corrections
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetCorrectionById(System.Int32)">
             <summary>
             get correction by id
@@ -7686,6 +7693,14 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUserCorrections(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get user corrections
+            </summary>
+            <param name="userId"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetCorrectionById(System.Int32)">
             <summary>
             get correction by id
@@ -9313,6 +9328,14 @@
             </summary>
             <param name="userId"></param>
             <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserCorrections(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get user corrections
+            </summary>
+            <param name="userId"></param>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCorrectionById(System.Int32)">
