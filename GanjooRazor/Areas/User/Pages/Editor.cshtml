@@ -7,6 +7,11 @@
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
 <h1>@ViewData["Title"]</h1>
+<script>
+    $(document).ready(function () {
+        $('[contenteditable]').keypress(function (e) { return e.which != 13; });
+    });
+</script>
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
     <p>@Model.FatalError</p>
@@ -17,11 +22,11 @@ else
 
     @if (Model.PageInformation.Poem.Previous != null)
     {
-            <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id">ویرایش شعر قبل</a></p>
+        <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id">ویرایش شعر قبل</a></p>
     }
     @if (Model.PageInformation.Poem.Next != null)
     {
-            <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id">ویرایش شعر بعد</a></p>
+        <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id">ویرایش شعر بعد</a></p>
     }
 
     if (Model.MyLastEdit != null)
@@ -112,18 +117,27 @@ else
         </tr>
         <tr>
             <td>
+
                 @if (Model.MyLastEdit != null && Model.MyLastEdit.Title != null)
                 {
-                    <input type="text" id="id-0" name="id-0" value="@Model.MyLastEdit.Title" size="50" oninput="editorcompare(0)" />
+                    <div id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.MyLastEdit.Title</div>
                     <script>
                         $(document).ready(function () {
                             editorcompare(0);
                         });
+                        document.getElementById("id-0").addEventListener("input", function () {
+                            editorcompare(0)
+                        }, false);
                     </script>
                 }
                 else
                 {
-                    <input type="text" id="id-0" name="id-0" value="@Model.PageInformation.Poem.Title" size="50" oninput="editorcompare(0)" />
+                    <div type="text" id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.PageInformation.Poem.Title</div>
+                    <script>
+                        document.getElementById("id-0").addEventListener("input", function () {
+                            editorcompare(0)
+                        }, false);
+                    </script>
                 }
             </td>
         </tr>
@@ -173,8 +187,13 @@ else
                 <td>
                     @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
                     {
-                        <input type="text" id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" value="@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text" size="50" oninput="editorcompare(@verse.VOrder)" />
+                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" style="background-color:white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text</div>
+
+
                         <script>
+                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
+                                editorcompare(@verse.VOrder)
+                            }, false);
                             $(document).ready(function () {
                                 editorcompare(@verse.VOrder);
                             });
@@ -182,7 +201,12 @@ else
                     }
                     else
                     {
-                        <input type="text" id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" value="@verse.Text" size="50" oninput="editorcompare(@verse.VOrder)" />
+                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true"  style="background-color:white">@verse.Text</div>
+                        <script>
+                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
+                                editorcompare(@verse.VOrder)
+                            }, false);
+                        </script>
                     }
                 </td>
             </tr>

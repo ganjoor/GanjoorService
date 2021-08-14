@@ -173,7 +173,7 @@
             var a = document.getElementById('original-' + id.toString());
             var b = document.getElementById('id-' + id.toString());
             var result = document.getElementById('compare-' + id.toString());
-            var diff = JsDiff.diffChars(a.textContent, b.value);
+            var diff = JsDiff.diffChars(a.textContent, b.textContent);
             var fragment = document.createDocumentFragment();
             for (var i = 0; i < diff.length; i++) {
 
@@ -233,8 +233,8 @@
             for (var i = 0; i <= verseCount; i++) {
                 var oldElementName = '#original-' + i.toString();
                 var newElementName = '#id-' + i.toString();
-                if ($(newElementName).val() != $(oldElementName).text()) {
-                    verseOrderText.push(i.toString() + ':' + $(newElementName).val());
+                if ($(newElementName).text() != $(oldElementName).text()) {
+                    verseOrderText.push(i.toString() + ':' + $(newElementName).text());
                 }
             }
 
@@ -269,7 +269,10 @@
                     location.reload(true);
                 },
                 error: function (e) {
-                    alert(e);
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
                     $('#savecorrections').show();
                     $('#saving').text('');
                 }

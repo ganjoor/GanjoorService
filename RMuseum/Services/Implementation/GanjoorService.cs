@@ -1345,7 +1345,7 @@ namespace RMuseum.Services.Implementation
                 Title = correction.Title,
                 OriginalTitle = poem.Title,
                 Rhythm = correction.Rhythm,
-                OriginalRhythm = poem.GanjoorMetre.Rhythm,
+                OriginalRhythm = poem.GanjoorMetre == null ? null : poem.GanjoorMetre.Rhythm,
                 Note = correction.Note,
                 Date = DateTime.Now,
                 Result = CorrectionReviewResult.NotReviewed,
