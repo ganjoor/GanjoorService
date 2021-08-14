@@ -12,6 +12,8 @@ using System;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.MusicCatalogue;
 using RMuseum.Models.Accounting;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace RMuseum.DbContext
 {
@@ -22,7 +24,13 @@ namespace RMuseum.DbContext
     {
         public RMuseumDbContext(DbContextOptions<RMuseumDbContext> options) : base(options) 
         {
-            Database.Migrate();
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                   .SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json")
+                   .Build();
+            if(bool.Parse(configuration["DatabaseMigrate"]))
+            {
+                Database.Migrate();
+            }
         }
 
         /// <summary>
