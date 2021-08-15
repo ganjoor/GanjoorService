@@ -1,0 +1,115 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.PoemCorrectionsHistoryModel
+@using RMuseum.Models.Ganjoor
+@using RMuseum.Services.Implementation
+@using DNTPersianUtils.Core; 
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "سوابق ویرایش";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @foreach (var correction in Model.Corrections)
+    {
+        if (color == "gray")
+            color = "white";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="correction-@correction.Id">
+            <table>
+                <tr>
+                    <td colspan="2"><a href="/?p=@correction.PoemId" target="_blank">مشاهدهٔ متن شعر یا بخش</a></td>
+                </tr>
+                <tr>
+                    <td colspan="2">@correction.ReviewDate.ToFriendlyPersianDateTextify()</td>
+                </tr>
+                <tr>
+                    <td>متن اولیه</td>
+                    <td>متن جدید</td>
+                </tr>
+
+                @if (correction.Title != null && correction.Result == CorrectionReviewResult.Approved)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">@correction.OriginalTitle</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.Title</p>
+                        </td>
+                    </tr>
+                }
+                @if (correction.Rhythm != null && correction.Result == CorrectionReviewResult.Approved)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">@correction.OriginalRhythm</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.Rhythm</p>
+                        </td>
+
+                    </tr>
+
+                }
+                @if (correction.VerseOrderText != null)
+                    @foreach (var verse in correction.VerseOrderText)
+                    if(verse.Result == CorrectionReviewResult.Approved)
+                    {
+                        <tr>
+                            <td>
+                                <p style="color:red">@verse.OriginalText</p>
+                            </td>
+                            <td>
+                                <p style="color:green">@verse.Text</p>
+                            </td>
+                            
+                        </tr>
+                    }
+            </table>
+
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+
+}

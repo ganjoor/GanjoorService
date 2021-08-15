@@ -14,8 +14,7 @@ using RSecurityBackend.Models.Generic;
 
 namespace GanjooRazor.Areas.User.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
-    public class EditsModel : PageModel
+    public class PoemCorrectionsHistoryModel : PageModel
     {
         /// <summary>
         /// Last Error
@@ -43,7 +42,12 @@ namespace GanjooRazor.Areas.User.Pages
                         {
                             pageNumber = int.Parse(Request.Query["page"]);
                         }
-                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/corrections/mine?PageNumber={pageNumber}&PageSize=20");
+                        int poemId = 0;
+                        if(!string.IsNullOrEmpty(Request.Query["id"]))
+                        {
+                            poemId = int.Parse(Request.Query["id"]);
+                        }
+                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/corrections/effective?PageNumber={pageNumber}&PageSize=20");
                         if (!response.IsSuccessStatusCode)
                         {
                             LastError = await response.Content.ReadAsStringAsync();
@@ -67,7 +71,7 @@ namespace GanjooRazor.Areas.User.Pages
                                         new NameIdUrlImage()
                                         {
                                             Name = "صفحهٔ اول",
-                                            Url = "/User/Edits/?page=1"
+                                            Url = "/User/PoemCorrectionsHistory?page=1"
                                         }
                                         );
                                 }
@@ -94,7 +98,7 @@ namespace GanjooRazor.Areas.User.Pages
                                                 new NameIdUrlImage()
                                                 {
                                                     Name = i.ToPersianNumbers(),
-                                                    Url = $"/User/Edits/?page={i}"
+                                                    Url = $"/User/PoemCorrectionsHistory?page={i}"
                                                 }
                                                 );
                                         }
@@ -116,7 +120,7 @@ namespace GanjooRazor.Areas.User.Pages
                                        new NameIdUrlImage()
                                        {
                                            Name = "صفحهٔ آخر",
-                                           Url = $"/User/Edits/?page={paginationMetadata.totalPages}"
+                                           Url = $"/User/PoemCorrectionsHistory?page={paginationMetadata.totalPages}"
                                        }
                                        );
                                 }
