@@ -73,6 +73,14 @@ else
                             }
                         </td>
                     </tr>
+                    @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                    {
+                        <tr>
+                            <td colspan="3">
+                                <p>@correction.ReviewNote</p>
+                            </td>
+                        </tr>
+                    }
                 }
                 @if (correction.Rhythm != null)
                 {
@@ -99,6 +107,14 @@ else
                             }
                         </td>
                     </tr>
+                    @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                    {
+                        <tr>
+                            <td colspan="3">
+                                <p>@correction.ReviewNote</p>
+                            </td>
+                        </tr>
+                    }
                 }
                 @if (correction.VerseOrderText != null)
                     @foreach (var verse in correction.VerseOrderText)
@@ -126,12 +142,20 @@ else
                                 }
                             </td>
                         </tr>
+                        @if (!string.IsNullOrEmpty(verse.ReviewNote))
+                        {
+                            <tr>
+                                <td colspan="3">
+                                    <p>@verse.ReviewNote</p>
+                                </td>
+                            </tr>
+                        }
                     }
                 @if (!string.IsNullOrEmpty(correction.Note))
                 {
                     <tr>
                         <td>یادداشت:</td>
-                        <td>
+                        <td colspan="2">
                             @correction.Note
                         </td>
                     </tr>

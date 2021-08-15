@@ -1402,6 +1402,8 @@ namespace RMuseum.Services.Implementation
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
                     RhythmResult = dbCorrection.RhythmResult,
+                    ReviewNote = dbCorrection.ReviewNote,
+                    ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 );
@@ -1445,6 +1447,8 @@ namespace RMuseum.Services.Implementation
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
                     RhythmResult = dbCorrection.RhythmResult,
+                    ReviewNote = dbCorrection.ReviewNote,
+                    ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 );
@@ -1485,6 +1489,8 @@ namespace RMuseum.Services.Implementation
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
                     RhythmResult = dbCorrection.RhythmResult,
+                    ReviewNote = dbCorrection.ReviewNote,
+                    ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 );
@@ -1523,6 +1529,8 @@ namespace RMuseum.Services.Implementation
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
                     RhythmResult = dbCorrection.RhythmResult,
+                    ReviewNote = dbCorrection.ReviewNote,
+                    ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 );

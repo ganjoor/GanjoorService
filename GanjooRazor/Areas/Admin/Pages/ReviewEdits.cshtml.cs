@@ -86,7 +86,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                         if (Correction.Rhythm != null)
                         {
-                            Correction.OriginalRhythm = PageInformation.Poem.GanjoorMetre.Rhythm;
+                            Correction.OriginalRhythm = PageInformation.Poem.GanjoorMetre == null ? null : PageInformation.Poem.GanjoorMetre.Rhythm;
                             if (Correction.OriginalRhythm == Correction.Rhythm)
                                 Correction.RhythmResult = CorrectionReviewResult.NotChanged;
                         }
