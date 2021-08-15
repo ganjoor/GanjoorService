@@ -324,6 +324,10 @@
 
         function moderatePoemCorrections(verseCount, correctionId) {
 
+            $('#moderatecorrections').hide();
+            $('#saving').text('در حال بررسی ...');
+
+
             var titleReviewResult = 'DontCare';
             if ($('#title_review_result_Approved').length > 0) { //has title
                 titleReviewResult = $('input[name=title_review_result]:checked').val()
@@ -370,6 +374,8 @@
                         alert(e);
                     else
                         alert(e.responseText);
+                    $('#moderatecorrections').show();
+                    $('#saving').text('');
                 }
             });
 

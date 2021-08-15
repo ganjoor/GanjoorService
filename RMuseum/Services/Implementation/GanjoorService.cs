@@ -1698,6 +1698,12 @@ namespace RMuseum.Services.Implementation
             _context.GanjoorPoemCorrections.Update(dbCorrection);
             await _context.SaveChangesAsync();
 
+            await _notificationService.PushNotification(dbCorrection.UserId,
+                               "بررسی ویرایش پیشنهادی شما",
+                               $"با سپاس از زحمت و همت شما ویرایش پیشنهادیتان برای <a href=\"{dbPoem.FullUrl}\" target=\"_blank\">{dbPoem.FullTitle}</a> بررسی شد.{Environment.NewLine}" +
+                               $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «ویرایش‌های من» را مشاهده بفرمایید.{Environment.NewLine}"
+                               );
+
             return new RServiceResult<GanjoorPoemCorrectionViewModel>(moderation);
         }
 
