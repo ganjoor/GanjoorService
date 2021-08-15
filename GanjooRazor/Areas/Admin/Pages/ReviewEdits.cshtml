@@ -21,6 +21,14 @@ else
     <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
 
     <table>
+        <tr>
+            <td>
+                پیشنهاد دهنده:
+            </td>
+            <td>
+                <a href="/hashieha/?userid=@Model.Correction.UserId" target="_blank">@Model.Correction.UserNickname</a>
+            </td>
+        </tr>
         @if (Model.Correction.Title != null)
         {
             <tr>
@@ -181,16 +189,16 @@ else
             </tr>
         }
 
-    <tr>
-        <td>
-            <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderatePoemCorrections(@Model.PageInformation.Poem.Verses.Length, @Model.Correction.Id)">بررسی</a>
-        </td>
-        <td>
-            <form method="post">
-                <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
-            </form>
-        </td>
-    </tr>
+        <tr>
+            <td>
+                <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderatePoemCorrections(@Model.PageInformation.Poem.Verses.Length, @Model.Correction.Id)">بررسی</a>
+            </td>
+            <td>
+                <form method="post">
+                    <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
+                </form>
+            </td>
+        </tr>
 
         <tr>
             <td>
