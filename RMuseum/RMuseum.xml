@@ -942,6 +942,14 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemEffectiveCorrections(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            effective corrections for poem
+            </summary>
+            <param name="id"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetCorrectionById(System.Int32)">
             <summary>
             get correction by id
@@ -7701,6 +7709,14 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemEffectiveCorrections(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            effective corrections for poem
+            </summary>
+            <param name="poemId"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetCorrectionById(System.Int32)">
             <summary>
             get correction by id
@@ -9347,6 +9363,14 @@
             get user corrections
             </summary>
             <param name="userId"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemEffectiveCorrections(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            effective corrections for poem
+            </summary>
+            <param name="poemId"></param>
             <param name="paging"></param>
             <returns></returns>
         </member>

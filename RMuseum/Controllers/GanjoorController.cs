@@ -882,6 +882,32 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// effective corrections for poem
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("poem/{id}/corrections/effective")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCorrectionViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPoemEffectiveCorrections(int id,[FromQuery] PagingParameterModel paging)
+        {
+            var res =
+                await _ganjoorService.GetPoemEffectiveCorrections(id, paging);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result.Items);
+        }
+
+        /// <summary>
         /// get correction by id
         /// </summary>
         /// <param name="id"></param>

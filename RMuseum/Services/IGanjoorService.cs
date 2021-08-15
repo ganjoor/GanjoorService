@@ -161,6 +161,14 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCorrectionViewModel[] Items)>> GetUserCorrections(Guid userId, PagingParameterModel paging);
 
         /// <summary>
+        /// effective corrections for poem
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCorrectionViewModel[] Items)>> GetPoemEffectiveCorrections(int poemId, PagingParameterModel paging);
+
+        /// <summary>
         /// get correction by id
         /// </summary>
         /// <param name="id"></param>

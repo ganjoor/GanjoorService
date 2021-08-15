@@ -1459,6 +1459,63 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// effective corrections for poem
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCorrectionViewModel[] Items)>> GetPoemEffectiveCorrections(int poemId, PagingParameterModel paging)
+        {
+            var source = from dbCorrection in
+                             _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText)
+                         where 
+                         dbCorrection.PoemId == poemId
+                         &&
+                         dbCorrection.Reviewed == true
+                         &&
+                         (
+                         dbCorrection.Result == CorrectionReviewResult.Approved || dbCorrection.RhythmResult == CorrectionReviewResult.Approved
+                         ||
+                         dbCorrection.VerseOrderText.Any(v => v.Result == CorrectionReviewResult.Approved)
+                         )
+                         orderby dbCorrection.Id descending
+                         select
+                         dbCorrection;
+
+            (PaginationMetadata PagingMeta, GanjoorPoemCorrection[] Items) dbPaginatedResult =
+                await QueryablePaginator<GanjoorPoemCorrection>.Paginate(source, paging);
+
+            List<GanjoorPoemCorrectionViewModel> list = new List<GanjoorPoemCorrectionViewModel>();
+            foreach (var dbCorrection in dbPaginatedResult.Items)
+            {
+                list.Add
+                    (
+                new GanjoorPoemCorrectionViewModel()
+                {
+                    Id = dbCorrection.Id,
+                    PoemId = dbCorrection.PoemId,
+                    UserId = dbCorrection.UserId,
+                    VerseOrderText = dbCorrection.VerseOrderText == null ? null : dbCorrection.VerseOrderText.ToArray(),
+                    Title = dbCorrection.Title,
+                    OriginalTitle = dbCorrection.OriginalTitle,
+                    Rhythm = dbCorrection.Rhythm,
+                    OriginalRhythm = dbCorrection.OriginalRhythm,
+                    Note = dbCorrection.Note,
+                    Date = dbCorrection.Date,
+                    Reviewed = dbCorrection.Reviewed,
+                    Result = dbCorrection.Result,
+                    RhythmResult = dbCorrection.RhythmResult,
+                    ReviewNote = dbCorrection.ReviewNote,
+                    ReviewDate = dbCorrection.ReviewDate,
+                }
+                );
+            }
+
+            return new RServiceResult<(PaginationMetadata, GanjoorPoemCorrectionViewModel[])>
+                ((dbPaginatedResult.PagingMeta, list.ToArray()));
+        }
+
+        /// <summary>
         /// get correction by id
         /// </summary>
         /// <param name="id"></param>
