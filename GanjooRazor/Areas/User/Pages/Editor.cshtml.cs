@@ -139,7 +139,7 @@ namespace GanjooRazor.Areas.User.Pages
                     List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
                     foreach(string v in verseOrderText)
                     {
-                        var vParts = v.Split(':', System.StringSplitOptions.RemoveEmptyEntries);
+                        var vParts = v.Split("TextSeparator", System.StringSplitOptions.RemoveEmptyEntries);
                         int vOrder = int.Parse(vParts[0]);
                         if (vOrder == 0)
                             title = vParts[1];

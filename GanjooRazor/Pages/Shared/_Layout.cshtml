@@ -186,11 +186,11 @@
                 var node;
                 if (diff[i].removed) {
                     node = document.createElement('del');
-                    node.style.color = 'red';
+                    node.style.color = 'blue';
                     node.appendChild(document.createTextNode(diff[i].value));
                 } else if (diff[i].added) {
                     node = document.createElement('span');
-                    node.style.color = 'green';
+                    node.style.color = 'red';
                     node.appendChild(document.createTextNode(diff[i].value));
                 } else {
                     node = document.createTextNode(diff[i].value);
@@ -234,7 +234,7 @@
                 var oldElementName = '#original-' + i.toString();
                 var newElementName = '#id-' + i.toString();
                 if ($(newElementName).text() != $(oldElementName).text()) {
-                    verseOrderText.push(i.toString() + ':' + $(newElementName).text());
+                    verseOrderText.push(i.toString() + 'TextSeparator' + $(newElementName).text());
                 }
             }
 
