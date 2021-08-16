@@ -796,6 +796,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> SuggestPoemCorrection([FromBody] GanjoorPoemCorrectionViewModel correction)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
             correction.UserId =
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -821,6 +824,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> DeletePoemCorrections(int id)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
             var userId =
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -982,6 +988,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> ModeratePoemCorrection([FromBody] GanjoorPoemCorrectionViewModel correction)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
             Guid userId =
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
