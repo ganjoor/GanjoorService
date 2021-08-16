@@ -2480,9 +2480,9 @@ namespace RMuseum.Services.Implementation
                  .SingleOrDefaultAsync();
 
             var poem = (await _ganjoorService.GetPoemById(link.GanjoorPostId)).Result;//if it fails here nothing is updated
-            string titleInTOC = poem.FullTitle;
+            string titleInTOC = poem == null ?  "" : poem.FullTitle;
 
-            if (poem.Verses.Length > 0)
+            if (poem != null && poem.Verses.Length > 0)
             {
                 titleInTOC += $" - {poem.Verses[0].Text}";
             }
