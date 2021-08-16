@@ -411,6 +411,46 @@ namespace RSecurityBackend.Services.Implementation
         }
 
         /// <summary>
+        /// Get User Session
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sessionId"></param>
+        /// <returns></returns>
+        public virtual async Task<RServiceResult<PublicRUserSession>> GetUserSession(Guid userId, Guid sessionId)
+        {
+            RTemporaryUserSession rUserSession =
+                await _context.Sessions.Where(s => s.RAppUserId == userId && s.Id == sessionId).SingleAsync();
+            return new RServiceResult<PublicRUserSession>
+                (
+                    new PublicRUserSession()
+                    {
+                        Id = rUserSession.Id,
+                        RAppUser = new PublicRAppUser()
+                        {
+                            Id = rUserSession.RAppUser.Id,
+                            Username = rUserSession.RAppUser.UserName,
+                            Email = rUserSession.RAppUser.Email,
+                            FirstName = rUserSession.RAppUser.FirstName,
+                            SureName = rUserSession.RAppUser.SureName,
+                            PhoneNumber = rUserSession.RAppUser.PhoneNumber,
+                            RImageId = rUserSession.RAppUser.RImageId,
+                            Status = rUserSession.RAppUser.Status,
+                            NickName = rUserSession.RAppUser.NickName,
+                            Website = rUserSession.RAppUser.Website,
+                            Bio = rUserSession.RAppUser.Bio,
+                            EmailConfirmed = rUserSession.RAppUser.EmailConfirmed
+                        },
+                        ClientAppName = rUserSession.ClientAppName,
+                        ClientIPAddress = rUserSession.ClientIPAddress,
+                        Language = rUserSession.Language,
+                        LastRenewal = rUserSession.LastRenewal,
+                        LoginTime = rUserSession.LoginTime
+                    }
+
+            );
+        }
+
+        /// <summary>
         /// is user admin?
         /// </summary>
         /// <param name="userId"></param>
@@ -852,6 +892,46 @@ namespace RSecurityBackend.Services.Implementation
                 return new RServiceResult<bool>(true);
             }
             return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
+
+        }
+
+        /// <summary>
+        /// start leaving
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sessionId"></param>
+        /// <param name="clientIPAddress"></param>
+        /// <returns></returns>
+        public virtual async Task<RServiceResult<RVerifyQueueItem>> StartLeaving(Guid userId, Guid sessionId, string clientIPAddress)
+        {
+            var session = await GetUserSession(userId, sessionId);
+            var user = (await GetUserInformation(userId)).Result;
+
+            //checking this queue for previous signup attempts is unnecessary and is not done intentionally
+            RVerifyQueueItem item = new RVerifyQueueItem()
+            {
+                QueueType = RVerifyQueueType.UserSelfDelete,
+                Email = user.Email,
+                DateTime = DateTime.Now,
+                ClientIPAddress = clientIPAddress,
+                ClientAppName = session.Result.ClientAppName,
+                Secret = $"{(new Random(DateTime.Now.Millisecond)).Next(0, 99999)}".PadLeft(6, '0'),
+                Language = session.Result.Language
+            };
+
+            var existingSecrets = await _context.VerifyQueueItems.Where(i => i.Secret == item.Secret).ToListAsync();
+            if (existingSecrets.Count > 0)
+            {
+                _context.VerifyQueueItems.RemoveRange(existingSecrets);
+                await _context.SaveChangesAsync();
+            }
+
+            await _context.VerifyQueueItems.AddAsync
+                (
+                item
+                );
+            await _context.SaveChangesAsync();
+            return new RServiceResult<RVerifyQueueItem>(item);
 
         }
 
@@ -1489,52 +1569,34 @@ namespace RSecurityBackend.Services.Implementation
 
         #region Signup/Forget password email related overridables
         /// <summary>
-        /// Sign Up Email Subject
+        /// Sign Up/forget passsword/delete Email Subject
         /// </summary>
         /// <returns>
         /// subject
         /// </returns>
+        /// <param name="op"></param>
         /// <param name="secretCode"></param>
-        public virtual string GetSignUpEmailSubject(string secretCode)
+        public virtual string GetEmailSubject(RVerifyQueueType op, string secretCode)
         {
-            return $"Ganjoor SignUp Code:{secretCode}";
+            string opString = op == RVerifyQueueType.SignUp ? "SignUp" : op == RVerifyQueueType.ForgotPassword ? "Forgot Password" : "Self Delete User";
+            return $"Ganjoor {opString} Code:{secretCode}";
         }
 
         /// <summary>
-        /// Sign Up Email Html Content
+        /// Sign Up/forget passsword/delete Email Html Content
         /// </summary>
+        /// <param name="op"></param>
         /// <param name="secretCode"></param>
         /// <param name="signupCallbackUrl"></param>
         /// <returns>html content</returns>
-        public virtual string GetSignUpEmailHtmlContent(string secretCode, string signupCallbackUrl)
+        public virtual string GetEmailHtmlContent(RVerifyQueueType op, string secretCode, string signupCallbackUrl)
         {
             if (string.IsNullOrEmpty(signupCallbackUrl))
                 return $"{signupCallbackUrl}?secret={secretCode}";
-            return $"لطفا {secretCode} را در صفحهٔ ثبت نام وارد کنید.";
+            string opString = op == RVerifyQueueType.SignUp ? "ثبت نام" : op == RVerifyQueueType.ForgotPassword ? "فراموشی رمز" : "حذف کاربر";
+            return $"لطفا {secretCode} را در صفحهٔ {opString} وارد کنید.";
         }
-
-        /// <summary>
-        /// Forgot Password Email Subject
-        /// </summary>
-        /// <returns>
-        /// subject
-        /// </returns>
-        /// <param name="secretCode"></param>
-        public virtual string GetForgotPasswordEmailSubject(string secretCode)
-        {
-            return $"Ganjoor Forgot Password Code:{secretCode}";
-        }
-
-        /// <summary>
-        /// Forgot Password Email Html Content
-        /// </summary>
-        /// <param name="secretCode"></param>
-        /// <param name="forgotPasswordCallbackUrl"></param>
-        /// <returns>html content</returns>
-        public virtual string GetForgotPasswordEmailHtmlContent(string secretCode, string forgotPasswordCallbackUrl)
-        {
-            return $"{forgotPasswordCallbackUrl}?secret={secretCode}";
-        }
+        
         #endregion
 
         /// <summary>

@@ -414,7 +414,7 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public async Task<IActionResult> Delete(Guid id)
+        public virtual async Task<IActionResult> Delete(Guid id)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<bool> isAdmin = await _appUserService.IsAdmin(loggedOnUserId);
@@ -481,7 +481,6 @@ namespace RSecurityBackend.Controllers
             }
             return Ok(res.Result);
         }
-
 
         /// <summary>
         /// View User Sessions (user needs user:sessions permission to view other users sessions)
@@ -854,8 +853,8 @@ namespace RSecurityBackend.Controllers
                     await _emailSender.SendEmailAsync
                         (
                         signUpViewModel.Email,
-                        _appUserService.GetSignUpEmailSubject(res.Result.Secret),
-                        _appUserService.GetSignUpEmailHtmlContent(res.Result.Secret, signUpViewModel.CallbackUrl)
+                        _appUserService.GetEmailSubject(RVerifyQueueType.SignUp, res.Result.Secret),
+                        _appUserService.GetEmailHtmlContent(RVerifyQueueType.SignUp, res.Result.Secret, signUpViewModel.CallbackUrl)
                         );
                     return Ok("verify");
                 }
@@ -950,8 +949,8 @@ namespace RSecurityBackend.Controllers
                 await _emailSender.SendEmailAsync
                     (
                     fpwdViewModel.Email,
-                    _appUserService.GetForgotPasswordEmailSubject(res.Result.Secret),
-                    _appUserService.GetForgotPasswordEmailHtmlContent(res.Result.Secret, fpwdViewModel.CallbackUrl)
+                    _appUserService.GetEmailSubject(RVerifyQueueType.ForgotPassword, res.Result.Secret),
+                    _appUserService.GetEmailHtmlContent(RVerifyQueueType.ForgotPassword, res.Result.Secret, fpwdViewModel.CallbackUrl)
                     );
             }
             catch (Exception exp)

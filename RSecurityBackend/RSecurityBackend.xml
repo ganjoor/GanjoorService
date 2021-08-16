@@ -1040,6 +1040,11 @@
             Forgot Password by email
             </summary>
         </member>
+        <member name="F:RSecurityBackend.Models.Auth.Db.RVerifyQueueType.UserSelfDelete">
+            <summary>
+            delete user by himself/hersef
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Models.Auth.Memory.SecurableItem">
             <summary>
             securable itmes: forms and ...
@@ -1461,6 +1466,16 @@
             <example>
             Test!123
             </example>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.SelfDeleteViewModel">
+            <summary>
+            User Self Delete View Model
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.SelfDeleteViewModel.CallbackUrl">
+             <summary>
+            CallbackUrl
+             </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Auth.ViewModels.SetPasswordModel">
             <summary>
@@ -2330,6 +2345,15 @@
             <param name="userId"></param>
             <returns>true if succeeds</returns>
         </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.StartLeaving(System.Guid,System.Guid,System.String)">
+            <summary>
+            start leaving
+            </summary>
+            <param name="userId"></param>
+            <param name="sessionId"></param>
+            <param name="clientIPAddress"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Services.IAppUserService.SetUserImage(System.Guid,Microsoft.AspNetCore.Http.IFormFileCollection)">
             <summary>
             Set User Image
@@ -2343,6 +2367,14 @@
             Get User Sessions
             </summary>
             <param name="userId">if null is passed returns all sessions</param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetUserSession(System.Guid,System.Guid)">
+            <summary>
+            Get User Session
+            </summary>
+            <param name="userId"></param>
+            <param name="sessionId"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.IAppUserService.GetUserImage(System.Guid)">
@@ -2414,38 +2446,23 @@
             <param name="email"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.IAppUserService.GetSignUpEmailSubject(System.String)">
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetEmailSubject(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String)">
             <summary>
-            Sign Up Email Subject
+            Sign Up/forget passsword/delete Email Subject
             </summary>
             <returns>
             subject
             </returns>
+            <param name="op"></param>
             <param name="secretCode"></param>
         </member>
-        <member name="M:RSecurityBackend.Services.IAppUserService.GetSignUpEmailHtmlContent(System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetEmailHtmlContent(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String,System.String)">
             <summary>
-            Sign Up Email Html Content
+            Sign Up/forget passsword/delete Email Html Content
             </summary>
+            <param name="op"></param>
             <param name="secretCode"></param>
             <param name="signupCallbackUrl"></param>
-            <returns>html content</returns>
-        </member>
-        <member name="M:RSecurityBackend.Services.IAppUserService.GetForgotPasswordEmailSubject(System.String)">
-            <summary>
-            Forgot Password Email Subject
-            </summary>
-            <returns>
-            subject
-            </returns>
-            <param name="secretCode"></param>
-        </member>
-        <member name="M:RSecurityBackend.Services.IAppUserService.GetForgotPasswordEmailHtmlContent(System.String,System.String)">
-            <summary>
-            Forgot Password Email Html Content
-            </summary>
-            <param name="secretCode"></param>
-            <param name="forgotPasswordCallbackUrl"></param>
             <returns>html content</returns>
         </member>
         <member name="P:RSecurityBackend.Services.IAppUserService.TokenSecret">
@@ -2686,6 +2703,14 @@
             <param name="userId">if null is passed returns all sessions</param>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetUserSession(System.Guid,System.Guid)">
+            <summary>
+            Get User Session
+            </summary>
+            <param name="userId"></param>
+            <param name="sessionId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Services.Implementation.AppUserService.IsAdmin(System.Guid)">
             <summary>
             is user admin?
@@ -2777,6 +2802,15 @@
             </summary>
             <param name="userId"></param>
             <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.StartLeaving(System.Guid,System.Guid,System.String)">
+            <summary>
+            start leaving
+            </summary>
+            <param name="userId"></param>
+            <param name="sessionId"></param>
+            <param name="clientIPAddress"></param>
+            <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.AppUserService.SetUserImage(System.Guid,Microsoft.AspNetCore.Http.IFormFileCollection)">
             <summary>
@@ -2908,38 +2942,23 @@
             <param name="errors"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetSignUpEmailSubject(System.String)">
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetEmailSubject(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String)">
             <summary>
-            Sign Up Email Subject
+            Sign Up/forget passsword/delete Email Subject
             </summary>
             <returns>
             subject
             </returns>
+            <param name="op"></param>
             <param name="secretCode"></param>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetSignUpEmailHtmlContent(System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetEmailHtmlContent(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String,System.String)">
             <summary>
-            Sign Up Email Html Content
+            Sign Up/forget passsword/delete Email Html Content
             </summary>
+            <param name="op"></param>
             <param name="secretCode"></param>
             <param name="signupCallbackUrl"></param>
-            <returns>html content</returns>
-        </member>
-        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetForgotPasswordEmailSubject(System.String)">
-            <summary>
-            Forgot Password Email Subject
-            </summary>
-            <returns>
-            subject
-            </returns>
-            <param name="secretCode"></param>
-        </member>
-        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetForgotPasswordEmailHtmlContent(System.String,System.String)">
-            <summary>
-            Forgot Password Email Html Content
-            </summary>
-            <param name="secretCode"></param>
-            <param name="forgotPasswordCallbackUrl"></param>
             <returns>html content</returns>
         </member>
         <member name="F:RSecurityBackend.Services.Implementation.AppUserService._context">

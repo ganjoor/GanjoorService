@@ -21,6 +21,13 @@
             <param name="imageFileService"></param>
             <param name="captchaService"></param>
         </member>
+        <member name="M:RMuseum.Controllers.AppUserController.StartLeaving(RSecurityBackend.Models.Auth.ViewModels.SelfDeleteViewModel)">
+            <summary>
+            start user self delete process (send a verification email to user)
+            </summary>
+            <param name="viewModel"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.ArtifactController.Get(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             get all published artifacts (including CoverImage info but not items info)
@@ -8991,38 +8998,23 @@
             IMemoryCache
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.GetSignUpEmailSubject(System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.GetEmailSubject(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String)">
             <summary>
             Sign Up Email Subject
             </summary>
             <returns>
             subject
             </returns>
+            <param name="op"></param>
             <param name="secretCode"></param>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.GetSignUpEmailHtmlContent(System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.GetEmailHtmlContent(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String,System.String)">
             <summary>
             Sign Up Email Html Content
             </summary>
+            <param name="op"></param>
             <param name="secretCode"></param>
             <param name="signupCallbackUrl"></param>
-            <returns>html content</returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.GetForgotPasswordEmailSubject(System.String)">
-            <summary>
-            Forgot Password Email Subject
-            </summary>
-            <returns>
-            subject
-            </returns>
-            <param name="secretCode"></param>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.GetForgotPasswordEmailHtmlContent(System.String,System.String)">
-            <summary>
-            Forgot Password Email Html Content
-            </summary>
-            <param name="secretCode"></param>
-            <param name="forgotPasswordCallbackUrl"></param>
             <returns>html content</returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.FinalizeSignUp(System.String,System.String,System.String,System.String,System.String)">

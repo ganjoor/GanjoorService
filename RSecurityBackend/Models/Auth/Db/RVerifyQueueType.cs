@@ -12,6 +12,10 @@
         /// <summary>
         /// Forgot Password by email
         /// </summary>
-        ForgotPassword = 1
+        ForgotPassword = 1,
+        /// <summary>
+        /// delete user by himself/hersef
+        /// </summary>
+        UserSelfDelete = 2
     }
 }

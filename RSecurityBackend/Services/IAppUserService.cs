@@ -171,6 +171,15 @@ namespace RSecurityBackend.Services
         Task<RServiceResult<bool>> DeleteUser(Guid userId);
 
         /// <summary>
+        /// start leaving
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sessionId"></param>
+        /// <param name="clientIPAddress"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RVerifyQueueItem>> StartLeaving(Guid userId, Guid sessionId, string clientIPAddress);
+
+        /// <summary>
         /// Set User Image
         /// </summary>
         /// <param name="userId"></param>
@@ -185,6 +194,14 @@ namespace RSecurityBackend.Services
         /// <param name="userId">if null is passed returns all sessions</param>
         /// <returns></returns>
         Task<RServiceResult<PublicRUserSession[]>> GetUserSessions(Guid? userId);
+
+        /// <summary>
+        /// Get User Session
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sessionId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PublicRUserSession>> GetUserSession(Guid userId, Guid sessionId);
 
         /// <summary>
         /// Get User Image
@@ -257,38 +274,23 @@ namespace RSecurityBackend.Services
         Task<RServiceResult<PublicRAppUser>> FindUserByEmail(string email);
 
         /// <summary>
-        /// Sign Up Email Subject
+        /// Sign Up/forget passsword/delete Email Subject
         /// </summary>
         /// <returns>
         /// subject
         /// </returns>
+        /// <param name="op"></param>
         /// <param name="secretCode"></param>
-        string GetSignUpEmailSubject(string secretCode);
+        string GetEmailSubject(RVerifyQueueType op, string secretCode);
 
         /// <summary>
-        /// Sign Up Email Html Content
+        /// Sign Up/forget passsword/delete Email Html Content
         /// </summary>
+        /// <param name="op"></param>
         /// <param name="secretCode"></param>
         /// <param name="signupCallbackUrl"></param>
         /// <returns>html content</returns>
-        string GetSignUpEmailHtmlContent(string secretCode, string signupCallbackUrl);
-
-        /// <summary>
-        /// Forgot Password Email Subject
-        /// </summary>
-        /// <returns>
-        /// subject
-        /// </returns>
-        /// <param name="secretCode"></param>
-        string GetForgotPasswordEmailSubject(string secretCode);
-
-        /// <summary>
-        /// Forgot Password Email Html Content
-        /// </summary>
-        /// <param name="secretCode"></param>
-        /// <param name="forgotPasswordCallbackUrl"></param>
-        /// <returns>html content</returns>
-        string GetForgotPasswordEmailHtmlContent(string secretCode, string forgotPasswordCallbackUrl);
+        string GetEmailHtmlContent(RVerifyQueueType op, string secretCode, string signupCallbackUrl);
 
         /// <summary>
         /// secret used for generating Jwt token
