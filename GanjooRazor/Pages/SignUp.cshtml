@@ -1,0 +1,68 @@
+﻿@page
+@model GanjooRazor.Pages.SignUpModel
+@{
+    Layout = null;
+    ViewData["Title"] = "ثبت نام";
+}
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link href="/css/p6.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="login">
+        <div id="login-container">
+            @if (Model.LoggedIn)
+            {
+                <div>
+                    <p>شما پیشتر ثبت نام کرده‌اید!</p>
+                </div>
+            }
+            else
+            {
+                <form method="post">
+                    <table>
+                        <tr>
+                            <td>
+                                <span class="inputlabel">پست الکترونیکی: </span>
+                            </td>
+                            <td>
+                                <input type="email" asp-for="SignUpViewModel.Email" placeholder="پست الکترونیکی" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="inputlabel">تصویر امنیتی:</span>
+                            </td>
+                            <td>
+                                <input type="password" asp-for="SignUpViewModel.CaptchaValue" id="password" placeholder="عدد تصویر امنیتی" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="inputlabel">عدد تصویر امنیتی: </span>
+                            </td>
+                            <td>
+                                <input type="password" asp-for="SignUpViewModel.CaptchaValue" id="password" placeholder="عدد تصویر امنیتی" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><input type="submit" name="submit" id="submit" value="ادامه" /></td>
+                        </tr>
+                        
+
+
+                    </table>
+                    <div>@Model.LastError</div>
+                </form>
+
+            }
+
+        </div>
+    </div>
+</body>
+</html>
