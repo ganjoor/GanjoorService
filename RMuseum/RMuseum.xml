@@ -8991,6 +8991,11 @@
             IMemoryCache
             </summary>
         </member>
+        <member name="P:RMuseum.Services.Implementation.GanjoorAppUserService._ganjoorService">
+            <summary>
+            Ganjoor Service
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.GetEmailSubject(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String)">
             <summary>
             Sign Up Email Subject

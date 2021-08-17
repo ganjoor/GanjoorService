@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.ViewModels;
@@ -10,6 +11,7 @@ using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
 using RSecurityBackend.Services.Implementation;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -40,6 +42,11 @@ namespace RMuseum.Services.Implementation
         /// IMemoryCache
         /// </summary>
         protected readonly IMemoryCache _memoryCache;
+
+        /// <summary>
+        /// Ganjoor Service
+        /// </summary>
+        protected IGanjoorService _ganjoorService { get; set; }
 
 
         /// <summary>
@@ -234,11 +241,123 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public override async Task<RServiceResult<bool>> RemoveUserData(Guid userId)
         {
-            var resBase = await base.RemoveUserData(userId);
-            if (!resBase.Result)
-                return resBase;
+            RMuseumDbContext context = _context as RMuseumDbContext;
+
+            string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+            var systemUserId = (Guid)(await FindUserByEmail(systemEmail)).Result.Id;
+
+            var reviewedRecitations = await context.Recitations.Where(r => r.ReviewerId == userId).ToListAsync();
+            foreach(var reviewedRecitation in reviewedRecitations)
+                reviewedRecitation.ReviewerId = systemUserId;
+            context.UpdateRange(reviewedRecitations);
+
+            var suggestedCorrections = await context.GanjoorPoemCorrections.Where(c => c.UserId == userId).ToListAsync();
+            foreach (var suggestedCorrection in suggestedCorrections)
+                suggestedCorrection.UserId = systemUserId;
+            context.UpdateRange(suggestedCorrections);
+
+            var reviewedCorrections = await context.GanjoorPoemCorrections.Where(c => c.ReviewerUserId == userId).ToListAsync();
+            foreach (var reviewedCorrection in reviewedCorrections)
+                reviewedCorrection.UserId = systemUserId;
+            context.UpdateRange(reviewedCorrections);
+
+            var reportedComments = await context.GanjoorReportedComments.Where(r => r.ReportedById == userId).ToListAsync();
+            foreach (var reportedComment in reportedComments)
+                reportedComment.ReportedById = systemUserId;
+            context.UpdateRange(reportedComments);
+
+            var ganjoorLinks = await context.GanjoorLinks.Where(l => l.SuggestedById == userId).ToListAsync();
+            foreach (var ganjoorLink in ganjoorLinks)
+                ganjoorLink.SuggestedById = systemUserId;
+            context.UpdateRange(ganjoorLinks);
+
+            var reviewedGanjoorLinks = await context.GanjoorLinks.Where(l => l.ReviewerId == userId).ToListAsync();
+            foreach (var reviewedGanjoorLink in reviewedGanjoorLinks)
+                reviewedGanjoorLink.ReviewerId = systemUserId;
+            context.UpdateRange(reviewedGanjoorLinks);
+
+            var pinLinks = await context.PinterestLinks.Where(l => l.SuggestedById == userId).ToListAsync();
+            foreach (var pinLink in pinLinks)
+                pinLink.SuggestedById = systemUserId;
+            context.UpdateRange(pinLinks);
+
+            var reviewedPinLinks = await context.GanjoorLinks.Where(l => l.ReviewerId == userId).ToListAsync();
+            foreach (var reviewedPinLink in reviewedPinLinks)
+                reviewedPinLink.ReviewerId = systemUserId;
+            context.UpdateRange(reviewedPinLinks);
+
+            var poemMusicTracks = await context.GanjoorPoemMusicTracks.Where(m => m.SuggestedById == userId).ToListAsync();
+            foreach (var poemMusicTrack in poemMusicTracks)
+                poemMusicTrack.SuggestedById = systemUserId;
+            context.UpdateRange(poemMusicTracks);
+
+            var snapshots = await context.GanjoorPageSnapshots.Where(s => s.MadeObsoleteByUserId == userId).ToListAsync();
+            foreach (var snapshot in snapshots)
+                snapshot.MadeObsoleteByUserId = systemUserId;
+            context.UpdateRange(snapshots);
+
+            await context.SaveChangesAsync();
+
+            List<int> poemsNeededToBeRefreshed = new List<int>();
+
+            var bookmarks = await context.UserBookmarks.Where(b => b.RAppUserId == userId).ToListAsync();
+            context.RemoveRange(bookmarks);
+
+            var uploadSessions = await context.UploadSessions.Where(s => s.UseId == userId).ToListAsync();
+            context.RemoveRange(uploadSessions);
+
+            var recitations = await context.Recitations.Where(r => r.OwnerId == userId).ToListAsync();
+            poemsNeededToBeRefreshed.AddRange(recitations.Select(r => r.GanjoorPostId).ToList());
+            context.RemoveRange(recitations);
+
+            await context.SaveChangesAsync();
+
+            var comments = await context.GanjoorComments.Where(c => c.UserId == userId).ToListAsync();
+            poemsNeededToBeRefreshed.AddRange(comments.Select(c => c.PoemId).ToList());
+            foreach (var comment in comments)
+            {
+                //await _ganjoorService.DeleteMyComment(userId, comment.Id);/*had error in service initializtion, so done it in the dirty way*/
+                await DeleteComment(context, userId, comment.Id);
+            }
+
+
+            return await base.RemoveUserData(userId);//notifications are deleted here, some of these operations might produce new notifications
+        }
+
+        private async Task<RServiceResult<bool>> DeleteComment(RMuseumDbContext context, Guid userId, int commentId)
+        {
+            GanjoorComment comment = await context.GanjoorComments.Where(c => c.Id == commentId && c.UserId == userId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
+            if (comment == null)
+            {
+                return new RServiceResult<bool>(false); //not found
+            }
+
+            //if user has got replies, delete them and notify their owners of what happened
+            var replies = await _FindReplies(context, comment);
+            for (int i = replies.Count - 1; i >= 0; i--)
+            {
+                context.GanjoorComments.Remove(replies[i]);
+            }
+
+            context.GanjoorComments.Remove(comment);
+            await _context.SaveChangesAsync();
 
             return new RServiceResult<bool>(true);
+        }
+
+        private async Task<List<GanjoorComment>> _FindReplies(RMuseumDbContext context, GanjoorComment comment)
+        {
+            List<GanjoorComment> replies = await context.GanjoorComments.Where(c => c.InReplyToId == comment.Id).AsNoTracking().ToListAsync();
+            List<GanjoorComment> replyToReplies = new List<GanjoorComment>();
+            foreach (GanjoorComment reply in replies)
+            {
+                replyToReplies.AddRange(await _FindReplies(context, reply));
+            }
+            if (replyToReplies.Count > 0)
+            {
+                replies.AddRange(replyToReplies);
+            }
+            return replies;
         }
     }
 }

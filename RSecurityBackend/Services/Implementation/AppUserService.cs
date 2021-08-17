@@ -881,6 +881,13 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public virtual async Task<RServiceResult<bool>> RemoveUserData(Guid userId)
         {
+            var notications = await _context.Notifications.Where(n => n.UserId == userId).ToArrayAsync();
+            _context.RemoveRange(notications);
+
+            var options = await _context.Options.Where(o => o.RAppUserId == userId).ToListAsync();
+            _context.RemoveRange(options);
+
+            await _context.SaveChangesAsync();
             return new RServiceResult<bool>(true);
         }
 
