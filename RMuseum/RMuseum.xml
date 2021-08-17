@@ -21,13 +21,6 @@
             <param name="imageFileService"></param>
             <param name="captchaService"></param>
         </member>
-        <member name="M:RMuseum.Controllers.AppUserController.StartLeaving(RSecurityBackend.Models.Auth.ViewModels.SelfDeleteViewModel)">
-            <summary>
-            start user self delete process (send a verification email to user)
-            </summary>
-            <param name="viewModel"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.ArtifactController.Get(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             get all published artifacts (including CoverImage info but not items info)
@@ -9034,6 +9027,13 @@
             </summary>
             <param name="userId"></param>
             <param name="updateUserInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.RemoveUserData(System.Guid)">
+            <summary>
+            remove user data
+            </summary>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorService">

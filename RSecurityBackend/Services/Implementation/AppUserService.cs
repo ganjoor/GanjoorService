@@ -875,6 +875,16 @@ namespace RSecurityBackend.Services.Implementation
         }
 
         /// <summary>
+        /// remove user data
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<RServiceResult<bool>> RemoveUserData(Guid userId)
+        {
+            return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
         /// delete user
         /// </summary>
         /// <param name="userId"></param>
@@ -884,6 +894,11 @@ namespace RSecurityBackend.Services.Implementation
             RAppUser dbUserInfo = await _userManager.FindByIdAsync(userId.ToString());
             if (dbUserInfo != null)
             {
+                var resDelData = await RemoveUserData(userId);
+                if (!string.IsNullOrEmpty(resDelData.ExceptionString))
+                    return new RServiceResult<bool>(false, resDelData.ExceptionString);
+                if (!resDelData.Result)
+                    return new RServiceResult<bool>(false, "حذف اطلاعات کاربر با خطا مواجه شد.");
                 var result = await _userManager.DeleteAsync(dbUserInfo);
                 if (!result.Succeeded)
                 {
@@ -892,7 +907,6 @@ namespace RSecurityBackend.Services.Implementation
                 return new RServiceResult<bool>(true);
             }
             return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
-
         }
 
         /// <summary>

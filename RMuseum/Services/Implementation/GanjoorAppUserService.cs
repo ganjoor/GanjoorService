@@ -225,5 +225,20 @@ namespace RMuseum.Services.Implementation
             }
             return res;
         }
+
+
+        /// <summary>
+        /// remove user data
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public override async Task<RServiceResult<bool>> RemoveUserData(Guid userId)
+        {
+            var resBase = await base.RemoveUserData(userId);
+            if (!resBase.Result)
+                return resBase;
+
+            return new RServiceResult<bool>(true);
+        }
     }
 }

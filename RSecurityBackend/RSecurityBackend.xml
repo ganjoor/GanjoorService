@@ -147,6 +147,20 @@
             <param name="id">user id</param>
             <returns>true if succeeds</returns>
         </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.StartLeaving(RSecurityBackend.Models.Auth.ViewModels.SelfDeleteViewModel)">
+            <summary>
+            start user self delete process (send a verification email to user)
+            </summary>
+            <param name="viewModel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.FinializeLeaving(System.String)">
+            <summary>
+            finalize user self delete
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.IsAdmin(System.Guid)">
             <summary>
             Checks if user is admin
@@ -2802,6 +2816,13 @@
             <param name="userId"></param>
             <param name="oldPassword"></param>
             <param name="newPassword"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.RemoveUserData(System.Guid)">
+            <summary>
+            remove user data
+            </summary>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.AppUserService.DeleteUser(System.Guid)">

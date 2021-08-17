@@ -186,7 +186,7 @@ namespace RSecurityBackend.Controllers
                 await _userPermissionChecker.Check
                 (
                     loggedOnUserId,
-                    new Guid(User.Claims.FirstOrDefault(c => c.Type ==   "SessionId").Value),
+                    new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value),
                     SecurableItem.UserEntityShortName,
                     SecurableItem.ViewAllOperationShortName
                     );
@@ -444,6 +444,103 @@ namespace RSecurityBackend.Controllers
         }
 
         /// <summary>
+        /// start user self delete process (send a verification email to user)
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
+        [HttpPost("selfdelete/start")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> StartLeaving(SelfDeleteViewModel viewModel)
+        {
+            if (SiteInReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً برای حذف حساب کاربری تلاش کنید.");
+
+            if (!SignupEnabled)
+                return BadRequest("ثبت نام و حذف کاربر غیرفعال است.");
+
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+            string clientIPAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+
+            var user = (await _appUserService.GetUserInformation(loggedOnUserId)).Result;
+            var session = await _appUserService.GetUserSession(loggedOnUserId, sessionId);
+
+            var loginResult = await _appUserService.Login(new LoginViewModel()
+            {
+                Username = user.Email,
+                Password = viewModel.Password,
+                ClientAppName = session.Result.ClientAppName,
+                Language = session.Result.Language
+            },
+            clientIPAddress);
+
+            if (loginResult.Result == null)
+            {
+                return BadRequest(loginResult.ExceptionString);
+            }
+
+            var verifyRes = (await _appUserService.StartLeaving(loggedOnUserId, sessionId, clientIPAddress)).Result;
+
+            try
+            {
+                await _emailSender.SendEmailAsync
+                    (
+                    user.Email,
+                    _appUserService.GetEmailSubject(RVerifyQueueType.UserSelfDelete, verifyRes.Secret),
+                    _appUserService.GetEmailHtmlContent(RVerifyQueueType.UserSelfDelete, verifyRes.Secret, viewModel.CallbackUrl)
+                    );
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest("Error sending email: " + exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// finalize user self delete
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        [HttpDelete("selfdelete/finalize/{code}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> FinializeLeaving(string code)
+        {
+            if (SiteInReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً برای حذف حساب کاربری تلاش کنید.");
+
+            if (!SignupEnabled)
+                return BadRequest("ثبت نام و حذف کاربر غیرفعال است.");
+
+
+            RServiceResult<string> res = await _appUserService.RetrieveEmailFromQueueSecret(RVerifyQueueType.UserSelfDelete, code);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            if (string.IsNullOrWhiteSpace(res.Result))
+            {
+                return NotFound("رمز وارد شده تطابق ندارد");
+            }
+            //override _appUserService.RemoveUserData to remove userdata
+
+            RServiceResult<bool> resDelete = await _appUserService.DeleteUser(new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value));
+            if (!resDelete.Result)
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            return Ok();
+        }
+
+        /// <summary>
         /// Checks if user is admin
         /// </summary>
         /// <returns></returns>
@@ -461,7 +558,7 @@ namespace RSecurityBackend.Controllers
                 return BadRequest(isAdmin.ExceptionString);
             if (!isAdmin.Result)
             {
-                if(userId != loggedOnUserId)
+                if (userId != loggedOnUserId)
                 {
                     return Forbid();
                 }
@@ -846,7 +943,7 @@ namespace RSecurityBackend.Controllers
                 return BadRequest(res.ExceptionString);
             }
 
-            if(VerifyEmailOnSignUp)
+            if (VerifyEmailOnSignUp)
             {
                 try
                 {
