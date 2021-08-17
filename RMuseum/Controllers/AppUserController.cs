@@ -53,8 +53,25 @@ namespace RMuseum.Controllers
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
             string clientIPAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
-            var verifyRes = (await _appUserService.StartLeaving(loggedOnUserId, sessionId, clientIPAddress)).Result;
+            
             var user = (await _appUserService.GetUserInformation(loggedOnUserId)).Result;
+            var session = await _appUserService.GetUserSession(loggedOnUserId, sessionId);
+
+            var loginResult = await _appUserService.Login(new LoginViewModel()
+            {
+                Username = user.Email,
+                Password = viewModel.Password,
+                ClientAppName = session.Result.ClientAppName,
+                Language = session.Result.Language
+            },
+            clientIPAddress);
+
+            if(loginResult.Result == null)
+            {
+                return BadRequest(loginResult.ExceptionString);
+            }
+
+            var verifyRes = (await _appUserService.StartLeaving(loggedOnUserId, sessionId, clientIPAddress)).Result;
 
             try
             {

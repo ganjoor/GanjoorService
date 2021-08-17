@@ -52,7 +52,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="secretCode"></param>
         public override string GetEmailSubject(RVerifyQueueType op, string secretCode)
         {
-            string opString = op == RVerifyQueueType.SignUp ? "ثبت نام" : op == RVerifyQueueType.ForgotPassword ? "بازیابی کلمهٔ عبور" : "حذف کاربر";
+            string opString = op == RVerifyQueueType.SignUp ? "ثبت نام" : op == RVerifyQueueType.ForgotPassword ? "بازیابی کلمهٔ عبور" : "حذف حساب کاربری";
             return $"{secretCode} کد {opString} شما در گنجور";
         }
 
@@ -65,12 +65,12 @@ namespace RMuseum.Services.Implementation
         /// <returns>html content</returns>
         public override string GetEmailHtmlContent(RVerifyQueueType op, string secretCode, string signupCallbackUrl)
         {
-            string opString = op == RVerifyQueueType.SignUp ? "ثبت نام" : op == RVerifyQueueType.ForgotPassword ? "بازیابی کلمهٔ عبور" : "حذف کاربر";
+            string opString = op == RVerifyQueueType.SignUp ? "ثبت نام" : op == RVerifyQueueType.ForgotPassword ? "بازیابی کلمهٔ عبور" : "حذف حساب کاربری";
             string ifNot = op == RVerifyQueueType.SignUp ? "اگر در گنجور ثبت نام نکرده‌اید لطفاً این نامه را نادیده بگیرید."
                                 : op == RVerifyQueueType.ForgotPassword ?
                                 "اگر در گنجور فراموشی گذرواژه را نزده‌اید یا گذرواژه‌تان را به خاطر آوردید لطفاً این نامه را نادیده بگیرید."
                                 :
-                                "";
+                                "اگر در گنجور حذف حساب کاربری را نزده‌اید یا از حذف حساب کاربریتان منصرف شده‌اید لطفاً این نامه را نادیده بگیرید.";
             string content =
                "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
                +

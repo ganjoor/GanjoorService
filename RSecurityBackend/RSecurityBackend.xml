@@ -1472,6 +1472,14 @@
             User Self Delete View Model
             </summary>
         </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.SelfDeleteViewModel.Password">
+            <summary>
+            user password
+            </summary>
+            <example>
+            Test!123
+            </example>     
+        </member>
         <member name="P:RSecurityBackend.Models.Auth.ViewModels.SelfDeleteViewModel.CallbackUrl">
              <summary>
             CallbackUrl
