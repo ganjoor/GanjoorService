@@ -453,7 +453,10 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public async Task<IActionResult> StartLeaving(SelfDeleteViewModel viewModel)
+        public async Task<IActionResult> StartLeaving(
+            [AuditIgnore]
+            [FromBody]
+            SelfDeleteViewModel viewModel)
         {
             if (SiteInReadOnlyMode)
                 return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً برای حذف حساب کاربری تلاش کنید.");
