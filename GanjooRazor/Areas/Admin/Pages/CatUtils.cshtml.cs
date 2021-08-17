@@ -22,11 +22,6 @@ namespace GanjooRazor.Areas.Admin.Pages
         private readonly HttpClient _httpClient;
 
         /// <summary>
-        /// memory cache
-        /// </summary>
-        private readonly IMemoryCache _memoryCache;
-
-        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
@@ -34,7 +29,6 @@ namespace GanjooRazor.Areas.Admin.Pages
         public CatUtilsModel(HttpClient httpClient, IMemoryCache memoryCache)
         {
             _httpClient = httpClient;
-            _memoryCache = memoryCache;
         }
 
         /// <summary>

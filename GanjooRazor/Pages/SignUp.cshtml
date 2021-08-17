@@ -9,6 +9,7 @@
 <head>
     <meta charset="utf-8" />
     <title>@ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link href="/css/p6.css" rel="stylesheet" type="text/css" />
@@ -39,7 +40,8 @@
                                 <span class="inputlabel">تصویر امنیتی:</span>
                             </td>
                             <td>
-                                <input type="password" asp-for="SignUpViewModel.CaptchaValue" id="password" placeholder="عدد تصویر امنیتی" />
+                                <img src="@Model.CaptchaImageUrl" />
+                                <input type="hidden" asp-for="SignUpViewModel.CaptchaImageId" />
                             </td>
                         </tr>
                         <tr>
