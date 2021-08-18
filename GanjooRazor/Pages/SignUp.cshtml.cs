@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RSecurityBackend.Models.Auth.ViewModels;
 using System;
@@ -16,9 +17,15 @@ namespace GanjooRazor.Pages
         /// HttpClient instance
         /// </summary>
         private readonly HttpClient _httpClient;
-        public SignUpModel(HttpClient httpClient)
+
+        /// <summary>
+        /// configuration
+        /// </summary>
+        private readonly IConfiguration _configuration;
+        public SignUpModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _configuration = configuration;
         }
         public bool LoggedIn { get; set; }
 
@@ -53,7 +60,7 @@ namespace GanjooRazor.Pages
             {
                 ClientAppName = "وبگاه گنجور",
                 Language = "fa-IR",
-                CallbackUrl = "https://ganjoor.net/signup"
+                CallbackUrl = $"{_configuration["SiteUrl"]}/signup"
             };
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/captchaimage");
