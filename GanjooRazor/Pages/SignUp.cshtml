@@ -26,7 +26,7 @@
             else
           if (Model.SignupPhase1)
             {
-                <form method="post">
+                <form method="post" action="/signup?Handler=Phase1">
                     <table>
                         <tr>
                             <td>
@@ -67,7 +67,7 @@
             else
           if (Model.SignupVerifyEmailPhase)
             {
-                <form method="post">
+                <form method="post" action="/signup?Handler=Phase2">
                     <table>
                         <tr>
                             <td colspan="2">
@@ -95,7 +95,7 @@
             }
             else
             {
-                <form method="post">
+                <form method="post" action="/signup?Handler=Phase3">
                     <table>
                         <tr>
                             <td>
@@ -119,6 +119,14 @@
                             </td>
                             <td>
                                 <input type="password" asp-for="FinalViewModel.Password" id="password" placeholder="گذرواژه" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="inputlabel">تکرار گذرواژه: </span>
+                            </td>
+                            <td>
+                                <input type="password" asp-for="FinalViewModel.PasswordConfirmation" placeholder="تکرار گذرواژه" />
                             </td>
                         </tr>
                         <tr>
