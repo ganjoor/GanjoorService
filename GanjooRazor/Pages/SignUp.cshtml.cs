@@ -38,6 +38,9 @@ namespace GanjooRazor.Pages
 
         [BindProperty]
         public string Secret { get; set; }
+
+        [BindProperty]
+        public VerifiedSignUpViewModel FinalViewModel { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Name"]);
@@ -80,6 +83,36 @@ namespace GanjooRazor.Pages
             SignupPhase1 = false;
             SignupVerifyEmailPhase = true;
 
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(string Secret)
+        {
+            LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Name"]);
+            LastError = "";
+            SignupPhase1 = false;
+            SignupVerifyEmailPhase = true;
+            SignupFinalPhase = false;
+
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/verify?type=0&secret={Secret}");
+            if (!response.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return Page();
+            }
+
+            FinalViewModel = new VerifiedSignUpViewModel()
+            {
+                Secret = Secret,
+                Email = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()),
+                FirstName = "",
+                SureName = "",
+                Password = ""
+            };
+
+            SignupVerifyEmailPhase = false;
+            SignupFinalPhase = true;
 
             return Page();
         }
