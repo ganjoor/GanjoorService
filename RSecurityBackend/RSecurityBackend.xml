@@ -231,7 +231,7 @@
         </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.VerifySignUp(RSecurityBackend.Models.Auth.Db.RVerifyQueueType,System.String)">
             <summary>
-            verify signup / forgot password
+            verify signup / forgot password / self delete user
             </summary>
             <param name="type"></param>
             <param name="secret"></param>

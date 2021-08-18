@@ -968,7 +968,7 @@ namespace RSecurityBackend.Controllers
         }
 
         /// <summary>
-        /// verify signup / forgot password
+        /// verify signup / forgot password / self delete user
         /// </summary>
         /// <param name="type"></param>
         /// <param name="secret"></param>
