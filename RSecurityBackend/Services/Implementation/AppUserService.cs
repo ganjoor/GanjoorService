@@ -1141,17 +1141,6 @@ namespace RSecurityBackend.Services.Implementation
         }
 
         /// <summary>
-        /// verify email on signup
-        /// </summary>
-        public bool VerifyEmailOnSignUp
-        {
-            get
-            {
-                return bool.Parse(Configuration.GetSection("SignUp")["VerifyEmail"]);
-            }
-        }
-
-        /// <summary>
         /// finalize signup process using email
         /// </summary>
         /// <param name="email"></param>
@@ -1174,18 +1163,13 @@ namespace RSecurityBackend.Services.Implementation
                 return new RServiceResult<bool>(false, "این نام کاربری قبلا استفاده شده است");
             }
 
-            bool verify = VerifyEmailOnSignUp;
-
-            if (verify)
+            if (
+                   email
+                   !=
+                   (await RetrieveEmailFromQueueSecret(RVerifyQueueType.SignUp, secret)).Result
+                  )
             {
-                if (
-                    email
-                    !=
-                    (await RetrieveEmailFromQueueSecret(RVerifyQueueType.SignUp, secret)).Result
-                   )
-                {
-                    return new RServiceResult<bool>(false, "کد ارسالی به ایمیل اشتباه وارد شده است");
-                }
+                return new RServiceResult<bool>(false, "کد ارسالی به ایمیل اشتباه وارد شده است");
             }
 
             secret = secret.Trim();
@@ -1216,11 +1200,9 @@ namespace RSecurityBackend.Services.Implementation
             {
                 return new RServiceResult<bool>(false, userAddResult.ExceptionString);
             }
-            if (verify)
-            {
-                userAddResult.Result.EmailConfirmed = true;
-                await _userManager.UpdateAsync(userAddResult.Result);
-            }
+
+            userAddResult.Result.EmailConfirmed = true;
+            await _userManager.UpdateAsync(userAddResult.Result);
 
             RVerifyQueueItem[] failedQueue = await _context.VerifyQueueItems.Where(i => i.Email == email && i.Secret != secret && i.QueueType == RVerifyQueueType.SignUp).ToArrayAsync();
             if (failedQueue.Length != 0)
@@ -1617,7 +1599,7 @@ namespace RSecurityBackend.Services.Implementation
             string opString = op == RVerifyQueueType.SignUp ? "ثبت نام" : op == RVerifyQueueType.ForgotPassword ? "فراموشی رمز" : "حذف کاربر";
             return $"لطفا {secretCode} را در صفحهٔ {opString} وارد کنید.";
         }
-        
+
         #endregion
 
         /// <summary>

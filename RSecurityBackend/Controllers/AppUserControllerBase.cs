@@ -946,25 +946,20 @@ namespace RSecurityBackend.Controllers
                 return BadRequest(res.ExceptionString);
             }
 
-            if (VerifyEmailOnSignUp)
+            try
             {
-                try
-                {
-                    await _emailSender.SendEmailAsync
-                        (
-                        signUpViewModel.Email,
-                        _appUserService.GetEmailSubject(RVerifyQueueType.SignUp, res.Result.Secret),
-                        _appUserService.GetEmailHtmlContent(RVerifyQueueType.SignUp, res.Result.Secret, signUpViewModel.CallbackUrl)
-                        );
-                    return Ok("verify");
-                }
-                catch (Exception exp)
-                {
-                    return BadRequest("Error sending email: " + exp.ToString());
-                }
+                await _emailSender.SendEmailAsync
+                    (
+                    signUpViewModel.Email,
+                    _appUserService.GetEmailSubject(RVerifyQueueType.SignUp, res.Result.Secret),
+                    _appUserService.GetEmailHtmlContent(RVerifyQueueType.SignUp, res.Result.Secret, signUpViewModel.CallbackUrl)
+                    );
+                return Ok("verify");
             }
-
-            return Ok("finalize");
+            catch (Exception exp)
+            {
+                return BadRequest("Error sending email: " + exp.ToString());
+            }
         }
 
         /// <summary>
@@ -1082,17 +1077,6 @@ namespace RSecurityBackend.Controllers
             get
             {
                 return bool.Parse(Configuration.GetSection("SignUp")["Enabled"]);
-            }
-        }
-
-        /// <summary>
-        /// verify email on signup
-        /// </summary>
-        public bool VerifyEmailOnSignUp
-        {
-            get
-            {
-                return bool.Parse(Configuration.GetSection("SignUp")["VerifyEmail"]);
             }
         }
 
