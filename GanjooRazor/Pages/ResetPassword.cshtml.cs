@@ -82,7 +82,7 @@ namespace GanjooRazor.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostSendEmailAsync(UnverifiedSignUpViewModel signUpViewModel)
+        public async Task<IActionResult> OnPostSendEmailAsync(UnverifiedSignUpViewModel forgotPasswordViewModel)
         {
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Name"]);
             LastError = "";
@@ -101,10 +101,10 @@ namespace GanjooRazor.Pages
 
                 ForgotPasswordViewModel = new UnverifiedSignUpViewModel()
                 {
-                    ClientAppName = signUpViewModel.ClientAppName,
-                    Language = signUpViewModel.Language,
-                    CallbackUrl = signUpViewModel.CallbackUrl,
-                    Email = signUpViewModel.Email
+                    ClientAppName = forgotPasswordViewModel.ClientAppName,
+                    Language = forgotPasswordViewModel.Language,
+                    CallbackUrl = forgotPasswordViewModel.CallbackUrl,
+                    Email = forgotPasswordViewModel.Email
                 };
 
                 ForgotPasswordViewModel.CaptchaImageId = JsonConvert.DeserializeObject<Guid>(await response.Content.ReadAsStringAsync());
