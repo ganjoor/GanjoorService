@@ -3,9 +3,9 @@
 namespace GanjooRazor.Models
 {
     /// <summary>
-    /// VerifiedSignUpViewModel with PasswordConfirmation field
+    ///  ResetPasswordViewModel with PasswordConfirmation field
     /// </summary>
-    public class VerifiedSignUpViewModelWithRepPass : VerifiedSignUpViewModel
+    public class ResetPasswordViewModelWithRepPass : ResetPasswordViewModel
     {
         /// <summary>
         /// password confirmation
