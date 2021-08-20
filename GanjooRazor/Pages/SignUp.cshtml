@@ -17,6 +17,9 @@
 <body>
     <div id="login">
         <div id="login-container">
+            <div class="imgcontainer">
+                <a href="/"><img src="/image/login.png" alt="گنجور" class="avatar"></a>
+            </div>
             @if (Model.LoggedIn)
             {
                 <div>
@@ -24,7 +27,7 @@
                 </div>
             }
             else
-          if (Model.SignupPhase1)
+            if (Model.SignupPhase1)
             {
                 <form method="post" action="/signup?Handler=Phase1">
                     <table>
@@ -65,7 +68,7 @@
 
             }
             else
-          if (Model.SignupVerifyEmailPhase)
+        if (Model.SignupVerifyEmailPhase)
             {
                 <form method="post" action="/signup?Handler=Phase2">
                     <table>
