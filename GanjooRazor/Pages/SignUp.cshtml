@@ -15,11 +15,11 @@
     <link href="/css/p6.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+    <div id="hdr">
+        <h1><a href="/" title="گنجور"><img src="/image/gm.gif" alt="گنجور" style="width:auto;margin:auto;" /></a></h1>
+    </div>
     <div id="login">
         <div id="login-container">
-            <div class="imgcontainer">
-                <a href="/"><img src="/image/login.png" alt="گنجور" class="avatar"></a>
-            </div>
             @if (Model.LoggedIn)
             {
                 <div>
@@ -27,10 +27,18 @@
                 </div>
             }
             else
-            if (Model.SignupPhase1)
+          if (Model.SignupPhase1)
             {
                 <form method="post" action="/signup?Handler=Phase1">
                     <table>
+                        <tr>
+                            <td colspan="2">
+                                <p>
+                                    برای ثبت نام در گنجور نیاز به یک ایمیل دارید. فرایند ثبت نام با ارسال یک رمز به ایمیل (پست الکترونیکی) شما ادامه پیدا می‌کند و اگر ایمیلتان درست نباشد یا به آن دسترسی نداشته باشید نمی‌توانید در گنجور ثبت نام کنید.
+
+                                </p>
+                            </td>
+                        </tr>
                         <tr>
                             <td>
                                 <span class="inputlabel">پست الکترونیکی: </span>
@@ -52,6 +60,13 @@
                             </td>
                         </tr>
                         <tr>
+                            <td colspan="2">
+                                <p>
+                                    تصویر امنیتی بالا کمک می‌کند بین کاربران واقعی و رباتها و برنامه‌های کامپیوتری تمایز قائل شویم. لطفاً عددی را که در تصویر امنیتی بالا می‌بینید در کادر زیر وارد کنید:
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
                             <td>
                                 <span class="inputlabel">عدد تصویر امنیتی: </span>
                             </td>
@@ -62,13 +77,22 @@
                         <tr>
                             <td colspan="2"><input type="submit" name="submit" id="submit" value="ادامه" /></td>
                         </tr>
+                        <tr>
+                            <td colspan="2">
+                                <p>لطفاً به نکات زیر توجه کنید:</p>
+                                <p>۱. اگر پیشتر در <a href="https://museum.ganjoor.net">گنجینهٔ گنجور</a> یا <a href="https://gaudiopanel.ganjoor.net">پیشخان خوانشگران گنجور</a> ثبت نام کرده‌اید می‌توانید با همان اطلاعات کاربری در گنجور وارد شوید و نیاز به و امکان ثبت نام مجدد با همان ایمیل را ندارید. </p>
+                                <p>۲. برای مطالعهٔ اشعار نیازی به ثبت نام ندارید. ثبت نام برای درج حاشیه و مشارکت در سایت مورد نیاز است.</p>
+                                <p>۳. گنجور اطلاعاتی راجع به این که شما با نام کاربری خود چه صفحاتی را مطالعه می‌کنید جمع آوری نمی‌کند. برای اطمینان مفاد صفحهٔ <a href="/privacy">حریم خصوصی</a> را مطالعه بفرمایید.</p>
+                                <p>۴. بعد از ثبت نام امکان حذف حساب کاربری خود را دارید. با این کار اطلاعات خاص شما مثل حاشیه‌ها و خوانش‌ها حذف می‌شود و مشارکت‌های شما مثل ویرایش‌ها و ... به نام کاربر سیستم گنجور ثبت می‌شود.</p>
+                            </td>
+                        </tr>
                     </table>
                     <div><p style="color:red">@Model.LastError</p></div>
                 </form>
 
             }
             else
-        if (Model.SignupVerifyEmailPhase)
+      if (Model.SignupVerifyEmailPhase)
             {
                 <form method="post" action="/signup?Handler=Phase2">
                     <table>

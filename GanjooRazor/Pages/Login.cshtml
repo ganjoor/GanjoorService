@@ -10,11 +10,15 @@
 <head>
     <meta charset="utf-8" />
     <title>@ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link href="/css/p6.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+    <div id="hdr">
+        <h1><a href="/" title="گنجور"><img src="/image/gm.gif" alt="گنجور" style="width:auto;margin:auto;" /></a></h1>
+    </div>
     <div id="login">
         <div id="login-container">
             @if (Model.LoggedIn)
@@ -22,7 +26,6 @@
                 <form method="post">
                     <table>
                         <tr>
-                            <td></td>
                             <td><input type="submit" name="submit" id="submit" value="خروج" /></td>
                         </tr>
                     </table>
@@ -55,8 +58,8 @@
                             <td><input type="submit" name="submit" id="submit" value="ورود" /></td>
                         </tr>
                         <tr>
-                            <td><a href="https://museum.ganjoor.net/signup" target="_blank">ثبت نام</a></td>
-                            <td><a href="https://museum.ganjoor.net/forgot-password" target="_blank">فراموشی رمز</a></td>
+                            <td><a href="/signup">ثبت نام</a></td>
+                            <td><a href="/resetpassword">فراموشی گذرواژه</a></td>
                         </tr>
 
 
