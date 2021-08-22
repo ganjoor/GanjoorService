@@ -1468,7 +1468,7 @@ namespace RMuseum.Services.Implementation
         {
             var source = from dbCorrection in
                              _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText)
-                         where 
+                         where
                          dbCorrection.PoemId == poemId
                          &&
                          dbCorrection.Reviewed == true
@@ -1689,6 +1689,14 @@ namespace RMuseum.Services.Implementation
             }
 
             pageViewModel.HtmlText = PrepareHtmlText(poemVerses);
+
+            var newRhyme = LanguageUtils.FindRhyme(poemVerses);
+            if (!string.IsNullOrEmpty(newRhyme.Rhyme) &&
+                (string.IsNullOrEmpty(dbPoem.RhymeLetters) || (!string.IsNullOrEmpty(dbPoem.RhymeLetters) && newRhyme.Rhyme.Length > dbPoem.RhymeLetters.Length))
+                )
+            {
+                pageViewModel.RhymeLetters = newRhyme.Rhyme;
+            }
 
             var res = await UpdatePageAsync(moderation.PoemId, userId, pageViewModel);
             if (!string.IsNullOrEmpty(res.ExceptionString))
