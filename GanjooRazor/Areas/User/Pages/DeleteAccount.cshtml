@@ -1,0 +1,51 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.DeleteAccountModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "حذف حساب کاربری";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+<h1>@ViewData["Title"]</h1>
+
+<form method="post" asp-page-handler="SendEmail">
+    <table style="width:100%" class="noborder">
+        <tr>
+            <td colspan="2">
+                <p>
+                    برای حذف حساب کاربری باید گذرواژهٔ خود را در کادر زیر وارد کنید.
+                </p>
+                <p>
+                    پس از ورود گذرواژه یک رمز به ایمیلتان ارسال می‌شود که با ورود رمز دریافتی حساب کاربریتان حذف خواهد شد.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="inputlabel">گذرواژه: </span>
+            </td>
+            <td>
+                <input type="password" style="width:100%" asp-for="DeleteViewModel.Password" />
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="2">
+                <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">بررسی گذرواژه و ارسال ایمیل تأیید</button>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <p>
+                    در صورتی که کاربری تصمیم بگیرد حساب کاربری خود را در گنجور حذف کند تمام حاشیه‌ها و خوانش‌های منتشر شده‌اش در گنجور نیز حذف خواهد شد. علاوه بر آن رکوردهای بخشهایی از مشارکت کاربر که در گنجور اثر غیر قابل حذف گذاشته است (مثل ویرایش متن اشعار یا پیشنهاد تصاویر مرتبط با اشعار) به حساب کاربری سیستمی گنجور منتقل می‌شود. عملیات حذف کاربر غیرقابل برگشت است و در صورتی که کاربر با ایمیلی که پیشتر در گنجور حساب کاربری داشته و آن را حذف کرده مجدداً ثبت نام کند هیچکدام از اطلاعات پیشتر وارد شده‌اش بر نخواهد گشت.
+                </p>
+                <p>
+                    <span style="color:red">تبصره:</span> گنجور ممکن است فهرست کاربران بدرفتار (کاربرانی که به ارسال مداوم حاشیه‌های نامناسب یا خرابکاری در سایت می‌پردازند) را به همراه گزارشی از فعالیتهای نامناسب آنها نگهداری کند تا برخی یا همهٔ فعالیتهای آنها محدود شود. ایمیل کاربر در این فهرست با حذف حساب کاربری حذف نمی‌شود و در صورت ثبت‌نام مجدد این اطلاعات مجدداً مورد مراجعه قرار خواهد گرفت.
+                </p>
+            </td>
+        </tr>
+
+    </table>
+</form>
+
