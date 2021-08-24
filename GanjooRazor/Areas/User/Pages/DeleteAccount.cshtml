@@ -56,7 +56,7 @@
 else
 {
     <form method="post" asp-page-handler="FinalizeDelete">
-        <table>
+        <table style="width:100%" class="noborder">
             <tr>
                 <td colspan="2">
                     <p>لطفا پست الکترونیکی خود را بررسی کنید. در صورتی که نشانی پست الکترونیکی خود را درست وارد کرده باشید نامه‌ای از گنجور دریافت کرده‌اید که حاوی یک رمز است. </p>
@@ -73,9 +73,8 @@ else
                     <input asp-for="Secret" placeholder="رمز دریافتی" />
                 </td>
             </tr>
-            <tr>
-                <td><a role="button" style="cursor: pointer; width: 100%; color: white; background-color: red; display: block" href="/resetpassword">برگشت</a></td>
-                <td><input type="submit" name="submit" id="submit" value="ادامه" /></td>
+            <tr >
+                <td colspan="2"><input type="submit" name="submit" id="submit" style="width:100%;background-color:red;color:white;text-align:center;cursor:pointer;border-color:white;font-size:2.0em" value="حذف نهایی حساب کاربری" /></td>
             </tr>
         </table>
         <div><p style="color:red">@Model.FatalError</p></div>

@@ -83,7 +83,7 @@ namespace GanjooRazor.Areas.User.Pages
 
 
 
-        public async Task<IActionResult> OnPostFinalizeDeleteAsync(string Secret)
+        public async Task<IActionResult> OnPostFinalizeDeleteAsync(string secret)
         {
             FatalError = "";
             Step1 = false;
@@ -92,7 +92,7 @@ namespace GanjooRazor.Areas.User.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     HttpResponseMessage response = await secureClient.DeleteAsync(
-                        $"{APIRoot.Url}/api/users/selfdelete/finalize/{Secret}"
+                        $"{APIRoot.Url}/api/users/selfdelete/finalize/{secret}"
                         );
                     if (!response.IsSuccessStatusCode)
                     {
