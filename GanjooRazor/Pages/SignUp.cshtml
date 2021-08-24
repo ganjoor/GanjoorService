@@ -75,10 +75,11 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2"><input type="submit" name="submit" id="submit" value="ادامه" /></td>
+                            <td colspan="2"><input type="submit" name="submit" id="submit" style="width:100%;background-color:green;color:white;text-align:center;cursor:pointer;border-color:white;font-size:2.0em" value="ادامه" /></td>
                         </tr>
                         <tr>
                             <td colspan="2">
+                                <div><p style="color:red">@Model.LastError</p></div>
                                 <p>لطفاً به نکات زیر توجه کنید:</p>
                                 <p>۱. اگر پیشتر در <a href="https://museum.ganjoor.net">گنجینهٔ گنجور</a> یا <a href="https://gaudiopanel.ganjoor.net">پیشخان خوانشگران گنجور</a> ثبت نام کرده‌اید می‌توانید با همان اطلاعات کاربری در گنجور وارد شوید و نیاز به و امکان ثبت نام مجدد با همان ایمیل را ندارید. </p>
                                 <p>۲. برای مطالعهٔ اشعار نیازی به ثبت نام ندارید. ثبت نام برای درج حاشیه و مشارکت در سایت مورد نیاز است.</p>
@@ -87,7 +88,7 @@
                             </td>
                         </tr>
                     </table>
-                    <div><p style="color:red">@Model.LastError</p></div>
+                    
                 </form>
 
             }
@@ -114,7 +115,7 @@
                         </tr>
                         <tr>
                             <td><a role="button" style="cursor: pointer; width: 100%; color: white; background-color: red; display: block" href="/signup">برگشت</a></td>
-                            <td><input type="submit" name="submit" id="submit" value="ادامه" /></td>
+                            <td><input type="submit" name="submit" id="submit" style="width:100%;background-color:green;color:white;text-align:center;cursor:pointer;border-color:white;font-size:2.0em" value="ادامه" /></td>
                         </tr>
                     </table>
                     <div><p style="color:red">@Model.LastError</p></div>
@@ -129,7 +130,7 @@
                                 <span class="inputlabel">نام: </span>
                             </td>
                             <td>
-                                <input asp-for="FinalViewModel.FirstName" placeholder="نام" />
+                                <input asp-for="FinalViewModel.FirstName" style="direction:rtl" placeholder="نام" />
                             </td>
                         </tr>
                         <tr>
@@ -137,7 +138,7 @@
                                 <span class="inputlabel">نام خانوادگی: </span>
                             </td>
                             <td>
-                                <input asp-for="FinalViewModel.SureName" placeholder="نام خانوادگی" />
+                                <input asp-for="FinalViewModel.SureName" style="direction:rtl" placeholder="نام خانوادگی" />
                             </td>
                         </tr>
                         <tr>
@@ -165,7 +166,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2"><input type="submit" name="submit" id="submit" value="ادامه" /></td>
+                            <td colspan="2"><input type="submit" name="submit" id="submit" style="width:100%;background-color:green;color:white;text-align:center;cursor:pointer;border-color:white;font-size:2.0em" value="ادامه" /></td>
                         </tr>
                     </table>
                     <div><p style="color:red">@Model.LastError</p></div>

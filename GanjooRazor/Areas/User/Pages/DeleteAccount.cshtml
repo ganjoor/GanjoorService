@@ -8,6 +8,9 @@
 }
 <h1>@ViewData["Title"]</h1>
 
+
+@if (Model.Step1)
+{
 <form method="post" asp-page-handler="SendEmail">
     <table style="width:100%" class="noborder">
         <tr>
@@ -25,10 +28,10 @@
                 <span class="inputlabel">گذرواژه: </span>
             </td>
             <td>
-                <input type="password" style="width:100%" asp-for="DeleteViewModel.Password" />
+                <input type="password" style="width:100%;direction:ltr" asp-for="DeleteViewModel.Password" />
             </td>
         </tr>
-        
+
         <tr>
             <td colspan="2">
                 <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">بررسی گذرواژه و ارسال ایمیل تأیید</button>
@@ -47,5 +50,36 @@
         </tr>
 
     </table>
+    <div><p style="color:red">@Model.FatalError</p></div>
 </form>
+}
+else
+{
+    <form method="post" asp-page-handler="FinalizeDelete">
+        <table>
+            <tr>
+                <td colspan="2">
+                    <p>لطفا پست الکترونیکی خود را بررسی کنید. در صورتی که نشانی پست الکترونیکی خود را درست وارد کرده باشید نامه‌ای از گنجور دریافت کرده‌اید که حاوی یک رمز است. </p>
+                    <p>رمز دریافتی را در کادر زیر وارد کرده، روی دکمهٔ «ادامه» کلیک کنید</p>
+                    <p style="color:red">تذکر: ممکن است نامه به پوشه اسپم منتقل شده باشد</p>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <span class="inputlabel">رمز دریافتی:</span>
+                </td>
+                <td>
+                    <input asp-for="Secret" placeholder="رمز دریافتی" />
+                </td>
+            </tr>
+            <tr>
+                <td><a role="button" style="cursor: pointer; width: 100%; color: white; background-color: red; display: block" href="/resetpassword">برگشت</a></td>
+                <td><input type="submit" name="submit" id="submit" value="ادامه" /></td>
+            </tr>
+        </table>
+        <div><p style="color:red">@Model.FatalError</p></div>
+    </form>
+}
+
 
