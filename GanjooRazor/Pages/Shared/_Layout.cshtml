@@ -186,11 +186,12 @@
                 var node;
                 if (diff[i].removed) {
                     node = document.createElement('del');
-                    node.style.color = 'blue';
+                    node.style.color = 'red';
                     node.appendChild(document.createTextNode(diff[i].value));
                 } else if (diff[i].added) {
                     node = document.createElement('span');
-                    node.style.color = 'red';
+                    node.style.color = 'white';
+                    node.style.backgroundColor = 'green';
                     node.appendChild(document.createTextNode(diff[i].value));
                 } else {
                     node = document.createTextNode(diff[i].value);
