@@ -57,7 +57,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var putResponse = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/song/add", new StringContent(JsonConvert.SerializeObject(PoemMusicTrackViewModel), Encoding.UTF8, "application/json"));
                     if (!putResponse.IsSuccessStatusCode)
                     {
-                        LastError = await putResponse.Content.ReadAsStringAsync();
+                        LastError = JsonConvert.DeserializeObject<string>(await putResponse.Content.ReadAsStringAsync());
                     }
                 }
                 else

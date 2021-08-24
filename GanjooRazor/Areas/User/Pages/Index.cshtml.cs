@@ -100,7 +100,7 @@ namespace GanjooRazor.Areas.Panel.Pages
 
                         if(!putResponse.IsSuccessStatusCode)
                         {
-                            LastError = await putResponse.Content.ReadAsStringAsync();
+                            LastError = JsonConvert.DeserializeObject<string>(await putResponse.Content.ReadAsStringAsync());
                         }
                     }
                     else
@@ -147,7 +147,7 @@ namespace GanjooRazor.Areas.Panel.Pages
                         Encoding.UTF8, "application/json"));
                     if (!changePassResp.IsSuccessStatusCode)
                     {
-                        LastError = await changePassResp.Content.ReadAsStringAsync();
+                        LastError = JsonConvert.DeserializeObject<string>(await changePassResp.Content.ReadAsStringAsync());
                     }
                     else
                     {

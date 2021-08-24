@@ -7,6 +7,7 @@ using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace GanjooRazor.Areas.Admin.Pages
@@ -62,7 +63,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             else
             {
-                Error = await response.Content.ReadAsStringAsync();
+                Error = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
             }
             return new OkResult();
         }

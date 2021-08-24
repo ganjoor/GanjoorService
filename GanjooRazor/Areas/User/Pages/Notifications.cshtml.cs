@@ -49,7 +49,7 @@ namespace GanjooRazor.Areas.User.Pages
                         var response = await secureClient.GetAsync($"{APIRoot.Url}/api/notifications/paginated?PageNumber={pageNumber}&PageSize=20");
                         if (!response.IsSuccessStatusCode)
                         {
-                            LastError = await response.Content.ReadAsStringAsync();
+                            LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                             return Page();
                         }
                         response.EnsureSuccessStatusCode();
@@ -145,7 +145,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return Redirect($"/login?redirect={Request.Path}&error={await response.Content.ReadAsStringAsync()}");
+                        return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
                     }
 
                 }

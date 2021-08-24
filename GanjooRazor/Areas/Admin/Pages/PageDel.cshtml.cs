@@ -4,6 +4,7 @@ using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
 
@@ -69,7 +70,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                 if(!response.IsSuccessStatusCode)
                 {
-                    LastResult = await response.Content.ReadAsStringAsync();
+                    LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                 }
                 else
                 {

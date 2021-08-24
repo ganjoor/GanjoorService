@@ -50,7 +50,7 @@ namespace GanjooRazor.Areas.User.Pages
                         var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/corrections/effective?PageNumber={pageNumber}&PageSize=20");
                         if (!response.IsSuccessStatusCode)
                         {
-                            LastError = await response.Content.ReadAsStringAsync();
+                            LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                             return Page();
                         }
                         response.EnsureSuccessStatusCode();

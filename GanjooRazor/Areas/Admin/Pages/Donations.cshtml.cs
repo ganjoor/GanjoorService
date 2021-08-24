@@ -55,7 +55,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/donations");
             if (!response.IsSuccessStatusCode)
             {
-                LastMessage = await response.Content.ReadAsStringAsync();
+                LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
             }
 
             response.EnsureSuccessStatusCode();
@@ -69,7 +69,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage resAccountInfo = await secureClient.GetAsync($"{APIRoot.Url}/api/donations/accountinfo/visible");
                     if (!resAccountInfo.IsSuccessStatusCode)
                     {
-                        LastMessage = await resAccountInfo.Content.ReadAsStringAsync();
+                        LastMessage = JsonConvert.DeserializeObject<string>(await resAccountInfo.Content.ReadAsStringAsync());
                     }
 
                     resAccountInfo.EnsureSuccessStatusCode();
@@ -106,7 +106,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/donations", new StringContent(JsonConvert.SerializeObject(Donation), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = await response.Content.ReadAsStringAsync();
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                     }
                     else
                     {

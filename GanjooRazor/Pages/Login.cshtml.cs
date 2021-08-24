@@ -94,7 +94,7 @@ namespace GanjooRazor.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        LastError = await response.Content.ReadAsStringAsync();
+                        LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                         return Page();
                     }
 

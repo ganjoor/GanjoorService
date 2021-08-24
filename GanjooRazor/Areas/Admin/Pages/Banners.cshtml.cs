@@ -43,7 +43,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.GetAsync($"{APIRoot.Url}/api/banners");
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = await response.Content.ReadAsStringAsync();
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                     }
 
                     response.EnsureSuccessStatusCode();
@@ -81,7 +81,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/banners/{id}", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = await response.Content.ReadAsStringAsync();
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                     }
 
 
@@ -136,7 +136,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/banners", form);
                         if (!response.IsSuccessStatusCode)
                         {
-                            LastMessage = await response.Content.ReadAsStringAsync();
+                            LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                         }
 
                     }

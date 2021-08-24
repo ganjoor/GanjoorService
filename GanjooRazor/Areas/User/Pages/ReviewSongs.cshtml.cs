@@ -63,7 +63,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var trackResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/song?skip={Skip}&onlyMine=false");
                     if (!trackResponse.IsSuccessStatusCode)
                     {
-                        LastError = await trackResponse.Content.ReadAsStringAsync();
+                        LastError = JsonConvert.DeserializeObject<string>(await trackResponse.Content.ReadAsStringAsync());
                     }
                     else
                     {
@@ -133,7 +133,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var putResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/song", new StringContent(JsonConvert.SerializeObject(PoemMusicTrackViewModel), Encoding.UTF8, "application/json"));
                     if (!putResponse.IsSuccessStatusCode)
                     {
-                        LastError = await putResponse.Content.ReadAsStringAsync();
+                        LastError = JsonConvert.DeserializeObject<string>(await putResponse.Content.ReadAsStringAsync());
                     }
                 }
                 else

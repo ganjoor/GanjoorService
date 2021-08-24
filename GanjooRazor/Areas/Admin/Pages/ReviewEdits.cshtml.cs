@@ -170,7 +170,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     if(!moderationResponse.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(moderationResponse.Content.ReadAsStringAsync());
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await moderationResponse.Content.ReadAsStringAsync()));
                     }
 
                     return new OkObjectResult(true);

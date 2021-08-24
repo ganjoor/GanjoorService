@@ -314,7 +314,7 @@ namespace GanjooRazor.Pages
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                return Redirect($"/login?redirect={Request.Path}&error={await response.Content.ReadAsStringAsync()}");
+                return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
             }
 
             LoggedOnUserModel loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModel>(await response.Content.ReadAsStringAsync());

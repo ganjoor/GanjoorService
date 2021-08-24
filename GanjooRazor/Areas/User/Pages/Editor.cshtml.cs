@@ -175,7 +175,7 @@ namespace GanjooRazor.Areas.User.Pages
                         "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(await response.Content.ReadAsStringAsync());
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                     return new OkObjectResult(true);
                 }

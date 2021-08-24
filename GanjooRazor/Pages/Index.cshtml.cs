@@ -91,7 +91,7 @@ namespace GanjooRazor.Pages
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                return Redirect($"/login?redirect={Request.Path}&error={await response.Content.ReadAsStringAsync()}");
+                return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
             }
 
             LoggedOnUserModel loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModel>(await response.Content.ReadAsStringAsync());
@@ -237,7 +237,7 @@ namespace GanjooRazor.Pages
                                 Model = new _CommentPartialModel()
                                 {
                                     Comment = null,
-                                    Error = await response.Content.ReadAsStringAsync(),
+                                    Error = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()),
                                     InReplyTo = null,
                                     LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"])
                                 }
@@ -279,7 +279,7 @@ namespace GanjooRazor.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return Redirect($"/login?redirect={Request.Path}&error={await response.Content.ReadAsStringAsync()}");
+                        return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
                     }
 
                 }
@@ -302,7 +302,7 @@ namespace GanjooRazor.Pages
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/{id}", new StringContent(JsonConvert.SerializeObject(comment), Encoding.UTF8, "application/json"));
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return Redirect($"/login?redirect={Request.Path}&error={await response.Content.ReadAsStringAsync()}");
+                        return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
                     }
                 }
             }
