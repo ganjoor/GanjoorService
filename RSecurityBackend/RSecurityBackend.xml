@@ -714,6 +714,16 @@
             Options
             </summary>
         </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.UserBehaviourLogs">
+            <summary>
+            user bad behaviour loigs
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.BannedEmails">
+            <summary>
+            banned emails
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Models.Audit.Db.REvent">
             <summary>
             Audit Event
@@ -767,6 +777,26 @@
         <member name="P:RSecurityBackend.Models.Audit.Db.REvent.JsonData">
             <summary>
             Jason Data
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Db.BannedEmail">
+            <summary>
+            banned emails (previous users who had been kicked out and their emails are logged to not allow them to signup again)
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.BannedEmail.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.BannedEmail.NormalizedEmail">
+            <summary>
+            all capital email
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.BannedEmail.Description">
+            <summary>
+            cause
             </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Auth.Db.RAppRole">
@@ -843,6 +873,16 @@
         <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.Website">
             <summary>
             web site
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.ScreenName">
+            <summary>
+            user screen name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.LockoutMessage">
+            <summary>
+            if user is locked out purposely as some kind of temporary punishment put the message for him or her here
             </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Auth.Db.RAppUserStatus">
@@ -979,6 +1019,36 @@
         <member name="P:RSecurityBackend.Models.Auth.Db.RTemporaryUserSession.Token">
             <summary>
             User Token
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.Db.RUserBehaviourLog">
+            <summary>
+            logs for user bad actions which may due to rule end in him or her being banned from the platform
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RUserBehaviourLog.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RUserBehaviourLog.UserId">
+            <summary>
+            user id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RUserBehaviourLog.User">
+            <summary>
+            user
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RUserBehaviourLog.DateTime">
+            <summary>
+            datetime
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Db.RUserBehaviourLog.Description">
+            <summary>
+            description
             </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Auth.Db.RVerifyQueueItem">

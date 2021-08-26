@@ -114,5 +114,15 @@ namespace RSecurityBackend.DbContext
         /// Options
         /// </summary>
         public DbSet<RGenericOption> Options { get; set; }
+
+        /// <summary>
+        /// user bad behaviour loigs
+        /// </summary>
+        public DbSet<RUserBehaviourLog> UserBehaviourLogs { get; set; }
+
+        /// <summary>
+        /// banned emails
+        /// </summary>
+        public DbSet<BannedEmail> BannedEmails { get; set; }
     }
 }

@@ -58,5 +58,15 @@ namespace RSecurityBackend.Models.Auth.Db
         /// web site
         /// </summary>
         public string Website { get; set; }
+
+        /// <summary>
+        /// user screen name
+        /// </summary>
+        public string ScreenName { get; set; }
+
+        /// <summary>
+        /// if user is locked out purposely as some kind of temporary punishment put the message for him or her here
+        /// </summary>
+        public string LockoutMessage { get; set; }
     }
 }
