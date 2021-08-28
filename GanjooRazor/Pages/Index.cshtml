@@ -12,24 +12,37 @@
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
+    <link href="/dist/skin/blue.monday/css/jplayer.blue.monday.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/p6.css" rel="stylesheet" type="text/css" />
+    <link href="/css/fab.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        var playerScrollLock = false;
+    </script>
+    <script src="/js/bf.js"></script>
+    <script src="/js/vaabd.js"></script>
     @if (Model.IsHomePage)
     {
         <meta name="description" content="جستجو در شعر فارسی" />
     }
     else
     {
+        if (Model.IsPoemPage)
+        {
+            <script>
+                $(document).ready(function () {
+                    btshmr();
+                });
+            </script>
+        }
         <script type="application/ld+json">
         {
         @Html.Raw(@ViewData["BrearCrumpList"])
         }
         </script>
     }
-    <link href="/dist/skin/blue.monday/css/jplayer.blue.monday.min.css" rel="stylesheet" type="text/css" />
-    <link href="/css/p6.css" rel="stylesheet" type="text/css" />
-    <link href="/css/fab.css" rel="stylesheet" type="text/css" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
-   
 </head>
 <body>
 
@@ -53,12 +66,7 @@
     }
 
 
-    <script src="/lib/jquery/dist/jquery.min.js"></script>
-    <script>
-        var playerScrollLock = false;
-    </script>
-    <script src="/js/bf.js"></script>
-    <script src="/js/vaabd.js"></script>
+
 
 
     @{
@@ -133,16 +141,17 @@
 
 
     <script src="/lib/tinymce/tinymce.min.js"></script>
-    <script>tinymce.init({
-        selector: 'textarea.editor',
-        language: 'fa_IR',
-        menubar: false,
-        plugins: 'link paste',
-        toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | outdent indent | link',
-        paste_auto_cleanup_on_paste: true,
-        paste_remove_styles: true,
-        paste_remove_styles_if_webkit: true,
-        paste_strip_class_attributes: true,
+    <script>
+    tinymce.init({
+            selector: 'textarea.editor',
+            language: 'fa_IR',
+            menubar: false,
+            plugins: 'link paste',
+            toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | outdent indent | link',
+            paste_auto_cleanup_on_paste: true,
+            paste_remove_styles: true,
+            paste_remove_styles_if_webkit: true,
+            paste_strip_class_attributes: true,
         });
     </script>
     <script>
