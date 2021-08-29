@@ -53,6 +53,10 @@
         /// view all
         /// </summary>
         public const string ViewAllOperationShortName = "viewall";
+        /// <summary>
+        /// administer
+        /// </summary>
+        public const string Administer = "administer";
 
 
 
@@ -88,6 +92,7 @@
                             new SecurableItemOperation(SessionsOperationShortName, "مشاهده جلسات همه کاربران", false, null),
                             new SecurableItemOperation(DelOtherUserSessionOperationShortName, "حذف جلسه سایر کاربران", false),
                             new SecurableItemOperation(ViewAllOperationShortName, "مشاهده اطلاعات کاربران دیگر", false, null ),
+                            new SecurableItemOperation(Administer, "مدیریت کاربران", false, null ),
                         }
                     },
                     new SecurableItem()

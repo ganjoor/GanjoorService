@@ -269,6 +269,14 @@
             <param name="pwd"></param>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.LogUserBehaviourAsync(System.Guid,System.String)">
+            <summary>
+            log user bad behaviuor
+            </summary>
+            <param name="userId"></param>
+            <param name="description"></param>
+            <returns></returns>
+        </member>
         <member name="F:RSecurityBackend.Controllers.AppUserControllerBase._appUserService">
             <summary>
             IAppUserService instance
@@ -1182,6 +1190,11 @@
         <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.ViewAllOperationShortName">
             <summary>
             view all
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.Administer">
+            <summary>
+            administer
             </summary>
         </member>
         <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItem.Items">
