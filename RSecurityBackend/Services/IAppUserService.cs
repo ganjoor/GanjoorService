@@ -302,6 +302,43 @@ namespace RSecurityBackend.Services
         /// </summary>
         int DefaultTokenExpirationInSeconds { get; }
 
+        /// <summary>
+        /// log user bad behaviuor
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RUserBehaviourLog>> LogUserBehaviourAsync(Guid userId, string description);
 
+        /// <summary>
+        /// get user behaviour logs
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RUserBehaviourLog[]>> GetUserBehaviourLogsAsync(Guid userId);
+
+        /// <summary>
+        /// lockout a user for a period
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="cause"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> LockoutAsync(Guid userId, string cause, DateTimeOffset offset);
+
+        /// <summary>
+        /// before kicking out a bad behving user ban him or her from signing up again
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="cause">document the cause</param>
+        /// <returns></returns>
+        Task<RServiceResult<BannedEmail>> BanUserFromSigningUpAgainAsync(Guid userId, string cause);
+
+        /// <summary>
+        /// get banned email information
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        Task<RServiceResult<BannedEmail>> GetBannedEmailInformationAsync(string email);
     }
 }

@@ -471,6 +471,10 @@ namespace RSecurityBackend.Controllers
             var user = (await _appUserService.GetUserInformation(loggedOnUserId)).Result;
             var session = await _appUserService.GetUserSession(loggedOnUserId, sessionId);
 
+            RServiceResult<bool> resCheckAdmin = await _appUserService.IsAdmin(loggedOnUserId);
+            if(resCheckAdmin.Result)
+                return BadRequest("شما کاربر مدیر سیستم هستید. لطفا ابتدا مدیر سیستم دیگری ایجاد کنید یا از مدیر دیگری بخواهید شما را از حالت مدیر سیستمی خارج کند.");
+
             var loginResult = await _appUserService.Login(new LoginViewModel()
             {
                 Username = user.Email,

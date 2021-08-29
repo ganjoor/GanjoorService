@@ -2562,6 +2562,45 @@
             JWT Tokens Expiration Time Out
             </summary>
         </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.LogUserBehaviourAsync(System.Guid,System.String)">
+            <summary>
+            log user bad behaviuor
+            </summary>
+            <param name="userId"></param>
+            <param name="description"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetUserBehaviourLogsAsync(System.Guid)">
+            <summary>
+            get user behaviour logs
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.LockoutAsync(System.Guid,System.String,System.DateTimeOffset)">
+            <summary>
+            lockout a user for a period
+            </summary>
+            <param name="userId"></param>
+            <param name="cause"></param>
+            <param name="offset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.BanUserFromSigningUpAgainAsync(System.Guid,System.String)">
+            <summary>
+            before kicking out a bad behving user ban him or her from signing up again
+            </summary>
+            <param name="userId"></param>
+            <param name="cause">document the cause</param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetBannedEmailInformationAsync(System.String)">
+            <summary>
+            get banned email information
+            </summary>
+            <param name="email"></param>
+            <returns></returns>
+        </member>
         <member name="T:RSecurityBackend.Services.IAuditLogService">
             <summary>
             Audit Log Service
@@ -3049,6 +3088,45 @@
             <param name="secretCode"></param>
             <param name="signupCallbackUrl"></param>
             <returns>html content</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.LogUserBehaviourAsync(System.Guid,System.String)">
+            <summary>
+            log user bad behaviuor
+            </summary>
+            <param name="userId"></param>
+            <param name="description"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetUserBehaviourLogsAsync(System.Guid)">
+            <summary>
+            get user behaviour logs
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.LockoutAsync(System.Guid,System.String,System.DateTimeOffset)">
+            <summary>
+            lockout a user for a period
+            </summary>
+            <param name="userId"></param>
+            <param name="cause"></param>
+            <param name="offset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.BanUserFromSigningUpAgainAsync(System.Guid,System.String)">
+            <summary>
+            before kicking out a bad behving user ban him or her from signing up again
+            </summary>
+            <param name="userId"></param>
+            <param name="cause">document the cause</param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetBannedEmailInformationAsync(System.String)">
+            <summary>
+            get banned email information
+            </summary>
+            <param name="email"></param>
+            <returns></returns>
         </member>
         <member name="F:RSecurityBackend.Services.Implementation.AppUserService._context">
             <summary>

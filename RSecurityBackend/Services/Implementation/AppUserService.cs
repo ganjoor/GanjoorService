@@ -1602,6 +1602,121 @@ namespace RSecurityBackend.Services.Implementation
 
         #endregion
 
+        #region Users' Bad Behaviour Management
+        /// <summary>
+        /// log user bad behaviuor
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RUserBehaviourLog>> LogUserBehaviourAsync(Guid userId, string description)
+        {
+            RUserBehaviourLog log = new RUserBehaviourLog()
+            {
+                UserId = userId,
+                DateTime = DateTime.Now,
+                Description = description,
+            };
+            _context.UserBehaviourLogs.Add(log);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<RUserBehaviourLog>(log);
+        }
+
+        /// <summary>
+        /// get user behaviour logs
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RUserBehaviourLog[]>> GetUserBehaviourLogsAsync(Guid userId)
+        {
+            return new RServiceResult<RUserBehaviourLog[]>
+                (
+                await _context.UserBehaviourLogs.Where(b => b.UserId == userId).OrderByDescending(b => b.DateTime).ToArrayAsync()
+                );
+        }
+
+        /// <summary>
+        /// lockout a user for a period
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="cause"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> LockoutAsync(Guid userId, string cause, DateTimeOffset offset)
+        {
+            RAppUser appUser =
+                await _userManager.Users.Where(u => u.Id == userId).SingleOrDefaultAsync();
+            var res = await _userManager.SetLockoutEnabledAsync(appUser, true);
+            if (!res.Succeeded)
+            {
+                return new RServiceResult<bool>(false, ErrorsToString(res.Errors));
+            }
+            res = await _userManager.SetLockoutEndDateAsync(appUser, offset);
+            if (!res.Succeeded)
+            {
+                return new RServiceResult<bool>(false, ErrorsToString(res.Errors));
+            }
+            appUser.LockoutMessage = cause;
+            res = await _userManager.UpdateAsync(appUser);
+            if (!res.Succeeded)
+            {
+                return new RServiceResult<bool>(false, ErrorsToString(res.Errors));
+            }
+            return new RServiceResult<bool>(true);
+
+        }
+
+        /// <summary>
+        /// before kicking out a bad behving user ban him or her from signing up again
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="cause">document the cause</param>
+        /// <returns></returns>
+        public async Task<RServiceResult<BannedEmail>> BanUserFromSigningUpAgainAsync(Guid userId, string cause)
+        {
+            RAppUser appUser =
+                await _userManager.Users.Where(u => u.Id == userId).SingleOrDefaultAsync();
+            string email = appUser.NormalizedEmail;
+            if(email.Contains("@GMAIL.COM"))
+            {
+                if(email.Contains("+") && email.IndexOf("+") < email.IndexOf("@GMAIL.COM"))
+                {
+                    email = email.Substring(0, email.IndexOf("+")) + "@GMAIL.COM";
+                }
+            }
+            var bannedEmail = new BannedEmail()
+            {
+                NormalizedEmail = email,
+                Description = cause
+            };
+            _context.BannedEmails.Add
+                (
+               bannedEmail
+                );
+            await _context.SaveChangesAsync();
+            return new RServiceResult<BannedEmail>(bannedEmail);
+
+        }
+
+        /// <summary>
+        /// get banned email information
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<BannedEmail>> GetBannedEmailInformationAsync(string email)
+        {
+            email = _userManager.NormalizeEmail(email);
+            if (email.Contains("@GMAIL.COM"))
+            {
+                if (email.Contains("+") && email.IndexOf("+") < email.IndexOf("@GMAIL.COM"))
+                {
+                    email = email.Substring(0, email.IndexOf("+")) + "@GMAIL.COM";
+                }
+            }
+            return new RServiceResult<BannedEmail>(await _context.BannedEmails.Where(b => b.NormalizedEmail == email).FirstOrDefaultAsync());
+        }
+        #endregion
+
         /// <summary>
         /// Main Database context
         /// </summary>
