@@ -12,6 +12,10 @@
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
+    @if (!string.IsNullOrEmpty(Model.PinterestUrl))
+    {
+        <meta name="robots" content="noindex, nofollow" />
+    }
     <link href="/dist/skin/blue.monday/css/jplayer.blue.monday.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/p6.css" rel="stylesheet" type="text/css" />
     <link href="/css/fab.css" rel="stylesheet" type="text/css" />
@@ -25,37 +29,37 @@
 
     @if (Model.IsHomePage)
     {
-    <meta name="description" content="جستجو در شعر فارسی" />
+        <meta name="description" content="جستجو در شعر فارسی" />
     }
     else
     {
-    <script type="application/ld+json">
+        <script type="application/ld+json">
         {
         @Html.Raw(@ViewData["BrearCrumpList"])
         }
-    </script>
+        </script>
     }
-   
+
 </head>
 <body>
     <script src="/js/vaabd.js"></script>
 
     @if (Model.IsHomePage)
     {
-    @if (!string.IsNullOrEmpty(Model.LastError))
+        @if (!string.IsNullOrEmpty(Model.LastError))
         {
-    <div class="poem">
-        @Model.LastError
-    </div>
+            <div class="poem">
+                @Model.LastError
+            </div>
         }
         else
         {
-    <partial name="_HomePagePartial" model="Model" />
+            <partial name="_HomePagePartial" model="Model" />
         }
     }
     else
     {
-    <partial name="_GanjoorPagePartial" model="Model" />
+        <partial name="_GanjoorPagePartial" model="Model" />
     }
 
 
@@ -67,9 +71,9 @@
         {
             if (Model.GanjoorPage != null && Model.GanjoorPage.Poem.Recitations.Length > 0)
             {
-        <script src="/dist/jplayer/jquery.jplayer.min.js"></script>
-        <script src="/dist/add-on/jplayer.playlist.min.js"></script>
-        <script>
+                <script src="/dist/jplayer/jquery.jplayer.min.js"></script>
+                <script src="/dist/add-on/jplayer.playlist.min.js"></script>
+                <script>
                 //<![CDATA[
                 $(document).ready(function () {
                     var jlist = prepaudio(
@@ -113,13 +117,13 @@
 
                 });
                 //]]>
-        </script>
+                </script>
             }
         }
 
         if (!string.IsNullOrEmpty(Model.PinterestUrl))
         {
-        <script>
+            <script>
                     $(function () {
                         $("a").attr('href', function (i, h) {
                             if (h != null) {
@@ -128,7 +132,7 @@
                             return h;
                         });
                     });
-        </script>
+            </script>
         }
     }
 
@@ -278,7 +282,7 @@
 
     @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
     {
-    <script>
+        <script>
             (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
                     (i[r].q = i[r].q || []).push(arguments)
@@ -289,7 +293,7 @@
             ga('create', '@ViewData["GoogleAnalyticsCode"]', 'auto');
             ga('send', 'pageview');
 
-    </script>
+        </script>
     }
 
 </body>
