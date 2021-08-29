@@ -1581,7 +1581,7 @@ namespace RSecurityBackend.Services.Implementation
         /// <param name="secretCode"></param>
         public virtual string GetEmailSubject(RVerifyQueueType op, string secretCode)
         {
-            string opString = op == RVerifyQueueType.SignUp ? "SignUp" : op == RVerifyQueueType.ForgotPassword ? "Forgot Password" : "Self Delete User";
+            string opString = op == RVerifyQueueType.SignUp ? "SignUp" : op == RVerifyQueueType.ForgotPassword ? "Forgot Password" : op == RVerifyQueueType.KickOutUser ? "User Removal" : "Self Delete User";
             return $"Ganjoor {opString} Code:{secretCode}";
         }
 
@@ -1594,10 +1594,10 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns>html content</returns>
         public virtual string GetEmailHtmlContent(RVerifyQueueType op, string secretCode, string signupCallbackUrl)
         {
-            if (string.IsNullOrEmpty(signupCallbackUrl))
+            if (!string.IsNullOrEmpty(signupCallbackUrl))
                 return $"{signupCallbackUrl}?secret={secretCode}";
             string opString = op == RVerifyQueueType.SignUp ? "ثبت نام" : op == RVerifyQueueType.ForgotPassword ? "فراموشی رمز" : "حذف کاربر";
-            return $"لطفا {secretCode} را در صفحهٔ {opString} وارد کنید.";
+            return op == RVerifyQueueType.KickOutUser ? $"حساب کاربری شما به دلیل {secretCode} حذف شد." : $"لطفا {secretCode} را در صفحهٔ {opString} وارد کنید.";
         }
 
         #endregion

@@ -943,6 +943,10 @@ namespace RSecurityBackend.Controllers
             if (!captchaRes.Result)
                 return BadRequest("مقدار تصویر امنیتی درست وارد نشده است.");
 
+            var bannedEmail = await _appUserService.GetBannedEmailInformationAsync(signUpViewModel.Email);
+            if (bannedEmail.Result != null)
+                return BadRequest("ایمیل شما در لیست سیاه قرار دارد و نمی‌توانید با آن مجدداً ثبت نام کنید.");
+
             string clientIPAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
             RServiceResult<RVerifyQueueItem> res = await _appUserService.SignUp(signUpViewModel.Email, clientIPAddress, signUpViewModel.ClientAppName, signUpViewModel.Language);
             if (res.Result == null)
@@ -1107,21 +1111,61 @@ namespace RSecurityBackend.Controllers
         /// <summary>
         /// log user bad behaviuor
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="description"></param>
+        /// <param name="userCause"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = SecurableItem.UserEntityShortName + ":" + SecurableItem.Administer)]
-        [Route("behaviour/log/{userId}")]
+        [Route("behaviour/log")]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserBehaviourLog))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> LogUserBehaviourAsync(Guid userId, string description)
+        public async Task<IActionResult> LogUserBehaviourAsync([FromBody] UserCauseViewModel userCause)
         {
-            RServiceResult<RUserBehaviourLog> result = await _appUserService.LogUserBehaviourAsync(userId, description);
+            RServiceResult<RUserBehaviourLog> result = await _appUserService.LogUserBehaviourAsync(userCause.UserId, userCause.Cause);
             if (!string.IsNullOrEmpty(result.ExceptionString))
                 return BadRequest(result.ExceptionString);
             return Ok(result.Result);
+        }
+
+        /// <summary>
+        /// kick out a user
+        /// </summary>
+        /// <param name="userCause"></param>
+        /// <returns></returns>
+
+        [HttpPost]
+        [Authorize(Policy = SecurableItem.UserEntityShortName + ":" + SecurableItem.Administer)]
+        [Route("kickout")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserBehaviourLog))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> KickOutUserAsync([FromBody] UserCauseViewModel userCause)
+        {
+            RServiceResult<PublicRAppUser> userInfo = await _appUserService.GetUserInformation(userCause.UserId);
+            if (userInfo.Result == null)
+            {
+                if (string.IsNullOrEmpty(userInfo.ExceptionString))
+                    return NotFound();
+                return BadRequest(userInfo.ExceptionString);
+            }
+
+            await _appUserService.BanUserFromSigningUpAgainAsync(userCause.UserId, userCause.Cause);
+            await _appUserService.DeleteUser(userCause.UserId);
+
+            try
+            {
+                await _emailSender.SendEmailAsync
+                    (
+                    userInfo.Result.Email,
+                    _appUserService.GetEmailSubject(RVerifyQueueType.KickOutUser, ""),
+                    _appUserService.GetEmailHtmlContent(RVerifyQueueType.KickOutUser, userCause.Cause, "")
+                    );
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest("Error sending email: " + exp.ToString());
+            }
         }
 
         /// <summary>

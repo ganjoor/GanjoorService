@@ -269,12 +269,18 @@
             <param name="pwd"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.LogUserBehaviourAsync(System.Guid,System.String)">
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.LogUserBehaviourAsync(RSecurityBackend.Models.Auth.ViewModels.UserCauseViewModel)">
             <summary>
             log user bad behaviuor
             </summary>
-            <param name="userId"></param>
-            <param name="description"></param>
+            <param name="userCause"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.KickOutUserAsync(RSecurityBackend.Models.Auth.ViewModels.UserCauseViewModel)">
+            <summary>
+            kick out a user
+            </summary>
+            <param name="userCause"></param>
             <returns></returns>
         </member>
         <member name="F:RSecurityBackend.Controllers.AppUserControllerBase._appUserService">
@@ -1132,6 +1138,11 @@
             delete user by himself/hersef
             </summary>
         </member>
+        <member name="F:RSecurityBackend.Models.Auth.Db.RVerifyQueueType.KickOutUser">
+            <summary>
+            kick out user
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Models.Auth.Memory.SecurableItem">
             <summary>
             securable itmes: forms and ...
@@ -1635,6 +1646,21 @@
              <summary>
             CallbackUrl
              </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Auth.ViewModels.UserCauseViewModel">
+            <summary>
+            User/Cause used for logging a user (bad) behaviour or kicking out him or her
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.UserCauseViewModel.UserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.UserCauseViewModel.Cause">
+            <summary>
+            cause
+            </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel">
             <summary>

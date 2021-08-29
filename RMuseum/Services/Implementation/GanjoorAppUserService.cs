@@ -59,7 +59,14 @@ namespace RMuseum.Services.Implementation
         /// <param name="secretCode"></param>
         public override string GetEmailSubject(RVerifyQueueType op, string secretCode)
         {
-            string opString = op == RVerifyQueueType.SignUp ? "ثبت نام" : op == RVerifyQueueType.ForgotPassword ? "بازیابی کلمهٔ عبور" : "حذف حساب کاربری";
+            string opString = 
+                op == RVerifyQueueType.SignUp ? "ثبت نام"
+                :
+                op == RVerifyQueueType.ForgotPassword
+                ?
+                "بازیابی کلمهٔ عبور"
+                :
+                "حذف حساب کاربری";
             return $"{secretCode} کد {opString} شما در گنجور";
         }
 
@@ -77,7 +84,10 @@ namespace RMuseum.Services.Implementation
                                 : op == RVerifyQueueType.ForgotPassword ?
                                 "اگر در گنجور فراموشی گذرواژه را نزده‌اید یا گذرواژه‌تان را به خاطر آوردید لطفاً این نامه را نادیده بگیرید."
                                 :
-                                "اگر در گنجور حذف حساب کاربری را نزده‌اید یا از حذف حساب کاربریتان منصرف شده‌اید لطفاً این نامه را نادیده بگیرید.";
+                                op == RVerifyQueueType.UserSelfDelete ? 
+                                "اگر در گنجور حذف حساب کاربری را نزده‌اید یا از حذف حساب کاربریتان منصرف شده‌اید لطفاً این نامه را نادیده بگیرید."
+                                :
+                                "";
             string content =
                "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
                +
@@ -87,7 +97,7 @@ namespace RMuseum.Services.Implementation
                +
                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />"
                +
-               $"<title>کد {opString} شما در گنجور: {secretCode}</title>"
+               (op == RVerifyQueueType.KickOutUser ? $"<title>حذف حساب کاربری شما در گنجور</title>" : $" <title>کد {opString} شما در گنجور: {secretCode}</title>")
                +
                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>"
                +
@@ -110,6 +120,9 @@ namespace RMuseum.Services.Implementation
                 "<tr><td>"
                 +
                 (
+                op == RVerifyQueueType.KickOutUser ?
+                $"<p style=\"font:normal 12px tahoma;direction:rtl\">کاربر گرامی، متأسفیم که به اطلاع برسانیم که به دلیل نقض قوانین استفاده از گنجور و به طور مشخص {secretCode} حساب کاربری شما به همراه حاشیه‌ها، خوانش‌ها و سایر اطلاعات خصوصیتان از گنجور حذف شده است. امیدواریم در آینده در صورت تمایل به استفاده از گنجور در چارچوب‌های قابل پذیرش برای ما با حساب کاربری جدیدی پذیرای شما باشیم. با این ایمیل امکان ثبت نام مجدد نخواهید داشت./p>"
+                :
                 string.IsNullOrEmpty(signupCallbackUrl) ?
                 $"<p style=\"font:normal 12px tahoma;direction:rtl\">لطفاً جهت تکمیل {opString} در گنجور کد <strong>{secretCode}</strong> را به عنوان رمز دریافتی در صفحهٔ {opString} وارد کنید.</p>"
                 :

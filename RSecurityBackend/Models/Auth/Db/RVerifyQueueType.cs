@@ -16,6 +16,10 @@
         /// <summary>
         /// delete user by himself/hersef
         /// </summary>
-        UserSelfDelete = 2
+        UserSelfDelete = 2,
+        /// <summary>
+        /// kick out user
+        /// </summary>
+        KickOutUser = 3
     }
 }
