@@ -4,10 +4,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Auth.ViewModel;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
@@ -27,6 +30,8 @@ namespace GanjooRazor.Pages
             }
 
             
+
+
             string filterUserId = Request.Query["userid"];
             string url = $"{APIRoot.Url}/api/ganjoor/comments?PageNumber={pageNumber}&PageSize=20";
             string htmlText = "";
@@ -49,6 +54,34 @@ namespace GanjooRazor.Pages
                 if (!string.IsNullOrEmpty(profile.Website))
                 {
                     htmlText += $"<a href=\"{profile.Website}\">🌐</a></p>{Environment.NewLine}";
+                }
+
+                bool canAdministerUsers = false;
+                if (!string.IsNullOrEmpty(Request.Cookies["Token"]))
+                {
+                    using (HttpClient secureClient = new HttpClient())
+                    {
+                        secureClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Cookies["Token"]);
+                        var res = await secureClient.GetAsync($"{APIRoot.Url}/api/users/securableitems");
+                        if (res.IsSuccessStatusCode)
+                        {
+                            SecurableItem[] secuarbleItems = JsonConvert.DeserializeObject<SecurableItem[]>(await res.Content.ReadAsStringAsync());
+                            var userSecurableItem = secuarbleItems.Where(s => s.ShortName == SecurableItem.UserEntityShortName).FirstOrDefault();
+                            if (userSecurableItem != null)
+                            {
+                                var administerOperation = userSecurableItem.Operations.Where(o => o.ShortName == SecurableItem.Administer).FirstOrDefault();
+                                if (administerOperation != null)
+                                {
+                                    canAdministerUsers = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (canAdministerUsers)
+                {
+                    htmlText += $"<a href=\"/Admin/ExamineUser?id={filterUserId}\">#</a></p>{Environment.NewLine}";
                 }
                 
                 htmlText += $"</p>{Environment.NewLine}";
