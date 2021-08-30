@@ -1128,6 +1128,25 @@ namespace RSecurityBackend.Controllers
         }
 
         /// <summary>
+        /// get user behaviour logs
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize(Policy = SecurableItem.UserEntityShortName + ":" + SecurableItem.Administer)]
+        [Route("behaviour/log/{userId}")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserBehaviourLog[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetUserBehaviourLogsAsync(Guid userId)
+        {
+            RServiceResult<RUserBehaviourLog[]> result = await _appUserService.GetUserBehaviourLogsAsync(userId);
+            if (!string.IsNullOrEmpty(result.ExceptionString))
+                return BadRequest(result.ExceptionString);
+            return Ok(result.Result);
+        }
+
+        /// <summary>
         /// kick out a user
         /// </summary>
         /// <param name="userCause"></param>
