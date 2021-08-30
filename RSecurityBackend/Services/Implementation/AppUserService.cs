@@ -806,6 +806,16 @@ namespace RSecurityBackend.Services.Implementation
                 return new RServiceResult<bool>(false, "برای تغییر تصویر کاربر از تابع اختصاصی این کار استفاده کنید");
             }
 
+            updateUserInfo.FirstName = updateUserInfo.FirstName.Trim();
+            updateUserInfo.SureName = updateUserInfo.SureName.Trim();
+            updateUserInfo.NickName = updateUserInfo.NickName.Trim();
+
+            if(string.IsNullOrEmpty(updateUserInfo.NickName) && string.IsNullOrEmpty(updateUserInfo.FirstName+ updateUserInfo.SureName))
+            {
+                return new RServiceResult<bool>(false, "نام، نام خانوادگی و نام مستعار نمی‌توانند همگی خالی باشند.");
+            }
+
+
 
 
 

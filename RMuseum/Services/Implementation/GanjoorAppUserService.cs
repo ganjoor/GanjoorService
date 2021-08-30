@@ -202,7 +202,12 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
             }
 
-            string nickName = unmodifiedUserInfo.NickName;
+            string nickName = unmodifiedUserInfo.NickName.Trim();
+
+            if (string.IsNullOrEmpty(nickName))
+            {
+                return new RServiceResult<bool>(false, "نام مستعار نمی‌تواند خالی باشد.");
+            }
 
             RServiceResult<bool> res = await base.ModifyUser(userId, updateUserInfo);
             if(res.Result)

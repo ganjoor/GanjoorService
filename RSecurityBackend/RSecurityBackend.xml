@@ -276,6 +276,13 @@
             <param name="userCause"></param>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetUserBehaviourLogsAsync(System.Guid)">
+            <summary>
+            get user behaviour logs
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.KickOutUserAsync(RSecurityBackend.Models.Auth.ViewModels.UserCauseViewModel)">
             <summary>
             kick out a user
