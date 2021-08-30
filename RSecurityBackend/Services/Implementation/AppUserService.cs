@@ -832,6 +832,12 @@ namespace RSecurityBackend.Services.Implementation
                 existingInfo.PasswordHash = _userManager.PasswordHasher.HashPassword(existingInfo, updateUserInfo.Password);
             }
 
+            if(updateUserInfo.Status == RAppUserStatus.Inactive)
+            {
+                _context.Sessions.RemoveRange(await _context.Sessions.Where(u => u.RAppUserId == userId).ToArrayAsync());
+                await _context.SaveChangesAsync();
+            }
+
 
             var result = await _userManager.UpdateAsync(existingInfo);
             if (!result.Succeeded)
@@ -1656,6 +1662,9 @@ namespace RSecurityBackend.Services.Implementation
             {
                 return new RServiceResult<bool>(false, ErrorsToString(res.Errors));
             }
+            _context.Sessions.RemoveRange(await _context.Sessions.Where(u => u.RAppUserId == userId).ToArrayAsync());
+            await _context.SaveChangesAsync();
+
             appUser.LockoutMessage = cause;
             res = await _userManager.UpdateAsync(appUser);
             if (!res.Succeeded)
