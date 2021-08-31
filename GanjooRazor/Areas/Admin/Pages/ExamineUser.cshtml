@@ -3,6 +3,31 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
-    ViewData["Title"] = "اخراج یا غیرفعالسازی کاربر بدرفتار";
+    ViewData["Title"] = "مدیریت کاربر";
 }
 <h1>@ViewData["Title"]</h1>
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    <p>@Model.LastError</p>
+}
+else
+{
+<table>
+    <tr>
+        <td>نام:</td>
+        <td>@Model.UserInfo.FirstName</td>
+    </tr>
+    <tr>
+        <td>نام خانوادگی:</td>
+        <td>@Model.UserInfo.FirstName</td>
+    </tr>
+    <tr>
+        <td>نام مستعار:</td>
+        <td>@Model.UserInfo.NickName</td>
+    </tr>
+    <tr>
+        <td>ایمیل:</td>
+        <td>@Model.UserInfo.Email</td>
+    </tr>
+</table>
+}
