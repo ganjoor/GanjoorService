@@ -1,6 +1,7 @@
 ﻿@page
 @model GanjooRazor.Areas.User.Pages.ReviewSongsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using DNTPersianUtils.Core
 @{
     Layout = "_Layout";
     ViewData["Title"] = "آهنگ‌های پیشنهادی";
@@ -44,6 +45,25 @@ else
                     <a href="/hashieha/?userid=@Model.PoemMusicTrackViewModel.SuggestedById" target="_blank">@Model.PoemMusicTrackViewModel.SuggestedByNickName</a>
                 </td>
             </tr>
+            @if ((Model.UserSongSuggestionsHistory.Approved + Model.UserSongSuggestionsHistory.Rejected) > 0)
+            {
+                <tr>
+                    <td>
+                        @if (Model.UserSongSuggestionsHistory.Approved > 0)
+                        {
+                            <span style="color:green"><strong>@Model.UserSongSuggestionsHistory.Approved.ToPersianNumbers()</strong> پیشنهاد تأیید شده</span>
+                        }
+
+                    </td>
+                    <td>
+                        @if (Model.UserSongSuggestionsHistory.Rejected > 0)
+                        {
+                            <span style="color:red"><strong>@Model.UserSongSuggestionsHistory.Rejected.ToPersianNumbers()</strong> پیشنهاد رد شده</span>
+                        }
+                    </td>
+                </tr>
+            }
+
             <tr>
                 <td colspan="2">
                     @{

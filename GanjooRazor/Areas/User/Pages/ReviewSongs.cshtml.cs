@@ -48,6 +48,12 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public int TotalCount { get; set; }
 
+
+        /// <summary>
+        /// user suggestions history
+        /// </summary>
+        public UserSongSuggestionsHistory UserSongSuggestionsHistory { get; set; }
+
         /// <summary>
         /// get
         /// </summary>
@@ -84,6 +90,16 @@ namespace GanjooRazor.Areas.User.Pages
                         if (poemResponse.IsSuccessStatusCode)
                         {
                             Poem = JsonConvert.DeserializeObject<GanjoorPoemCompleteViewModel>(await poemResponse.Content.ReadAsStringAsync());
+                        }
+                        else
+                        {
+                            LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                        }
+
+                        var userHistoryResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/song/user/stats/{PoemMusicTrackViewModel.SuggestedById}");
+                        if (userHistoryResponse.IsSuccessStatusCode)
+                        {
+                            UserSongSuggestionsHistory = JsonConvert.DeserializeObject<UserSongSuggestionsHistory>(await userHistoryResponse.Content.ReadAsStringAsync());
                         }
                         else
                         {
