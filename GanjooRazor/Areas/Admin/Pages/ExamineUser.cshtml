@@ -29,5 +29,10 @@ else
         <td>ایمیل:</td>
         <td>@Model.UserInfo.Email</td>
     </tr>
+    <tr>
+        <td colspan="2">
+            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" href="/Admin/KickoutUser?id=@Model.UserInfo.Id">حذف حساب کاربری</a>
+        </td>
+    </tr>
 </table>
 }
