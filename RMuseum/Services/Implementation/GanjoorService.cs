@@ -1849,6 +1849,23 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get track of user song suggestions
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<UserSongSuggestionsHistory>> GetUserSongsSuggestionsStatistics(Guid userId)
+        {
+            return new RServiceResult<UserSongSuggestionsHistory>
+                (
+                new UserSongSuggestionsHistory()
+                {
+                    Approved = await _context.GanjoorPoemMusicTracks.Where(p => p.SuggestedById == userId && p.Approved == true).CountAsync(),
+                    Rejected = await _context.GanjoorPoemMusicTracks.Where(p => p.SuggestedById == userId && p.Rejected == true).CountAsync()
+                }
+                );
+        }
+
+        /// <summary>
         /// review song
         /// </summary>
         /// <param name="song"></param>

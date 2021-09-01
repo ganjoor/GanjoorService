@@ -986,6 +986,11 @@
             <param name="onlyMine"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserSongsSuggestionsStatistics(System.Guid)">
+            <summary>
+            history of suggested songs by a user
+            </summary>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ReviewSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             review song
@@ -6226,6 +6231,21 @@
             alternate text
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.UserSongSuggestionsHistory">
+            <summary>
+            history of suggested songs by a user
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserSongSuggestionsHistory.Approved">
+            <summary>
+            approved
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserSongSuggestionsHistory.Rejected">
+            <summary>
+            rejected
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.ImportJob.ImportJob">
             <summary>
             Import Job
@@ -7759,6 +7779,13 @@
             </summary>
             <param name="skip"></param>
             <param name="suggestedById"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUserSongsSuggestionsStatistics(System.Guid)">
+            <summary>
+            get track of user song suggestions
+            </summary>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
@@ -9420,6 +9447,13 @@
             </summary>
             <param name="skip"></param>
             <param name="suggestedById"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserSongsSuggestionsStatistics(System.Guid)">
+            <summary>
+            get track of user song suggestions
+            </summary>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ReviewSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">

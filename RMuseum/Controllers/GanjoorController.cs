@@ -1091,6 +1091,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// history of suggested songs by a user
+        /// </summary>
+        [HttpGet]
+        [Route("song/user/stats/{userId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ReviewSongs)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserSongSuggestionsHistory))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> GetUserSongsSuggestionsStatistics(Guid userId)
+        {
+            var res =
+                await _ganjoorService.GetUserSongsSuggestionsStatistics(userId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// review song
         /// </summary>
         /// <param name="song"></param>
