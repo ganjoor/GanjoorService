@@ -1160,6 +1160,9 @@ namespace RSecurityBackend.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> KickOutUserAsync([FromBody] UserCauseViewModel userCause)
         {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            if (loggedOnUserId == userCause.UserId)
+                return BadRequest("loggedOnUserId == userCause.UserId!");
             RServiceResult<PublicRAppUser> userInfo = await _appUserService.GetUserInformation(userCause.UserId);
             if (userInfo.Result == null)
             {
@@ -1170,6 +1173,7 @@ namespace RSecurityBackend.Controllers
 
             await _appUserService.BanUserFromSigningUpAgainAsync(userCause.UserId, userCause.Cause);
             await _appUserService.DeleteUser(userCause.UserId);
+            
 
             try
             {

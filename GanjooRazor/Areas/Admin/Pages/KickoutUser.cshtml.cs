@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +10,7 @@ using RSecurityBackend.Models.Auth.ViewModels;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class KickoutUserModel : PageModel
     {
         public PublicRAppUser UserInfo { get; set; }
@@ -19,6 +19,9 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// Last Error
         /// </summary>
         public string LastResult { get; set; }
+
+        [BindProperty]
+        public UserCauseViewModel UserCauseViewModel { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -30,6 +33,12 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if (userInfoResponse.IsSuccessStatusCode)
                     {
                         UserInfo = JsonConvert.DeserializeObject<PublicRAppUser>(await userInfoResponse.Content.ReadAsStringAsync());
+
+                        UserCauseViewModel = new UserCauseViewModel()
+                        {
+                            UserId = (Guid)UserInfo.Id,
+                            Cause = "ارسال اسپم در حاشیه‌ها"
+                        };
                     }
                     else
                     {
@@ -40,6 +49,25 @@ namespace GanjooRazor.Areas.Admin.Pages
                 {
                     LastResult = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
                 }
+            }
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            LastResult = "";
+            using (HttpClient secureClient = new HttpClient())
+            {
+                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
+
+
+                HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/users/kickout", new StringContent(JsonConvert.SerializeObject(UserCauseViewModel), Encoding.UTF8, "application/json"));
+                response.EnsureSuccessStatusCode();
+
+
+                LastResult = "کاربر حذف شد.";
+
+                return Page();
+
             }
         }
     }
