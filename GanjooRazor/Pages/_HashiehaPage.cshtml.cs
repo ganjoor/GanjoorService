@@ -72,7 +72,7 @@ namespace GanjooRazor.Pages
                                 var administerOperation = userSecurableItem.Operations.Where(o => o.ShortName == SecurableItem.Administer).FirstOrDefault();
                                 if (administerOperation != null)
                                 {
-                                    canAdministerUsers = true;
+                                    canAdministerUsers = administerOperation.Status;
                                 }
                             }
                         }
