@@ -606,6 +606,25 @@ margin: 1px;
 
 #searchhorm input[type="submit"] { width:50px; }
 
+.bnum {
+    width: 50px !important;
+    height: 28px;
+    clear:right;
+    margin-left: -50px;
+}
+
+.n .bnum, .l .bnum {
+    margin-left: 0px;
+}
+
+.normalbnum{
+    float:right;
+}
+
+.bandnum {
+    margin: auto;
+}
+
 
 @media(max-width: 768px) {
     .b {
@@ -621,6 +640,14 @@ margin: 1px;
     }
 	.tooltip {
         font-size: 1.4em;
+    }
+
+    .bnum {
+        margin: auto;
+    }
+
+    .normalbnum {
+        float: none;
     }
 }
 

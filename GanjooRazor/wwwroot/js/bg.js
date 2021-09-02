@@ -1,4 +1,19 @@
+﻿function coupletNumImage(bnum, color) {
+    let canvas = document.createElement('canvas');
+    canvas.width = 50;
+    canvas.height = 28;
+    let context = canvas.getContext('2d');
+    context.font = "1.5em Vazir";
+    context.fillStyle = color;
+    context.textAlign = "center";
+    context.textBaseline = "top";
+    context.imageSmoothingEnabled = true;
+    context.fillText(bnum, canvas.width / 2, 7);
+    return canvas.toDataURL();
+}
+
 function btshmr() {
+    $("body").css("cursor", "progress");
     var bnum = getElements("bnum");
     if (bnum.length != 0) {
         for (var i = 0; i < bnum.length; ++i) {
@@ -7,6 +22,7 @@ function btshmr() {
             else
                 bnum[i].style.visibility = 'hidden';
         }
+        $("body").css("cursor", "default");
         return true;
     }
     var msr1s = getElements("m1", "b2", "n", "l");
@@ -15,17 +31,24 @@ function btshmr() {
     var k = 1;
     for (var i = 0; i < msr1s.length; ++i) {
         if (msr1s[i].className != "b2") {
-            msr1s[i].innerHTML = '<div class="bnum" style="float:right;color:red;"><p>' + bshfarsinum(String(j + 1)) + '</p></div>' + msr1s[i].innerHTML;
+            if (msr1s[i].className != "m1") {
+                msr1s[i].innerHTML = '<div class="bnum normalbnum" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;//no alt, so that when user copies text does not appear in the copied content
+            }
+            else {
+                msr1s[i].parentElement.innerHTML = '<div class="bnum normalbnum" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].parentElement.innerHTML;//no alt, so that when user copies text does not appear in the copied content
+            }
+            
+            document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage(bshfarsinum(String(j + 1)), "red") + ')';
             j++;
         }
         else {
-            if (i != msr1s.length - 1) {
-                msr1s[i].innerHTML = msr1s[i].innerHTML + '<div class="bnum" style="color:blue;"><p>' + bshfarsinum(String(k + 1)) + '</p></div>';
-                k++;
-                j = 0;
-            }
+            msr1s[i].innerHTML = '<div class="bnum bandnum" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;
+            document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage("بند " + bshfarsinum(String(k)), "blue") + ')';
+            k++;
+            j = 0;
         }
     }
+    $("body").css("cursor", "default");
     return true;
 }
 
