@@ -6,6 +6,13 @@
     ViewData["Title"] = "حذف کاربر";
 }
 
+@if (Model.UserInfo == null)
+{
+    <p>
+        @Model.LastResult
+    </p>
+}
+else
 @if (!string.IsNullOrEmpty(Model.LastResult))
 {
     <p>
