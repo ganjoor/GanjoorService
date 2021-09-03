@@ -8,60 +8,47 @@ Author:gozir.com
 @font-face {
     font-family: Vazir;
     src: url('Vazir-Regular.eot');
-    src: url('Vazir-Regular.eot?#iefix') format('embedded-opentype'),
-         url('Vazir-Regular.woff2') format('woff2'),
-         url('Vazir-Regular.woff') format('woff'),
-         url('Vazir-Regular.ttf') format('truetype');
+    src: url('Vazir-Regular.eot?#iefix') format('embedded-opentype'), url('Vazir-Regular.woff2') format('woff2'), url('Vazir-Regular.woff') format('woff'), url('Vazir-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
+
 @font-face {
     font-family: Vazir;
     src: url('Vazir-Bold.eot');
-    src: url('Vazir-Bold.eot?#iefix') format('embedded-opentype'),
-         url('Vazir-Bold.woff2') format('woff2'),
-         url('Vazir-Bold.woff') format('woff'),
-         url('Vazir-Bold.ttf') format('truetype');
+    src: url('Vazir-Bold.eot?#iefix') format('embedded-opentype'), url('Vazir-Bold.woff2') format('woff2'), url('Vazir-Bold.woff') format('woff'), url('Vazir-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
 }
+
 @font-face {
     font-family: Vazir;
     src: url('Vazir-Black.eot');
-    src: url('Vazir-Black.eot?#iefix') format('embedded-opentype'),
-         url('Vazir-Black.woff2') format('woff2'),
-         url('Vazir-Black.woff') format('woff'),
-         url('Vazir-Black.ttf') format('truetype');
+    src: url('Vazir-Black.eot?#iefix') format('embedded-opentype'), url('Vazir-Black.woff2') format('woff2'), url('Vazir-Black.woff') format('woff'), url('Vazir-Black.ttf') format('truetype');
     font-weight: 900;
     font-style: normal;
 }
+
 @font-face {
     font-family: Vazir;
     src: url('Vazir-Medium.eot');
-    src: url('Vazir-Medium.eot?#iefix') format('embedded-opentype'),
-         url('Vazir-Medium.woff2') format('woff2'),
-         url('Vazir-Medium.woff') format('woff'),
-         url('Vazir-Medium.ttf') format('truetype');
+    src: url('Vazir-Medium.eot?#iefix') format('embedded-opentype'), url('Vazir-Medium.woff2') format('woff2'), url('Vazir-Medium.woff') format('woff'), url('Vazir-Medium.ttf') format('truetype');
     font-weight: 500;
     font-style: normal;
 }
+
 @font-face {
     font-family: Vazir;
     src: url('Vazir-Light.eot');
-    src: url('Vazir-Light.eot?#iefix') format('embedded-opentype'),
-         url('Vazir-Light.woff2') format('woff2'),
-         url('Vazir-Light.woff') format('woff'),
-         url('Vazir-Light.ttf') format('truetype');
+    src: url('Vazir-Light.eot?#iefix') format('embedded-opentype'), url('Vazir-Light.woff2') format('woff2'), url('Vazir-Light.woff') format('woff'), url('Vazir-Light.ttf') format('truetype');
     font-weight: 300;
     font-style: normal;
 }
+
 @font-face {
     font-family: Vazir;
     src: url('Vazir-Thin.eot');
-    src: url('Vazir-Thin.eot?#iefix') format('embedded-opentype'),
-         url('Vazir-Thin.woff2') format('woff2'),
-         url('Vazir-Thin.woff') format('woff'),
-         url('Vazir-Thin.ttf') format('truetype');
+    src: url('Vazir-Thin.eot?#iefix') format('embedded-opentype'), url('Vazir-Thin.woff2') format('woff2'), url('Vazir-Thin.woff') format('woff'), url('Vazir-Thin.ttf') format('truetype');
     font-weight: 100;
     font-style: normal;
 }
@@ -110,17 +97,21 @@ h1 a img {
 
 #fa {
     direction: rtl;
-    font-family: Vazir;font-weight: 300;font-size: 1em;
+    font-family: Vazir;
+    font-weight: 300;
+    font-size: 1em;
     background: transparent url(/image/bk.gif) top center repeat scroll;
 }
 
-#fa a {
-    text-decoration: none;
-    color: #c44
-}
+    #fa a {
+        text-decoration: none;
+        color: #c44
+    }
 
 h2 {
-    font-family: Vazir;font-weight: bold;font-size: 1.2em;
+    font-family: Vazir;
+    font-weight: bold;
+    font-size: 1.2em;
     margin: 3px auto;
     color: #300
 }
@@ -143,7 +134,9 @@ form:after, form div:after {
 #hdr2 .actionbox {
     margin: 0;
     float: left;
-    font-family: Vazir;font-weight: 300;font-size: 1em;
+    font-family: Vazir;
+    font-weight: 300;
+    font-size: 1em;
 }
 
 #main, .sitem, .poem {
@@ -163,10 +156,10 @@ form:after, form div:after {
     padding: 3px;
 }
 
-.poem p {
-    text-indent: 20px;
-    text-align: justify;
-}
+    .poem p {
+        text-indent: 20px;
+        text-align: justify;
+    }
 
 #footer {
     max-width: 752px;
@@ -177,19 +170,19 @@ form:after, form div:after {
     clear: both
 }
 
-#footer ul {
-    list-style: none;
-    font-size: 0.8em
-}
+    #footer ul {
+        list-style: none;
+        font-size: 0.8em
+    }
 
-#footer li {
-    display: inline;
-    text-align: right
-}
+    #footer li {
+        display: inline;
+        text-align: right
+    }
 
-#footer li a {
-    display: inline
-}
+        #footer li a {
+            display: inline
+        }
 
 form {
     margin: 0;
@@ -203,7 +196,9 @@ label {
 }
 
 input, select, textarea {
-    font-family: Vazir;font-weight: 300;font-size: 0.8em;
+    font-family: Vazir;
+    font-weight: 300;
+    font-size: 0.8em;
     padding: 2px;
     text-align: right;
     color: #7f7f7f;
@@ -233,12 +228,14 @@ select {
     width: 100%;
 }
 
-#guides p {
-    text-indent: 20px;
-    margin: 5px 5px 5px 5px;
-    font-family: Vazir;font-weight: 300;font-size: 1em;
-    line-height: 24px
-}
+    #guides p {
+        text-indent: 20px;
+        margin: 5px 5px 5px 5px;
+        font-family: Vazir;
+        font-weight: 300;
+        font-size: 1em;
+        line-height: 24px
+    }
 
 .poet {
     display: inline-table;
@@ -246,20 +243,22 @@ select {
     margin-right: 1px;
 }
 
-.poet .caption {
-    display: block;
-    width: 100%;
-    font-family: Vazir;font-weight: 300;font-size: 0.8em;
-    text-align: center;
-    margin-right: 1px;
-}
+    .poet .caption {
+        display: block;
+        width: 100%;
+        font-family: Vazir;
+        font-weight: 300;
+        font-size: 0.8em;
+        text-align: center;
+        margin-right: 1px;
+    }
 
 .width-100per {
     width: 100%;
 }
 
-.text-align-center{
-    text-align:center;
+.text-align-center {
+    text-align: center;
 }
 
 .caption {
@@ -340,12 +339,15 @@ div.n, div.l {
     float: left;
 }
 
-.m1 p, .m2 p {
-    font-family: Vazir;font-weight: 300;font-size: 0.9em;font-style:normal;
-    text-indent: 0;
-    margin: 0;
-    line-height: 30px;
-}
+    .m1 p, .m2 p {
+        font-family: Vazir;
+        font-weight: 300;
+        font-size: 0.9em;
+        font-style: normal;
+        text-indent: 0;
+        margin: 0;
+        line-height: 30px;
+    }
 
 .m1 p {
     text-align: left;
@@ -363,8 +365,8 @@ div.n, div.l {
     padding-top: 20px;
 }
 
-.ganjoor-comment{
-    margin-right:20px;
+.ganjoor-comment {
+    margin-right: 20px;
 }
 
 .sit {
@@ -392,12 +394,14 @@ div.n, div.l {
     border: 2px solid #300;
 }
 
-.notice p {
-    color: #ffffe1;
-}
+    .notice p {
+        color: #ffffe1;
+    }
 
 #commentsp h3, #comments h3 {
-    font-family: Vazir;font-weight: 300;font-size: 0.9em;
+    font-family: Vazir;
+    font-weight: 300;
+    font-size: 0.9em;
     margin: 3px auto;
     color: #fff;
     text-align: center;
@@ -475,7 +479,11 @@ form div input.inputSubmit {
     color: #300
 }
 
-input[type="submit"] { padding:0px; text-align:center; background-color: #ccc}
+input[type="submit"] {
+    padding: 0px;
+    text-align: center;
+    background-color: #ccc
+}
 
 .lft {
     direction: ltr;
@@ -483,7 +491,9 @@ input[type="submit"] { padding:0px; text-align:center; background-color: #ccc}
 }
 
 table {
-    font-family: Vazir;font-weight: 300;font-size: 0.8em;
+    font-family: Vazir;
+    font-weight: 300;
+    font-size: 0.8em;
     border-collapse: collapse;
     max-width: 600px;
     margin: auto;
@@ -503,15 +513,15 @@ tr {
     background: #eee;
 }
 
-tr.h td {
-    border-top: 1px solid #fb7a31;
-    border-bottom: 1px solid #fb7a31;
-    background: #ffc;
-}
+    tr.h td {
+        border-top: 1px solid #fb7a31;
+        border-bottom: 1px solid #fb7a31;
+        background: #ffc;
+    }
 
-tr.e {
-    background: #fff;
-}
+    tr.e {
+        background: #fff;
+    }
 
 td.c1 {
     width: 50px;
@@ -543,6 +553,7 @@ td.c2 {
     top: 20px;
     left: -50px;
 }
+
 #abjad {
     background: url('/image/abjad.png') 0 0 no-repeat;
     width: 28px;
@@ -552,17 +563,18 @@ td.c2 {
     left: -50px;
 }
 
-#vazn{ background:url('/image/vazn.png') 0 0 no-repeat;
-	width:41px;
-	height:25px;
-	position:absolute;
-	top:0px; 
-	left:100px; 
+#vazn {
+    background: url('/image/vazn.png') 0 0 no-repeat;
+    width: 41px;
+    height: 25px;
+    position: absolute;
+    top: 0px;
+    left: 100px;
 }
 
 .poet-pic-wrap {
-    width:82px;
-    margin:auto;
+    width: 82px;
+    margin: auto;
 }
 
 .clearfix:after {
@@ -575,7 +587,7 @@ td.c2 {
 }
 
 #searchhorm {
-    margin:auto;
+    margin: auto;
     max-width: 500px;
 }
 
@@ -584,41 +596,44 @@ td.c2 {
     max-width: 150px;
 }
 
-#searchform input,
-#searchform select,
-#searchhorm input,
-#searchhorm select
- {
-    width: 150px;
-    margin: 3px 0;
-    padding: 4px;
-    float: left;
-    height: 30px;
-}
+    #searchform input,
+    #searchform select,
+    #searchhorm input,
+    #searchhorm select {
+        width: 150px;
+        margin: 3px 0;
+        padding: 4px;
+        float: left;
+        height: 30px;
+    }
 
 #searchhorm input,
 #searchhorm select,
-#searchhorm label
-{
-float: right;
-margin: 1px;
+#searchhorm label {
+    float: right;
+    margin: 1px;
 }
 
-#searchhorm input[type="submit"] { width:50px; }
+    #searchhorm input[type="submit"] {
+        width: 50px;
+    }
 
 .bnum {
     width: 50px !important;
     height: 28px;
-    clear:right;
+    clear: right;
     margin-left: -50px;
+    cursor: pointer;
 }
 
 .n .bnum, .l .bnum {
     margin-left: 0px;
 }
 
-.normalbnum{
-    float:right;
+.normalbnum {
+    float: right;
+    position: relative;
+    z-index: 10;
 }
 
 .bandnum {
@@ -630,15 +645,18 @@ margin: 1px;
     .b {
         margin-bottom: 15px;
     }
-    .b p {
-        text-align: center;
-        font-size: 1.4em;
-    }
-    .b > div {
-        width: 100%;
-        float: none;
-    }
-	.tooltip {
+
+        .b p {
+            text-align: center;
+            font-size: 1.4em;
+        }
+
+        .b > div {
+            width: 100%;
+            float: none;
+        }
+
+    .tooltip {
         font-size: 1.4em;
     }
 
@@ -647,51 +665,51 @@ margin: 1px;
     }
 
     .normalbnum {
-        float: none;
+        position: unset;
+        right: unset;
     }
 }
 
 .tooltip {
-        font-family: Vazir;
+    font-family: Vazir;
+}
+
+    .tooltip a {
+        border-radius: 10px;
+        height: 100%;
+        padding: 0.5em;
+        cursor: pointer;
+        color: white;
+        text-decoration: none;
     }
 
-.tooltip a {
-    border-radius: 10px;
-	height: 100%;
-	padding: 0.5em;
-    cursor: pointer;
-    color: white;
-    text-decoration: none;
-}
+        .tooltip a:hover {
+            background: rgba(59,68,75,0.9);
+        }
 
-.tooltip a:hover {
-    background: rgba(59,68,75,0.9);
-}
-
-.tooltip::before {
-    content: '';
-    display: block;
-    border-left: 0.5em solid transparent;
-    border-right: 0.5em solid transparent;
-    border-bottom: 0.5em solid rgba(14,17,17,0.9);
-    position: absolute;
-    top: 0;
-    margin-top: -0.5em;
-}
+    .tooltip::before {
+        content: '';
+        display: block;
+        border-left: 0.5em solid transparent;
+        border-right: 0.5em solid transparent;
+        border-bottom: 0.5em solid rgba(14,17,17,0.9);
+        position: absolute;
+        top: 0;
+        margin-top: -0.5em;
+    }
 
 .jp-video-270p {
     width: 100%;
 }
 
 ol {
- 	list-style-type: persian;
+    list-style-type: persian;
 }
 
-ol li {
-  margin-right: 2em;
-  float:right;
-
-}
+    ol li {
+        margin-right: 2em;
+        float: right;
+    }
 
 #login {
     height: 100%;
@@ -703,21 +721,21 @@ ol li {
     display: flex;
 }
 
-#login-container form {
-    margin: auto; /* nice thing of auto margin if display:flex; it center both horizontal and vertical :) */
-}
+    #login-container form {
+        margin: auto; /* nice thing of auto margin if display:flex; it center both horizontal and vertical :) */
+    }
 
-#login-container td {
-    border: 0;
-}
+    #login-container td {
+        border: 0;
+    }
 
-#login-container input {
-    direction: ltr;
-    text-align: left;
-}
+    #login-container input {
+        direction: ltr;
+        text-align: left;
+    }
 
-.alert-text{
-    color:red;
+.alert-text {
+    color: red;
 }
 
 /* The Modal (background) */
@@ -745,9 +763,9 @@ ol li {
 }
 
 
-.modal-content td {
-    border: none
-}
+    .modal-content td {
+        border: none
+    }
 
 
 /* The Close Button */
@@ -802,9 +820,9 @@ ol li {
     }
 }
 
-.loginImgContainer{
+.loginImgContainer {
 }
 
-.refComment{
-    width:90%
+.refComment {
+    width: 90%
 }

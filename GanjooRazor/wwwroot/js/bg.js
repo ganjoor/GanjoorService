@@ -1,67 +1,4 @@
-﻿function btshmr() {
-    setTimeout(function () { btshmr_internal(); }, 1);
-}
-
-function coupletNumImage(bnum, color) {
-    let canvas = document.createElement('canvas');
-    canvas.width = 50;
-    canvas.height = 28;
-    let context = canvas.getContext('2d');
-    context.font = "1.5em Vazir";
-    context.fillStyle = color;
-    context.textAlign = "center";
-    context.textBaseline = "top";
-    context.imageSmoothingEnabled = true;
-    context.fillText(bnum, canvas.width / 2, 7);
-    return canvas.toDataURL();
-}
-
-function btshmr_internal() {
-    var bnum = getElements("bnum");
-    if (bnum.length != 0) {
-        for (var i = 0; i < bnum.length; ++i) {
-            if (bnum[i].style.visibility == 'hidden')
-                bnum[i].style.visibility = 'visible';
-            else
-                bnum[i].style.visibility = 'hidden';
-        }
-        return true;
-    }
-    var msr1s = getElements("m1", "b2", "n", "l");
-    if (msr1s.length == 0) return true;
-    var j = 0;
-    var k = 1;
-    for (var i = 0; i < msr1s.length; ++i) {
-        if (msr1s[i].className != "b2") {
-            if (msr1s[i].className != "m1") {
-                msr1s[i].innerHTML = '<div class="bnum normalbnum" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;//no alt, so that when user copies text does not appear in the copied content
-            }
-            else {
-                msr1s[i].parentElement.innerHTML = '<div class="bnum normalbnum" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].parentElement.innerHTML;//no alt, so that when user copies text does not appear in the copied content
-            }
-            
-            document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage(bshfarsinum(String(j + 1)), "red") + ')';
-            j++;
-        }
-        else {
-            msr1s[i].innerHTML = '<div class="bnum bandnum" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;
-            document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage("بند " + bshfarsinum(String(k)), "blue") + ')';
-            k++;
-            j = 0;
-        }
-    }
-    return true;
-}
-
-
-function bshfarsinum(englishnum) {
-    var result = "";
-    for (var i = 0; i < englishnum.length; i++) {
-        result = result + String.fromCharCode(englishnum.charCodeAt(i) + 0x6C0);
-    }
-    return result;
-}
-// From David Flanagan's "JavaScript: The Definitive Guide" 5th Ed,
+﻿// From David Flanagan's "JavaScript: The Definitive Guide" 5th Ed,
 //   http://www.davidflanagan.com/javascript5/display.php?n=15-4&f=15/04.js
 //modified 4 ganjoor a little bit
 
@@ -93,6 +30,82 @@ function getElements(classname, classname2, classname3, classname4, tagname, roo
     return elements;
 
 }
+
+function bnumClick(index) {
+    var msr1s = getElements("m1", "b2", "n", "l");
+    if (msr1s.length <= index) return;
+    alert(msr1s[index].innerHTML);
+}
+
+function coupletNumImage(bnum, color) {
+    let canvas = document.createElement('canvas');
+    canvas.width = 50;
+    canvas.height = 28;
+    let context = canvas.getContext('2d');
+    context.font = "1.5em Vazir";
+    context.fillStyle = color;
+    context.textAlign = "center";
+    context.textBaseline = "top";
+    context.imageSmoothingEnabled = true;
+    context.fillText(bnum, canvas.width / 2, 7);
+    return canvas.toDataURL();
+}
+
+function bshfarsinum(englishnum) {
+    var result = "";
+    for (var i = 0; i < englishnum.length; i++) {
+        result = result + String.fromCharCode(englishnum.charCodeAt(i) + 0x6C0);
+    }
+    return result;
+}
+
+
+
+function btshmr_internal() {
+    var bnum = getElements("bnum");
+    if (bnum.length != 0) {
+        for (var i = 0; i < bnum.length; ++i) {
+            if (bnum[i].style.visibility == 'hidden')
+                bnum[i].style.visibility = 'visible';
+            else
+                bnum[i].style.visibility = 'hidden';
+        }
+        return true;
+    }
+    var msr1s = getElements("m1", "b2", "n", "l");
+    if (msr1s.length == 0) return true;
+    var j = 0;
+    var k = 1;
+    for (var i = 0; i < msr1s.length; ++i) {
+        if (msr1s[i].className != "b2") {
+            if (msr1s[i].className != "m1") {
+                msr1s[i].innerHTML = '<div class="bnum normalbnum" onclick="bnumClick(' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;//no alt, so that when user copies text does not appear in the copied content
+            }
+            else {
+                msr1s[i].parentElement.innerHTML = '<div class="bnum normalbnum" onclick="bnumClick(' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].parentElement.innerHTML;//no alt, so that when user copies text does not appear in the copied content
+            }
+            
+            document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage(bshfarsinum(String(j + 1)), "red") + ')';
+            j++;
+        }
+        else {
+            msr1s[i].innerHTML = '<div class="bnum bandnum" onclick="bnumClick(' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;
+            document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage("بند " + bshfarsinum(String(k)), "blue") + ')';
+            k++;
+            j = 0;
+        }
+    }
+    return true;
+}
+
+function btshmr() {
+    setTimeout(function () { btshmr_internal(); }, 1);
+}
+
+
+
+
+
 
 function hilightverse(vnum, clr, sc, forceScroll) {
     var root = document;
