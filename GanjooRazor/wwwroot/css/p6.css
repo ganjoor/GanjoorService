@@ -642,7 +642,7 @@ margin: 1px;
         font-size: 1.4em;
     }
 
-    .bnum {
+    .bnum, .n .bnum, .l .bnum {
         margin: auto;
     }
 

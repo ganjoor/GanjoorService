@@ -1,4 +1,8 @@
-﻿function coupletNumImage(bnum, color) {
+﻿function btshmr() {
+    setTimeout(function () { btshmr_internal(); }, 1);
+}
+
+function coupletNumImage(bnum, color) {
     let canvas = document.createElement('canvas');
     canvas.width = 50;
     canvas.height = 28;
@@ -12,8 +16,7 @@
     return canvas.toDataURL();
 }
 
-function btshmr() {
-    $("body").css("cursor", "progress");
+function btshmr_internal() {
     var bnum = getElements("bnum");
     if (bnum.length != 0) {
         for (var i = 0; i < bnum.length; ++i) {
@@ -22,7 +25,6 @@ function btshmr() {
             else
                 bnum[i].style.visibility = 'hidden';
         }
-        $("body").css("cursor", "default");
         return true;
     }
     var msr1s = getElements("m1", "b2", "n", "l");
@@ -48,7 +50,6 @@ function btshmr() {
             j = 0;
         }
     }
-    $("body").css("cursor", "default");
     return true;
 }
 
