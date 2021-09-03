@@ -34,7 +34,15 @@ function getElements(classname, classname2, classname3, classname4, tagname, roo
 function bnumClick(index) {
     var msr1s = getElements("m1", "b2", "n", "l");
     if (msr1s.length <= index) return;
-    alert(msr1s[index].innerHTML);
+    var divId = 'bnumpanel' + String(index);
+    var existingDiv = document.getElementById(divId);
+    if (existingDiv != null) {
+        existingDiv.remove();
+        return;
+    }
+    var divParent = msr1s[index].className == "m1" ? msr1s[index].parentElement : msr1s[index];
+    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="' + divId + '"><p>سلام</p></div>';
+    
 }
 
 function coupletNumImage(bnum, color) {
@@ -65,13 +73,12 @@ function btshmr_internal() {
     var bnum = getElements("bnum");
     if (bnum.length != 0) {
         for (var i = 0; i < bnum.length; ++i) {
-            if (bnum[i].style.visibility == 'hidden')
-                bnum[i].style.visibility = 'visible';
-            else
-                bnum[i].style.visibility = 'hidden';
+            bnum[i].remove();
         }
+        document.getElementById("bnum-button").innerText = "شماره‌گذاری ابیات";
         return true;
     }
+    document.getElementById("bnum-button").innerText = "حذف شماره‌ها";
     var msr1s = getElements("m1", "b2", "n", "l");
     if (msr1s.length == 0) return true;
     var j = 0;

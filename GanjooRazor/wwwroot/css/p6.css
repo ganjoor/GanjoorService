@@ -640,6 +640,11 @@ td.c2 {
     margin: auto;
 }
 
+.bnumdiv {
+    clear: both;
+    background: transparent url(/image/cbk.jpg) top center repeat scroll;
+}
+
 
 @media(max-width: 768px) {
     .b {
