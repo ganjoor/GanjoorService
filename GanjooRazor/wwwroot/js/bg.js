@@ -75,6 +75,10 @@ function btshmr_internal() {
         for (var i = 0; i < bnum.length; ++i) {
             bnum[i].remove();
         }
+        var bnumdiv = getElements("bnumdiv");
+        for (var i = 0; i < bnumdiv.length; ++i) {
+            bnumdiv[i].remove();
+        }
         document.getElementById("bnum-button").innerText = "شماره‌گذاری ابیات";
         return true;
     }

@@ -375,7 +375,7 @@ div.n, div.l {
     max-width: 508px
 }
 
-#comments, #profile {
+#comments, #profile, .bnumdiv {
     margin: 20px auto 6px;
     display: block;
     background: transparent url(/image/cbk.jpg) top center repeat scroll;
@@ -638,11 +638,6 @@ td.c2 {
 
 .bandnum {
     margin: auto;
-}
-
-.bnumdiv {
-    clear: both;
-    background: transparent url(/image/cbk.jpg) top center repeat scroll;
 }
 
 
