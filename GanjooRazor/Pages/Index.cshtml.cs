@@ -181,6 +181,8 @@ namespace GanjooRazor.Pages
             return await OnPostComment(replyCommentText, refPoemId, refCommentId);
         }
 
+        
+
         /// <summary>
         /// comment
         /// </summary>
@@ -634,6 +636,19 @@ namespace GanjooRazor.Pages
 
             
             return Page();
+        }
+
+
+        public async Task<ActionResult> OnGetBNumPartialAsync()
+        {
+            return new PartialViewResult()
+            {
+                ViewName = "_BNumPartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _BNumPartialModel()
+                }
+            };
         }
     }
 }

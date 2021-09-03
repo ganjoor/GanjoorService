@@ -41,7 +41,15 @@ function bnumClick(index) {
         return;
     }
     var divParent = msr1s[index].className == "m1" ? msr1s[index].parentElement : msr1s[index];
-    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="' + divId + '"><p>سلام</p></div>';
+    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="' + divId + '"></div>';
+    $.ajax({
+        type: "GET",
+        url: '?Handler=BNumPartial',
+        success: function (data) {
+            var divId = 'bnumpanel' + String(index);
+            $(data).appendTo(document.getElementById(divId));
+        },
+    });
     
 }
 
