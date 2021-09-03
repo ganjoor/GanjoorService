@@ -58,7 +58,7 @@ namespace RMuseum.Services.Implementation
                        .Replace("،", "")//virgool
                        .Replace("!", "")
                        .Replace("؟", "")
-                       .Replace("ٔ", "")
+                       .Replace("ٔ", "")//ye
                        .Replace(":", "")
                        .Replace("ئ", "ی")
                        .Replace("؛", "")
@@ -66,6 +66,8 @@ namespace RMuseum.Services.Implementation
                        .Replace("*", "")
                        .Replace(")", "")
                        .Replace("(", "")
+                       .Replace("[", "")
+                       .Replace("]", "")
                        .Replace("\"", "")
                        .Replace("'", "")
                        .Replace("«", "")
