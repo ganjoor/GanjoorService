@@ -164,8 +164,8 @@
             window.open(macagna, '_blank', 'width=600,height=700,scrollbars=yes,status=yes');
         }
 
-        function postComment(parent) {
-            $("#commentform").unbind('submit').bind('submit', function (e) {
+        function postComment(parent, commentformSelector, commentErrorSelector) {
+            $(commentformSelector).unbind('submit').bind('submit', function (e) {
 
                 e.preventDefault(); // avoid to execute the actual submit of the form.
 
@@ -180,7 +180,7 @@
                     data: form.serialize(), // serializes the form's elements.
                     success: function (data) {
                         $(data).appendTo(parent);
-                        $("#commentform")[0].reset();
+                        $(commentErrorSelector)[0].reset();
                     },
                 });
 
