@@ -31,7 +31,7 @@ function getElements(classname, classname2, classname3, classname4, tagname, roo
 
 }
 
-function bnumClick(index) {
+function bnumClick(poemId, index) {
     var msr1s = getElements("m1", "b2", "n", "l");
     if (msr1s.length <= index) return;
     var divId = 'bnumpanel' + String(index);
@@ -44,7 +44,7 @@ function bnumClick(index) {
     divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="' + divId + '"></div>';
     $.ajax({
         type: "GET",
-        url: '?Handler=BNumPartial',
+        url: '?Handler=BNumPartial&poemId=' + String(poemId) + '&coupletIndex=' + String(index),
         success: function (data) {
             var divId = 'bnumpanel' + String(index);
             $(data).appendTo(document.getElementById(divId));
@@ -77,7 +77,7 @@ function bshfarsinum(englishnum) {
 
 
 
-function btshmr_internal() {
+function btshmr_internal(poemId) {
     var bnum = getElements("bnum");
     if (bnum.length != 0) {
         for (var i = 0; i < bnum.length; ++i) {
@@ -98,17 +98,17 @@ function btshmr_internal() {
     for (var i = 0; i < msr1s.length; ++i) {
         if (msr1s[i].className != "b2") {
             if (msr1s[i].className != "m1") {
-                msr1s[i].innerHTML = '<div class="bnum normalbnum" onclick="bnumClick(' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;//no alt, so that when user copies text does not appear in the copied content
+                msr1s[i].innerHTML = '<div class="bnum normalbnum" onclick="bnumClick(' + String(poemId) + ',' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;//no alt, so that when user copies text does not appear in the copied content
             }
             else {
-                msr1s[i].parentElement.innerHTML = '<div class="bnum normalbnum" onclick="bnumClick(' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].parentElement.innerHTML;//no alt, so that when user copies text does not appear in the copied content
+                msr1s[i].parentElement.innerHTML = '<div class="bnum normalbnum" onclick="bnumClick(' + String(poemId) + ',' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].parentElement.innerHTML;//no alt, so that when user copies text does not appear in the copied content
             }
             
             document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage(bshfarsinum(String(j + 1)), "red") + ')';
             j++;
         }
         else {
-            msr1s[i].innerHTML = '<div class="bnum bandnum" onclick="bnumClick(' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;
+            msr1s[i].innerHTML = '<div class="bnum bandnum" onclick="bnumClick(' + String(poemId) + ',' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;
             document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage("بند " + bshfarsinum(String(k)), "blue") + ')';
             k++;
             j = 0;
@@ -117,12 +117,9 @@ function btshmr_internal() {
     return true;
 }
 
-function btshmr() {
-    setTimeout(function () { btshmr_internal(); }, 1);
+function btshmr(poemId) {
+    setTimeout(function () { btshmr_internal(poemId); }, 1);
 }
-
-
-
 
 
 

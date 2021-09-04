@@ -313,7 +313,7 @@
                                 <small>🖰 با دو بار کلیک روی واژه‌ها یا انتخاب متن و کلیک روی آنها می‌توانید آنها را در لغتنامهٔ دهخدا جستجو کنید.</small>
                             </p>
                             <p>
-                                <small>🖐 <a role="button" onclick="btshmr()" class="actionlink" id="bnum-button">حذف شماره‌ها</a></small>
+                                <small>🖐 <a role="button" onclick="btshmr(@Model.GanjoorPage.Id)" class="actionlink" id="bnum-button">حذف شماره‌ها</a></small>
                                 @if (Model.GanjoorPage.Poem.GanjoorMetre != null)
                                 {
                                     <text>| <small>وزن: <a href="@Html.Raw($"/vazn/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@Html.Raw(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)</a></small></text>

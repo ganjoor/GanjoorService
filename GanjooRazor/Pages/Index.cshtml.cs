@@ -639,7 +639,7 @@ namespace GanjooRazor.Pages
         }
 
 
-        public async Task<ActionResult> OnGetBNumPartialAsync()
+        public async Task<ActionResult> OnGetBNumPartialAsync(int poemId, int coupletIndex)
         {
             return new PartialViewResult()
             {
@@ -647,6 +647,11 @@ namespace GanjooRazor.Pages
                 ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
                 {
                     Model = new _BNumPartialModel()
+                    {
+                        PoemId = poemId,
+                        CoupletIndex = coupletIndex,
+                        LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"])
+                    }
                 }
             };
         }
