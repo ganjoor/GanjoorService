@@ -178,7 +178,7 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnPostReply(string replyCommentText, int refPoemId, int refCommentId)
         {
-            return await OnPostComment(replyCommentText, refPoemId, refCommentId);
+            return await OnPostComment(replyCommentText, refPoemId, refCommentId, 0);
         }
 
         
@@ -189,8 +189,9 @@ namespace GanjooRazor.Pages
         /// <param name="comment"></param>
         /// <param name="poemId"></param>
         /// <param name="inReplytoId"></param>
+        /// <param name="coupletIndex"></param>
         /// <returns></returns>
-        public async Task<ActionResult> OnPostComment(string comment, int poemId, int inReplytoId)
+        public async Task<ActionResult> OnPostComment(string comment, int poemId, int inReplytoId, int coupletIndex)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -204,7 +205,8 @@ namespace GanjooRazor.Pages
                             {
                                 HtmlComment = comment,
                                 InReplyToId = inReplytoId == 0 ? null : inReplytoId,
-                                PoemId = poemId
+                                PoemId = poemId,
+                                CoupletIndex = coupletIndex == -1 ? null : coupletIndex
                             }
                         ),
                         Encoding.UTF8, "application/json");

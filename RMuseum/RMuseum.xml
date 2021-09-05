@@ -5449,6 +5449,11 @@
             in reply to
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentPostViewModel.CoupletIndex">
+            <summary>
+            couplet index - send null for unrelated to a couplet comment
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel">
             <summary>
             GanjoorComment Summary View Model

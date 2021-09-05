@@ -19,5 +19,10 @@
         /// in reply to
         /// </summary>
         public int? InReplyToId { get; set; }
+
+        /// <summary>
+        /// couplet index - send null for unrelated to a couplet comment
+        /// </summary>
+        public int? CoupletIndex { get; set; }
     }
 }
