@@ -78,5 +78,25 @@ namespace RMuseum.Models.Ganjoor
         /// publish status
         /// </summary>
         public PublishStatus Status { get; set; }
+
+        /// <summary>
+        /// related verse 1 Id
+        /// </summary>
+        public int? Verse1Id { get; set; }
+
+        /// <summary>
+        /// related verse 1
+        /// </summary>
+        public virtual GanjoorVerse Verse1 { get; set; }
+
+        /// <summary>
+        /// related verse 2 Id
+        /// </summary>
+        public int? Verse12d { get; set; }
+
+        /// <summary>
+        /// related verse 2
+        /// </summary>
+        public virtual GanjoorVerse Verse2 { get; set; }
     }
 }

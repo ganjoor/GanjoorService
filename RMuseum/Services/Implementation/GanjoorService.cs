@@ -583,8 +583,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="poemId"></param>
         /// <param name="content"></param>
         /// <param name="inReplyTo"></param>
+        /// <param name="coupletIndex"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorCommentSummaryViewModel>> NewComment(Guid userId, string ip, int poemId, string content, int? inReplyTo)
+        public async Task<RServiceResult<GanjoorCommentSummaryViewModel>> NewComment(Guid userId, string ip, int poemId, string content, int? inReplyTo, int? coupletIndex)
         {
             if (string.IsNullOrEmpty(content))
             {
@@ -598,6 +599,46 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "لطفاً با مراجعه به پیشخان کاربری (دکمهٔ گوشهٔ پایین سمت چپ) «نام مستعار» خود را مشخص کنید و سپس اقدام به ارسال حاشیه بفرمایید.");
             }
 
+            int? Verse1Id = null;
+            int? Verse2Id = null;
+            if (coupletIndex != null)
+            {
+                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
+                int cIndex = -1;
+                for (int i = 0; i < verses.Count; i++)
+                {
+                    if (verses[i].VersePosition != VersePosition.Left && verses[i].VersePosition != VersePosition.CenteredVerse2)
+                        cIndex++;
+                    if (cIndex == coupletIndex)
+                    {
+                        Verse1Id = verses[i].Id;
+                        if (verses[i].VersePosition == VersePosition.Right)
+                        {
+                            if (i < verses.Count - 2)
+                                Verse2Id = verses[i + 1].Id;
+                        }
+                        if (verses[i].VersePosition == VersePosition.CenteredVerse1)
+                        {
+                            if (i < verses.Count - 2)
+                            {
+                                if (verses[i + 1].VersePosition == VersePosition.CenteredVerse2)
+                                    Verse2Id = verses[i + 1].Id;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                if (inReplyTo != null)
+                {
+                    GanjoorComment refComment = await _context.GanjoorComments.Where(c => c.Id == (int)inReplyTo).SingleAsync();
+                    Verse1Id = refComment.Verse1Id;
+                    Verse2Id = refComment.Verse12d;
+                }
+            }
+
             content = content.ApplyCorrectYeKe();
 
             GanjoorComment comment = new GanjoorComment()
@@ -609,6 +650,8 @@ namespace RMuseum.Services.Implementation
                 InReplyToId = inReplyTo,
                 PoemId = poemId,
                 Status = PublishStatus.Published,
+                Verse1Id = Verse1Id,
+                Verse12d = Verse2Id
             };
             _context.GanjoorComments.Add(comment);
             await _context.SaveChangesAsync();

@@ -256,8 +256,9 @@ namespace RMuseum.Services
         /// <param name="poemId"></param>
         /// <param name="content"></param>
         /// <param name="inReplyTo"></param>
+        /// <param name="coupletIndex"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorCommentSummaryViewModel>> NewComment(Guid userId, string ip, int poemId, string content, int? inReplyTo);
+        Task<RServiceResult<GanjoorCommentSummaryViewModel>> NewComment(Guid userId, string ip, int poemId, string content, int? inReplyTo, int? coupletIndex);
 
         /// <summary>
         /// update user's own comment

@@ -1284,7 +1284,7 @@ namespace RMuseum.Controllers
             }
 
             var res =
-                await _ganjoorService.NewComment(userId, clientIPAddress, comment.PoemId, comment.HtmlComment, comment.InReplyToId);
+                await _ganjoorService.NewComment(userId, clientIPAddress, comment.PoemId, comment.HtmlComment, comment.InReplyToId, comment.CoupletIndex);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

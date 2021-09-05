@@ -4375,6 +4375,26 @@
             publish status
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Verse1Id">
+            <summary>
+            related verse 1 Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Verse1">
+            <summary>
+            related verse 1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Verse12d">
+            <summary>
+            related verse 2 Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Verse2">
+            <summary>
+            related verse 2
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport">
             <summary>
             Comment Abuse Report
@@ -7822,7 +7842,7 @@
             <param name="song"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.NewComment(System.Guid,System.String,System.Int32,System.String,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.IGanjoorService.NewComment(System.Guid,System.String,System.Int32,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
             <summary>
             new comment
             </summary>
@@ -7831,6 +7851,7 @@
             <param name="poemId"></param>
             <param name="content"></param>
             <param name="inReplyTo"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.EditMyComment(System.Guid,System.Int32,System.String)">
@@ -9249,7 +9270,7 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.NewComment(System.Guid,System.String,System.Int32,System.String,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.NewComment(System.Guid,System.String,System.Int32,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
             <summary>
             new comment
             </summary>
@@ -9258,6 +9279,7 @@
             <param name="poemId"></param>
             <param name="content"></param>
             <param name="inReplyTo"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.EditMyComment(System.Guid,System.Int32,System.String)">
