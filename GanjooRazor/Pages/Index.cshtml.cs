@@ -643,6 +643,11 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnGetBNumPartialAsync(int poemId, int coupletIndex)
         {
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments?coupletIndex={coupletIndex}");
+            response.EnsureSuccessStatusCode();
+
+            var comments = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCommentSummaryViewModel>>();
+
             return new PartialViewResult()
             {
                 ViewName = "_BNumPartial",
@@ -652,7 +657,8 @@ namespace GanjooRazor.Pages
                     {
                         PoemId = poemId,
                         CoupletIndex = coupletIndex,
-                        LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"])
+                        LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
+                        Comments = comments
                     }
                 }
             };

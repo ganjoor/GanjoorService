@@ -2,6 +2,10 @@
 @{
 }
 <div id="comments-block-@Model.CoupletIndex">
+    @foreach (var comment in Model.Comments)
+    {
+        <partial name="_CommentPartial" model=Model.GetCommentModel(comment) />
+    }
 </div>
 @if (Model.LoggedIn)
 {

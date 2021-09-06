@@ -528,15 +528,34 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="poemId"></param>
         /// <param name="userId"></param>
+        /// <param name="coupletIndex"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId)
+        public async Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex)
         {
+            int? Verse1Id = null;
+            if (coupletIndex != null)
+            {
+                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
+                int cIndex = -1;
+                for (int i = 0; i < verses.Count; i++)
+                {
+                    if (verses[i].VersePosition != VersePosition.Left && verses[i].VersePosition != VersePosition.CenteredVerse2)
+                        cIndex++;
+                    if (cIndex == coupletIndex)
+                    {
+                        Verse1Id = verses[i].Id;
+                        break;
+                    }
+                }
+            }
             var source =
                   from comment in _context.GanjoorComments.Include(c => c.User)
                   where
                   (comment.Status == PublishStatus.Published || (userId != Guid.Empty && comment.Status == PublishStatus.Awaiting && comment.UserId == userId))
                   &&
                   comment.PoemId == poemId
+                  &&
+                  ((Verse1Id == null) || (Verse1Id != null && comment.Verse1Id == Verse1Id))
                   orderby comment.CommentDate
                   select new GanjoorCommentSummaryViewModel()
                   {
@@ -1253,7 +1272,7 @@ namespace RMuseum.Services.Implementation
 
                 if (comments)
                 {
-                    var commentsRes = await GetPoemComments(id, Guid.Empty);
+                    var commentsRes = await GetPoemComments(id, Guid.Empty, null);
                     if (!string.IsNullOrEmpty(commentsRes.ExceptionString))
                         return new RServiceResult<GanjoorPoemCompleteViewModel>(null, commentsRes.ExceptionString);
                     poemComments = commentsRes.Result;

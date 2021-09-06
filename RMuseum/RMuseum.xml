@@ -914,6 +914,14 @@
             <param name="trackType"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemComments(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            Get Poem Comments
+            </summary>
+            <param name="id"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SuggestPoemCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
             <summary>
             send poem corrections
@@ -7731,6 +7739,15 @@
             <param name="trackType"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemComments(System.Int32,System.Guid,System.Nullable{System.Int32})">
+            <summary>
+            get poem comments
+            </summary>
+            <param name="poemId"></param>
+            <param name="userId"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestPoemCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
             <summary>
             send poem corrections
@@ -9262,12 +9279,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemComments(System.Int32,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemComments(System.Int32,System.Guid,System.Nullable{System.Int32})">
             <summary>
             get poem comments
             </summary>
             <param name="poemId"></param>
             <param name="userId"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.NewComment(System.Guid,System.String,System.Int32,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">

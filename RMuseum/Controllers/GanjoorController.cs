@@ -784,6 +784,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Get Poem Comments
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("poem/{id}/comments")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCommentSummaryViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemComments(int id, int? coupletIndex)
+        {
+            RServiceResult<GanjoorCommentSummaryViewModel[]> res =
+                await _ganjoorService.GetPoemComments(id, Guid.Empty, coupletIndex);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// send poem corrections
         /// </summary>
         /// <param name="correction"></param>
