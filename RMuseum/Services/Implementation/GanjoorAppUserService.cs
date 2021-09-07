@@ -264,6 +264,11 @@ namespace RMuseum.Services.Implementation
             string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
             var systemUserId = (Guid)(await FindUserByEmail(systemEmail)).Result.Id;
 
+            if(systemUserId == userId)
+            {
+                return new RServiceResult<bool>(false, "تلاش برای حذف کاربر سیستمی");
+            }
+
             var reviewedRecitations = await context.Recitations.Where(r => r.ReviewerId == userId).ToListAsync();
             foreach(var reviewedRecitation in reviewedRecitations)
                 reviewedRecitation.ReviewerId = systemUserId;
