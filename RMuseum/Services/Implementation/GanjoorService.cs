@@ -670,7 +670,8 @@ namespace RMuseum.Services.Implementation
                 PoemId = poemId,
                 Status = PublishStatus.Published,
                 Verse1Id = Verse1Id,
-                Verse12d = Verse2Id
+                Verse12d = Verse2Id,
+                CoupletIndex = coupletIndex
             };
             _context.GanjoorComments.Add(comment);
             await _context.SaveChangesAsync();

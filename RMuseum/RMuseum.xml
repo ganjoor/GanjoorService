@@ -4403,6 +4403,11 @@
             related verse 2
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.CoupletIndex">
+            <summary>
+            couplet index
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport">
             <summary>
             Comment Abuse Report

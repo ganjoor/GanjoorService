@@ -98,5 +98,10 @@ namespace RMuseum.Models.Ganjoor
         /// related verse 2
         /// </summary>
         public virtual GanjoorVerse Verse2 { get; set; }
+
+        /// <summary>
+        /// couplet index
+        /// </summary>
+        public int? CoupletIndex { get; set; }
     }
 }
