@@ -6,43 +6,48 @@
 
 @if (Model.Comment == null)
 {
-<div class="item" id="comment-error">
-    <p style="color:red">خطا</p>
-    @Html.Raw(Model.Error)
-</div>
+    <div class="item" id="comment-error">
+        <p style="color:red">خطا</p>
+        @Html.Raw(Model.Error)
+    </div>
 }
 else
 {
-<div class="ganjoor-comment" id="comment-@Model.Comment.Id">
-    @if (Model.Comment.UserId != null)
-    {
-        <p><a href="/hashieha/?userid=@Model.Comment.UserId">@(string.IsNullOrEmpty(Model.Comment.AuthorName) ? "#" : Model.Comment.AuthorName)</a> <small>در @Html.Raw($"{Model.Comment.CommentDate.ToFriendlyPersianDateTextify()}")</small> @Model.Wrote:</p>
-    }
-    else
-    {
-        <p>@(string.IsNullOrEmpty(Model.Comment.AuthorName) ? "ناشناس" : Model.Comment.AuthorName) <small>در @Html.Raw($"{Model.Comment.CommentDate.ToFriendlyPersianDateTextify()}")</small> @Model.Wrote:</p>
-    }
-
-    <blockquote id="comment-text-@Model.Comment.Id">
-        @Html.Raw(Model.Comment.HtmlComment)
-    </blockquote>
-    <p>
-        @if (Model.Comment.MyComment)
+    <div class="ganjoor-comment" id="comment-@Model.Comment.Id">
+        @if (Model.Comment.UserId != null)
         {
-            <a role="button" onclick="deleteMyComment(@Model.Comment.Id)" class="actionlink" title="حذف حاشیه">🗑</a>
-            <a role="button" onclick="editMyComment(@Model.Comment.Id)" class="actionlink" title="ویرایش حاشیه">✎</a>
+            <p><a href="/hashieha/?userid=@Model.Comment.UserId">@(string.IsNullOrEmpty(Model.Comment.AuthorName) ? "#" : Model.Comment.AuthorName)</a> <small>در @Html.Raw($"{Model.Comment.CommentDate.ToFriendlyPersianDateTextify()}")</small> @Model.Wrote:</p>
+        }
+        else
+        {
+            <p>@(string.IsNullOrEmpty(Model.Comment.AuthorName) ? "ناشناس" : Model.Comment.AuthorName) <small>در @Html.Raw($"{Model.Comment.CommentDate.ToFriendlyPersianDateTextify()}")</small> @Model.Wrote:</p>
         }
 
-        <a role="button" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"))" class="actionlink" title="پاسخگویی به این حاشیه">⤶</a>
-        <a href="/ReportComment/?CommentId=@Model.Comment.Id" onclick="wpopen(this.href); return false" class="comments-link" title="گزارش حاشیهٔ نامناسب">⚐</a>
-    </p>
-    <div class='spacer'>&nbsp;</div>
-    <hr />
-    @foreach (var reply in Model.Comment.Replies)
-    {
-        <partial name="_CommentPartial" model=Model.GetCommentModel(reply) />
-    }
-</div>
+        @if (Model.Comment.CoupletIndex != -1)
+        {
+            <div class="commentquote">@Model.Comment.CoupletSummary</div>
+        }
+
+        <blockquote id="comment-text-@Model.Comment.Id">
+            @Html.Raw(Model.Comment.HtmlComment)
+        </blockquote>
+        <p>
+            @if (Model.Comment.MyComment)
+            {
+                <a role="button" onclick="deleteMyComment(@Model.Comment.Id)" class="actionlink" title="حذف حاشیه">🗑</a>
+                <a role="button" onclick="editMyComment(@Model.Comment.Id)" class="actionlink" title="ویرایش حاشیه">✎</a>
+            }
+
+            <a role="button" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"))" class="actionlink" title="پاسخگویی به این حاشیه">⤶</a>
+            <a href="/ReportComment/?CommentId=@Model.Comment.Id" onclick="wpopen(this.href); return false" class="comments-link" title="گزارش حاشیهٔ نامناسب">⚐</a>
+        </p>
+        <div class='spacer'>&nbsp;</div>
+        <hr />
+        @foreach (var reply in Model.Comment.Replies)
+        {
+            <partial name="_CommentPartial" model=Model.GetCommentModel(reply) />
+        }
+    </div>
 }
 
 
