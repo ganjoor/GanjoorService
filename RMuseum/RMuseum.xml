@@ -5462,6 +5462,26 @@
             this can be used by clients
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.Verse1Id">
+            <summary>
+            verse1 id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.Verse2Id">
+            <summary>
+            verse2 id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.CoupletIndex">
+            <summary>
+            couplet index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.CoupletSummary">
+            <summary>
+            couplet summary
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentPostViewModel">
             <summary>
             new comment model

@@ -936,6 +936,9 @@ namespace RMuseum.Services.Implementation
                      HtmlComment = comment.HtmlComment,
                      PublishStatus = "",//invalid!
                      UserId = comment.UserId,
+                     CoupletIndex = comment.CoupletIndex == null ? -1 : (int)comment.CoupletIndex,
+                     Verse1Id = comment.Verse1Id == null ? -1 : (int)comment.Verse1Id,
+                     Verse2Id = comment.Verse12d == null ? -1 : (int)comment.Verse12d,
                      InReplyTo = comment.InReplyTo == null ? null :
                         new GanjoorCommentSummaryViewModel()
                         {
@@ -966,14 +969,20 @@ namespace RMuseum.Services.Implementation
             foreach (GanjoorCommentFullViewModel comment in paginatedResult.Items)
             {
                 comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
-                if(comment.InReplyTo != null)
+                string replyText = comment.Verse1Id == -1 ? "" : (await _context.GanjoorVerses.Where(v => v.Id == comment.Verse1Id).FirstAsync()).Text;
+                if (comment.Verse2Id != -1)
                 {
-                    string coupleText = comment.InReplyTo.Verse1Id == -1 ? "" : (await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse1Id).FirstAsync()).Text;
+                    replyText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.Verse2Id).FirstAsync()).Text}";
+                }
+                comment.CoupletSummary = replyText;
+                if (comment.InReplyTo != null)
+                {
+                    string replyCoupleText = comment.InReplyTo.Verse1Id == -1 ? "" : (await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse1Id).FirstAsync()).Text;
                     if(comment.InReplyTo.Verse2Id != -1)
                     {
-                        coupleText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse2Id).FirstAsync()).Text}";
+                        replyCoupleText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse2Id).FirstAsync()).Text}";
                     }
-                    comment.InReplyTo.CoupletSummary = coupleText;
+                    comment.InReplyTo.CoupletSummary = replyCoupleText;
                 }
             }
 
