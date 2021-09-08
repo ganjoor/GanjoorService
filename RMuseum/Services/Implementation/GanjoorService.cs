@@ -566,7 +566,10 @@ namespace RMuseum.Services.Implementation
                       HtmlComment = comment.HtmlComment,
                       PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
                       InReplyToId = comment.InReplyToId,
-                      UserId = comment.UserId
+                      UserId = comment.UserId,
+                      CoupletIndex = comment.CoupletIndex == null ? -1 : (int)comment.CoupletIndex,
+                      Verse1Id = comment.Verse1Id == null ? -1 : (int)comment.Verse1Id,
+                      Verse2Id = comment.Verse12d == null ? -1 : (int)comment.Verse12d
                   };
 
             GanjoorCommentSummaryViewModel[] allComments = await source.AsNoTracking().ToArrayAsync();
@@ -574,6 +577,12 @@ namespace RMuseum.Services.Implementation
             foreach (GanjoorCommentSummaryViewModel comment in allComments)
             {
                 comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
+                string coupleText = comment.Verse1Id == -1 ? "" : (await _context.GanjoorVerses.Where(v => v.Id == comment.Verse1Id).FirstAsync()).Text;
+                if (comment.Verse2Id != -1)
+                {
+                    coupleText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.Verse2Id).FirstAsync()).Text}";
+                }
+                comment.CoupletSummary = coupleText;
             }
 
             GanjoorCommentSummaryViewModel[] rootComments = allComments.Where(c => c.InReplyToId == null).ToArray();
@@ -618,6 +627,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "لطفاً با مراجعه به پیشخان کاربری (دکمهٔ گوشهٔ پایین سمت چپ) «نام مستعار» خود را مشخص کنید و سپس اقدام به ارسال حاشیه بفرمایید.");
             }
 
+            string coupletSummary = "";
             int? Verse1Id = null;
             int? Verse2Id = null;
             if (coupletIndex != null)
@@ -631,17 +641,24 @@ namespace RMuseum.Services.Implementation
                     if (cIndex == coupletIndex)
                     {
                         Verse1Id = verses[i].Id;
+                        coupletSummary = verses[i].Text;
                         if (verses[i].VersePosition == VersePosition.Right)
                         {
                             if (i < verses.Count - 2)
+                            {
                                 Verse2Id = verses[i + 1].Id;
+                                coupletSummary += $" {verses[i + 1].Text}"; 
+                            }
                         }
                         if (verses[i].VersePosition == VersePosition.CenteredVerse1)
                         {
                             if (i < verses.Count - 2)
                             {
                                 if (verses[i + 1].VersePosition == VersePosition.CenteredVerse2)
+                                {
                                     Verse2Id = verses[i + 1].Id;
+                                    coupletSummary += $" {verses[i + 1].Text}";
+                                }
                             }
                         }
                         break;
@@ -671,7 +688,7 @@ namespace RMuseum.Services.Implementation
                 Status = PublishStatus.Published,
                 Verse1Id = Verse1Id,
                 Verse12d = Verse2Id,
-                CoupletIndex = coupletIndex
+                CoupletIndex = coupletIndex,
             };
             _context.GanjoorComments.Add(comment);
             await _context.SaveChangesAsync();
@@ -709,9 +726,13 @@ namespace RMuseum.Services.Implementation
                     PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
                     InReplyToId = comment.InReplyToId,
                     UserId = comment.UserId,
-                    Replies = new GanjoorCommentSummaryViewModel[] { }
+                    Replies = new GanjoorCommentSummaryViewModel[] { },
+                    CoupletIndex = coupletIndex == null ? -1 : (int)coupletIndex,
+                    MyComment = true,
+                    Verse1Id = Verse1Id == null ? -1 : (int)Verse1Id,
+                    CoupletSummary = coupletSummary
                 }
-                );
+                ); ;
         }
 
         /// <summary>
@@ -915,7 +936,7 @@ namespace RMuseum.Services.Implementation
                      HtmlComment = comment.HtmlComment,
                      PublishStatus = "",//invalid!
                      UserId = comment.UserId,
-                     InReplayTo = comment.InReplyTo == null ? null :
+                     InReplyTo = comment.InReplyTo == null ? null :
                         new GanjoorCommentSummaryViewModel()
                         {
                             Id = comment.InReplyTo.Id,
@@ -924,7 +945,10 @@ namespace RMuseum.Services.Implementation
                             CommentDate = comment.InReplyTo.CommentDate,
                             HtmlComment = comment.InReplyTo.HtmlComment,
                             PublishStatus = "",
-                            UserId = comment.InReplyTo.UserId
+                            UserId = comment.InReplyTo.UserId,
+                            CoupletIndex = comment.InReplyTo.CoupletIndex == null ? -1 : (int)comment.InReplyTo.CoupletIndex,
+                            Verse1Id = comment.InReplyTo.Verse1Id == null ? -1 : (int)comment.InReplyTo.Verse1Id,
+                            Verse2Id = comment.InReplyTo.Verse12d == null ? -1 : (int)comment.InReplyTo.Verse12d
                         },
                      Poem = new GanjoorPoemSummaryViewModel()
                      {
@@ -942,6 +966,15 @@ namespace RMuseum.Services.Implementation
             foreach (GanjoorCommentFullViewModel comment in paginatedResult.Items)
             {
                 comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
+                if(comment.InReplyTo != null)
+                {
+                    string coupleText = comment.InReplyTo.Verse1Id == -1 ? "" : (await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse1Id).FirstAsync()).Text;
+                    if(comment.InReplyTo.Verse2Id != -1)
+                    {
+                        coupleText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse2Id).FirstAsync()).Text}";
+                    }
+                    comment.InReplyTo.CoupletSummary = coupleText;
+                }
             }
 
             return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>(paginatedResult);
@@ -1011,7 +1044,7 @@ namespace RMuseum.Services.Implementation
                          HtmlComment = comment.HtmlComment,
                          PublishStatus = "",//invalid!
                          UserId = comment.UserId,
-                         InReplayTo = comment.InReplyTo == null ? null :
+                         InReplyTo = comment.InReplyTo == null ? null :
                         new GanjoorCommentSummaryViewModel()
                         {
                             Id = comment.InReplyTo.Id,

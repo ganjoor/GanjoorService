@@ -111,7 +111,7 @@ namespace GanjooRazor.Pages
             foreach (var comment in comments)
             {
                 string commentAuthorLink = comment.UserId == null ? comment.AuthorName : $"<a href=\"/hashieha/?userid={comment.UserId}\">{comment.AuthorName}</a>";
-                string inReplyTo = comment.InReplayTo == null ? "" : $" در پاسخ به {comment.InReplayTo.AuthorName} ";
+                string inReplyTo = comment.InReplyTo == null ? "" : $" در پاسخ به {comment.InReplyTo.AuthorName} ";
                 htmlText += $"<p>{commentAuthorLink} <small>در {comment.CommentDate.ToFriendlyPersianDateTextify()}{inReplyTo}</small> دربارهٔ <a href=\"{comment.Poem.UrlSlug}#comment-{comment.Id}\">{comment.Poem.Title}</a>:</p>" + 
                     $"<blockquote>{comment.HtmlComment}{Environment.NewLine}" +
                     $"</blockquote>{Environment.NewLine}<div class='spacer'>&nbsp;</div><hr />{Environment.NewLine}";

@@ -43,7 +43,7 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// in reply to
         /// </summary>
 
-        public GanjoorCommentSummaryViewModel InReplayTo { get; set; }
+        public GanjoorCommentSummaryViewModel InReplyTo { get; set; }
 
         /// <summary>
         /// poem
