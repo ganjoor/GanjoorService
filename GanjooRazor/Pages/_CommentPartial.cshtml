@@ -34,7 +34,7 @@ else
         <p>
             @if (Model.Comment.MyComment)
             {
-                <a role="button" onclick="deleteMyComment(@Model.Comment.Id)" class="actionlink" title="حذف حاشیه">🗑</a>
+                <a role="button" onclick="deleteMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="actionlink" title="حذف حاشیه">🗑</a>
                 <a role="button" onclick="editMyComment(@Model.Comment.Id)" class="actionlink" title="ویرایش حاشیه">✎</a>
             }
 
