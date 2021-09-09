@@ -420,7 +420,7 @@
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <button name="postcomment" id="postcomment" class="inputSubmit" onclick="return postComment(document.getElementById('comments-block'), '#commentform');" style="width:100%">درج حاشیه</button>
+                                                    <button name="postcomment" id="postcomment" class="inputSubmit" onclick="return postComment(document.getElementById('comments-block'), '#commentform', '#comment-error');" style="width:100%">درج حاشیه</button>
                                                 </td>
                                             </tr>
                                         </table>
@@ -476,6 +476,7 @@
                                                     <textarea name="replyCommentText" id="replyCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
                                                     <input type="hidden" name="refPoemId" id="refPoemId" value="@Model.GanjoorPage.Id" />
                                                     <input type="hidden" name="refCommentId" id="refCommentId" value="" />
+                                                    <input type="hidden" name="refCommentDivSuffix" id="refCommentDivSuffix" value="" />
                                                 </td>
                                             </tr>
                                             <tr>

@@ -172,13 +172,14 @@ namespace GanjooRazor.Pages
                 Comment = comment,
                 Error = "",
                 InReplyTo = null,
-                LoggedIn = LoggedIn
+                LoggedIn = LoggedIn,
+                DivSuffix = ""
             };
         }
 
         public async Task<ActionResult> OnPostReply(string replyCommentText, int refPoemId, int refCommentId)
         {
-            return await OnPostComment(replyCommentText, refPoemId, refCommentId, 0);
+            return await OnPostComment(replyCommentText, refPoemId, refCommentId, -1);
         }
 
         
@@ -656,6 +657,7 @@ namespace GanjooRazor.Pages
                 comment.MyComment = comment.UserId == userId;
                 _markMyReplies(comment, userId);
             }
+
 
             return new PartialViewResult()
             {

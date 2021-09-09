@@ -38,7 +38,7 @@ else
                 <a role="button" onclick="editMyComment(@Model.Comment.Id)" class="actionlink" title="ویرایش حاشیه">✎</a>
             }
 
-            <a role="button" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"))" class="actionlink" title="پاسخگویی به این حاشیه">⤶</a>
+            <a role="button" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"), '@Model.DivSuffix')" class="actionlink" title="پاسخگویی به این حاشیه">⤶</a>
             <a href="/ReportComment/?CommentId=@Model.Comment.Id" onclick="wpopen(this.href); return false" class="comments-link" title="گزارش حاشیهٔ نامناسب">⚐</a>
         </p>
         <div class='spacer'>&nbsp;</div>

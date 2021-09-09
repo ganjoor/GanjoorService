@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
 {
@@ -36,11 +33,10 @@ namespace GanjooRazor.Pages
                 Comment = comment,
                 Error = "",
                 InReplyTo = null,
-                LoggedIn = LoggedIn
+                LoggedIn = LoggedIn,
+                DivSuffix = $"-{comment.CoupletIndex}"
             };
         }
-
-        
 
 
 

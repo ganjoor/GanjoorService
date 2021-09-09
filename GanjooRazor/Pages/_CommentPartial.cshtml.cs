@@ -31,7 +31,7 @@ namespace GanjooRazor.Pages
                 Error = "",
                 InReplyTo = Comment,
                 LoggedIn = LoggedIn,
-                DivSuffix = comment.CoupletIndex == -1 ? "" : $"-{comment.CoupletIndex.ToString()}"
+                DivSuffix = DivSuffix
             };
         }
        

@@ -1,5 +1,6 @@
 ﻿@model GanjooRazor.Pages._BNumPartialModel
 @{
+    Layout = null;
 }
 <div id="comments-block-@Model.CoupletIndex">
     @foreach (var comment in Model.Comments)
@@ -9,10 +10,9 @@
 </div>
 @if (Model.LoggedIn)
 {
-    <script src="/lib/tinymce/tinymce.min.js"></script>
     <script>
         tinymce.init({
-            selector: 'textarea.editor',
+            selector: 'textarea.editorbnum',
             language: 'fa_IR',
             menubar: false,
             plugins: 'link paste',
@@ -30,7 +30,7 @@
                 <tr>
                     <td>
                         <div class="required">
-                            <textarea name="comment" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                            <textarea name="comment" class="inputTextarea editorbnum" tabindex="4" rows="10" style="width:100%"></textarea>
                         </div>
                         <input type="hidden" name="poemId" value="@Model.PoemId" />
                         <input type="hidden" name="coupletIndex" value="@Model.CoupletIndex" />
@@ -46,7 +46,7 @@
 
     </form>
 
-    <div class="item" id="comment-error">
+    <div class="item" id="comment-error-@Model.CoupletIndex">
     </div>
 }
 else
