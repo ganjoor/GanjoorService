@@ -660,7 +660,7 @@ namespace RMuseum.Services.Implementation
                             if (i < verses.Count - 1)
                             {
                                 Verse2Id = verses[i + 1].Id;
-                                coupletSummary += $" {verses[i + 1].Text}"; 
+                                coupletSummary += $" {verses[i + 1].Text}";
                             }
                         }
                         if (verses[i].VersePosition == VersePosition.CenteredVerse1)
@@ -678,7 +678,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
             }
-         
+
             content = content.ApplyCorrectYeKe();
 
             GanjoorComment comment = new GanjoorComment()
@@ -694,6 +694,7 @@ namespace RMuseum.Services.Implementation
                 Verse12d = Verse2Id,
                 CoupletIndex = coupletIndex,
             };
+
             _context.GanjoorComments.Add(comment);
             await _context.SaveChangesAsync();
 
@@ -734,6 +735,7 @@ namespace RMuseum.Services.Implementation
                     CoupletIndex = coupletIndex == null ? -1 : (int)coupletIndex,
                     MyComment = true,
                     Verse1Id = Verse1Id == null ? -1 : (int)Verse1Id,
+                    Verse2Id = Verse2Id == null ? -1 : (int)Verse2Id,
                     CoupletSummary = _CutSummary(coupletSummary)
                 }
                 ); ;
@@ -1000,7 +1002,7 @@ namespace RMuseum.Services.Implementation
                 if (comment.InReplyTo != null)
                 {
                     string replyCoupleText = comment.InReplyTo.Verse1Id == -1 ? "" : (await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse1Id).FirstAsync()).Text;
-                    if(comment.InReplyTo.Verse2Id != -1)
+                    if (comment.InReplyTo.Verse2Id != -1)
                     {
                         replyCoupleText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse2Id).FirstAsync()).Text}";
                     }

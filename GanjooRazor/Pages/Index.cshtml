@@ -222,7 +222,7 @@
             });
         }
 
-        function deleteMyComment(commentId) {
+        function deleteMyComment(commentId, coupletIndex) {
             if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
                 return;
 
@@ -236,7 +236,15 @@
                 },
                 success: function () {
                     var commentBlockId = '#comment-' + commentId;
-                    $(commentBlockId).remove();
+                    if ($(commentBlockId) != null) {
+                        $(commentBlockId).remove();
+                    }
+                    if (coupletIndex != -1) {
+                        var bnumCommentBlockId = '#comment-' + commentId + "-" + coupletIndex;
+                        if ($(bnumCommentBlockId) != null) {
+                            $(bnumCommentBlockId).remove();
+                        }
+                    }
                 },
             });
 
