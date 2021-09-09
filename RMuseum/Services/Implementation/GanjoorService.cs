@@ -582,7 +582,7 @@ namespace RMuseum.Services.Implementation
                 {
                     coupleText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.Verse2Id).FirstAsync()).Text}";
                 }
-                comment.CoupletSummary = coupleText;
+                comment.CoupletSummary = _CutSummary(coupleText);
             }
 
             GanjoorCommentSummaryViewModel[] rootComments = allComments.Where(c => c.InReplyToId == null).ToArray();
@@ -644,7 +644,7 @@ namespace RMuseum.Services.Implementation
                         coupletSummary = verses[i].Text;
                         if (verses[i].VersePosition == VersePosition.Right)
                         {
-                            if (i < verses.Count - 2)
+                            if (i < verses.Count - 1)
                             {
                                 Verse2Id = verses[i + 1].Id;
                                 coupletSummary += $" {verses[i + 1].Text}"; 
@@ -652,7 +652,7 @@ namespace RMuseum.Services.Implementation
                         }
                         if (verses[i].VersePosition == VersePosition.CenteredVerse1)
                         {
-                            if (i < verses.Count - 2)
+                            if (i < verses.Count - 1)
                             {
                                 if (verses[i + 1].VersePosition == VersePosition.CenteredVerse2)
                                 {
@@ -730,9 +730,27 @@ namespace RMuseum.Services.Implementation
                     CoupletIndex = coupletIndex == null ? -1 : (int)coupletIndex,
                     MyComment = true,
                     Verse1Id = Verse1Id == null ? -1 : (int)Verse1Id,
-                    CoupletSummary = coupletSummary
+                    CoupletSummary = _CutSummary(coupletSummary)
                 }
                 ); ;
+        }
+
+        private string _CutSummary(string summary)
+        {
+            if (summary.Length > 50)
+            {
+                summary = summary.Substring(0, 30);
+                int n = summary.LastIndexOf(' ');
+                if (n >= 0)
+                {
+                    summary = summary.Substring(0, n) + " ...";
+                }
+                else
+                {
+                    summary += "...";
+                }
+            }
+            return summary;
         }
 
         /// <summary>
@@ -974,7 +992,7 @@ namespace RMuseum.Services.Implementation
                 {
                     replyText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.Verse2Id).FirstAsync()).Text}";
                 }
-                comment.CoupletSummary = replyText;
+                comment.CoupletSummary = _CutSummary(replyText);
                 if (comment.InReplyTo != null)
                 {
                     string replyCoupleText = comment.InReplyTo.Verse1Id == -1 ? "" : (await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse1Id).FirstAsync()).Text;
@@ -982,7 +1000,7 @@ namespace RMuseum.Services.Implementation
                     {
                         replyCoupleText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse2Id).FirstAsync()).Text}";
                     }
-                    comment.InReplyTo.CoupletSummary = replyCoupleText;
+                    comment.InReplyTo.CoupletSummary = _CutSummary(replyCoupleText);
                 }
             }
 

@@ -25,7 +25,7 @@ else
 
         @if (Model.Comment.CoupletIndex != -1)
         {
-            <div class="commentquote">@Model.Comment.CoupletSummary</div>
+            <div class="commentquote">دربارهٔ <a href="@($"#bnum{Model.Comment.CoupletIndex + 1}")">@Model.Comment.CoupletSummary</a></div>
         }
 
         <blockquote id="comment-text-@Model.Comment.Id">

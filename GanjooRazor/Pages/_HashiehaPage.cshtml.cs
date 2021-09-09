@@ -112,8 +112,9 @@ namespace GanjooRazor.Pages
             {
                 string commentAuthorLink = comment.UserId == null ? comment.AuthorName : $"<a href=\"/hashieha/?userid={comment.UserId}\">{comment.AuthorName}</a>";
                 string inReplyTo = comment.InReplyTo == null ? "" : $" در پاسخ به {comment.InReplyTo.AuthorName} ";
+                string coupletSummary = comment.CoupletIndex == -1 ? "" : $"<div class=\"commentquote\">{comment.CoupletSummary}</a></div>";
                 htmlText += $"<p>{commentAuthorLink} <small>در {comment.CommentDate.ToFriendlyPersianDateTextify()}{inReplyTo}</small> دربارهٔ <a href=\"{comment.Poem.UrlSlug}#comment-{comment.Id}\">{comment.Poem.Title}</a>:</p>" + 
-                    $"<blockquote>{comment.HtmlComment}{Environment.NewLine}" +
+                    $"{coupletSummary}<blockquote>{comment.HtmlComment}{Environment.NewLine}" +
                     $"</blockquote>{Environment.NewLine}<div class='spacer'>&nbsp;</div><hr />{Environment.NewLine}";
             }
 
