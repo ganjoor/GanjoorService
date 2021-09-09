@@ -38,7 +38,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <button name="postcomment" class="inputSubmit" onclick="return postComment('@Model.CoupletIndex');" style="width:100%">درج حاشیه</button>
+                        <button name="postcomment-@Model.CoupletIndex" id="postcomment-@Model.CoupletIndex" class="inputSubmit" onclick="return postComment('@Model.CoupletIndex', '#postcomment-@Model.CoupletIndex');" style="width:100%">درج حاشیه</button>
                     </td>
                 </tr>
             </table>

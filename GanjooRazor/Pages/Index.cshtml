@@ -164,7 +164,7 @@
             window.open(macagna, '_blank', 'width=600,height=700,scrollbars=yes,status=yes');
         }
 
-        function postComment(coupletIndex) {
+        function postComment(coupletIndex, buttonSelector) {
             var commentformSelector = '#commentform';
             if (coupletIndex != '') {
                 commentformSelector += ('-' + coupletIndex);
@@ -172,6 +172,9 @@
             $(commentformSelector).unbind('submit').bind('submit', function (e) {
 
                 e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                $(buttonSelector).text('در حال درج حاشیه ...');
+                $(buttonSelector).prop("disabled", true);
 
                 var commentErrorSelector = '#comment-error';
                 if (coupletIndex != '') {
@@ -183,7 +186,7 @@
                 var parent1 = $('#comments-block');
                 var parent2 = null;
                 if (coupletIndex != '') {
-                    parent2 = $('#comments-block-'+coupletIndex);
+                    parent2 = $('#comments-block-' + coupletIndex);
                 }
 
                 var form = $(this);
@@ -193,11 +196,17 @@
                     type: "POST",
                     url: url,
                     data: form.serialize(), // serializes the form's elements.
+                    error: function () {
+                        $(buttonSelector).text('درج حاشیه');
+                        $(buttonSelector).prop("disabled", false);
+                    },
                     success: function (data) {
                         $(data).appendTo(parent1);
                         if (parent2 != null)
                             $(data).appendTo(parent2);
-                        $(commentErrorSelector)[0].reset();
+                        $(buttonSelector).text('درج حاشیه');
+                        $(buttonSelector).prop("disabled", false);
+                        form[0].reset();
                     },
                 });
 
