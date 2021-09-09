@@ -633,7 +633,6 @@ td.c2 {
 .normalbnum {
     float: right;
     position: relative;
-    z-index: 10;
 }
 
 .bandnum {

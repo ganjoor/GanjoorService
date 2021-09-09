@@ -630,6 +630,19 @@ namespace RMuseum.Services.Implementation
             string coupletSummary = "";
             int? Verse1Id = null;
             int? Verse2Id = null;
+            if (inReplyTo != null)
+            {
+                GanjoorComment refComment = await _context.GanjoorComments.Where(c => c.Id == (int)inReplyTo).SingleAsync();
+                Verse1Id = refComment.Verse1Id;
+                Verse2Id = refComment.Verse12d;
+                coupletIndex = refComment.CoupletIndex;
+                coupletSummary = Verse1Id == null ? "" : (await _context.GanjoorVerses.Where(v => v.Id == (int)Verse1Id).FirstAsync()).Text;
+                if (Verse2Id != null)
+                {
+                    coupletSummary += $" {(await _context.GanjoorVerses.Where(v => v.Id == (int)Verse2Id).FirstAsync()).Text}";
+                }
+            }
+            else
             if (coupletIndex != null)
             {
                 var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
@@ -665,16 +678,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
             }
-            else
-            {
-                if (inReplyTo != null)
-                {
-                    GanjoorComment refComment = await _context.GanjoorComments.Where(c => c.Id == (int)inReplyTo).SingleAsync();
-                    Verse1Id = refComment.Verse1Id;
-                    Verse2Id = refComment.Verse12d;
-                }
-            }
-
+         
             content = content.ApplyCorrectYeKe();
 
             GanjoorComment comment = new GanjoorComment()

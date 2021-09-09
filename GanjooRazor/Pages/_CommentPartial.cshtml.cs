@@ -13,6 +13,8 @@ namespace GanjooRazor.Pages
 
         public bool LoggedIn { get; set; }
 
+        public string DivSuffix { get; set; }
+
         public string Wrote
         {
             get
@@ -28,11 +30,10 @@ namespace GanjooRazor.Pages
                 Comment = comment,
                 Error = "",
                 InReplyTo = Comment,
-                LoggedIn = LoggedIn
+                LoggedIn = LoggedIn,
+                DivSuffix = comment.CoupletIndex == -1 ? "" : $"-{comment.CoupletIndex.ToString()}"
             };
         }
-        public void OnGet()
-        {
-        }
+       
     }
 }

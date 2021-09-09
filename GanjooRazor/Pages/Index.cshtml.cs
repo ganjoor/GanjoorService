@@ -648,6 +648,15 @@ namespace GanjooRazor.Pages
 
             var comments = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCommentSummaryViewModel>>();
 
+            if (!string.IsNullOrEmpty(Request.Cookies["UserId"]))
+            if (Guid.TryParse(Request.Cookies["UserId"], out Guid userId))
+            if (userId != Guid.Empty)
+            foreach (GanjoorCommentSummaryViewModel comment in comments)
+            {
+                comment.MyComment = comment.UserId == userId;
+                _markMyReplies(comment, userId);
+            }
+
             return new PartialViewResult()
             {
                 ViewName = "_BNumPartial",

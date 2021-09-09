@@ -13,7 +13,7 @@
 }
 else
 {
-    <div class="ganjoor-comment" id="comment-@Model.Comment.Id">
+    <div class="ganjoor-comment" id="comment-@Model.Comment.Id@Model.DivSuffix">
         @if (Model.Comment.UserId != null)
         {
             <p><a href="/hashieha/?userid=@Model.Comment.UserId">@(string.IsNullOrEmpty(Model.Comment.AuthorName) ? "#" : Model.Comment.AuthorName)</a> <small>در @Html.Raw($"{Model.Comment.CommentDate.ToFriendlyPersianDateTextify()}")</small> @Model.Wrote:</p>
@@ -28,7 +28,7 @@ else
             <div class="commentquote">دربارهٔ <a href="@($"#bnum{Model.Comment.CoupletIndex + 1}")">@Model.Comment.CoupletSummary</a></div>
         }
 
-        <blockquote id="comment-text-@Model.Comment.Id">
+        <blockquote id="comment-text-@Model.Comment.Id@Model.DivSuffix">
             @Html.Raw(Model.Comment.HtmlComment)
         </blockquote>
         <p>
