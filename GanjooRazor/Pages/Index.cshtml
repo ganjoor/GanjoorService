@@ -231,6 +231,9 @@
 
                 e.preventDefault(); // avoid to execute the actual submit of the form.
 
+                $('#replycomment').text('در حال درج پاسخ به حاشیه ...');
+                $('#replycomment').prop("disabled", true);
+
                 $('#comment-error').remove();
 
                 var form = $(this);
@@ -240,9 +243,14 @@
                     type: "POST",
                     url: url,
                     data: form.serialize(), // serializes the form's elements.
+                    error: function () {
+                        $('#replycomment').text('درج پاسخ به حاشیه');
+                        $('#replycomment').prop("disabled", false);
+                    },
                     success: function (data) {
                         document.getElementById('id03').style.display = 'none';
                         $(data).appendTo(parent);
+                        $('#replycomment').prop("disabled", false);
                         $("#replycommentform")[0].reset();
                     },
                 });
@@ -293,6 +301,9 @@
 
                 e.preventDefault(); // avoid to execute the actual submit of the form.
 
+                $('#editcomment').text('در حال ویرایش حاشیه ...');
+                $('#editcomment').prop("disabled", true);
+
                 var url = '?handler=MyComment';
 
                 var commentId = $("#editCommentId").val();
@@ -305,6 +316,10 @@
                     data: {
                         id: commentId,
                         comment: $("textarea#editCommentText").val()
+                    },
+                    error: function () {
+                        $('#editcomment').text('ویرایش حاشیه');
+                        $('#editcomment').prop("disabled", false);
                     },
                     success: function () {
                         document.getElementById('id02').style.display = 'none';
@@ -319,6 +334,9 @@
                                 $(bnumCommentBlockId).html($("textarea#editCommentText").val());
                             }
                         }
+
+                        $('#editcomment').text('ویرایش حاشیه');
+                        $('#editcomment').prop("disabled", false);
                     },
 
                 });
