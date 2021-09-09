@@ -269,10 +269,11 @@
 
         }
 
-        function editMyComment(commentId) {
+        function editMyComment(commentId, coupletIndex) {
             var commentTextBlockId = '#comment-text-' + commentId;
             tinymce.get('editCommentText').setContent($(commentTextBlockId).html());
             $("#editCommentId").val(commentId);
+            $("#editCommentCoupletIndex").val(coupletIndex);
             document.getElementById('id02').style.display = 'block';
         }
 
@@ -286,6 +287,7 @@
                 var url = '?handler=MyComment';
 
                 var commentId = $("#editCommentId").val();
+                var coupletIndex = $("#editCommentCoupletIndex").val();
 
 
                 $.ajax({
@@ -301,6 +303,13 @@
                         var commentTextBlockId = '#comment-text-' + commentId;
 
                         $(commentTextBlockId).html($("textarea#editCommentText").val());
+
+                        if (coupletIndex != '-1') {
+                            var bnumCommentBlockId = '#comment-text-' + commentId + "-" + coupletIndex;
+                            if ($(bnumCommentBlockId) != null) {
+                                $(bnumCommentBlockId).html($("textarea#editCommentText").val());
+                            }
+                        }
                     },
 
                 });
