@@ -176,12 +176,7 @@
                 $(buttonSelector).text('در حال درج حاشیه ...');
                 $(buttonSelector).prop("disabled", true);
 
-                var commentErrorSelector = '#comment-error';
-                if (coupletIndex != '') {
-                    commentErrorSelector += ('-' + coupletIndex);
-                }
-
-                $(commentErrorSelector).remove();
+                $('#comment-error').remove();
 
                 var parent1 = $('#comments-block');
                 var parent2 = null;
