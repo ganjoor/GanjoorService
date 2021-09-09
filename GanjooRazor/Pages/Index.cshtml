@@ -164,12 +164,27 @@
             window.open(macagna, '_blank', 'width=600,height=700,scrollbars=yes,status=yes');
         }
 
-        function postComment(parent, commentformSelector, commentErrorSelector) {
+        function postComment(coupletIndex) {
+            var commentformSelector = '#commentform';
+            if (coupletIndex != '') {
+                commentformSelector += ('-' + coupletIndex);
+            }
             $(commentformSelector).unbind('submit').bind('submit', function (e) {
 
                 e.preventDefault(); // avoid to execute the actual submit of the form.
 
+                var commentErrorSelector = '#comment-error';
+                if (coupletIndex != '') {
+                    commentErrorSelector += ('-' + coupletIndex);
+                }
+
                 $(commentErrorSelector).remove();
+
+                var parent1 = $('#comments-block');
+                var parent2 = null;
+                if (coupletIndex != '') {
+                    parent2 = $('#comments-block-'+coupletIndex);
+                }
 
                 var form = $(this);
                 var url = form.attr('action');
@@ -179,13 +194,16 @@
                     url: url,
                     data: form.serialize(), // serializes the form's elements.
                     success: function (data) {
-                        $(data).appendTo(parent);
-                        $('#comment-error')[0].reset();
+                        $(data).appendTo(parent1);
+                        if (parent2 != null)
+                            $(data).appendTo(parent2);
+                        $(commentErrorSelector)[0].reset();
                     },
                 });
 
             });
         }
+
 
         function replyComment(commentId, loggedIn, divSuffix) {
             if (!loggedIn) {
