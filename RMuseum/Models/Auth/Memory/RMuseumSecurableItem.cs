@@ -93,6 +93,10 @@ namespace RMuseum.Models.Auth.Memory
         /// </summary>
         public const string Donations = "donations";
 
+        /// <summary>
+        /// translations
+        /// </summary>
+        public const string Translations = "translations";
 
         /// <summary>
         /// list of forms and their permissions
@@ -167,6 +171,7 @@ namespace RMuseum.Models.Auth.Memory
                             new SecurableItemOperation(ModifyOperationShortName, "ویرایش محتوا", false),
                             new SecurableItemOperation(Banners, "مدیریت آگاهی‌ها", false),
                             new SecurableItemOperation(Donations, "مدیریت کمکهای مالی", false),
+                            new SecurableItemOperation(Translations, "ترجمه", false),
                         }
                     },
 
