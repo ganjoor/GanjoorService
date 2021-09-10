@@ -134,11 +134,12 @@ function hilightverse(vnum, clr, sc, forceScroll) {
             n++;
             if (n == vnum) {
                 element.style.color = clr;
-                if (element.lastChild.getElementsByTagName("BUTTON").length == 1) {
-                    element.lastChild.removeChild(element.lastChild.getElementsByTagName("BUTTON")[0]);
+                if ($('#InlinePauseButton') != null) {
+                    $('#InlinePauseButton').remove();
                 }
                 if (sc == true) {
                     var btn = document.createElement("BUTTON");
+                    btn.id = "InlinePauseButton";
                     var t = document.createTextNode(" || ");
                     btn.appendChild(t);
                     btn.style["display"] = "inline";
