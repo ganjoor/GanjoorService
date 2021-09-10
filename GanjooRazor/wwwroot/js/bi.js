@@ -316,8 +316,7 @@ function fillnarrations(coupletIndex) {
     }
 }
 
-
-function playCouplet(coupletIndex) {
+function getVerseIndexFromCoupleIndex(coupletIndex) {
     var tagname = "*";
     var all = document.getElementsByTagName(tagname);
     var msr1s = [];
@@ -337,9 +336,14 @@ function playCouplet(coupletIndex) {
                 break;
             }
         }
-       
     }
+    return vIndex;
+}
 
+
+function playCouplet(coupletIndex) {
+    
+    var vIndex = getVerseIndexFromCoupleIndex(coupletIndex);
     if (jlist.isPlaying) {
         jlist.pause();
     }
