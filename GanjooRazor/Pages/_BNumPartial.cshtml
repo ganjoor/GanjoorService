@@ -4,11 +4,19 @@
 }
 <div id="play-block-@Model.CoupletIndex" style="width: 100%;">
     <select id="narrators-@Model.CoupletIndex" style="width:49%;float:right"></select>
-    <a role="button" id="listen-@Model.CoupletIndex" style="cursor: pointer; width: 49%; color: white; background-color: #300; display: block; text-align: center; border-color: #300; padding:1px; float:left; margin-top:3px; " onclick="playCouplet(@Model.CoupletIndex)">از اینجا بخواند</a>
+    <a role="button" id="listen-@Model.CoupletIndex" style="cursor: pointer; width: 49%; color: white; background-color: green; display: block; text-align: center; border-color: #300; padding:1px; float:left; margin-top:3px; " onclick="playCouplet(@Model.CoupletIndex)">از اینجا بخواند</a>
 </div>
 <script>
     fillnarrations('@Model.CoupletIndex');
 </script>
+
+@if (Model.LoggedIn)
+{
+    <div style="width:100%;clear:both;">
+        <a role="button" id="listen-@Model.CoupletIndex" style="cursor: pointer; width: 100%; color: white; background-color: #300; display: block; text-align: center; border-color: #300;" onclick="editCouplet(@Model.PoemId, @Model.CoupletIndex)">ویرایش از اینجا</a>
+    </div>
+}
+
 
 <div id="comments-block-@Model.CoupletIndex" style="clear:both">
     @foreach (var comment in Model.Comments)
