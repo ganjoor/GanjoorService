@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Linq;
@@ -118,6 +119,65 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorLanguage[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// add or update poem translation
+        /// </summary>
+        /// <param name="translation"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> AddOrUpdatePoemTranslation(GanjoorPoemTranslationViewModel translation)
+        {
+            try
+            {
+                var dbTranslation = await _context.PoemTranslations.Where(t => t.LanguageId == translation.LanguageId && t.PoemId == translation.PoemId).SingleOrDefaultAsync();
+                if(dbTranslation == null)
+                {
+                    dbTranslation = new GanjoorPoemTranslation()
+                    {
+                        LanguageId = translation.LanguageId,
+                        PoemId = translation.PoemId,
+                        Title = translation.Title,
+                        Published = true
+                    };
+                    _context.PoemTranslations.Add(dbTranslation);
+                }
+                else
+                {
+                    dbTranslation.Title = translation.Title;
+                    _context.PoemTranslations.Update(dbTranslation);
+                }
+
+                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == translation.PoemId).ToListAsync();
+                foreach (var translatedVerse in translation.TranslatedVerses)
+                {
+                    var verse = verses.Where(v => v.VOrder == translatedVerse.VOrder).Single();
+                    var dbTranslatedVerse = await _context.VerseTranslations.Where(t => t.LanguageId == translation.LanguageId && t.VerseId == verse.Id).SingleOrDefaultAsync();
+                    if (dbTranslatedVerse == null)
+                    {
+                        dbTranslatedVerse = new GanjoorVerseTranslation()
+                        {
+                            LanguageId = translation.LanguageId,
+                            VerseId = verse.Id,
+                            TText = translatedVerse.TText
+                        };
+                        _context.VerseTranslations.Add(dbTranslatedVerse);
+                    }
+                    else
+                    {
+                        dbTranslatedVerse.TText = translatedVerse.TText;
+                        _context.VerseTranslations.Update(dbTranslatedVerse);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 

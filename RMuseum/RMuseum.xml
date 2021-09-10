@@ -6283,11 +6283,6 @@
             verse translation view mode
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseTranslationViewModel.LanguageId">
-            <summary>
-            language id
-            </summary>
-        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseTranslationViewModel.VOrder">
             <summary>
             verse order
@@ -9984,6 +9979,13 @@
             <summary>
             get all languages
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.AddOrUpdatePoemTranslation(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel)">
+            <summary>
+            add or update poem translation
+            </summary>
+            <param name="translation"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorTranslationService._context">
