@@ -206,9 +206,11 @@ function hilightverse(vnum, clr, sc, forceScroll) {
 }
 
 var audioxmlfiles = [];
+var narrators = [];
 var jlist;
 function addpaudio(index, jplaylist, xmlfilename, poemtitle, auartist, oggurl, mp3url) {
     audioxmlfiles[index] = xmlfilename;
+    narrators[index] = auartist;
     jplaylist.add({
         title: poemtitle,
         artist: auartist,
@@ -223,6 +225,7 @@ function prepaudio(xmlfilename, poemtitle, auartist, oggurl, mp3url) {
     var vCount = 0;
 
     audioxmlfiles[0] = xmlfilename;
+    narrators[0] = auartist;
 
 
     jlist = new jPlayerPlaylist({
@@ -300,6 +303,19 @@ function prepaudio(xmlfilename, poemtitle, auartist, oggurl, mp3url) {
 
 }
 
+function fillnarrations(coupletIndex) {
+    if (narrators.length == 0) {
+        var blockid = '#play-block-' + coupletIndex;
+        $(blockid).hide();
+        return;
+    }
+
+    var comboId = '#narrators-' + coupletIndex;
+    for (var i = 0; i < narrators.length; i++) {
+        $(comboId).append(new Option(narrators[i].replace(/<\/?[^>]+(>|$)/g, "").replace('به خوانش ', '').replace('می‌خواهید شما بخوانید؟ اینجا را ببینید.', '').replace('(دریافت)', ''), i));
+    }
+}
+
 
 function playCouplet(coupletIndex) {
     var tagname = "*";
@@ -323,26 +339,45 @@ function playCouplet(coupletIndex) {
         }
        
     }
+
+    if (jlist.isPlaying) {
+        jlist.pause();
+    }
+    var comboId = '#narrators-' + coupletIndex;
+    var recitationIndex =  $(comboId).find(":selected").val()
+    jlist.select(recitationIndex);
+
     if (audioxmlfiles.length > 0) {
         $.ajax({
             type: "GET",
-            url: audioxmlfiles[jlist.current],
+            url: audioxmlfiles[recitationIndex],
             dataType: "xml",
             success: function (xml) {
                 var nOneSecondBugFix = 2000;
                 $(xml).find('OneSecondBugFix').each(function () {
                     nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
                 });
+
+                var foundCouplet = false;
+                
                 $(xml).find('SyncInfo').each(function () {
                     var v = parseInt($(this).find('VerseOrder').text())
                     if (v == vIndex) {
                         var verseStart = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
+                        $(jlist.cssSelector.jPlayer).jPlayer("play");
                         setTimeout(function () {
                             $(jlist.cssSelector.jPlayer).jPlayer("play", verseStart);
                         }, 100);
+                        foundCouplet = true;
+                        var buttonList = '#listen-' + coupletIndex;
+                        $(buttonList).text('در حال خواندن');
+                        return false;
                     }
-                    v++;
                 });
+
+                if (!foundCouplet) {
+                    alert('در این خوانش این خط خوانده نشده است.');
+                }
             }
         });
     }

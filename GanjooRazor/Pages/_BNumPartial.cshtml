@@ -2,8 +2,15 @@
 @{
     Layout = null;
 }
-<a role="button" style="cursor: pointer; width: 100%; color: white; background-color: #300; display: block; text-align: center; border-color: #300 " onclick="playCouplet(@Model.CoupletIndex)">بشنوید</a>
-<div id="comments-block-@Model.CoupletIndex">
+<div id="play-block-@Model.CoupletIndex" style="width: 100%;">
+    <select id="narrators-@Model.CoupletIndex" style="width:49%;float:right"></select>
+    <a role="button" id="listen-@Model.CoupletIndex" style="cursor: pointer; width: 49%; color: white; background-color: #300; display: block; text-align: center; border-color: #300; padding:1px; float:left; margin-top:3px; " onclick="playCouplet(@Model.CoupletIndex)">از اینجا بخواند</a>
+</div>
+<script>
+    fillnarrations('@Model.CoupletIndex');
+</script>
+
+<div id="comments-block-@Model.CoupletIndex" style="clear:both">
     @foreach (var comment in Model.Comments)
     {
         <partial name="_CommentPartial" model=Model.GetCommentModel(comment) />
@@ -26,7 +33,7 @@
     </script>
     <form method="post" id="commentform-@Model.CoupletIndex" action="?handler=Comment">
         <fieldset>
-            <legend>💬 دربارهٔ این پاراگراف/بیت/مصرع حاشیه بگذارید ...</legend>
+            <legend>💬 دربارهٔ این خط حاشیه بگذارید ...</legend>
             <table style="max-width:100%; width:100%; margin:0">
                 <tr>
                     <td>
