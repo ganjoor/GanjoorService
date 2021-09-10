@@ -205,6 +205,7 @@ function hilightverse(vnum, clr, sc, forceScroll) {
 }
 
 var audioxmlfiles = [];
+var jlist;
 function addpaudio(index, jplaylist, xmlfilename, poemtitle, auartist, oggurl, mp3url) {
     audioxmlfiles[index] = xmlfilename;
     jplaylist.add({
@@ -223,7 +224,7 @@ function prepaudio(xmlfilename, poemtitle, auartist, oggurl, mp3url) {
     audioxmlfiles[0] = xmlfilename;
 
 
-    var jlist = new jPlayerPlaylist({
+    jlist = new jPlayerPlaylist({
         jPlayer: "#jquery_jplayer_1",
         cssSelectorAncestor: "#jp_container_1"
     }, [
@@ -296,5 +297,53 @@ function prepaudio(xmlfilename, poemtitle, auartist, oggurl, mp3url) {
 
     return jlist;
 
+}
+
+
+function playCouplet(coupletIndex) {
+    var tagname = "*";
+    var all = document.getElementsByTagName(tagname);
+    var msr1s = [];
+    for (var i = 0; i < all.length; i++) {
+        var element = all[i];
+        if (isMember(element, "m1") || isMember(element, "m2") || isMember(element, "b2") || isMember(element, "n") || isMember(element, "l"))
+            msr1s.push(element);
+    }
+    if ((msr1s.length - 1) < coupletIndex) return;
+    var cIndex = -1;
+    var vIndex = -1;
+    for (var i = 0; i < msr1s.length; ++i) {
+        if (msr1s[i].className != "m2") {
+            cIndex++;
+            if (cIndex == coupletIndex) {
+                vIndex = i;
+                break;
+            }
+        }
+       
+    }
+    if (audioxmlfiles.length > 0) {
+        $.ajax({
+            type: "GET",
+            url: audioxmlfiles[jlist.current],
+            dataType: "xml",
+            success: function (xml) {
+                var nOneSecondBugFix = 2000;
+                $(xml).find('OneSecondBugFix').each(function () {
+                    nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
+                });
+                $(xml).find('SyncInfo').each(function () {
+                    var v = parseInt($(this).find('VerseOrder').text())
+                    if (v == vIndex) {
+                        var verseStart = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
+                        setTimeout(function () {
+                            $(jlist.cssSelector.jPlayer).jPlayer("play", verseStart);
+                        }, 100);
+                    }
+                    v++;
+                });
+            }
+        });
+    }
 }
 
