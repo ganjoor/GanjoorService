@@ -319,5 +319,20 @@ namespace RMuseum.DbContext
         /// poem corrections
         /// </summary>
         public DbSet<GanjoorPoemCorrection> GanjoorPoemCorrections { get; set; }
+
+        /// <summary>
+        /// languages for translation
+        /// </summary>
+        public DbSet<GanjoorLanguage> GanjoorLanguages { get; set; }
+
+        /// <summary>
+        /// poem translations
+        /// </summary>
+        public DbSet<GanjoorPoemTranslation> PoemTranslations { get; set; }
+
+        /// <summary>
+        /// verse translations
+        /// </summary>
+        public DbSet<GanjoorVerseTranslation> VerseTranslations { get; set; }
     }
 }

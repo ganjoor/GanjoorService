@@ -1825,6 +1825,21 @@
             poem corrections
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorLanguages">
+            <summary>
+            languages for translation
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.PoemTranslations">
+            <summary>
+            poem translations
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.VerseTranslations">
+            <summary>
+            verse translations
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -4478,6 +4493,26 @@
             target url
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorLanguage">
+            <summary>
+            Language or system of writing for translating poems
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorLanguage.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorLanguage.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorLanguage.RightToLeft">
+            <summary>
+            is right to left
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorMetre">
             <summary>
             Poem prosodic Metre
@@ -4952,6 +4987,46 @@
             had any effect on poem after moderation? effective in history
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
+            <summary>
+            poem translation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.LanguageId">
+            <summary>
+            language id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.Language">
+            <summary>
+            language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.Poem">
+            <summary>
+            poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.Title">
+            <summary>
+            title translation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.Published">
+            <summary>
+            published
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">
             <summary>
             Ganjoor Poet
@@ -5070,6 +5145,41 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.Text">
             <summary>
             text
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorVerseTranslation">
+            <summary>
+            Verse translation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseTranslation.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseTranslation.VerseId">
+            <summary>
+            verse id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseTranslation.Verse">
+            <summary>
+            verse
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseTranslation.LanguageId">
+            <summary>
+            language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseTranslation.Language">
+            <summary>
+            language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseTranslation.TText">
+            <summary>
+            translated text
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText">
