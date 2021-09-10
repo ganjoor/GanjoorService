@@ -6098,6 +6098,31 @@
             rhyme letters
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel">
+            <summary>
+            poem translation view model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.LanguageId">
+            <summary>
+            language id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.Title">
+            <summary>
+            translated title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.TranslatedVerses">
+            <summary>
+            translated verses
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel">
             <summary>
             Poet Complete Information 
@@ -6251,6 +6276,26 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorSiteBannerViewModel.Active">
             <summary>
             active
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseTranslationViewModel">
+            <summary>
+            verse translation view mode
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseTranslationViewModel.LanguageId">
+            <summary>
+            language id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseTranslationViewModel.VOrder">
+            <summary>
+            verse order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseTranslationViewModel.TText">
+            <summary>
+            translated text
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel">

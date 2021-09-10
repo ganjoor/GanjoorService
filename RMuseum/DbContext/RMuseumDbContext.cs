@@ -120,6 +120,14 @@ namespace RMuseum.DbContext
                 .HasIndex(m => m.Name)
                 .IsUnique();
 
+            builder.Entity<GanjoorPoemTranslation>()
+                .HasIndex(t => new { t.LanguageId, t.PoemId })
+                .IsUnique();
+
+            builder.Entity<GanjoorVerseTranslation>()
+                .HasIndex(t => new { t.LanguageId, t.VerseId })
+                .IsUnique();
+
 
             //Index set suggested by SQL Server Tuning Wizard -- end
 
