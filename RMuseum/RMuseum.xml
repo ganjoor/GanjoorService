@@ -9988,6 +9988,14 @@
             <param name="translation"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetTranslationAsync(System.Int32,System.Int32)">
+            <summary>
+            get translation
+            </summary>
+            <param name="langId"></param>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorTranslationService._context">
             <summary>
             Database Context

@@ -182,6 +182,45 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get translation
+        /// </summary>
+        /// <param name="langId"></param>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemTranslationViewModel>> GetTranslationAsync(int langId, int poemId)
+        {
+            try
+            {
+                var dbTranslation = await _context.PoemTranslations.Where(t => t.LanguageId == langId && t.PoemId == poemId).SingleOrDefaultAsync();
+                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).ToListAsync();
+                var verseIds = verses.Select(v => v.Id).ToList();
+                var dbVerseTranslations = await _context.VerseTranslations.Where(t => t.LanguageId == langId && verseIds.Contains(t.VerseId)).OrderBy(t => t.VerseId).ToArrayAsync();
+
+                return new RServiceResult<GanjoorPoemTranslationViewModel>
+                    (
+                    new GanjoorPoemTranslationViewModel()
+                    {
+                        LanguageId = langId,
+                        PoemId = poemId,
+                        Title = dbTranslation == null ? null : dbTranslation.Title,
+                        TranslatedVerses = dbVerseTranslations.Select(v => 
+                        new GanjoorVerseTranslationViewModel()
+                        {
+                            VOrder = verses.Where(pv => pv.Id == v.VerseId).Single().VOrder,
+                            TText = v.TText
+                        }
+                        ).ToArray()
+                    }
+                    );
+
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<GanjoorPoemTranslationViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;
