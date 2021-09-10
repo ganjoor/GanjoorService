@@ -795,7 +795,7 @@ namespace RSecurityBackend.Services.Implementation
 
                 if (anotheruserWithUserName != null)
                 {
-                    return new RServiceResult<bool>(false, "کلمهٔ عبور تکراری می باشد");
+                    return new RServiceResult<bool>(false, "نام کاربری تکراری می باشد");
                 }
 
                 existingInfo.UserName = updateUserInfo.Username;
@@ -806,11 +806,11 @@ namespace RSecurityBackend.Services.Implementation
                 return new RServiceResult<bool>(false, "برای تغییر تصویر کاربر از تابع اختصاصی این کار استفاده کنید");
             }
 
-            updateUserInfo.FirstName = updateUserInfo.FirstName.Trim();
-            updateUserInfo.SureName = updateUserInfo.SureName.Trim();
-            updateUserInfo.NickName = updateUserInfo.NickName.Trim();
+            updateUserInfo.FirstName = string.IsNullOrEmpty(updateUserInfo.FirstName) ? updateUserInfo.FirstName : updateUserInfo.FirstName.Trim();
+            updateUserInfo.SureName = string.IsNullOrEmpty(updateUserInfo.SureName) ? updateUserInfo.SureName : updateUserInfo.SureName.Trim();
+            updateUserInfo.NickName = string.IsNullOrEmpty(updateUserInfo.NickName) ? updateUserInfo.NickName : updateUserInfo.NickName.Trim();
 
-            if(string.IsNullOrEmpty(updateUserInfo.NickName) && string.IsNullOrEmpty(updateUserInfo.FirstName+ updateUserInfo.SureName))
+            if(string.IsNullOrEmpty(updateUserInfo.NickName) && string.IsNullOrEmpty(updateUserInfo.FirstName) && string.IsNullOrEmpty(updateUserInfo.SureName))
             {
                 return new RServiceResult<bool>(false, "نام، نام خانوادگی و نام مستعار نمی‌توانند همگی خالی باشند.");
             }
@@ -854,9 +854,6 @@ namespace RSecurityBackend.Services.Implementation
             {
                 return new RServiceResult<bool>(false, ErrorsToString(result.Errors));
             }
-
-
-
 
             //updating admin status  is not supported               
 

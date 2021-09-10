@@ -196,59 +196,69 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public override async Task<RServiceResult<bool>> ModifyUser(Guid userId, RegisterRAppUser updateUserInfo)
         {
-            RAppUser unmodifiedUserInfo = await _userManager.FindByIdAsync(userId.ToString());
-            if (unmodifiedUserInfo == null)
+            try
             {
-                return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
-            }
-
-            string nickName = unmodifiedUserInfo.NickName.Trim();
-
-            if (string.IsNullOrEmpty(nickName))
-            {
-                return new RServiceResult<bool>(false, "نام مستعار نمی‌تواند خالی باشد.");
-            }
-
-            RServiceResult<bool> res = await base.ModifyUser(userId, updateUserInfo);
-            if(res.Result)
-            {
-                try
+                RAppUser unmodifiedUserInfo = await _userManager.FindByIdAsync(userId.ToString());
+                if (unmodifiedUserInfo == null)
                 {
-                    if (nickName != updateUserInfo.NickName)
+                    return new RServiceResult<bool>(false, "کاربر مورد نظر یافت نشد");
+                }
+
+                string nickName = updateUserInfo.NickName;
+
+                if (string.IsNullOrEmpty(nickName))
+                {
+                    return new RServiceResult<bool>(false, "نام مستعار نمی‌تواند خالی باشد.");
+                }
+
+                nickName = nickName.Trim();
+
+                RServiceResult<bool> res = await base.ModifyUser(userId, updateUserInfo);
+                if (res.Result)
+                {
+                    try
                     {
-                        RMuseumDbContext context = _context as RMuseumDbContext;
-                        var poemIdSet = await context.GanjoorComments.AsNoTracking().Where(c => c.UserId == userId).Select(c => c.PoemId).ToListAsync();
-                        foreach (var poemId in poemIdSet)
+                        if (nickName != updateUserInfo.NickName)
                         {
-                            //await _ganjoorService.CacheCleanForPageById(poemId); /*had error in service initializtion, so done it in the dirty way*/
-
-                            var dbPage = await context.GanjoorPages.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
-                            if (dbPage != null)
+                            RMuseumDbContext context = _context as RMuseumDbContext;
+                            var poemIdSet = await context.GanjoorComments.AsNoTracking().Where(c => c.UserId == userId).Select(c => c.PoemId).ToListAsync();
+                            foreach (var poemId in poemIdSet)
                             {
-                                //CacheCleanForPageByUrl(dbPage.FullUrl);
-                                var url = dbPage.FullUrl;
-                                var cachKey = $"GanjoorService::GetPageByUrl::{url}";
-                                if (_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
-                                {
-                                    _memoryCache.Remove(cachKey);
+                                //await _ganjoorService.CacheCleanForPageById(poemId); /*had error in service initializtion, so done it in the dirty way*/
 
-                                    var poemCachKey = $"GetPoemById({page.Id}, {true}, {false}, {true}, {true}, {true}, {true}, {true}, {true}, {true})";
-                                    if (_memoryCache.TryGetValue(poemCachKey, out GanjoorPoemCompleteViewModel p))
+                                var dbPage = await context.GanjoorPages.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
+                                if (dbPage != null)
+                                {
+                                    //CacheCleanForPageByUrl(dbPage.FullUrl);
+                                    var url = dbPage.FullUrl;
+                                    var cachKey = $"GanjoorService::GetPageByUrl::{url}";
+                                    if (_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
                                     {
-                                        _memoryCache.Remove(poemCachKey);
+                                        _memoryCache.Remove(cachKey);
+
+                                        var poemCachKey = $"GetPoemById({page.Id}, {true}, {false}, {true}, {true}, {true}, {true}, {true}, {true}, {true})";
+                                        if (_memoryCache.TryGetValue(poemCachKey, out GanjoorPoemCompleteViewModel p))
+                                        {
+                                            _memoryCache.Remove(poemCachKey);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                    catch
+                    {
+                        return new RServiceResult<bool>(true); //ignore this error! because main operation was successfull!
+                    }
+
                 }
-                catch
-                {
-                    return new RServiceResult<bool>(true); //ignore this error! because main operation was successfull!
-                }
-               
+                return res;
             }
-            return res;
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+
         }
 
 
