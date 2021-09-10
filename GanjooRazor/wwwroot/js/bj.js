@@ -325,17 +325,25 @@ function getVerseIndexFromCoupleIndex(coupletIndex) {
         if (isMember(element, "m1") || isMember(element, "m2") || isMember(element, "b2") || isMember(element, "n") || isMember(element, "l"))
             msr1s.push(element);
     }
-    if ((msr1s.length - 1) < coupletIndex) return;
+    if ((msr1s.length - 1) < coupletIndex) return -1;
     var cIndex = -1;
     var vIndex = -1;
+    var bandNums = 0;
     for (var i = 0; i < msr1s.length; ++i) {
         if (msr1s[i].className != "m2") {
             cIndex++;
-            if (cIndex == coupletIndex) {
-                vIndex = i;
-                break;
-            }
         }
+        
+        if (cIndex == coupletIndex) {
+            vIndex = (i + bandNums);
+            break;
+        }
+
+        if (msr1s[i].className == "b2") {
+            if (msr1s[i].getElementsByTagName("p").length > 1)
+                bandNums++;
+        }
+        
     }
     return vIndex;
 }
