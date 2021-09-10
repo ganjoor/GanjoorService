@@ -9906,6 +9906,52 @@
             <param name="memoryCache"></param>
             <param name="httpClient"></param>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.AddLanguageAsync(System.String,System.Boolean)">
+            <summary>
+            add language
+            </summary>
+            <param name="name"></param>
+            <param name="rtl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.UpdateLangaugeAsync(RMuseum.Models.Ganjoor.GanjoorLanguage)">
+            <summary>
+            update an existing language
+            </summary>
+            <param name="updated"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.DeleteLangaugeAsync(System.Int32)">
+            <summary>
+            حذف زبان
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetLanguageAsync(System.Int32)">
+            <summary>
+            get langauge by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetLanguagesAsync">
+            <summary>
+            get all languages
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorTranslationService._context">
+            <summary>
+            Database Context
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.#ctor(RMuseum.DbContext.RMuseumDbContext)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ImportedFromDesktopGanjoor.GPersianTextSync">
             <summary>
             Persian specific text utility class

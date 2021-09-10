@@ -116,6 +116,11 @@ namespace RMuseum.DbContext
                 .HasIndex(c => new { c.CoverItemIndex, c.Status });
 
 
+            builder.Entity<GanjoorLanguage>()
+                .HasIndex(m => m.Name)
+                .IsUnique();
+
+
             //Index set suggested by SQL Server Tuning Wizard -- end
 
             builder.Entity<GanjoorDonation>()
