@@ -9,7 +9,10 @@ using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
 {
-    public class GanjoorTranslationService
+    /// <summary>
+    /// translation service implementation
+    /// </summary>
+    public class GanjoorTranslationService : IGanjoorTranslationService
     {
         /// <summary>
         /// add language

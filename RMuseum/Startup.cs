@@ -285,6 +285,9 @@ namespace RMuseum
             //donation service
             services.AddTransient<IDonationService, DonationService>();
 
+            //translation service
+            services.AddTransient<IGanjoorTranslationService, GanjoorTranslationService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {

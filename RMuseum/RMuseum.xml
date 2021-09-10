@@ -8351,6 +8351,61 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:RMuseum.Services.IGanjoorTranslationService">
+            <summary>
+            translation service implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.AddLanguageAsync(System.String,System.Boolean)">
+            <summary>
+            add language
+            </summary>
+            <param name="name"></param>
+            <param name="rtl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.UpdateLangaugeAsync(RMuseum.Models.Ganjoor.GanjoorLanguage)">
+            <summary>
+            update an existing language
+            </summary>
+            <param name="updated"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.DeleteLangaugeAsync(System.Int32)">
+            <summary>
+            حذف زبان
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.GetLanguageAsync(System.Int32)">
+            <summary>
+            get langauge by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.GetLanguagesAsync">
+            <summary>
+            get all languages
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.AddOrUpdatePoemTranslation(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel)">
+            <summary>
+            add or update poem translation
+            </summary>
+            <param name="translation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.GetTranslationAsync(System.Int32,System.Int32)">
+            <summary>
+            get translation
+            </summary>
+            <param name="langId"></param>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
             <summary>
             IArtifactService implementation
@@ -9945,6 +10000,11 @@
             <param name="imageFileService"></param>
             <param name="memoryCache"></param>
             <param name="httpClient"></param>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.GanjoorTranslationService">
+            <summary>
+            translation service implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.AddLanguageAsync(System.String,System.Boolean)">
             <summary>
