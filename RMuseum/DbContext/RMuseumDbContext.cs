@@ -124,6 +124,11 @@ namespace RMuseum.DbContext
                 .HasIndex(t => new { t.LanguageId, t.PoemId })
                 .IsUnique();
 
+            builder.Entity<GanjoorPoemTranslation>()
+            .HasOne(e => e.Language)
+            .WithMany()
+            .OnDelete(DeleteBehavior.NoAction);
+
             builder.Entity<GanjoorVerseTranslation>()
                 .HasIndex(t => new { t.LanguageId, t.VerseId })
                 .IsUnique();
