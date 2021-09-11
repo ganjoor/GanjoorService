@@ -4,6 +4,7 @@ using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -69,7 +70,7 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// حذف زبان
+        /// delete language
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -195,6 +196,8 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var dbTranslation = await _context.PoemTranslations.Where(t => t.LanguageId == langId && t.PoemId == poemId).SingleOrDefaultAsync();
+                if (dbTranslation == null)
+                    return new RServiceResult<GanjoorPoemTranslationViewModel>(null); //not found
                 var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).ToListAsync();
                 var verseIds = verses.Select(v => v.Id).ToList();
                 var dbVerseTranslations = await _context.VerseTranslations.Where(t => t.LanguageId == langId && verseIds.Contains(t.VerseId)).OrderBy(t => t.VerseId).ToArrayAsync();
@@ -220,6 +223,52 @@ namespace RMuseum.Services.Implementation
             catch(Exception exp)
             {
                 return new RServiceResult<GanjoorPoemTranslationViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get translations for a poem
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemTranslationViewModel[]>> GetTranslationsAsync(int poemId)
+        {
+            try
+            {
+                var dbTranslations = await _context.PoemTranslations.Where(t => t.PoemId == poemId).OrderBy(t => t.LanguageId).ToArrayAsync();
+                List<GanjoorPoemTranslationViewModel> res = new List<GanjoorPoemTranslationViewModel>();
+                if(dbTranslations.Length > 0)
+                {
+
+                }
+                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).ToListAsync();
+                var verseIds = verses.Select(v => v.Id).ToList();
+                foreach(var dbTranslation in dbTranslations)
+                {
+                    var dbVerseTranslations = await _context.VerseTranslations.Where(t => t.LanguageId == dbTranslation.LanguageId && verseIds.Contains(t.VerseId)).OrderBy(t => t.VerseId).ToArrayAsync();
+
+                    res.Add(
+                        new GanjoorPoemTranslationViewModel()
+                        {
+                            LanguageId = dbTranslation.LanguageId,
+                            PoemId = poemId,
+                            Title = dbTranslation == null ? null : dbTranslation.Title,
+                            TranslatedVerses = dbVerseTranslations.Select(v =>
+                            new GanjoorVerseTranslationViewModel()
+                            {
+                                VOrder = verses.Where(pv => pv.Id == v.VerseId).Single().VOrder,
+                                TText = v.TText
+                            }
+                            ).ToArray()
+                        }
+                        );
+                }
+                return new RServiceResult<GanjoorPoemTranslationViewModel[]>(res.ToArray());
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoemTranslationViewModel[]>(null, exp.ToString());
             }
         }
 

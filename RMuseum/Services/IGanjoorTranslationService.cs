@@ -28,7 +28,7 @@ namespace RMuseum.Services
 
 
         /// <summary>
-        /// حذف زبان
+        /// delete language
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -54,6 +54,13 @@ namespace RMuseum.Services
         /// <param name="translation"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> AddOrUpdatePoemTranslation(GanjoorPoemTranslationViewModel translation);
+
+        /// <summary>
+        /// get translations for a poem
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemTranslationViewModel[]>> GetTranslationsAsync(int poemId);
 
         /// <summary>
         /// get translation
