@@ -20,6 +20,11 @@
         public string Title { get; set; }
 
         /// <summary>
+        /// published
+        /// </summary>
+        public bool Published { get; set; }
+
+        /// <summary>
         /// translated verses
         /// </summary>
         public GanjoorVerseTranslationViewModel[] TranslatedVerses { get; set; }

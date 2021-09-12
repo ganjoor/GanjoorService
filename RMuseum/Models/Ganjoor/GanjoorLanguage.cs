@@ -16,8 +16,23 @@
         public string Name { get; set; }
 
         /// <summary>
+        /// code
+        /// </summary>
+        public string Code { get; set; }
+
+        /// <summary>
+        /// native name
+        /// </summary>
+        public string NativeName { get; set; }
+
+        /// <summary>
         /// is right to left
         /// </summary>
         public bool RightToLeft { get; set; }
+
+        /// <summary>
+        /// description
+        /// </summary>
+        public string Description { get; set; }
     }
 }

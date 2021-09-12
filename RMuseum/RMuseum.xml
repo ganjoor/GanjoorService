@@ -1895,11 +1895,6 @@
             poem translations
             </summary>
         </member>
-        <member name="P:RMuseum.DbContext.RMuseumDbContext.VerseTranslations">
-            <summary>
-            verse translations
-            </summary>
-        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -4573,9 +4568,24 @@
             name
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorLanguage.Code">
+            <summary>
+            code
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorLanguage.NativeName">
+            <summary>
+            native name
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorLanguage.RightToLeft">
             <summary>
             is right to left
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorLanguage.Description">
+            <summary>
+            description
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorMetre">
@@ -5087,9 +5097,29 @@
             title translation
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.Verses">
+            <summary>
+            verses
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.Published">
             <summary>
             published
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.UserId">
+            <summary>
+            user id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.User">
+            <summary>
+            user
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.DateTime">
+            <summary>
+            date/time
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">
@@ -5230,16 +5260,6 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseTranslation.Verse">
             <summary>
             verse
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseTranslation.LanguageId">
-            <summary>
-            language
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseTranslation.Language">
-            <summary>
-            language
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseTranslation.TText">
@@ -6181,6 +6201,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.Title">
             <summary>
             translated title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.Published">
+            <summary>
+            published
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.TranslatedVerses">
@@ -8421,12 +8446,11 @@
             translation service implementation
             </summary>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorTranslationService.AddLanguageAsync(System.String,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.AddLanguageAsync(RMuseum.Models.Ganjoor.GanjoorLanguage)">
             <summary>
             add language
             </summary>
-            <param name="name"></param>
-            <param name="rtl"></param>
+            <param name="lang"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorTranslationService.UpdateLangaugeAsync(RMuseum.Models.Ganjoor.GanjoorLanguage)">
@@ -8456,11 +8480,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorTranslationService.AddOrUpdatePoemTranslation(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel)">
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.AddPoemTranslation(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel)">
             <summary>
             add or update poem translation
             </summary>
             <param name="translation"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorTranslationService.GetTranslationsAsync(System.Int32)">
@@ -10078,12 +10103,11 @@
             translation service implementation
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.AddLanguageAsync(System.String,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.AddLanguageAsync(RMuseum.Models.Ganjoor.GanjoorLanguage)">
             <summary>
             add language
             </summary>
-            <param name="name"></param>
-            <param name="rtl"></param>
+            <param name="lang"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.UpdateLangaugeAsync(RMuseum.Models.Ganjoor.GanjoorLanguage)">
@@ -10113,10 +10137,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.AddOrUpdatePoemTranslation(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.AddPoemTranslation(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel)">
             <summary>
             add or update poem translation
             </summary>
+            <param name="userId"></param>
             <param name="translation"></param>
             <returns></returns>
         </member>

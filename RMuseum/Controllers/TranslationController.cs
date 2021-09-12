@@ -4,6 +4,8 @@ using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services;
+using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -59,7 +61,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> AddLanguageAsync([FromBody] GanjoorLanguage lang)
         {
-            var res = await _translationService.AddLanguageAsync(lang.Name, lang.RightToLeft);
+            var res = await _translationService.AddLanguageAsync(lang);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -148,7 +150,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> AddOrUpdatePoemTranslation([FromBody] GanjoorPoemTranslationViewModel translation)
         {
-            var res = await _translationService.AddOrUpdatePoemTranslation(translation);
+            Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = await _translationService.AddPoemTranslation(userId, translation);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

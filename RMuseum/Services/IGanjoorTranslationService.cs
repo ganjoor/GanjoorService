@@ -1,6 +1,7 @@
 ﻿using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
+using System;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services
@@ -13,10 +14,9 @@ namespace RMuseum.Services
         /// <summary>
         /// add language
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="rtl"></param>
+        /// <param name="lang"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorLanguage>> AddLanguageAsync(string name, bool rtl);
+        Task<RServiceResult<GanjoorLanguage>> AddLanguageAsync(GanjoorLanguage lang);
 
 
         /// <summary>
@@ -52,8 +52,9 @@ namespace RMuseum.Services
         /// add or update poem translation
         /// </summary>
         /// <param name="translation"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> AddOrUpdatePoemTranslation(GanjoorPoemTranslationViewModel translation);
+        Task<RServiceResult<bool>> AddPoemTranslation(Guid userId, GanjoorPoemTranslationViewModel translation);
 
         /// <summary>
         /// get translations for a poem

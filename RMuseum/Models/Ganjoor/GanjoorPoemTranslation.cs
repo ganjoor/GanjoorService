@@ -1,4 +1,8 @@
-﻿namespace RMuseum.Models.Ganjoor
+﻿using RSecurityBackend.Models.Auth.Db;
+using System;
+using System.Collections.Generic;
+
+namespace RMuseum.Models.Ganjoor
 {
     /// <summary>
     /// poem translation
@@ -36,8 +40,28 @@
         public string Title { get; set; }
 
         /// <summary>
+        /// verses
+        /// </summary>
+        public List<GanjoorVerseTranslation> Verses { get; set; }
+
+        /// <summary>
         /// published
         /// </summary>
         public bool Published { get; set; }
+
+        /// <summary>
+        /// user id
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// user
+        /// </summary>
+        public RAppUser User { get; set; }
+
+        /// <summary>
+        /// date/time
+        /// </summary>
+        public DateTime DateTime { get; set; }
     }
 }

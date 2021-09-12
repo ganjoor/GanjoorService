@@ -21,16 +21,6 @@
         public GanjoorVerse Verse { get; set; }
 
         /// <summary>
-        /// language
-        /// </summary>
-        public int LanguageId { get; set; }
-
-        /// <summary>
-        /// language
-        /// </summary>
-        public GanjoorLanguage Language { get; set; }
-
-        /// <summary>
         /// translated text
         /// </summary>
         public string TText { get; set; }
