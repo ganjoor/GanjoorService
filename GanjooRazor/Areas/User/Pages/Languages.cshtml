@@ -1,5 +1,6 @@
 ﻿@page
 @model GanjooRazor.Areas.User.Pages.LanguagesModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_Layout";
     ViewData["Title"] = "زبان‌ها و نویسش‌ها";
@@ -86,7 +87,7 @@ else
                     <td>@language.Name</td>
                     <td>@language.Code</td>
                     <td>@language.NativeName</td>
-                    <td>(@language.RightToLeft ? "✅" : "⧠")</td>
+                    <td>@($"{(language.RightToLeft ? "✅" : "⧠")}")</td>
                     <td>@language.Description</td>
                     <td>
                         <a role="button" href="/Admin/LanguageEdit/?id=@language.Id" class="actionlink" title="ویرایش">✎</a>

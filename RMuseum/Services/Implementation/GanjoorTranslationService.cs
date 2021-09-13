@@ -22,6 +22,10 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorLanguage>> AddLanguageAsync(GanjoorLanguage lang)
         {
+            lang.Name = lang.Name == null ? lang.Name : lang.Name.Trim();
+            lang.Code = lang.Code == null ? lang.Code : lang.Code.Trim();
+            if (string.IsNullOrEmpty(lang.Name) || string.IsNullOrEmpty(lang.Code))
+                return new RServiceResult<GanjoorLanguage>(null, "ورود کد و نام زبان اجباری است.");
             var existing = await _context.GanjoorLanguages.Where(l => l.Name == lang.Name || l.Code == lang.Code).FirstOrDefaultAsync();
             if (existing != null)
                 return new RServiceResult<GanjoorLanguage>(null, "اطلاعات تکراری است.");

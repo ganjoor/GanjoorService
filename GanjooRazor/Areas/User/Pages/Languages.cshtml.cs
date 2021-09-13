@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -53,6 +51,34 @@ namespace GanjooRazor.Areas.User.Pages
                 }
             }
 
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            LastMessage = "";
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/translations/langugages", new StringContent(JsonConvert.SerializeObject(Language), Encoding.UTF8, "application/json"));
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    }
+                    else
+                    {
+                        return await OnGetAsync();
+                    }
+
+                }
+                else
+                {
+                    LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                }
+
+            }
 
             return Page();
         }
