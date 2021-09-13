@@ -15,21 +15,82 @@
 }
 else
 {
+    <form method="post">
+        <table>
+            <tr>
+                <td>
+                    نام:
+                </td>
+                <td>
+                    <input asp-for="Language.Name" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    کد:
+                </td>
+                <td>
+                    <input style="direction:ltr" asp-for="Language.Code" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    نام بومی زبان:
+                </td>
+                <td>
+                    <input style="direction:ltr" asp-for="Language.NativeName" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    راست به چپ:
+                </td>
+                <td>
+                    <input type="checkbox" asp-for="Language.RightToLeft" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    شرح:
+                </td>
+                <td>
+                    <input asp-for="Language.Description" />
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="ایجاد زبان" />
+                </td>
+            </tr>
+
+        </table>
+
+    </form>
+
+
     @if (Model.Languages != null)
     {
         <table>
             <tr>
                 <th>نام</th>
                 <th>کد</th>
+                <th>نام بومی</th>
+                <th>ر.ب.چ</th>
+                <th>شرح</th>
+                <th>#</th>
             </tr>
             @foreach (var language in Model.Languages)
             {
                 <tr id="tr-@language.Id">
                     <td>@language.Name</td>
                     <td>@language.Code</td>
+                    <td>@language.NativeName</td>
+                    <td>(@language.RightToLeft ? "✅" : "⧠")</td>
+                    <td>@language.Description</td>
                     <td>
                         <a role="button" href="/Admin/LanguageEdit/?id=@language.Id" class="actionlink" title="ویرایش">✎</a>
-                        <a role="button" onclick="deleteLanguage(@language.Id, 'کمک')" class="actionlink" title="حذف">🗑</a>
+                        <a role="button" onclick="deleteLanguage(@language.Id, 'زبان')" class="actionlink" title="حذف">🗑</a>
                     </td>
                 </tr>
             }

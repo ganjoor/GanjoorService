@@ -16,6 +16,9 @@ namespace GanjooRazor.Areas.User.Pages
     public class LanguagesModel : PageModel
     {
         public string LastMessage { get; set; }
+        
+        [BindProperty]
+        public GanjoorLanguage Language { get; set; }
 
         public GanjoorLanguage[] Languages { get; set; }
 
