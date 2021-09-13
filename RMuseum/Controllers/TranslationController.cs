@@ -19,7 +19,7 @@ namespace RMuseum.Controllers
         /// get all languages
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("langugages")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorLanguage[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -37,7 +37,7 @@ namespace RMuseum.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
 
-        [HttpGet("{id}")]
+        [HttpGet("langugages/{id}")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorLanguage))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -54,7 +54,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="lang"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("langugages")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Translations)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorLanguage))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -72,7 +72,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="lang"></param>
         /// <returns></returns>
-        [HttpPut]
+        [HttpPut("langugages")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Translations)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -85,7 +85,7 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("langugages/{id}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Translations)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]

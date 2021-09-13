@@ -1,0 +1,38 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.LanguagesModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "زبان‌ها و نویسش‌ها";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+<h1>@ViewData["Title"]</h1>
+
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <p>
+        @Model.LastMessage
+    </p>
+}
+else
+{
+    @if (Model.Languages != null)
+    {
+        <table>
+            <tr>
+                <th>نام</th>
+                <th>کد</th>
+            </tr>
+            @foreach (var language in Model.Languages)
+            {
+                <tr id="tr-@language.Id">
+                    <td>@language.Name</td>
+                    <td>@language.Code</td>
+                    <td>
+                        <a role="button" href="/Admin/LanguageEdit/?id=@language.Id" class="actionlink" title="ویرایش">✎</a>
+                        <a role="button" onclick="deleteLanguage(@language.Id, 'کمک')" class="actionlink" title="حذف">🗑</a>
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+}
