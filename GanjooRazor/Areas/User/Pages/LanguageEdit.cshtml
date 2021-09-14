@@ -1,0 +1,71 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.LanguageEditModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "ویرایش زبان یا نویسش";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+<h1>@ViewData["Title"]</h1>
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <p>
+        @Model.LastMessage
+    </p>
+}
+else
+{
+    <form method="post">
+        <table>
+            <tr>
+                <td>
+                    نام:
+                </td>
+                <td>
+                    <input type="hidden" asp-for="Language.Id" />
+                    <input asp-for="Language.Name" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    کد:
+                </td>
+                <td>
+                    <input style="direction:ltr" asp-for="Language.Code" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    نام بومی زبان:
+                </td>
+                <td>
+                    <input style="direction:ltr" asp-for="Language.NativeName" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    راست به چپ:
+                </td>
+                <td>
+                    <input type="checkbox" asp-for="Language.RightToLeft" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    شرح:
+                </td>
+                <td>
+                    <input asp-for="Language.Description" />
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="ویرایش" />
+                </td>
+            </tr>
+
+        </table>
+
+    </form>
+}
