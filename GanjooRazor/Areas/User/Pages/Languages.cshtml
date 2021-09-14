@@ -72,6 +72,29 @@ else
 
     @if (Model.Languages != null)
     {
+        <script>
+            function deleteLanguage(itemId, itemName) {
+
+                if (!confirm('آیا از حذف این ' + itemName + ' اطمینان دارید؟'))
+                    return;
+
+
+                $.ajax({
+                    type: "DELETE",
+                    url: '',
+                    data: {
+                        id: itemId
+                    },
+                    error: function () {
+                        alert('خطا رخ داد.');
+                    },
+                    success: function () {
+                        location.reload();
+                        return false;
+                    },
+                });
+            }
+        </script>
         <table>
             <tr>
                 <th>نام</th>
