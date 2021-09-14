@@ -235,28 +235,27 @@ namespace RMuseum.Services.Implementation
                 List<GanjoorPoemTranslationViewModel> res = new List<GanjoorPoemTranslationViewModel>();
                 if (dbTranslations.Length > 0)
                 {
+                    var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).ToListAsync();
+                    var verseIds = verses.Select(v => v.Id).ToList();
+                    foreach (var dbTranslation in dbTranslations)
+                    {
 
-                }
-                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).ToListAsync();
-                var verseIds = verses.Select(v => v.Id).ToList();
-                foreach (var dbTranslation in dbTranslations)
-                {
-
-                    res.Add(
-                        new GanjoorPoemTranslationViewModel()
-                        {
-                            LanguageId = dbTranslation.LanguageId,
-                            PoemId = poemId,
-                            Title = dbTranslation == null ? null : dbTranslation.Title,
-                            TranslatedVerses = dbTranslation.Verses.Select(v =>
-                            new GanjoorVerseTranslationViewModel()
+                        res.Add(
+                            new GanjoorPoemTranslationViewModel()
                             {
-                                VOrder = verses.Where(pv => pv.Id == v.VerseId).Single().VOrder,
-                                TText = v.TText
+                                LanguageId = dbTranslation.LanguageId,
+                                PoemId = poemId,
+                                Title = dbTranslation == null ? null : dbTranslation.Title,
+                                TranslatedVerses = dbTranslation.Verses.Select(v =>
+                                new GanjoorVerseTranslationViewModel()
+                                {
+                                    VOrder = verses.Where(pv => pv.Id == v.VerseId).Single().VOrder,
+                                    TText = v.TText
+                                }
+                                ).ToArray()
                             }
-                            ).ToArray()
-                        }
-                        );
+                            );
+                    }
                 }
                 return new RServiceResult<GanjoorPoemTranslationViewModel[]>(res.ToArray());
 
