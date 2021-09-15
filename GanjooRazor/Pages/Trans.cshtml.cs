@@ -45,9 +45,20 @@ namespace GanjooRazor.Pages
 
         public string ErrorMessage { get; set; }
 
+        public int PoemId { get; set; }
+
+        /// <summary>
+        /// is logged on
+        /// </summary>
+        public bool LoggedIn { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             ErrorMessage = "";
+
+            LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
+
+            PoemId = int.Parse(Request.Query["p"]);
 
             ViewData["GoogleAnalyticsCode"] = _configuration["GoogleAnalyticsCode"];
 
@@ -61,7 +72,7 @@ namespace GanjooRazor.Pages
 
             var allLanguages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await responseLanguages.Content.ReadAsStringAsync());
 
-            HttpResponseMessage response = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/poem/{Request.Query["p"]}");
+            HttpResponseMessage response = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/poem/{PoemId}");
             if (!response.IsSuccessStatusCode)
             {
                 ErrorMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
@@ -83,7 +94,7 @@ namespace GanjooRazor.Pages
             Languages = poemLanguages.ToArray();
 
 
-            var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{Request.Query["p"]}?verseDetails=true&catInfo=true&rhymes=false&recitations=false&images=false&songs=false&comments=false&navigation=false");
+            var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{PoemId}?verseDetails=true&catInfo=true&rhymes=false&recitations=false&images=false&songs=false&comments=false&navigation=false");
             if(!responsePoem.IsSuccessStatusCode)
             {
                 ErrorMessage = JsonConvert.DeserializeObject<string>(await responsePoem.Content.ReadAsStringAsync());

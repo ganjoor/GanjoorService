@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex" />
+    <meta name="robots" content="noindex, nofollow" />
     <title>
         گنجور &raquo; ترجمه‌ها و نویس‌های شعر
     </title>
@@ -26,12 +26,27 @@
         }
         else
         {
-            <select name="languages" id="languages">
-                @foreach (var language in Model.Languages)
+            if (Model.Languages.Length == 0)
+            {
+                <p>
+                    هنوز برای این شعر هیچ ترجمه یا نویسشی ارائه یا منتشر نشده است.
+                </p>
+
+                @if (Model.LoggedIn)
                 {
-                    <option value="@language.Id">@language.NativeName</option>
+                    <a role="button" target="_blank" style="text-decoration: none; cursor: pointer; width: 100%; color: white; background-color: #300; display: block; text-align: center; border-color: #300 " href="/User/Translate?id=@Model.PoemId">ترجمه کنید</a>
                 }
-            </select>
+            }
+            else
+            {
+                <select name="languages" id="languages">
+                    @foreach (var language in Model.Languages)
+                    {
+                        <option value="@language.Id">@language.NativeName</option>
+                    }
+                </select>
+            }
+
         }
 
     </div>
