@@ -331,6 +331,7 @@
                                     <text> | <small>منبع اولیه: <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Html.Raw(Model.GanjoorPage.Poem.SourceName)</a></small></text>
                                 }
                                 | <small><a href="@Html.Raw($"http://www.facebook.com/sharer.php?u=https://ganjoor.net{Model.GanjoorPage.FullUrl}&amp;t={Uri.EscapeUriString(Model.GanjoorPage.FullTitle)}/")">ارسال به فیس‌بوک</a></small>
+                                | <small><a href="@Html.Raw($"/trans?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">#</a></small>
                             </p>
                             <h3>این شعر را چه کسی در کدام آهنگ خوانده است؟</h3>
                             @if (Model.GanjoorPage.Poem.Songs.Length == 0)
