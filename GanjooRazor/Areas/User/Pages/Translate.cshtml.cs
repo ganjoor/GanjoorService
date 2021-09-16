@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,10 +25,7 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
 
-        /// <summary>
-        /// rythms
-        /// </summary>
-        public GanjoorMetre[] Rhythms { get; set; }
+        public GanjoorLanguage[] Languages { get; set; }
 
         /// <summary>
         /// fatal error
@@ -95,10 +90,16 @@ namespace GanjooRazor.Areas.User.Pages
                     editResponse.EnsureSuccessStatusCode();
                     MyLastEdit = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await editResponse.Content.ReadAsStringAsync());
 
+                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    response.EnsureSuccessStatusCode();
 
-                    var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
-                    rhythmResponse.EnsureSuccessStatusCode();
-                    Rhythms = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
+                    Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
+                    
 
                     var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
                     pageUrlResponse.EnsureSuccessStatusCode();
