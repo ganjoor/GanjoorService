@@ -1,6 +1,7 @@
 ﻿@page
 @model GanjooRazor.Areas.User.Pages.TranslateModel
 @using DNTPersianUtils.Core
+@using System.Linq
 @{
     Layout = "_Layout";
     ViewData["Title"] = "ترجمه / نویسش";
@@ -22,19 +23,21 @@ else
     <select name="languages" id="languages">
         @foreach (var language in Model.Languages)
         {
-            <option value="@language.Id">@language.NativeName</option>
+            <option value="@language.Id">@language.Name</option>
         }
     </select>
+    <p><a role="button" target="_blank" href="/User/Languages" class="actionlink">معرفی زبان‌ها و نویسش‌ها</a></p>
+
 
     <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
 
     @if (Model.PageInformation.Poem.Previous != null)
     {
-        <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id">ترجمهٔ شعر قبل</a></p>
+        <p><a href="/User/Translate?id=@Model.PageInformation.Poem.Previous.Id">ترجمهٔ شعر قبل</a></p>
     }
     @if (Model.PageInformation.Poem.Next != null)
     {
-        <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id">ترجمهٔ شعر بعد</a></p>
+        <p><a href="/User/Translate?id=@Model.PageInformation.Poem.Next.Id">ترجمهٔ شعر بعد</a></p>
     }
 
     <table>
@@ -50,7 +53,7 @@ else
         </tr>
         <tr>
             <td>
-                <p id="original-0">@Model.PageInformation.Poem.Title</p>
+                <p style="color:red" id="original-0">@Model.PageInformation.Poem.Title</p>
             </td>
         </tr>
         <tr>
@@ -61,45 +64,26 @@ else
         <tr>
             <td>
 
-                @if (Model.MyLastEdit != null && Model.MyLastEdit.Title != null)
-                {
-                    <div id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.MyLastEdit.Title</div>
-                    <script>
-                        $(document).ready(function () {
-                            editorcompare(0);
-                        });
-                        document.getElementById("id-0").addEventListener("input", function () {
-                            editorcompare(0)
-                        }, false);
-                    </script>
-                }
-                else
-                {
-                    <div type="text" id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.PageInformation.Poem.Title</div>
-                    <script>
-                        document.getElementById("id-0").addEventListener("input", function () {
-                            editorcompare(0)
-                        }, false);
-                    </script>
-                }
+                <div type="text" id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.Translation.Title</div>
+                
             </td>
         </tr>
 
-        @foreach (var verse in Model.PageInformation.Poem.Verses)
+        @foreach (var verse in Model.Translation.TranslatedVerses)
         {
             <tr>
                 <td>
-                    بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers()
+                    بیت @Model.GetVerseCoupletNumber(verse.Verse).ToPersianNumbers()
                 </td>
             </tr>
             <tr>
                 <td>
-                    مصرع @verse.VOrder.ToPersianNumbers()
+                    مصرع @verse.Verse.VOrder.ToPersianNumbers()
                 </td>
             </tr>
             <tr>
                 <td>
-                    نوع: @Model.GetVersePosition(verse)
+                    نوع: @Model.GetVersePosition(verse.Verse)
                 </td>
             </tr>
             <tr>
@@ -109,7 +93,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <p id="original-@($"{verse.VOrder}")">@verse.Text</p>
+                    <p style="color: red" id="original-@($"{verse.Verse.VOrder}")">@verse.Verse.Text</p>
                 </td>
             </tr>
             <tr>
@@ -119,53 +103,12 @@ else
             </tr>
             <tr>
                 <td>
-                    @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
-                    {
-                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" style="background-color:white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text</div>
-
-
-                        <script>
-                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
-                                editorcompare(@verse.VOrder)
-                            }, false);
-                            $(document).ready(function () {
-                                editorcompare(@verse.VOrder);
-                            });
-                        </script>
-                    }
-                    else
-                    {
-                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" style="background-color:white">@verse.Text</div>
-                        <script>
-                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
-                                editorcompare(@verse.VOrder)
-                            }, false);
-                        </script>
-                    }
+                    <div  id="id-@($"{verse.Verse.VOrder}")" name="name-@($"{verse.Verse.VOrder}")" contenteditable="true" style="background-color:white">@verse.TText</div>
                 </td>
             </tr>
 
 
         }
-
-        <tr>
-            <td>
-                توضیحات:
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-                @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.Note))
-                {
-                    <input type="text" id="note" name="note" value="@Model.MyLastEdit.Note" size="50" />
-                }
-                else
-                {
-                    <input type="text" id="note" name="note" value="" size="50" />
-                }
-            </td>
-        </tr>
 
         <tr>
             <td>
@@ -180,13 +123,13 @@ else
         @if (Model.PageInformation.Poem.Previous != null)
         {
             <tr>
-                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id">ترجمهٔ شعر قبل</a></td>
+                <td><a href="/User/Translate?id=@Model.PageInformation.Poem.Previous.Id">ترجمهٔ شعر قبل</a></td>
             </tr>
         }
         @if (Model.PageInformation.Poem.Next != null)
         {
             <tr>
-                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id">ترجمهٔ شعر بعد</a></td>
+                <td><a href="/User/Translate?id=@Model.PageInformation.Poem.Next.Id">ترجمهٔ شعر بعد</a></td>
             </tr>
         }
     </table>

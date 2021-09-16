@@ -22,7 +22,7 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// language
         /// </summary>
-        public GanjoorPoemTranslation Language { get; set; }
+        public GanjoorLanguage Language { get; set; }
 
         /// <summary>
         /// poem id
@@ -63,5 +63,10 @@ namespace RMuseum.Models.Ganjoor
         /// date/time
         /// </summary>
         public DateTime DateTime { get; set; }
+
+        /// <summary>
+        /// comments
+        /// </summary>
+        public string Description { get; set; }
     }
 }

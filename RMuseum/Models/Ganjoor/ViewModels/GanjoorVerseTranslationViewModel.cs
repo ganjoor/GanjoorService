@@ -6,9 +6,10 @@
     public class GanjoorVerseTranslationViewModel
     {
         /// <summary>
-        /// verse order
+        /// verse
         /// </summary>
-        public int VOrder { get; set; }
+        public GanjoorVerseViewModel Verse { get; set; }
+
 
         /// <summary>
         /// translated text

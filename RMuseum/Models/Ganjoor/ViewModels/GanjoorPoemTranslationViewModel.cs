@@ -6,9 +6,10 @@
     public class GanjoorPoemTranslationViewModel
     {
         /// <summary>
-        /// language id
+        /// language
         /// </summary>
-        public int LanguageId { get; set; }
+        public GanjoorLanguage Language { get; set; }
+
         /// <summary>
         /// poem id
         /// </summary>

@@ -120,11 +120,6 @@ namespace RMuseum.DbContext
                 .HasIndex(m => m.Name)
                 .IsUnique();
 
-            builder.Entity<GanjoorPoemTranslation>()
-            .HasOne(e => e.Language)
-            .WithMany()
-            .OnDelete(DeleteBehavior.NoAction);
-
 
             //Index set suggested by SQL Server Tuning Wizard -- end
 
@@ -338,7 +333,7 @@ namespace RMuseum.DbContext
         /// <summary>
         /// poem translations
         /// </summary>
-        public DbSet<GanjoorPoemTranslation> PoemTranslations { get; set; }
+        public DbSet<GanjoorPoemTranslation> GanjoorPoemTranslations { get; set; }
        
     }
 }

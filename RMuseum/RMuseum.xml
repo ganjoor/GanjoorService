@@ -1890,7 +1890,7 @@
             languages for translation
             </summary>
         </member>
-        <member name="P:RMuseum.DbContext.RMuseumDbContext.PoemTranslations">
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoemTranslations">
             <summary>
             poem translations
             </summary>
@@ -5122,6 +5122,11 @@
             date/time
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemTranslation.Description">
+            <summary>
+            comments
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">
             <summary>
             Ganjoor Poet
@@ -6188,9 +6193,9 @@
             poem translation view model
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.LanguageId">
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.Language">
             <summary>
-            language id
+            language
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.PoemId">
@@ -6373,9 +6378,9 @@
             verse translation view mode
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseTranslationViewModel.VOrder">
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseTranslationViewModel.Verse">
             <summary>
-            verse order
+            verse
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseTranslationViewModel.TText">

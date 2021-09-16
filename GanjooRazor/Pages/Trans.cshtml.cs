@@ -85,7 +85,7 @@ namespace GanjooRazor.Pages
             List<GanjoorLanguage> poemLanguages = new List<GanjoorLanguage>();
             foreach (var lang in allLanguages)
             {
-                if(Translations.Where(t => t.LanguageId == lang.Id).FirstOrDefault() != null)
+                if(Translations.Where(t => t.Language.Id == lang.Id).FirstOrDefault() != null)
                 {
                     poemLanguages.Add(lang);
                 }

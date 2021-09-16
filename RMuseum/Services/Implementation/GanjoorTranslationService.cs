@@ -139,16 +139,16 @@ namespace RMuseum.Services.Implementation
             {
                 if (translation.Published)
                 {
-                    var oldPublished = await _context.PoemTranslations.Where(t => t.LanguageId == translation.LanguageId && t.PoemId == translation.PoemId && t.Published == true).ToListAsync();
+                    var oldPublished = await _context.GanjoorPoemTranslations.Include(t => t.Language).Where(t => t.Language.Id == translation.Language.Id && t.PoemId == translation.PoemId && t.Published == true).ToListAsync();
                     foreach (var item in oldPublished)
                     {
                         item.Published = false;
-                        _context.PoemTranslations.Update(item);
+                        _context.GanjoorPoemTranslations.Update(item);
                     }
                 }
                 var dbTranslation = new GanjoorPoemTranslation()
                 {
-                    LanguageId = translation.LanguageId,
+                    LanguageId = translation.Language.Id,
                     PoemId = translation.PoemId,
                     Title = translation.Title,
                     Published = true,
@@ -160,7 +160,7 @@ namespace RMuseum.Services.Implementation
                 var verses = await _context.GanjoorVerses.Where(v => v.PoemId == translation.PoemId).ToListAsync();
                 foreach (var translatedVerse in translation.TranslatedVerses)
                 {
-                    var verse = verses.Where(v => v.VOrder == translatedVerse.VOrder).Single();
+                    var verse = verses.Where(v => v.VOrder == translatedVerse.Verse.Id).Single();
                     dbTranslation.Verses
                     .Add(
                         new GanjoorVerseTranslation()
@@ -170,7 +170,7 @@ namespace RMuseum.Services.Implementation
                         });
                 }
 
-                _context.PoemTranslations.Add(dbTranslation);
+                _context.GanjoorPoemTranslations.Add(dbTranslation);
 
                 await _context.SaveChangesAsync();
 
@@ -192,7 +192,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var dbTranslation = await _context.PoemTranslations.Include(t => t.Verses).Where(t => t.LanguageId == langId && t.PoemId == poemId && t.Published == true).SingleOrDefaultAsync();
+                var dbTranslation = await _context.GanjoorPoemTranslations.Include(t => t.Verses).Where(t => t.LanguageId == langId && t.PoemId == poemId && t.Published == true).Include(t => t.Language).SingleOrDefaultAsync();
                 if (dbTranslation == null)
                     return new RServiceResult<GanjoorPoemTranslationViewModel>(null); //not found
                 var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).ToListAsync();
@@ -202,13 +202,22 @@ namespace RMuseum.Services.Implementation
                     (
                     new GanjoorPoemTranslationViewModel()
                     {
-                        LanguageId = langId,
+                        Language = dbTranslation.Language,
                         PoemId = poemId,
                         Title = dbTranslation == null ? null : dbTranslation.Title,
                         TranslatedVerses = dbTranslation.Verses.Select(v =>
                         new GanjoorVerseTranslationViewModel()
                         {
-                            VOrder = verses.Where(pv => pv.Id == v.VerseId).Single().VOrder,
+                            Verse = verses.Where(pv => pv.Id == v.VerseId)
+                                .Select(pv =>
+                                new GanjoorVerseViewModel()
+                                {
+                                    Id = pv.Id,
+                                    VersePosition = pv.VersePosition,
+                                    VOrder = pv.VOrder,
+                                    Text = pv.Text
+                                }
+                                ).Single(),
                             TText = v.TText
                         }
                         ).ToArray()
@@ -231,7 +240,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var dbTranslations = await _context.PoemTranslations.Include(t => t.Verses).Where(t => t.PoemId == poemId && t.Published == true).OrderBy(t => t.LanguageId).ToArrayAsync();
+                var dbTranslations = await _context.GanjoorPoemTranslations.Include(t => t.Verses).Where(t => t.PoemId == poemId && t.Published == true).Include(t => t.Language).OrderBy(t => t.LanguageId).ToArrayAsync();
                 List<GanjoorPoemTranslationViewModel> res = new List<GanjoorPoemTranslationViewModel>();
                 if (dbTranslations.Length > 0)
                 {
@@ -243,13 +252,22 @@ namespace RMuseum.Services.Implementation
                         res.Add(
                             new GanjoorPoemTranslationViewModel()
                             {
-                                LanguageId = dbTranslation.LanguageId,
+                                Language = dbTranslation.Language,
                                 PoemId = poemId,
                                 Title = dbTranslation == null ? null : dbTranslation.Title,
                                 TranslatedVerses = dbTranslation.Verses.Select(v =>
                                 new GanjoorVerseTranslationViewModel()
                                 {
-                                    VOrder = verses.Where(pv => pv.Id == v.VerseId).Single().VOrder,
+                                    Verse = verses.Where(pv => pv.Id == v.VerseId)
+                                        .Select(pv =>
+                                        new GanjoorVerseViewModel()
+                                        {
+                                            Id = pv.Id,
+                                            VersePosition = pv.VersePosition,
+                                            VOrder = pv.VOrder,
+                                            Text = pv.Text
+                                        }
+                                        ).Single(),
                                     TText = v.TText
                                 }
                                 ).ToArray()

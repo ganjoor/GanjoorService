@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,16 +17,19 @@ namespace GanjooRazor.Areas.User.Pages
     public class TranslateModel : PageModel
     {
         /// <summary>
-        /// my last edit
-        /// </summary>
-        public GanjoorPoemCorrectionViewModel MyLastEdit { get; set; }
-
-        /// <summary>
         /// page
         /// </summary>
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
 
+        /// <summary>
+        /// translations
+        /// </summary>
         public GanjoorLanguage[] Languages { get; set; }
+
+        /// <summary>
+        /// translation
+        /// </summary>
+        public GanjoorPoemTranslationViewModel Translation { get; set; }
 
         /// <summary>
         /// fatal error
@@ -86,10 +90,6 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var editResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/correction/last/{Request.Query["id"]}");
-                    editResponse.EnsureSuccessStatusCode();
-                    MyLastEdit = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await editResponse.Content.ReadAsStringAsync());
-
                     HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
                     if (!response.IsSuccessStatusCode)
                     {
@@ -99,6 +99,12 @@ namespace GanjooRazor.Areas.User.Pages
                     response.EnsureSuccessStatusCode();
 
                     Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
+
+                    if(Languages.Length == 0)
+                    {
+                        FatalError = "<p><a role=\"button\" target=\"_blank\" href=\"/User/Languages\" class=\"actionlink\">معرفی زبان‌ها و نویسش‌ها</a></p>";
+                        return Page();
+                    }
                     
 
                     var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
@@ -108,6 +114,22 @@ namespace GanjooRazor.Areas.User.Pages
                     var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
                     pageQuery.EnsureSuccessStatusCode();
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+
+                    Translation = new GanjoorPoemTranslationViewModel()
+                    {
+                        Language = Languages[0],
+                        PoemId = PageInformation.Id,
+                        Title = "",
+                        Published = false,
+                        TranslatedVerses = PageInformation.Poem.Verses.Select(v =>
+                        new GanjoorVerseTranslationViewModel()
+                        {
+                            Verse = v,
+                            TText = ""
+                        }
+                        ).ToArray()
+                    };
                 }
                 else
                 {
