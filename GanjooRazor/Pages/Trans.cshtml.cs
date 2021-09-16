@@ -72,7 +72,7 @@ namespace GanjooRazor.Pages
 
             var allLanguages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await responseLanguages.Content.ReadAsStringAsync());
 
-            HttpResponseMessage response = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/poem/{PoemId}");
+            HttpResponseMessage response = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/poem/{PoemId}/published");
             if (!response.IsSuccessStatusCode)
             {
                 ErrorMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
