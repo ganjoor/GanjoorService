@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,11 @@ namespace GanjooRazor.Areas.User.Pages
         /// translations
         /// </summary>
         public GanjoorLanguage[] Languages { get; set; }
+
+        /// <summary>
+        /// translations
+        /// </summary>
+        public GanjoorPoemTranslationViewModel[] Translations { get; set; }
 
         /// <summary>
         /// translation
@@ -98,32 +104,92 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    
 
-                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
+                    int poemId = int.Parse(Request.Query["id"]);
+
+                    int langId = string.IsNullOrEmpty(Request.Query["lang"]) ? -1 : int.Parse(Request.Query["lang"]);
+
+                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/poem/{poemId}/language/{langId}");
                     if (!response.IsSuccessStatusCode)
                     {
                         FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                         return Page();
                     }
-                    response.EnsureSuccessStatusCode();
+
+                    var translations = JsonConvert.DeserializeObject<GanjoorPoemTranslationViewModel[]>(await response.Content.ReadAsStringAsync());
 
                     var userInfoResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/users/{Request.Cookies["UserId"]}");
-                    if (userInfoResponse.IsSuccessStatusCode)
+                    if (!response.IsSuccessStatusCode)
                     {
-                        UserInfo = JsonConvert.DeserializeObject<PublicRAppUser>(await userInfoResponse.Content.ReadAsStringAsync());
+                        FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    UserInfo = JsonConvert.DeserializeObject<PublicRAppUser>(await userInfoResponse.Content.ReadAsStringAsync());
+
+                    if (langId == -1)
+                    {
+                        var lastLangResp = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/user/lastlanguage");
+                        if (response.StatusCode != HttpStatusCode.NotFound)
+                        {
+                            var lang = JsonConvert.DeserializeObject<GanjoorLanguage>(await lastLangResp.Content.ReadAsStringAsync());
+                            langId = lang.Id;
+                        }
                     }
 
-                    Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
+                    if (langId != -1)
+                    {
+                        Translations = translations;
+                        foreach (var translation in translations)
+                            if (translation.ContributerId == UserInfo.Id && langId == translation.Language.Id)
+                            {
+                                Translation = translation;
+                                break;
+                            }
+                    }
+                    else if (translations.Length > 0)
+                    {
+                        foreach (var translation in translations)
+                            if (translation.ContributerId == UserInfo.Id)
+                            {
+                                Translation = translation;
+                                langId = Translation.Language.Id;
+                                break;
+                            }
+                        if (langId == -1)
+                        {
+                            Translation = translations[0];
+                            langId = Translation.Language.Id;
+                        }
+
+                        Translations = translations.Where(t => t.Language.Id == langId).ToArray();
+                    }
+
+                   
+
+                    HttpResponseMessage responseLanguages = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
+                    if (!responseLanguages.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await responseLanguages.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    responseLanguages.EnsureSuccessStatusCode();
+
+                    
+                    Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await responseLanguages.Content.ReadAsStringAsync());
 
                     if(Languages.Length == 0)
                     {
                         FatalError = "<a role=\"button\" target=\"_blank\" href=\"/User/Languages\" class=\"actionlink\">معرفی زبان‌ها و نویسش‌ها</a>";
                         return Page();
                     }
-                    
 
-                    var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
+                    if (langId == -1)
+                    {
+                        langId = Languages[0].Id;
+                    }
+
+
+                    var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={poemId}");
                     pageUrlResponse.EnsureSuccessStatusCode();
                     var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
 
@@ -131,23 +197,30 @@ namespace GanjooRazor.Areas.User.Pages
                     pageQuery.EnsureSuccessStatusCode();
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
-
-                    Translation = new GanjoorPoemTranslationViewModel()
+                    if(Translation == null)
                     {
-                        Language = Languages[0],
-                        PoemId = PageInformation.Id,
-                        Title = "",
-                        Published = false,
-                        Description = "",
-                        ContributerName = UserInfo.NickName == null ? UserInfo.Id.ToString() : UserInfo.NickName,
-                        TranslatedVerses = PageInformation.Poem.Verses.Select(v =>
-                        new GanjoorVerseTranslationViewModel()
+                       
+                        Translation = new GanjoorPoemTranslationViewModel()
                         {
-                            Verse = v,
-                            TText = ""
-                        }
+                            Language = Languages.Where(l => l.Id == langId).Single(),
+                            PoemId = PageInformation.Id,
+                            Title = "",
+                            Published = false,
+                            Description = "",
+                            ContributerName = UserInfo.NickName == null ? UserInfo.Id.ToString() : UserInfo.NickName,
+                            TranslatedVerses = PageInformation.Poem.Verses.Select(v =>
+                            new GanjoorVerseTranslationViewModel()
+                            {
+                                Verse = v,
+                                TText = ""
+                            }
                         ).ToArray()
-                    };
+                        };
+
+                        Translations = new GanjoorPoemTranslationViewModel[] { Translation };
+                    }
+
+                    
                 }
                 else
                 {

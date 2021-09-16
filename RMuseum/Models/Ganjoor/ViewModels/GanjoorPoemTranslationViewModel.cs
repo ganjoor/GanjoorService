@@ -1,4 +1,7 @@
-﻿namespace RMuseum.Models.Ganjoor.ViewModels
+﻿using DNTPersianUtils.Core;
+using System;
+
+namespace RMuseum.Models.Ganjoor.ViewModels
 {
     /// <summary>
     /// poem translation view model
@@ -35,13 +38,36 @@
         public string Description { get; set; }
 
         /// <summary>
-        /// contributer name
+        /// might be empty in anonymous apis
+        /// </summary>
+        public Guid ContributerId { get; set; }
+
+        /// <summary>
+        /// contributer name - might be empty in anonymous apis
         /// </summary>
         public string ContributerName { get; set; }
+
+        /// <summary>
+        /// datetime
+        /// </summary>
+        public DateTime DateTime { get; set; }
 
         /// <summary>
         /// translated verses
         /// </summary>
         public GanjoorVerseTranslationViewModel[] TranslatedVerses { get; set; }
+
+        /// <summary>
+        /// to string
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            if(Id != 0)
+            {
+                return $"{ContributerName}-{DateTime.ToFriendlyPersianDateTextify()}";
+            }
+            return "جدید"; 
+        }
     }
 }

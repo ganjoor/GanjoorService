@@ -57,18 +57,20 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoemTranslationViewModel>> AddPoemTranslation(Guid userId, GanjoorPoemTranslationViewModel translation);
 
         /// <summary>
-        /// get translations for a poem
-        /// </summary>
-        /// <param name="poemId"></param>
-        /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemTranslationViewModel[]>> GetPublishedTranslationsAsync(int poemId);
-
-        /// <summary>
         /// get translation
         /// </summary>
-        /// <param name="langId"></param>
+        /// <param name="langId">-1 all languages</param>
         /// <param name="poemId"></param>
+        /// <param name="onlyPublished"></param>
+        /// <param name="includeUserInfo"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemTranslationViewModel>> GetPublishedTranslationAsync(int langId, int poemId);
+        Task<RServiceResult<GanjoorPoemTranslationViewModel[]>> GetPoemTranslationsAsync(int langId, int poemId, bool onlyPublished, bool includeUserInfo);
+
+        /// <summary>
+        /// get last language the user contributed to its translation
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorLanguage>> GetLastUserContributedLanguage(Guid userId);
     }
 }

@@ -19,12 +19,28 @@
 }
 else
 {
-    <select name="languages" id="languages">
-        @foreach (var language in Model.Languages)
+<select name="languages" id="languages">
+    @foreach (var language in Model.Languages)
+    {
+        @if (language.Id == Model.Translation.Language.Id)
+        {
+            <option value="@language.Id" selected>@language.Name</option>
+        }
+        else
         {
             <option value="@language.Id">@language.Name</option>
         }
-    </select>
+
+    }
+</select>
+<script>
+    $('#languages').change(
+        function () {
+            var langId = $('#languages option:selected').val();
+            location.href = '/User/Translate?id=@Model.PageInformation.Id&lang=' + String(langId);
+        }
+    );
+</script>
     <p><a role="button" target="_blank" href="/User/Languages" class="actionlink">معرفی زبان‌ها و نویسش‌ها</a></p>
 
 

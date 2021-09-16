@@ -1642,14 +1642,14 @@
         </member>
         <member name="M:RMuseum.Controllers.TranslationController.GetLanguageAsync(System.Int32)">
             <summary>
-            get langauge by id
+            get language by id
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.TranslationController.AddLanguageAsync(RMuseum.Models.Ganjoor.GanjoorLanguage)">
             <summary>
-            add new langauge
+            add new language
             </summary>
             <param name="lang"></param>
             <returns></returns>
@@ -1674,6 +1674,20 @@
             </summary>
             <param name="id"></param>
             <param name="lang"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.TranslationController.GetPoemTranslationsAsync(System.Int32,System.Int32)">
+            <summary>
+            get all translations of a poem in a specific language
+            </summary>
+            <param name="id"></param>
+            <param name="lang">send -1 for all languages</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.TranslationController.GetLastUserContributedLanguage">
+            <summary>
+            last language user has contributed in its translation
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.TranslationController.AddOrUpdatePoemTranslation(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel)">
@@ -6223,15 +6237,31 @@
             comments or description
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.ContributerId">
+            <summary>
+            might be empty in anonymous apis
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.ContributerName">
             <summary>
-            contributer name
+            contributer name - might be empty in anonymous apis
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.DateTime">
+            <summary>
+            datetime
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.TranslatedVerses">
             <summary>
             translated verses
             </summary>
+        </member>
+        <member name="M:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.ToString">
+            <summary>
+            to string
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel">
             <summary>
@@ -8508,19 +8538,21 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorTranslationService.GetPublishedTranslationsAsync(System.Int32)">
-            <summary>
-            get translations for a poem
-            </summary>
-            <param name="poemId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IGanjoorTranslationService.GetPublishedTranslationAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.GetPoemTranslationsAsync(System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             get translation
             </summary>
-            <param name="langId"></param>
+            <param name="langId">-1 all languages</param>
             <param name="poemId"></param>
+            <param name="onlyPublished"></param>
+            <param name="includeUserInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.GetLastUserContributedLanguage(System.Guid)">
+            <summary>
+            get last language the user contributed to its translation
+            </summary>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.ArtifactService">
@@ -10165,19 +10197,21 @@
             <param name="translation"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetPublishedTranslationAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetLastUserContributedLanguage(System.Guid)">
+            <summary>
+            get last language the user contributed to its translation
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetPoemTranslationsAsync(System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             get translation
             </summary>
             <param name="langId"></param>
             <param name="poemId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetPublishedTranslationsAsync(System.Int32)">
-            <summary>
-            get translations for a poem
-            </summary>
-            <param name="poemId"></param>
+            <param name="onlyPublished"></param>
+            <param name="includeUserInfo"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorTranslationService._context">
