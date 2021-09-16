@@ -199,7 +199,7 @@ namespace GanjooRazor.Areas.User.Pages
                     };
 
                     HttpResponseMessage response = await secureClient.PostAsync(
-                        $"{APIRoot.Url}/api/translations/poem",
+                        $"{APIRoot.Url}/api/translations",
                         new StringContent(JsonConvert.SerializeObject(translation),
                         Encoding.UTF8,
                         "application/json"));

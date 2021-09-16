@@ -1661,16 +1661,16 @@
             <param name="lang"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.TranslationController.GetTranslationsAsync(System.Int32)">
+        <member name="M:RMuseum.Controllers.TranslationController.GetPublishedTranslationsAsync(System.Int32)">
             <summary>
-            get poem translations
+            get published poem translations
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.TranslationController.GetTranslationAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.TranslationController.GetPublishedTranslationAsync(System.Int32,System.Int32)">
             <summary>
-            get poem translation in a specific language
+            get published poem translation in a specific language
             </summary>
             <param name="id"></param>
             <param name="lang"></param>
@@ -1678,7 +1678,7 @@
         </member>
         <member name="M:RMuseum.Controllers.TranslationController.AddOrUpdatePoemTranslation(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel)">
             <summary>
-            add translation for a poem
+            add translation for a poem (please specify verses VORder, Id is not processed)
             </summary>
             <param name="translation"></param>
             <returns></returns>
@@ -8508,14 +8508,14 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorTranslationService.GetTranslationsAsync(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.GetPublishedTranslationsAsync(System.Int32)">
             <summary>
             get translations for a poem
             </summary>
             <param name="poemId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorTranslationService.GetTranslationAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorTranslationService.GetPublishedTranslationAsync(System.Int32,System.Int32)">
             <summary>
             get translation
             </summary>
@@ -10165,7 +10165,7 @@
             <param name="translation"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetTranslationAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetPublishedTranslationAsync(System.Int32,System.Int32)">
             <summary>
             get translation
             </summary>
@@ -10173,7 +10173,7 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetTranslationsAsync(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetPublishedTranslationsAsync(System.Int32)">
             <summary>
             get translations for a poem
             </summary>

@@ -190,7 +190,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="langId"></param>
         /// <param name="poemId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemTranslationViewModel>> GetTranslationAsync(int langId, int poemId)
+        public async Task<RServiceResult<GanjoorPoemTranslationViewModel>> GetPublishedTranslationAsync(int langId, int poemId)
         {
             try
             {
@@ -241,7 +241,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="poemId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemTranslationViewModel[]>> GetTranslationsAsync(int poemId)
+        public async Task<RServiceResult<GanjoorPoemTranslationViewModel[]>> GetPublishedTranslationsAsync(int poemId)
         {
             try
             {

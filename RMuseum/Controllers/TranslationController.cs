@@ -99,37 +99,37 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// get poem translations
+        /// get published poem translations
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("poem/{id}")]
+        [HttpGet("poem/{id}/published")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemTranslationViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetTranslationsAsync(int id)
+        public async Task<IActionResult> GetPublishedTranslationsAsync(int id)
         {
-            var res = await _translationService.GetTranslationsAsync(id);
+            var res = await _translationService.GetPublishedTranslationsAsync(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
         }
 
         /// <summary>
-        /// get poem translation in a specific language
+        /// get published poem translation in a specific language
         /// </summary>
         /// <param name="id"></param>
         /// <param name="lang"></param>
         /// <returns></returns>
-        [HttpGet("poem/{id}/langauge/{lang}")]
+        [HttpGet("poem/{id}/langauge/{lang}/published")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemTranslationViewModel))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetTranslationAsync(int id, int lang)
+        public async Task<IActionResult> GetPublishedTranslationAsync(int id, int lang)
         {
-            var res = await _translationService.GetTranslationAsync(id, lang);
+            var res = await _translationService.GetPublishedTranslationAsync(id, lang);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             if (res.Result == null)
@@ -138,12 +138,12 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// add translation for a poem
+        /// add translation for a poem (please specify verses VORder, Id is not processed)
         /// </summary>
         /// <param name="translation"></param>
         /// <returns></returns>
 
-        [HttpPost("poem")]
+        [HttpPost]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Translations)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]

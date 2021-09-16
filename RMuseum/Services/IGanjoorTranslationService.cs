@@ -61,7 +61,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="poemId"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemTranslationViewModel[]>> GetTranslationsAsync(int poemId);
+        Task<RServiceResult<GanjoorPoemTranslationViewModel[]>> GetPublishedTranslationsAsync(int poemId);
 
         /// <summary>
         /// get translation
@@ -69,6 +69,6 @@ namespace RMuseum.Services
         /// <param name="langId"></param>
         /// <param name="poemId"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemTranslationViewModel>> GetTranslationAsync(int langId, int poemId);
+        Task<RServiceResult<GanjoorPoemTranslationViewModel>> GetPublishedTranslationAsync(int langId, int poemId);
     }
 }
