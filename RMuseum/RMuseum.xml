@@ -6193,6 +6193,11 @@
             poem translation view model
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.Id">
+            <summary>
+            id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.Language">
             <summary>
             language

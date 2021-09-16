@@ -33,6 +33,11 @@ namespace GanjooRazor.Areas.User.Pages
         public GanjoorPoemTranslationViewModel Translation { get; set; }
 
         /// <summary>
+        /// user info
+        /// </summary>
+        public PublicRAppUser UserInfo { get; set; }
+
+        /// <summary>
         /// fatal error
         /// </summary>
         public string FatalError { get; set; }
@@ -80,10 +85,7 @@ namespace GanjooRazor.Areas.User.Pages
             return -1;
         }
 
-        /// <summary>
-        /// user info
-        /// </summary>
-        public PublicRAppUser UserInfo { get; set; }
+        
 
         /// <summary>
         /// get
@@ -155,63 +157,50 @@ namespace GanjooRazor.Areas.User.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostDeletePoemCorrectionsAsync(int poemid)
-        {
-            using (HttpClient secureClient = new HttpClient())
-            {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
-                {
-                    HttpResponseMessage response = await secureClient.DeleteAsync(
-                        $"{APIRoot.Url}/api/ganjoor/poem/correction/{poemid}");
-                    response.EnsureSuccessStatusCode();
-                    return new OkObjectResult(true);
-                }
-            }
-            return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
-        }
 
-        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, string rhythm, string note)
+        public async Task<IActionResult> OnPostSendPoemTranslationAsync(int poemid, int langid, string[] translations, bool published, string note)
         {
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     string title = null;
-                    List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
-                    foreach (string v in verseOrderText)
+                    List<GanjoorVerseTranslationViewModel> verses = new List<GanjoorVerseTranslationViewModel>();
+                    foreach (string v in translations)
                     {
                         var vParts = v.Split("TextSeparator", System.StringSplitOptions.RemoveEmptyEntries);
                         int vOrder = int.Parse(vParts[0]);
-                        if (vOrder == 0)
+                        if (vOrder == 0 && vParts.Length > 1)
                             title = vParts[1];
                         else
                         {
-                            vOrderTexts.Add
+                            verses.Add
                                 (
-                                new GanjoorVerseVOrderText()
+                                new GanjoorVerseTranslationViewModel()
                                 {
-                                    VORder = vOrder,
-                                    Text = vParts[1]
+                                    Verse = new GanjoorVerseViewModel() { VOrder = vOrder },
+                                    TText = vParts.Length > 1 ? vParts[1] : null
                                 }
-                                );
+                                );;
                         }
                     }
 
-                    if (title == null && vOrderTexts.Count == 0 && rhythm == null)
-                        return new BadRequestObjectResult("شما هیچ تغییری در متن نداده‌اید!");
+                    if (string.IsNullOrEmpty(title) && verses.Where(v => !string.IsNullOrEmpty(v.TText) ).FirstOrDefault() == null)
+                        return new BadRequestObjectResult("شما هیچ متنی را وارد نکرده‌اید!");
 
-                    GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel()
+                    var translation = new GanjoorPoemTranslationViewModel()
                     {
+                        Language = new GanjoorLanguage() { Id = langid },
                         PoemId = poemid,
                         Title = title,
-                        VerseOrderText = vOrderTexts.ToArray(),
-                        Rhythm = rhythm,
-                        Note = note
+                        Published = published,
+                        Description = note,
+                        TranslatedVerses = verses.ToArray()
                     };
 
                     HttpResponseMessage response = await secureClient.PostAsync(
-                        $"{APIRoot.Url}/api/ganjoor/poem/correction",
-                        new StringContent(JsonConvert.SerializeObject(correction),
+                        $"{APIRoot.Url}/api/translations/poem",
+                        new StringContent(JsonConvert.SerializeObject(translation),
                         Encoding.UTF8,
                         "application/json"));
                     if (!response.IsSuccessStatusCode)

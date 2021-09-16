@@ -133,7 +133,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="userId"></param>
         /// <param name="translation"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> AddPoemTranslation(Guid userId, GanjoorPoemTranslationViewModel translation)
+        public async Task<RServiceResult<GanjoorPoemTranslationViewModel>> AddPoemTranslation(Guid userId, GanjoorPoemTranslationViewModel translation)
         {
             try
             {
@@ -160,7 +160,7 @@ namespace RMuseum.Services.Implementation
                 var verses = await _context.GanjoorVerses.Where(v => v.PoemId == translation.PoemId).ToListAsync();
                 foreach (var translatedVerse in translation.TranslatedVerses)
                 {
-                    var verse = verses.Where(v => v.VOrder == translatedVerse.Verse.Id).Single();
+                    var verse = verses.Where(v => v.VOrder == translatedVerse.Verse.VOrder).Single();
                     dbTranslation.Verses
                     .Add(
                         new GanjoorVerseTranslation()
@@ -174,11 +174,13 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
-                return new RServiceResult<bool>(true);
+                translation.Id = dbTranslation.Id;
+
+                return new RServiceResult<GanjoorPoemTranslationViewModel>(translation);
             }
             catch (Exception exp)
             {
-                return new RServiceResult<bool>(false, exp.ToString());
+                return new RServiceResult<GanjoorPoemTranslationViewModel>(null, exp.ToString());
             }
         }
 
@@ -202,6 +204,7 @@ namespace RMuseum.Services.Implementation
                     (
                     new GanjoorPoemTranslationViewModel()
                     {
+                        Id = dbTranslation.Id,
                         Language = dbTranslation.Language,
                         PoemId = poemId,
                         Title = dbTranslation.Title,
@@ -254,6 +257,7 @@ namespace RMuseum.Services.Implementation
                         res.Add(
                             new GanjoorPoemTranslationViewModel()
                             {
+                                Id = dbTranslation.Id,
                                 Language = dbTranslation.Language,
                                 PoemId = poemId,
                                 Title = dbTranslation == null ? null : dbTranslation.Title,

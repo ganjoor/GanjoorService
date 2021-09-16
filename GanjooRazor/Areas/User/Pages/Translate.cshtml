@@ -1,7 +1,6 @@
 ﻿@page
 @model GanjooRazor.Areas.User.Pages.TranslateModel
 @using DNTPersianUtils.Core
-@using System.Linq
 @{
     Layout = "_Layout";
     ViewData["Title"] = "برگردان / نویسش";
@@ -125,7 +124,7 @@ else
 
     <tr>
         <td>
-            توضیح این ویرایش:
+            یادداشت این ویرایش:
         </td>
     </tr>
 
@@ -149,7 +148,47 @@ else
 
     <tr>
         <td>
-            <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
+            <script>
+                function savePoemTranslation(id, verseCount, langid) {
+                    var translations = [];
+                    for (var i = 0; i <= verseCount; i++) {
+                        var newElementName = '#id-' + i.toString();
+                        translations.push(i.toString() + 'TextSeparator' + $(newElementName).text());
+                    }
+
+                    $('#savetranslation').hide();
+                    $('#saving').text('در حال ذخیره ...');
+
+                    var url = '?handler=SendPoemTranslation';
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: {
+                            poemid: id,
+                            langid: langid,
+                            translations: translations,
+                            published: $('#published').is(":checked"),
+                            note: $('#description').val()
+
+                        },
+                        success: function () {
+                            location.reload(true);
+                        },
+                        error: function (e) {
+                            if (e.responseText == null)
+                                alert(e);
+                            else
+                                alert(e.responseText);
+                            $('#savetranslation').show();
+                            $('#saving').text('');
+                        }
+
+                    });
+
+                }
+            </script>
+            <a role="button" id="savetranslation" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemTranslation(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length, @Model.Translation.Language.Id)">ذخیره</a>
         </td>
     </tr>
 

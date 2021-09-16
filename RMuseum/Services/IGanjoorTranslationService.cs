@@ -54,7 +54,7 @@ namespace RMuseum.Services
         /// <param name="translation"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> AddPoemTranslation(Guid userId, GanjoorPoemTranslationViewModel translation);
+        Task<RServiceResult<GanjoorPoemTranslationViewModel>> AddPoemTranslation(Guid userId, GanjoorPoemTranslationViewModel translation);
 
         /// <summary>
         /// get translations for a poem
