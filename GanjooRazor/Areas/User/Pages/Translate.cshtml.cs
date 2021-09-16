@@ -102,7 +102,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if(Languages.Length == 0)
                     {
-                        FatalError = "<p><a role=\"button\" target=\"_blank\" href=\"/User/Languages\" class=\"actionlink\">معرفی زبان‌ها و نویسش‌ها</a></p>";
+                        FatalError = "<a role=\"button\" target=\"_blank\" href=\"/User/Languages\" class=\"actionlink\">معرفی زبان‌ها و نویسش‌ها</a>";
                         return Page();
                     }
                     

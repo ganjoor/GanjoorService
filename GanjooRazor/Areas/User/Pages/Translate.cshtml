@@ -16,7 +16,7 @@
 </script>
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
-    <p>@Model.FatalError</p>
+    <p>@Html.Raw(Model.FatalError)</p>
 }
 else
 {
