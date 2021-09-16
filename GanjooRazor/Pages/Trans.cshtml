@@ -34,7 +34,7 @@
 
                 @if (Model.LoggedIn)
                 {
-                    <a role="button" target="_blank" style="text-decoration: none; cursor: pointer; width: 100%; color: white; background-color: #300; display: block; text-align: center; border-color: #300 " href="/User/Translate?id=@Model.PoemId">برگردان کنید</a>
+                    <a role="button" target="_blank" style="text-decoration: none; cursor: pointer; width: 100%; color: white; background-color: #300; display: block; text-align: center; border-color: #300 " href="/User/Translate?id=@Model.PoemId">من اضافه کنم</a>
                 }
             }
             else
@@ -42,9 +42,24 @@
                 <select name="languages" id="languages">
                     @foreach (var language in Model.Languages)
                     {
-                        <option value="@language.Id">@language.NativeName</option>
+                        if (Model.Translation.Language.Id == language.Id)
+                        {
+                            <option value="@language.Id" selected>@language.NativeName</option>
+                        }
+                        else
+                        {
+                            <option value="@language.Id">@language.NativeName</option>
+                        }
                     }
                 </select>
+                <script>
+                    $('#languages').change(
+                        function () {
+                            var langId = $('#languages option:selected').val();
+                            location.href = '/User/Trans?p=@Model.PoemId&lang=' + String(langId);
+                        }
+                    );
+                </script>
             }
 
         }

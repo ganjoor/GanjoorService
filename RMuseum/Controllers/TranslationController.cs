@@ -132,9 +132,7 @@ namespace RMuseum.Controllers
             var res = await _translationService.GetPoemTranslationsAsync(lang, id, true, false);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
-            if (res.Result.Length > 0)
-                return Ok(res.Result[0]);
-            return NotFound();
+            return Ok(res.Result);
         }
 
         /// <summary>

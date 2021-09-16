@@ -43,6 +43,8 @@ namespace GanjooRazor.Pages
 
         public GanjoorPoemTranslationViewModel[] Translations { get; set; }
 
+        public GanjoorPoemTranslationViewModel Translation { get; set; }
+
         public string ErrorMessage { get; set; }
 
         public int PoemId { get; set; }
@@ -82,6 +84,10 @@ namespace GanjooRazor.Pages
 
             Translations = JsonConvert.DeserializeObject<GanjoorPoemTranslationViewModel[]>(await response.Content.ReadAsStringAsync());
 
+            int langId = string.IsNullOrEmpty(Request.Query["lang"]) ? -1 : int.Parse(Request.Query["lang"]);
+
+            
+
             List<GanjoorLanguage> poemLanguages = new List<GanjoorLanguage>();
             foreach (var lang in allLanguages)
             {
@@ -90,8 +96,12 @@ namespace GanjooRazor.Pages
                     poemLanguages.Add(lang);
                 }
             }
-
             Languages = poemLanguages.ToArray();
+
+            if (langId != -1)
+                Translations = Translations.Where(t => t.Language.Id == langId).ToArray();
+
+            Translation = Translations.Length > 0 ? Translations[0] : null;
 
 
             var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{PoemId}?verseDetails=true&catInfo=true&rhymes=false&recitations=false&images=false&songs=false&comments=false&navigation=false");
