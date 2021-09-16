@@ -6213,6 +6213,16 @@
             published
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.Description">
+            <summary>
+            comments or description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.ContributerName">
+            <summary>
+            contributer name
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel.TranslatedVerses">
             <summary>
             translated verses

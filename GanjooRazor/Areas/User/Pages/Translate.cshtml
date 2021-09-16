@@ -4,7 +4,7 @@
 @using System.Linq
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "ترجمه / نویسش";
+    ViewData["Title"] = "برگردان / نویسش";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
 
@@ -33,105 +33,142 @@ else
 
     @if (Model.PageInformation.Poem.Previous != null)
     {
-        <p><a href="/User/Translate?id=@Model.PageInformation.Poem.Previous.Id">ترجمهٔ شعر قبل</a></p>
+        <p><a href="/User/Translate?id=@Model.PageInformation.Poem.Previous.Id">برگردان شعر قبل</a></p>
     }
     @if (Model.PageInformation.Poem.Next != null)
     {
-        <p><a href="/User/Translate?id=@Model.PageInformation.Poem.Next.Id">ترجمهٔ شعر بعد</a></p>
+        <p><a href="/User/Translate?id=@Model.PageInformation.Poem.Next.Id">برگردان شعر بعد</a></p>
     }
 
-    <table>
-        <tr>
-            <td>
-                <p><strong>ترجمهٔ متن:</strong></p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                عنوان اصلی:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p style="color:red" id="original-0">@Model.PageInformation.Poem.Title</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                ترجمهٔ عنوان:
-            </td>
-        </tr>
-        <tr>
-            <td>
+<table>
+    <tr>
+        <td>
+            <p><strong>برگردان متن:</strong></p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            عنوان اصلی:
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p style="color:red" id="original-0">@Model.PageInformation.Poem.Title</p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            برگردان عنوان:
+        </td>
+    </tr>
+    <tr>
+        <td>
 
-                <div type="text" id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.Translation.Title</div>
-                
+            <div type="text" id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.Translation.Title</div>
+
+        </td>
+    </tr>
+
+    @foreach (var verse in Model.Translation.TranslatedVerses)
+    {
+        <tr>
+            <td>
+                بیت @Model.GetVerseCoupletNumber(verse.Verse).ToPersianNumbers()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مصرع @verse.Verse.VOrder.ToPersianNumbers()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                نوع: @Model.GetVersePosition(verse.Verse)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                متن اصلی:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p style="color: red" id="original-@($"{verse.Verse.VOrder}")">@verse.Verse.Text</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                برگردان:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="id-@($"{verse.Verse.VOrder}")" name="name-@($"{verse.Verse.VOrder}")" contenteditable="true" style="background-color:white">@verse.TText</div>
             </td>
         </tr>
 
-        @foreach (var verse in Model.Translation.TranslatedVerses)
+
+    }
+
+
+    
+    <tr>
+        @if (Model.Translation.Published)
         {
-            <tr>
-                <td>
-                    بیت @Model.GetVerseCoupletNumber(verse.Verse).ToPersianNumbers()
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    مصرع @verse.Verse.VOrder.ToPersianNumbers()
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نوع: @Model.GetVersePosition(verse.Verse)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    متن اصلی:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p style="color: red" id="original-@($"{verse.Verse.VOrder}")">@verse.Verse.Text</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    ترجمه:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div  id="id-@($"{verse.Verse.VOrder}")" name="name-@($"{verse.Verse.VOrder}")" contenteditable="true" style="background-color:white">@verse.TText</div>
-                </td>
-            </tr>
-
-
+            <td colspan="2">منتشر شده <input type="checkbox" name="published" id="published" checked /> </td>
         }
-
-        <tr>
-            <td>
-                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
-            </td>
-        </tr>
-
-        <tr>
-            <td><p id="saving">&nbsp;</p></td>
-        </tr>
-
-        @if (Model.PageInformation.Poem.Previous != null)
+        else
         {
-            <tr>
-                <td><a href="/User/Translate?id=@Model.PageInformation.Poem.Previous.Id">ترجمهٔ شعر قبل</a></td>
-            </tr>
+            <td colspan="2">منتشر شده <input type="checkbox" name="published" id="published" /> </td>
         }
-        @if (Model.PageInformation.Poem.Next != null)
-        {
-            <tr>
-                <td><a href="/User/Translate?id=@Model.PageInformation.Poem.Next.Id">ترجمهٔ شعر بعد</a></td>
-            </tr>
-        }
-    </table>
+    </tr>
+
+    <tr>
+        <td>
+            توضیح این ویرایش:
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <input type="text" id="description" name="description" value="@Model.Translation.Description" size="50" />
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            توسط:
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            @Model.Translation.ContributerName
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
+        </td>
+    </tr>
+
+    <tr>
+        <td><p id="saving">&nbsp;</p></td>
+    </tr>
+
+    @if (Model.PageInformation.Poem.Previous != null)
+    {
+        <tr>
+            <td><a href="/User/Translate?id=@Model.PageInformation.Poem.Previous.Id">برگردان شعر قبل</a></td>
+        </tr>
+    }
+    @if (Model.PageInformation.Poem.Next != null)
+    {
+        <tr>
+            <td><a href="/User/Translate?id=@Model.PageInformation.Poem.Next.Id">برگردان شعر بعد</a></td>
+        </tr>
+    }
+</table>
 
 }

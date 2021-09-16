@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <title>
-        گنجور &raquo; ترجمه‌ها و نویس‌های شعر
+        گنجور &raquo; برگردان‌ها و نویس‌های شعر
     </title>
     <link href="~/css/p7.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
@@ -29,12 +29,12 @@
             if (Model.Languages.Length == 0)
             {
                 <p>
-                    هنوز برای این شعر هیچ ترجمه یا نویسشی ارائه یا منتشر نشده است.
+                    هنوز برای این شعر هیچ برگردان یا نویسشی ارائه یا منتشر نشده است.
                 </p>
 
                 @if (Model.LoggedIn)
                 {
-                    <a role="button" target="_blank" style="text-decoration: none; cursor: pointer; width: 100%; color: white; background-color: #300; display: block; text-align: center; border-color: #300 " href="/User/Translate?id=@Model.PoemId">ترجمه کنید</a>
+                    <a role="button" target="_blank" style="text-decoration: none; cursor: pointer; width: 100%; color: white; background-color: #300; display: block; text-align: center; border-color: #300 " href="/User/Translate?id=@Model.PoemId">برگردان کنید</a>
                 }
             }
             else

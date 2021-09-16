@@ -204,7 +204,9 @@ namespace RMuseum.Services.Implementation
                     {
                         Language = dbTranslation.Language,
                         PoemId = poemId,
-                        Title = dbTranslation == null ? null : dbTranslation.Title,
+                        Title = dbTranslation.Title,
+                        Description = dbTranslation.Description,
+                        ContributerName = string.IsNullOrEmpty(dbTranslation.User.NickName) ? dbTranslation.User.Id.ToString() : dbTranslation.User.NickName,
                         TranslatedVerses = dbTranslation.Verses.Select(v =>
                         new GanjoorVerseTranslationViewModel()
                         {
@@ -240,7 +242,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var dbTranslations = await _context.GanjoorPoemTranslations.Include(t => t.Verses).Where(t => t.PoemId == poemId && t.Published == true).Include(t => t.Language).OrderBy(t => t.LanguageId).ToArrayAsync();
+                var dbTranslations = await _context.GanjoorPoemTranslations.Include(t => t.Verses).Where(t => t.PoemId == poemId && t.Published == true).Include(t => t.Language).Include(t => t.User).OrderBy(t => t.LanguageId).ToArrayAsync();
                 List<GanjoorPoemTranslationViewModel> res = new List<GanjoorPoemTranslationViewModel>();
                 if (dbTranslations.Length > 0)
                 {
@@ -255,6 +257,8 @@ namespace RMuseum.Services.Implementation
                                 Language = dbTranslation.Language,
                                 PoemId = poemId,
                                 Title = dbTranslation == null ? null : dbTranslation.Title,
+                                Description = dbTranslation.Description,
+                                ContributerName = string.IsNullOrEmpty(dbTranslation.User.NickName) ? dbTranslation.User.Id.ToString() : dbTranslation.User.NickName,
                                 TranslatedVerses = dbTranslation.Verses.Select(v =>
                                 new GanjoorVerseTranslationViewModel()
                                 {

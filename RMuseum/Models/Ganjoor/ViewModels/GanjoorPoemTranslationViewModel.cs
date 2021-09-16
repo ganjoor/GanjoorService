@@ -26,6 +26,16 @@
         public bool Published { get; set; }
 
         /// <summary>
+        /// comments or description
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// contributer name
+        /// </summary>
+        public string ContributerName { get; set; }
+
+        /// <summary>
         /// translated verses
         /// </summary>
         public GanjoorVerseTranslationViewModel[] TranslatedVerses { get; set; }

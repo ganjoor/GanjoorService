@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RSecurityBackend.Models.Auth.ViewModels;
 
 namespace GanjooRazor.Areas.User.Pages
 {
@@ -80,6 +81,11 @@ namespace GanjooRazor.Areas.User.Pages
         }
 
         /// <summary>
+        /// user info
+        /// </summary>
+        public PublicRAppUser UserInfo { get; set; }
+
+        /// <summary>
         /// get
         /// </summary>
         /// <returns></returns>
@@ -90,6 +96,8 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+                    
+
                     HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
                     if (!response.IsSuccessStatusCode)
                     {
@@ -97,6 +105,12 @@ namespace GanjooRazor.Areas.User.Pages
                         return Page();
                     }
                     response.EnsureSuccessStatusCode();
+
+                    var userInfoResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/users/{Request.Cookies["UserId"]}");
+                    if (userInfoResponse.IsSuccessStatusCode)
+                    {
+                        UserInfo = JsonConvert.DeserializeObject<PublicRAppUser>(await userInfoResponse.Content.ReadAsStringAsync());
+                    }
 
                     Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
 
@@ -122,6 +136,8 @@ namespace GanjooRazor.Areas.User.Pages
                         PoemId = PageInformation.Id,
                         Title = "",
                         Published = false,
+                        Description = "",
+                        ContributerName = UserInfo.NickName == null ? UserInfo.Id.ToString() : UserInfo.NickName,
                         TranslatedVerses = PageInformation.Poem.Verses.Select(v =>
                         new GanjoorVerseTranslationViewModel()
                         {
