@@ -54,6 +54,8 @@ namespace GanjooRazor.Pages
         /// </summary>
         public bool LoggedIn { get; set; }
 
+        public int LanguageId { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             ErrorMessage = "";
@@ -84,33 +86,40 @@ namespace GanjooRazor.Pages
 
             Translations = JsonConvert.DeserializeObject<GanjoorPoemTranslationViewModel[]>(await response.Content.ReadAsStringAsync());
 
-            int langId = string.IsNullOrEmpty(Request.Query["lang"]) ? -1 : int.Parse(Request.Query["lang"]);
-
-            
+            LanguageId = string.IsNullOrEmpty(Request.Query["lang"]) ? -1 : int.Parse(Request.Query["lang"]);
 
             List<GanjoorLanguage> poemLanguages = new List<GanjoorLanguage>();
             foreach (var lang in allLanguages)
             {
-                if(Translations.Where(t => t.Language.Id == lang.Id).FirstOrDefault() != null)
+                if (Translations.Where(t => t.Language.Id == lang.Id).FirstOrDefault() != null)
                 {
                     poemLanguages.Add(lang);
                 }
             }
+            if (LanguageId != -1)
+                if (!poemLanguages.Where(l => l.Id == LanguageId).Any())
+                {
+                    poemLanguages.Add(allLanguages.Where(l => l.Id == LanguageId).Single());
+                }
             Languages = poemLanguages.ToArray();
 
-            if (langId != -1)
-                Translations = Translations.Where(t => t.Language.Id == langId).ToArray();
+            if (LanguageId != -1)
+                Translations = Translations.Where(t => t.Language.Id == LanguageId).ToArray();
 
             Translation = Translations.Length > 0 ? Translations[0] : null;
 
+            if (Translation != null)
+                LanguageId = Translation.Language.Id;
 
-            var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{PoemId}?verseDetails=true&catInfo=true&rhymes=false&recitations=false&images=false&songs=false&comments=false&navigation=false");
-            if(!responsePoem.IsSuccessStatusCode)
+
+
+            var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{PoemId}?verseDetails=true&catInfo=true&rhymes=false&recitations=false&images=false&songs=false&comments=false&navigation=true");
+            if (!responsePoem.IsSuccessStatusCode)
             {
                 ErrorMessage = JsonConvert.DeserializeObject<string>(await responsePoem.Content.ReadAsStringAsync());
                 return Page();
             }
-            
+
             responsePoem.EnsureSuccessStatusCode();
 
             Poem = JsonConvert.DeserializeObject<GanjoorPoemCompleteViewModel>(await responsePoem.Content.ReadAsStringAsync());

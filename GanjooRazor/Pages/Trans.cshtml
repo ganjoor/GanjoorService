@@ -13,6 +13,7 @@
     <title>
         گنجور &raquo; برگردان‌ها و نویس‌های شعر
     </title>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <link href="~/css/p7.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
@@ -26,6 +27,15 @@
         }
         else
         {
+            @if (Model.Poem.Previous != null)
+            {
+                <p><a href="/Trans?p=@Model.Poem.Previous.Id&lang=@Model.LanguageId">شعر قبل</a></p>
+            }
+            @if (Model.Poem.Next != null)
+            {
+                <p><a href="/Trans?p=@Model.Poem.Next.Id&lang=@Model.LanguageId">شعر بعد</a></p>
+            }
+
             if (Model.Languages.Length == 0)
             {
                 <p>
@@ -42,7 +52,7 @@
                 <select name="languages" id="languages">
                     @foreach (var language in Model.Languages)
                     {
-                        if (Model.Translation.Language.Id == language.Id)
+                        if (Model.LanguageId == language.Id)
                         {
                             <option value="@language.Id" selected>@language.NativeName</option>
                         }
@@ -56,10 +66,48 @@
                     $('#languages').change(
                         function () {
                             var langId = $('#languages option:selected').val();
-                            location.href = '/User/Trans?p=@Model.PoemId&lang=' + String(langId);
+                            location.href = '/Trans?p=@Model.PoemId&lang=' + String(langId);
                         }
                     );
                 </script>
+
+
+
+                if (Model.Translation == null)
+                {
+                    <p>
+                        هنوز برای این شعر هیچ برگردان یا نویسشی با این زبان ارائه یا منتشر نشده است.
+                    </p>
+
+                }
+                else
+                {
+                    <p><a role="button" target="_blank" href="@Model.Poem.FullUrl" class="actionlink">@Model.Poem.FullTitle</a></p>
+                    @if (!string.IsNullOrEmpty(Model.Translation.Title))
+                    {
+                        <div class="commentquote">@Model.Translation.Title</div>
+                    }
+
+
+                    @foreach (var verse in Model.Translation.TranslatedVerses)
+                    {
+                        if (!string.IsNullOrEmpty(verse.TText))
+                        {
+                            <p>@verse.Verse.Text</p>
+                            <div class="commentquote">@verse.TText</div>
+                        }
+                    }
+
+                    @if (Model.Poem.Previous != null)
+                    {
+                        <p><a href="/Trans?p=@Model.Poem.Previous.Id&lang=@Model.LanguageId">شعر قبل</a></p>
+                    }
+                    @if (Model.Poem.Next != null)
+                    {
+                        <p><a href="/Trans?p=@Model.Poem.Next.Id&lang=@Model.LanguageId">شعر بعد</a></p>
+                    }
+                }
+
             }
 
         }
