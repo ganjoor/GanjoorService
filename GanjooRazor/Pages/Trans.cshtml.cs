@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 
@@ -52,7 +54,7 @@ namespace GanjooRazor.Pages
         /// <summary>
         /// is logged on
         /// </summary>
-        public bool LoggedIn { get; set; }
+        public bool CanTranslate { get; set; }
 
         public int LanguageId { get; set; }
 
@@ -60,7 +62,17 @@ namespace GanjooRazor.Pages
         {
             ErrorMessage = "";
 
-            LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
+            CanTranslate = false;
+            if (!string.IsNullOrEmpty(Request.Cookies["Token"]))
+            {
+                await GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+                if (ViewData.ContainsKey($"{RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseumSecurableItem.Translations}"))
+                {
+                    CanTranslate = true;
+                }
+            }
+
+            
 
             PoemId = int.Parse(Request.Query["p"]);
 

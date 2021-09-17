@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Auth.ViewModels;
@@ -104,6 +105,13 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+
+                    await GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+                    if (!ViewData.ContainsKey($"{RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseumSecurableItem.Translations}"))
+                    {
+                        FatalError = "حساب کاربری شما به این بخش دسترسی ندارد.";
+                        return Page();
+                    }
 
                     int poemId = int.Parse(Request.Query["id"]);
 

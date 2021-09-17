@@ -42,7 +42,7 @@
                     هنوز برای این شعر هیچ برگردان یا نویسشی ارائه یا منتشر نشده است.
                 </p>
 
-                @if (Model.LoggedIn)
+                @if (Model.CanTranslate)
                 {
                     <a role="button" target="_blank" style="text-decoration: none; cursor: pointer; width: 100%; color: white; background-color: #300; display: block; text-align: center; border-color: #300 " href="/User/Translate?id=@Model.PoemId">من اضافه کنم</a>
                 }
@@ -108,7 +108,7 @@
                     }
                 }
 
-                @if (Model.LoggedIn)
+                @if (Model.CanTranslate)
                 {
                     <a role="button" target="_blank" style="text-decoration: none; cursor: pointer; width: 100%; color: white; background-color: #300; display: block; text-align: center; border-color: #300 " href="/User/Translate?id=@Model.PoemId">من ترجمه کنم</a>
                 }
