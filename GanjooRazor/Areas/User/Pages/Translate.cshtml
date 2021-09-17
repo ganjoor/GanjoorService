@@ -56,6 +56,14 @@ else
 
         }
     </select>
+    <script>
+        $('#translations').change(
+        function () {
+                var transId = $('#translations option:selected').val();
+                location.href = '/User/Translate?id=@Model.PageInformation.Id&t=' + String(transId);
+        }
+    );
+    </script>
 
     <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
 
@@ -214,8 +222,8 @@ else
                                 note: $('#description').val()
 
                             },
-                            success: function () {
-                                location.reload(true);
+                            success: function (transId) {
+                                location.href = '/User/Translate?id=' + String(id)+'&t=' + String(transId);
                             },
                             error: function (e) {
                                 if (e.responseText == null)

@@ -107,6 +107,8 @@ namespace GanjooRazor.Areas.User.Pages
 
                     int poemId = int.Parse(Request.Query["id"]);
 
+                    int transId = string.IsNullOrEmpty(Request.Query["t"]) ? -1 : int.Parse(Request.Query["t"]);
+
                     int langId = string.IsNullOrEmpty(Request.Query["lang"]) ? -1 : int.Parse(Request.Query["lang"]);
 
                     HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/poem/{poemId}/language/{langId}");
@@ -126,6 +128,12 @@ namespace GanjooRazor.Areas.User.Pages
                     }
                     UserInfo = JsonConvert.DeserializeObject<PublicRAppUser>(await userInfoResponse.Content.ReadAsStringAsync());
 
+                    if(transId != -1)
+                    {
+                        Translation = translations.Where(t => t.Id == transId).Single();
+                        langId = Translation.Language.Id;
+                    }
+
                     if (langId == -1)
                     {
                         var lastLangResp = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/user/lastlanguage");
@@ -136,7 +144,7 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                     }
 
-                    if (langId != -1)
+                    if (langId != -1 && Translation == null)
                     {
                         Translations = translations;
                         foreach (var translation in translations)
@@ -146,7 +154,7 @@ namespace GanjooRazor.Areas.User.Pages
                                 break;
                             }
                     }
-                    else if (translations.Length > 0)
+                    else if (translations.Length > 0 && Translation == null)
                     {
                         foreach (var translation in translations)
                             if (translation.ContributerId == UserInfo.Id)
@@ -161,7 +169,6 @@ namespace GanjooRazor.Areas.User.Pages
                             langId = Translation.Language.Id;
                         }
 
-                        Translations = translations.Where(t => t.Language.Id == langId).ToArray();
                     }
 
                    
@@ -222,7 +229,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if(langId != -1)
                     {
-                        Translations = Translations.Where(t => t.Language.Id == langId).ToArray();
+                        Translations = translations.Where(t => t.Language.Id == langId).ToArray();
                     }
 
                     
@@ -285,7 +292,8 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
-                    return new OkObjectResult(true);
+                    Translation = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorPoemTranslationViewModel>();
+                    return new OkObjectResult(Translation.Id);
                 }
                 else
                 {
