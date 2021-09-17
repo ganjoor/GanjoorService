@@ -65,6 +65,8 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         {
             if(Id != 0)
             {
+                if(Published)
+                    return $"*منتشره شده - {ContributerName}-{DateTime.ToFriendlyPersianDateTextify()}";
                 return $"{ContributerName}-{DateTime.ToFriendlyPersianDateTextify()}";
             }
             return "جدید"; 

@@ -220,6 +220,11 @@ namespace GanjooRazor.Areas.User.Pages
                         Translations = new GanjoorPoemTranslationViewModel[] { Translation };
                     }
 
+                    if(langId != -1)
+                    {
+                        Translations = Translations.Where(t => t.Language.Id == langId).ToArray();
+                    }
+
                     
                 }
                 else
