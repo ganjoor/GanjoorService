@@ -817,6 +817,13 @@ namespace RMuseum.Services.Implementation
 
             }
 
+            while (poemtext.IndexOf("id=\"bn") != -1)
+            {
+                int idxbn1 = poemtext.IndexOf(" id=\"bn");
+                int idxbn2 = poemtext.IndexOf("\"", idxbn1 + " id=\"bn".Length);
+                poemtext = poemtext.Substring(0, idxbn1) + poemtext.Substring(idxbn2+1);
+            }
+
 
             poemtext = poemtext.Replace("Adaptation du milieu", "یییییییییییییییییییی");
             poemtext = poemtext.Replace("Empirique", "ببببببببب");

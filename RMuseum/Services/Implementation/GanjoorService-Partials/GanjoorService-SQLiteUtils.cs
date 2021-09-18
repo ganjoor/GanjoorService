@@ -748,18 +748,20 @@ namespace RMuseum.Services.Implementation
         private static string PrepareHtmlText(List<GanjoorVerse> verses)
         {
             string htmlText = "";
+            int coupletIndex = 0;
             for (int vIndex = 0; vIndex < verses.Count; vIndex++)
             {
                 GanjoorVerse v = verses[vIndex];
                 if (v.VersePosition == VersePosition.CenteredVerse1)
                 {
+                    coupletIndex++;
                     if (((vIndex + 1) < verses.Count) && (verses[vIndex + 1].VersePosition == VersePosition.CenteredVerse2))
                     {
-                        htmlText += $"<div class=\"b2\"><p>{v.Text}</p>{Environment.NewLine}";
+                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\" ><p>{v.Text}</p>{Environment.NewLine}";
                     }
                     else
                     {
-                        htmlText += $"<div class=\"b2\"><p>{v.Text}</p></div>{Environment.NewLine}";
+                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\"><p>{v.Text}</p></div>{Environment.NewLine}";
 
                     }
                 }
@@ -772,7 +774,8 @@ namespace RMuseum.Services.Implementation
 
                 if (v.VersePosition == VersePosition.Right)
                 {
-                    htmlText += $"<div class=\"b\"><div class=\"m1\"><p>{v.Text}</p></div>{Environment.NewLine}";
+                    coupletIndex++;
+                    htmlText += $"<div class=\"b\" id=\"bn{coupletIndex}\"><div class=\"m1\"><p>{v.Text}</p></div>{Environment.NewLine}";
                 }
                 else
                 if (v.VersePosition == VersePosition.Left)
@@ -782,7 +785,7 @@ namespace RMuseum.Services.Implementation
                 else
                 if (v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single)
                 {
-
+                    coupletIndex++;
                     string[] lines = v.Text.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
                     string cssClass = v.VersePosition == VersePosition.Paragraph ? "n" : "l";
@@ -791,23 +794,23 @@ namespace RMuseum.Services.Implementation
                     {
                         if (v.Text.Length / lines.Length < 150)
                         {
-                            htmlText += $"<div class=\"{cssClass}\"><p>{v.Text.Replace("\r\n", " ")}</p></div>{Environment.NewLine}";
+                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{v.Text.Replace("\r\n", " ")}</p></div>{Environment.NewLine}";
                         }
                         else
                         {
                             foreach (string line in lines)
-                                htmlText += $"<div class=\"{cssClass}\"><p>{line}</p></div>{Environment.NewLine}";
+                                htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{line}</p></div>{Environment.NewLine}";
                         }
                     }
                     else
                     {
                         if(string.IsNullOrEmpty(v.Text))
                         {
-                            htmlText += $"<div class=\"{cssClass}\"><p>&nbsp;</p></div>{Environment.NewLine}";//empty line!
+                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>&nbsp;</p></div>{Environment.NewLine}";//empty line!
                         }
                         else
                         {
-                            htmlText += $"<div class=\"{cssClass}\"><p>{v.Text}</p></div>{Environment.NewLine}";//not brave enough to ignore it!
+                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{v.Text}</p></div>{Environment.NewLine}";//not brave enough to ignore it!
                         }
                         
                     }

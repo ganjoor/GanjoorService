@@ -2722,20 +2722,52 @@ namespace RMuseum.Services.Implementation
 
                 List<GanjoorVerse> verses = _extractVersesFromPoemHtmlText(id, pageData.HtmlText);
 
-
                 dbPoem.PlainText = PreparePlainText(verses);
 
                 _context.GanjoorPoems.Update(dbPoem);
 
 
                 var oldVerses = await _context.GanjoorVerses.Where(v => v.PoemId == id).ToListAsync();
-                _context.GanjoorVerses.RemoveRange(oldVerses);
 
-                _context.GanjoorVerses.AddRange(verses);
+                if (oldVerses.Count <= verses.Count)
+                {
+                    for (int v = 0; v < oldVerses.Count; v++)
+                    {
+                        oldVerses[v].Text = verses[v].Text;
+                        oldVerses[v].VersePosition = verses[v].VersePosition;
+                        oldVerses[v].VOrder= verses[v].VOrder;
+                        _context.GanjoorVerses.Update(oldVerses[v]);
+                    }
 
+                    for(int v = oldVerses.Count; v < verses.Count; v++)
+                    {
+                        _context.GanjoorVerses.Add(verses[v]);
+                    }
+                }
+                else
+                {
+                    for (int v = 0; v < verses.Count; v++)
+                    {
+                        oldVerses[v].Text = verses[v].Text;
+                        oldVerses[v].VersePosition = verses[v].VersePosition;
+                        oldVerses[v].VOrder = verses[v].VOrder;
+                        _context.GanjoorVerses.Update(oldVerses[v]);
+                    }
+
+                    for (int v = verses.Count; v < oldVerses.Count; v++)
+                    {
+                        _context.GanjoorVerses.Remove(oldVerses[v]);
+                    }
+                }
             }
-
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPageCompleteViewModel>(null, exp.ToString());
+            }
 
 
             CacheCleanForPageByUrl(dbPage.FullUrl);
@@ -3708,7 +3740,10 @@ namespace RMuseum.Services.Implementation
 
                             var poem = poems[i];
 
-                            poem.PlainText = PreparePlainText(await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.Id).ToListAsync());
+                            var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.Id).ToListAsync();
+
+                            poem.PlainText = PreparePlainText(verses);
+                            poem.HtmlText = PrepareHtmlText(verses);
                         }
 
                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Finalizing PlainText");
