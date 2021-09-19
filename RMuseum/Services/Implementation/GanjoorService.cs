@@ -3727,7 +3727,7 @@ namespace RMuseum.Services.Implementation
                     {
                         var poems = await context.GanjoorPoems.ToArrayAsync();
 
-                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating PlainText");
+                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating PlainText/Poem Html");
 
                         int percent = 0;
                         for (int i = 0; i < poems.Length; i++)
@@ -3740,17 +3740,21 @@ namespace RMuseum.Services.Implementation
 
                             var poem = poems[i];
 
-                            var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.Id).ToListAsync();
+                            var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
 
                             poem.PlainText = PreparePlainText(verses);
                             poem.HtmlText = PrepareHtmlText(verses);
                         }
 
-                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Finalizing PlainText");
+                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Finalizing PlainText/Poem Html");
 
                         context.GanjoorPoems.UpdateRange(poems);
 
                         await context.SaveChangesAsync();
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 50, $"Updating pages HTML");
+
+                        await context.Database.ExecuteSqlRawAsync("UPDATE p SET p.HtmlText = (SELECT poem.HtmlText FROM GanjoorPoems poem WHERE poem.Id = p.Id) FROM GanjoorPages p WHERE p.GanjoorPageType = 3 ");
 
                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                     }
