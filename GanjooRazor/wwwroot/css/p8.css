@@ -327,6 +327,7 @@ div.n, div.l {
     margin: auto;
     margin-bottom: 20px;
     text-align: center;
+    clear: both;
 }
 
 .m1 {
