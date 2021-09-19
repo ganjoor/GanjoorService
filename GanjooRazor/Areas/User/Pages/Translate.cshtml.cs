@@ -148,7 +148,10 @@ namespace GanjooRazor.Areas.User.Pages
                         if (response.StatusCode != HttpStatusCode.NotFound)
                         {
                             var lang = JsonConvert.DeserializeObject<GanjoorLanguage>(await lastLangResp.Content.ReadAsStringAsync());
-                            langId = lang.Id;
+                            if(lang != null)
+                            {
+                                langId = lang.Id;
+                            }
                         }
                     }
 
