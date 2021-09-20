@@ -44,5 +44,10 @@
         /// image url
         /// </summary>
         public string ImageUrl { get; set; }
+
+        public override string ToString()
+        {
+            return Nickname;
+        }
     }
 }

@@ -50,14 +50,16 @@ else
             </tr>
             <tr>
                 <td colspan="2">
-                    <input type="radio" id="title_review_result_Approved" name="title_review_result" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                    <label for="title_review_result_Approved">تأیید می‌شود</label><br>
                     @if (Model.Correction.Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                     {
+                        <input type="radio" id="title_review_result_Approved" name="title_review_result" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                        <label for="title_review_result_Approved">تأیید می‌شود</label><br>
                         <input type="radio" id="title_review_result_NotChanged" name="title_review_result" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
                     }
                     else
                     {
+                        <input type="radio" id="title_review_result_Approved" name="title_review_result" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                        <label for="title_review_result_Approved">تأیید می‌شود</label><br>
                         <input type="radio" id="title_review_result_NotChanged" name="title_review_result" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                     }
                     <label for="title_review_result_NotChanged">تغییری نکرده</label><br>
@@ -156,14 +158,16 @@ else
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                        <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label><br>
                         @if (verse.Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                         {
+                            <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                            <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label><br>
                             <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
                         }
                         else
                         {
+                            <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                            <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label><br>
                             <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                         }
                         <label for="verse@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
