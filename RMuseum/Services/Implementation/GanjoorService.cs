@@ -1818,13 +1818,19 @@ namespace RMuseum.Services.Implementation
             }
 
             pageViewModel.HtmlText = PrepareHtmlText(poemVerses);
-
-            var newRhyme = LanguageUtils.FindRhyme(poemVerses);
-            if (!string.IsNullOrEmpty(newRhyme.Rhyme) &&
-                (string.IsNullOrEmpty(dbPoem.RhymeLetters) || (!string.IsNullOrEmpty(dbPoem.RhymeLetters) && newRhyme.Rhyme.Length > dbPoem.RhymeLetters.Length))
-                )
+            try
             {
-                pageViewModel.RhymeLetters = newRhyme.Rhyme;
+                var newRhyme = LanguageUtils.FindRhyme(poemVerses);
+                if (!string.IsNullOrEmpty(newRhyme.Rhyme) &&
+                    (string.IsNullOrEmpty(dbPoem.RhymeLetters) || (!string.IsNullOrEmpty(dbPoem.RhymeLetters) && newRhyme.Rhyme.Length > dbPoem.RhymeLetters.Length))
+                    )
+                {
+                    pageViewModel.RhymeLetters = newRhyme.Rhyme;
+                }
+            }
+            catch
+            {
+
             }
 
             var res = await UpdatePageAsync(moderation.PoemId, userId, pageViewModel);
