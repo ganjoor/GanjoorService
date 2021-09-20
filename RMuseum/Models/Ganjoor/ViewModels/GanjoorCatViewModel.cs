@@ -52,6 +52,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// </summary>
         public ICollection<GanjoorPoemSummaryViewModel> Poems { get; set; }
 
-       
+        public override string ToString()
+        {
+            return Title;
+        }
+
+
     }
 }
