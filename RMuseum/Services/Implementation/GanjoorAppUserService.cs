@@ -279,54 +279,62 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, "تلاش برای حذف کاربر سیستمی");
             }
 
+            string deletedUserEmail = $"{Configuration.GetSection("Ganjoor")["DeleteUserEmail"]}";
+            var deletedUserId = (Guid)(await FindUserByEmail(deletedUserEmail)).Result.Id;
+
+            if (deletedUserId == userId)
+            {
+                return new RServiceResult<bool>(false, "تلاش برای حذف کاربر سیستمی کاربر حذف شده");
+            }
+
             var reviewedRecitations = await context.Recitations.Where(r => r.ReviewerId == userId).ToListAsync();
             foreach(var reviewedRecitation in reviewedRecitations)
-                reviewedRecitation.ReviewerId = systemUserId;
+                reviewedRecitation.ReviewerId = deletedUserId;
             context.UpdateRange(reviewedRecitations);
 
             var suggestedCorrections = await context.GanjoorPoemCorrections.Where(c => c.UserId == userId).ToListAsync();
             foreach (var suggestedCorrection in suggestedCorrections)
-                suggestedCorrection.UserId = systemUserId;
+                suggestedCorrection.UserId = deletedUserId;
             context.UpdateRange(suggestedCorrections);
 
             var reviewedCorrections = await context.GanjoorPoemCorrections.Where(c => c.ReviewerUserId == userId).ToListAsync();
             foreach (var reviewedCorrection in reviewedCorrections)
-                reviewedCorrection.UserId = systemUserId;
+                reviewedCorrection.UserId = deletedUserId;
             context.UpdateRange(reviewedCorrections);
 
             var reportedComments = await context.GanjoorReportedComments.Where(r => r.ReportedById == userId).ToListAsync();
             foreach (var reportedComment in reportedComments)
-                reportedComment.ReportedById = systemUserId;
+                reportedComment.ReportedById = deletedUserId;
             context.UpdateRange(reportedComments);
 
             var ganjoorLinks = await context.GanjoorLinks.Where(l => l.SuggestedById == userId).ToListAsync();
             foreach (var ganjoorLink in ganjoorLinks)
-                ganjoorLink.SuggestedById = systemUserId;
+                ganjoorLink.SuggestedById = deletedUserId;
             context.UpdateRange(ganjoorLinks);
 
             var reviewedGanjoorLinks = await context.GanjoorLinks.Where(l => l.ReviewerId == userId).ToListAsync();
             foreach (var reviewedGanjoorLink in reviewedGanjoorLinks)
-                reviewedGanjoorLink.ReviewerId = systemUserId;
+                reviewedGanjoorLink.ReviewerId = deletedUserId;
             context.UpdateRange(reviewedGanjoorLinks);
 
             var pinLinks = await context.PinterestLinks.Where(l => l.SuggestedById == userId).ToListAsync();
             foreach (var pinLink in pinLinks)
-                pinLink.SuggestedById = systemUserId;
+                pinLink.SuggestedById = deletedUserId;
             context.UpdateRange(pinLinks);
 
             var reviewedPinLinks = await context.GanjoorLinks.Where(l => l.ReviewerId == userId).ToListAsync();
             foreach (var reviewedPinLink in reviewedPinLinks)
-                reviewedPinLink.ReviewerId = systemUserId;
+                reviewedPinLink.ReviewerId = deletedUserId;
             context.UpdateRange(reviewedPinLinks);
 
             var poemMusicTracks = await context.GanjoorPoemMusicTracks.Where(m => m.SuggestedById == userId).ToListAsync();
             foreach (var poemMusicTrack in poemMusicTracks)
-                poemMusicTrack.SuggestedById = systemUserId;
+                poemMusicTrack.SuggestedById = deletedUserId;
             context.UpdateRange(poemMusicTracks);
 
             var snapshots = await context.GanjoorPageSnapshots.Where(s => s.MadeObsoleteByUserId == userId).ToListAsync();
             foreach (var snapshot in snapshots)
-                snapshot.MadeObsoleteByUserId = systemUserId;
+                snapshot.MadeObsoleteByUserId = deletedUserId;
             context.UpdateRange(snapshots);
 
             await context.SaveChangesAsync();
