@@ -266,8 +266,11 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         var vParts = v.Split("TextSeparator", System.StringSplitOptions.RemoveEmptyEntries);
                         int vOrder = int.Parse(vParts[0]);
-                        if (vOrder == 0 && vParts.Length > 1)
-                            title = vParts[1];
+                        if (vOrder == 0)
+                        {
+                            if(vParts.Length > 1)
+                                title = vParts[1];
+                        }
                         else
                         {
                             verses.Add
@@ -277,7 +280,7 @@ namespace GanjooRazor.Areas.User.Pages
                                     Verse = new GanjoorVerseViewModel() { VOrder = vOrder },
                                     TText = vParts.Length > 1 ? vParts[1] : null
                                 }
-                                );;
+                                ); ;
                         }
                     }
 

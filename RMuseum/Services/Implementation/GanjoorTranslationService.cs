@@ -83,6 +83,9 @@ namespace RMuseum.Services.Implementation
                 if (lang == null)
                     return new RServiceResult<bool>(false, "اطلاعات زبان یافت نشد.");
 
+                var translations = await _context.GanjoorPoemTranslations.Where(l => l.LanguageId == id).ToListAsync();
+                _context.RemoveRange(translations);
+
                 _context.Remove(lang);
 
                 await _context.SaveChangesAsync();
