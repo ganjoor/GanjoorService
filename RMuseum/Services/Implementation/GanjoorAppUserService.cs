@@ -337,6 +337,11 @@ namespace RMuseum.Services.Implementation
                 snapshot.MadeObsoleteByUserId = deletedUserId;
             context.UpdateRange(snapshots);
 
+            var translations = await context.GanjoorPoemTranslations.Where(t => t.UserId == userId).ToListAsync();
+            foreach (var translation in translations)
+                translation.UserId = deletedUserId;
+            context.UpdateRange(translations);
+
             await context.SaveChangesAsync();
 
             List<int> poemsNeededToBeRefreshed = new List<int>();
