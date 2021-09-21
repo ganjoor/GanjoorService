@@ -26,6 +26,8 @@ namespace RMuseum.Services.Implementation
             lang.Code = lang.Code == null ? lang.Code : lang.Code.Trim();
             if (string.IsNullOrEmpty(lang.Name) || string.IsNullOrEmpty(lang.Code))
                 return new RServiceResult<GanjoorLanguage>(null, "ورود کد و نام زبان اجباری است.");
+            if (string.IsNullOrEmpty(lang.NativeName))
+                lang.NativeName = lang.Name;
             var existing = await _context.GanjoorLanguages.Where(l => l.Name == lang.Name || l.Code == lang.Code).FirstOrDefaultAsync();
             if (existing != null)
                 return new RServiceResult<GanjoorLanguage>(null, "اطلاعات تکراری است.");
@@ -83,7 +85,7 @@ namespace RMuseum.Services.Implementation
                 if (lang == null)
                     return new RServiceResult<bool>(false, "اطلاعات زبان یافت نشد.");
 
-                var translations = await _context.GanjoorPoemTranslations.Where(l => l.LanguageId == id).ToListAsync();
+                var translations = await _context.GanjoorPoemTranslations.Include(t => t.Verses).Where(l => l.LanguageId == id).ToListAsync();
                 _context.RemoveRange(translations);
 
                 _context.Remove(lang);

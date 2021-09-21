@@ -110,7 +110,17 @@ else
                     <td>@language.Name</td>
                     <td>@language.Code</td>
                     <td>@language.NativeName</td>
-                    <td>@($"{(language.RightToLeft ? "✅" : "⧠")}")</td>
+                    <td>
+                        @if (language.RightToLeft)
+                        {
+                            <input type="checkbox" checked="checked" disabled="disabled" />
+                        }
+                        else
+                        {
+                            <input type="checkbox" disabled="disabled" />
+                        }
+
+                    </td>
                     <td>@language.Description</td>
                     <td>
                         <a role="button" href="/User/LanguageEdit?id=@language.Id" class="actionlink" title="ویرایش">✎</a>
