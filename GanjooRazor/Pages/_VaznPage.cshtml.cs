@@ -123,6 +123,13 @@ namespace GanjooRazor.Pages
 
         private string _GetPoemTextExcerpt(string poemText)
         {
+            while (poemText.IndexOf("id=\"bn") != -1)
+            {
+                int idxbn1 = poemText.IndexOf(" id=\"bn");
+                int idxbn2 = poemText.IndexOf("\"", idxbn1 + " id=\"bn".Length);
+                poemText = poemText.Substring(0, idxbn1) + poemText.Substring(idxbn2 + 1);
+            }
+
             poemText = poemText.Replace("<div class=\"b\">", "").Replace("<div class=\"b2\">", "").Replace("<div class=\"m1\">", "").Replace("<div class=\"m2\">", "").Replace("</div>", "");
 
             int index = poemText.IndexOf("<p>");
