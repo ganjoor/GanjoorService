@@ -577,6 +577,75 @@ namespace RMuseum.Services.Implementation
                     var poetCatId = 1 + await context.GanjoorCategories.MaxAsync(c => c.Id);
 
                     string url = GPersianTextSync.Farglisize(cat.text);
+                    switch(cat.text)
+                    {
+                        case "دیوان اشعار":
+                            url = "divan";
+                            break;
+                        case "قصاید":
+                        case "قصائد":
+                        case "قصیده":
+                        case "قصیده ها":
+                            url = "ghaside";
+                            break;
+                        case "غزلیات":
+                        case "غزل":
+                        case "غزل ها":
+                            url = "ghazal";
+                            break;
+                        case "قطعات":
+                        case "مقطعات":
+                        case "قطعه":
+                            url = "ghete";
+                            break;
+                        case "مثنویات":
+                        case "مثنوی":
+                        case "مثنوی ها":
+                            url = "masnavi";
+                            break;
+                        case "ترکیبات":
+                        case "ترکیب بند":
+                            url = "tarkib";
+                            break;
+                        case "ترجیعات":
+                        case "ترجیع بند":
+                            url = "tarjee";
+                            break;
+                        case "مسمطات":
+                        case "مسمط":
+                            url = "mosammat";
+                            break;
+                        case "مخمسات":
+                        case "مخمس":
+                            url = "mokhammas";
+                            break;
+                        case "رباعیات":
+                        case "رباعی":
+                        case "رباعی ها":
+                            url = "robaee";
+                            break;
+                        case "ملمعات":
+                        case "ملمع":
+                            url = "molamma";
+                            break;
+                        case "هجویات":
+                        case "هجو":
+                            url = "hajv";
+                            break;
+                        case "هزلیات":
+                        case "هزل":
+                            url = "hazl";
+                            break;
+                        case "مراثی":
+                        case "مرثیه":
+                        case "رثا":
+                        case "مرثیه ها":
+                            url = "hazl";
+                            break;
+                        case "مفردات":
+                            url = "mofradat";
+                            break;
+                    }
 
                     GanjoorCat dbCat = new GanjoorCat()
                     {
