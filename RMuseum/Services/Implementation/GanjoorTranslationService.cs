@@ -156,7 +156,7 @@ namespace RMuseum.Services.Implementation
                     LanguageId = translation.Language.Id,
                     PoemId = translation.PoemId,
                     Title = translation.Title,
-                    Published = true,
+                    Published = translation.Published,
                     Verses = new List<GanjoorVerseTranslation>(),
                     UserId = userId,
                     DateTime = DateTime.Now
