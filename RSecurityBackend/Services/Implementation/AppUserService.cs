@@ -703,6 +703,7 @@ namespace RSecurityBackend.Services.Implementation
                     UserName = newUserInfo.Username,
                     FirstName = newUserInfo.FirstName,
                     SureName = newUserInfo.SureName,
+                    NickName = newUserInfo.NickName,
                     Email = newUserInfo.Email,
                     PhoneNumber = newUserInfo.PhoneNumber,
                     CreateDate = DateTime.Now,
