@@ -281,6 +281,35 @@
             });
 
         }
+
+
+        function breakPoem(poemId, vOrder, vText) {
+            if (!confirm(vText))
+                return;
+            $('#breakpoem').hide();
+
+            var url = '?handler=BreakPoem';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    poemId: poemId,
+                    vOrder: vOrder
+                },
+                success: function (id) {
+                    location.href = '/?p=' + String(id);
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                    $('#breakpoem').show();
+                }
+
+            });
+        }
     </script>
 </head>
 

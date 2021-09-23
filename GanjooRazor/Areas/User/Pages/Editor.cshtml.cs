@@ -79,12 +79,18 @@ namespace GanjooRazor.Areas.User.Pages
         }
 
         /// <summary>
+        /// can edit
+        /// </summary>
+        public bool CanEdit { get; set; }
+
+        /// <summary>
         /// get
         /// </summary>
         /// <returns></returns>
         public async Task<IActionResult> OnGetAsync()
         {
             FatalError = "";
+            CanEdit = Request.Cookies["CanEdit"] == "True";
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
@@ -178,6 +184,38 @@ namespace GanjooRazor.Areas.User.Pages
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                     return new OkObjectResult(true);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
+
+
+        public async Task<IActionResult> OnPostBreakPoemAsync(int poemId, int vOrder)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/poem/break",
+                        new StringContent(JsonConvert.SerializeObject
+                        (
+                            new PoemVerseOrder()
+                            {
+                                PoemId = poemId,
+                                VOrder = vOrder
+                            }
+                        ),
+                        Encoding.UTF8,
+                        "application/json"));
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkObjectResult(JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync()));
                 }
                 else
                 {

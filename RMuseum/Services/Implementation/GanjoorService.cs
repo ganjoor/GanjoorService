@@ -1892,8 +1892,8 @@ namespace RMuseum.Services.Implementation
                 if (!int.TryParse(poem.UrlSlug.Substring("sh".Length), out int slugNumber))
                     return new RServiceResult<int>(-1, $"slug error: {poem.UrlSlug}");
 
-                var poemPage = await _context.GanjoorPages.Where(p => p.Id == poem.Id).SingleAsync();
-                var parentPage = await _context.GanjoorPages.Where(p => p.Id == poemPage.ParentId).SingleAsync();
+                var poemPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == poem.Id).SingleAsync();
+                var parentPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == poem.Category.Cat.Id).SingleAsync();
 
                 string nextPoemUrlSluf = $"sh{slugNumber + 1}";
 
@@ -1949,9 +1949,9 @@ namespace RMuseum.Services.Implementation
 
                 GanjoorPage dbPoemNewPage = new GanjoorPage()
                 {
-                    Id = poemId,
+                    Id = nextPoemId,
                     GanjoorPageType = GanjoorPageType.PoemPage,
-                    Published = false,
+                    Published = true,
                     PageOrder = -1,
                     Title = dbNewPoem.Title,
                     FullTitle = dbNewPoem.FullTitle,
@@ -1960,7 +1960,7 @@ namespace RMuseum.Services.Implementation
                     HtmlText = dbNewPoem.HtmlText,
                     PoetId = parentPage.PoetId,
                     CatId = poem.Category.Cat.Id,
-                    PoemId = poemId,
+                    PoemId = nextPoemId,
                     PostDate = DateTime.Now,
                     ParentId = parentPage.Id,
                 };
@@ -2006,7 +2006,7 @@ namespace RMuseum.Services.Implementation
 
 
 
-                return new RServiceResult<int>(maxPoemId);
+                return new RServiceResult<int>(nextPoemId);
             }
             catch (Exception exp)
             {
