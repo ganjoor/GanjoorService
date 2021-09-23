@@ -979,6 +979,13 @@
             <param name="correction"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.BreakPoemAsync(RMuseum.Models.Ganjoor.ViewModels.PoemVerseOrder)">
+            <summary>
+            break a poem from a verse forward
+            </summary>
+            <param name="verse"></param>
+            <returns>id of new poem</returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SuggestSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             suggest song for poem
@@ -6599,6 +6606,21 @@
             alternate text
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemVerseOrder">
+            <summary>
+            poem + verse order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemVerseOrder.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemVerseOrder.VOrder">
+            <summary>
+            verse order
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.UserSongSuggestionsHistory">
             <summary>
             history of suggested songs by a user
@@ -8150,6 +8172,15 @@
             <param name="correction"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.BreakPoemAsync(System.Int32,System.Int32,System.Guid)">
+            <summary>
+            break a poem from a verse forward
+            </summary>
+            <param name="poemId"></param>
+            <param name="vOrder"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedSong(System.Int32,System.Guid)">
             <summary>
             next unreviewed track
@@ -8489,15 +8520,6 @@
             <summary>
             start updating mundex page
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IGanjoorService.BreakPoemAsync(System.Int32,System.Int32,System.Guid)">
-            <summary>
-            break a poem from a verse forward
-            </summary>
-            <param name="poemId"></param>
-            <param name="vOrder"></param>
-            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
@@ -9879,6 +9901,15 @@
             <param name="moderation"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BreakPoemAsync(System.Int32,System.Int32,System.Guid)">
+            <summary>
+            break a poem from a verse forward
+            </summary>
+            <param name="poemId"></param>
+            <param name="vOrder"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             suggest song
@@ -10104,15 +10135,6 @@
             <summary>
             examine site pages for broken links
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.BreakPoemAsync(System.Int32,System.Int32,System.Guid)">
-            <summary>
-            break a poem from a verse forward
-            </summary>
-            <param name="poemId"></param>
-            <param name="vOrder"></param>
-            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._context">

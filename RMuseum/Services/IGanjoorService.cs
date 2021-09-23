@@ -214,6 +214,15 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoemCorrectionViewModel>> ModeratePoemCorrection(Guid userId, GanjoorPoemCorrectionViewModel correction);
 
         /// <summary>
+        /// break a poem from a verse forward
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="vOrder"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<int>> BreakPoemAsync(int poemId, int vOrder, Guid userId);
+
+        /// <summary>
         /// next unreviewed track
         /// </summary>
         /// <param name="skip"></param>
@@ -557,13 +566,6 @@ namespace RMuseum.Services
         /// <returns></returns>
         RServiceResult<bool> StartUpdatingMundexPage(Guid editingUserId);
 
-        /// <summary>
-        /// break a poem from a verse forward
-        /// </summary>
-        /// <param name="poemId"></param>
-        /// <param name="vOrder"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        Task<RServiceResult<int>> BreakPoemAsync(int poemId, int vOrder, Guid userId);
+        
     }
 }

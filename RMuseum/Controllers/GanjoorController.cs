@@ -1025,6 +1025,32 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// break a poem from a verse forward
+        /// </summary>
+        /// <param name="verse"></param>
+        /// <returns>id of new poem</returns>
+        [HttpPost]
+        [Route("poem/break")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> BreakPoemAsync([FromBody] PoemVerseOrder verse)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
+            var userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<int> res =
+                await _ganjoorService.BreakPoemAsync(verse.PoemId, verse.VOrder, userId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// suggest song for poem
         /// </summary>
         /// <param name="song"></param>
