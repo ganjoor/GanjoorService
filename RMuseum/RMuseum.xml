@@ -8491,6 +8491,15 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.BreakPoemAsync(System.Int32,System.Int32,System.Guid)">
+            <summary>
+            break a poem from a verse forward
+            </summary>
+            <param name="poemId"></param>
+            <param name="vOrder"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -10095,6 +10104,15 @@
             <summary>
             examine site pages for broken links
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BreakPoemAsync(System.Int32,System.Int32,System.Guid)">
+            <summary>
+            break a poem from a verse forward
+            </summary>
+            <param name="poemId"></param>
+            <param name="vOrder"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._context">

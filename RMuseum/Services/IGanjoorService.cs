@@ -556,5 +556,14 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         RServiceResult<bool> StartUpdatingMundexPage(Guid editingUserId);
+
+        /// <summary>
+        /// break a poem from a verse forward
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="vOrder"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<int>> BreakPoemAsync(int poemId, int vOrder, Guid userId);
     }
 }
