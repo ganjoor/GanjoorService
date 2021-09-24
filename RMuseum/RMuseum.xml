@@ -4359,6 +4359,66 @@
             correction review result
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorBookmark">
+            <summary>
+            Ganjoor Bookmark
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.UserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.User">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.PoemId">
+            <summary>
+            Poem Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.Poem">
+            <summary>
+            Poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.VerseId">
+            <summary>
+            Verse Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.Verse">
+            <summary>
+            Verse
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.RBookmarkType">
+            <summary>
+            Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.Rating">
+            <summary>
+            rating
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.Note">
+            <summary>
+            User Note
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorCat">
             <summary>
             Ganjoor Category

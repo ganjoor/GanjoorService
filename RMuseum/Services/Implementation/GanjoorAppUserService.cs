@@ -329,7 +329,7 @@ namespace RMuseum.Services.Implementation
             context.UpdateRange(pinLinks);
             await context.SaveChangesAsync();
 
-            var reviewedPinLinks = await context.GanjoorLinks.Where(l => l.ReviewerId == userId).ToListAsync();
+            var reviewedPinLinks = await context.PinterestLinks.Where(l => l.ReviewerId == userId).ToListAsync();
             foreach (var reviewedPinLink in reviewedPinLinks)
                 reviewedPinLink.ReviewerId = deletedUserId;
             context.UpdateRange(reviewedPinLinks);
