@@ -472,7 +472,7 @@ namespace RSecurityBackend.Controllers
             var session = await _appUserService.GetUserSession(loggedOnUserId, sessionId);
 
             RServiceResult<bool> resCheckAdmin = await _appUserService.IsAdmin(loggedOnUserId);
-            if(resCheckAdmin.Result)
+            if (resCheckAdmin.Result)
                 return BadRequest("شما کاربر مدیر سیستم هستید. لطفا ابتدا مدیر سیستم دیگری ایجاد کنید یا از مدیر دیگری بخواهید شما را از حالت مدیر سیستمی خارج کند.");
 
             var loginResult = await _appUserService.Login(new LoginViewModel()
@@ -536,9 +536,29 @@ namespace RSecurityBackend.Controllers
             {
                 return NotFound("رمز وارد شده تطابق ندارد");
             }
+            var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var userEmail = res.Result;
+            var userInfo = await _appUserService.FindUserByEmail(userEmail);
+            if (userInfo.Result == null)
+            {
+                return NotFound("کاربری که این رمز به او تعلق دارد حذف شده است.");
+            }
+            if (userInfo.Result.Id != loggedOnUserId)
+            {
+                return BadRequest("این رمز متعلق به کاربر وارد شده نیست.");
+            }
+
+            RServiceResult<bool> isAdmin = await _appUserService.IsAdmin(loggedOnUserId);
+            if (!string.IsNullOrEmpty(isAdmin.ExceptionString))
+                return BadRequest(isAdmin.ExceptionString);
+            if (isAdmin.Result)
+            {
+                return BadRequest("امکان حذف کاربر مدیر سیستم توسط خودش وجود ندارد. لطفاً ابتدا کاربر خود را از گروه مدیران سیستم خارج کنید.");
+            }
+
             //override _appUserService.RemoveUserData to remove userdata
 
-            RServiceResult<bool> resDelete = await _appUserService.DeleteUser(new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value));
+            RServiceResult<bool> resDelete = await _appUserService.DeleteUser(loggedOnUserId);
             if (!resDelete.Result)
             {
                 return BadRequest(res.ExceptionString);
@@ -1173,7 +1193,7 @@ namespace RSecurityBackend.Controllers
 
             await _appUserService.BanUserFromSigningUpAgainAsync(userCause.UserId, userCause.Cause);
             await _appUserService.DeleteUser(userCause.UserId);
-            
+
 
             try
             {
