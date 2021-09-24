@@ -291,51 +291,61 @@ namespace RMuseum.Services.Implementation
             foreach(var reviewedRecitation in reviewedRecitations)
                 reviewedRecitation.ReviewerId = deletedUserId;
             context.UpdateRange(reviewedRecitations);
+            await context.SaveChangesAsync(); //some tracking data related bugs makes it necessary to call this especially for same table data processing
 
             var suggestedCorrections = await context.GanjoorPoemCorrections.Where(c => c.UserId == userId).ToListAsync();
             foreach (var suggestedCorrection in suggestedCorrections)
                 suggestedCorrection.UserId = deletedUserId;
             context.UpdateRange(suggestedCorrections);
+            await context.SaveChangesAsync();
 
             var reviewedCorrections = await context.GanjoorPoemCorrections.Where(c => c.ReviewerUserId == userId).ToListAsync();
             foreach (var reviewedCorrection in reviewedCorrections)
                 reviewedCorrection.UserId = deletedUserId;
             context.UpdateRange(reviewedCorrections);
+            await context.SaveChangesAsync();
 
             var reportedComments = await context.GanjoorReportedComments.Where(r => r.ReportedById == userId).ToListAsync();
             foreach (var reportedComment in reportedComments)
                 reportedComment.ReportedById = deletedUserId;
             context.UpdateRange(reportedComments);
+            await context.SaveChangesAsync();
 
             var ganjoorLinks = await context.GanjoorLinks.Where(l => l.SuggestedById == userId).ToListAsync();
             foreach (var ganjoorLink in ganjoorLinks)
                 ganjoorLink.SuggestedById = deletedUserId;
             context.UpdateRange(ganjoorLinks);
+            await context.SaveChangesAsync();
 
             var reviewedGanjoorLinks = await context.GanjoorLinks.Where(l => l.ReviewerId == userId).ToListAsync();
             foreach (var reviewedGanjoorLink in reviewedGanjoorLinks)
                 reviewedGanjoorLink.ReviewerId = deletedUserId;
             context.UpdateRange(reviewedGanjoorLinks);
+            await context.SaveChangesAsync();
 
             var pinLinks = await context.PinterestLinks.Where(l => l.SuggestedById == userId).ToListAsync();
             foreach (var pinLink in pinLinks)
                 pinLink.SuggestedById = deletedUserId;
             context.UpdateRange(pinLinks);
+            await context.SaveChangesAsync();
 
             var reviewedPinLinks = await context.GanjoorLinks.Where(l => l.ReviewerId == userId).ToListAsync();
             foreach (var reviewedPinLink in reviewedPinLinks)
                 reviewedPinLink.ReviewerId = deletedUserId;
             context.UpdateRange(reviewedPinLinks);
+            await context.SaveChangesAsync();
 
             var poemMusicTracks = await context.GanjoorPoemMusicTracks.Where(m => m.SuggestedById == userId).ToListAsync();
             foreach (var poemMusicTrack in poemMusicTracks)
                 poemMusicTrack.SuggestedById = deletedUserId;
             context.UpdateRange(poemMusicTracks);
+            await context.SaveChangesAsync();
 
             var snapshots = await context.GanjoorPageSnapshots.Where(s => s.MadeObsoleteByUserId == userId).ToListAsync();
             foreach (var snapshot in snapshots)
                 snapshot.MadeObsoleteByUserId = deletedUserId;
             context.UpdateRange(snapshots);
+            await context.SaveChangesAsync();
 
             var translations = await context.GanjoorPoemTranslations.Where(t => t.UserId == userId).ToListAsync();
             foreach (var translation in translations)
@@ -348,9 +358,11 @@ namespace RMuseum.Services.Implementation
 
             var bookmarks = await context.UserBookmarks.Where(b => b.RAppUserId == userId).ToListAsync();
             context.RemoveRange(bookmarks);
+            await context.SaveChangesAsync();
 
             var uploadSessions = await context.UploadSessions.Where(s => s.UseId == userId).ToListAsync();
             context.RemoveRange(uploadSessions);
+            await context.SaveChangesAsync();
 
             var recitations = await context.Recitations.Where(r => r.OwnerId == userId).ToListAsync();
             poemsNeededToBeRefreshed.AddRange(recitations.Select(r => r.GanjoorPostId).ToList());
