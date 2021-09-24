@@ -301,7 +301,7 @@ namespace RMuseum.Services.Implementation
 
             var reviewedCorrections = await context.GanjoorPoemCorrections.Where(c => c.ReviewerUserId == userId).ToListAsync();
             foreach (var reviewedCorrection in reviewedCorrections)
-                reviewedCorrection.UserId = deletedUserId;
+                reviewedCorrection.ReviewerUserId = deletedUserId;
             context.UpdateRange(reviewedCorrections);
             await context.SaveChangesAsync();
 
