@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Auth.ViewModel;
+using RMuseum.Models.Bookmark;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
@@ -1879,6 +1880,168 @@ namespace RMuseum.Controllers
             {
                 return BadRequest(exp.ToString());
             }
+        }
+
+
+        /// <summary>
+        /// bookmark verse
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="verseId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("bookmark/{poemId}/{verseId}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> BookmarkArtifact(int poemId, int verseId)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.BookmarkVerse(poemId, verseId, loggedOnUserId, RBookmarkType.Bookmark);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// delete bookmark / fav / private note
+        /// </summary>
+        /// <param name="bookmarkId"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("bookmark/{bookmarkId}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteBookmark(Guid bookmarkId)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<bool> res = await _ganjoorService.DeleteGanjoorBookmark(bookmarkId, loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// fav poem
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="verseId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("fav/{poemId}/{verseId}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> FavArtifact(int poemId, int verseId)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.BookmarkVerse(poemId, verseId, loggedOnUserId, RBookmarkType.Favorite);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+
+
+        /// <summary>
+        /// poem bookmarks info
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("bookmark/{poemId}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemGanjoorUserBookmarks(int poemId)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<GanjoorUserBookmark[]> res = await _ganjoorService.GetPoemGanjoorUserBookmarks(poemId, loggedOnUserId, RBookmarkType.Bookmark);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// poem fav info
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("fav/{poemId}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemGanjoorUserFavs(int poemId)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<GanjoorUserBookmark[]> res = await _ganjoorService.GetPoemGanjoorUserBookmarks(poemId, loggedOnUserId, RBookmarkType.Favorite);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// item bookmarks info
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="verseId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("bookmark/item/{itemId}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetVerseGanjoorUserBookmarks(int poemId, int verseId)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<GanjoorUserBookmark[]> res = await _ganjoorService.GetVerseGanjoorUserBookmarks(poemId, verseId, loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// user bookmarks
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("bookmark")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetUserBookmarks([FromQuery] PagingParameterModel paging)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)> res = await _ganjoorService.GetUserBookmarks(paging, loggedOnUserId, RBookmarkType.Bookmark);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            return Ok(res.Result.Bookmarks);
+        }
+
+        /// <summary>
+        /// user favorites
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("fav")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetUserFavorites([FromQuery] PagingParameterModel paging)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)> res = await _ganjoorService.GetUserBookmarks(paging, loggedOnUserId, RBookmarkType.Favorite);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            return Ok(res.Result.Bookmarks);
         }
 
         /// <summary>

@@ -610,6 +610,6 @@ namespace RMuseum.Services
         /// <param name="userId"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)>> GetBookmarks(PagingParameterModel paging, Guid userId, RBookmarkType type);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)>> GetUserBookmarks(PagingParameterModel paging, Guid userId, RBookmarkType type);
     }
 }

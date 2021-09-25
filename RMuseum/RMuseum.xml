@@ -1210,6 +1210,63 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.BookmarkArtifact(System.Int32,System.Int32)">
+            <summary>
+            bookmark verse
+            </summary>
+            <param name="poemId"></param>
+            <param name="verseId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeleteBookmark(System.Guid)">
+            <summary>
+            delete bookmark / fav / private note
+            </summary>
+            <param name="bookmarkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.FavArtifact(System.Int32,System.Int32)">
+            <summary>
+            fav poem
+            </summary>
+            <param name="poemId"></param>
+            <param name="verseId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemGanjoorUserBookmarks(System.Int32)">
+            <summary>
+            poem bookmarks info
+            </summary>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemGanjoorUserFavs(System.Int32)">
+            <summary>
+            poem fav info
+            </summary>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetVerseGanjoorUserBookmarks(System.Int32,System.Int32)">
+            <summary>
+            item bookmarks info
+            </summary>
+            <param name="poemId"></param>
+            <param name="verseId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            user bookmarks
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserFavorites(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            user favorites
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -8628,7 +8685,7 @@
             <param name="userId">to make sure a user can not delete another user's bookmarks</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
             <summary>
             get user bookmarks (artifacts and items)
             </summary>
@@ -9715,7 +9772,7 @@
             <param name="userId">to make sure a user can not delete another user's bookmarks</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
             <summary>
             get user bookmarks (artifacts and items)
             </summary>
