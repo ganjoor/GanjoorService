@@ -1916,6 +1916,11 @@
             poem translations
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorUserBookmarks">
+            <summary>
+            ganjoor bookmarks
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -2932,6 +2937,11 @@
         <member name="F:RMuseum.Models.Bookmark.RBookmarkType.Favorite">
             <summary>
             Public Favorite
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Bookmark.RBookmarkType.Note">
+            <summary>
+            Private Note (GanjoorComment)
             </summary>
         </member>
         <member name="T:RMuseum.Models.Bookmark.RUserBookmark">
@@ -4359,66 +4369,6 @@
             correction review result
             </summary>
         </member>
-        <member name="T:RMuseum.Models.Ganjoor.GanjoorBookmark">
-            <summary>
-            Ganjoor Bookmark
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.Id">
-            <summary>
-            Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.UserId">
-            <summary>
-            User Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.User">
-            <summary>
-            User
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.PoemId">
-            <summary>
-            Poem Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.Poem">
-            <summary>
-            Poem
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.VerseId">
-            <summary>
-            Verse Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.Verse">
-            <summary>
-            Verse
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.DateTime">
-            <summary>
-            DateTime
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.RBookmarkType">
-            <summary>
-            Type
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.Rating">
-            <summary>
-            rating
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorBookmark.Note">
-            <summary>
-            User Note
-            </summary>
-        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorCat">
             <summary>
             Ganjoor Category
@@ -5291,6 +5241,66 @@
         <member name="T:RMuseum.Models.Ganjoor.GanjoorTOC">
             <summary>
             ganjoor TOC options
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorUserBookmark">
+            <summary>
+            Ganjoor Bookmark
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.UserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.User">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.PoemId">
+            <summary>
+            Poem Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Poem">
+            <summary>
+            Poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.VerseId">
+            <summary>
+            Verse Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Verse">
+            <summary>
+            Verse
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.DateTime">
+            <summary>
+            DateTime
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.RBookmarkType">
+            <summary>
+            Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Rating">
+            <summary>
+            rating
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Note">
+            <summary>
+            User Note
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorVerse">
@@ -8582,6 +8592,51 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            Bookmark Verse
+            </summary>
+            <param name="poemId"></param>
+            <param name="verseId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemGanjoorUserBookmarks(System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            get user ganjoor bookmarks
+            </summary>
+            <param name="poemId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetVerseGanjoorUserBookmarks(System.Int32,System.Int32,System.Guid)">
+            <summary>
+            get verse bookmarks
+            </summary>
+            <param name="poemId"></param>
+            <param name="verseId"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeleteGanjoorBookmark(System.Guid,System.Guid)">
+            <summary>
+            delete user bookmark         
+            /// </summary>
+            <param name="bookmarkId"></param>
+            <param name="userId">to make sure a user can not delete another user's bookmarks</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            get user bookmarks (artifacts and items)
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -9620,6 +9675,54 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            Bookmark Verse
+            </summary>
+            <param name="poemId"></param>
+            <param name="verseId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemGanjoorUserBookmarks(System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            get user ganjoor bookmarks
+            </summary>
+            <param name="poemId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetVerseGanjoorUserBookmarks(System.Int32,System.Int32,System.Guid)">
+            <summary>
+            get verse bookmarks
+            </summary>
+            <param name="poemId"></param>
+            <param name="verseId"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteGanjoorBookmark(System.Guid,System.Guid)">
+            <summary>
+            delete user bookmark         
+            /// </summary>
+            <param name="bookmarkId"></param>
+            <param name="userId">to make sure a user can not delete another user's bookmarks</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            get user bookmarks (artifacts and items)
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartUpdatingMundexPage(System.Guid)">
             <summary>

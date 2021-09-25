@@ -12,6 +12,10 @@
         /// <summary>
         /// Public Favorite
         /// </summary>
-        Favorite = 1
+        Favorite = 1,
+        /// <summary>
+        /// Private Note (GanjoorComment)
+        /// </summary>
+        Note = 2
     }
 }

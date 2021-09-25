@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using RMuseum.Models.Bookmark;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
@@ -566,6 +567,49 @@ namespace RMuseum.Services
         /// <returns></returns>
         RServiceResult<bool> StartUpdatingMundexPage(Guid editingUserId);
 
-        
+        /// <summary>
+        /// Bookmark Verse
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="verseId"></param>
+        /// <param name="userId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int verseId, Guid userId, RBookmarkType type);
+
+        /// <summary>
+        /// get user ganjoor bookmarks
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="userId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorUserBookmark[]>> GetPoemGanjoorUserBookmarks(int poemId, Guid userId, RBookmarkType type);
+
+        /// <summary>
+        /// get verse bookmarks
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="verseId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorUserBookmark[]>> GetVerseGanjoorUserBookmarks(int poemId, int verseId, Guid userId);
+
+        /// <summary>
+        /// delete user bookmark         
+        /// /// </summary>
+        /// <param name="bookmarkId"></param>
+        /// <param name="userId">to make sure a user can not delete another user's bookmarks</param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteGanjoorBookmark(Guid bookmarkId, Guid userId);
+
+        /// <summary>
+        /// get user bookmarks (artifacts and items)
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)>> GetBookmarks(PagingParameterModel paging, Guid userId, RBookmarkType type);
     }
 }

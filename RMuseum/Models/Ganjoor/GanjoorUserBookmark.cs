@@ -7,7 +7,7 @@ namespace RMuseum.Models.Ganjoor
     /// <summary>
     /// Ganjoor Bookmark
     /// </summary>
-    public class GanjoorBookmark
+    public class GanjoorUserBookmark
     {
         /// <summary>
         /// Id
