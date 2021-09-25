@@ -354,6 +354,8 @@ namespace RMuseum.Services.Implementation
 
             await context.SaveChangesAsync();
 
+            
+
             List<int> poemsNeededToBeRefreshed = new List<int>();
 
             var bookmarks = await context.UserBookmarks.Where(b => b.RAppUserId == userId).ToListAsync();
@@ -367,7 +369,10 @@ namespace RMuseum.Services.Implementation
             var recitations = await context.Recitations.Where(r => r.OwnerId == userId).ToListAsync();
             poemsNeededToBeRefreshed.AddRange(recitations.Select(r => r.GanjoorPostId).ToList());
             context.RemoveRange(recitations);
+            await context.SaveChangesAsync();
 
+            var ganjoorBookmarks = await context.GanjoorUserBookmarks.Where(b => b.UserId == userId).ToListAsync();
+            context.RemoveRange(ganjoorBookmarks);
             await context.SaveChangesAsync();
 
             var comments = await context.GanjoorComments.Where(c => c.UserId == userId).ToListAsync();
