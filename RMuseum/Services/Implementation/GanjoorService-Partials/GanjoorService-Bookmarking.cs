@@ -20,13 +20,14 @@ namespace RMuseum.Services.Implementation
         /// Bookmark Verse
         /// </summary>
         /// <param name="poemId"></param>
-        /// <param name="verseId"></param>
+        /// <param name="vOrder"></param>
         /// <param name="userId"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorUserBookmark>> SwitchBookmarkVerse(int poemId, int verseId, Guid userId, RBookmarkType type)
+        public async Task<RServiceResult<GanjoorUserBookmark>> SwitchBookmarkVerse(int poemId, int vOrder, Guid userId, RBookmarkType type)
         {
-            var bookmark = await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.VerseId == verseId && b.RBookmarkType == type).SingleOrDefaultAsync();
+            var verse = await _context.GanjoorVerses.Where(v => v.PoemId == poemId && v.VOrder == vOrder).SingleAsync();
+            var bookmark = await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.VerseId == verse.Id && b.RBookmarkType == type).SingleOrDefaultAsync();
             if (bookmark != null)
             {
                 var res = await DeleteGanjoorBookmark(bookmark.Id, userId);
@@ -37,7 +38,7 @@ namespace RMuseum.Services.Implementation
             }
             else
             {
-                var res = await BookmarkVerse(poemId, verseId, userId, type);
+                var res = await BookmarkVerse(poemId, vOrder, userId, type);
                 if(!string.IsNullOrEmpty(res.ExceptionString))
                     return res;
                 bookmark = res.Result;
@@ -50,13 +51,14 @@ namespace RMuseum.Services.Implementation
         /// Bookmark Verse
         /// </summary>
         /// <param name="poemId"></param>
-        /// <param name="verseId"></param>
+        /// <param name="vOrder"></param>
         /// <param name="userId"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int verseId, Guid userId, RBookmarkType type)
+        public async Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int vOrder, Guid userId, RBookmarkType type)
         {
-            if ((await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.VerseId == verseId && b.RBookmarkType == type).SingleOrDefaultAsync()) != null)
+            var verse = await _context.GanjoorVerses.Where(v => v.PoemId == poemId && v.VOrder == vOrder).SingleAsync();
+            if ((await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.VerseId == verse.Id && b.RBookmarkType == type).SingleOrDefaultAsync()) != null)
             {
                 return new RServiceResult<GanjoorUserBookmark>(null, "Artifact is already bookmarked/faved.");
             }
@@ -66,7 +68,7 @@ namespace RMuseum.Services.Implementation
                 {
                     UserId = userId,
                     PoemId = poemId,
-                    VerseId = verseId,
+                    VerseId = verse.Id,
                     RBookmarkType = type,
                     DateTime = DateTime.Now,
                     Note = ""
@@ -95,12 +97,13 @@ namespace RMuseum.Services.Implementation
         /// get verse bookmarks
         /// </summary>
         /// <param name="poemId"></param>
-        /// <param name="verseId"></param>
+        /// <param name="vOrder"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorUserBookmark[]>> GetVerseGanjoorUserBookmarks(int poemId, int verseId, Guid userId)
+        public async Task<RServiceResult<GanjoorUserBookmark[]>> GetVerseGanjoorUserBookmarks(int poemId, int vOrder, Guid userId)
         {
-            GanjoorUserBookmark[] bookmarks = await _context.GanjoorUserBookmarks.Where(b => b.PoemId == poemId && b.VerseId == verseId && b.UserId == userId).ToArrayAsync();
+            var verse = await _context.GanjoorVerses.Where(v => v.PoemId == poemId && v.VOrder == vOrder).SingleAsync();
+            GanjoorUserBookmark[] bookmarks = await _context.GanjoorUserBookmarks.Where(b => b.PoemId == poemId && b.VerseId == verse.Id && b.UserId == userId).ToArrayAsync();
             return new RServiceResult<GanjoorUserBookmark[]>(bookmarks);
         }
 

@@ -571,21 +571,21 @@ namespace RMuseum.Services
         /// Bookmark Verse
         /// </summary>
         /// <param name="poemId"></param>
-        /// <param name="verseId"></param>
+        /// <param name="vOrder"></param>
         /// <param name="userId"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int verseId, Guid userId, RBookmarkType type);
+        Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int vOrder, Guid userId, RBookmarkType type);
 
         /// <summary>
         /// Switch Bookmark Verse
         /// </summary>
         /// <param name="poemId"></param>
-        /// <param name="verseId"></param>
+        /// <param name="vOrder"></param>
         /// <param name="userId"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorUserBookmark>> SwitchBookmarkVerse(int poemId, int verseId, Guid userId, RBookmarkType type);
+        Task<RServiceResult<GanjoorUserBookmark>> SwitchBookmarkVerse(int poemId, int vOrder, Guid userId, RBookmarkType type);
 
         /// <summary>
         /// get user ganjoor bookmarks
@@ -600,10 +600,10 @@ namespace RMuseum.Services
         /// get verse bookmarks
         /// </summary>
         /// <param name="poemId"></param>
-        /// <param name="verseId"></param>
+        /// <param name="vOrder"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorUserBookmark[]>> GetVerseGanjoorUserBookmarks(int poemId, int verseId, Guid userId);
+        Task<RServiceResult<GanjoorUserBookmark[]>> GetVerseGanjoorUserBookmarks(int poemId, int vOrder, Guid userId);
 
         /// <summary>
         /// delete user bookmark         

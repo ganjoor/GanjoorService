@@ -402,6 +402,29 @@ function editCouplet(poemId, coupletIndex) {
 }
 
 function switchBookmark(poemId, coupletIndex) {
+    var vIndex = getVerseIndexFromCoupleIndex(coupletIndex);
     var iconElementId = 'bookmark-icon-' + String(coupletIndex);
-    document.getElementById(iconElementId).innerHTML = (document.getElementById(iconElementId).innerHTML == 'star') ? 'star_border' : 'star';
+    document.getElementById(iconElementId).innerHTML = 'star_half';
+    var url = '/?handler=SwitchBookmark';
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+            poemId: poemId,
+            vOrder: (vIndex + 1)
+        },
+        error: function (err) {
+            alert(err)
+        },
+        success: function (isBookmarked) {
+            if (isBookmarked == true) {
+                document.getElementById(iconElementId).innerHTML = 'star';
+            }
+            else {
+                document.getElementById(iconElementId).innerHTML = 'star_border';
+            }
+        },
+
+    });
 }

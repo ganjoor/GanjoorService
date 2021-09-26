@@ -1215,7 +1215,7 @@
             bookmark verse
             </summary>
             <param name="poemId"></param>
-            <param name="verseId"></param>
+            <param name="vOrder"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.DeleteBookmark(System.Guid)">
@@ -1230,7 +1230,7 @@
             switch bookmark
             </summary>
             <param name="poemId"></param>
-            <param name="verseId"></param>
+            <param name="vOrder"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.FavArtifact(System.Int32,System.Int32)">
@@ -1238,7 +1238,7 @@
             fav poem
             </summary>
             <param name="poemId"></param>
-            <param name="verseId"></param>
+            <param name="vOrder"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemGanjoorUserBookmarks(System.Int32)">
@@ -1260,7 +1260,7 @@
             item bookmarks info
             </summary>
             <param name="poemId"></param>
-            <param name="verseId"></param>
+            <param name="vOrder"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel)">
@@ -8662,7 +8662,7 @@
             Bookmark Verse
             </summary>
             <param name="poemId"></param>
-            <param name="verseId"></param>
+            <param name="vOrder"></param>
             <param name="userId"></param>
             <param name="type"></param>
             <returns></returns>
@@ -8672,7 +8672,7 @@
             Switch Bookmark Verse
             </summary>
             <param name="poemId"></param>
-            <param name="verseId"></param>
+            <param name="vOrder"></param>
             <param name="userId"></param>
             <param name="type"></param>
             <returns></returns>
@@ -8691,7 +8691,7 @@
             get verse bookmarks
             </summary>
             <param name="poemId"></param>
-            <param name="verseId"></param>
+            <param name="vOrder"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>
@@ -9759,7 +9759,7 @@
             Bookmark Verse
             </summary>
             <param name="poemId"></param>
-            <param name="verseId"></param>
+            <param name="vOrder"></param>
             <param name="userId"></param>
             <param name="type"></param>
             <returns></returns>
@@ -9769,7 +9769,7 @@
             Bookmark Verse
             </summary>
             <param name="poemId"></param>
-            <param name="verseId"></param>
+            <param name="vOrder"></param>
             <param name="userId"></param>
             <param name="type"></param>
             <returns></returns>
@@ -9788,7 +9788,7 @@
             get verse bookmarks
             </summary>
             <param name="poemId"></param>
-            <param name="verseId"></param>
+            <param name="vOrder"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>

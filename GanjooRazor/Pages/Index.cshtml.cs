@@ -649,14 +649,19 @@ namespace GanjooRazor.Pages
 
             var comments = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCommentSummaryViewModel>>();
 
+            bool isBookmarked = false;
+
             if (!string.IsNullOrEmpty(Request.Cookies["UserId"]))
-            if (Guid.TryParse(Request.Cookies["UserId"], out Guid userId))
-            if (userId != Guid.Empty)
-            foreach (GanjoorCommentSummaryViewModel comment in comments)
             {
-                comment.MyComment = comment.UserId == userId;
-                _markMyReplies(comment, userId);
+                if (Guid.TryParse(Request.Cookies["UserId"], out Guid userId))
+                    if (userId != Guid.Empty)
+                        foreach (GanjoorCommentSummaryViewModel comment in comments)
+                        {
+                            comment.MyComment = comment.UserId == userId;
+                            _markMyReplies(comment, userId);
+                        }
             }
+            
 
 
             return new PartialViewResult()
@@ -669,10 +674,33 @@ namespace GanjooRazor.Pages
                         PoemId = poemId,
                         CoupletIndex = coupletIndex,
                         LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
-                        Comments = comments
+                        Comments = comments,
+                        IsBookmarked = isBookmarked
                     }
                 }
             };
+        }
+
+        public async Task<IActionResult> OnPostSwitchBookmarkAsync(int poemId, int vOrder)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/bookmark/switch/{poemId}/{vOrder}", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    var res = await response.Content.ReadAsStringAsync();
+                    return new OkObjectResult(res != null);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
         }
     }
 }
