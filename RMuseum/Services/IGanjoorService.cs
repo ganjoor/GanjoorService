@@ -578,6 +578,16 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int verseId, Guid userId, RBookmarkType type);
 
         /// <summary>
+        /// Switch Bookmark Verse
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="verseId"></param>
+        /// <param name="userId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorUserBookmark>> SwitchBookmarkVerse(int poemId, int verseId, Guid userId, RBookmarkType type);
+
+        /// <summary>
         /// get user ganjoor bookmarks
         /// </summary>
         /// <param name="poemId"></param>

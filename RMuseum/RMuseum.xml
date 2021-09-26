@@ -1210,7 +1210,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.BookmarkArtifact(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.BookmarkVerse(System.Int32,System.Int32)">
             <summary>
             bookmark verse
             </summary>
@@ -1223,6 +1223,14 @@
             delete bookmark / fav / private note
             </summary>
             <param name="bookmarkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SwitchBookmark(System.Int32,System.Int32)">
+            <summary>
+            switch bookmark
+            </summary>
+            <param name="poemId"></param>
+            <param name="verseId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.FavArtifact(System.Int32,System.Int32)">
@@ -8659,6 +8667,16 @@
             <param name="type"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SwitchBookmarkVerse(System.Int32,System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            Switch Bookmark Verse
+            </summary>
+            <param name="poemId"></param>
+            <param name="verseId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemGanjoorUserBookmarks(System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
             <summary>
             get user ganjoor bookmarks
@@ -9735,6 +9753,16 @@
             <summary>
             IGanjoorService implementation
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchBookmarkVerse(System.Int32,System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+            <summary>
+            Bookmark Verse
+            </summary>
+            <param name="poemId"></param>
+            <param name="verseId"></param>
+            <param name="userId"></param>
+            <param name="type"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
             <summary>

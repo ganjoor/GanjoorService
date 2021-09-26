@@ -1894,7 +1894,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> BookmarkArtifact(int poemId, int verseId)
+        public async Task<IActionResult> BookmarkVerse(int poemId, int verseId)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.BookmarkVerse(poemId, verseId, loggedOnUserId, RBookmarkType.Bookmark);
@@ -1920,6 +1920,26 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();
+        }
+
+        /// <summary>
+        /// switch bookmark
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="verseId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("bookmark/switch/{poemId}/{verseId}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SwitchBookmark(int poemId, int verseId)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.SwitchBookmarkVerse(poemId, verseId, loggedOnUserId, RBookmarkType.Bookmark);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
         }
 
         /// <summary>

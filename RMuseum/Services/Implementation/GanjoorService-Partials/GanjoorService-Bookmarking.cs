@@ -24,6 +24,36 @@ namespace RMuseum.Services.Implementation
         /// <param name="userId"></param>
         /// <param name="type"></param>
         /// <returns></returns>
+        public async Task<RServiceResult<GanjoorUserBookmark>> SwitchBookmarkVerse(int poemId, int verseId, Guid userId, RBookmarkType type)
+        {
+            var bookmark = await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.VerseId == verseId && b.RBookmarkType == type).SingleOrDefaultAsync();
+            if (bookmark != null)
+            {
+                var res = await DeleteGanjoorBookmark(bookmark.Id, userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return new RServiceResult<GanjoorUserBookmark>(null, res.ExceptionString);
+                bookmark = null;
+
+            }
+            else
+            {
+                var res = await BookmarkVerse(poemId, verseId, userId, type);
+                if(!string.IsNullOrEmpty(res.ExceptionString))
+                    return res;
+                bookmark = res.Result;
+            }
+            return new RServiceResult<GanjoorUserBookmark>(bookmark);
+        }
+
+
+        /// <summary>
+        /// Bookmark Verse
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="verseId"></param>
+        /// <param name="userId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public async Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int verseId, Guid userId, RBookmarkType type)
         {
             if ((await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.VerseId == verseId && b.RBookmarkType == type).SingleOrDefaultAsync()) != null)
