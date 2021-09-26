@@ -12,9 +12,10 @@
 
 @if (Model.LoggedIn)
 {
-    <div style="width:100%;clear:both;">
-        <a role="button" id="listen-@Model.CoupletIndex" style="cursor: pointer; width: 100%; color: white; background-color: #300; display: block; text-align: center; border-color: #300;" onclick="editCouplet(@Model.PoemId, @Model.CoupletIndex)">ویرایش از اینجا</a>
-    </div>
+<div style="width: 100%; clear: both; background-color: #300;">
+    <a role="button" id="bookmark-@Model.CoupletIndex" style="cursor: pointer;" onclick="switchBookmark(@Model.PoemId, @Model.CoupletIndex)" title="@Model.BookmarkingText"><i class="material-icons" id="bookmark-icon-@Model.CoupletIndex" style="color:white;">@Model.BookmarkingIcon</i></a>
+    <a role="button" id="listen-@Model.CoupletIndex" style="cursor: pointer;" onclick="editCouplet(@Model.PoemId, @Model.CoupletIndex)" title="ویرایش از اینجا"><i class="material-icons" style="color:white;">edit</i></a>
+</div>
 }
 
 

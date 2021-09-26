@@ -400,3 +400,8 @@ function editCouplet(poemId, coupletIndex) {
     var vIndex = getVerseIndexFromCoupleIndex(coupletIndex);
     location.href = '/User/Editor?id=' + poemId + '#id-' + String(vIndex + 1);
 }
+
+function switchBookmark(poemId, coupletIndex) {
+    var iconElementId = 'bookmark-icon-' + String(coupletIndex);
+    document.getElementById(iconElementId).innerHTML = (document.getElementById(iconElementId).innerHTML == 'star') ? 'star_border' : 'star';
+}
