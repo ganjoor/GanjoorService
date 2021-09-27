@@ -1906,6 +1906,27 @@ namespace RMuseum.Controllers
             return Ok(res.Result != null);
         }
 
+        /// <summary>
+        /// delete bookmark
+        /// </summary>
+        /// <param name="bookmarkId"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("bookmark/{bookmarkId}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteBookmark(Guid bookmarkId)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<bool> res = await _ganjoorService.DeleteGanjoorBookmark(bookmarkId, loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
 
         /// <summary>
         /// get poem user bookmarks

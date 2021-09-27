@@ -1218,6 +1218,13 @@
             <param name="coupletIndex"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeleteBookmark(System.Guid)">
+            <summary>
+            delete bookmark
+            </summary>
+            <param name="bookmarkId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemUserBookmarks(System.Int32)">
             <summary>
             get poem user bookmarks
@@ -8694,6 +8701,14 @@
             <param name="userId"></param>
             <param name="poemId"></param>
             <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeleteGanjoorBookmark(System.Guid,System.Guid)">
+            <summary>
+            delete user bookmark         
+            /// </summary>
+            <param name="bookmarkId"></param>
+            <param name="userId">to make sure a user can not delete another user's bookmarks</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemUserBookmarks(System.Guid,System.Int32)">
