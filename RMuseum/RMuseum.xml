@@ -5312,24 +5312,24 @@
             Verse
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.DateTime">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Verse2Id">
             <summary>
-            DateTime
+            Verse 2 Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.RBookmarkType">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Verse2">
             <summary>
-            Type
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Rating">
-            <summary>
-            rating
+            Verse 2
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Note">
             <summary>
-            User Note
+            note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.DateTime">
+            <summary>
+            DateTime
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorVerse">
@@ -9706,12 +9706,13 @@
             <param name="coupletIndex"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Nullable{System.Int32},System.Guid)">
             <summary>
             Bookmark Verse
             </summary>
             <param name="poemId"></param>
             <param name="verseId"></param>
+            <param name="verse2Id"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>
@@ -9899,6 +9900,14 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService._GetVerseIdFromCoupletIndex(System.Int32,System.Int32)">
             <summary>
             verse id from couplet index
+            </summary>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._GetVerse12IdFromCoupletIndex(System.Int32,System.Int32)">
+            <summary>
+            verse 1/ 2 id from couplet index
             </summary>
             <param name="poemId"></param>
             <param name="coupletIndex"></param>

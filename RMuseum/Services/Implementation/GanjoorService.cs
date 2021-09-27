@@ -545,6 +545,52 @@ namespace RMuseum.Services.Implementation
             return res;
         }
 
+        /// <summary>
+        /// verse 1/ 2 id from couplet index
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        private async Task<(int Verse1, int? Verse2)?> _GetVerse12IdFromCoupletIndex(int poemId, int coupletIndex)
+        {
+            int? Verse1Id = null;
+            int? Verse2Id = null;
+
+            var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
+            int cIndex = -1;
+            for (int i = 0; i < verses.Count; i++)
+            {
+                if (verses[i].VersePosition != VersePosition.Left && verses[i].VersePosition != VersePosition.CenteredVerse2)
+                    cIndex++;
+                if (cIndex == coupletIndex)
+                {
+                    Verse1Id = verses[i].Id;
+                    if (verses[i].VersePosition == VersePosition.Right)
+                    {
+                        if (i < verses.Count - 1)
+                        {
+                            Verse2Id = verses[i + 1].Id;
+                        }
+                    }
+                    if (verses[i].VersePosition == VersePosition.CenteredVerse1)
+                    {
+                        if (i < verses.Count - 1)
+                        {
+                            if (verses[i + 1].VersePosition == VersePosition.CenteredVerse2)
+                            {
+                                Verse2Id = verses[i + 1].Id;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (Verse1Id == null)
+                return null;
+            return ((int)Verse1Id, Verse2Id);
+        }
+
 
 
         /// <summary>

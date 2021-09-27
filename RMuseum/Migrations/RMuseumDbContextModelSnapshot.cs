@@ -993,25 +993,25 @@ namespace RMuseum.Migrations
                     b.Property<int>("PoemId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RBookmarkType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("VerseId")
+                    b.Property<int?>("Verse2Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VerseId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PoemId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Verse2Id");
 
                     b.HasIndex("VerseId");
+
+                    b.HasIndex("UserId", "PoemId", "VerseId")
+                        .IsUnique();
 
                     b.ToTable("GanjoorUserBookmarks");
                 });
@@ -2675,15 +2675,23 @@ namespace RMuseum.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorVerse", "Verse2")
+                        .WithMany()
+                        .HasForeignKey("Verse2Id");
+
                     b.HasOne("RMuseum.Models.Ganjoor.GanjoorVerse", "Verse")
                         .WithMany()
-                        .HasForeignKey("VerseId");
+                        .HasForeignKey("VerseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Poem");
 
                     b.Navigation("User");
 
                     b.Navigation("Verse");
+
+                    b.Navigation("Verse2");
                 });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorVerse", b =>

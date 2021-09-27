@@ -1,5 +1,4 @@
-﻿using RMuseum.Models.Bookmark;
-using RSecurityBackend.Models.Auth.Db;
+﻿using RSecurityBackend.Models.Auth.Db;
 using System;
 
 namespace RMuseum.Models.Ganjoor
@@ -37,31 +36,31 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// Verse Id
         /// </summary>
-        public int? VerseId { get; set; }
+        public int VerseId { get; set; }
 
         /// <summary>
         /// Verse
         /// </summary>
-        public virtual GanjoorVerse Verse { get; set; }
+        public GanjoorVerse Verse { get; set; }
+
+        /// <summary>
+        /// Verse 2 Id
+        /// </summary>
+        public int? Verse2Id { get; set; }
+
+        /// <summary>
+        /// Verse 2
+        /// </summary>
+        public virtual GanjoorVerse Verse2 { get; set; }
+
+        /// <summary>
+        /// note
+        /// </summary>
+        public string Note { get; set; }
 
         /// <summary>
         /// DateTime
         /// </summary>
         public DateTime DateTime { get; set; }
-
-        /// <summary>
-        /// Type
-        /// </summary>
-        public RBookmarkType RBookmarkType { get; set; }
-
-        /// <summary>
-        /// rating
-        /// </summary>
-        public int Rating { get; set; }
-
-        /// <summary>
-        /// User Note
-        /// </summary>
-        public string Note { get; set; }
     }
 }

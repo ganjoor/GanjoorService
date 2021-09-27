@@ -14,11 +14,10 @@ namespace RMuseum.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PoemId = table.Column<int>(type: "int", nullable: false),
-                    VerseId = table.Column<int>(type: "int", nullable: true),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RBookmarkType = table.Column<int>(type: "int", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    VerseId = table.Column<int>(type: "int", nullable: false),
+                    Verse2Id = table.Column<int>(type: "int", nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -36,6 +35,12 @@ namespace RMuseum.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_GanjoorUserBookmarks_GanjoorVerses_Verse2Id",
+                        column: x => x.Verse2Id,
+                        principalTable: "GanjoorVerses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_GanjoorUserBookmarks_GanjoorVerses_VerseId",
                         column: x => x.VerseId,
                         principalTable: "GanjoorVerses",
@@ -49,9 +54,15 @@ namespace RMuseum.Migrations
                 column: "PoemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GanjoorUserBookmarks_UserId",
+                name: "IX_GanjoorUserBookmarks_UserId_PoemId_VerseId",
                 table: "GanjoorUserBookmarks",
-                column: "UserId");
+                columns: new[] { "UserId", "PoemId", "VerseId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GanjoorUserBookmarks_Verse2Id",
+                table: "GanjoorUserBookmarks",
+                column: "Verse2Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GanjoorUserBookmarks_VerseId",
