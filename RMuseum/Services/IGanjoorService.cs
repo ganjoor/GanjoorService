@@ -567,59 +567,40 @@ namespace RMuseum.Services
         /// <returns></returns>
         RServiceResult<bool> StartUpdatingMundexPage(Guid editingUserId);
 
-        /// <summary>
-        /// Bookmark Verse
-        /// </summary>
-        /// <param name="poemId"></param>
-        /// <param name="vOrder"></param>
-        /// <param name="userId"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int vOrder, Guid userId, RBookmarkType type);
 
         /// <summary>
-        /// Switch Bookmark Verse
+        /// Switch Bookmark for couplet
         /// </summary>
-        /// <param name="poemId"></param>
-        /// <param name="vOrder"></param>
         /// <param name="userId"></param>
-        /// <param name="type"></param>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorUserBookmark>> SwitchBookmarkVerse(int poemId, int vOrder, Guid userId, RBookmarkType type);
+        Task<RServiceResult<GanjoorUserBookmark>> SwitchCoupletBookmark(Guid userId, int poemId, int coupletIndex);
 
         /// <summary>
         /// get user ganjoor bookmarks
         /// </summary>
-        /// <param name="poemId"></param>
         /// <param name="userId"></param>
-        /// <param name="type"></param>
+        /// <param name="poemId"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorUserBookmark[]>> GetPoemGanjoorUserBookmarks(int poemId, Guid userId, RBookmarkType type);
+        Task<RServiceResult<GanjoorUserBookmark[]>> GetPoemUserBookmarks(Guid userId, int poemId);
 
         /// <summary>
         /// get verse bookmarks
         /// </summary>
-        /// <param name="poemId"></param>
-        /// <param name="vOrder"></param>
         /// <param name="userId"></param>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorUserBookmark[]>> GetVerseGanjoorUserBookmarks(int poemId, int vOrder, Guid userId);
+        Task<RServiceResult<bool>> IsCoupletBookmarked(Guid userId, int poemId, int coupletIndex);
 
-        /// <summary>
-        /// delete user bookmark         
-        /// /// </summary>
-        /// <param name="bookmarkId"></param>
-        /// <param name="userId">to make sure a user can not delete another user's bookmarks</param>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> DeleteGanjoorBookmark(Guid bookmarkId, Guid userId);
 
         /// <summary>
         /// get user bookmarks (artifacts and items)
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
-        /// <param name="type"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)>> GetUserBookmarks(PagingParameterModel paging, Guid userId, RBookmarkType type);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)>> GetUserBookmarks(PagingParameterModel paging, Guid userId);
     }
 }

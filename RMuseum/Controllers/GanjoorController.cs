@@ -1883,89 +1883,30 @@ namespace RMuseum.Controllers
         }
 
 
-        /// <summary>
-        /// bookmark verse
-        /// </summary>
-        /// <param name="poemId"></param>
-        /// <param name="vOrder"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("bookmark/{poemId}/{vOrder}")]
-        [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> BookmarkVerse(int poemId, int vOrder)
-        {
-            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.BookmarkVerse(poemId, vOrder, loggedOnUserId, RBookmarkType.Bookmark);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
-        }
-
-        /// <summary>
-        /// delete bookmark / fav / private note
-        /// </summary>
-        /// <param name="bookmarkId"></param>
-        /// <returns></returns>
-        [HttpDelete]
-        [Route("bookmark/{bookmarkId}")]
-        [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> DeleteBookmark(Guid bookmarkId)
-        {
-            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<bool> res = await _ganjoorService.DeleteGanjoorBookmark(bookmarkId, loggedOnUserId);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok();
-        }
 
         /// <summary>
         /// switch bookmark
         /// </summary>
         /// <param name="poemId"></param>
-        /// <param name="vOrder"></param>
+        /// <param name="coupletIndex"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("bookmark/switch/{poemId}/{vOrder}")]
+        [Route("bookmark/switch/{poemId}/{coupletIndex}")]
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> SwitchBookmark(int poemId, int vOrder)
+        public async Task<IActionResult> SwitchCoupletBookmark(int poemId, int coupletIndex)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.SwitchBookmarkVerse(poemId, vOrder, loggedOnUserId, RBookmarkType.Bookmark);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
-        }
-
-        /// <summary>
-        /// fav poem
-        /// </summary>
-        /// <param name="poemId"></param>
-        /// <param name="vOrder"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("fav/{poemId}/{vOrder}")]
-        [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> FavArtifact(int poemId, int vOrder)
-        {
-            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.BookmarkVerse(poemId, vOrder, loggedOnUserId, RBookmarkType.Favorite);
+            RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.SwitchCoupletBookmark(loggedOnUserId, poemId, coupletIndex);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
         }
 
 
-
         /// <summary>
-        /// poem bookmarks info
+        /// get poem user bookmarks
         /// </summary>
         /// <param name="poemId"></param>
         /// <returns></returns>
@@ -1974,49 +1915,30 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPoemGanjoorUserBookmarks(int poemId)
+        public async Task<IActionResult> GetPoemUserBookmarks(int poemId)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<GanjoorUserBookmark[]> res = await _ganjoorService.GetPoemGanjoorUserBookmarks(poemId, loggedOnUserId, RBookmarkType.Bookmark);
+            RServiceResult<GanjoorUserBookmark[]> res = await _ganjoorService.GetPoemUserBookmarks(loggedOnUserId, poemId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
         }
 
         /// <summary>
-        /// poem fav info
+        /// is the poem couplet is bookmarked by user
         /// </summary>
         /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("fav/{poemId}")]
+        [Route("bookmark/{poemId}/{coupletIndex}")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark[]))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPoemGanjoorUserFavs(int poemId)
+        public async Task<IActionResult> IsCoupletBookmarked(int poemId, int coupletIndex)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<GanjoorUserBookmark[]> res = await _ganjoorService.GetPoemGanjoorUserBookmarks(poemId, loggedOnUserId, RBookmarkType.Favorite);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
-        }
-
-        /// <summary>
-        /// item bookmarks info
-        /// </summary>
-        /// <param name="poemId"></param>
-        /// <param name="vOrder"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("bookmark/{poemId}/{vOrder}")]
-        [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark[]))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetVerseGanjoorUserBookmarks(int poemId, int vOrder)
-        {
-            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<GanjoorUserBookmark[]> res = await _ganjoorService.GetVerseGanjoorUserBookmarks(poemId, vOrder, loggedOnUserId);
+            RServiceResult<bool> res = await _ganjoorService.IsCoupletBookmarked(loggedOnUserId, poemId, coupletIndex);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -2035,28 +1957,7 @@ namespace RMuseum.Controllers
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
-            RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)> res = await _ganjoorService.GetUserBookmarks(paging, loggedOnUserId, RBookmarkType.Bookmark);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
-            return Ok(res.Result.Bookmarks);
-        }
-
-        /// <summary>
-        /// user favorites
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("fav")]
-        [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark[]))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetUserFavorites([FromQuery] PagingParameterModel paging)
-        {
-            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-
-            RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)> res = await _ganjoorService.GetUserBookmarks(paging, loggedOnUserId, RBookmarkType.Favorite);
+            RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)> res = await _ganjoorService.GetUserBookmarks(paging, loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             // Paging Header

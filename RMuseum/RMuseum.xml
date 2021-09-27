@@ -1210,68 +1210,32 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.BookmarkVerse(System.Int32,System.Int32)">
-            <summary>
-            bookmark verse
-            </summary>
-            <param name="poemId"></param>
-            <param name="vOrder"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.DeleteBookmark(System.Guid)">
-            <summary>
-            delete bookmark / fav / private note
-            </summary>
-            <param name="bookmarkId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.SwitchBookmark(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.SwitchCoupletBookmark(System.Int32,System.Int32)">
             <summary>
             switch bookmark
             </summary>
             <param name="poemId"></param>
-            <param name="vOrder"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.FavArtifact(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemUserBookmarks(System.Int32)">
             <summary>
-            fav poem
-            </summary>
-            <param name="poemId"></param>
-            <param name="vOrder"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemGanjoorUserBookmarks(System.Int32)">
-            <summary>
-            poem bookmarks info
+            get poem user bookmarks
             </summary>
             <param name="poemId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemGanjoorUserFavs(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.IsCoupletBookmarked(System.Int32,System.Int32)">
             <summary>
-            poem fav info
+            is the poem couplet is bookmarked by user
             </summary>
             <param name="poemId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetVerseGanjoorUserBookmarks(System.Int32,System.Int32)">
-            <summary>
-            item bookmarks info
-            </summary>
-            <param name="poemId"></param>
-            <param name="vOrder"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             user bookmarks
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetUserFavorites(RSecurityBackend.Models.Generic.PagingParameterModel)">
-            <summary>
-            user favorites
             </summary>
             <returns></returns>
         </member>
@@ -8657,59 +8621,38 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+        <member name="M:RMuseum.Services.IGanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
-            Bookmark Verse
+            Switch Bookmark for couplet
             </summary>
-            <param name="poemId"></param>
-            <param name="vOrder"></param>
             <param name="userId"></param>
-            <param name="type"></param>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.SwitchBookmarkVerse(System.Int32,System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
-            <summary>
-            Switch Bookmark Verse
-            </summary>
-            <param name="poemId"></param>
-            <param name="vOrder"></param>
-            <param name="userId"></param>
-            <param name="type"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoemGanjoorUserBookmarks(System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemUserBookmarks(System.Guid,System.Int32)">
             <summary>
             get user ganjoor bookmarks
             </summary>
-            <param name="poemId"></param>
             <param name="userId"></param>
-            <param name="type"></param>
+            <param name="poemId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetVerseGanjoorUserBookmarks(System.Int32,System.Int32,System.Guid)">
+        <member name="M:RMuseum.Services.IGanjoorService.IsCoupletBookmarked(System.Guid,System.Int32,System.Int32)">
             <summary>
             get verse bookmarks
             </summary>
-            <param name="poemId"></param>
-            <param name="vOrder"></param>
             <param name="userId"></param>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.DeleteGanjoorBookmark(System.Guid,System.Guid)">
-            <summary>
-            delete user bookmark         
-            /// </summary>
-            <param name="bookmarkId"></param>
-            <param name="userId">to make sure a user can not delete another user's bookmarks</param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
             <summary>
             get user bookmarks (artifacts and items)
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
-            <param name="type"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
@@ -9754,42 +9697,39 @@
             IGanjoorService implementation
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchBookmarkVerse(System.Int32,System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Switch Bookmark for couplet
+            </summary>
+            <param name="userId"></param>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Guid)">
             <summary>
             Bookmark Verse
             </summary>
             <param name="poemId"></param>
-            <param name="vOrder"></param>
+            <param name="verseId"></param>
             <param name="userId"></param>
-            <param name="type"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
-            <summary>
-            Bookmark Verse
-            </summary>
-            <param name="poemId"></param>
-            <param name="vOrder"></param>
-            <param name="userId"></param>
-            <param name="type"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemGanjoorUserBookmarks(System.Int32,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemUserBookmarks(System.Guid,System.Int32)">
             <summary>
             get user ganjoor bookmarks
             </summary>
-            <param name="poemId"></param>
             <param name="userId"></param>
-            <param name="type"></param>
+            <param name="poemId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetVerseGanjoorUserBookmarks(System.Int32,System.Int32,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.IsCoupletBookmarked(System.Guid,System.Int32,System.Int32)">
             <summary>
             get verse bookmarks
             </summary>
-            <param name="poemId"></param>
-            <param name="vOrder"></param>
             <param name="userId"></param>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteGanjoorBookmark(System.Guid,System.Guid)">
@@ -9800,13 +9740,12 @@
             <param name="userId">to make sure a user can not delete another user's bookmarks</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.Bookmark.RBookmarkType)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
             <summary>
             get user bookmarks (artifacts and items)
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
-            <param name="type"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartUpdatingMundexPage(System.Guid)">
