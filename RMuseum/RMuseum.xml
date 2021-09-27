@@ -5302,6 +5302,11 @@
             Poem
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.CoupletIndex">
+            <summary>
+            couplet index
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.VerseId">
             <summary>
             Verse Id
@@ -6522,6 +6527,56 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorSiteBannerViewModel.Active">
             <summary>
             active
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.PoetName">
+            <summary>
+            poet name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.PoetImageUrl">
+            <summary>
+            poet image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.PoemFullTitle">
+            <summary>
+            poem full title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.PoemFullUrl">
+            <summary>
+            sample: /hafez/ghazal/sh1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.CoupletIndex">
+            <summary>
+            couplet index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.VerseText">
+            <summary>
+            verse1 text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.Verse2Text">
+            <summary>
+            verse2 text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.Note">
+            <summary>
+            note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.DateTime">
+            <summary>
+            DateTime
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseTranslationViewModel">
@@ -9706,11 +9761,12 @@
             <param name="coupletIndex"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Nullable{System.Int32},System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Int32,System.Nullable{System.Int32},System.Guid)">
             <summary>
             Bookmark Verse
             </summary>
             <param name="poemId"></param>
+            <param name="coupletIndex"></param>
             <param name="verseId"></param>
             <param name="verse2Id"></param>
             <param name="userId"></param>

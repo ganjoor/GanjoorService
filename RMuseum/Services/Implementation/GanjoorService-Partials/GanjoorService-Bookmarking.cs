@@ -6,6 +6,8 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using RSecurityBackend.Services.Implementation;
+using RMuseum.Models.Ganjoor.ViewModels;
+using System.Collections.Generic;
 
 namespace RMuseum.Services.Implementation
 {
@@ -37,7 +39,7 @@ namespace RMuseum.Services.Implementation
             }
             else
             {
-                var res = await BookmarkVerse(poemId, verse12.Value.Verse1, verse12.Value.Verse2, userId);
+                var res = await BookmarkVerse(poemId, coupletIndex, verse12.Value.Verse1, verse12.Value.Verse2, userId);
                 if(!string.IsNullOrEmpty(res.ExceptionString))
                     return res;
                 bookmark = res.Result;
@@ -50,11 +52,12 @@ namespace RMuseum.Services.Implementation
         /// Bookmark Verse
         /// </summary>
         /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
         /// <param name="verseId"></param>
         /// <param name="verse2Id"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int verseId, int? verse2Id, Guid userId)
+        public async Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int coupletIndex, int verseId, int? verse2Id, Guid userId)
         {
             if ((await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.VerseId == verseId).SingleOrDefaultAsync()) != null)
             {
@@ -69,6 +72,7 @@ namespace RMuseum.Services.Implementation
                     VerseId = verseId,
                     Verse2Id = verse2Id,
                     DateTime = DateTime.Now,
+                    CoupletIndex = coupletIndex
                 };
 
             _context.GanjoorUserBookmarks.Add(bookmark);
@@ -129,22 +133,45 @@ namespace RMuseum.Services.Implementation
         /// <param name="paging"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)>> GetUserBookmarks(PagingParameterModel paging, Guid userId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmarkViewModel[] Bookmarks)>> GetUserBookmarks(PagingParameterModel paging, Guid userId)
         {
             var source =
                  _context.GanjoorUserBookmarks
-                 .Include(b => b.Poem)
+                 .Include(b => b.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet)
                  .Include(b => b.Verse)
+                 .Include(b => b.Verse2)
                  .Where(b => b.UserId == userId)
                 .OrderByDescending(b => b.DateTime)
                 .AsQueryable();
 
-            (PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks) paginatedResult =
+            (PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks) bookmarksPage =
                 await QueryablePaginator<GanjoorUserBookmark>.Paginate(source, paging);
 
 
+            List<GanjoorUserBookmarkViewModel> result = new List<GanjoorUserBookmarkViewModel>();
+            foreach (var bookmark in bookmarksPage.Bookmarks)
+            {
+                result.Add
+                    (
+                    new GanjoorUserBookmarkViewModel()
+                    {
+                        Id = bookmark.Id,
+                        PoetName = bookmark.Poem.Cat.Poet.Nickname,
+                        PoetImageUrl = $"{WebServiceUrl.Url}{$"/api/rimages/{bookmark.Poem.Cat.Poet.RImageId}.jpg"}",
+                        PoemFullTitle = bookmark.Poem.FullTitle,
+                        PoemFullUrl = bookmark.Poem.FullUrl,
+                        CoupletIndex = bookmark.CoupletIndex,
+                        VerseText = bookmark.Verse.Text,
+                        Verse2Text = bookmark.Verse2 == null ? "" : bookmark.Verse2.Text,
+                        Note = bookmark.Note,
+                        DateTime = bookmark.DateTime
+                    }
+                    );
+            }
 
-            return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmark[] Bookmarks)>(paginatedResult);
+
+            return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmarkViewModel[] Bookmarks)>
+                ((bookmarksPage.PagingMeta, result.ToArray()));
         }
     }
 }
