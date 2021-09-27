@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
@@ -61,6 +62,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> AddLanguageAsync([FromBody] GanjoorLanguage lang)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             var res = await _translationService.AddLanguageAsync(lang);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -79,6 +82,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> UpdateLangaugeAsync([FromBody] GanjoorLanguage lang)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             var res = await _translationService.UpdateLangaugeAsync(lang);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -92,6 +97,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> DeleteLangaugeAsync(int id)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             var res = await _translationService.DeleteLangaugeAsync(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -187,6 +194,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> AddOrUpdatePoemTranslation([FromBody] GanjoorPoemTranslationViewModel translation)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             var res = await _translationService.AddPoemTranslation(userId, translation);
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -195,17 +204,42 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// readonly mode
+        /// </summary>
+        public bool ReadOnlyMode
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration["ReadOnlyMode"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
         /// translation service
         /// </summary>
         private readonly IGanjoorTranslationService _translationService;
 
         /// <summary>
+        /// Configuration
+        /// </summary>
+        protected IConfiguration Configuration { get; }
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="translationService"></param>
-        public TranslationController(IGanjoorTranslationService translationService)
+        /// <param name="configuration"></param>
+        public TranslationController(IGanjoorTranslationService translationService, IConfiguration configuration)
         {
             _translationService = translationService;
+            Configuration = configuration;
         }
     }
 }
