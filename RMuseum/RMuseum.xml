@@ -9957,6 +9957,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._GetVerseIdFromCoupletIndex(System.Int32,System.Int32)">
+            <summary>
+            verse id from couplet index
+            </summary>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemComments(System.Int32,System.Guid,System.Nullable{System.Int32})">
             <summary>
             get poem comments

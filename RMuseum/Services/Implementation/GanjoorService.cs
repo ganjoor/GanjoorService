@@ -521,6 +521,30 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<PublicRecitationViewModel[]>(await source.AsNoTracking().ToArrayAsync());
         }
 
+        /// <summary>
+        /// verse id from couplet index
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        private async Task<int?> _GetVerseIdFromCoupletIndex(int poemId, int coupletIndex)
+        {
+            int? res = null;
+            var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
+            int cIndex = -1;
+            for (int i = 0; i < verses.Count; i++)
+            {
+                if (verses[i].VersePosition != VersePosition.Left && verses[i].VersePosition != VersePosition.CenteredVerse2)
+                    cIndex++;
+                if (cIndex == coupletIndex)
+                {
+                    res = verses[i].Id;
+                    break;
+                }
+            }
+            return res;
+        }
+
 
 
         /// <summary>
@@ -535,18 +559,7 @@ namespace RMuseum.Services.Implementation
             int? Verse1Id = null;
             if (coupletIndex != null)
             {
-                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
-                int cIndex = -1;
-                for (int i = 0; i < verses.Count; i++)
-                {
-                    if (verses[i].VersePosition != VersePosition.Left && verses[i].VersePosition != VersePosition.CenteredVerse2)
-                        cIndex++;
-                    if (cIndex == coupletIndex)
-                    {
-                        Verse1Id = verses[i].Id;
-                        break;
-                    }
-                }
+                Verse1Id = await _GetVerseIdFromCoupletIndex(poemId, (int)coupletIndex);
             }
             var source =
                   from comment in _context.GanjoorComments.Include(c => c.User)
