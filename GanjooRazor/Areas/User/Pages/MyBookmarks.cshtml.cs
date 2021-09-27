@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DNTPersianUtils.Core;
@@ -11,13 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
-using RSecurityBackend.Models.Notification.ViewModels;
 
 namespace GanjooRazor.Areas.User.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public class NotificationsModel : PageModel
+    public class MyBookmarksModel : PageModel
     {
         /// <summary>
         /// Last Error
@@ -29,10 +27,7 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public List<NameIdUrlImage> PaginationLinks { get; set; }
 
-        /// <summary>
-        /// Notifications
-        /// </summary>
-        public List<RUserNotificationViewModel> Notifications { get; set; }
+        public List<GanjoorUserBookmarkViewModel> Bookmarks { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -46,7 +41,7 @@ namespace GanjooRazor.Areas.User.Pages
                         {
                             pageNumber = int.Parse(Request.Query["page"]);
                         }
-                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/notifications/paginated?PageNumber={pageNumber}&PageSize=20");
+                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/?PageNumber={pageNumber}&PageSize=20");
                         if (!response.IsSuccessStatusCode)
                         {
                             LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
@@ -54,7 +49,7 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                         response.EnsureSuccessStatusCode();
 
-                        Notifications = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<RUserNotificationViewModel>>();
+                        Bookmarks = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorUserBookmarkViewModel>>();
 
                         string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
                         if (!string.IsNullOrEmpty(paginnationMetadata))
@@ -70,7 +65,7 @@ namespace GanjooRazor.Areas.User.Pages
                                         new NameIdUrlImage()
                                         {
                                             Name = "صفحهٔ اول",
-                                            Url = "/User/Notifications/?page=1"
+                                            Url = "/User/MyBookmarks/?page=1"
                                         }
                                         );
                                 }
@@ -97,7 +92,7 @@ namespace GanjooRazor.Areas.User.Pages
                                                 new NameIdUrlImage()
                                                 {
                                                     Name = i.ToPersianNumbers(),
-                                                    Url = $"/User/Notifications/?page={i}"
+                                                    Url = $"/User/MyBookmarks/?page={i}"
                                                 }
                                                 );
                                         }
@@ -119,7 +114,7 @@ namespace GanjooRazor.Areas.User.Pages
                                        new NameIdUrlImage()
                                        {
                                            Name = "صفحهٔ آخر",
-                                           Url = $"/User/Notifications/?page={paginationMetadata.totalPages}"
+                                           Url = $"/User/MyBookmarks/?page={paginationMetadata.totalPages}"
                                        }
                                        );
                                 }
@@ -133,24 +128,6 @@ namespace GanjooRazor.Areas.User.Pages
                     LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
                 }
             return Page();
-        }
-
-        public async Task<IActionResult> OnDeleteNotification(Guid id)
-        {
-            using (HttpClient secureClient = new HttpClient())
-            {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
-                {
-                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/notifications/{id}");
-
-                    if (response.StatusCode != HttpStatusCode.OK)
-                    {
-                        return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
-                    }
-
-                }
-            }
-            return new JsonResult(true);
         }
     }
 }

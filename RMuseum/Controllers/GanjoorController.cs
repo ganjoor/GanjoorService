@@ -1897,6 +1897,8 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> SwitchCoupletBookmark(int poemId, int coupletIndex)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.SwitchCoupletBookmark(loggedOnUserId, poemId, coupletIndex);
             if (!string.IsNullOrEmpty(res.ExceptionString))

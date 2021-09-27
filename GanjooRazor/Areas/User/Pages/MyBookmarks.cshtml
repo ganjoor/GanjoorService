@@ -1,0 +1,80 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.MyBookmarksModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "نشانه‌های من";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @foreach (var bookmark in Model.Bookmarks)
+    {
+        if (color == "gray")
+            color = "white";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="bookmark-@bookmark.Id">
+            <blockquote>
+                <p>
+                    <small>در @bookmark.DateTime.ToFriendlyPersianDateTextify()</small>
+                </p>
+                <div id="bookmark-text-@bookmark.Id">
+                    <p>
+                        @bookmark.VerseText
+                    </p>
+
+                    @if(!string.IsNullOrEmpty(bookmark.Verse2Text))
+                    {
+                        <p>
+                            @bookmark.Verse2Text
+                        </p>
+                    }
+                   
+                </div>
+            </blockquote>
+           
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+
+}
+

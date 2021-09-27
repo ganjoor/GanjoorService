@@ -1733,16 +1733,27 @@
             <param name="translation"></param>
             <returns></returns>
         </member>
+        <member name="P:RMuseum.Controllers.TranslationController.ReadOnlyMode">
+            <summary>
+            readonly mode
+            </summary>
+        </member>
         <member name="F:RMuseum.Controllers.TranslationController._translationService">
             <summary>
             translation service
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.TranslationController.#ctor(RMuseum.Services.IGanjoorTranslationService)">
+        <member name="P:RMuseum.Controllers.TranslationController.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.TranslationController.#ctor(RMuseum.Services.IGanjoorTranslationService,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             constructor
             </summary>
             <param name="translationService"></param>
+            <param name="configuration"></param>
         </member>
         <member name="T:RMuseum.DbContext.RMuseumDbContext">
             <summary>
