@@ -38,23 +38,26 @@ else
         <div style="background-color:@color" id="bookmark-@bookmark.Id">
             <blockquote>
                 <p>
-                    <small>در @bookmark.DateTime.ToFriendlyPersianDateTextify()</small>
+                    از <a href="@($"{bookmark.PoemFullUrl}#bn{bookmark.CoupletIndex + 1}")">@bookmark.PoemFullTitle</a> <small>در @bookmark.DateTime.ToFriendlyPersianDateTextify()</small>
                 </p>
+                <a href="@($"{bookmark.PoemFullUrl}#bn{bookmark.CoupletIndex + 1}")">
+                    <img src="@bookmark.PoetImageUrl" style="width:unset;display:unset;border:unset" alt="@bookmark.PoetName" />
+                </a>
                 <div id="bookmark-text-@bookmark.Id">
                     <p>
                         @bookmark.VerseText
                     </p>
 
-                    @if(!string.IsNullOrEmpty(bookmark.Verse2Text))
+                    @if (!string.IsNullOrEmpty(bookmark.Verse2Text))
                     {
                         <p>
                             @bookmark.Verse2Text
                         </p>
                     }
-                   
+
                 </div>
             </blockquote>
-           
+
         </div>
 
 

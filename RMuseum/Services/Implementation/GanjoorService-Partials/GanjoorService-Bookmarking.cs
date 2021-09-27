@@ -157,7 +157,7 @@ namespace RMuseum.Services.Implementation
                     {
                         Id = bookmark.Id,
                         PoetName = bookmark.Poem.Cat.Poet.Nickname,
-                        PoetImageUrl = $"{WebServiceUrl.Url}{$"/api/poet/image/{bookmark.Poem.FullUrl.Substring(1, bookmark.Poem.FullUrl.IndexOf('/', 1) - 1)}.gif"}",
+                        PoetImageUrl = $"{WebServiceUrl.Url}{$"/api/ganjoor/poet/image/{bookmark.Poem.FullUrl.Substring(1, bookmark.Poem.FullUrl.IndexOf('/', 1) - 1)}.gif"}",
                         PoemFullTitle = bookmark.Poem.FullTitle,
                         PoemFullUrl = bookmark.Poem.FullUrl,
                         CoupletIndex = bookmark.CoupletIndex,
