@@ -34,6 +34,11 @@ namespace RMuseum.Models.Ganjoor
         public GanjoorPoem Poem { get; set; }
 
         /// <summary>
+        /// couplet index
+        /// </summary>
+        public int CoupletIndex { get; set; }
+
+        /// <summary>
         /// Verse Id
         /// </summary>
         public int VerseId { get; set; }

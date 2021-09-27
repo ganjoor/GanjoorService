@@ -10,7 +10,7 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20210927065456_GanjoorUserBookmarks")]
+    [Migration("20210927125827_GanjoorUserBookmarks")]
     partial class GanjoorUserBookmarks
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -985,6 +985,9 @@ namespace RMuseum.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CoupletIndex")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");

@@ -14,6 +14,7 @@ namespace RMuseum.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PoemId = table.Column<int>(type: "int", nullable: false),
+                    CoupletIndex = table.Column<int>(type: "int", nullable: false),
                     VerseId = table.Column<int>(type: "int", nullable: false),
                     Verse2Id = table.Column<int>(type: "int", nullable: true),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
