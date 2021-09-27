@@ -1893,7 +1893,7 @@ namespace RMuseum.Controllers
         [HttpPost]
         [Route("bookmark/switch/{poemId}/{coupletIndex}")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> SwitchCoupletBookmark(int poemId, int coupletIndex)
         {
@@ -1901,7 +1901,7 @@ namespace RMuseum.Controllers
             RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.SwitchCoupletBookmark(loggedOnUserId, poemId, coupletIndex);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
+            return Ok(res.Result != null);
         }
 
 

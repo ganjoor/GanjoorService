@@ -402,7 +402,6 @@ function editCouplet(poemId, coupletIndex) {
 }
 
 function switchBookmark(poemId, coupletIndex) {
-    var vIndex = getVerseIndexFromCoupleIndex(coupletIndex);
     var iconElementId = 'bookmark-icon-' + String(coupletIndex);
     document.getElementById(iconElementId).innerHTML = 'star_half';
     var url = '/?handler=SwitchBookmark';
@@ -412,7 +411,7 @@ function switchBookmark(poemId, coupletIndex) {
         url: url,
         data: {
             poemId: poemId,
-            vOrder: (vIndex + 1)
+            coupletIndex: coupletIndex
         },
         error: function (err) {
             alert(err)

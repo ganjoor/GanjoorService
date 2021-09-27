@@ -48,7 +48,7 @@ namespace GanjooRazor.Pages
         /// <param name="configuration"></param>
         /// <param name="httpClient"></param>
         /// <param name="memoryCache"></param>
-        public IndexModel(IConfiguration configuration, 
+        public IndexModel(IConfiguration configuration,
             HttpClient httpClient,
             IMemoryCache memoryCache
             )
@@ -182,7 +182,7 @@ namespace GanjooRazor.Pages
             return await OnPostComment(replyCommentText, refPoemId, refCommentId, -1);
         }
 
-        
+
 
         /// <summary>
         /// comment
@@ -228,7 +228,7 @@ namespace GanjooRazor.Pages
                                     Error = "",
                                     InReplyTo = inReplytoId == 0 ? null : new GanjoorCommentSummaryViewModel(),
                                     LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"])
-                    }
+                                }
                             }
                         };
                     }
@@ -280,7 +280,7 @@ namespace GanjooRazor.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var response  = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment?id={id}");
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment?id={id}");
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
@@ -417,7 +417,7 @@ namespace GanjooRazor.Pages
 
         private void _markMyReplies(GanjoorCommentSummaryViewModel parent, Guid userId)
         {
-            foreach(var reply in parent.Replies)
+            foreach (var reply in parent.Replies)
             {
                 reply.MyComment = reply.UserId == userId;
                 _markMyReplies(reply, userId);
@@ -504,7 +504,7 @@ namespace GanjooRazor.Pages
                 return Redirect(pageUrl);
             }
 
-            if(Request.Path.ToString().IndexOf("index.php") != -1)
+            if (Request.Path.ToString().IndexOf("index.php") != -1)
             {
                 return Redirect($"{Request.Path.ToString().Replace("index.php", "search")}{Request.QueryString}");
             }
@@ -618,7 +618,7 @@ namespace GanjooRazor.Pages
                     ViewData["Title"] = $"گنجور &raquo; {GanjoorPage.FullTitle}";
 
 
-                    switch(GanjoorPage.UrlSlug)
+                    switch (GanjoorPage.UrlSlug)
                     {
                         case "hashieha":
                             await _GenerateHashiehaHtmlText();
@@ -633,21 +633,21 @@ namespace GanjooRazor.Pages
                 }
                 breadCrumbList.AddItem(GanjoorPage.Title, GanjoorPage.FullUrl, "https://i.ganjoor.net/cat.png");
             }
-            
+
 
             ViewData["BrearCrumpList"] = breadCrumbList.ToString();
 
-            
+
             return Page();
         }
 
 
         public async Task<ActionResult> OnGetBNumPartialAsync(int poemId, int coupletIndex)
         {
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments?coupletIndex={coupletIndex}");
-            response.EnsureSuccessStatusCode();
+            var responseCoupletComments = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments?coupletIndex={coupletIndex}");
+            responseCoupletComments.EnsureSuccessStatusCode();
 
-            var comments = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCommentSummaryViewModel>>();
+            var comments = JArray.Parse(await responseCoupletComments.Content.ReadAsStringAsync()).ToObject<List<GanjoorCommentSummaryViewModel>>();
 
             bool isBookmarked = false;
 
@@ -655,14 +655,25 @@ namespace GanjooRazor.Pages
             {
                 if (Guid.TryParse(Request.Cookies["UserId"], out Guid userId))
                     if (userId != Guid.Empty)
+                    {
                         foreach (GanjoorCommentSummaryViewModel comment in comments)
                         {
                             comment.MyComment = comment.UserId == userId;
                             _markMyReplies(comment, userId);
                         }
-            }
-            
 
+                        using (HttpClient secureClient = new HttpClient())
+                        {
+                            if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                            {
+                                HttpResponseMessage responseIsBookmarked = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}/{coupletIndex}");
+                                responseIsBookmarked.EnsureSuccessStatusCode();
+
+                                isBookmarked = JsonConvert.DeserializeObject<bool>(await responseIsBookmarked.Content.ReadAsStringAsync());
+                            }
+                        }
+                    }
+            }
 
             return new PartialViewResult()
             {
@@ -681,20 +692,20 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public async Task<IActionResult> OnPostSwitchBookmarkAsync(int poemId, int vOrder)
+        public async Task<IActionResult> OnPostSwitchBookmarkAsync(int poemId, int coupletIndex)
         {
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     HttpResponseMessage response = await secureClient.PostAsync(
-                        $"{APIRoot.Url}/api/ganjoor/bookmark/switch/{poemId}/{vOrder}", null);
+                        $"{APIRoot.Url}/api/ganjoor/bookmark/switch/{poemId}/{coupletIndex}", null);
                     if (!response.IsSuccessStatusCode)
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
-                    var res = await response.Content.ReadAsStringAsync();
-                    return new OkObjectResult(res != null);
+                    var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                    return new OkObjectResult(res);
                 }
                 else
                 {
