@@ -246,7 +246,7 @@ namespace GanjooRazor.Pages
                         {
                             catQuery = $"&cat={Request.Query["cat"]}";
                         }
-                        PagingToolsHtml = GeneratePagingBarHtml(paginationMetadata, $"/search?s={Query}&author={PoetId}{catQuery}");
+                        PagingToolsHtml = GeneratePagingBarHtml(paginationMetadata, $"/search?s={WebUtility.UrlEncode(Query)}&amp;author={PoetId}{catQuery}");
                     }
                 }
 
@@ -262,11 +262,12 @@ namespace GanjooRazor.Pages
         {
             string htmlText = "<p style=\"text-align: center;\">";
 
+
             if (paginationMetadata != null && paginationMetadata.totalPages > 1)
             {
                 if (paginationMetadata.currentPage > 3)
                 {
-                    htmlText += $"[<a href=\"{routeStartWithQueryStrings}&page=1\">صفحهٔ اول</a>] …";
+                    htmlText += $"[<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page=1\">صفحهٔ اول</a>] …";
                 }
                 for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
                 {
@@ -279,14 +280,14 @@ namespace GanjooRazor.Pages
                         }
                         else
                         {
-                            htmlText += $"<a href=\"{routeStartWithQueryStrings}&page={i}\">{i.ToPersianNumbers()}</a>";
+                            htmlText += $"<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page={i}\">{i.ToPersianNumbers()}</a>";
                         }
                         htmlText += "] ";
                     }
                 }
                 if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
                 {
-                    htmlText += $"… [<a href=\"{routeStartWithQueryStrings}&page={paginationMetadata.totalPages}\">صفحهٔ آخر</a>]";
+                    htmlText += $"… [<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page={paginationMetadata.totalPages}\">صفحهٔ آخر</a>]";
                 }
             }
 
