@@ -286,7 +286,7 @@
         function breakPoem(poemId, vOrder, vText) {
             if (!confirm(vText))
                 return;
-            $('#breakpoem').hide();
+            $('#breakpoem-' + String(vOrder)).hide();
 
             var url = '?handler=BreakPoem';
 
@@ -305,7 +305,7 @@
                         alert(e);
                     else
                         alert(e.responseText);
-                    $('#breakpoem').show();
+                    $('#breakpoem-' + String(vOrder)).show();
                 }
 
             });

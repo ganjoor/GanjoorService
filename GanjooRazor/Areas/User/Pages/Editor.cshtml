@@ -227,7 +227,7 @@ else
         {
             <tr>
                 <td>
-                    <a role="button" id="breakpoem" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">شکستن از اینجا</a>
+                    <a role="button" id="breakpoem-@verse.VOrder" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">شکستن از اینجا</a>
                 </td>
             </tr>
         }
