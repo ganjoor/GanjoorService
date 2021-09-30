@@ -278,11 +278,21 @@
                                     {
                                         <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + Model.GanjoorPage.Poem.Next.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Next.Title): @Html.Raw(Model.GanjoorPage.Poem.Next.Excerpt)</a><span> &raquo;</span>
                                     }
+                                    else
+                                   if (Model.GanjoorPage.Poem.Category.Cat.Next != null)
+                                    {
+                                        <a href="@Model.GanjoorPage.Poem.Category.Cat.Next.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Next.Title</a><span> &raquo;</span>
+                                    }
                                 </div>
                                 <div class="navright">
                                     @if (Model.GanjoorPage.Poem.Previous != null)
                                     {
                                         <span>&laquo; </span><a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" +Model.GanjoorPage.Poem.Previous.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Previous.Title) :@Html.Raw(Model.GanjoorPage.Poem.Previous.Excerpt)</a>
+                                    }
+                                    else
+                                   if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
+                                    {
+                                        <span>&laquo; </span><a href="@Model.GanjoorPage.Poem.Category.Cat.Previous.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Previous.Title</a>
                                     }
                                 </div>
                             </div>
@@ -306,7 +316,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                
+
                             }
 
                             <p>
@@ -331,7 +341,7 @@
                                     <text> | <small>منبع اولیه: <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Html.Raw(Model.GanjoorPage.Poem.SourceName)</a></small></text>
                                 }
                                 | <small><a href="@Html.Raw($"http://www.facebook.com/sharer.php?u=https://ganjoor.net{Model.GanjoorPage.FullUrl}&amp;t={Uri.EscapeUriString(Model.GanjoorPage.FullTitle)}/")">ارسال به فیس‌بوک</a></small>
-                                
+
                                 @if (Model.LoggedIn)
                                 {
                                     <text>| <small><a href="@Html.Raw($"/trans?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">#</a></small></text>
