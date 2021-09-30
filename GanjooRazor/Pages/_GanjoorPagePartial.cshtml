@@ -143,7 +143,7 @@
                                     <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" style="width:auto;float:right" /></a>
                                     <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Name)" style="width:auto;float:right" /></a>
                                 </div>
-                                <div style="width:164px;margin:auto">
+                                <div style="width:164px;margin:auto" id="page-hierarchy">
                                     @{
                                         <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)</a><span> &raquo;</span>
                                         <h2><a href="@Html.Raw(Model.GanjoorPage.FullUrl)">@Html.Raw(Model.GanjoorPage.Title)</a></h2>
@@ -153,22 +153,37 @@
                             }
                             else
                             {
-                                <div style="width:82px;margin:auto">
+                                <div style="width:82px;margin:auto" id="poet-image">
                                     <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" /></a>
                                 </div>
-                                <div style="width:100%;margin:auto">
+                                <div style="width:100%;margin:auto" id="page-hierarchy">
                                     @{
                                         foreach (var gran in Model.GanjoorPage.PoetOrCat.Cat.Ancestors)
                                         {
                                             <a href="@Html.Raw(gran.FullUrl)">@Html.Raw(gran.Title)</a><span> &raquo;</span>
                                         }
-                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</a>
+
                                         @if (!Model.IsPoemPage && !Model.IsCatPage && !Model.IsPoetPage)
                                         {
+                                            <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</a>
                                             <text> &raquo; </text>
-                                            <a href="@Html.Raw(Model.GanjoorPage.FullUrl)" rel="bookmark">
-                                                @Html.Raw(Model.GanjoorPage.Title)
-                                            </a>
+                                            <h2>
+                                                <a href="@Html.Raw(Model.GanjoorPage.FullUrl)" rel="bookmark">
+                                                    @Html.Raw(Model.GanjoorPage.Title)
+                                                </a>
+                                            </h2>
+                                        }
+                                        else
+                                        {
+                                            @if (Model.IsPoemPage)
+                                            {
+                                                <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</a>
+                                            }
+                                            else
+                                            {
+                                                <h2><a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</a></h2>
+                                            }
+
                                         }
                                     }
                                 </div>
@@ -279,7 +294,7 @@
                                         <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + Model.GanjoorPage.Poem.Next.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Next.Title): @Html.Raw(Model.GanjoorPage.Poem.Next.Excerpt)</a><span> &raquo;</span>
                                     }
                                     else
-                                   if (Model.GanjoorPage.Poem.Category.Cat.Next != null)
+                               if (Model.GanjoorPage.Poem.Category.Cat.Next != null)
                                     {
                                         <a href="@Model.GanjoorPage.Poem.Category.Cat.Next.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Next.Title</a><span> &raquo;</span>
                                     }
@@ -290,7 +305,7 @@
                                         <span>&laquo; </span><a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" +Model.GanjoorPage.Poem.Previous.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Previous.Title) :@Html.Raw(Model.GanjoorPage.Poem.Previous.Excerpt)</a>
                                     }
                                     else
-                                   if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
+                               if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                     {
                                         <span>&laquo; </span><a href="@Model.GanjoorPage.Poem.Category.Cat.Previous.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Previous.Title</a>
                                     }
