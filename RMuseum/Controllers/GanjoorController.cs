@@ -1929,19 +1929,19 @@ namespace RMuseum.Controllers
 
 
         /// <summary>
-        /// get poem user bookmarks
+        /// get poem user bookmarks (only Id, CoupletIndex and DateTime are valid in the output view model)
         /// </summary>
         /// <param name="poemId"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("bookmark/{poemId}")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmark[]))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmarkViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetPoemUserBookmarks(int poemId)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<GanjoorUserBookmark[]> res = await _ganjoorService.GetPoemUserBookmarks(loggedOnUserId, poemId);
+            RServiceResult<GanjoorUserBookmarkViewModel[]> res = await _ganjoorService.GetPoemUserBookmarks(loggedOnUserId, poemId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

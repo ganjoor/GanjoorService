@@ -585,12 +585,12 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> DeleteGanjoorBookmark(Guid bookmarkId, Guid userId);
 
         /// <summary>
-        /// get user ganjoor bookmarks
+        /// get user ganjoor bookmarks (only  Id, CoupletIndex and DateTime are valid)
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="poemId"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorUserBookmark[]>> GetPoemUserBookmarks(Guid userId, int poemId);
+        Task<RServiceResult<GanjoorUserBookmarkViewModel[]>> GetPoemUserBookmarks(Guid userId, int poemId);
 
         /// <summary>
         /// get verse bookmarks

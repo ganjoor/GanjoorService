@@ -1227,7 +1227,7 @@
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemUserBookmarks(System.Int32)">
             <summary>
-            get poem user bookmarks
+            get poem user bookmarks (only Id, CoupletIndex and DateTime are valid in the output view model)
             </summary>
             <param name="poemId"></param>
             <returns></returns>
@@ -8703,7 +8703,7 @@
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemUserBookmarks(System.Guid,System.Int32)">
             <summary>
-            get user ganjoor bookmarks
+            get user ganjoor bookmarks (only  Id, CoupletIndex and DateTime are valid)
             </summary>
             <param name="userId"></param>
             <param name="poemId"></param>
@@ -9790,7 +9790,7 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemUserBookmarks(System.Guid,System.Int32)">
             <summary>
-            get user ganjoor bookmarks
+            get user ganjoor bookmarks (only Id, CoupletIndex and DateTime are valid)
             </summary>
             <param name="userId"></param>
             <param name="poemId"></param>

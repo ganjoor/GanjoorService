@@ -82,15 +82,26 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// get user ganjoor bookmarks
+        /// get user ganjoor bookmarks (only Id, CoupletIndex and DateTime are valid)
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="poemId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorUserBookmark[]>> GetPoemUserBookmarks(Guid userId, int poemId)
-        { 
-            GanjoorUserBookmark[] bookmarks = await _context.GanjoorUserBookmarks.Where(b => b.PoemId == poemId && b.UserId == userId).ToArrayAsync();
-            return new RServiceResult<GanjoorUserBookmark[]>(bookmarks);
+        public async Task<RServiceResult<GanjoorUserBookmarkViewModel[]>> GetPoemUserBookmarks(Guid userId, int poemId)
+        {
+            GanjoorUserBookmarkViewModel[] bookmarks = 
+                await _context.GanjoorUserBookmarks
+                .Where(b => b.PoemId == poemId && b.UserId == userId)
+                .Select(b => 
+                    new GanjoorUserBookmarkViewModel()
+                    {
+                        Id = b.Id,
+                        CoupletIndex = b.CoupletIndex,
+                        DateTime = b.DateTime,
+                    }
+                )
+                .ToArrayAsync();
+            return new RServiceResult<GanjoorUserBookmarkViewModel[]>(bookmarks);
         }
 
         /// <summary>
