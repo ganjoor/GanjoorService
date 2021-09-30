@@ -139,14 +139,14 @@
                             <div class="spacer">&nbsp;</div>
                             @if (Model.GanjoorPage.SecondPoet != null)
                             {
-                                <div style="width:164px;margin:auto">
+                                <div style="width:164px;margin:auto" id="poets">
                                     <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" style="width:auto;float:right" /></a>
                                     <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Name)" style="width:auto;float:right" /></a>
                                 </div>
                                 <div style="width:164px;margin:auto">
                                     @{
                                         <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)</a><span> &raquo;</span>
-                                        <a href="@Html.Raw(Model.GanjoorPage.FullUrl)">@Html.Raw(Model.GanjoorPage.Title)</a>
+                                        <h2><a href="@Html.Raw(Model.GanjoorPage.FullUrl)">@Html.Raw(Model.GanjoorPage.Title)</a></h2>
                                     }
                                 </div>
 
