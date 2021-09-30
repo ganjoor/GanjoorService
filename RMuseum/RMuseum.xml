@@ -5345,11 +5345,6 @@
             Verse 2
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Note">
-            <summary>
-            note
-            </summary>
-        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.DateTime">
             <summary>
             DateTime
@@ -6585,11 +6580,6 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.Verse2Text">
             <summary>
             verse2 text
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.Note">
-            <summary>
-            note
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorUserBookmarkViewModel.DateTime">

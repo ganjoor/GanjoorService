@@ -163,7 +163,6 @@ namespace RMuseum.Services.Implementation
                         CoupletIndex = bookmark.CoupletIndex,
                         VerseText = bookmark.Verse.Text,
                         Verse2Text = bookmark.Verse2 == null ? "" : bookmark.Verse2.Text,
-                        Note = bookmark.Note,
                         DateTime = bookmark.DateTime
                     }
                     );

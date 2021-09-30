@@ -990,9 +990,6 @@ namespace RMuseum.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PoemId")
                         .HasColumnType("int");
 

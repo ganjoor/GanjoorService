@@ -46,11 +46,6 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public string Verse2Text { get; set; }
 
         /// <summary>
-        /// note
-        /// </summary>
-        public string Note { get; set; }
-
-        /// <summary>
         /// DateTime
         /// </summary>
         public DateTime DateTime { get; set; }

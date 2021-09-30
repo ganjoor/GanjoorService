@@ -10,7 +10,7 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20210927125827_GanjoorUserBookmarks")]
+    [Migration("20210930062842_GanjoorUserBookmarks")]
     partial class GanjoorUserBookmarks
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -991,9 +991,6 @@ namespace RMuseum.Migrations
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PoemId")
                         .HasColumnType("int");

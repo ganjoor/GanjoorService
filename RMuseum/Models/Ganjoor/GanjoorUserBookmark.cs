@@ -59,11 +59,6 @@ namespace RMuseum.Models.Ganjoor
         public virtual GanjoorVerse Verse2 { get; set; }
 
         /// <summary>
-        /// note
-        /// </summary>
-        public string Note { get; set; }
-
-        /// <summary>
         /// DateTime
         /// </summary>
         public DateTime DateTime { get; set; }

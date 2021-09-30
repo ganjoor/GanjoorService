@@ -17,7 +17,6 @@ namespace RMuseum.Migrations
                     CoupletIndex = table.Column<int>(type: "int", nullable: false),
                     VerseId = table.Column<int>(type: "int", nullable: false),
                     Verse2Id = table.Column<int>(type: "int", nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
