@@ -1367,12 +1367,14 @@
             </summary>
             <param name="notificationService"></param>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.GetPublished(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+        <member name="M:RMuseum.Controllers.RecitationController.GetPublished(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">
             <summary>
-            returns paginated published recitations, ordered by publish date descending
+            returns paginated published recitations (if poetId or catId is non-zero its ordered by poemId ascending if not it is ordered by publish date descending)
             </summary>
-            <param name="paging">if PageSize is -1 or is more than 100 it resets to 100</param>
-            <param name="searchTerm"></param>
+            <param name="paging">if PageSize is -1 or is more than 1000 it resets to 1000</param>
+            <param name="searchTerm">empty: no search term, non-empty: searches within AudioArtist, AudioTitle, poem.FullTitle and poem.PlainText simultaneously</param>
+            <param name="poetId"></param>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetPublishedRecitationById(System.Int32)">
@@ -10903,12 +10905,14 @@
             <param name="searchTerm"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishedRecitations(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishedRecitations(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">
             <summary>
             returns list of publish recitations
             </summary>
             <param name="paging"></param>
             <param name="searchTerm"></param>
+            <param name="poetId"></param>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishedRecitationById(System.Int32)">
@@ -11257,12 +11261,14 @@
             <param name="searchTerm"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IRecitationService.GetPublishedRecitations(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+        <member name="M:RMuseum.Services.IRecitationService.GetPublishedRecitations(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">
             <summary>
-            returns list of publish narrations
+            returns list of publish narrations (if poetId or catId is non-zero its ordered by poemId ascending if not it is ordered by publish date descending)
             </summary>
             <param name="paging"></param>
             <param name="searchTerm"></param>
+            <param name="poetId"></param>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.GetPublishedRecitationById(System.Int32)">

@@ -25,20 +25,22 @@ namespace RMuseum.Controllers
     public class RecitationController : Controller
     {
         /// <summary>
-        /// returns paginated published recitations, ordered by publish date descending
+        /// returns paginated published recitations (if poetId or catId is non-zero its ordered by poemId ascending if not it is ordered by publish date descending)
         /// </summary>
-        /// <param name="paging">if PageSize is -1 or is more than 100 it resets to 100</param>
-        /// <param name="searchTerm"></param>
+        /// <param name="paging">if PageSize is -1 or is more than 1000 it resets to 1000</param>
+        /// <param name="searchTerm">empty: no search term, non-empty: searches within AudioArtist, AudioTitle, poem.FullTitle and poem.PlainText simultaneously</param>
+        /// <param name="poetId"></param>
+        /// <param name="catId"></param>
         /// <returns></returns>
         [HttpGet("published")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PublicRecitationViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPublished([FromQuery] PagingParameterModel paging, string searchTerm = "")
+        public async Task<IActionResult> GetPublished([FromQuery] PagingParameterModel paging, string searchTerm = "", int poetId = 0, int catId = 0)
         {
-            if (paging.PageSize == -1 || paging.PageSize > 100)
-                paging.PageSize = 100;
-            var res = await _audioService.GetPublishedRecitations(paging, searchTerm);
+            if (paging.PageSize == -1 || paging.PageSize > 1000)
+                paging.PageSize = 1000;
+            var res = await _audioService.GetPublishedRecitations(paging, searchTerm, poetId, catId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 
@@ -81,7 +83,7 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> GetRssFeed()
         {
             int count = 200;
-            var res = await _audioService.GetPublishedRecitations(new PagingParameterModel() { PageNumber = 1, PageSize = count}, "");
+            var res = await _audioService.GetPublishedRecitations(new PagingParameterModel() { PageNumber = 1, PageSize = count});
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 
