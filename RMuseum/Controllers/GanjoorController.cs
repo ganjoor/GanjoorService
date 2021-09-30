@@ -1895,6 +1895,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> SwitchCoupletBookmark(int poemId, int coupletIndex)
         {
             if (ReadOnlyMode)
@@ -1902,7 +1903,38 @@ namespace RMuseum.Controllers
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.SwitchCoupletBookmark(loggedOnUserId, poemId, coupletIndex);
             if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                if (res.ExceptionString == "verse not found")
+                    return NotFound();
                 return BadRequest(res.ExceptionString);
+            }
+            return Ok(res.Result != null);
+        }
+
+        /// <summary>
+        /// Bookmark couplet if it is not
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("bookmark/{poemId}/{coupletIndex}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> BookmarkCoupletIfNotBookmarked(int poemId, int coupletIndex)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.BookmarkCoupletIfNotBookmarked(loggedOnUserId, poemId, coupletIndex);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                if (res.ExceptionString == "verse not found")
+                    return NotFound();
+                return BadRequest(res.ExceptionString);
+            }
             return Ok(res.Result != null);
         }
 
@@ -1958,12 +1990,17 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> IsCoupletBookmarked(int poemId, int coupletIndex)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<bool> res = await _ganjoorService.IsCoupletBookmarked(loggedOnUserId, poemId, coupletIndex);
             if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                if (res.ExceptionString == "verse not found")
+                    return NotFound();
                 return BadRequest(res.ExceptionString);
+            }
             return Ok(res.Result);
         }
 

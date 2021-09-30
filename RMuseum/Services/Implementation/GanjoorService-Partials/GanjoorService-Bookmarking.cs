@@ -47,6 +47,29 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<GanjoorUserBookmark>(bookmark);
         }
 
+        /// <summary>
+        /// Bookmark couplet if it is not
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorUserBookmark>> BookmarkCoupletIfNotBookmarked(Guid userId, int poemId, int coupletIndex)
+        {
+            (int Verse1, int? Verse2)? verse12 = await _GetVerse12IdFromCoupletIndex(poemId, coupletIndex);
+            if (verse12 == null)
+                return new RServiceResult<GanjoorUserBookmark>(null, "verse not found");
+            var bookmark = await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.VerseId == verse12.Value.Verse1).SingleOrDefaultAsync();
+            if (bookmark == null)
+            { 
+                var res = await BookmarkVerse(poemId, coupletIndex, verse12.Value.Verse1, verse12.Value.Verse2, userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return res;
+                bookmark = res.Result;
+            }
+            return new RServiceResult<GanjoorUserBookmark>(bookmark);
+        }
+
 
         /// <summary>
         /// Bookmark Verse

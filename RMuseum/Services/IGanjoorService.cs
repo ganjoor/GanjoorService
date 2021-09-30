@@ -577,6 +577,15 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorUserBookmark>> SwitchCoupletBookmark(Guid userId, int poemId, int coupletIndex);
 
         /// <summary>
+        /// Bookmark couplet if it is not
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorUserBookmark>> BookmarkCoupletIfNotBookmarked(Guid userId, int poemId, int coupletIndex);
+
+        /// <summary>
         /// delete user bookmark         
         /// /// </summary>
         /// <param name="bookmarkId"></param>

@@ -1218,6 +1218,14 @@
             <param name="coupletIndex"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.BookmarkCoupletIfNotBookmarked(System.Int32,System.Int32)">
+            <summary>
+            Bookmark couplet if it is not
+            </summary>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.DeleteBookmark(System.Guid)">
             <summary>
             delete bookmark
@@ -8695,6 +8703,15 @@
             <param name="coupletIndex"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.BookmarkCoupletIfNotBookmarked(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Bookmark couplet if it is not
+            </summary>
+            <param name="userId"></param>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.DeleteGanjoorBookmark(System.Guid,System.Guid)">
             <summary>
             delete user bookmark         
@@ -9773,6 +9790,15 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
             Switch Bookmark for couplet
+            </summary>
+            <param name="userId"></param>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkCoupletIfNotBookmarked(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Bookmark couplet if it is not
             </summary>
             <param name="userId"></param>
             <param name="poemId"></param>
