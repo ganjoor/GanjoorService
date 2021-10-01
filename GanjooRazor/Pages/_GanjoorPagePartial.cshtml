@@ -339,7 +339,7 @@
                                         <text> | <small>وزن: <a href="@Html.Raw($"/vazn/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@Html.Raw(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)</a></small></text>
                                     @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
                                     {
-                                        <text> | <small>🔍 <a href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای مشابه (وزن و قافیه)</a></small></text>
+                                        <text> | <small><i class="pageicons">search</i> <a href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای مشابه (وزن و قافیه)</a></small></text>
                                     }
                                 }
                                     @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag))
@@ -354,14 +354,14 @@
 
                                     @if (Model.LoggedIn)
                                     {
-                                        <text>| <small><a href="@Html.Raw($"/trans?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">#</a></small></text>
+                                        <text>| <small><a href="@Html.Raw($"/trans?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link"><i class="pageicons">translate</i></a></small></text>
                                     }
 
                                 </p>
                             <h3>این شعر را چه کسی در کدام آهنگ خوانده است؟</h3>
                             @if (Model.GanjoorPage.Poem.Songs.Length == 0)
                             {
-                                <p>🎜 <small><a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است</a> ...</small></p>
+                                <p><i class="pageicons">music_note</i> <small><a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است</a> ...</small></p>
                             }
                             else
                             {
@@ -377,7 +377,7 @@
                                     </p>
                                 }
 
-                                <p>🎜 <small><a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">معرفی آهنگهای دیگری که در متن آنها از این شعر استفاده شده است</a> ...</small></p>
+                                <p><i class="pageicons">music_note</i> <small><a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="comments-link">معرفی آهنگهای دیگری که در متن آنها از این شعر استفاده شده است</a> ...</small></p>
                             }
 
 
@@ -396,7 +396,7 @@
                             }
 
                             <p>
-                                <small>📷 <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی</a>، 📖 <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور</a></small>
+                                <small><i class="pageicons">photo_camera</i> <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی</a>، <i class="pageicons">support</i> <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور</a></small>
                             </p>
 
                             <h3>حاشیه‌ها</h3>
