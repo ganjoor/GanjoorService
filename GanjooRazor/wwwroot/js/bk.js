@@ -140,12 +140,10 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                     $('#InlinePauseButton').remove();
                 }
                 if (sc == true) {
-                    var btn = document.createElement("BUTTON");
+                    var btn = document.createElement("a");
                     btn.id = "InlinePauseButton";
-                    var t = document.createTextNode(" || ");
-                    btn.appendChild(t);
-                    btn.style["display"] = "inline";
-                    btn.style["width"] = "25px";
+                    btn.setAttribute('role', 'button');
+                    btn.className = 'inlineanchor';
                     btn.onclick = function () {
                         if ($('#jquery_jplayer_1').data().jPlayer.status.paused) {
                             $('#jquery_jplayer_1').data().jPlayer.play();
@@ -155,6 +153,12 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                         }
                     };
                     element.lastChild.appendChild(btn);
+
+                    var btnIcon = document.createElement("i");
+                    btnIcon.className = 'inlinebutton';
+                    btnIcon.innerText = 'pause_circle_filled';
+                    btnIcon.id = "InlinePauseButtonImage"
+                    btn.appendChild(btnIcon);
 
                     if (forceScroll)
                         if (!!element && element.scrollIntoView) {
@@ -173,22 +177,27 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                     n++;
                     if (n == vnum) {
                         ptags[p].style.color = clr;
-                        if (ptags[p].getElementsByTagName("BUTTON").length == 1) {
-                            ptags[p].removeChild(ptags[p].getElementsByTagName("BUTTON")[0]);
+                        if ($('#InlinePauseButton') != null) {
+                            $('#InlinePauseButton').remove();
                         }
 
                         if (sc == true) {
-                            var btn = document.createElement("BUTTON");
-                            var t = document.createTextNode(" || ");
-                            btn.appendChild(t);
-                            btn.style["display"] = "inline";
-                            btn.style["width"] = "25px";
+                            var btn = document.createElement("a");
+                            btn.setAttribute('role', 'button');
+                            btn.className = 'inlineanchor';
+                            btn.innerHTML = '<i class="inlinebutton">pause_circle_filled</i>';
                             btn.onclick = function () {
                                 if ($('#jquery_jplayer_1').data().jPlayer.status.paused) {
                                     $('#jquery_jplayer_1').data().jPlayer.play();
+                                    if ($('#InlinePauseButton') != null) {
+                                        $('#InlinePauseButton').innerHTML = '<i class="inlinebutton">pause_circle_filled</i>';
+                                    }
                                 }
                                 else {
                                     $('#jquery_jplayer_1').data().jPlayer.pause();
+                                    if ($('#InlinePauseButton') != null) {
+                                        $('#InlinePauseButton').innerHTML = '<i class="inlinebutton">play_circle_filled</i>';
+                                    }
                                 }
                             };
                             ptags[p].appendChild(btn);
@@ -460,7 +469,7 @@ function checkIfBookmarked(poemId) {
                     document.getElementById('bookmark-icon').innerHTML = 'star';
                 }
                 else {
-                    document.getElementById(iconElementId).innerHTML = 'star_border';
+                    document.getElementById('bookmark-icon').innerHTML = 'star_border';
                 }
             },
         });
