@@ -139,6 +139,9 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                 if ($('#InlinePauseButton') != null) {
                     $('#InlinePauseButton').remove();
                 }
+                if ($('#InlineLockButton') != null) {
+                    $('#InlineLockButton').remove();
+                }
                 if (sc == true) {
                     var btn = document.createElement("a");
                     btn.id = "InlinePauseButton";
@@ -162,6 +165,28 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                     btnIcon.id = "InlinePauseButtonImage"
                     btn.appendChild(btnIcon);
 
+                    var btnLock = document.createElement("a");
+                    btnLock.id = "InlineLockButton";
+                    btnLock.setAttribute('role', 'button');
+                    btnLock.className = 'inlineanchor';
+                    btnLock.onclick = function () {
+                        playerScrollLock = !playerScrollLock;
+                        if (playerScrollLock) {
+
+                            $('#scroll-lock').text('🔒');
+                        }
+                        else {
+                            $('#scroll-lock').text('🔓');
+                        }
+                    };
+                    element.lastChild.appendChild(btnLock);
+
+                    var btnLockIcon = document.createElement("i");
+                    btnLockIcon.className = 'inlinebutton';
+                    btnLockIcon.innerText = 'lock';
+                    btnLockIcon.id = "InlineLockButtonImage"
+                    btnLock.appendChild(btnLockIcon);
+
                     if (forceScroll)
                         if (!!element && element.scrollIntoView) {
                             element.scrollIntoView();
@@ -181,6 +206,9 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                         ptags[p].style.color = clr;
                         if ($('#InlinePauseButton') != null) {
                             $('#InlinePauseButton').remove();
+                        }
+                        if ($('#InlineLockButton') != null) {
+                            $('#InlineLockButton').remove();
                         }
 
                         if (sc == true) {
@@ -204,6 +232,27 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                             btnIcon.innerText = 'pause_circle_filled';
                             btnIcon.id = "InlinePauseButtonImage"
                             btn.appendChild(btnIcon);
+
+                            var btnLock = document.createElement("a");
+                            btnLock.id = "InlineLockButton";
+                            btnLock.setAttribute('role', 'button');
+                            btnLock.className = 'inlineanchor';
+                            btnLock.onclick = function () {
+                                playerScrollLock = !playerScrollLock;
+                                if (playerScrollLock) {
+
+                                    $('#scroll-lock').text('🔒');
+                                }
+                                else {
+                                    $('#scroll-lock').text('🔓');
+                                }
+                            };
+                            ptags[p].appendChild(btnLock);
+                            var btnLockIcon = document.createElement("i");
+                            btnLockIcon.className = 'inlinebutton';
+                            btnLockIcon.innerText = 'lock';
+                            btnLockIcon.id = "InlineLockButtonImage"
+                            btnLock.appendChild(btnLockIcon);
 
                             if (forceScroll)
                                 if (!!element && element.scrollIntoView) {
