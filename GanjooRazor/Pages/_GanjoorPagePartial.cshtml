@@ -113,16 +113,8 @@
                 }
                 <article>
                     @{
-                        if (Model.IsPoemPage)
-                        {
-                            <h2>
-                                <a href="@Html.Raw(Model.GanjoorPage.Poem.FullUrl)" rel="bookmark">
-                                    @Html.Raw(Model.GanjoorPage.Poem.Title)
-                                </a>
-                            </h2>
-                        }
-                        else
-                        if (Model.GanjoorPage.PoetOrCat == null)
+
+                        if (!Model.IsPoemPage && Model.GanjoorPage.PoetOrCat == null)
                         {
                             <h2>
                                 <a href="@Html.Raw(Model.Request.Path)" rel="bookmark">
@@ -130,7 +122,6 @@
                                 </a>
                             </h2>
                         }
-
                     }
 
                     @{
@@ -177,7 +168,12 @@
                                         {
                                             @if (Model.IsPoemPage)
                                             {
-                                                <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</a>
+                                                <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</a><span> &raquo;</span>
+                                                <h2>
+                                                    <a href="@Html.Raw(Model.GanjoorPage.Poem.FullUrl)" rel="bookmark">
+                                                        @Html.Raw(Model.GanjoorPage.Poem.Title)
+                                                    </a>
+                                                </h2>
                                             }
                                             else
                                             {
@@ -190,15 +186,11 @@
                             }
                         }
                     }
-
                     <div class="spacer">&nbsp;</div>
                     @{
                         @Html.Raw(Model.GanjoorPage.HtmlText)
                     }
-
-
                 </article>
-
                 @{
                     if (Model.IsPoemPage)
                     {
@@ -258,8 +250,6 @@
                         }
                     }
                 }
-
-
                 @{
                     if (Model.IsCatPage)
                     {
@@ -294,7 +284,7 @@
                                         <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + Model.GanjoorPage.Poem.Next.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Next.Title): @Html.Raw(Model.GanjoorPage.Poem.Next.Excerpt)</a><span> &raquo;</span>
                                     }
                                     else
-                               if (Model.GanjoorPage.Poem.Category.Cat.Next != null)
+                              if (Model.GanjoorPage.Poem.Category.Cat.Next != null)
                                     {
                                         <a href="@Model.GanjoorPage.Poem.Category.Cat.Next.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Next.Title</a><span> &raquo;</span>
                                     }
@@ -305,7 +295,7 @@
                                         <span>&laquo; </span><a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" +Model.GanjoorPage.Poem.Previous.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Previous.Title) :@Html.Raw(Model.GanjoorPage.Poem.Previous.Excerpt)</a>
                                     }
                                     else
-                               if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
+                              if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                     {
                                         <span>&laquo; </span><a href="@Model.GanjoorPage.Poem.Category.Cat.Previous.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Previous.Title</a>
                                     }
