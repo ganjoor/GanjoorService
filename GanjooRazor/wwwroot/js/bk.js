@@ -147,9 +147,11 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                     btn.onclick = function () {
                         if ($('#jquery_jplayer_1').data().jPlayer.status.paused) {
                             $('#jquery_jplayer_1').data().jPlayer.play();
+                            $('#InlinePauseButtonImage').text('pause_circle_filled');
                         }
                         else {
                             $('#jquery_jplayer_1').data().jPlayer.pause();
+                            $('#InlinePauseButtonImage').text('play_circle_filled');
                         }
                     };
                     element.lastChild.appendChild(btn);
@@ -183,24 +185,25 @@ function hilightverse(vnum, clr, sc, forceScroll) {
 
                         if (sc == true) {
                             var btn = document.createElement("a");
+                            btn.id = "InlinePauseButton";
                             btn.setAttribute('role', 'button');
                             btn.className = 'inlineanchor';
-                            btn.innerHTML = '<i class="inlinebutton">pause_circle_filled</i>';
                             btn.onclick = function () {
                                 if ($('#jquery_jplayer_1').data().jPlayer.status.paused) {
                                     $('#jquery_jplayer_1').data().jPlayer.play();
-                                    if ($('#InlinePauseButton') != null) {
-                                        $('#InlinePauseButton').innerHTML = '<i class="inlinebutton">pause_circle_filled</i>';
-                                    }
+                                    $('#InlinePauseButtonImage').text('pause_circle_filled');
                                 }
                                 else {
                                     $('#jquery_jplayer_1').data().jPlayer.pause();
-                                    if ($('#InlinePauseButton') != null) {
-                                        $('#InlinePauseButton').innerHTML = '<i class="inlinebutton">play_circle_filled</i>';
-                                    }
+                                    $('#InlinePauseButtonImage').text('play_circle_filled');
                                 }
                             };
                             ptags[p].appendChild(btn);
+                            var btnIcon = document.createElement("i");
+                            btnIcon.className = 'inlinebutton';
+                            btnIcon.innerText = 'pause_circle_filled';
+                            btnIcon.id = "InlinePauseButtonImage"
+                            btn.appendChild(btnIcon);
 
                             if (forceScroll)
                                 if (!!element && element.scrollIntoView) {
