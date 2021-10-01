@@ -50,7 +50,7 @@ function bnumClick(poemId, index) {
             $(data).appendTo(document.getElementById(divId));
         },
     });
-    
+
 }
 
 function coupletNumImage(bnum, color) {
@@ -103,7 +103,7 @@ function btshmr_internal(poemId) {
             else {
                 msr1s[i].parentElement.innerHTML = '<div class="bnum normalbnum" onclick="bnumClick(' + String(poemId) + ',' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].parentElement.innerHTML;//no alt, so that when user copies text does not appear in the copied content
             }
-            
+
             document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage(bshfarsinum(String(j + 1)), "red") + ')';
             j++;
         }
@@ -120,6 +120,8 @@ function btshmr_internal(poemId) {
 function btshmr(poemId) {
     setTimeout(function () { btshmr_internal(poemId); }, 1);
 }
+
+
 
 
 
@@ -333,7 +335,7 @@ function getVerseIndexFromCoupleIndex(coupletIndex) {
         if (msr1s[i].className != "m2") {
             cIndex++;
         }
-        
+
         if (cIndex == coupletIndex) {
             vIndex = (i + bandNums);
             break;
@@ -343,20 +345,20 @@ function getVerseIndexFromCoupleIndex(coupletIndex) {
             if (msr1s[i].getElementsByTagName("p").length > 1)
                 bandNums++;
         }
-        
+
     }
     return vIndex;
 }
 
 
 function playCouplet(coupletIndex) {
-    
+
     var vIndex = getVerseIndexFromCoupleIndex(coupletIndex);
     if (jlist.isPlaying) {
         jlist.pause();
     }
     var comboId = '#narrators-' + coupletIndex;
-    var recitationIndex =  $(comboId).find(":selected").val()
+    var recitationIndex = $(comboId).find(":selected").val()
     jlist.select(recitationIndex);
 
     if (audioxmlfiles.length > 0) {
@@ -371,7 +373,7 @@ function playCouplet(coupletIndex) {
                 });
 
                 var foundCouplet = false;
-                
+
                 $(xml).find('SyncInfo').each(function () {
                     var v = parseInt($(this).find('VerseOrder').text())
                     if (v == vIndex) {
@@ -403,7 +405,12 @@ function editCouplet(poemId, coupletIndex) {
 
 function switchBookmark(poemId, coupletIndex) {
     var iconElementId = 'bookmark-icon-' + String(coupletIndex);
-    document.getElementById(iconElementId).innerHTML = 'star_half';
+    if (document.getElementById(iconElementId) != null) {
+        document.getElementById(iconElementId).innerHTML = 'star_half';
+    }
+    if (coupletIndex == 0) {
+        document.getElementById('bookmark-icon').innerHTML = 'star_half';
+    }
     var url = '/?handler=SwitchBookmark';
 
     $.ajax({
@@ -418,12 +425,44 @@ function switchBookmark(poemId, coupletIndex) {
         },
         success: function (isBookmarked) {
             if (isBookmarked == true) {
-                document.getElementById(iconElementId).innerHTML = 'star';
+                if (document.getElementById(iconElementId) != null) {
+                    document.getElementById(iconElementId).innerHTML = 'star';
+                }
+
+                if (coupletIndex == 0) {
+                    document.getElementById('bookmark-icon').innerHTML = 'star';
+                }
             }
             else {
-                document.getElementById(iconElementId).innerHTML = 'star_border';
+                if (document.getElementById(iconElementId) != null) {
+                    document.getElementById(iconElementId).innerHTML = 'star_border';
+                }
+
+                if (coupletIndex == 0) {
+                    document.getElementById('bookmark-icon').innerHTML = 'star_border';
+                }
             }
         },
 
     });
+}
+
+function checkIfBookmarked(poemId) {
+    setTimeout(function () {
+        $.ajax({
+            type: "GET",
+            url: '?Handler=IsCoupletBookmarked&poemId=' + String(poemId) + '&coupletIndex=0',
+            error: function (err) {
+                console.log(err);
+            },
+            success: function (isBookmarked) {
+                if (isBookmarked) {
+                    document.getElementById('bookmark-icon').innerHTML = 'star';
+                }
+                else {
+                    document.getElementById(iconElementId).innerHTML = 'star_border';
+                }
+            },
+        });
+    }, 1);
 }

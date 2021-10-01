@@ -713,5 +713,23 @@ namespace GanjooRazor.Pages
                 }
             }
         }
+
+        public async Task<IActionResult> OnGetIsCoupletBookmarkedAsync(int poemId, int coupletIndex)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}/{coupletIndex}");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                    return new OkObjectResult(res);
+                }
+            }
+            return new OkObjectResult(false);
+        }
     }
 }

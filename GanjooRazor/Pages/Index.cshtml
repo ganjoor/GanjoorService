@@ -17,16 +17,15 @@
         <meta name="robots" content="noindex, nofollow" />
     }
     <link href="/dist/skin/blue.monday/css/jplayer.blue.monday.min.css" rel="stylesheet" type="text/css" />
-    <link href="/css/p8.css" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=2" rel="stylesheet" type="text/css" />
     <link href="/css/fab.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
     <script>
         var playerScrollLock = false;
     </script>
-    <script src="/js/bk.js"></script>
+    <script src="/js/bk.js?version=2"></script>
 
     @if (Model.IsHomePage)
     {
@@ -36,11 +35,12 @@
     {
         if (Model.IsPoemPage)
         {
-            <script>
+<script>
                 $(document).ready(function () {
                     btshmr(@Model.GanjoorPage.Id);
+                    checkIfBookmarked(@Model.GanjoorPage.Id);
                 });
-            </script>
+</script>
         }
         <script type="application/ld+json">
         {
