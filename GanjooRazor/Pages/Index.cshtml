@@ -35,12 +35,13 @@
     {
         if (Model.IsPoemPage)
         {
-<script>
+            <script>
                 $(document).ready(function () {
+                    checkWebShareSupport();
                     btshmr(@Model.GanjoorPage.Id);
                     checkIfBookmarked(@Model.GanjoorPage.Id);
                 });
-</script>
+            </script>
         }
         <script type="application/ld+json">
         {

@@ -509,6 +509,7 @@ function switchBookmark(poemId, coupletIndex) {
 }
 
 function checkIfBookmarked(poemId) {
+    if (document.getElementById('bookmark-icon') == null) return;
     setTimeout(function () {
         $.ajax({
             type: "GET",
@@ -526,4 +527,21 @@ function checkIfBookmarked(poemId) {
             },
         });
     }, 1);
+}
+
+function checkWebShareSupport() {
+    if (navigator.share === undefined) {
+        document.getElementById('share_span').styl;e.display = 'none';
+    }
+}
+
+async function webSharePoem() {
+    var title = document.title;
+    var text = document.getElementById('garticle').text;
+    var url = window.location.href;
+    try {
+        await navigator.share({ title, text, url });
+    } catch (error) {
+        logError('Error sharing: ' + error);
+    }
 }
