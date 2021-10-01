@@ -531,17 +531,55 @@ function checkIfBookmarked(poemId) {
 
 function checkWebShareSupport() {
     if (navigator.share === undefined) {
-        document.getElementById('share_span').styl;e.display = 'none';
+        document.getElementById('share_span').style.display = 'none';
     }
 }
 
 async function webSharePoem() {
+    
+
+    var all = $('#garticle').children();
+    var text = '';
+    for (var i = 0; i < all.length; i++) {
+        var element = all[i];
+        if (element.className == 'b' || element.className == 'b2' || element.className == 'n' || element.className == 'l') {
+            var elementSubs = $('#' + element.id).children();
+            for (var j = 0; j < elementSubs.length; j++) {
+                var elementSub = elementSubs[j];
+                if (elementSub.className == 'm1' || elementSub.className == 'm2' || elementSub.nodeName == 'P') {
+                    if (text != '')
+                        text += '\n';
+                    text += elementSub.innerText;
+                }
+            }
+        }
+        
+    }
     var title = document.title;
-    var text = document.getElementById('garticle').text;
     var url = window.location.href;
     try {
         await navigator.share({ title, text, url });
     } catch (error) {
-        logError('Error sharing: ' + error);
+        console.log('Error sharing: ' + error);
+    }
+}
+
+async function webShareCouplet(coupletIndex) {
+    var all = $('#bn' + String(coupletIndex + 1)).children();
+    var text = '';
+    for (var i = 0; i < all.length; i++) {
+        var element = all[i];
+        if (element.className == 'm1' || element.className == 'm2' || element.nodeName == 'P') {
+            text += element.innerText;
+            text += '\n';
+        }
+    }
+    var title = document.title;
+    var url = window.location.href + '#bn' + String(coupletIndex + 1);
+    try {
+        await navigator.share({ title, text, url });
+    } catch (error) {
+        alert('از همرسانی روی مرورگر جاری شما پشتیبانی نمی‌شود.')
+        console.log('Error sharing: ' + error);
     }
 }
