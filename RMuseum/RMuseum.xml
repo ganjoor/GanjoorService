@@ -9786,6 +9786,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -9847,6 +9850,50 @@
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
+            <summary>
+            find category poem rhymes
+            </summary>
+            <param name="catId"></param>
+            <param name="retag"></param>
+            <param name="rhythm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingSubCatsTOC(System.Guid,System.Int32)">
+            <summary>
+            start generating sub cats TOC
+            </summary>
+            <param name="userId"></param>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GenerateTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
+            <summary>
+            generate category TOC
+            </summary>
+            <param name="catId"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.PreparePlainText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
+            <summary>
+            make plain text
+            </summary>
+            <param name="verses"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.RegerneratePoemsPlainText">
+            <summary>
+            separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.HealthCheckContents">
+            <summary>
+            examine site pages for broken links
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartUpdatingMundexPage(System.Guid)">
@@ -10395,50 +10442,6 @@
             find poem rhythm
             </summary>
             <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
-            <summary>
-            find category poem rhymes
-            </summary>
-            <param name="catId"></param>
-            <param name="retag"></param>
-            <param name="rhythm"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingSubCatsTOC(System.Guid,System.Int32)">
-            <summary>
-            start generating sub cats TOC
-            </summary>
-            <param name="userId"></param>
-            <param name="catId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GenerateTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
-            <summary>
-            generate category TOC
-            </summary>
-            <param name="catId"></param>
-            <param name="options"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.PreparePlainText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
-            <summary>
-            make plain text
-            </summary>
-            <param name="verses"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.RegerneratePoemsPlainText">
-            <summary>
-            separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.HealthCheckContents">
-            <summary>
-            examine site pages for broken links
-            </summary>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._context">
