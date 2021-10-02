@@ -507,6 +507,51 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<bool>(true);
         }
 
+        private async Task<string> _ProcessCommentHtmlLinks(string commentText, RMuseumDbContext context)
+        {
+            int index = commentText.IndexOf("href=");
+            while (index != -1)
+            {
+                index += "href=\"".Length;
+                commentText = commentText.Replace("'", "\"");
+                if (commentText.IndexOf("\"", index) != -1)
+                {
+                    int closeIndex = commentText.IndexOf("\"", index);
+                    if (closeIndex == -1)
+                    {
+                        continue;
+                    }
+                    string url = commentText.Substring(index, closeIndex - index);
+                    closeIndex = commentText.IndexOf(">", index);
+                    if (closeIndex != -1 && commentText.IndexOf("</a>", closeIndex) != -1)
+                    {
+                        closeIndex += ">".Length;
+                        string urlText = commentText.Substring(closeIndex, commentText.IndexOf("</a>", closeIndex) - closeIndex);
+                        if (urlText == url)
+                        {
+                            bool textFixed = false;
+                            if (urlText.IndexOf("http://ganjoor.net") == 0 || urlText.IndexOf("https://ganjoor.net") == 0)
+                            {
+                                urlText = urlText.Replace("http://ganjoor.net", "").Replace("https://ganjoor.net", "");
+                                if (urlText.Length > 0 && urlText[urlText.Length - 1] == '/')
+                                    urlText = urlText.Substring(0, urlText.Length - 1);
+                                var page = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl == urlText).FirstOrDefaultAsync();
+                                if (page != null)
+                                {
+                                    commentText = commentText.Substring(0, closeIndex) + page.FullTitle + commentText.Substring(commentText.IndexOf("</a>", closeIndex));
+                                    textFixed = true;
+                                }
+                            }
+                            if (!textFixed)
+                                commentText = commentText.Substring(0, closeIndex) + "پیوند به وبگاه بیرونی" + commentText.Substring(commentText.IndexOf("</a>", closeIndex));
+                        }
+                    }
+                }
+                index = commentText.IndexOf("href=\"", index);
+            }
+            return commentText;
+        }
+
         /// <summary>
         /// examine comments for long links
         /// </summary>
@@ -539,48 +584,7 @@ namespace RMuseum.Services.Implementation
 
                             var comment = comments[i];
 
-                            string commentText = comment.HtmlComment;
-
-                            int index = commentText.IndexOf("href=");
-                            while(index != -1)
-                            {
-                                index += "href=\"".Length;
-                                commentText = commentText.Replace("'", "\"");
-                                if(commentText.IndexOf("\"", index) != -1)
-                                {
-                                    int closeIndex = commentText.IndexOf("\"", index);
-                                    if(closeIndex == -1)
-                                    {
-                                        continue;
-                                    }
-                                    string url = commentText.Substring(index, closeIndex - index);
-                                    closeIndex = commentText.IndexOf(">", index);
-                                    if (closeIndex != -1 && commentText.IndexOf("</a>", closeIndex) != -1)
-                                    {
-                                        closeIndex += ">".Length;
-                                        string urlText = commentText.Substring(closeIndex, commentText.IndexOf("</a>", closeIndex) - closeIndex);
-                                        if(urlText == url)
-                                        {
-                                            bool textFixed = false;
-                                            if(urlText.IndexOf("http://ganjoor.net") == 0 || urlText.IndexOf("https://ganjoor.net") == 0)
-                                            {
-                                                urlText = urlText.Replace("http://ganjoor.net", "").Replace("https://ganjoor.net", "");
-                                                if (urlText.Length > 0 && urlText[urlText.Length - 1] == '/')
-                                                    urlText = urlText.Substring(0, urlText.Length - 1);
-                                                var page = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl == urlText).FirstOrDefaultAsync();
-                                                if(page != null)
-                                                {
-                                                    commentText = commentText.Substring(0, closeIndex) + page.FullTitle + commentText.Substring(commentText.IndexOf("</a>", closeIndex));
-                                                    textFixed = true;
-                                                }
-                                            }
-                                            if(!textFixed)
-                                                commentText = commentText.Substring(0, closeIndex) + "پیوند به وبگاه بیرونی" + commentText.Substring(commentText.IndexOf("</a>", closeIndex));
-                                        }
-                                    }
-                                }
-                                index = commentText.IndexOf("href=\"", index);
-                            }
+                            string commentText = await _ProcessCommentHtmlLinks(comment.HtmlComment, context);
 
                             if(commentText != comment.HtmlComment)
                             {

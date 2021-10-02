@@ -738,6 +738,8 @@ namespace RMuseum.Services.Implementation
 
             content = content.ApplyCorrectYeKe();
 
+            content = await _ProcessCommentHtmlLinks(content, _context);
+
             GanjoorComment comment = new GanjoorComment()
             {
                 UserId = userId,
@@ -834,6 +836,8 @@ namespace RMuseum.Services.Implementation
             await CacheCleanForComment(commentId);
 
             htmlComment = htmlComment.ApplyCorrectYeKe();
+
+            htmlComment = await _ProcessCommentHtmlLinks(htmlComment, _context);
 
             comment.HtmlComment = htmlComment;
 
