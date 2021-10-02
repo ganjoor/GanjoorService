@@ -563,8 +563,22 @@ async function webSharePoem() {
 
 function copyPoemLink() {
     var url = window.location.href;
+    if (url.indexOf('#') != -1) {
+        url = url.substring(0, url.indexOf('#'));
+    }
     navigator.clipboard.writeText(url);
     var tooltip = document.getElementById("copylink-tooltip");
+    tooltip.innerHTML = "نشانی در حافظه رونوشت شد: " + url;
+}
+
+function copyCoupletUrl(coupletIndex) {
+    var url = window.location.href;
+    if (url.indexOf('#') != -1) {
+        url = url.substring(0, url.indexOf('#'));
+    }
+    url += ( '#bn' + String(coupletIndex + 1));
+    navigator.clipboard.writeText(url);
+    var tooltip = document.getElementById("copylink-tooltip-" + String(coupletIndex));
     tooltip.innerHTML = "نشانی در حافظه رونوشت شد: " + url;
 }
 
