@@ -536,8 +536,6 @@ function checkWebShareSupport() {
 }
 
 async function webSharePoem() {
-    
-
     var all = $('#garticle').children();
     var text = '';
     for (var i = 0; i < all.length; i++) {
@@ -553,7 +551,6 @@ async function webSharePoem() {
                 }
             }
         }
-        
     }
     var title = document.title;
     var url = window.location.href;
@@ -562,6 +559,13 @@ async function webSharePoem() {
     } catch (error) {
         console.log('Error sharing: ' + error);
     }
+}
+
+function copyPoemLink() {
+    var url = window.location.href;
+    navigator.clipboard.writeText(url);
+    var tooltip = document.getElementById("copylink-tooltip");
+    tooltip.innerHTML = "نشانی در حافظه رونوشت شد: " + url;
 }
 
 async function webShareCouplet(coupletIndex) {

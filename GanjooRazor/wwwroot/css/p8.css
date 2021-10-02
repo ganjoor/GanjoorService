@@ -888,3 +888,42 @@ ol {
 .inlinebutton {
     color: red;
 }
+
+.w3tooltip {
+    position: relative;
+    display: inline-block;
+    text-indent: 0px;
+}
+
+    .w3tooltip .w3tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 150%;
+        left: 50%;
+        margin-left: -75px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+        .w3tooltip .w3tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+    .w3tooltip:hover .w3tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }

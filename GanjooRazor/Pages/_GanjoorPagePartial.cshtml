@@ -350,10 +350,13 @@
                                 {
                                     <text> | <small>منبع اولیه: <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Html.Raw(Model.GanjoorPage.Poem.SourceName)</a></small></text>
                                 }
-                                <span id="share_span">| <a role="button" id="share" style="cursor: pointer;" onclick="webSharePoem()" title="همرسانی"><i class="pageicons" id="share-icon">share</i></a></span>
+                                <span id="share_span"> | <a role="button" id="share" style="cursor: pointer;" onclick="webSharePoem()" title="همرسانی"><i class="pageicons" id="share-icon">share</i></a></span>
+                                | <span id="copylink_span" class="w3tooltip"><a role="button" id="copylink" style="cursor: pointer;" onclick="copyPoemLink()"><i class="pageicons" id="copylink-icon">link</i></a><span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span></span>
+   
+
                                 @if (Model.LoggedIn)
                                 {
-                                    <text>| <small><a href="@Html.Raw($"/trans?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false"  title="برگردان‌ها و نویسش‌ها" class="comments-link"><i class="pageicons">translate</i></a></small></text>
+                                    <text> | <small><a href="@Html.Raw($"/trans?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" title="برگردان‌ها و نویسش‌ها" class="comments-link"><i class="pageicons">translate</i></a></small></text>
                                 }
 
                             </p>
