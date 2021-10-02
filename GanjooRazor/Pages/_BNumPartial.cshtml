@@ -12,6 +12,7 @@
 
 <div style="width: 100%; clear: both; background-color: #300;">
     <a role="button" class="w3tooltip" id="copylink-@Model.CoupletIndex" style="cursor: pointer;" onclick="copyCoupletUrl(@Model.CoupletIndex)"><i class="material-icons" style="color:white;">link</i><span class="w3tooltiptext" id="copylink-tooltip-@Model.CoupletIndex">رونوشت نشانی</span></a>
+    <a role="button" class="w3tooltip" id="copytext-@Model.CoupletIndex" style="cursor: pointer;" onclick="copyCoupletText(@Model.CoupletIndex)"><i class="material-icons" style="color:white;">content_copy</i><span class="w3tooltiptext" id="copytext-tooltip-@Model.CoupletIndex">رونوشت متن</span></a>
     <a role="button" id="share-@Model.CoupletIndex" style="cursor: pointer;" onclick="webShareCouplet(@Model.CoupletIndex)" title="همرسانی"><i class="material-icons" style="color:white;">share</i></a>
     @if (Model.LoggedIn)
     {

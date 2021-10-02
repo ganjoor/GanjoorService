@@ -582,7 +582,7 @@ function copyCoupletUrl(coupletIndex) {
     tooltip.innerHTML = "نشانی در حافظه رونوشت شد: " + url;
 }
 
-async function webShareCouplet(coupletIndex) {
+function getCoypletText(coupletIndex) {
     var all = $('#bn' + String(coupletIndex + 1)).children();
     var text = '';
     for (var i = 0; i < all.length; i++) {
@@ -592,6 +592,11 @@ async function webShareCouplet(coupletIndex) {
             text += '\n';
         }
     }
+    return text;
+}
+
+async function webShareCouplet(coupletIndex) {
+    var text = getCoypletText(coupletIndex);
     var title = document.title;
     var url = window.location.href + '#bn' + String(coupletIndex + 1);
     try {
@@ -600,4 +605,11 @@ async function webShareCouplet(coupletIndex) {
         alert('از همرسانی روی مرورگر جاری شما پشتیبانی نمی‌شود.')
         console.log('Error sharing: ' + error);
     }
+}
+
+function copyCoupletText(coupletIndex) {
+    var text = getCoypletText(coupletIndex);
+    navigator.clipboard.writeText(text);
+    var tooltip = document.getElementById("copytext-tooltip-" + String(coupletIndex));
+    tooltip.innerHTML = "متن در حافظه رونوشت شد.";
 }
