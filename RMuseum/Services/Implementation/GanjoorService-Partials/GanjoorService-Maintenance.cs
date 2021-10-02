@@ -509,6 +509,10 @@ namespace RMuseum.Services.Implementation
 
         private async Task<string> _ProcessCommentHtmlLinks(string commentText, RMuseumDbContext context)
         {
+            if(commentText.IndexOf("href=") == -1 && commentText.IndexOf("http") != -1)
+            {
+                commentText = _Linkify(commentText);
+            }
             int index = commentText.IndexOf("href=");
             while (index != -1)
             {
@@ -533,14 +537,69 @@ namespace RMuseum.Services.Implementation
                             if (urlText.IndexOf("http://ganjoor.net") == 0 || urlText.IndexOf("https://ganjoor.net") == 0)
                             {
                                 urlText = urlText.Replace("http://ganjoor.net", "").Replace("https://ganjoor.net", "");
+                                int coupletNumber = -1;
+                                if(urlText.IndexOf("#bn") != -1)
+                                {
+                                    int coupletStartIndex = urlText.IndexOf("#bn") + "#bn".Length;
+                                    if(int.TryParse(urlText.Substring(coupletStartIndex), out coupletNumber))
+                                    {
+                                        urlText = urlText.Substring(0, urlText.IndexOf("#bn"));
+                                    }
+                                }
                                 if (urlText.Length > 0 && urlText[urlText.Length - 1] == '/')
                                     urlText = urlText.Substring(0, urlText.Length - 1);
                                 var page = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl == urlText).FirstOrDefaultAsync();
                                 if (page != null)
                                 {
-                                    commentText = commentText.Substring(0, closeIndex) + page.FullTitle + commentText.Substring(commentText.IndexOf("</a>", closeIndex));
-                                    textFixed = true;
+                                    if(coupletNumber != -1)
+                                    {
+                                        string coupletSummary = "";
+                                        int coupletIndex = coupletNumber - 1;
+                                        var verses = await _context.GanjoorVerses.Where(v => v.PoemId == page.Id).OrderBy(v => v.VOrder).ToListAsync();
+                                        int cIndex = -1;
+                                        for (int i = 0; i < verses.Count; i++)
+                                        {
+                                            if (verses[i].VersePosition != VersePosition.Left && verses[i].VersePosition != VersePosition.CenteredVerse2)
+                                                cIndex++;
+                                            if (cIndex == coupletIndex)
+                                            {
+                                                coupletSummary = verses[i].Text;
+                                                if (verses[i].VersePosition == VersePosition.Right)
+                                                {
+                                                    if (i < verses.Count - 1)
+                                                    {
+                                                        coupletSummary += $" {verses[i + 1].Text}";
+                                                    }
+                                                }
+                                                if (verses[i].VersePosition == VersePosition.CenteredVerse1)
+                                                {
+                                                    if (i < verses.Count - 1)
+                                                    {
+                                                        if (verses[i + 1].VersePosition == VersePosition.CenteredVerse2)
+                                                        {
+                                                            coupletSummary += $" {verses[i + 1].Text}";
+                                                        }
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                        }
+                                        if (!string.IsNullOrEmpty(coupletSummary))
+                                        {
+                                            coupletSummary = _CutSummary(coupletSummary);
+                                            commentText = commentText.Substring(0, closeIndex) + page.FullTitle + " » " + coupletSummary + commentText.Substring(commentText.IndexOf("</a>", closeIndex));
+                                            textFixed = true;
+                                        }
+                                        else
+                                            coupletNumber = -1;
+                                    }
+                                    if(coupletNumber == -1)
+                                    {
+                                        commentText = commentText.Substring(0, closeIndex) + page.FullTitle + commentText.Substring(commentText.IndexOf("</a>", closeIndex));
+                                        textFixed = true;
+                                    }
                                 }
+                                
                             }
                             if (!textFixed)
                                 commentText = commentText.Substring(0, closeIndex) + "پیوند به وبگاه بیرونی" + commentText.Substring(commentText.IndexOf("</a>", closeIndex));

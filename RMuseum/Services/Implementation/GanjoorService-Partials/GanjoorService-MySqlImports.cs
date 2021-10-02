@@ -920,23 +920,51 @@ namespace RMuseum.Services.Implementation
 
         private string _Linkify(string SearchText)
         {
-            // this will find links like:
-            // http://www.mysite.com
-            // as well as any links with other characters directly in front of it like:
-            // href="http://www.mysite.com"
-            // you can then use your own logic to determine which links to linkify
-            Regex regx = new Regex(@"\b(((\S+)?)(@|mailto\:|(news|(ht|f)tp(s?))\://)\S+)\b", RegexOptions.IgnoreCase);
-            SearchText = SearchText.Replace("&nbsp;", " ");
-            MatchCollection matches = regx.Matches(SearchText);
-
-            foreach (Match match in matches)
+            if (SearchText.IndexOf("href") != -1)
+                return SearchText;
+            int linkIndex = SearchText.IndexOf("http");
+            while(linkIndex != -1)
             {
-                if (match.Value.StartsWith("http"))
-                { // if it starts with anything else then dont linkify -- may already be linked!
-                    SearchText = SearchText.Replace(match.Value, "<a href='" + match.Value + "'>" + match.Value + "</a>");
+                int linkEndIndex = SearchText.IndexOfAny(new char[] { '\r', '\n', '<' , ' '}, linkIndex);
+                if (linkEndIndex == -1)
+                    linkEndIndex = SearchText.Length - 1;
+                if(linkEndIndex != -1)
+                {
+                    string link = SearchText.Substring(linkIndex, linkEndIndex - linkIndex);
+                    SearchText
+                        =
+                        SearchText.Substring(0, linkIndex)
+                        +
+                        "<a href=\""
+                        +
+                        link
+                        +
+                        "\" rel=\"nofollow\">"
+                        +
+                        link
+                        +
+                        "</a>"
+                        +
+                        SearchText.Substring(linkEndIndex);
+                    linkIndex =
+                        (
+                        SearchText.Substring(0, linkIndex)
+                        +
+                        "<a href=\""
+                        +
+                        link
+                        +
+                        "\" rel=\"nofollow\">"
+                        +
+                        link
+                        +
+                        "</a>"
+                        ).Length;
+                    linkIndex = SearchText.IndexOf("http", linkIndex);
                 }
+                else
+                    linkIndex = SearchText.IndexOf("http", linkIndex + "http".Length);
             }
-
             return SearchText;
         }
 
