@@ -441,6 +441,12 @@ namespace RMuseum.Services
         RServiceResult<bool> HealthCheckContents();
 
         /// <summary>
+        /// examine comments for long links
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> FindAndFixLongUrlsInComments();
+
+        /// <summary>
         /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
         /// </summary>
         /// <returns></returns>

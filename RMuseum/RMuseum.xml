@@ -1186,6 +1186,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.FindAndFixLongUrlsInComments">
+            <summary>
+            examine comments for long links
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.RegerneratePoemsPlainText">
             <summary>
             separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
@@ -8570,6 +8576,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.FindAndFixLongUrlsInComments">
+            <summary>
+            examine comments for long links
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.RegerneratePoemsPlainText">
             <summary>
             separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
@@ -9893,6 +9905,12 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.HealthCheckContents">
             <summary>
             examine site pages for broken links
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindAndFixLongUrlsInComments">
+            <summary>
+            examine comments for long links
             </summary>
             <returns></returns>
         </member>

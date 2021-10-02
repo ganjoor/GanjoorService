@@ -506,5 +506,102 @@ namespace RMuseum.Services.Implementation
 
             return new RServiceResult<bool>(true);
         }
+
+        /// <summary>
+        /// examine comments for long links
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> FindAndFixLongUrlsInComments()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+            (
+            async token =>
+            {
+                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                {
+                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                    var job = (await jobProgressServiceEF.NewJob("FindAndFixLongUrlsInComments", "Query data")).Result;
+
+                    try
+                    {
+                        var comments = await context.GanjoorComments.Where(c => c.HtmlComment.Contains("href=")).ToArrayAsync();
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Examining {comments.Length} Comments");
+
+                        int percent = 0;
+                        for (int i = 0; i < comments.Length; i++)
+                        {
+                            if (i * 100 / comments.Length > percent)
+                            {
+                                percent++;
+                                await jobProgressServiceEF.UpdateJob(job.Id, percent);
+                            }
+
+                            var comment = comments[i];
+
+                            string commentText = comment.HtmlComment;
+
+                            int index = commentText.IndexOf("href=");
+                            while(index != -1)
+                            {
+                                index += "href=\"".Length;
+                                commentText = commentText.Replace("'", "\"");
+                                if(commentText.IndexOf("\"", index) != -1)
+                                {
+                                    int closeIndex = commentText.IndexOf("\"", index);
+                                    if(closeIndex == -1)
+                                    {
+                                        continue;
+                                    }
+                                    string url = commentText.Substring(index, closeIndex - index);
+                                    closeIndex = commentText.IndexOf(">", index);
+                                    if (closeIndex != -1 && commentText.IndexOf("</a>", closeIndex) != -1)
+                                    {
+                                        closeIndex += ">".Length;
+                                        string urlText = commentText.Substring(closeIndex, commentText.IndexOf("</a>", closeIndex) - closeIndex);
+                                        if(urlText == url)
+                                        {
+                                            bool textFixed = false;
+                                            if(urlText.IndexOf("http://ganjoor.net") == 0 || urlText.IndexOf("https://ganjoor.net") == 0)
+                                            {
+                                                urlText = urlText.Replace("http://ganjoor.net", "").Replace("https://ganjoor.net", "");
+                                                if (urlText.Length > 0 && urlText[urlText.Length - 1] == '/')
+                                                    urlText = urlText.Substring(0, urlText.Length - 1);
+                                                var page = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl == urlText).FirstOrDefaultAsync();
+                                                if(page != null)
+                                                {
+                                                    commentText = commentText.Substring(0, closeIndex) + page.FullTitle + commentText.Substring(commentText.IndexOf("</a>", closeIndex));
+                                                    textFixed = true;
+                                                }
+                                            }
+                                            if(!textFixed)
+                                                commentText = commentText.Substring(0, closeIndex) + "پیوند به وبگاه بیرونی" + commentText.Substring(commentText.IndexOf("</a>", closeIndex));
+                                        }
+                                    }
+                                }
+                                index = commentText.IndexOf("href=\"", index);
+                            }
+
+                            if(commentText != comment.HtmlComment)
+                            {
+                                comment.HtmlComment = commentText;
+                                context.Update(comment);
+                                await context.SaveChangesAsync();
+                            }
+                        }
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                    }
+                    catch (Exception exp)
+                    {
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                    }
+
+                }
+            }
+            );
+
+            return new RServiceResult<bool>(true);
+        }
     }
 }

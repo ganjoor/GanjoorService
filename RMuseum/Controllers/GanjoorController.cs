@@ -1793,6 +1793,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// examine comments for long links
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("fixlongurlsincomments")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult FindAndFixLongUrlsInComments()
+        {
+            RServiceResult<bool> res =
+                 _ganjoorService.FindAndFixLongUrlsInComments();
+            if (res.Result)
+                return Ok();
+            return BadRequest(res.ExceptionString);
+        }
+
+        /// <summary>
         /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
         /// </summary>
         /// <returns></returns>
