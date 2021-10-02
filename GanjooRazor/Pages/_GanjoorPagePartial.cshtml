@@ -351,6 +351,7 @@
                                     <text> | <small>منبع اولیه: <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Html.Raw(Model.GanjoorPage.Poem.SourceName)</a></small></text>
                                 }
                                 <span id="copylink_span" class="w3tooltip"> | <a role="button" id="copylink" style="cursor: pointer;" onclick="copyPoemLink()"><i class="pageicons" id="copylink-icon">link</i></a><span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span></span>
+                                <span id="copytext_span" class="w3tooltip"> | <a role="button" id="copytext" style="cursor: pointer;" onclick="copyPoemText()"><i class="pageicons" id="copytext-icon">content_copy</i></a><span class="w3tooltiptext" id="copytext-tooltip">رونوشت متن</span></span>
                                 <span id="share_span"> | <a role="button" id="share" style="cursor: pointer;" onclick="webSharePoem()" title="همرسانی"><i class="pageicons" id="share-icon">share</i></a></span>
 
                                 @if (Model.LoggedIn)

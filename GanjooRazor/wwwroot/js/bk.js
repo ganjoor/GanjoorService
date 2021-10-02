@@ -535,7 +535,7 @@ function checkWebShareSupport() {
     }
 }
 
-async function webSharePoem() {
+function getPoemText() {
     var all = $('#garticle').children();
     var text = '';
     for (var i = 0; i < all.length; i++) {
@@ -552,6 +552,11 @@ async function webSharePoem() {
             }
         }
     }
+    return text;
+}
+
+async function webSharePoem() {
+    var text = getPoemText();
     var title = document.title;
     var url = window.location.href;
     try {
@@ -559,6 +564,13 @@ async function webSharePoem() {
     } catch (error) {
         console.log('Error sharing: ' + error);
     }
+}
+
+function copyPoemText() {
+    var text = getPoemText();
+    navigator.clipboard.writeText(text);
+    var tooltip = document.getElementById("copytext-tooltip");
+    tooltip.innerHTML = "متن در حافظه رونوشت شد.";
 }
 
 function copyPoemLink() {
@@ -582,7 +594,7 @@ function copyCoupletUrl(coupletIndex) {
     tooltip.innerHTML = "نشانی در حافظه رونوشت شد: " + url;
 }
 
-function getCoypletText(coupletIndex) {
+function getCoupletText(coupletIndex) {
     var all = $('#bn' + String(coupletIndex + 1)).children();
     var text = '';
     for (var i = 0; i < all.length; i++) {
@@ -596,7 +608,7 @@ function getCoypletText(coupletIndex) {
 }
 
 async function webShareCouplet(coupletIndex) {
-    var text = getCoypletText(coupletIndex);
+    var text = getCoupletText(coupletIndex);
     var title = document.title;
     var url = window.location.href + '#bn' + String(coupletIndex + 1);
     try {
@@ -608,7 +620,7 @@ async function webShareCouplet(coupletIndex) {
 }
 
 function copyCoupletText(coupletIndex) {
-    var text = getCoypletText(coupletIndex);
+    var text = getCoupletText(coupletIndex);
     navigator.clipboard.writeText(text);
     var tooltip = document.getElementById("copytext-tooltip-" + String(coupletIndex));
     tooltip.innerHTML = "متن در حافظه رونوشت شد.";
