@@ -22,12 +22,12 @@ namespace RMuseum.DbContext
     /// </summary>
     public class RMuseumDbContext : RSecurityDbContext<RAppUser, RAppRole, Guid>
     {
-        public RMuseumDbContext(DbContextOptions<RMuseumDbContext> options) : base(options) 
+        public RMuseumDbContext(DbContextOptions<RMuseumDbContext> options) : base(options)
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
                    .SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json")
                    .Build();
-            if(bool.Parse(configuration["DatabaseMigrate"]))
+            if (bool.Parse(configuration["DatabaseMigrate"]))
             {
                 Database.Migrate();
             }
@@ -127,6 +127,10 @@ namespace RMuseum.DbContext
                 .HasIndex(b => new { b.UserId, b.PoemId, b.VerseId })
                 .IsUnique();
 
+            builder.Entity<GanjoorVerseNumber>()
+                .HasIndex(n => new { n.NumberingId, n.PoemId, n.CoupletIndex })
+                .IsUnique();
+
 
             //Index set suggested by SQL Server Tuning Wizard -- end
 
@@ -183,7 +187,7 @@ namespace RMuseum.DbContext
         /// User Bookmarks
         /// </summary>
         public DbSet<RUserBookmark> UserBookmarks { get; set; }
-        
+
         /// <summary>
         /// User Notes
         /// </summary>
@@ -255,7 +259,7 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorMetre> GanjoorMetres { get; set; }
 
-        
+
         /// <summary>
         /// singers
         /// </summary>
@@ -346,6 +350,16 @@ namespace RMuseum.DbContext
         /// ganjoor bookmarks
         /// </summary>
         public DbSet<GanjoorUserBookmark> GanjoorUserBookmarks { get; set; }
+
+        /// <summary>
+        /// ganjoor numbering schemas
+        /// </summary>
+        public DbSet<GanjoorNumbering> GanjoorNumberings { get; set; }
+
+        /// <summary>
+        /// ganjoor verse numbers
+        /// </summary>
+        public DbSet<GanjoorVerseNumber> GanjoorVerseNumbers { get; set; }
 
     }
 }

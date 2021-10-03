@@ -18,18 +18,19 @@
         public GanjoorNumbering Numbering { get; set; }
 
         /// <summary>
-        /// verse id
+        /// Poem Id (no relation is defined)
         /// </summary>
-        public int VerseId { get; set; }
+        public int PoemId { get; set; }
 
         /// <summary>
-        /// verse
+        /// verse couplet index (do not add related verses here)
         /// </summary>
-        public GanjoorVerse Verse { get; set; }
+        public int CoupletIndex { get; set; }
 
         /// <summary>
-        /// number
+        /// couplet number
         /// </summary>
         public int Number { get; set; }
     }
+
 }

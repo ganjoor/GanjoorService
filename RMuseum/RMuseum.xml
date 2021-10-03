@@ -1984,6 +1984,16 @@
             ganjoor bookmarks
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorNumberings">
+            <summary>
+            ganjoor numbering schemas
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorVerseNumbers">
+            <summary>
+            ganjoor verse numbers
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -5449,6 +5459,36 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.Text">
             <summary>
             text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.NumberingId">
+            <summary>
+            Numbering schema Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Numbering">
+            <summary>
+            Numbering schema
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.PoemId">
+            <summary>
+            Poem Id (no relation is defined)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.CoupletIndex">
+            <summary>
+            verse couplet index (do not add related verses here)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Number">
+            <summary>
+            couplet number
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorVerseTranslation">
