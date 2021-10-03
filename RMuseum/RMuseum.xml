@@ -4721,6 +4721,56 @@
             Total Verse Count
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorNumbering">
+            <summary>
+            Numbering Schema
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.StartCatId">
+            <summary>
+            starting category id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.StartCat">
+            <summary>
+            ending category
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.EndCatId">
+            <summary>
+            ending category id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.EndCat">
+            <summary>
+            ending category
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.TotalCouplets">
+            <summary>
+            couplet count
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.TotalVerses">
+            <summary>
+            verse count
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.LastCountingDate">
+            <summary>
+            last counting date
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPage">
             <summary>
             Ganjoor Page
