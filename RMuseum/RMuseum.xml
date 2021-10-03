@@ -9917,16 +9917,28 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorNumberingService.Count(System.Int32)">
+            <summary>
+            start counting
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorNumberingService._context">
             <summary>
             Database Context
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorNumberingService.#ctor(RMuseum.DbContext.RMuseumDbContext)">
+        <member name="F:RMuseum.Services.Implementation.GanjoorNumberingService._backgroundTaskQueue">
+            <summary>
+            Background Task Queue Instance
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorNumberingService.#ctor(RMuseum.DbContext.RMuseumDbContext,RSecurityBackend.Services.IBackgroundTaskQueue)">
             <summary>
             constructor
             </summary>
             <param name="context"></param>
+            <param name="backgroundTaskQueue"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorService">
             <summary>
