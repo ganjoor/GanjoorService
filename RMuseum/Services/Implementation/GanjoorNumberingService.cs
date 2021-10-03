@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 namespace RMuseum.Services.Implementation
 {
     /// <summary>
-    /// numbering service
+    /// numbering service implementation
     /// </summary>
-    public class GanjoorNumberingService
+    public class GanjoorNumberingService : IGanjoorNumberingService
     {
         /// <summary>
         /// add numbering
@@ -33,7 +33,7 @@ namespace RMuseum.Services.Implementation
             {
                 _context.GanjoorNumberings.Add(numbering);
                 await _context.SaveChangesAsync();
-                Count(numbering.Id); //start counting
+                Recount(numbering.Id); //start counting
                 return new RServiceResult<GanjoorNumbering>(numbering);
             }
             catch (Exception exp)
@@ -211,7 +211,7 @@ namespace RMuseum.Services.Implementation
         /// start counting
         /// </summary>
         /// <returns></returns>
-        public RServiceResult<bool> Count(int numberingId)
+        public RServiceResult<bool> Recount(int numberingId)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
             (

@@ -288,6 +288,9 @@ namespace RMuseum
             //translation service
             services.AddTransient<IGanjoorTranslationService, GanjoorTranslationService>();
 
+            //numbering service
+            services.AddTransient<IGanjoorNumberingService, GanjoorNumberingService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {

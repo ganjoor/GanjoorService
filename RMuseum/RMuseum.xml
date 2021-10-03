@@ -8236,6 +8236,63 @@
             Show Donating Information (temporary switch off/on)
             </summary>
         </member>
+        <member name="T:RMuseum.Services.IGanjoorNumberingService">
+            <summary>
+            numbering service 
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorNumberingService.AddNumberingAsync(RMuseum.Models.Ganjoor.GanjoorNumbering)">
+            <summary>
+            add numbering
+            </summary>
+            <param name="numbering"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorNumberingService.UpdateNumberingAsync(RMuseum.Models.Ganjoor.GanjoorNumbering)">
+            <summary>
+            update an existing numbering (only name)
+            </summary>
+            <param name="updated"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorNumberingService.DeleteNumberingAsync(System.Int32)">
+            <summary>
+            delete numbering
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorNumberingService.GetNumberingAsync(System.Int32)">
+            <summary>
+            get numbering by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorNumberingService.GetNumberingsAsync">
+            <summary>
+            get all numberings
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorNumberingService.GetNumberingsForCatAsync(System.Int32)">
+            <summary>
+            get numberings for a cat
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorNumberingService.GetNumberingsForDirectSubCatsAsync(System.Int32)">
+            <summary>
+            get numberings for direct subcats of parent cat
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorNumberingService.Recount(System.Int32)">
+            <summary>
+            start counting
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorService">
             <summary>
             Ganjoor Poems Content Privider Service
@@ -9868,7 +9925,7 @@
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorNumberingService">
             <summary>
-            numbering service
+            numbering service implementation
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorNumberingService.AddNumberingAsync(RMuseum.Models.Ganjoor.GanjoorNumbering)">
@@ -9917,7 +9974,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorNumberingService.Count(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorNumberingService.Recount(System.Int32)">
             <summary>
             start counting
             </summary>
