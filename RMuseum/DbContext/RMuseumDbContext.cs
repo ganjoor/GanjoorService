@@ -131,6 +131,9 @@ namespace RMuseum.DbContext
                 .HasIndex(n => new { n.NumberingId, n.PoemId, n.CoupletIndex })
                 .IsUnique();
 
+            builder.Entity<GanjoorVerseNumber>()
+                .HasIndex(n => new { n.PoemId, n.CoupletIndex });
+
 
             //Index set suggested by SQL Server Tuning Wizard -- end
 

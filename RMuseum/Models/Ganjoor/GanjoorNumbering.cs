@@ -30,12 +30,12 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// ending category id
         /// </summary>
-        public int EndCatId { get; set; }
+        public int? EndCatId { get; set; }
 
         /// <summary>
         /// ending category
         /// </summary>
-        public GanjoorCat EndCat { get; set; }
+        public virtual GanjoorCat EndCat { get; set; }
 
         /// <summary>
         /// couplet count
