@@ -1381,6 +1381,62 @@
             </summary>
             <param name="notificationService"></param>
         </member>
+        <member name="M:RMuseum.Controllers.NumberingController.GetNumberingsAsync">
+            <summary>
+            get all numberings
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.NumberingController.GetNumberingAsync(System.Int32)">
+            <summary>
+            get numbering by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.NumberingController.GetNumberingsRelatedToCategoryAsync(System.Int32)">
+            <summary>
+            get all numberings related to a category
+            </summary>
+            <param name="id">category id</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.NumberingController.AddNumberingAsync(RMuseum.Models.Ganjoor.GanjoorNumbering)">
+            <summary>
+            add new numbering
+            </summary>
+            <param name="numbering"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.NumberingController.UpdateNumberingAsync(RMuseum.Models.Ganjoor.GanjoorNumbering)">
+            <summary>
+            update an existing numbering
+            </summary>
+            <param name="numbering"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RMuseum.Controllers.NumberingController.ReadOnlyMode">
+            <summary>
+            readonly mode
+            </summary>
+        </member>
+        <member name="P:RMuseum.Controllers.NumberingController.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.NumberingController._numberingService">
+            <summary>
+            numbering service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.NumberingController.#ctor(RMuseum.Services.IGanjoorNumberingService,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            constructor
+            </summary>
+            <param name="numberingService"></param>
+            <param name="configuration"></param>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetPublished(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">
             <summary>
             returns paginated published recitations (if poetId or catId is non-zero its ordered by poemId ascending if not it is ordered by publish date descending)
