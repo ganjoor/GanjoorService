@@ -41,11 +41,14 @@ function bnumClick(poemId, index) {
         return;
     }
     var divParent = msr1s[index].className == "m1" ? msr1s[index].parentElement : msr1s[index];
-    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="' + divId + '"></div>';
+    var imgElementId = 'loadingimg-' + divId;
+    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="' + divId + '"><img id="' + imgElementId +'" src="/image/loading.gif" alt="بارگذاری  "/></div>';
     $.ajax({
         type: "GET",
         url: '?Handler=BNumPartial&poemId=' + String(poemId) + '&coupletIndex=' + String(index),
         success: function (data) {
+
+            document.getElementById(imgElementId).style.display = "none";
             var divId = 'bnumpanel' + String(index);
             $(data).appendTo(document.getElementById(divId));
         },
