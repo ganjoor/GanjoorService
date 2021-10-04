@@ -1,4 +1,5 @@
 ﻿using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System.Threading.Tasks;
 
@@ -54,6 +55,14 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<GanjoorNumbering[]>> GetNumberingsForDirectSubCatsAsync(int parentCatId);
+
+        /// <summary>
+        /// get all numbering patterns for a couplet
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCoupletNumberViewModel[]>> GetNumberingsForCouplet(int poemId, int coupletIndex);
 
         /// <summary>
         /// start counting

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Auth.Memory;
 using System.Collections.Generic;
@@ -80,6 +81,24 @@ namespace RMuseum.Controllers
                 }
             }
             return Ok(combined);
+        }
+
+        /// <summary>
+        /// get all numbering patterns for a couplet
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        [HttpGet("couplet/{poemId}/{coupletId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCoupletNumberViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetNumberingsForCouplet(int poemId, int coupletIndex)
+        {
+            var res = await _numberingService.GetNumberingsForCouplet(poemId, coupletIndex);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
         }
 
         /// <summary>

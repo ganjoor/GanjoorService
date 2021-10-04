@@ -1401,6 +1401,14 @@
             <param name="id">category id</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.NumberingController.GetNumberingsForCouplet(System.Int32,System.Int32)">
+            <summary>
+            get all numbering patterns for a couplet
+            </summary>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.NumberingController.AddNumberingAsync(RMuseum.Models.Ganjoor.GanjoorNumbering)">
             <summary>
             add new numbering
@@ -6082,6 +6090,26 @@
             couplet summary
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel">
+            <summary>
+            Ganjoor Couplet Number View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.NumberingName">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.CoupletNumber">
+            <summary>
+            number
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.TotalCouplets">
+            <summary>
+            total couplets
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjooRhymeAnalysisResult">
             <summary>
             Rhyme Analysis Result
@@ -8343,6 +8371,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorNumberingService.GetNumberingsForCouplet(System.Int32,System.Int32)">
+            <summary>
+            get all numbering patterns for a couplet
+            </summary>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorNumberingService.Recount(System.Int32)">
             <summary>
             start counting
@@ -10028,6 +10064,14 @@
             <summary>
             get numberings for direct subcats of parent cat
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorNumberingService.GetNumberingsForCouplet(System.Int32,System.Int32)">
+            <summary>
+            get all numbering patterns for a couplet
+            </summary>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorNumberingService.Recount(System.Int32)">

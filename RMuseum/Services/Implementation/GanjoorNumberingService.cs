@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
 using RSecurityBackend.Services.Implementation;
@@ -157,6 +158,32 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// get all numbering patterns for a couplet
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorCoupletNumberViewModel[]>> GetNumberingsForCouplet(int poemId, int coupletIndex)
+        {
+            return new RServiceResult<GanjoorCoupletNumberViewModel[]>
+            (
+            await _context.GanjoorVerseNumbers.Include(n => n.Numbering)
+                    .Where(n => n.PoemId == poemId && n.CoupletIndex == coupletIndex)
+                    .OrderBy(n => n.NumberingId)
+                    .Select
+                    (
+                    n =>
+                    new GanjoorCoupletNumberViewModel()
+                    {
+                        NumberingName = n.Numbering.Name,
+                        CoupletNumber = n.Number,
+                        TotalCouplets = n.Numbering.TotalCouplets
+                    }
+                    ).ToArrayAsync()
+            );
+        }
+
         private async Task<List<GanjoorCat>> _FindAllSubCategories(RMuseumDbContext context, int catId)
         {
             List<GanjoorCat> cats = new List<GanjoorCat>();
@@ -167,7 +194,7 @@ namespace RMuseum.Services.Implementation
 
                 var subCats = await _FindAllSubCategories(context, cat.Id);
 
-                if(subCats.Count > 0)
+                if (subCats.Count > 0)
                 {
                     cats.AddRange(subCats);
                 }
@@ -179,11 +206,11 @@ namespace RMuseum.Services.Implementation
         {
             var parents = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == startCat.ParentId && c.Id >= startCat.Id && c.Id <= endCatId).OrderBy(c => c.Id).ToListAsync();
             List<GanjoorCat> cats = new List<GanjoorCat>();
-            foreach(GanjoorCat parentCat in parents)
+            foreach (GanjoorCat parentCat in parents)
             {
                 cats.Add(parentCat);
                 var subCats = await _FindAllSubCategories(context, parentCat.Id);
-                if(subCats.Count > 0)
+                if (subCats.Count > 0)
                 {
                     cats.AddRange(subCats);
                 }
@@ -194,7 +221,7 @@ namespace RMuseum.Services.Implementation
 
         private async Task<List<GanjoorCat>> _FindTargetCategories(RMuseumDbContext context, GanjoorCat startCat, int? endCatId)
         {
-            if(endCatId == null || startCat.Id == endCatId)
+            if (endCatId == null || startCat.Id == endCatId)
             {
                 List<GanjoorCat> cats = new List<GanjoorCat>();
                 cats.Add(startCat);
@@ -244,7 +271,7 @@ namespace RMuseum.Services.Implementation
 
                             await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Counting:: {cat.Title}");
 
-                            foreach(var poem in poems)
+                            foreach (var poem in poems)
                             {
                                 totalVerseCount += await context.GanjoorVerses.Where(v => v.PoemId == poem.Id).CountAsync();
                                 var verses = await context.GanjoorVerses.AsNoTracking()
