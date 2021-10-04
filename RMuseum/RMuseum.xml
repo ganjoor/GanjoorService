@@ -4830,14 +4830,24 @@
             ending category
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.TotalCouplets">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.TotalLines">
             <summary>
-            couplet count
+            lines count
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.TotalVerses">
             <summary>
             verse count
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.TotalCouplets">
+            <summary>
+            total poem couplets
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.TotalParagraphs">
+            <summary>
+            total paragraphs
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorNumbering.LastCountingDate">
@@ -5552,7 +5562,17 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Number">
             <summary>
-            couplet number
+            line number
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.IsPoemVerse">
+            <summary>
+            is poem verse or paragraph
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.SameTypeNumber">
+            <summary>
+            number based on type of line: is it a poem verse or a paragraph
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorVerseTranslation">
@@ -6100,14 +6120,34 @@
             name
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.CoupletNumber">
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.Number">
             <summary>
             number
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.TotalCouplets">
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.IsPoemVerse">
+            <summary>
+            is poem verse or paragraph
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.SameTypeNumber">
+            <summary>
+            number based on type of line: is it a poem verse or a paragraph
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.TotalLines">
             <summary>
             total couplets
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.TotalCouplets">
+            <summary>
+            total poem couplets
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.TotalParagraphs">
+            <summary>
+            total paragraphs
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjooRhymeAnalysisResult">

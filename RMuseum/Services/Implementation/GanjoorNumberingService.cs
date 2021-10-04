@@ -177,8 +177,12 @@ namespace RMuseum.Services.Implementation
                     new GanjoorCoupletNumberViewModel()
                     {
                         NumberingName = n.Numbering.Name,
-                        CoupletNumber = n.Number,
-                        TotalCouplets = n.Numbering.TotalCouplets
+                        IsPoemVerse = n.IsPoemVerse,
+                        Number = n.Number,
+                        SameTypeNumber = n.SameTypeNumber,
+                        TotalLines = n.Numbering.TotalLines,
+                        TotalCouplets = n.Numbering.TotalCouplets,
+                        TotalParagraphs = n.Numbering.TotalParagraphs
                     }
                     ).ToArrayAsync()
             );
@@ -263,6 +267,8 @@ namespace RMuseum.Services.Implementation
                         await jobProgressServiceEF.UpdateJob(job.Id, 0, "Counting");
 
                         int number = 0;
+                        int coupletnumber = 0;
+                        int paragraphnumber = 0;
                         int totalVerseCount = 0;
 
                         foreach (var cat in cats)
@@ -275,26 +281,35 @@ namespace RMuseum.Services.Implementation
                             {
                                 totalVerseCount += await context.GanjoorVerses.Where(v => v.PoemId == poem.Id).CountAsync();
                                 var verses = await context.GanjoorVerses.AsNoTracking()
-                                                .Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Left)
+                                                .Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Left && v.VersePosition != VersePosition.CenteredVerse2)
                                                 .OrderBy(v => v.VOrder)
                                                 .ToListAsync();
                                 for (int coupletIndex = 0; coupletIndex < verses.Count; coupletIndex++)
                                 {
                                     number++;
+                                    bool isPoemVerse = verses[coupletIndex].VersePosition == VersePosition.Right || verses[coupletIndex].VersePosition == VersePosition.CenteredVerse1;
+                                    if (isPoemVerse)
+                                        coupletnumber++;
+                                    else
+                                        paragraphnumber++;
                                     GanjoorVerseNumber verseNumber = new GanjoorVerseNumber()
                                     {
                                         NumberingId = numberingId,
                                         PoemId = poem.Id,
                                         CoupletIndex = coupletIndex,
-                                        Number = number
+                                        Number = number,
+                                        IsPoemVerse = isPoemVerse,
+                                        SameTypeNumber = isPoemVerse ? coupletnumber : paragraphnumber
                                     };
                                     context.GanjoorVerseNumbers.Add(verseNumber);
                                 }
                             }
                         }
 
-                        numbering.TotalCouplets = number;
+                        numbering.TotalLines = number;
                         numbering.TotalVerses = totalVerseCount;
+                        numbering.TotalCouplets = coupletnumber;
+                        numbering.TotalParagraphs = paragraphnumber;
                         numbering.LastCountingDate = DateTime.Now;
                         context.GanjoorNumberings.Update(numbering);
 

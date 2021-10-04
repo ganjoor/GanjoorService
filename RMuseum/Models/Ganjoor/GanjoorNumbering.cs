@@ -38,14 +38,24 @@ namespace RMuseum.Models.Ganjoor
         public virtual GanjoorCat EndCat { get; set; }
 
         /// <summary>
-        /// couplet count
+        /// lines count
         /// </summary>
-        public int TotalCouplets { get; set; }
+        public int TotalLines { get; set; }
 
         /// <summary>
         /// verse count
         /// </summary>
         public int TotalVerses { get; set; }
+
+        /// <summary>
+        /// total poem couplets
+        /// </summary>
+        public int TotalCouplets { get; set; }
+
+        /// <summary>
+        /// total paragraphs
+        /// </summary>
+        public int TotalParagraphs { get; set; }
 
         /// <summary>
         /// last counting date

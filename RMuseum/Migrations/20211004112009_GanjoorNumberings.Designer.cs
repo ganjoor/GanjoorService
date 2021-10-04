@@ -10,7 +10,7 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20211003093459_GanjoorNumberings")]
+    [Migration("20211004112009_GanjoorNumberings")]
     partial class GanjoorNumberings
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -665,6 +665,12 @@ namespace RMuseum.Migrations
                     b.Property<int>("TotalCouplets")
                         .HasColumnType("int");
 
+                    b.Property<int>("TotalLines")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalParagraphs")
+                        .HasColumnType("int");
+
                     b.Property<int>("TotalVerses")
                         .HasColumnType("int");
 
@@ -1088,6 +1094,9 @@ namespace RMuseum.Migrations
                     b.Property<int>("CoupletIndex")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsPoemVerse")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
@@ -1095,6 +1104,9 @@ namespace RMuseum.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("PoemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SameTypeNumber")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

@@ -28,9 +28,19 @@
         public int CoupletIndex { get; set; }
 
         /// <summary>
-        /// couplet number
+        /// line number
         /// </summary>
         public int Number { get; set; }
+
+        /// <summary>
+        /// is poem verse or paragraph
+        /// </summary>
+        public bool IsPoemVerse { get; set; }
+
+        /// <summary>
+        /// number based on type of line: is it a poem verse or a paragraph
+        /// </summary>
+        public int SameTypeNumber { get; set; }
     }
 
 }

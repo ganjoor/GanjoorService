@@ -16,8 +16,10 @@ namespace RMuseum.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StartCatId = table.Column<int>(type: "int", nullable: false),
                     EndCatId = table.Column<int>(type: "int", nullable: true),
-                    TotalCouplets = table.Column<int>(type: "int", nullable: false),
+                    TotalLines = table.Column<int>(type: "int", nullable: false),
                     TotalVerses = table.Column<int>(type: "int", nullable: false),
+                    TotalCouplets = table.Column<int>(type: "int", nullable: false),
+                    TotalParagraphs = table.Column<int>(type: "int", nullable: false),
                     LastCountingDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -46,7 +48,9 @@ namespace RMuseum.Migrations
                     NumberingId = table.Column<int>(type: "int", nullable: false),
                     PoemId = table.Column<int>(type: "int", nullable: false),
                     CoupletIndex = table.Column<int>(type: "int", nullable: false),
-                    Number = table.Column<int>(type: "int", nullable: false)
+                    Number = table.Column<int>(type: "int", nullable: false),
+                    IsPoemVerse = table.Column<bool>(type: "bit", nullable: false),
+                    SameTypeNumber = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

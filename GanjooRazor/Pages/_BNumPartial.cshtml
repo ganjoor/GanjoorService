@@ -11,13 +11,28 @@
             @((Model.CoupletIndex + 1).ToPersianNumbers())
         </td>
     </tr>
-   @foreach (var number in Model.Numbers)
-   {
-       <tr>
-           <td>شماره در @number.NumberingName:</td>
-           <td>@number.CoupletNumber.ToPersianNumbers() از @number.TotalCouplets.ToPersianNumbers()</td>
-       </tr>
-   }
+    @foreach (var number in Model.Numbers)
+    {
+        <tr>
+            <td>شماره در @number.NumberingName:</td>
+            <td>@number.Number.ToPersianNumbers() از @number.TotalLines.ToPersianNumbers()</td>
+        </tr>
+        @if (number.SameTypeNumber != number.Number)
+        {
+            @if (number.IsPoemVerse)
+            {
+                <tr>
+                    <td colspan="2">بیت @number.SameTypeNumber.ToPersianNumbers() از @number.TotalCouplets.ToPersianNumbers()</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td colspan="2">پاراگراف @number.SameTypeNumber.ToPersianNumbers() از @number.TotalParagraphs.ToPersianNumbers()</td>
+                </tr>
+            }
+        }
+    }
 </table>
 
 <div id="play-block-@Model.CoupletIndex" style="width: 100%;">
