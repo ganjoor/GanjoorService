@@ -177,6 +177,20 @@ namespace GanjooRazor.Areas.Admin.Pages
             return Page();
         }
 
+        public async Task<IActionResult> OnDeleteAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/numberings/{id}");
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
         public async Task<IActionResult> OnPostStartRhymeAnalysisAsync(int id)
         {
             using (HttpClient secureClient = new HttpClient())
@@ -220,5 +234,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         }
 
         
+
+
     }
 }

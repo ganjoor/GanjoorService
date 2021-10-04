@@ -160,6 +160,29 @@
 
 
 <h2>الگوهای شماره‌گذاری</h2>
+<script>
+    function deleteNumbering(itemId, itemName) {
+
+        if (!confirm('آیا از حذف الگوی شماره‌گذاری ' + itemName + ' اطمینان دارید؟'))
+            return;
+
+
+        $.ajax({
+            type: "DELETE",
+            url: '',
+            data: {
+                id: itemId
+            },
+            error: function () {
+                alert('خطا رخ داد.');
+            },
+            success: function () {
+                location.reload();
+                return false;
+            },
+        });
+    }
+</script>
 <table>
     <tr>
         <th>
@@ -173,6 +196,9 @@
         </th>
         <th>
             شمارش
+        </th>
+        <th>
+            #
         </th>
     </tr>
     @foreach (var numbering in Model.Numberings)
@@ -188,10 +214,13 @@
                 @numbering.EndCatId
             </td>
             <td>
-                @if(numbering.LastCountingDate != DateTime.MinValue)
+                @if (numbering.LastCountingDate != DateTime.MinValue)
                 {
                     @numbering.LastCountingDate.ToLongPersianDateTimeString()
                 }
+            </td>
+            <td>
+                <a role="button" onclick="deleteNumbering(@numbering.Id, '@numbering.Name')" class="actionlink" title="حذف">🗑</a>
             </td>
         </tr>
     }
