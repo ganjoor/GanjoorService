@@ -89,7 +89,7 @@ namespace RMuseum.Controllers
         /// <param name="poemId"></param>
         /// <param name="coupletIndex"></param>
         /// <returns></returns>
-        [HttpGet("couplet/{poemId}/{coupletId}")]
+        [HttpGet("couplet/{poemId}/{coupletIndex}")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCoupletNumberViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]

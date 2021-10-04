@@ -275,7 +275,7 @@ namespace RMuseum.Services.Implementation
                             {
                                 totalVerseCount += await context.GanjoorVerses.Where(v => v.PoemId == poem.Id).CountAsync();
                                 var verses = await context.GanjoorVerses.AsNoTracking()
-                                                .Where(v => v.PoemId == poem.Id && (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1))
+                                                .Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Left)
                                                 .OrderBy(v => v.VOrder)
                                                 .ToListAsync();
                                 for (int coupletIndex = 0; coupletIndex < verses.Count; coupletIndex++)

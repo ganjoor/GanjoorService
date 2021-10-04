@@ -1,7 +1,25 @@
 ﻿@model GanjooRazor.Pages._BNumPartialModel
+@using DNTPersianUtils.Core
 @{
     Layout = null;
 }
+
+<table style="width:100%; margin-bottom:10px;">
+    <tr>
+        <td>شماره:</td>
+        <td>
+            @((Model.CoupletIndex + 1).ToPersianNumbers())
+        </td>
+    </tr>
+   @foreach (var number in Model.Numbers)
+   {
+       <tr>
+           <td>شماره در @number.NumberingName:</td>
+           <td>@number.CoupletNumber.ToPersianNumbers() از @number.TotalCouplets.ToPersianNumbers()</td>
+       </tr>
+   }
+</table>
+
 <div id="play-block-@Model.CoupletIndex" style="width: 100%;">
     <select id="narrators-@Model.CoupletIndex" style="width:49%;float:right"></select>
     <a role="button" id="listen-@Model.CoupletIndex" style="cursor: pointer; width: 49%; color: white; background-color: green; display: block; text-align: center; border-color: #300; padding:1px; float:left; margin-top:3px; " onclick="playCouplet(@Model.CoupletIndex)">از اینجا بخواند</a>

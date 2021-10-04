@@ -646,8 +646,11 @@ namespace GanjooRazor.Pages
         {
             var responseCoupletComments = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments?coupletIndex={coupletIndex}");
             responseCoupletComments.EnsureSuccessStatusCode();
-
             var comments = JArray.Parse(await responseCoupletComments.Content.ReadAsStringAsync()).ToObject<List<GanjoorCommentSummaryViewModel>>();
+
+            var responseCoupletNumbers = await _httpClient.GetAsync($"{APIRoot.Url}/api/numberings/couplet/{poemId}/{coupletIndex}");
+            responseCoupletNumbers.EnsureSuccessStatusCode();
+            var numbers = JArray.Parse(await responseCoupletNumbers.Content.ReadAsStringAsync()).ToObject<List<GanjoorCoupletNumberViewModel>>();
 
             bool isBookmarked = false;
 
@@ -686,7 +689,8 @@ namespace GanjooRazor.Pages
                         CoupletIndex = coupletIndex,
                         LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
                         Comments = comments,
-                        IsBookmarked = isBookmarked
+                        IsBookmarked = isBookmarked,
+                        Numbers = numbers
                     }
                 }
             };

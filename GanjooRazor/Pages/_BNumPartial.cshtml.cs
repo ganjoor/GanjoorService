@@ -49,6 +49,11 @@ namespace GanjooRazor.Pages
         }
 
         /// <summary>
+        /// numbers
+        /// </summary>
+        public List<GanjoorCoupletNumberViewModel> Numbers { get; set; }
+
+        /// <summary>
         /// comments
         /// </summary>
         public List<GanjoorCommentSummaryViewModel> Comments { get; set; }
