@@ -330,6 +330,59 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// generate missing default numberings and start counting
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> GenerateMissingDefaultNumberings()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+            (
+            async token =>
+            {
+                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                {
+                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                    var job = (await jobProgressServiceEF.NewJob("GenerateMissingDefaultNumberings", "Query")).Result;
+
+                    try
+                    {
+                        var cats = await context.GanjoorCategories.Where(c => c.ParentId != null).ToListAsync();
+
+                        foreach (var cat in cats)
+                        {
+                            var numbering = await context.GanjoorNumberings.Where(n => n.StartCatId == cat.Id && n.Name == cat.Title).FirstOrDefaultAsync();
+                            if(numbering == null)
+                            {
+                                await jobProgressServiceEF.UpdateJob(job.Id, 0, cat.FullUrl);
+                                numbering = new GanjoorNumbering()
+                                {
+                                    Name = cat.Title,
+                                    StartCatId = cat.Id,
+                                    EndCatId = cat.Id
+                                };
+                                context.GanjoorNumberings.Add(numbering);
+                                await context.SaveChangesAsync();
+                                Recount(numbering.Id); //start counting
+                            }
+                        }
+
+                        await context.SaveChangesAsync();
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                    }
+                    catch (Exception exp)
+                    {
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                    }
+
+                }
+            }
+            );
+
+            return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;

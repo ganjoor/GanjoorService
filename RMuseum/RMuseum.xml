@@ -1430,6 +1430,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.NumberingController.GenerateMissingDefaultNumberings">
+            <summary>
+            generate missing default numberings and start counting
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.NumberingController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -8432,6 +8438,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorNumberingService.GenerateMissingDefaultNumberings">
+            <summary>
+            generate missing default numberings and start counting
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorService">
             <summary>
             Ganjoor Poems Content Privider Service
@@ -10124,6 +10136,12 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorNumberingService.Recount(System.Int32)">
             <summary>
             start counting
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorNumberingService.GenerateMissingDefaultNumberings">
+            <summary>
+            generate missing default numberings and start counting
             </summary>
             <returns></returns>
         </member>

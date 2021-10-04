@@ -69,5 +69,11 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         RServiceResult<bool> Recount(int numberingId);
+
+        /// <summary>
+        /// generate missing default numberings and start counting
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> GenerateMissingDefaultNumberings();
     }
 }

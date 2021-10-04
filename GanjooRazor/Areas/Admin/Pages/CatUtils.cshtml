@@ -203,6 +203,25 @@
             },
         });
     }
+
+    function regenMissingNumbering() {
+
+        if (!confirm('آیا از تولید الگوهای شماره‌گذاری ناموجود اطمینان دارید؟'))
+            return;
+
+        var url = '?handler=RegenerateNumberings';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            error: function () {
+                alert('خطا رخ داد.');
+            },
+            success: function () {
+                alert('تولید الگوهای شماره‌گذاری ناموجود شروع شد.')
+            },
+        });
+    }
 </script>
 <table>
     <tr>
@@ -246,6 +265,11 @@
             </td>
         </tr>
     }
+    <tr>
+        <td colspan="5">
+            <a role="button" onclick="regenMissingNumbering()" class="actionlink" title="تولید کلی الگوهای ناموجود">تولید کلی الگوهای ناموجود</a>
+        </td>
+    </tr>
 </table>
 
 <form method="post" action="?Handler=Numbering&url=@Model.Cat.Cat.FullUrl">
