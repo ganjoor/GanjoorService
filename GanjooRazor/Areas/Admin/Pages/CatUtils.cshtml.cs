@@ -66,6 +66,12 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public GanjoorNumbering[] Numberings { get; set; }
 
+        /// <summary>
+        /// numbering model
+        /// </summary>
+        [BindProperty]
+        public GanjoorNumbering NumberingModel { get; set; }
+
         private async Task GetInformationAsync()
         {
            
@@ -106,6 +112,13 @@ namespace GanjooRazor.Areas.Admin.Pages
                 Simulate = true
             };
 
+            NumberingModel = new GanjoorNumbering()
+            {
+                Name = Cat.Cat.Title,
+                StartCatId = Cat.Cat.Id,
+                EndCatId = Cat.Cat.Id
+            };
+
             return Page();
         }
 
@@ -118,6 +131,13 @@ namespace GanjooRazor.Areas.Admin.Pages
         {
             await GetInformationAsync();
 
+            NumberingModel = new GanjoorNumbering()
+            {
+                Name = Cat.Cat.Title,
+                StartCatId = Cat.Cat.Id,
+                EndCatId = Cat.Cat.Id
+            };
+
             using (HttpClient secureClient = new HttpClient())
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
@@ -129,6 +149,30 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                 NamingModel.Simulate = false;
             }
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostNumberingAsync(GanjoorNumbering NumberingModel)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
+
+                HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/numberings", new StringContent(JsonConvert.SerializeObject(NumberingModel), Encoding.UTF8, "application/json"));
+                response.EnsureSuccessStatusCode();
+
+            }
+
+            await GetInformationAsync();
+
+            NamingModel = new GanjoorBatchNamingModel()
+            {
+                StartWithNotIncludingSpaces = "شمارهٔ ",
+                RemovePreviousPattern = true,
+                RemoveSetOfCharacters = ".-",
+                Simulate = true
+            };
 
             return Page();
         }

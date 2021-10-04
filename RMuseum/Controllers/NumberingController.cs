@@ -74,7 +74,7 @@ namespace RMuseum.Controllers
             }
             foreach (var numbering in res2.Result)
             {
-                if(combined.Where(n => n.Id == numbering.Id).FirstOrDefault() == numbering)
+                if(combined.Where(n => n.Id == numbering.Id).FirstOrDefault() == null)
                 {
                     combined.Add(numbering);
                 }

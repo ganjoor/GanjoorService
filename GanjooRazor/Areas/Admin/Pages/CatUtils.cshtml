@@ -188,11 +188,48 @@
                 @numbering.EndCatId
             </td>
             <td>
-                @numbering.LastCountingDate.ToLongPersianDateTimeString()
+                @if(numbering.LastCountingDate != DateTime.MinValue)
+                {
+                    @numbering.LastCountingDate.ToLongPersianDateTimeString()
+                }
             </td>
         </tr>
     }
 </table>
+
+<form method="post" action="?Handler=Numbering&url=@Model.Cat.Cat.FullUrl">
+    <table>
+        <tr>
+            <td>
+                عنوان:
+            </td>
+            <td>
+                <input asp-for="NumberingModel.Name" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                شناسهٔ ابتدا
+            </td>
+            <td>
+                <input asp-for="NumberingModel.StartCatId" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                شناسهٔ انتها
+            </td>
+            <td>
+                <input asp-for="NumberingModel.EndCatId" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="ایجاد الگوی شماره‌گذاری" />
+            </td>
+        </tr>
+    </table>
+</form>
 
 
 
