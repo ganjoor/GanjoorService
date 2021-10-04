@@ -233,8 +233,20 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new OkObjectResult(false);
         }
 
-        
 
+        public async Task<IActionResult> OnPostRecountAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/numberings/recount/start/{id}", null);
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
 
     }
 }

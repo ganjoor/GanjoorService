@@ -1423,6 +1423,13 @@
             <param name="numbering"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.NumberingController.Recount(System.Int32)">
+            <summary>
+            recount a numbering
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.NumberingController.ReadOnlyMode">
             <summary>
             readonly mode

@@ -157,6 +157,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// recount a numbering
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPut("recount/start/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public  IActionResult Recount(int id)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            var res = _numberingService.Recount(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode
