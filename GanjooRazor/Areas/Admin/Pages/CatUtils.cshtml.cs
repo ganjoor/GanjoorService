@@ -61,26 +61,30 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public string[] RenamingOutput { get; set; }
 
+        /// <summary>
+        /// numbering patterns
+        /// </summary>
+        public GanjoorNumbering[] Numberings { get; set; }
+
         private async Task GetInformationAsync()
         {
            
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat?url={Request.Query["url"]}&poems=true");
-
             response.EnsureSuccessStatusCode();
-
             Cat = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
 
             var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Query["url"]}");
             pageQuery.EnsureSuccessStatusCode();
-
             PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
-            var rhythmResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
+            var rhythmsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
+            rhythmsResponse.EnsureSuccessStatusCode();
+            Rhythms = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmsResponse.Content.ReadAsStringAsync());
 
-            rhythmResponse.EnsureSuccessStatusCode();
-
-            Rhythms = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
+            var numberings = await _httpClient.GetAsync($"{APIRoot.Url}/api/numberings/cat/{Cat.Cat.Id}");
+            numberings.EnsureSuccessStatusCode();
+            Numberings = JsonConvert.DeserializeObject<GanjoorNumbering[]>(await numberings.Content.ReadAsStringAsync());
         }
 
         public async Task<IActionResult> OnGetAsync()

@@ -1,5 +1,6 @@
 ﻿@page
 @model GanjooRazor.Areas.Admin.Pages.CatUtilsModel
+@using DNTPersianUtils.Core
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
@@ -156,6 +157,42 @@
         </tr>
     </table>
 </form>
+
+
+<h2>الگوهای شماره‌گذاری</h2>
+<table>
+    <tr>
+        <th>
+            نام
+        </th>
+        <th>
+            ابتدا
+        </th>
+        <th>
+            انتها
+        </th>
+        <th>
+            شمارش
+        </th>
+    </tr>
+    @foreach (var numbering in Model.Numberings)
+    {
+        <tr>
+            <td>
+                @numbering.Name
+            </td>
+            <td>
+                @numbering.StartCatId
+            </td>
+            <td>
+                @numbering.EndCatId
+            </td>
+            <td>
+                @numbering.LastCountingDate.ToLongPersianDateTimeString()
+            </td>
+        </tr>
+    }
+</table>
 
 
 
