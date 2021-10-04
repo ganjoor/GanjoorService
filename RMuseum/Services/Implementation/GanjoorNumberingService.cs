@@ -27,9 +27,9 @@ namespace RMuseum.Services.Implementation
             numbering.Name = numbering.Name == null ? numbering.Name : numbering.Name.Trim();
             if (string.IsNullOrEmpty(numbering.Name))
                 return new RServiceResult<GanjoorNumbering>(null, "ورود نام طرح شماره‌گذاری اجباری است.");
-            var existing = await _context.GanjoorNumberings.Where(l => l.Name == numbering.Name).FirstOrDefaultAsync();
+            var existing = await _context.GanjoorNumberings.Where(l => l.Name == numbering.Name && l.StartCatId == numbering.StartCatId).FirstOrDefaultAsync();
             if (existing != null)
-                return new RServiceResult<GanjoorNumbering>(null, "اطلاعات تکراری است.");
+                return new RServiceResult<GanjoorNumbering>(null, "نام در این بخش تکراری است.");
             try
             {
                 _context.GanjoorNumberings.Add(numbering);
