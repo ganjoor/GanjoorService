@@ -48,13 +48,13 @@ namespace RMuseum.Services.Implementation
 
                         var job = (await jobProgressServiceEF.NewJob("GanjoorService:ImportFromMySql", $"{stepCount} - start")).Result;
 
-                        if(string.IsNullOrEmpty(_configuration.GetSection("AudioMySqlServer")["ReportedCommentsDatabase"]))
+                        if(string.IsNullOrEmpty(Configuration.GetSection("AudioMySqlServer")["ReportedCommentsDatabase"]))
                         {
                             await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, "ReportedCommentsDatabase is not set");
                             return;
                         }
 
-                        if (string.IsNullOrEmpty(_configuration.GetSection("AudioMySqlServer")["PoetImagesImportPath"]))
+                        if (string.IsNullOrEmpty(Configuration.GetSection("AudioMySqlServer")["PoetImagesImportPath"]))
                         {
                             await jobProgressServiceEF.UpdateJob(job.Id, job.Progress, "", false, "PoetImagesImportPath is not set");
                             return;
@@ -67,7 +67,7 @@ namespace RMuseum.Services.Implementation
 
                        stepCount++;
 
-                       MusicCatalogueService catalogueService = new MusicCatalogueService(_configuration, context);
+                       MusicCatalogueService catalogueService = new MusicCatalogueService(Configuration, context);
 
                        RServiceResult<bool> musicCatalogueRes = await catalogueService.ImportFromMySql($"{stepCount} MusicCatalogueImportFromMySql", jobProgressServiceEF, job);
 
@@ -154,7 +154,7 @@ namespace RMuseum.Services.Implementation
 
                 using (MySqlConnection connection = new MySqlConnection
                                            (
-                                           $"server={_configuration.GetSection("AudioMySqlServer")["Server"]};uid={_configuration.GetSection("AudioMySqlServer")["Username"]};pwd={_configuration.GetSection("AudioMySqlServer")["Password"]};database={_configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                           $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
                                            ))
                 {
                     connection.Open();
@@ -360,7 +360,7 @@ namespace RMuseum.Services.Implementation
 
                 using (MySqlConnection connection = new MySqlConnection
                                 (
-                                $"server={_configuration.GetSection("AudioMySqlServer")["Server"]};uid={_configuration.GetSection("AudioMySqlServer")["Username"]};pwd={_configuration.GetSection("AudioMySqlServer")["Password"]};database={_configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
                                 ))
                 {
                     connection.Open();
@@ -464,7 +464,7 @@ namespace RMuseum.Services.Implementation
 
                 using (MySqlConnection connection = new MySqlConnection
                                 (
-                                $"server={_configuration.GetSection("AudioMySqlServer")["Server"]};uid={_configuration.GetSection("AudioMySqlServer")["Username"]};pwd={_configuration.GetSection("AudioMySqlServer")["Password"]};database={_configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
                                 ))
                 {
                     connection.Open();
@@ -520,9 +520,9 @@ namespace RMuseum.Services.Implementation
 
                 string connectionString =
                     approved ?
-                    $"server={_configuration.GetSection("AudioMySqlServer")["Server"]};uid={_configuration.GetSection("AudioMySqlServer")["Username"]};pwd={_configuration.GetSection("AudioMySqlServer")["Password"]};database={_configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True"
                     :
-                    $"server={_configuration.GetSection("AudioMySqlServer")["Server"]};uid={_configuration.GetSection("AudioMySqlServer")["SongsUsername"]};pwd={_configuration.GetSection("AudioMySqlServer")["SongsPassword"]};database={_configuration.GetSection("AudioMySqlServer")["SongsDatabase"]};charset=utf8;convert zero datetime=True";
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["SongsUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["SongsPassword"]};database={Configuration.GetSection("AudioMySqlServer")["SongsDatabase"]};charset=utf8;convert zero datetime=True";
 
                 using (MySqlConnection connection = new MySqlConnection
                                 (
@@ -621,7 +621,7 @@ namespace RMuseum.Services.Implementation
         {
             List<GanjoorCommentAbuseReport> list = new List<GanjoorCommentAbuseReport>();
             string connectionString =
-                   $"server={_configuration.GetSection("AudioMySqlServer")["Server"]};uid={_configuration.GetSection("AudioMySqlServer")["ReportedCommentsUsername"]};pwd={_configuration.GetSection("AudioMySqlServer")["ReportedCommentsPassword"]};database={_configuration.GetSection("AudioMySqlServer")["ReportedCommentsDatabase"]};charset=utf8;convert zero datetime=True";
+                   $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["ReportedCommentsUsername"]};pwd={Configuration.GetSection("AudioMySqlServer")["ReportedCommentsPassword"]};database={Configuration.GetSection("AudioMySqlServer")["ReportedCommentsDatabase"]};charset=utf8;convert zero datetime=True";
 
             using (MySqlConnection connection = new MySqlConnection
                             (
@@ -665,7 +665,7 @@ namespace RMuseum.Services.Implementation
                 job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - pre mysql data fetch")).Result;
 
                 string connectionString =
-                    $"server={_configuration.GetSection("AudioMySqlServer")["Server"]};uid={_configuration.GetSection("AudioMySqlServer")["Username"]};pwd={_configuration.GetSection("AudioMySqlServer")["Password"]};database={_configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True";
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True";
 
                 using (MySqlConnection connection = new MySqlConnection
                                 (
@@ -990,7 +990,7 @@ namespace RMuseum.Services.Implementation
                 job = (await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{jobName} - pre mysql data fetch")).Result;
 
                 string connectionString =
-                    $"server={_configuration.GetSection("AudioMySqlServer")["Server"]};uid={_configuration.GetSection("AudioMySqlServer")["Username"]};pwd={_configuration.GetSection("AudioMySqlServer")["Password"]};database={_configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True";
+                    $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8;convert zero datetime=True";
 
                 using (MySqlConnection connection = new MySqlConnection
                                 (
@@ -1037,7 +1037,7 @@ namespace RMuseum.Services.Implementation
 
                                 //poet image
 
-                                string imagePath = Path.Combine(_configuration.GetSection("AudioMySqlServer")["PoetImagesImportPath"], $"{poet.Id}.png");
+                                string imagePath = Path.Combine(Configuration.GetSection("AudioMySqlServer")["PoetImagesImportPath"], $"{poet.Id}.png");
                                 if (!File.Exists(imagePath))
                                 {
                                     job = (await jobProgressServiceEF.UpdateJob(job.Id, curPoet, $"{jobName} - {poet.Name} - {poet.Id}.png not found")).Result;
@@ -1045,7 +1045,7 @@ namespace RMuseum.Services.Implementation
                                 }
 
 
-                                ImageFileServiceEF imageFileService = new ImageFileServiceEF(context, _configuration);
+                                ImageFileServiceEF imageFileService = new ImageFileServiceEF(context, Configuration);
 
                                 using(FileStream fs = File.OpenRead(imagePath))
                                 {

@@ -10848,12 +10848,17 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">
+            <summary>
+            aggressive cache
+            </summary>
+        </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._context">
             <summary>
             Database Context
             </summary>
         </member>
-        <member name="P:RMuseum.Services.Implementation.GanjoorService._configuration">
+        <member name="P:RMuseum.Services.Implementation.GanjoorService.Configuration">
             <summary>
             Configuration
             </summary>

@@ -58,7 +58,7 @@ namespace RMuseum.Services.Implementation
                                    var job = (await jobProgressServiceEF.NewJob("BuildSitemap", "Query data")).Result;
                                    try
                                    {
-                                       string xmlSitemap = _configuration.GetSection("Ganjoor")["SitemapLocation"];
+                                       string xmlSitemap = Configuration.GetSection("Ganjoor")["SitemapLocation"];
                                        if (File.Exists(xmlSitemap))
                                            File.Delete(xmlSitemap);
 

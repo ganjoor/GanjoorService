@@ -468,7 +468,7 @@ namespace RMuseum.Services.Implementation
                         }
                         break;
                 }
-                if (page.FullUrl != "/hashieha" && page.FullUrl != "/vazn" && page.FullUrl != "/simi" && page.FullUrl != "/audioclip")
+                if ( (AggressiveCacheEnabled || page.GanjoorPageType == GanjoorPageType.CatPage) && page.FullUrl != "/hashieha" && page.FullUrl != "/vazn" && page.FullUrl != "/simi" && page.FullUrl != "/audioclip")
                 {
                     _memoryCache.Set(cachKey, page);
                 }
@@ -1431,7 +1431,10 @@ namespace RMuseum.Services.Implementation
                     Comments = poemComments
                 };
 
-                _memoryCache.Set(cachKey, poemViewModel);
+                if (AggressiveCacheEnabled)
+                {
+                    _memoryCache.Set(cachKey, poemViewModel);
+                }
             }
             return new RServiceResult<GanjoorPoemCompleteViewModel>
                 (
@@ -3608,6 +3611,24 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// aggressive cache
+        /// </summary>
+        public bool AggressiveCacheEnabled
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration["AggressiveCacheEnabled"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;
@@ -3615,7 +3636,7 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// Configuration
         /// </summary>
-        protected IConfiguration _configuration { get; }
+        protected IConfiguration Configuration { get; }
 
         /// <summary>
         /// Background Task Queue Instance
@@ -3667,7 +3688,7 @@ namespace RMuseum.Services.Implementation
             _notificationService = notificationService;
             _imageFileService = imageFileService;
             _memoryCache = memoryCache;
-            _configuration = configuration;
+            Configuration = configuration;
             _httpClient = httpClient;
         }
     }

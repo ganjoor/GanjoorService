@@ -46,9 +46,9 @@ namespace RMuseum.Services.Implementation
 
                                     try
                                     {
-                                        string outDir = _configuration.GetSection("Ganjoor")["GDBStorage"];
-                                        string imgDir = _configuration.GetSection("Ganjoor")["GDBStorageImageSource"];
-                                        string xmlFile = _configuration.GetSection("Ganjoor")["GDBListXMLFile"];
+                                        string outDir = Configuration.GetSection("Ganjoor")["GDBStorage"];
+                                        string imgDir = Configuration.GetSection("Ganjoor")["GDBStorageImageSource"];
+                                        string xmlFile = Configuration.GetSection("Ganjoor")["GDBListXMLFile"];
 
                                         var poets = await context.GanjoorPoets.AsNoTracking().ToListAsync();
 
@@ -160,7 +160,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<string>> ExportToSqlite(int poetId)
         {
-            return await _ExportToSqlite(_context, poetId, Path.Combine($"{_configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteExports"));
+            return await _ExportToSqlite(_context, poetId, Path.Combine($"{Configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteExports"));
         }
         
         private async Task<RServiceResult<string>> _ExportToSqlite(RMuseumDbContext context, int poetId, string dir, string fileName = null, bool ignoreBio = false)
@@ -247,7 +247,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                string dir = Path.Combine($"{_configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteImports");
+                string dir = Path.Combine($"{Configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteImports");
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 
@@ -259,7 +259,7 @@ namespace RMuseum.Services.Implementation
                     await file.CopyToAsync(fsMain);
                 }
 
-                string email = $"{_configuration.GetSection("Ganjoor")["SystemEmail"]}";
+                string email = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
                 var userId = (await _appUserService.FindUserByEmail(email)).Result.Id;
 
                 _backgroundTaskQueue.QueueBackgroundWorkItem
@@ -490,7 +490,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                string dir = Path.Combine($"{_configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteImports");
+                string dir = Path.Combine($"{Configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteImports");
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 
