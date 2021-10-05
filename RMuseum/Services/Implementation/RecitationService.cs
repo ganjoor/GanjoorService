@@ -129,61 +129,7 @@ namespace RMuseum.Services.Implementationa
                 return new RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>(paginatedResult);
             }
             else
-            if (poetId != 0)
-            {
-                var source =
-                                 from audio in _context.Recitations.AsNoTracking()
-                                 join poem in _context.GanjoorPoems.Include(p => p.Cat)
-                                 on audio.GanjoorPostId equals poem.Id
-                                 where
-                                 poem.Cat.PoetId == poetId
-                                 &&
-                                 audio.ReviewStatus == AudioReviewStatus.Approved
-                                 &&
-                                 (
-                                 string.IsNullOrEmpty(searchTerm) ||
-                                 (
-                                 !string.IsNullOrEmpty(searchTerm)
-                                 &&
-                                 (
-                                 audio.AudioArtist.Contains(searchTerm)
-                                 ||
-                                 audio.AudioTitle.Contains(searchTerm)
-                                 ||
-                                 poem.FullTitle.Contains(searchTerm)
-                                 ||
-                                 poem.PlainText.Contains(searchTerm)
-                                 ))
-                                 )
-                                 orderby poem.Id, audio.ReviewDate
-                                 select new PublicRecitationViewModel()
-                                 {
-                                     Id = audio.Id,
-                                     PoemId = audio.GanjoorPostId,
-                                     PoemFullTitle = poem.FullTitle,
-                                     PoemFullUrl = poem.FullUrl,
-                                     AudioTitle = audio.AudioTitle,
-                                     AudioArtist = audio.AudioArtist,
-                                     AudioArtistUrl = audio.AudioArtistUrl,
-                                     AudioSrc = audio.AudioSrc,
-                                     AudioSrcUrl = audio.AudioSrcUrl,
-                                     LegacyAudioGuid = audio.LegacyAudioGuid,
-                                     Mp3FileCheckSum = audio.Mp3FileCheckSum,
-                                     Mp3SizeInBytes = audio.Mp3SizeInBytes,
-                                     PublishDate = audio.ReviewDate,
-                                     FileLastUpdated = audio.FileLastUpdated,
-                                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
-                                     XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
-                                     PlainText = poem.PlainText,
-                                     HtmlText = poem.HtmlText
-                                 };
-
-                (PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items) paginatedResult =
-                    await QueryablePaginator<PublicRecitationViewModel>.Paginate(source, paging);
-
-                return new RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>(paginatedResult);
-            }
-            else //catId != 0
+            if(catId != 0)
             {
                 var source =
                                  from audio in _context.Recitations.AsNoTracking()
@@ -237,7 +183,60 @@ namespace RMuseum.Services.Implementationa
 
                 return new RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>(paginatedResult);
             }
+            else //poetId != 0
+            {
+                var source =
+                                 from audio in _context.Recitations.AsNoTracking()
+                                 join poem in _context.GanjoorPoems.Include(p => p.Cat)
+                                 on audio.GanjoorPostId equals poem.Id
+                                 where
+                                 poem.Cat.PoetId == poetId
+                                 &&
+                                 audio.ReviewStatus == AudioReviewStatus.Approved
+                                 &&
+                                 (
+                                 string.IsNullOrEmpty(searchTerm) ||
+                                 (
+                                 !string.IsNullOrEmpty(searchTerm)
+                                 &&
+                                 (
+                                 audio.AudioArtist.Contains(searchTerm)
+                                 ||
+                                 audio.AudioTitle.Contains(searchTerm)
+                                 ||
+                                 poem.FullTitle.Contains(searchTerm)
+                                 ||
+                                 poem.PlainText.Contains(searchTerm)
+                                 ))
+                                 )
+                                 orderby poem.Id, audio.ReviewDate
+                                 select new PublicRecitationViewModel()
+                                 {
+                                     Id = audio.Id,
+                                     PoemId = audio.GanjoorPostId,
+                                     PoemFullTitle = poem.FullTitle,
+                                     PoemFullUrl = poem.FullUrl,
+                                     AudioTitle = audio.AudioTitle,
+                                     AudioArtist = audio.AudioArtist,
+                                     AudioArtistUrl = audio.AudioArtistUrl,
+                                     AudioSrc = audio.AudioSrc,
+                                     AudioSrcUrl = audio.AudioSrcUrl,
+                                     LegacyAudioGuid = audio.LegacyAudioGuid,
+                                     Mp3FileCheckSum = audio.Mp3FileCheckSum,
+                                     Mp3SizeInBytes = audio.Mp3SizeInBytes,
+                                     PublishDate = audio.ReviewDate,
+                                     FileLastUpdated = audio.FileLastUpdated,
+                                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                                     XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
+                                     PlainText = poem.PlainText,
+                                     HtmlText = poem.HtmlText
+                                 };
 
+                (PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items) paginatedResult =
+                    await QueryablePaginator<PublicRecitationViewModel>.Paginate(source, paging);
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>(paginatedResult);
+            }
         }
 
         /// <summary>
