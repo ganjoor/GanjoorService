@@ -365,13 +365,13 @@ namespace RMuseum.Services.Implementation
                 using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                 {
                     LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                    var job = (await jobProgressServiceEF.NewJob("RegerneratePoemsPlainText", "Query data")).Result;
+                    var job = (await jobProgressServiceEF.NewJob($"RegerneratePoemsPlainText {catId}", "Query data")).Result;
 
                     try
                     {
                         var poems = catId == 0 ? await context.GanjoorPoems.ToArrayAsync() : await context.GanjoorPoems.Where(p => p.CatId == catId).ToArrayAsync();
 
-                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating PlainText/Poem Html");
+                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating PlainText/Poem Html {catId}");
 
                         int percent = 0;
                         for (int i = 0; i < poems.Length; i++)
@@ -390,13 +390,13 @@ namespace RMuseum.Services.Implementation
                             poem.HtmlText = PrepareHtmlText(verses);
                         }
 
-                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Finalizing PlainText/Poem Html");
+                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Finalizing PlainText/Poem Html {catId}");
 
                         context.GanjoorPoems.UpdateRange(poems);
 
                         await context.SaveChangesAsync();
 
-                        await jobProgressServiceEF.UpdateJob(job.Id, 50, $"Updating pages HTML");
+                        await jobProgressServiceEF.UpdateJob(job.Id, 50, $"Updating pages HTML {catId}");
 
                         await context.Database.ExecuteSqlRawAsync("UPDATE p SET p.HtmlText = (SELECT poem.HtmlText FROM GanjoorPoems poem WHERE poem.Id = p.Id) FROM GanjoorPages p WHERE p.GanjoorPageType = 3 ");
 
