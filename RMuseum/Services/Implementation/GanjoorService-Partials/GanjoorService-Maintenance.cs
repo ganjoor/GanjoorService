@@ -354,8 +354,9 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
         /// </summary>
+        /// <param name="catId"></param>
         /// <returns></returns>
-        public RServiceResult<bool> RegerneratePoemsPlainText()
+        public RServiceResult<bool> RegerneratePoemsPlainText(int catId)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
             (
@@ -368,7 +369,7 @@ namespace RMuseum.Services.Implementation
 
                     try
                     {
-                        var poems = await context.GanjoorPoems.ToArrayAsync();
+                        var poems = catId == 0 ? await context.GanjoorPoems.ToArrayAsync() : await context.GanjoorPoems.Where(p => p.CatId == catId).ToArrayAsync();
 
                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating PlainText/Poem Html");
 

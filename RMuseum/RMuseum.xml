@@ -1192,10 +1192,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.RegerneratePoemsPlainText">
+        <member name="M:RMuseum.Controllers.GanjoorController.RegerneratePoemsPlainText(System.Int32)">
             <summary>
             separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
             </summary>
+            <param name="catId">if it is 0 it is ignored</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.StartBuildingSitemap">
@@ -8885,10 +8886,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.RegerneratePoemsPlainText">
+        <member name="M:RMuseum.Services.IGanjoorService.RegerneratePoemsPlainText(System.Int32)">
             <summary>
             separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
             </summary>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.CacheCleanForPageById(System.Int32)">
@@ -10287,10 +10289,11 @@
             <param name="verses"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.RegerneratePoemsPlainText">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.RegerneratePoemsPlainText(System.Int32)">
             <summary>
             separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
             </summary>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.HealthCheckContents">

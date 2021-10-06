@@ -449,8 +449,9 @@ namespace RMuseum.Services
         /// <summary>
         /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
         /// </summary>
+        /// <param name="catId"></param>
         /// <returns></returns>
-        RServiceResult<bool> RegerneratePoemsPlainText();
+        RServiceResult<bool> RegerneratePoemsPlainText(int catId);
 
         /// <summary>
         /// clean cache for paeg by id
