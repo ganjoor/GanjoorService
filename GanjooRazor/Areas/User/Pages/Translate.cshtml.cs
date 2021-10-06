@@ -65,6 +65,8 @@ namespace GanjooRazor.Areas.User.Pages
                     return "پاراگراف نثر";
                 case VersePosition.Single:
                     return "نیمایی یا آزاد";
+                case VersePosition.Comment:
+                    return "توضیح";
             }
             return "نامعتبر";
         }

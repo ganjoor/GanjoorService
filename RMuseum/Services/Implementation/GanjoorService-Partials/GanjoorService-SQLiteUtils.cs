@@ -852,6 +852,11 @@ namespace RMuseum.Services.Implementation
                     htmlText += $"<div class=\"m2\"><p>{v.Text}</p></div></div>{Environment.NewLine}";
                 }
                 else
+                if(v.VersePosition == VersePosition.Comment)
+                {
+                    htmlText += $"<div class=\"c\"><p>{v.Text}</p></div>{Environment.NewLine}";
+                }
+                else
                 if (v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single)
                 {
                     coupletIndex++;

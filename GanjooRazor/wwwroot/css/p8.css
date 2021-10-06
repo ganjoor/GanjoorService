@@ -296,7 +296,7 @@ a img {
     background-color: #f99
 }
 
-div.spacer, .item, .b2 {
+div.spacer, .item, .b2, .c {
     clear: both;
 }
 
@@ -358,7 +358,7 @@ div.n, div.l {
     text-align: right;
 }
 
-.b2 p {
+.b2 p, .c p {
     text-align: center;
 }
 

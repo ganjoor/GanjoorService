@@ -5844,6 +5844,11 @@
             Free form verse
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Ganjoor.VersePosition.Comment">
+            <summary>
+            Comment 
+            </summary>
+        </member>
         <member name="F:RMuseum.Models.Ganjoor.VersePosition.Paragraph">
             <summary>
             Non-poem paragraph

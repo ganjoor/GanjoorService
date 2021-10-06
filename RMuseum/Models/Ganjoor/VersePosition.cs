@@ -29,6 +29,10 @@
         /// </summary>
         Single = 4, //مصرعهای شعرهای نیمایی یا آزاد
         /// <summary>
+        /// Comment 
+        /// </summary>
+        Comment = 5, //پاراگرافهایی که حالت توضیحی دارند
+        /// <summary>
         /// Non-poem paragraph
         /// </summary>
         Paragraph = -1, //نثر
