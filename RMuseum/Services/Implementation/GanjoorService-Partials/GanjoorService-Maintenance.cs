@@ -398,7 +398,17 @@ namespace RMuseum.Services.Implementation
 
                         await jobProgressServiceEF.UpdateJob(job.Id, 50, $"Updating pages HTML {catId}");
 
-                        await context.Database.ExecuteSqlRawAsync("UPDATE p SET p.HtmlText = (SELECT poem.HtmlText FROM GanjoorPoems poem WHERE poem.Id = p.Id) FROM GanjoorPages p WHERE p.GanjoorPageType = 3 ");
+                        //the following line always gets timeout, so it is being replaced by a loop
+                        //await context.Database.ExecuteSqlRawAsync(
+                        //    "UPDATE p SET p.HtmlText = (SELECT poem.HtmlText FROM GanjoorPoems poem WHERE poem.Id = p.Id) FROM GanjoorPages p WHERE p.GanjoorPageType = 3 ");
+
+                        foreach (var poem in poems)
+                        {
+                            var page = await context.GanjoorPages.Where(p => p.Id == poem.Id).SingleAsync();
+                            page.HtmlText = poem.HtmlText;
+                            context.GanjoorPages.Update(page);
+                        }
+                        await context.SaveChangesAsync();
 
                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                     }
