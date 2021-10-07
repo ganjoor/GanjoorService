@@ -518,8 +518,23 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<bool>(true);
         }
 
-        private async Task<string> _ProcessCommentHtmlLinks(string commentText, RMuseumDbContext context)
+        private async Task<string> _ProcessCommentHtmlLinksAndRemoveTags(string commentText, RMuseumDbContext context)
         {
+            if(commentText.IndexOf("<div") != -1)
+            {
+                int divIndex = commentText.IndexOf("<div");
+                while(divIndex != -1)
+                {
+                    int divCloseIndex = commentText.IndexOf(">", divIndex);
+                    if(divCloseIndex != -1)
+                    {
+                        commentText = commentText.Substring(0, divIndex) + commentText.Substring(divCloseIndex + 1);
+                    }
+                    divIndex = commentText.IndexOf("<div", divIndex + 1);
+                }
+            }
+            commentText = commentText.Replace("</div>", "");
+
             if(commentText.IndexOf("href=") == -1 && commentText.IndexOf("http") != -1)
             {
                 commentText = _Linkify(commentText);
@@ -654,7 +669,7 @@ namespace RMuseum.Services.Implementation
 
                             var comment = comments[i];
 
-                            string commentText = await _ProcessCommentHtmlLinks(comment.HtmlComment, context);
+                            string commentText = await _ProcessCommentHtmlLinksAndRemoveTags(comment.HtmlComment, context);
 
                             if(commentText != comment.HtmlComment)
                             {
