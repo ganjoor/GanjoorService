@@ -518,22 +518,74 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<bool>(true);
         }
 
-        private async Task<string> _ProcessCommentHtmlLinksAndRemoveTags(string commentText, RMuseumDbContext context)
+        private async Task<string> _ProcessCommentHtml(string commentText, RMuseumDbContext context)
         {
-            if(commentText.IndexOf("<div") != -1)
+            string[] allowedTags = new string[]
             {
-                int divIndex = commentText.IndexOf("<div");
-                while(divIndex != -1)
+                "p",
+                "a",
+                "br",
+                "b",
+                "i",
+                "strong",
+                "img"
+            };
+            if(commentText.IndexOf("<") != -1)
+            {
+                int openTagIndex = commentText.IndexOf('<');
+                while(openTagIndex != -1)
                 {
-                    int divCloseIndex = commentText.IndexOf(">", divIndex);
-                    if(divCloseIndex != -1)
+                    int closeOpenningTagIndex = commentText.IndexOf('>', openTagIndex + 1);
+                    if(closeOpenningTagIndex == -1) //an unclosed tag
                     {
-                        commentText = commentText.Substring(0, divIndex) + commentText.Substring(divCloseIndex + 1);
+                        if(commentText.IndexOf(' ', openTagIndex + 1) != -1)
+                        {
+                            commentText = commentText.Substring(0, openTagIndex) + commentText.Substring(commentText.IndexOf(' ', openTagIndex + 1));
+                        }
+                        else
+                        {
+                            commentText = commentText.Substring(0, openTagIndex);
+                        }
                     }
-                    divIndex = commentText.IndexOf("<div", divIndex + 1);
+                    else
+                    {
+                        int anotherOpenTagInBetweenIndex = commentText.IndexOf('<', openTagIndex + 1);
+                        if(anotherOpenTagInBetweenIndex != -1 && anotherOpenTagInBetweenIndex < closeOpenningTagIndex)
+                        {
+                            commentText = commentText.Substring(0, openTagIndex) + commentText.Substring(anotherOpenTagInBetweenIndex);
+                        }
+                        else
+                        {
+                            int tagTypeCloseIndex = closeOpenningTagIndex;
+                            int spaceAfterOpenningTagIndex = commentText.IndexOf(' ', openTagIndex + 1);
+                            if (spaceAfterOpenningTagIndex != -1 && spaceAfterOpenningTagIndex < tagTypeCloseIndex)
+                                tagTypeCloseIndex = spaceAfterOpenningTagIndex;
+
+
+                            string tagType = commentText.Substring(openTagIndex + 1, tagTypeCloseIndex - openTagIndex - 1).ToLower();
+                            tagType = tagType.Replace("/", "");//include close tags
+                            if (tagType.Length == 0)
+                            {
+                                if (closeOpenningTagIndex == commentText.Length - 1)
+                                    commentText = commentText.Substring(0, openTagIndex);
+                                else
+                                    commentText = commentText.Substring(0, openTagIndex) + commentText.Substring(closeOpenningTagIndex + 1);
+                            }
+                            else
+                            {
+                                if(!allowedTags.Contains(tagType))
+                                {
+                                    commentText = commentText.Substring(0, openTagIndex) + commentText.Substring(closeOpenningTagIndex + 1);
+                                    commentText = commentText.Replace($"</{tagType}>", "");
+                                }
+                            }
+                        }
+                    }
+
+                   
+                    openTagIndex = commentText.IndexOf("<", openTagIndex + 1);
                 }
             }
-            commentText = commentText.Replace("</div>", "");
 
             if(commentText.IndexOf("href=") == -1 && commentText.IndexOf("http") != -1)
             {
@@ -669,7 +721,7 @@ namespace RMuseum.Services.Implementation
 
                             var comment = comments[i];
 
-                            string commentText = await _ProcessCommentHtmlLinksAndRemoveTags(comment.HtmlComment, context);
+                            string commentText = await _ProcessCommentHtml(comment.HtmlComment, context);
 
                             if(commentText != comment.HtmlComment)
                             {

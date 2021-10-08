@@ -738,7 +738,7 @@ namespace RMuseum.Services.Implementation
 
             content = content.ApplyCorrectYeKe();
 
-            content = await _ProcessCommentHtmlLinksAndRemoveTags(content, _context);
+            content = await _ProcessCommentHtml(content, _context);
 
             GanjoorComment comment = new GanjoorComment()
             {
@@ -837,7 +837,7 @@ namespace RMuseum.Services.Implementation
 
             htmlComment = htmlComment.ApplyCorrectYeKe();
 
-            htmlComment = await _ProcessCommentHtmlLinksAndRemoveTags(htmlComment, _context);
+            htmlComment = await _ProcessCommentHtml(htmlComment, _context);
 
             comment.HtmlComment = htmlComment;
 
