@@ -20,6 +20,7 @@ using DNTPersianUtils.Core;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net.Http;
 using System.Web;
+using System.Text.RegularExpressions;
 
 namespace RMuseum.Services.Implementation
 {
@@ -739,6 +740,17 @@ namespace RMuseum.Services.Implementation
             content = content.ApplyCorrectYeKe();
 
             content = await _ProcessCommentHtml(content, _context);
+
+            string commentText = Regex.Replace(content, "<.*?>", string.Empty);
+            if(commentText.Split(" ", StringSplitOptions.RemoveEmptyEntries).Max(s => s.Length) > 50)
+            {
+                return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه شامل کلمات به هم پیوستهٔ طولانی است.");
+            }
+
+            if (string.IsNullOrEmpty(commentText))
+            {
+                return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه خالی است.");
+            }
 
             GanjoorComment comment = new GanjoorComment()
             {
