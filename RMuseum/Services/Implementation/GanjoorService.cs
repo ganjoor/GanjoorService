@@ -544,6 +544,27 @@ namespace RMuseum.Services.Implementation
             return res;
         }
 
+        private async Task _FillPoemCoupletIndices(RMuseumDbContext context, int poemId)
+        {
+            var verses = await context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
+            int cIndex = -1;
+            foreach (var verse in verses)
+            {
+                if (verse.VersePosition != VersePosition.Left && verse.VersePosition != VersePosition.CenteredVerse2)
+                    cIndex++;
+                if (verse.VersePosition != VersePosition.Comment)
+                {
+                    verse.CoupletIndex = cIndex;
+                }
+                else
+                {
+                    verse.CoupletIndex = null;
+                }
+            }
+            context.GanjoorVerses.UpdateRange(verses);
+            await context.SaveChangesAsync();
+        }
+
         /// <summary>
         /// verse 1/ 2 id from couplet index
         /// </summary>

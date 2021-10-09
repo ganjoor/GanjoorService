@@ -744,5 +744,51 @@ namespace RMuseum.Services.Implementation
 
             return new RServiceResult<bool>(true);
         }
+
+        /// <summary>
+        /// start filling poems couplet indices
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> StartFillingPoemsCoupletIndices()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+            (
+            async token =>
+            {
+                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                {
+                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                    var job = (await jobProgressServiceEF.NewJob("illingPoemsCoupletIndices", "Query data")).Result;
+
+                    try
+                    {
+                        var poemIds = await context.GanjoorPoems.AsNoTracking().Select(p => p.Id).ToListAsync();
+
+
+                        int percent = 0;
+                        for (int i = 0; i < poemIds.Count; i++)
+                        {
+                            if (i * 100 / poemIds.Count > percent)
+                            {
+                                percent++;
+                                await jobProgressServiceEF.UpdateJob(job.Id, percent);
+                            }
+
+                            await _FillPoemCoupletIndices(context, poemIds[i]);
+                        }
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                    }
+                    catch (Exception exp)
+                    {
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                    }
+
+                }
+            }
+            );
+
+            return new RServiceResult<bool>(true);
+        }
     }
 }

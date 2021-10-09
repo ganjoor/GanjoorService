@@ -447,6 +447,12 @@ namespace RMuseum.Services
         RServiceResult<bool> FindAndFixLongUrlsInComments();
 
         /// <summary>
+        /// start filling poems couplet indices
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartFillingPoemsCoupletIndices();
+
+        /// <summary>
         /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
         /// </summary>
         /// <param name="catId"></param>
