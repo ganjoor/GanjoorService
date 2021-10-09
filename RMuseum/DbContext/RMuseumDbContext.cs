@@ -134,6 +134,12 @@ namespace RMuseum.DbContext
             builder.Entity<GanjoorVerseNumber>()
                 .HasIndex(n => new { n.PoemId, n.CoupletIndex });
 
+            builder.Entity<GanjoorVerse>()
+                .HasIndex(v => v.PoemId);//the next statement causes a drop index in the migration which this line prevents it
+
+            builder.Entity<GanjoorVerse>()
+                .HasIndex(v => new { v.PoemId, v.CoupletIndex });
+
 
             //Index set suggested by SQL Server Tuning Wizard -- end
 

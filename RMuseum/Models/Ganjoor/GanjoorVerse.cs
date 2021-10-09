@@ -34,5 +34,10 @@
         /// text
         /// </summary>
         public string Text { get; set; }
+
+        /// <summary>
+        /// couplet index
+        /// </summary>
+        public int? CoupletIndex { get; set; }
     }
 }

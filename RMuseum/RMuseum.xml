@@ -5549,6 +5549,11 @@
             text
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.CoupletIndex">
+            <summary>
+            couplet index
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Id">
             <summary>
             id
