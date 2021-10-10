@@ -562,7 +562,6 @@ namespace RMuseum.Services.Implementation
                 }
             }
             context.GanjoorVerses.UpdateRange(verses);
-            await context.SaveChangesAsync();
         }
 
         /// <summary>
