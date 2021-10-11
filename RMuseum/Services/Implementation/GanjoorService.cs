@@ -3025,6 +3025,8 @@ namespace RMuseum.Services.Implementation
                         _context.GanjoorVerses.Remove(oldVerses[v]);
                     }
                 }
+
+                await _FillPoemCoupletIndices(_context, id);
             }
             try
             {

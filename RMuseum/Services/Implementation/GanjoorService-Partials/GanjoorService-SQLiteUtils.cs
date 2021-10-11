@@ -394,6 +394,7 @@ namespace RMuseum.Services.Implementation
 
                                                     if (anyChanges)
                                                     {
+                                                        await _FillPoemCoupletIndices(context, poemId);
                                                         GanjoorComment sysComment = new GanjoorComment()
                                                         {
                                                             UserId = userId,
@@ -748,6 +749,8 @@ namespace RMuseum.Services.Implementation
                         context.GanjoorVerses.Add(dbVerse);
                         await context.SaveChangesAsync();//id set should be in order
                     }
+
+                    await _FillPoemCoupletIndices(context, poemId);
 
                     try
                     {
