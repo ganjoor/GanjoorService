@@ -60,17 +60,6 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public bool MyComment { get; set; }
 
         /// <summary>
-        /// verse1 id
-        /// </summary>
-        public int Verse1Id { get; set; }
-
-        /// <summary>
-        /// verse2 id
-        /// </summary>
-        public int Verse2Id { get; set; }
-
-
-        /// <summary>
         /// couplet index
         /// </summary>
         public int CoupletIndex { get; set; }

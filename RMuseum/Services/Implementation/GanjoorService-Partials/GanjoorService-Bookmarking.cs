@@ -136,10 +136,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> IsCoupletBookmarked(Guid userId, int poemId, int coupletIndex)
         {
-            int? verseId = await _GetVerseIdFromCoupletIndex(poemId, coupletIndex);
-            if (verseId == null)
-                return new RServiceResult<bool>(false, "verse not found");
-            return new RServiceResult<bool>(await _context.GanjoorUserBookmarks.Where(b => b.PoemId == poemId && b.VerseId == verseId && b.UserId == userId).AnyAsync());
+            return new RServiceResult<bool>(await _context.GanjoorUserBookmarks.Where(b => b.PoemId == poemId && b.CoupletIndex == coupletIndex && b.UserId == userId).AnyAsync());
         }
 
 

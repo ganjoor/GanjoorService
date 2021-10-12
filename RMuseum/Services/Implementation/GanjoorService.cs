@@ -520,30 +520,6 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<PublicRecitationViewModel[]>(await source.AsNoTracking().ToArrayAsync());
         }
 
-        /// <summary>
-        /// verse id from couplet index
-        /// </summary>
-        /// <param name="poemId"></param>
-        /// <param name="coupletIndex"></param>
-        /// <returns></returns>
-        private async Task<int?> _GetVerseIdFromCoupletIndex(int poemId, int coupletIndex)
-        {
-            int? res = null;
-            var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
-            int cIndex = -1;
-            for (int i = 0; i < verses.Count; i++)
-            {
-                if (verses[i].VersePosition != VersePosition.Left && verses[i].VersePosition != VersePosition.CenteredVerse2)
-                    cIndex++;
-                if (cIndex == coupletIndex)
-                {
-                    res = verses[i].Id;
-                    break;
-                }
-            }
-            return res;
-        }
-
         private async Task _FillPoemCoupletIndices(RMuseumDbContext context, int poemId)
         {
             var verses = await context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
@@ -621,11 +597,6 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex)
         {
-            int? Verse1Id = null;
-            if (coupletIndex != null)
-            {
-                Verse1Id = await _GetVerseIdFromCoupletIndex(poemId, (int)coupletIndex);
-            }
             var source =
                   from comment in _context.GanjoorComments.Include(c => c.User)
                   where
@@ -633,7 +604,7 @@ namespace RMuseum.Services.Implementation
                   &&
                   comment.PoemId == poemId
                   &&
-                  ((Verse1Id == null) || (Verse1Id != null && comment.Verse1Id == Verse1Id))
+                  ((coupletIndex == null) || (coupletIndex != null && comment.CoupletIndex == coupletIndex))
                   orderby comment.CommentDate
                   select new GanjoorCommentSummaryViewModel()
                   {
@@ -646,8 +617,6 @@ namespace RMuseum.Services.Implementation
                       InReplyToId = comment.InReplyToId,
                       UserId = comment.UserId,
                       CoupletIndex = comment.CoupletIndex == null ? -1 : (int)comment.CoupletIndex,
-                      Verse1Id = comment.Verse1Id == null ? -1 : (int)comment.Verse1Id,
-                      Verse2Id = comment.Verse12d == null ? -1 : (int)comment.Verse12d
                   };
 
             GanjoorCommentSummaryViewModel[] allComments = await source.AsNoTracking().ToArrayAsync();
@@ -655,10 +624,11 @@ namespace RMuseum.Services.Implementation
             foreach (GanjoorCommentSummaryViewModel comment in allComments)
             {
                 comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
-                string coupleText = comment.Verse1Id == -1 ? "" : (await _context.GanjoorVerses.Where(v => v.Id == comment.Verse1Id).FirstAsync()).Text;
-                if (comment.Verse2Id != -1)
+                var relatedVerses = comment.CoupletIndex == -1 ? new List<GanjoorVerse>() : await _context.GanjoorVerses.Where(v => v.PoemId == poemId && v.CoupletIndex == comment.CoupletIndex).OrderBy(v => v.VOrder).ToListAsync();
+                string coupleText = relatedVerses.Count == 0 ? "" : relatedVerses[0].Text;
+                for(int nVerseIndex = 1; nVerseIndex < relatedVerses.Count; nVerseIndex++)
                 {
-                    coupleText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.Verse2Id).FirstAsync()).Text}";
+                    coupleText += $" {relatedVerses[nVerseIndex].Text}";
                 }
                 comment.CoupletSummary = _CutSummary(coupleText);
             }
@@ -825,8 +795,6 @@ namespace RMuseum.Services.Implementation
                     Replies = new GanjoorCommentSummaryViewModel[] { },
                     CoupletIndex = coupletIndex == null ? -1 : (int)coupletIndex,
                     MyComment = true,
-                    Verse1Id = Verse1Id == null ? -1 : (int)Verse1Id,
-                    Verse2Id = Verse2Id == null ? -1 : (int)Verse2Id,
                     CoupletSummary = _CutSummary(coupletSummary)
                 }
                 ); ;
@@ -1067,8 +1035,6 @@ namespace RMuseum.Services.Implementation
                             PublishStatus = "",
                             UserId = comment.InReplyTo.UserId,
                             CoupletIndex = comment.InReplyTo.CoupletIndex == null ? -1 : (int)comment.InReplyTo.CoupletIndex,
-                            Verse1Id = comment.InReplyTo.Verse1Id == null ? -1 : (int)comment.InReplyTo.Verse1Id,
-                            Verse2Id = comment.InReplyTo.Verse12d == null ? -1 : (int)comment.InReplyTo.Verse12d
                         },
                      Poem = new GanjoorPoemSummaryViewModel()
                      {
@@ -1086,18 +1052,23 @@ namespace RMuseum.Services.Implementation
             foreach (GanjoorCommentFullViewModel comment in paginatedResult.Items)
             {
                 comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
-                string replyText = comment.Verse1Id == -1 ? "" : (await _context.GanjoorVerses.Where(v => v.Id == comment.Verse1Id).FirstAsync()).Text;
-                if (comment.Verse2Id != -1)
+                var relatedVerses = comment.CoupletIndex == -1 ? new List<GanjoorVerse>() : await _context.GanjoorVerses.Where(v => v.PoemId == comment.Poem.Id && v.CoupletIndex == comment.CoupletIndex).OrderBy(v => v.VOrder).ToListAsync();
+                string coupleText = relatedVerses.Count == 0 ? "" : relatedVerses[0].Text;
+                for (int nVerseIndex = 1; nVerseIndex < relatedVerses.Count; nVerseIndex++)
                 {
-                    replyText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.Verse2Id).FirstAsync()).Text}";
+                    coupleText += $" {relatedVerses[nVerseIndex].Text}";
                 }
-                comment.CoupletSummary = _CutSummary(replyText);
+
+                
+                comment.CoupletSummary = _CutSummary(coupleText);
                 if (comment.InReplyTo != null)
                 {
-                    string replyCoupleText = comment.InReplyTo.Verse1Id == -1 ? "" : (await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse1Id).FirstAsync()).Text;
-                    if (comment.InReplyTo.Verse2Id != -1)
+
+                    var replyRelatedVerses = comment.InReplyTo.CoupletIndex == -1 ? new List<GanjoorVerse>() : await _context.GanjoorVerses.Where(v => v.PoemId == comment.Poem.Id && v.CoupletIndex == comment.InReplyTo.CoupletIndex).OrderBy(v => v.VOrder).ToListAsync();
+                    string replyCoupleText = relatedVerses.Count == 0 ? "" : relatedVerses[0].Text;
+                    for (int nVerseIndex = 1; nVerseIndex < replyRelatedVerses.Count; nVerseIndex++)
                     {
-                        replyCoupleText += $" {(await _context.GanjoorVerses.Where(v => v.Id == comment.InReplyTo.Verse2Id).FirstAsync()).Text}";
+                        replyCoupleText += $" {replyRelatedVerses[nVerseIndex].Text}";
                     }
                     comment.InReplyTo.CoupletSummary = _CutSummary(replyCoupleText);
                 }
