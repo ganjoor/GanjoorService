@@ -121,8 +121,7 @@ namespace RMuseum.DbContext
                 .IsUnique();
 
             builder.Entity<GanjoorUserBookmark>()
-                .HasIndex(b => new { b.UserId, b.PoemId, b.VerseId })
-                .IsUnique();
+                .HasIndex(b => new { b.UserId, b.PoemId, b.CoupletIndex });
 
             builder.Entity<GanjoorVerseNumber>()
                 .HasIndex(n => new { n.NumberingId, n.PoemId, n.CoupletIndex })
