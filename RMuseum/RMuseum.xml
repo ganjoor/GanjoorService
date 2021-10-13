@@ -10220,14 +10220,12 @@
             <param name="coupletIndex"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Int32,System.Nullable{System.Int32},System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkVerse(System.Int32,System.Int32,System.Guid)">
             <summary>
             Bookmark Verse
             </summary>
             <param name="poemId"></param>
             <param name="coupletIndex"></param>
-            <param name="verseId"></param>
-            <param name="verse2Id"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>

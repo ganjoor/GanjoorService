@@ -25,10 +25,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorUserBookmark>> SwitchCoupletBookmark(Guid userId, int poemId, int coupletIndex)
         {
-            (int Verse1, int? Verse2)? verse12 = await _GetVerse12IdFromCoupletIndex(poemId, coupletIndex);
-            if (verse12 == null)
-                return new RServiceResult<GanjoorUserBookmark>(null, "verse not found");
-            var bookmark = await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.VerseId == verse12.Value.Verse1).SingleOrDefaultAsync();
+            var bookmark = await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.CoupletIndex == coupletIndex).SingleOrDefaultAsync();
             if (bookmark != null)
             {
                 var res = await DeleteGanjoorBookmark(bookmark.Id, userId);
@@ -39,7 +36,7 @@ namespace RMuseum.Services.Implementation
             }
             else
             {
-                var res = await BookmarkVerse(poemId, coupletIndex, verse12.Value.Verse1, verse12.Value.Verse2, userId);
+                var res = await BookmarkVerse(poemId, coupletIndex, userId);
                 if(!string.IsNullOrEmpty(res.ExceptionString))
                     return res;
                 bookmark = res.Result;
@@ -56,13 +53,10 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorUserBookmark>> BookmarkCoupletIfNotBookmarked(Guid userId, int poemId, int coupletIndex)
         {
-            (int Verse1, int? Verse2)? verse12 = await _GetVerse12IdFromCoupletIndex(poemId, coupletIndex);
-            if (verse12 == null)
-                return new RServiceResult<GanjoorUserBookmark>(null, "verse not found");
-            var bookmark = await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.VerseId == verse12.Value.Verse1).SingleOrDefaultAsync();
+            var bookmark = await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.CoupletIndex == coupletIndex).SingleOrDefaultAsync();
             if (bookmark == null)
             { 
-                var res = await BookmarkVerse(poemId, coupletIndex, verse12.Value.Verse1, verse12.Value.Verse2, userId);
+                var res = await BookmarkVerse(poemId, coupletIndex, userId);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return res;
                 bookmark = res.Result;
@@ -76,15 +70,13 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="poemId"></param>
         /// <param name="coupletIndex"></param>
-        /// <param name="verseId"></param>
-        /// <param name="verse2Id"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int coupletIndex, int verseId, int? verse2Id, Guid userId)
+        public async Task<RServiceResult<GanjoorUserBookmark>> BookmarkVerse(int poemId, int coupletIndex, Guid userId)
         {
-            if ((await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.VerseId == verseId).SingleOrDefaultAsync()) != null)
+            if ((await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.CoupletIndex == coupletIndex).SingleOrDefaultAsync()) != null)
             {
-                return new RServiceResult<GanjoorUserBookmark>(null, "Verse is already bookmarkeded.");
+                return new RServiceResult<GanjoorUserBookmark>(null, "The couplet is already bookmarkeded.");
             }
 
             GanjoorUserBookmark bookmark =
@@ -92,8 +84,6 @@ namespace RMuseum.Services.Implementation
                 {
                     UserId = userId,
                     PoemId = poemId,
-                    VerseId = verseId,
-                    Verse2Id = verse2Id,
                     DateTime = DateTime.Now,
                     CoupletIndex = coupletIndex
                 };
@@ -169,8 +159,6 @@ namespace RMuseum.Services.Implementation
             var source =
                  _context.GanjoorUserBookmarks
                  .Include(b => b.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet)
-                 .Include(b => b.Verse)
-                 .Include(b => b.Verse2)
                  .Where(b => b.UserId == userId)
                 .OrderByDescending(b => b.DateTime)
                 .AsQueryable();
@@ -182,6 +170,7 @@ namespace RMuseum.Services.Implementation
             List<GanjoorUserBookmarkViewModel> result = new List<GanjoorUserBookmarkViewModel>();
             foreach (var bookmark in bookmarksPage.Bookmarks)
             {
+                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == bookmark.PoemId && v.CoupletIndex == bookmark.CoupletIndex).OrderBy(v => v.VOrder).ToListAsync();
                 result.Add
                     (
                     new GanjoorUserBookmarkViewModel()
@@ -192,8 +181,8 @@ namespace RMuseum.Services.Implementation
                         PoemFullTitle = bookmark.Poem.FullTitle,
                         PoemFullUrl = bookmark.Poem.FullUrl,
                         CoupletIndex = bookmark.CoupletIndex,
-                        VerseText = bookmark.Verse.Text,
-                        Verse2Text = bookmark.Verse2 == null ? "" : bookmark.Verse2.Text,
+                        VerseText = verses.Count == 0 ? "" : verses[0].Text,
+                        Verse2Text = verses.Count < 2 ? "" : verses[1].Text,
                         DateTime = bookmark.DateTime
                     }
                     );

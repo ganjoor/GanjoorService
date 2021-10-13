@@ -41,12 +41,12 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// Verse Id
         /// </summary>
-        public int VerseId { get; set; }
+        public int? VerseId { get; set; }
 
         /// <summary>
         /// Verse
         /// </summary>
-        public GanjoorVerse Verse { get; set; }
+        public virtual GanjoorVerse Verse { get; set; }
 
         /// <summary>
         /// Verse 2 Id
