@@ -5500,19 +5500,9 @@
             Verse Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Verse">
-            <summary>
-            Verse
-            </summary>
-        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Verse2Id">
             <summary>
             Verse 2 Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Verse2">
-            <summary>
-            Verse 2
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.DateTime">

@@ -44,19 +44,9 @@ namespace RMuseum.Models.Ganjoor
         public int? VerseId { get; set; }
 
         /// <summary>
-        /// Verse
-        /// </summary>
-        public virtual GanjoorVerse Verse { get; set; }
-
-        /// <summary>
         /// Verse 2 Id
         /// </summary>
         public int? Verse2Id { get; set; }
-
-        /// <summary>
-        /// Verse 2
-        /// </summary>
-        public virtual GanjoorVerse Verse2 { get; set; }
 
         /// <summary>
         /// DateTime

@@ -120,9 +120,6 @@ namespace RMuseum.DbContext
                 .HasIndex(m => m.Name)
                 .IsUnique();
 
-            builder.Entity<GanjoorUserBookmark>().HasOne(b => b.Verse)
-                 .WithMany().Metadata.DeleteBehavior = DeleteBehavior.Restrict;
-
             builder.Entity<GanjoorUserBookmark>()
                 .HasIndex(b => new { b.UserId, b.PoemId, b.VerseId })
                 .IsUnique();
