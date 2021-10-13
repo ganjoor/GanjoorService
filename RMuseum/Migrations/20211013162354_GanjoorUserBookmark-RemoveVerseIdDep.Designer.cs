@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RMuseum.DbContext;
 
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    partial class RMuseumDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211013162354_GanjoorUserBookmark-RemoveVerseIdDep")]
+    partial class GanjoorUserBookmarkRemoveVerseIdDep
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
