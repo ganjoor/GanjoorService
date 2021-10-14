@@ -80,24 +80,17 @@ namespace RMuseum.Models.Ganjoor
         public PublishStatus Status { get; set; }
 
         /// <summary>
-        /// related verse 1 Id
+        /// related verse 1 Id, this is always null, because verses are removed and created on operations like editing and their Ids changed, so
+        /// later I decided to rely on (PoemId + CoupletIndex) instead
         /// </summary>
         public int? Verse1Id { get; set; }
 
-        /// <summary>
-        /// related verse 1
-        /// </summary>
-        public virtual GanjoorVerse Verse1 { get; set; }
 
         /// <summary>
-        /// related verse 2 Id
+        /// related verse 2 Id, this is always null, because verses are removed and created on operations like editing and their Ids changed, so
+        /// later I decided to rely on (PoemId + CoupletIndex) instead
         /// </summary>
         public int? Verse12d { get; set; }
-
-        /// <summary>
-        /// related verse 2
-        /// </summary>
-        public virtual GanjoorVerse Verse2 { get; set; }
 
         /// <summary>
         /// couplet index

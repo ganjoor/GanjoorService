@@ -4648,22 +4648,14 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Verse1Id">
             <summary>
-            related verse 1 Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Verse1">
-            <summary>
-            related verse 1
+            related verse 1 Id, this is always null, because verses are removed and created on operations like editing and their Ids changed, so
+            later I decided to rely on (PoemId + CoupletIndex) instead
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Verse12d">
             <summary>
-            related verse 2 Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Verse2">
-            <summary>
-            related verse 2
+            related verse 2 Id, this is always null, because verses are removed and created on operations like editing and their Ids changed, so
+            later I decided to rely on (PoemId + CoupletIndex) instead
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.CoupletIndex">
@@ -5497,12 +5489,14 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.VerseId">
             <summary>
-            Verse Id
+            Verse Id, this is always null, because verses are removed and created on operations like editing and their Ids changed, so
+            later I decided to rely on (PoemId + CoupletIndex) instead
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.Verse2Id">
             <summary>
-            Verse 2 Id
+            Verse 2 Id, this is always null, because verses are removed and created on operations like editing and their Ids changed, so
+            later I decided to rely on (PoemId + CoupletIndex) instead
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorUserBookmark.DateTime">
@@ -10460,14 +10454,6 @@
             get poem recitations  (PlainText/HtmlText are intentionally empty)
             </summary>
             <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService._GetVerse12IdFromCoupletIndex(System.Int32,System.Int32)">
-            <summary>
-            verse 1/ 2 id from couplet index
-            </summary>
-            <param name="poemId"></param>
-            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemComments(System.Int32,System.Guid,System.Nullable{System.Int32})">
