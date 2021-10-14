@@ -1383,6 +1383,7 @@ namespace RMuseum.Services.Implementation
                                                         {
                                                             Id = v.Id,
                                                             VOrder = v.VOrder,
+                                                            CoupletIndex = v.CoupletIndex,
                                                             VersePosition = v.VersePosition,
                                                             Text = v.Text
                                                         }

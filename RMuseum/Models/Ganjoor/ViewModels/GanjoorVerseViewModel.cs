@@ -17,6 +17,11 @@
         public int VOrder { get; set; }
 
         /// <summary>
+        /// couplet index
+        /// </summary>
+        public int? CoupletIndex { get; set; }
+
+        /// <summary>
         /// position
         /// </summary>
         public VersePosition VersePosition { get; set; }

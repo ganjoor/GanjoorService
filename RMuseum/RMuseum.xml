@@ -6857,6 +6857,11 @@
             vorder
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.CoupletIndex">
+            <summary>
+            couplet index
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.VersePosition">
             <summary>
             position
