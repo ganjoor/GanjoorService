@@ -39,12 +39,14 @@ namespace RMuseum.Models.Ganjoor
         public int CoupletIndex { get; set; }
 
         /// <summary>
-        /// Verse Id
+        /// Verse Id, this is always null, because verses are removed and created on operations like editing and their Ids changed, so
+        /// later I decided to rely on (PoemId + CoupletIndex) instead
         /// </summary>
         public int? VerseId { get; set; }
 
         /// <summary>
-        /// Verse 2 Id
+        /// Verse 2 Id, this is always null, because verses are removed and created on operations like editing and their Ids changed, so
+        /// later I decided to rely on (PoemId + CoupletIndex) instead
         /// </summary>
         public int? Verse2Id { get; set; }
 
