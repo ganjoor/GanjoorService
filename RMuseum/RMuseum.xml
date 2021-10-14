@@ -4652,10 +4652,20 @@
             later I decided to rely on (PoemId + CoupletIndex) instead
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Verse1">
+            <summary>
+            do not use
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Verse12d">
             <summary>
             related verse 2 Id, this is always null, because verses are removed and created on operations like editing and their Ids changed, so
             later I decided to rely on (PoemId + CoupletIndex) instead
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.Verse2">
+            <summary>
+            do not use
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorComment.CoupletIndex">
