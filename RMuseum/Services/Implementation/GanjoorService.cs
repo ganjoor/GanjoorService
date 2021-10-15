@@ -526,7 +526,7 @@ namespace RMuseum.Services.Implementation
             int cIndex = -1;
             foreach (var verse in verses)
             {
-                if (verse.VersePosition != VersePosition.Left && verse.VersePosition != VersePosition.CenteredVerse2)
+                if (verse.VersePosition != VersePosition.Left && verse.VersePosition != VersePosition.CenteredVerse2 && verse.VersePosition != VersePosition.Comment)
                     cIndex++;
                 if (verse.VersePosition != VersePosition.Comment)
                 {
