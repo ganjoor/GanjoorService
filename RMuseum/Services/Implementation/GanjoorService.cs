@@ -469,7 +469,7 @@ namespace RMuseum.Services.Implementation
                         }
                         break;
                 }
-                if ( (AggressiveCacheEnabled || page.GanjoorPageType == GanjoorPageType.CatPage) && page.FullUrl != "/hashieha" && page.FullUrl != "/vazn" && page.FullUrl != "/simi" && page.FullUrl != "/audioclip")
+                if ((AggressiveCacheEnabled || page.GanjoorPageType == GanjoorPageType.CatPage) && page.FullUrl != "/hashieha" && page.FullUrl != "/vazn" && page.FullUrl != "/simi" && page.FullUrl != "/audioclip")
                 {
                     _memoryCache.Set(cachKey, page);
                 }
@@ -579,7 +579,7 @@ namespace RMuseum.Services.Implementation
                 comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
                 var relatedVerses = comment.CoupletIndex == -1 ? new List<GanjoorVerse>() : await _context.GanjoorVerses.Where(v => v.PoemId == poemId && v.CoupletIndex == comment.CoupletIndex).OrderBy(v => v.VOrder).ToListAsync();
                 string coupleText = relatedVerses.Count == 0 ? "" : relatedVerses[0].Text;
-                for(int nVerseIndex = 1; nVerseIndex < relatedVerses.Count; nVerseIndex++)
+                for (int nVerseIndex = 1; nVerseIndex < relatedVerses.Count; nVerseIndex++)
                 {
                     coupleText += $" {relatedVerses[nVerseIndex].Text}";
                 }
@@ -633,11 +633,11 @@ namespace RMuseum.Services.Implementation
             {
                 GanjoorComment refComment = await _context.GanjoorComments.Where(c => c.Id == (int)inReplyTo).SingleAsync();
                 coupletIndex = refComment.CoupletIndex;
-                if(refComment.CoupletIndex != null)
+                if (refComment.CoupletIndex != null)
                 {
                     var relatedVerses = refComment.CoupletIndex == -1 ? new List<GanjoorVerse>() : await _context.GanjoorVerses.Where(v => v.PoemId == poemId && v.CoupletIndex == refComment.CoupletIndex).OrderBy(v => v.VOrder).ToListAsync();
                     coupletSummary = relatedVerses.Count > 0 ? relatedVerses[0].Text : "";
-                    if(relatedVerses.Count > 1)
+                    if (relatedVerses.Count > 1)
                     {
                         coupletSummary += $" {relatedVerses[1].Text}";
                     }
@@ -659,7 +659,7 @@ namespace RMuseum.Services.Implementation
             content = await _ProcessCommentHtml(content, _context);
 
             string commentText = Regex.Replace(content, "<.*?>", string.Empty);
-            if(commentText.Split(" ", StringSplitOptions.RemoveEmptyEntries).Max(s => s.Length) > 50)
+            if (commentText.Split(" ", StringSplitOptions.RemoveEmptyEntries).Max(s => s.Length) > 50)
             {
                 return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه شامل کلمات به هم پیوستهٔ طولانی است.");
             }
@@ -722,7 +722,7 @@ namespace RMuseum.Services.Implementation
                     MyComment = true,
                     CoupletSummary = _CutSummary(coupletSummary)
                 }
-                ); ;
+                );
         }
 
         private string _CutSummary(string summary)
@@ -770,6 +770,54 @@ namespace RMuseum.Services.Implementation
             await _context.SaveChangesAsync();
 
             return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
+        /// link or unlink user's own comment to a coupletIndex
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="commentId"></param>
+        /// <param name="coupletIndex">if null then unlinks</param>
+        /// <returns>couplet summary</returns>
+        public async Task<RServiceResult<string>> LinkUnLinkMyComment(Guid userId, int commentId, int? coupletIndex)
+        {
+            var userRes = await _appUserService.GetUserInformation(userId);
+
+            if (string.IsNullOrEmpty(userRes.Result.NickName))
+            {
+                return new RServiceResult<string>(null, "لطفاً با مراجعه به پیشخان کاربری (دکمهٔ گوشهٔ پایین سمت چپ) «نام مستعار» خود را مشخص کنید و سپس اقدام به ارسال حاشیه بفرمایید.");
+            }
+
+            GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == commentId && c.UserId == userId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
+            if (comment == null)
+            {
+                return new RServiceResult<string>(null); //not found
+            }
+
+            await CacheCleanForComment(commentId);
+
+
+
+            comment.CoupletIndex = coupletIndex;
+
+            string coupletSummary = "";
+            if (coupletIndex != null)
+            {
+                var relatedVerses = await _context.GanjoorVerses.Where(v => v.PoemId == comment.PoemId && v.CoupletIndex == coupletIndex).OrderBy(v => v.VOrder).ToListAsync();
+                coupletSummary = relatedVerses.Count > 0 ? relatedVerses[0].Text : "";
+                if (relatedVerses.Count > 1)
+                {
+                    coupletSummary += $" {relatedVerses[1].Text}";
+                }
+            }
+
+            _context.GanjoorComments.Update(comment);
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<string>
+                (
+               coupletSummary
+                );
         }
 
         /// <summary>
@@ -982,7 +1030,7 @@ namespace RMuseum.Services.Implementation
                     coupleText += $" {relatedVerses[nVerseIndex].Text}";
                 }
 
-                
+
                 comment.CoupletSummary = _CutSummary(coupleText);
                 if (comment.InReplyTo != null)
                 {
@@ -2896,11 +2944,11 @@ namespace RMuseum.Services.Implementation
                     {
                         oldVerses[v].Text = verses[v].Text;
                         oldVerses[v].VersePosition = verses[v].VersePosition;
-                        oldVerses[v].VOrder= verses[v].VOrder;
+                        oldVerses[v].VOrder = verses[v].VOrder;
                         _context.GanjoorVerses.Update(oldVerses[v]);
                     }
 
-                    for(int v = oldVerses.Count; v < verses.Count; v++)
+                    for (int v = oldVerses.Count; v < verses.Count; v++)
                     {
                         _context.GanjoorVerses.Add(verses[v]);
                     }

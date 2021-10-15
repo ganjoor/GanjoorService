@@ -1064,6 +1064,14 @@
             <param name="comment"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.LinkUnLinkMyComment(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            link or unlink user's own comment to a coupletIndex
+            </summary>
+            <param name="id"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.DeleteMyComment(System.Int32)">
             <summary>
             delete user's own comment
@@ -8728,6 +8736,15 @@
             <param name="htmlComment"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.LinkUnLinkMyComment(System.Guid,System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            link or unlink user's own comment to a coupletIndex
+            </summary>
+            <param name="userId"></param>
+            <param name="commentId"></param>
+            <param name="coupletIndex">if null then unlinks</param>
+            <returns>couplet summary</returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.DeleteModerateComment(System.Int32)">
             <summary>
             delete a reported  comment
@@ -10495,6 +10512,15 @@
             <param name="commentId"></param>
             <param name="htmlComment"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.LinkUnLinkMyComment(System.Guid,System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            link or unlink user's own comment to a coupletIndex
+            </summary>
+            <param name="userId"></param>
+            <param name="commentId"></param>
+            <param name="coupletIndex">if null then unlinks</param>
+            <returns>couplet summary</returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteModerateComment(System.Int32)">
             <summary>

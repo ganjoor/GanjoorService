@@ -288,6 +288,15 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> EditMyComment(Guid userId, int commentId, string htmlComment);
 
         /// <summary>
+        /// link or unlink user's own comment to a coupletIndex
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="commentId"></param>
+        /// <param name="coupletIndex">if null then unlinks</param>
+        /// <returns>couplet summary</returns>
+        Task<RServiceResult<string>> LinkUnLinkMyComment(Guid userId, int commentId, int? coupletIndex);
+
+        /// <summary>
         /// delete a reported  comment
         /// </summary>
         /// <param name="reportId"></param>

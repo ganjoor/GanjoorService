@@ -1374,6 +1374,41 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// link or unlink user's own comment to a coupletIndex
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("comment/{id}/editlink/{coupletIndex}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> LinkUnLinkMyComment(int id, int? coupletIndex)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            Guid userId =
+                 new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId =
+                new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+            RServiceResult<bool> sessionCheckResult = await _appUserService.SessionExists(userId, sessionId);
+            if (!string.IsNullOrEmpty(sessionCheckResult.ExceptionString))
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
+            var res =
+                await _ganjoorService.LinkUnLinkMyComment(userId, id, coupletIndex);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// delete user's own comment
         /// </summary>
         /// <param name="id"></param>
