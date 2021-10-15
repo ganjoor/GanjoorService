@@ -1378,10 +1378,11 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="coupletIndex"></param>
-        /// <returns></returns>
+        /// <returns>couplet summary for linked comment</returns>
         [HttpPut]
         [Route("comment/{id}/editlink/{coupletIndex}")]
         [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]

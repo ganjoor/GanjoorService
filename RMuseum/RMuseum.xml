@@ -1070,7 +1070,7 @@
             </summary>
             <param name="id"></param>
             <param name="coupletIndex"></param>
-            <returns></returns>
+            <returns>couplet summary for linked comment</returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.DeleteMyComment(System.Int32)">
             <summary>
