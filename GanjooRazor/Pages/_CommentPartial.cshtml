@@ -36,6 +36,7 @@ else
             {
                 <a role="button" onclick="deleteMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="actionlink" title="حذف حاشیه">🗑</a>
                 <a role="button" onclick="editMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="actionlink" title="ویرایش حاشیه">✎</a>
+                <a role="button" onclick="linkUnlinkMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="actionlink" title="اتصال یا قطع حاشیه و بیت">🔗</a>
             }
 
             <a role="button" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"), '@Model.DivSuffix')" class="actionlink" title="پاسخگویی به این حاشیه">⤶</a>
