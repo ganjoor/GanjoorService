@@ -34,13 +34,13 @@ else
         <p>
             @if (Model.Comment.MyComment)
             {
-                <a role="button" onclick="deleteMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="actionlink" title="حذف حاشیه">🗑</a>
-                <a role="button" onclick="editMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="actionlink" title="ویرایش حاشیه">✎</a>
-                <a role="button" onclick="linkUnlinkMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="actionlink" title="اتصال یا قطع حاشیه و بیت">🔗</a>
+                <a role="button" onclick="deleteMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="actionlink" title="حذف حاشیه"><i class="pageicons">delete</i></a>
+                <a role="button" onclick="editMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="actionlink" title="ویرایش حاشیه"><i class="pageicons">edit</i></a>
+                <a role="button" onclick="linkUnlinkMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="actionlink" title="اتصال یا قطع اتصال حاشیه و بیت"><i class="pageicons">link</i></a>
             }
 
-            <a role="button" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"), '@Model.DivSuffix')" class="actionlink" title="پاسخگویی به این حاشیه">⤶</a>
-            <a href="/ReportComment/?CommentId=@Model.Comment.Id" onclick="wpopen(this.href); return false" class="comments-link" title="گزارش حاشیهٔ نامناسب">⚐</a>
+            <a role="button" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"), '@Model.DivSuffix')" class="actionlink" title="پاسخگویی به این حاشیه"><i class="pageicons">reply</i></a>
+            <a href="/ReportComment/?CommentId=@Model.Comment.Id" onclick="wpopen(this.href); return false" class="comments-link" title="گزارش حاشیهٔ نامناسب"><i class="pageicons">flag</i></a>
         </p>
         <div class='spacer'>&nbsp;</div>
         <hr />
