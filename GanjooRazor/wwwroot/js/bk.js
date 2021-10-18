@@ -810,10 +810,3 @@ function editComment() {
     });
 }
 
-function linkUnlinkMyComment(commentId, coupletIndex) {
-    if (coupletIndex == -1) {
-        var coupletNum = prompt("شمارهٔ بیت", "1");
-        if (isNaN(parseInt(coupletNum)))
-            alert('لطفا عدد وارد کنید.')
-    }
-}
