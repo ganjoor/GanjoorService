@@ -810,3 +810,13 @@ function editComment() {
     });
 }
 
+function copyCommentUrl(commentId) {
+    var url = window.location.href;
+    if (url.indexOf('#') != -1) {
+        url = url.substring(0, url.indexOf('#'));
+    }
+    url += ('#comment-' + String(commentId));
+    navigator.clipboard.writeText(url);
+    var tooltip = document.getElementById("copycommentlink-tooltip-" + String(commentId));
+    tooltip.innerHTML = "نشانی در حافظه رونوشت شد: " + url;
+}
