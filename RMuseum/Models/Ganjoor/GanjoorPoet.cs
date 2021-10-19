@@ -50,5 +50,15 @@ namespace RMuseum.Models.Ganjoor
         /// published on website
         /// </summary>
         public bool Published { get; set; }
+
+        /// <summary>
+        /// birth year in lunar hijri
+        /// </summary>
+        public int BirthYearInLHijri { get; set; }
+
+        /// <summary>
+        /// death year in lunar hijri
+        /// </summary>
+        public int DeathYearInLHijri { get; set; }
     }
 }
