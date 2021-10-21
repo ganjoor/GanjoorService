@@ -18,11 +18,11 @@
         /// <summary>
         /// poet id
         /// </summary>
-        public int PoetId { get; set; }
+        public int? PoetId { get; set; }
 
         /// <summary>
         /// poet
         /// </summary>
-        public GanjoorPoet Poet { get; set; }
+        public virtual GanjoorPoet Poet { get; set; }
     }
 }

@@ -51,7 +51,7 @@ namespace RMuseum.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PoetOrder = table.Column<int>(type: "int", nullable: false),
-                    PoetId = table.Column<int>(type: "int", nullable: false),
+                    PoetId = table.Column<int>(type: "int", nullable: true),
                     GanjoorHalfCenturyId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -68,7 +68,7 @@ namespace RMuseum.Migrations
                         column: x => x.PoetId,
                         principalTable: "GanjoorPoets",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

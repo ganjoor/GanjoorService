@@ -69,6 +69,11 @@
                 <input type="text" name="@($"pinorder-{poet.Id}")" id="@($"pinorder-{poet.Id}")" value="@poet.PinOrder" />
             </td>
         </tr>
+        <tr>
+            <td colspan="4">
+                @Html.Raw(poet.Description)
+            </td>
+        </tr>
     }
     <tr>
         <td colspan="4">

@@ -22,9 +22,11 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var oldOnes = await _context.GanjoorHalfCenturies.Include(o => o.Poets)).ToArrayAsync();
+                await _context.Database.ExecuteSqlRawAsync("DELETE FROM GanjoorPeriodPoet");
+                var oldOnes = await _context.GanjoorHalfCenturies.ToArrayAsync();
                 _context.RemoveRange(oldOnes);
                 await _context.SaveChangesAsync();
+                
 
                 var periods = new List<GanjoorHalfCentury>
                 {

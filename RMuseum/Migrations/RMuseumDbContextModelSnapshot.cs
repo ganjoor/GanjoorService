@@ -837,7 +837,7 @@ namespace RMuseum.Migrations
                     b.Property<int?>("GanjoorHalfCenturyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PoetId")
+                    b.Property<int?>("PoetId")
                         .HasColumnType("int");
 
                     b.Property<int>("PoetOrder")
@@ -2733,9 +2733,7 @@ namespace RMuseum.Migrations
 
                     b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
                         .WithMany()
-                        .HasForeignKey("PoetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PoetId");
 
                     b.Navigation("Poet");
                 });

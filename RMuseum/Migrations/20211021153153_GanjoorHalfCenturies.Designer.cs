@@ -10,7 +10,7 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20211021145514_GanjoorHalfCenturies")]
+    [Migration("20211021153153_GanjoorHalfCenturies")]
     partial class GanjoorHalfCenturies
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -839,7 +839,7 @@ namespace RMuseum.Migrations
                     b.Property<int?>("GanjoorHalfCenturyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PoetId")
+                    b.Property<int?>("PoetId")
                         .HasColumnType("int");
 
                     b.Property<int>("PoetOrder")
@@ -2735,9 +2735,7 @@ namespace RMuseum.Migrations
 
                     b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
                         .WithMany()
-                        .HasForeignKey("PoetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PoetId");
 
                     b.Navigation("Poet");
                 });
