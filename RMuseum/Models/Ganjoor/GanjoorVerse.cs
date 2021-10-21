@@ -39,5 +39,10 @@
         /// couplet index
         /// </summary>
         public int? CoupletIndex { get; set; }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 }

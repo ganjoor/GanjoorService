@@ -45,6 +45,16 @@
         /// </summary>
         public string ImageUrl { get; set; }
 
+        /// <summary>
+        /// birth year in lunar hijri
+        /// </summary>
+        public int BirthYearInLHijri { get; set; }
+
+        /// <summary>
+        /// death year in lunar hijri
+        /// </summary>
+        public int DeathYearInLHijri { get; set; }
+
         public override string ToString()
         {
             return Nickname;

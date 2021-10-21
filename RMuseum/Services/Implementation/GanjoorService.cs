@@ -56,7 +56,9 @@ namespace RMuseum.Services.Implementation
                       RootCatId = cat.Id,
                       Nickname = poet.Nickname,
                       Published = poet.Published,
-                      ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.gif"
+                      ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.gif",
+                      BirthYearInLHijri = poet.BirthYearInLHijri,
+                      DeathYearInLHijri = poet.DeathYearInLHijri,
                   }
                   )
                   .AsNoTracking()
@@ -266,16 +268,18 @@ namespace RMuseum.Services.Implementation
                new GanjoorPoetCompleteViewModel()
                {
                    Poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId)
-                                        .Select(p => new GanjoorPoetViewModel()
+                                        .Select(poet => new GanjoorPoetViewModel()
                                         {
-                                            Id = p.Id,
-                                            Name = p.Name,
-                                            Description = p.Description,
-                                            FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl,
-                                            RootCatId = _context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().Id,
-                                            Nickname = p.Nickname,
-                                            Published = p.Published,
-                                            ImageUrl = p.RImageId == null ? "" : $"/api/ganjoor/poet/image{_context.GanjoorCategories.Where(c => c.PoetId == p.Id && c.ParentId == null).Single().FullUrl}.gif"
+                                            Id = poet.Id,
+                                            Name = poet.Name,
+                                            Description = poet.Description,
+                                            FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == poet.Id && c.ParentId == null).Single().FullUrl,
+                                            RootCatId = _context.GanjoorCategories.Where(c => c.PoetId == poet.Id && c.ParentId == null).Single().Id,
+                                            Nickname = poet.Nickname,
+                                            Published = poet.Published,
+                                            ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{_context.GanjoorCategories.Where(c => c.PoetId == poet.Id && c.ParentId == null).Single().FullUrl}.gif",
+                                            BirthYearInLHijri = poet.BirthYearInLHijri,
+                                            DeathYearInLHijri = poet.DeathYearInLHijri,
                                         }).AsNoTracking().FirstOrDefaultAsync(),
                    Cat = catViewModel
                }
@@ -384,7 +388,9 @@ namespace RMuseum.Services.Implementation
                           RootCatId = cat.Id,
                           Nickname = poet.Nickname,
                           Published = poet.Published,
-                          ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.gif"
+                          ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.gif",
+                          BirthYearInLHijri = poet.BirthYearInLHijri,
+                          DeathYearInLHijri = poet.DeathYearInLHijri,
                       }
                       )
                      .AsNoTracking().SingleAsync();

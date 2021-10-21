@@ -6749,6 +6749,16 @@
             image url
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.BirthYearInLHijri">
+            <summary>
+            birth year in lunar hijri
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.DeathYearInLHijri">
+            <summary>
+            death year in lunar hijri
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPostReportCommentViewModel">
             <summary>
             report comment view model
