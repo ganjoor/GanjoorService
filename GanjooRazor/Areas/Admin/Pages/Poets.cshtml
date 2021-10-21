@@ -15,6 +15,7 @@
         <td><a href="/Admin/Poet">شاعر جدید</a></td>
         <td>زاده</td>
         <td>درگذشته</td>
+        <td>چسبانی</td>
     </tr>
     @foreach (var poet in Model.Poets)
     {
@@ -27,6 +28,9 @@
             </td>
             <td>
                 <input type="text" name="@($"death-{poet.Id}")" id="@($"death-{poet.Id}")" value="@poet.DeathYearInLHijri" />
+            </td>
+            <td>
+                <input type="text" name="@($"pinorder-{poet.Id}")" id="@($"pinorder-{poet.Id}")" value="@poet.PinOrder" />
             </td>
         </tr>
     }

@@ -62,7 +62,7 @@ namespace RMuseum.Models.Ganjoor
         public int DeathYearInLHijri { get; set; }
 
         /// <summary>
-        /// Home page pin order (zero not pinned)
+        /// Home page pin order (zero means not pinned)
         /// </summary>
         public int PinOrder { get; set; }
     }

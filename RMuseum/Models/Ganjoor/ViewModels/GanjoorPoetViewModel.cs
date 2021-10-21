@@ -55,6 +55,11 @@
         /// </summary>
         public int DeathYearInLHijri { get; set; }
 
+        /// <summary>
+        /// Home page pin order (zero means not pinned)
+        /// </summary>
+        public int PinOrder { get; set; }
+
         public override string ToString()
         {
             return Nickname;
