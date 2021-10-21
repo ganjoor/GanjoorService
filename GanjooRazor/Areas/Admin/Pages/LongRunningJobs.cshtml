@@ -20,14 +20,14 @@
     </tr>
     @foreach (var job in Model.Jobs)
     {
-        <tr id="#tr-@job.Id">
+        <tr id="tr-@job.Id">
             <td>@job.Name</td>
             <td>@job.StartTime</td>
             <td>@job.Step</td>
             <td>@job.Progress</td>
             <td>@job.Succeeded</td>
             <td>@job.Exception</td>
-            <td><a role="button" onclick="deleteLongRunningJob(@job.Id)" class="actionlink" title="حذف">🗑</a></td>
+            <td><a role="button" onclick="deleteLongRunningJob('@job.Id')" class="actionlink" title="حذف">🗑</a></td>
         </tr>
     }
 </table>

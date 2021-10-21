@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
@@ -42,7 +43,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new JsonResult(true);
         }
 
-        public async Task<IActionResult> OnDeleteAsync(int id)
+        public async Task<IActionResult> OnDeleteAsync(Guid id)
         {
             using (HttpClient secureClient = new HttpClient())
             {
