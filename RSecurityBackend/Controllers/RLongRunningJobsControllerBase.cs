@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Generic.Db;
 using RSecurityBackend.Services;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -45,6 +46,24 @@ namespace RSecurityBackend.Controllers
         public async Task<IActionResult> CleanUp()
         {
             var res = await _jobService.CleanUp(true, true);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// delete a specific job record, this could be used for deleting records which are not cleanable using the "cleanup" method
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("{id}")]
+        [Authorize(Policy = SecurableItem.AuditLogEntityShortName + ":" + SecurableItem.ViewOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteJob(Guid id)
+        {
+            var res = await _jobService.DeleteJob(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();

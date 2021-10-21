@@ -2086,6 +2086,11 @@
             ganjoor verse numbers
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorHalfCenturies">
+            <summary>
+            ganjoor half centuries
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -4721,6 +4726,41 @@
             reported by user
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHalfCentury.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHalfCentury.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHalfCentury.HalfCenturyOrder">
+            <summary>
+            order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHalfCentury.StartYear">
+            <summary>
+            start
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHalfCentury.EndYear">
+            <summary>
+            end
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHalfCentury.ShowInTimeLine">
+            <summary>
+            show in time line
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorHalfCentury.Poets">
+            <summary>
+            poets
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorHealthCheckError">
             <summary>
             Ganjoor Page Health Check log
@@ -5428,6 +5468,16 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.Published">
             <summary>
             published on website
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.BirthYearInLHijri">
+            <summary>
+            birth year in lunar hijri
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.DeathYearInLHijri">
+            <summary>
+            death year in lunar hijri
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">

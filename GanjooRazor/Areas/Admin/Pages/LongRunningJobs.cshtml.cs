@@ -41,5 +41,18 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             return new JsonResult(true);
         }
+
+        public async Task<IActionResult> OnDeleteAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/rjobs?id={id}");
+                    response.EnsureSuccessStatusCode();
+                }
+            }
+            return new JsonResult(true);
+        }
     }
 }

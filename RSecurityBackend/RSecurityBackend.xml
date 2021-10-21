@@ -535,6 +535,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Controllers.RLongRunningJobsControllerBase.DeleteJob(System.Guid)">
+            <summary>
+            delete a specific job record, this could be used for deleting records which are not cleanable using the "cleanup" method
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RSecurityBackend.Controllers.RLongRunningJobsControllerBase.#ctor(RSecurityBackend.Services.ILongRunningJobProgressService)">
             <summary>
             constructor
