@@ -286,7 +286,19 @@ namespace RMuseum.Services.Implementation
 
                 foreach (var poet in poets)
                 {
-                    var period = periods.Where(p => p.EndYear >= poet.DeathYearInLHijri).FirstOrDefault();
+                    GanjoorCentury period = null;
+
+
+                    var firstPeriod = periods.Where(p => p.StartYear <= poet.BirthYearInLHijri).LastOrDefault();
+                    var lastPeriod = periods.Where(p => p.EndYear >= poet.DeathYearInLHijri).FirstOrDefault();
+
+                    if(firstPeriod != null)
+                    {
+                        period = firstPeriod;
+                        if (poet.DeathYearInLHijri - lastPeriod.StartYear >= 10)
+                            period = lastPeriod;
+                    }
+                    
                     
                     if(period != null)
                     {
