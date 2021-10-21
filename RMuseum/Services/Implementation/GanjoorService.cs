@@ -3067,28 +3067,11 @@ namespace RMuseum.Services.Implementation
         private void CleanPoetCache(int poetId)
         {
             //cache clean:
-            var cachKeyPoets = $"/api/ganjoor/poets?published=True&includeBio=False";
-            if (_memoryCache.TryGetValue(cachKeyPoets, out GanjoorPoetViewModel[] poets))
-            {
-                _memoryCache.Remove(cachKeyPoets);
-            }
-            var cachKeyPoets2 = $"ganjoor/poets";
-            if (_memoryCache.TryGetValue(cachKeyPoets2, out GanjoorPoetViewModel[] poets2))
-            {
-                _memoryCache.Remove(cachKeyPoets2);
-            }
-
-            var cacheKeyPoet = $"/api/ganjoor/poet/{poetId}";
-            if (_memoryCache.TryGetValue(cacheKeyPoet, out GanjoorPoetCompleteViewModel poetCat))
-            {
-                _memoryCache.Remove(cacheKeyPoet);
-            }
-
-            var cacheKeyPoet2 = $"poet/byid/{poetId}";
-            if (_memoryCache.TryGetValue(cacheKeyPoet2, out GanjoorPoetCompleteViewModel poetCat2))
-            {
-                _memoryCache.Remove(cacheKeyPoet2);
-            }
+            _memoryCache.Remove($"/api/ganjoor/poets?published={true}&includeBio={false}");
+            _memoryCache.Remove($"/api/ganjoor/poets?published={false}&includeBio={true}");
+            _memoryCache.Remove("ganjoor/poets");
+            _memoryCache.Remove($"/api/ganjoor/poet/{poetId}");
+            _memoryCache.Remove($"poet/byid/{poetId}");
         }
 
         /// <summary>
@@ -3101,6 +3084,18 @@ namespace RMuseum.Services.Implementation
         {
             var dbPoet = await _context.GanjoorPoets.Where(p => p.Id == poet.Id).SingleAsync();
             var dbPoetPage = await _context.GanjoorPages.Where(page => page.PoetId == poet.Id && page.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
+            if (string.IsNullOrEmpty(poet.Nickname))
+            {
+                poet.Nickname = dbPoet.Nickname;
+                poet.Published = dbPoet.Published;
+            }
+            if (string.IsNullOrEmpty(poet.FullUrl))
+                poet.FullUrl = dbPoetPage.FullUrl;
+            if (string.IsNullOrEmpty(poet.Name))
+                poet.Name = dbPoet.Name;
+            if (string.IsNullOrEmpty(poet.Description))
+                poet.Description = dbPoet.Description;
+
             if (dbPoet.Nickname != poet.Nickname || dbPoetPage.FullUrl != poet.FullUrl)
             {
                 var resPageEdit =
@@ -3125,6 +3120,9 @@ namespace RMuseum.Services.Implementation
             dbPoet.Description = poet.Description;
             bool publishedChange = dbPoet.Published != poet.Published;
             dbPoet.Published = poet.Published;
+            dbPoet.BirthYearInLHijri = poet.BirthYearInLHijri;
+            dbPoet.DeathYearInLHijri = poet.DeathYearInLHijri;
+            dbPoet.PinOrder = poet.PinOrder;
             _context.GanjoorPoets.Update(dbPoet);
             await _context.SaveChangesAsync();
 

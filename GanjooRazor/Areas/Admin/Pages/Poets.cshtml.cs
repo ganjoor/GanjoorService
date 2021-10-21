@@ -1,9 +1,12 @@
 ﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace GanjooRazor.Areas.Admin.Pages
@@ -61,6 +64,48 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
 
             return new OkObjectResult(false);
+        }
+
+        public async Task<ActionResult> OnPostSavePoetMetaAsync(int id, int birth, int death, int pinorder)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var poet = new GanjoorPoetViewModel()
+                    {
+                        Id = id,
+                        BirthYearInLHijri = birth,
+                        DeathYearInLHijri = death,
+                        PinOrder = pinorder
+                    };
+                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/poet/{id}", new StringContent(JsonConvert.SerializeObject(poet), Encoding.UTF8, "application/json"));
+                    response.EnsureSuccessStatusCode();
+
+                    _memoryCache.Remove($"/api/ganjoor/poets");
+                    _memoryCache.Remove($"/api/ganjoor/poet/{id}");
+
+                    return new OkObjectResult(true);
+
+
+                }
+            }
+
+            return new OkObjectResult(false);
+        }
+
+        /// <summary>
+        /// memory cache
+        /// </summary>
+        private readonly IMemoryCache _memoryCache;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="memoryCache"></param>
+        public PoetsModel(IMemoryCache memoryCache)
+        {
+            _memoryCache = memoryCache;
         }
     }
 }

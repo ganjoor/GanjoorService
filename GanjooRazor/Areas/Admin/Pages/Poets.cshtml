@@ -10,6 +10,37 @@
 
 <p>@Model.LastMessage</p>
 
+<script>
+    function savePoetsMeta() {
+        if (!confirm('آیا از ذخیرهٔ اطلاعات سال تولد و وفات و ترتیب شاعران در صفحهٔ اول اطمینان دارید؟'))
+            return;
+        @foreach (var poet in Model.Poets)
+        {
+            <text>
+                var b = $("#@($"birth-{poet.Id}")").val();
+                var d = $("#@($"death-{poet.Id}")").val();
+                var o = $("#@($"pinorder-{poet.Id}")").val();
+                var url = '?handler=SavePoetMeta';
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        id: @poet.Id,
+                        birth: b,
+                        death: d,
+                        pinorder: o
+                    },
+                    error: function () {
+                        alert('برای @poet.Nickname خطا رخ داد.')
+                    },
+                });
+            </text>
+        }
+        alert('انجام شد.');
+    }
+</script>
+
 <table>
     <tr>
         <td><a href="/Admin/Poet">شاعر جدید</a></td>
@@ -34,6 +65,11 @@
             </td>
         </tr>
     }
+    <tr>
+        <td colspan="4">
+            <a role="button" onclick="savePoetsMeta()" class="actionlink">ذخیره</a>
+        </td>
+    </tr>
 </table>
 
 
