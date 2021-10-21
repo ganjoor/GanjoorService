@@ -5,8 +5,6 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using RSecurityBackend.Services.Implementation;
-using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
 
 namespace RMuseum.Services.Implementation
@@ -225,7 +223,47 @@ namespace RMuseum.Services.Implementation
     
                 };
 
-                var poets = await _context.GanjoorPoets.AsNoTracking().Where(p => p.BirthYearInLHijri != 0).OrderBy(p => new { p.BirthYearInLHijri, p.DeathYearInLHijri }).ToArrayAsync();
+                var poets = await _context.GanjoorPoets.AsNoTracking().Where(p => p.BirthYearInLHijri != 0).OrderBy(p => p.BirthYearInLHijri).ToArrayAsync();
+
+                foreach (var poet in poets)
+                {
+                    GanjoorHalfCentury period = null;
+                    var relatedPeriods = periods.Where(p => p.StartYear <= poet.BirthYearInLHijri && p.EndYear >= poet.DeathYearInLHijri).ToList();
+                    if(relatedPeriods.Count == 1)
+                    {
+                        period = relatedPeriods.First();
+                    }
+                    else
+                    {
+                        int maxIntersect = 0;
+                        foreach (var p in relatedPeriods)
+                        {
+                            int intersect = poet.BirthYearInLHijri > p.StartYear ? poet.BirthYearInLHijri - p.StartYear : 0;
+                            intersect += (poet.DeathYearInLHijri < p.EndYear ? p.EndYear - poet.DeathYearInLHijri : 0);
+                            if(maxIntersect < intersect)
+                            {
+                                maxIntersect = intersect;
+                                period = p;
+                            }
+                        }
+                    }
+
+                    if(period != null)
+                    {
+                        if (period.Poets == null)
+                            period.Poets = new List<GanjoorPoet>();
+                        period.Poets.Add(poet);
+                    }
+                }
+
+                foreach (var period in periods)
+                {
+                    if(period.Poets != null)
+                    {
+                        _context.Add(period);
+                        await _context.SaveChangesAsync();
+                    }
+                }
 
 
                 return new RServiceResult<bool>(true);

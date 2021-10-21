@@ -640,5 +640,11 @@ namespace RMuseum.Services
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmarkViewModel[] Bookmarks)>> GetUserBookmarks(PagingParameterModel paging, Guid userId);
+
+        /// <summary>
+        /// regenerate half centuries
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RegenerateHalfCenturiesAsync();
     }
 }

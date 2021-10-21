@@ -94,6 +94,21 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new OkObjectResult(false);
         }
 
+        public async Task<IActionResult> OnPostUpdatePeriodsAsync()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/periods", null);
+                    response.EnsureSuccessStatusCode();
+                    return new OkObjectResult(true);
+                }
+            }
+
+            return new OkObjectResult(false);
+        }
+
         /// <summary>
         /// memory cache
         /// </summary>

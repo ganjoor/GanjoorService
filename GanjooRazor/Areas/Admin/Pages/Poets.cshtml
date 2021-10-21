@@ -17,19 +17,14 @@
         @foreach (var poet in Model.Poets)
         {
             <text>
-                var b = $("#@($"birth-{poet.Id}")").val();
-                var d = $("#@($"death-{poet.Id}")").val();
-                var o = $("#@($"pinorder-{poet.Id}")").val();
-                var url = '?handler=SavePoetMeta';
-
                 $.ajax({
                     type: "POST",
-                    url: url,
+                    url: '?handler=SavePoetMeta',
                     data: {
                         id: @poet.Id,
-                        birth: b,
-                        death: d,
-                        pinorder: o
+                        birth: $("#@($"birth-{poet.Id}")").val(),
+                        death: $("#@($"death-{poet.Id}")").val(),
+                        pinorder: $("#@($"pinorder-{poet.Id}")").val()
                     },
                     error: function () {
                         alert('برای @poet.Nickname خطا رخ داد.')
@@ -37,7 +32,17 @@
                 });
             </text>
         }
-        alert('انجام شد.');
+
+         $.ajax({
+                type: "POST",
+                url: '?handler=UpdatePeriods',
+                success: function () {
+                        alert('انجام شد.');
+                },
+                error: function () {
+                    alert('در مرحلهٔ نهایی خطا رخ داد.')
+                },
+                });
     }
 </script>
 

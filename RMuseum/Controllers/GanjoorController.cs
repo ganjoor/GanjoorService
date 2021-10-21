@@ -164,6 +164,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// regenerate half centuries
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpPost]
+        [Route("periods")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> RegenerateHalfCenturiesAsync()
+        {
+            var res = await _ganjoorService.RegenerateHalfCenturiesAsync();
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// create new poet
         /// </summary>
         /// <param name="poet"></param>
