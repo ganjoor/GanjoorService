@@ -10287,6 +10287,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -10346,6 +10349,12 @@
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.RegenerateHalfCenturiesAsync">
+            <summary>
+            regenerate half centuries
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
