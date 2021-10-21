@@ -13,11 +13,21 @@
 <table>
     <tr>
         <td><a href="/Admin/Poet">شاعر جدید</a></td>
+        <td>زاده</td>
+        <td>درگذشته</td>
     </tr>
     @foreach (var poet in Model.Poets)
     {
         <tr>
-            <td><a href="/Admin/Poet?id=@poet.Id">@poet.Nickname</a></td>
+            <td>
+                <a href="/Admin/Poet?id=@poet.Id">@poet.Nickname</a>
+            </td>
+            <td>
+                <input type="text" name="@($"birth-{poet.Id}")" id="@($"birth-{poet.Id}")" value="@poet.BirthYearInLHijri" />
+            </td>
+            <td>
+                <input type="text" name="@($"death-{poet.Id}")" id="@($"death-{poet.Id}")" value="@poet.DeathYearInLHijri" />
+            </td>
         </tr>
     }
 </table>
