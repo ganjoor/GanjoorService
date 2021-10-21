@@ -3,7 +3,7 @@
     /// <summary>
     /// half century
     /// </summary>
-    public class GanjoorPeriodPoet
+    public class GanjoorCenturyPoet
     {
         /// <summary>
         /// id

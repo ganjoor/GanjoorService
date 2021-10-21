@@ -22,15 +22,15 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                await _context.Database.ExecuteSqlRawAsync("DELETE FROM GanjoorPeriodPoet");
-                var oldOnes = await _context.GanjoorHalfCenturies.ToArrayAsync();
+                await _context.Database.ExecuteSqlRawAsync("DELETE FROM GanjoorCenturyPoet");
+                var oldOnes = await _context.GanjoorCenturies.ToArrayAsync();
                 _context.RemoveRange(oldOnes);
                 await _context.SaveChangesAsync();
                 
 
-                var periods = new List<GanjoorHalfCentury>
+                var periods = new List<GanjoorCentury>
                 {
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 1,
                         Name = "قرن سوم",
@@ -38,7 +38,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 300,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 2,
                         Name = "سوم و چهارم",
@@ -46,7 +46,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 350,
                         ShowInTimeLine = false,
                     },
-                     new GanjoorHalfCentury()
+                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 3,
                         Name = "قرن چهارم",
@@ -54,7 +54,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 400,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 4,
                         Name = "چهارم و پنجم",
@@ -62,7 +62,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 450,
                         ShowInTimeLine = false,
                     },
-                     new GanjoorHalfCentury()
+                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 5,
                         Name = "قرن پنجم",
@@ -70,7 +70,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 500,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 6,
                         Name = "پنجم و ششم",
@@ -78,7 +78,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 550,
                         ShowInTimeLine = false,
                     },
-                     new GanjoorHalfCentury()
+                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 7,
                         Name = "قرن ششم",
@@ -86,7 +86,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 600,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 8,
                         Name = "ششم و هفتم",
@@ -94,7 +94,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 650,
                         ShowInTimeLine = false,
                     },
-                     new GanjoorHalfCentury()
+                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 9,
                         Name = "قرن هفتم",
@@ -102,7 +102,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 700,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 10,
                         Name = "هفتم و هشتم",
@@ -110,7 +110,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 750,
                         ShowInTimeLine = false,
                     },
-                     new GanjoorHalfCentury()
+                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 11,
                         Name = "قرن هشتم",
@@ -118,7 +118,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 800,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 12,
                         Name = "هشتم و نهم",
@@ -126,7 +126,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 850,
                         ShowInTimeLine = false,
                     },
-                     new GanjoorHalfCentury()
+                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 13,
                         Name = "قرن نهم",
@@ -134,7 +134,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 900,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 14,
                         Name = "نهم و دهم",
@@ -142,7 +142,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 950,
                         ShowInTimeLine = false,
                     },
-                     new GanjoorHalfCentury()
+                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 15,
                         Name = "قرن دهم",
@@ -150,7 +150,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 1000,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 16,
                         Name = "دهم و یازدهم",
@@ -158,7 +158,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 1050,
                         ShowInTimeLine = false,
                     },
-                     new GanjoorHalfCentury()
+                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 17,
                         Name = "قرن یازدهم",
@@ -166,7 +166,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 1100,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 18,
                         Name = "یازذهم و دوازدهم",
@@ -174,7 +174,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 1150,
                         ShowInTimeLine = false,
                     },
-                     new GanjoorHalfCentury()
+                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 19,
                         Name = "قرن دوازدهم",
@@ -182,7 +182,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 1200,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 20,
                         Name = "دوازدهم و سیزدهم",
@@ -190,7 +190,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 1250,
                         ShowInTimeLine = false,
                     },
-                     new GanjoorHalfCentury()
+                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 21,
                         Name = "قرن سیزدهم",
@@ -198,7 +198,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 1300,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 22,
                         Name = "سیزدهم و چهاردهم",
@@ -206,7 +206,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 1350,
                         ShowInTimeLine = false,
                     },
-                     new GanjoorHalfCentury()
+                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 23,
                         Name = "قرن چهاردهم",
@@ -214,7 +214,7 @@ namespace RMuseum.Services.Implementation
                         EndYear = 1400,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorHalfCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 24,
                         Name = "چهاردهم و پانزدهم",
@@ -234,10 +234,10 @@ namespace RMuseum.Services.Implementation
                     if(period != null)
                     {
                         if (period.Poets == null)
-                            period.Poets = new List<GanjoorPeriodPoet>();
+                            period.Poets = new List<GanjoorCenturyPoet>();
                         period.Poets.Add
                             (
-                            new GanjoorPeriodPoet()
+                            new GanjoorCenturyPoet()
                             {
                                 PoetOrder = period.Poets.Count,
                                 PoetId = poet.Id

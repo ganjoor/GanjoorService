@@ -369,7 +369,7 @@ namespace RMuseum.DbContext
         /// <summary>
         /// ganjoor half centuries
         /// </summary>
-        public DbSet<GanjoorHalfCentury> GanjoorHalfCenturies { get; set; }
+        public DbSet<GanjoorCentury> GanjoorCenturies { get; set; }
 
     }
 }

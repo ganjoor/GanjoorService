@@ -10,8 +10,8 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20211021153153_GanjoorHalfCenturies")]
-    partial class GanjoorHalfCenturies
+    [Migration("20211021165721_GanjoorCenturies")]
+    partial class GanjoorCenturies
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -465,6 +465,58 @@ namespace RMuseum.Migrations
                     b.ToTable("GanjoorCategories");
                 });
 
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCentury", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("EndYear")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HalfCenturyOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ShowInTimeLine")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("StartYear")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GanjoorCenturies");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCenturyPoet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("GanjoorCenturyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PoetId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PoetOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GanjoorCenturyId");
+
+                    b.HasIndex("PoetId");
+
+                    b.ToTable("GanjoorCenturyPoet");
+                });
+
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorComment", b =>
                 {
                     b.Property<int>("Id")
@@ -559,33 +611,6 @@ namespace RMuseum.Migrations
                     b.HasIndex("ReportedById");
 
                     b.ToTable("GanjoorReportedComments");
-                });
-
-            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorHalfCentury", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("EndYear")
-                        .HasColumnType("int");
-
-                    b.Property<int>("HalfCenturyOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("ShowInTimeLine")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("StartYear")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GanjoorHalfCenturies");
                 });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorHealthCheckError", b =>
@@ -827,31 +852,6 @@ namespace RMuseum.Migrations
                     b.HasIndex("MadeObsoleteByUserId");
 
                     b.ToTable("GanjoorPageSnapshots");
-                });
-
-            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPeriodPoet", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("GanjoorHalfCenturyId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PoetId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PoetOrder")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GanjoorHalfCenturyId");
-
-                    b.HasIndex("PoetId");
-
-                    b.ToTable("GanjoorPeriodPoet");
                 });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoem", b =>
@@ -2606,6 +2606,19 @@ namespace RMuseum.Migrations
                     b.Navigation("Poet");
                 });
 
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCenturyPoet", b =>
+                {
+                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorCentury", null)
+                        .WithMany("Poets")
+                        .HasForeignKey("GanjoorCenturyId");
+
+                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
+                        .WithMany()
+                        .HasForeignKey("PoetId");
+
+                    b.Navigation("Poet");
+                });
+
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorComment", b =>
                 {
                     b.HasOne("RMuseum.Models.Ganjoor.GanjoorComment", "InReplyTo")
@@ -2725,19 +2738,6 @@ namespace RMuseum.Migrations
                     b.Navigation("GanjoorPage");
 
                     b.Navigation("MadeObsoleteByUser");
-                });
-
-            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPeriodPoet", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorHalfCentury", null)
-                        .WithMany("Poets")
-                        .HasForeignKey("GanjoorHalfCenturyId");
-
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
-                        .WithMany()
-                        .HasForeignKey("PoetId");
-
-                    b.Navigation("Poet");
                 });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoem", b =>
@@ -3234,7 +3234,7 @@ namespace RMuseum.Migrations
                     b.Navigation("Tags");
                 });
 
-            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorHalfCentury", b =>
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCentury", b =>
                 {
                     b.Navigation("Poets");
                 });

@@ -6,7 +6,7 @@ namespace RMuseum.Models.Ganjoor
     /// <summary>
     /// half century
     /// </summary>
-    public class GanjoorHalfCentury
+    public class GanjoorCentury
     {
         /// <summary>
         /// id
@@ -41,7 +41,7 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// poets
         /// </summary>
-        public List<GanjoorPeriodPoet> Poets { get; set; }
+        public List<GanjoorCenturyPoet> Poets { get; set; }
 
     }
 }
