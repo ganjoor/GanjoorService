@@ -5480,6 +5480,11 @@
             death year in lunar hijri
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.PinOrder">
+            <summary>
+            Home page pin order (zero not pinned)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
             <summary>
             ganjoor.net site banner

@@ -10,8 +10,8 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20211021064655_GanjoorHalfCenturies")]
-    partial class GanjoorHalfCenturies
+    [Migration("20211021102748_GanjoorHalfCentury")]
+    partial class GanjoorHalfCentury
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1013,6 +1013,9 @@ namespace RMuseum.Migrations
 
                     b.Property<string>("Nickname")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PinOrder")
+                        .HasColumnType("int");
 
                     b.Property<bool>("Published")
                         .HasColumnType("bit");

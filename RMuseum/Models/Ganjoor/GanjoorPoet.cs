@@ -60,5 +60,10 @@ namespace RMuseum.Models.Ganjoor
         /// death year in lunar hijri
         /// </summary>
         public int DeathYearInLHijri { get; set; }
+
+        /// <summary>
+        /// Home page pin order (zero not pinned)
+        /// </summary>
+        public int PinOrder { get; set; }
     }
 }

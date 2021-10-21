@@ -2,7 +2,7 @@
 
 namespace RMuseum.Migrations
 {
-    public partial class GanjoorHalfCenturies : Migration
+    public partial class GanjoorHalfCentury : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -25,6 +25,13 @@ namespace RMuseum.Migrations
                 table: "GanjoorPoets",
                 type: "int",
                 nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "PinOrder",
+                table: "GanjoorPoets",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
 
             migrationBuilder.CreateTable(
                 name: "GanjoorHalfCenturies",
@@ -80,6 +87,10 @@ namespace RMuseum.Migrations
 
             migrationBuilder.DropColumn(
                 name: "GanjoorHalfCenturyId",
+                table: "GanjoorPoets");
+
+            migrationBuilder.DropColumn(
+                name: "PinOrder",
                 table: "GanjoorPoets");
         }
     }

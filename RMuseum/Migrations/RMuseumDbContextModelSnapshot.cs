@@ -1012,6 +1012,9 @@ namespace RMuseum.Migrations
                     b.Property<string>("Nickname")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PinOrder")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Published")
                         .HasColumnType("bit");
 
