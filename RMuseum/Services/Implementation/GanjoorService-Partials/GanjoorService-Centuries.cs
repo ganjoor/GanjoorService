@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using RMuseum.Models.Ganjoor.ViewModels;
 
 namespace RMuseum.Services.Implementation
 {
@@ -14,6 +15,62 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// get centuries with published poets
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorCenturyViewModel[]>> GetCenturiesAsync()
+        {
+            var poets = (await GetPoets(true, false)).Result;
+            var dbCenturies = await _context.GanjoorCenturies.AsNoTracking().Include(c => c.Poets).OrderBy(c => c.HalfCenturyOrder).ToListAsync();
+
+            List<GanjoorCenturyViewModel> res = new List<GanjoorCenturyViewModel>();
+
+            var pinned = await _context.GanjoorPoets.AsNoTracking().Where(p => p.PinOrder != 0).OrderBy(p => p.PinOrder).ToListAsync();
+            if(pinned.Count > 0)
+            {
+                GanjoorCenturyViewModel model = new GanjoorCenturyViewModel()
+                {
+                    Id = 0,
+                    Name = "",
+                    HalfCenturyOrder = 0,
+                    ShowInTimeLine = false,
+                    StartYear = 0,
+                    EndYear = 0,
+                    Poets = new List<GanjoorPoetViewModel>()
+                };
+                foreach (var poet in pinned)
+                {
+                    model.Poets.Add(poets.Where(p => p.Id == poet.Id).Single());
+                }
+                res.Add(model);
+            }
+
+            foreach (var dbCentury in dbCenturies)
+            {
+                GanjoorCenturyViewModel model = new GanjoorCenturyViewModel()
+                {
+                    Id = dbCentury.Id,
+                    Name = dbCentury.Name,
+                    HalfCenturyOrder = dbCentury.HalfCenturyOrder,
+                    ShowInTimeLine = dbCentury.ShowInTimeLine,
+                    StartYear = dbCentury.StartYear,
+                    EndYear = dbCentury.EndYear,
+                    Poets = new List<GanjoorPoetViewModel>()
+                };
+
+                foreach (var poet in dbCentury.Poets)
+                {
+                    model.Poets.Add(poets.Where(p => p.Id == poet.PoetId).Single());
+                }
+
+                res.Add(model);
+            }
+
+            return new RServiceResult<GanjoorCenturyViewModel[]>(res.ToArray());
+        }
+
+
         /// <summary>
         /// regenerate half centuries
         /// </summary>
@@ -225,7 +282,7 @@ namespace RMuseum.Services.Implementation
     
                 };
 
-                var poets = await _context.GanjoorPoets.AsNoTracking().Where(p => p.BirthYearInLHijri != 0).OrderBy(p => p.BirthYearInLHijri).ToArrayAsync();
+                var poets = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Published && p.BirthYearInLHijri != 0).OrderBy(p => p.BirthYearInLHijri).ToArrayAsync();
 
                 foreach (var poet in poets)
                 {

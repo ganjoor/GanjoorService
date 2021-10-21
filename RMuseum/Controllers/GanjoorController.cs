@@ -55,6 +55,33 @@ namespace RMuseum.Controllers
             return Ok(poets);
         }
 
+        /// <summary>
+        /// gets list of poets grouped by centuries (first one is the pinned ones)
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("centuries")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCenturyViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetCenturiesAsync()
+        {
+            var cacheKey = $"ganjoor/centuries";
+            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorCenturyViewModel[] centuries))
+            {
+                RServiceResult<GanjoorCenturyViewModel[]> res =
+                await _ganjoorService.GetCenturiesAsync();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+
+                centuries = res.Result;
+                _memoryCache.Set(cacheKey, centuries);
+
+            }
+            return Ok(centuries);
+        }
+
 
         /// <summary>
         /// get list of all poets (including unpublished ones) with their bio

@@ -646,5 +646,11 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<bool>> RegenerateHalfCenturiesAsync();
+
+        /// <summary>
+        /// get centuries with published poets
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCenturyViewModel[]>> GetCenturiesAsync();
     }
 }
