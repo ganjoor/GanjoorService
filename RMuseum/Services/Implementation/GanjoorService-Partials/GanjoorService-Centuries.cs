@@ -22,7 +22,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var oldOnes = await _context.GanjoorHalfCenturies.ToArrayAsync();
+                var oldOnes = await _context.GanjoorHalfCenturies.Include(o => o.Poets)).ToArrayAsync();
                 _context.RemoveRange(oldOnes);
                 await _context.SaveChangesAsync();
 
@@ -227,32 +227,20 @@ namespace RMuseum.Services.Implementation
 
                 foreach (var poet in poets)
                 {
-                    GanjoorHalfCentury period = null;
-                    var relatedPeriods = periods.Where(p => p.StartYear <= poet.BirthYearInLHijri && p.EndYear >= poet.DeathYearInLHijri).ToList();
-                    if(relatedPeriods.Count == 1)
-                    {
-                        period = relatedPeriods.First();
-                    }
-                    else
-                    {
-                        int maxIntersect = 0;
-                        foreach (var p in relatedPeriods)
-                        {
-                            int intersect = poet.BirthYearInLHijri > p.StartYear ? poet.BirthYearInLHijri - p.StartYear : 0;
-                            intersect += (poet.DeathYearInLHijri < p.EndYear ? p.EndYear - poet.DeathYearInLHijri : 0);
-                            if(maxIntersect < intersect)
-                            {
-                                maxIntersect = intersect;
-                                period = p;
-                            }
-                        }
-                    }
-
+                    var period = periods.Where(p => p.EndYear >= poet.DeathYearInLHijri).FirstOrDefault();
+                    
                     if(period != null)
                     {
                         if (period.Poets == null)
-                            period.Poets = new List<GanjoorPoet>();
-                        period.Poets.Add(poet);
+                            period.Poets = new List<GanjoorPeriodPoet>();
+                        period.Poets.Add
+                            (
+                            new GanjoorPeriodPoet()
+                            {
+                                PoetOrder = period.Poets.Count,
+                                PoetId = poet.Id
+                            }
+                            );
                     }
                 }
 

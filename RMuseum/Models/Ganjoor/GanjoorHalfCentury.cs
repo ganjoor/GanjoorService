@@ -3,6 +3,9 @@
 namespace RMuseum.Models.Ganjoor
 {
 
+    /// <summary>
+    /// half century
+    /// </summary>
     public class GanjoorHalfCentury
     {
         /// <summary>
@@ -38,7 +41,7 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// poets
         /// </summary>
-        public List<GanjoorPoet> Poets { get; set; }
+        public List<GanjoorPeriodPoet> Poets { get; set; }
 
     }
 }

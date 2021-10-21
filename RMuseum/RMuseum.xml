@@ -4732,6 +4732,11 @@
             reported by user
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorHalfCentury">
+            <summary>
+            half century
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorHalfCentury.Id">
             <summary>
             id
@@ -5164,6 +5169,31 @@
         <member name="F:RMuseum.Models.Ganjoor.GanjoorPageType.ProsodyAndStats">
             <summary>
             Prosody and Statistics
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPeriodPoet">
+            <summary>
+            half century
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPeriodPoet.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPeriodPoet.PoetOrder">
+            <summary>
+            order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPeriodPoet.PoetId">
+            <summary>
+            poet id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPeriodPoet.Poet">
+            <summary>
+            poet
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoem">
