@@ -478,6 +478,18 @@ namespace GanjooRazor.Pages
             Poets = poets;
         }
 
+        private async Task _PreparePoetGroups()
+        {
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/centuries");
+            response.EnsureSuccessStatusCode();
+            PoetGroups = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCenturyViewModel>>();
+        }
+
+        /// <summary>
+        /// valid only for home page
+        /// </summary>
+        public List<GanjoorCenturyViewModel> PoetGroups { get; set; }
+
         /// <summary>
         /// Get
         /// </summary>
@@ -556,6 +568,7 @@ namespace GanjooRazor.Pages
             if (IsHomePage)
             {
                 ViewData["Title"] = "گنجور";
+                await _PreparePoetGroups();
             }
             else
             if (IsPoetPage)

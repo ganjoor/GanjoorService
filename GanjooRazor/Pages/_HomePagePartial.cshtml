@@ -27,14 +27,30 @@
 
     <div id="main">
         <div id="guides">
-            <div class="spacer">&nbsp;</div>
+
 
             @{
-                foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
+                foreach (var poetGroup in Model.PoetGroups)
                 {
-                    <div class="poet"><a href="@poet.FullUrl" title="@poet.Name"><img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" /></a><div class="caption"><a href="@poet.FullUrl">@poet.Nickname</a></div></div>
+                        <div class="spacer">
+                            @foreach (var poet in poetGroup.Poets)
+                            {
+                                <div class="poet">
+                                    <a href="@poet.FullUrl" title="@poet.Name">
+                                        <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
+                                    </a>
+                                    <div class="caption">
+                                        <a href="@poet.FullUrl">@poet.Nickname</a>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    <hr />
                 }
             }
+
+            
 
 
             <div class="spacer">&nbsp;</div>
