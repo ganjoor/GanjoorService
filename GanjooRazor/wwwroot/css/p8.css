@@ -374,6 +374,12 @@ div.n, div.l {
 
 .ganjoor-comment {
     margin-right: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    margin-top: 20px;
+    border-radius: 20px;
+    padding: 5px;
+    overflow-x: hidden;
 }
 
 .sit {
@@ -993,4 +999,18 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     justify-content: space-evenly;
     width: 100%;
     flex-wrap: wrap;
+}
+
+.related-songs {
+    background: transparent url('/image/note.png') top center repeat scroll;
+    border-width: 3px;
+    border-color: #300;
+    display: block;
+    width: 95%;
+    border-radius: 20px;
+    border-style: solid;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }

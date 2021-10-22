@@ -43,7 +43,6 @@ else
             <a role="button" onclick="copyCommentUrl(@Model.Comment.Id, '@Model.DivSuffix')" class="w3tooltip"><i class="pageicons">link</i><span class="w3tooltiptext" id="copycommentlink-tooltip-@Model.Comment.Id@Model.DivSuffix">رونوشت نشانی حاشیه</span></a>
         </p>
         <div class='spacer'>&nbsp;</div>
-        <hr />
         @foreach (var reply in Model.Comment.Replies)
         {
             <partial name="_CommentPartial" model=Model.GetCommentModel(reply) />
