@@ -208,6 +208,8 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 
+            _memoryCache.Remove($"ganjoor/centuries");
+
             return Ok(res.Result);
         }
 

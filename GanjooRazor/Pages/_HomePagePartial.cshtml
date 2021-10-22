@@ -32,25 +32,30 @@
             @{
                 foreach (var poetGroup in Model.PoetGroups)
                 {
-                        <div class="spacer">
-                            @foreach (var poet in poetGroup.Poets)
-                            {
-                                <div class="poet">
-                                    <a href="@poet.FullUrl" title="@poet.Name">
-                                        <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
-                                    </a>
-                                    <div class="caption">
-                                        <a href="@poet.FullUrl">@poet.Nickname</a>
-                                    </div>
-                                </div>
-                            }
-
+                    if (poetGroup.ShowInTimeLine)
+                    {
+                        <div class="caption">
+                           @poetGroup.Name
                         </div>
-                    <hr />
+                    }
+                    <div class="spacer">
+                        @foreach (var poet in poetGroup.Poets)
+                        {
+                            <div class="poet">
+                                <a href="@poet.FullUrl" title="@poet.Name">
+                                    <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
+                                </a>
+                                <div class="caption">
+                                    <a href="@poet.FullUrl">@poet.Nickname</a>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
                 }
             }
 
-            
+
 
 
             <div class="spacer">&nbsp;</div>
