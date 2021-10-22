@@ -128,7 +128,9 @@ form:after, form div:after {
     position: relative;
     margin: auto;
     line-height: normal;
-    text-align: center
+    text-align: center;
+    display: flex;
+    justify-content:center;
 }
 
 #hdr2 .actionbox {
@@ -139,13 +141,17 @@ form:after, form div:after {
     font-size: 1em;
 }
 
+
 #main, .sitem, .poem {
     max-width: 752px;
     margin: auto;
     display: block;
     background-color: #fc9;
     border: 2px solid #300;
+    border-radius: 20px;
+    padding: 20px;
 }
+
 
 .poem, #guides, .sitem {
     background: transparent url(/image/pbk.jpg) top center repeat scroll;
@@ -229,7 +235,7 @@ select {
 }
 
     #guides p {
-        text-indent: 20px;
+        text-indent: 0;
         margin: 5px 5px 5px 5px;
         font-family: Vazir;
         font-weight: 300;
@@ -474,17 +480,7 @@ form div.submit {
     text-align: center
 }
 
-form div input.inputSubmit {
-    background-color: #fff;
-    border: 2px solid #300;
-    color: #300
-}
 
-input[type="submit"] {
-    padding: 0px;
-    text-align: center;
-    background-color: #ccc
-}
 
 .lft {
     direction: ltr;
@@ -929,6 +925,19 @@ ol {
         opacity: 1;
     }
 
+form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
+    padding: 0px;
+    text-align: center;
+    background-color: #300;
+    border-radius: 5px;
+    color: white;
+    height: 30px;
+    font-family: Vazir;
+    cursor: pointer;
+    box-shadow: 0 5px 0.3rem rgba(0, 0, 0, 0.3);
+}
+
+
 .textualbutton {
     cursor: pointer;
     width: 100%;
@@ -938,7 +947,7 @@ ol {
     text-align: center;
     border-color: #300;
     border-radius: 5px;
-    box-shadow: 0 5px 0.3rem rgba(0, 0, 0, 0.3)
+    box-shadow: 0 5px 0.3rem rgba(0, 0, 0, 0.3);
 }
 
 
@@ -946,12 +955,15 @@ ol {
     clear: both;
     font-family: Vazir;
     font-weight: 300;
-    font-size: 0.8em;
+    font-size: 1em;
     text-align: center;
     color: white;
-    background-color: #300;
+    background-color: darkred;
     display: block;
     text-align: center;
     margin: 20px;
     border-radius: 20px;
+    border-color: #300;
+    border-style:solid;
+    border-width:3px;
 }
