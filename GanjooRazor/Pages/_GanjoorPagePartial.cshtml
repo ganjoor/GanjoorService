@@ -284,7 +284,7 @@
                                         <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + Model.GanjoorPage.Poem.Next.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Next.Title): @Html.Raw(Model.GanjoorPage.Poem.Next.Excerpt)</a><span> &raquo;</span>
                                     }
                                     else
-                           if (Model.GanjoorPage.Poem.Category.Cat.Next != null)
+                          if (Model.GanjoorPage.Poem.Category.Cat.Next != null)
                                     {
                                         <a href="@Model.GanjoorPage.Poem.Category.Cat.Next.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Next.Title</a><span> &raquo;</span>
                                     }
@@ -295,7 +295,7 @@
                                         <span>&laquo; </span><a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" +Model.GanjoorPage.Poem.Previous.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Previous.Title) :@Html.Raw(Model.GanjoorPage.Poem.Previous.Excerpt)</a>
                                     }
                                     else
-                           if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
+                          if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                     {
                                         <span>&laquo; </span><a href="@Model.GanjoorPage.Poem.Category.Cat.Previous.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Previous.Title</a>
                                     }
@@ -311,7 +311,7 @@
                                         <p>
                                             @if (Model.LoggedIn)
                                             {
-                                                <a role="button" class="textualbutton" href="/User/Editor?id=@Model.GanjoorPage.Id">ویرایش</a>
+                                                <a role="button" class="textualbutton" href="/User/Editor?id=@Model.GanjoorPage.Id">ویرایش<i class="info-buttons">edit</i></a>
                                             }
                                             else
                                             {
@@ -324,32 +324,34 @@
 
                             }
 
+                        <div class="poem-info">
                             <p>
                                 <small><i class="pageicons">mouse</i> با دو بار کلیک روی واژه‌ها یا انتخاب متن و کلیک روی آنها می‌توانید آنها را در لغتنامهٔ دهخدا جستجو کنید.</small>
                             </p>
                             <p>
-
                                 <small><i class="pageicons">format_list_numbered_rtl</i> <a role="button" onclick="btshmr(@Model.GanjoorPage.Id)" class="actionlink" id="bnum-button">حذف شماره‌ها</a></small>
+                            </p>
                                 @if (Model.LoggedIn)
                                 {
-                                    <text> | <a role="button" id="bookmark" style="cursor: pointer;" onclick="switchBookmark(@Model.GanjoorPage.Id, 0)" title="نشانه‌گذاری / حذف نشانه"><i class="pageicons" id="bookmark-icon">star_border</i></a></text>
+                                    <text> <p> <a role="button" id="bookmark" style="cursor: pointer;" onclick="switchBookmark(@Model.GanjoorPage.Id, 0)" title="نشانه‌گذاری / حذف نشانه"><i class="pageicons" id="bookmark-icon">star_border</i></a></p></text>
                                 }
                                 @if (Model.GanjoorPage.Poem.GanjoorMetre != null)
                                 {
-                                    <text> | <small>وزن: <a href="@Html.Raw($"/vazn/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@Html.Raw(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)</a></small></text>
+                                    <text><p><small>وزن: <a href="@Html.Raw($"/vazn/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@Html.Raw(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)</a></small></p></text>
                                     @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
                                     {
-                                        <text> | <small><i class="pageicons">search</i> <a href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای مشابه (وزن و قافیه)</a></small></text>
+                                        <text><p><small><i class="pageicons">search</i> <a href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای مشابه (وزن و قافیه)</a></small></p></text>
                                     }
                                 }
                                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag))
                                 {
-                                    <text> | <small><a href="@Html.Raw($"{Model.GanjoorPage.Poem.OldTagPageUrl}/")">@Html.Raw(Model.GanjoorPage.Poem.OldTag)</a></small></text>
+                                    <text><p><small><a href="@Html.Raw($"{Model.GanjoorPage.Poem.OldTagPageUrl}/")">@Html.Raw(Model.GanjoorPage.Poem.OldTag)</a></small></p></text>
                                 }
                                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
                                 {
-                                    <text> | <small>منبع اولیه: <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Html.Raw(Model.GanjoorPage.Poem.SourceName)</a></small></text>
+                                    <text><p><small>منبع اولیه: <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Html.Raw(Model.GanjoorPage.Poem.SourceName)</a></small></p></text>
                                 }
+                                <p>
                                 <span id="copylink_span" class="w3tooltip"> | <a role="button" id="copylink" style="cursor: pointer;" onclick="copyPoemLink()"><i class="pageicons" id="copylink-icon">link</i></a><span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span></span>
                                 <span id="copytext_span" class="w3tooltip"> | <a role="button" id="copytext" style="cursor: pointer;" onclick="copyPoemText()"><i class="pageicons" id="copytext-icon">content_copy</i></a><span class="w3tooltiptext" id="copytext-tooltip">رونوشت متن</span></span>
                                 <span id="share_span"> | <a role="button" id="share" style="cursor: pointer;" onclick="webSharePoem()" title="همرسانی"><i class="pageicons" id="share-icon">share</i></a></span>
@@ -358,8 +360,8 @@
                                 {
                                     <text> | <small><a href="@Html.Raw($"/trans?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" title="برگردان‌ها و نویسش‌ها" class="comments-link"><i class="pageicons">translate</i></a></small></text>
                                 }
+                                </p>
 
-                            </p>
                             <h3>این شعر را چه کسی در کدام آهنگ خوانده است؟</h3>
                             @if (Model.GanjoorPage.Poem.Songs.Length == 0)
                             {
@@ -400,6 +402,10 @@
                             <p>
                                 <small><i class="pageicons">photo_camera</i> <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی</a>، <i class="pageicons">support</i> <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور</a></small>
                             </p>
+                        </div>
+
+
+
 
                             <h3>حاشیه‌ها</h3>
 

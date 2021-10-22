@@ -130,7 +130,7 @@ form:after, form div:after {
     line-height: normal;
     text-align: center;
     display: flex;
-    justify-content:center;
+    justify-content: center;
 }
 
 #hdr2 .actionbox {
@@ -853,7 +853,7 @@ ol {
     src: url(https://fonts.gstatic.com/s/materialicons/v107/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
 }
 
-.material-icons, .pageicons, .inlinebutton {
+.material-icons, .pageicons, .inlinebutton, .info-buttons {
     font-family: 'Material Icons';
     font-weight: normal;
     font-style: normal;
@@ -867,6 +867,12 @@ ol {
     direction: ltr;
     -moz-font-feature-settings: 'liga';
     -moz-osx-font-smoothing: grayscale;
+}
+
+.info-buttons {
+    direction: rtl;
+    vertical-align: middle;
+    text-indent: 5px;
 }
 
 .pageicons {
@@ -964,6 +970,11 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     margin: 20px;
     border-radius: 20px;
     border-color: #300;
-    border-style:solid;
-    border-width:3px;
+    border-style: solid;
+    border-width: 3px;
+}
+
+#comments .poem-info p {
+    text-align: center;
+    text-indent: 0;
 }
