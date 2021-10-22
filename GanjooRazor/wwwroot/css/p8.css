@@ -383,7 +383,6 @@ div.n, div.l {
     padding: 3px;
     clear: both;
     border: 2px solid #300;
-    overflow-x: hidden;
 }
 
 .notice {
@@ -890,6 +889,7 @@ ol {
     color: red;
 }
 
+
 .w3tooltip {
     position: relative;
     display: inline-block;
@@ -929,6 +929,22 @@ ol {
         opacity: 1;
     }
 
+.textualbutton {
+    cursor: pointer;
+    width: 100%;
+    color: white !important;
+    background-color: #300;
+    display: block;
+    text-align: center;
+    border-color: #300;
+    border-radius: 5px;
+    box-shadow: 0 5px 0.3rem rgba(0, 0, 0, 0.3)
+}
+
+    .textualbutton a:hover {
+        background-color: white;
+    }
+
 .century {
     clear: both;
     font-family: Vazir;
@@ -940,5 +956,5 @@ ol {
     display: block;
     text-align: center;
     margin: 20px;
-    border-radius: 5px;
+    border-radius: 20px;
 }
