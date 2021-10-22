@@ -944,9 +944,8 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
 }
 
 
-.textualbutton {
+.textualbutton, .pagebutton {
     cursor: pointer;
-    width: 100%;
     color: white !important;
     background-color: #300;
     display: block;
@@ -954,6 +953,16 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     border-color: #300;
     border-radius: 5px;
     box-shadow: 0 5px 0.3rem rgba(0, 0, 0, 0.3);
+}
+
+.textualbutton {
+    width: 100%;
+}
+
+.pagebutton{
+    padding:5px;
+    font-size: 0.8em;
+    margin: 5px;
 }
 
 
@@ -977,4 +986,11 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
 #comments .poem-info p {
     text-align: center;
     text-indent: 0;
+}
+
+.poem-actions {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    flex-wrap: wrap;
 }
