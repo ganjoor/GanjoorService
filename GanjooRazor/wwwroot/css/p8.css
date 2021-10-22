@@ -928,3 +928,17 @@ ol {
         visibility: visible;
         opacity: 1;
     }
+
+.century {
+    clear: both;
+    font-family: Vazir;
+    font-weight: 300;
+    font-size: 0.8em;
+    text-align: center;
+    color: white;
+    background-color: #300;
+    display: block;
+    text-align: center;
+    margin: 20px;
+    border-radius: 5px;
+}
