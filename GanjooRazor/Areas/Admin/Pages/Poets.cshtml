@@ -48,10 +48,13 @@
 
 <table>
     <tr>
-        <td><a href="/Admin/Poet">شاعر جدید</a></td>
-        <td>زاده</td>
-        <td>درگذشته</td>
-        <td>چسبانی</td>
+        <th>نام شاعر</th>
+        <th>زاده</th>
+        <th>درگذشته</th>
+        <th>چسبانی</th>
+    </tr>
+    <tr>
+        <td colspan="4"><a href="/Admin/Poet">شاعر جدید</a></td>
     </tr>
     @foreach (var poet in Model.Poets)
     {
