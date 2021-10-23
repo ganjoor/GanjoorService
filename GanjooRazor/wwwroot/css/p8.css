@@ -1001,8 +1001,7 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     flex-wrap: wrap;
 }
 
-.related-songs, .related-images-frame {
-    
+.related-songs, .related-images-frame, .comment-author {
     border-width: 3px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     display: block;
@@ -1050,4 +1049,8 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     width: 200px;
     float: right;
     padding: 5px;
+}
+
+.comment-author {
+    background: rgba(255, 255, 255, 0.5);
 }

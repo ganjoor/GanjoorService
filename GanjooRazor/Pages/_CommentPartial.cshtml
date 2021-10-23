@@ -16,11 +16,11 @@ else
     <div class="ganjoor-comment" id="comment-@Model.Comment.Id@Model.DivSuffix">
         @if (Model.Comment.UserId != null)
         {
-            <p><a href="/hashieha/?userid=@Model.Comment.UserId">@(string.IsNullOrEmpty(Model.Comment.AuthorName) ? "#" : Model.Comment.AuthorName)</a> <small>در @Html.Raw($"{Model.Comment.CommentDate.ToFriendlyPersianDateTextify()}")</small> @Model.Wrote:</p>
+            <div class="comment-author"><a href="/hashieha/?userid=@Model.Comment.UserId">@(string.IsNullOrEmpty(Model.Comment.AuthorName) ? "#" : Model.Comment.AuthorName)</a> <small>در @Html.Raw($"{Model.Comment.CommentDate.ToFriendlyPersianDateTextify()}")</small> @Model.Wrote:</div>
         }
         else
         {
-            <p>@(string.IsNullOrEmpty(Model.Comment.AuthorName) ? "ناشناس" : Model.Comment.AuthorName) <small>در @Html.Raw($"{Model.Comment.CommentDate.ToFriendlyPersianDateTextify()}")</small> @Model.Wrote:</p>
+            <div class="comment-author">@(string.IsNullOrEmpty(Model.Comment.AuthorName) ? "ناشناس" : Model.Comment.AuthorName) <small>در @Html.Raw($"{Model.Comment.CommentDate.ToFriendlyPersianDateTextify()}")</small> @Model.Wrote:</div>
         }
 
         @if (Model.Comment.CoupletIndex != -1)
