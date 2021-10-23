@@ -646,6 +646,9 @@ namespace RMuseum.Services.Implementation
                         case "مفردات":
                             url = "mofradat";
                             break;
+                        case "ملحقات":
+                            url = "molhaghat";
+                            break;
                     }
 
                     GanjoorCat dbCat = new GanjoorCat()
