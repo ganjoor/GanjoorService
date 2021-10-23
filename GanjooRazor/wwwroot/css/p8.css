@@ -1018,11 +1018,12 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
 .related-song {
     text-align: right;
     margin: 10px;
-    background: rgba(51,0,0,0.2);
-    border-radius: 5px;
-    color: white;
+    background: rgba(0,0,0,0.2);
+    border-radius: 20px;
+    color: black;
+    padding: 5px;
 }
 
     .related-song a {
-        color: white !important;
+        color: black !important;
     }
