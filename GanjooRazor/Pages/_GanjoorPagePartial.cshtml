@@ -426,15 +426,18 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                             else
                             {
                                 <div class="related-songs">
+                                    <div class="century">
+                                        این شعر را چه کسی در کدام آهنگ خوانده است؟
+                                    </div>
                                     @foreach (var song in Model.GanjoorPage.Poem.Songs)
                                     {
-                                        <p>
-                                            <a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
+                                        <div class="related-song">
+                                            <i class="info-buttons">queue_music</i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
                                             @if (song.TrackType == RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify)
                                             {
                                                 <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img style="display:inline;width:16px;" src="/image/sp16.png" alt="اسپاتیفای" height="16" /></a>
                                             }
-                                        </p>
+                                        </div>
                                     }
                                     <p>
                                         <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">

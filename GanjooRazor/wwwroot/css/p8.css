@@ -1004,13 +1004,25 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
 .related-songs {
     background: transparent url('/image/note.png') top center repeat scroll;
     border-width: 3px;
-    border-color: #300;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     display: block;
     width: 95%;
     border-radius: 20px;
-    border-style: solid;
     margin-left: auto;
     margin-right: auto;
     margin-top: 5px;
     margin-bottom: 5px;
+    padding: 5px;
 }
+
+.related-song {
+    text-align: right;
+    margin: 10px;
+    background: rgba(51,0,0,0.2);
+    border-radius: 5px;
+    color: white;
+}
+
+    .related-song a {
+        color: white !important;
+    }
