@@ -979,7 +979,7 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     font-size: 1em;
     text-align: center;
     color: white;
-    background-color: darkred;
+    background-color: rgba(139,0,0,0.5);
     display: block;
     text-align: center;
     margin: 20px;
@@ -1001,8 +1001,8 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     flex-wrap: wrap;
 }
 
-.related-songs {
-    background: transparent url('/image/note.png') top center repeat scroll;
+.related-songs, .related-images-frame {
+    
     border-width: 3px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     display: block;
@@ -1015,15 +1015,39 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     padding: 5px;
 }
 
-.related-song {
-    text-align: right;
-    margin: 10px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 20px;
-    color: black;
-    padding: 5px;
+.related-songs {
+    background: transparent url('/image/note.png') top center repeat scroll;
 }
+
+    .related-song {
+        text-align: right;
+        margin: 10px;
+        background: rgba(0,0,0,0.2);
+        border-radius: 20px;
+        color: black;
+        padding: 5px;
+    }
 
     .related-song a {
         color: black !important;
     }
+
+.related-images {
+    display: flex;
+    clear: both;
+    width: auto;
+    margin: auto;
+    flex-flow: wrap;
+    text-align: center;
+}
+
+    .related-images a {
+        text-align: center;
+        margin: auto
+    }
+
+.related-image {
+    width: 200px;
+    float: right;
+    padding: 5px;
+}
