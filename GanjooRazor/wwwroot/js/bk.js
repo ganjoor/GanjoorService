@@ -820,3 +820,36 @@ function copyCommentUrl(commentId, divSuffix) {
     var tooltip = document.getElementById("copycommentlink-tooltip-" + String(commentId) + divSuffix);
     tooltip.innerHTML = "نشانی در حافظه رونوشت شد: " + url;
 }
+
+function onSelectedPoetChanged() {
+    if (document.getElementById('cat') != null) {
+        var id = document.getElementById('author').value;
+        if (id == 0) return;
+        $.ajax({
+            type: "GET",
+            url: '?handler=PoetInformation',
+            data: {
+                id: id
+            },
+            success: function (poet) {
+                if (poet == null)
+                    return;
+                var select = document.getElementById("cat");
+                var length = select.options.length;
+                for (var i = length - 1; i >= 0; i--) {
+                    select.options[i] = null;
+                }
+                option = document.createElement('option');
+                option.setAttribute('value', 0);
+                option.appendChild(document.createTextNode('در همهٔ بخشها'));
+                select.appendChild(option);
+                for (var i = 0; i < poet.cat.children.length; i++) {
+                    option = document.createElement('option');
+                    option.setAttribute('value', poet.cat.children[i].id);
+                    option.appendChild(document.createTextNode(poet.cat.children[i].title));
+                    select.appendChild(option);
+                }
+            },
+        });
+    }
+}

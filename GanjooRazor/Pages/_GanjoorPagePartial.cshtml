@@ -6,16 +6,16 @@
     <div class="actionbox">
         <form action="/search" method="get" id="searchform">
             <input type="text" name="s" id="s" class="inputText" value="" placeholder="جستجو" />
-            <select name="author" id="author">
+            <select name="author" id="author" onchange="onSelectedPoetChanged()">
 
                 @{
                     if (Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null)
                     {
-                        <option value="0">در آثار همه شاعران</option>
+                        <option value="0">در آثار همهٔ شاعران</option>
                     }
                     else
                     {
-                        <option value="0" selected>در آثار همه شاعران</option>
+                        <option value="0" selected>در آثار همهٔ شاعران</option>
                     }
 
                     if (Model.Poets != null)
@@ -39,7 +39,7 @@
                 if (!Model.IsPoetPage && Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null)
                 {
                     <select name="cat" id="cat" style="width:150px">
-                        <option value="0">در همه بخشها</option>
+                        <option value="0">در همهٔ بخشها</option>
                         @{
                             foreach (var gran in Model.GanjoorPage.PoetOrCat.Cat.Ancestors)
                             {

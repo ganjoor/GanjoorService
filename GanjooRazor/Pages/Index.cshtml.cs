@@ -478,6 +478,21 @@ namespace GanjooRazor.Pages
             Poets = poets;
         }
 
+        public async Task<IActionResult> OnGetPoetInformationAsync(int id)
+        {
+            if (id == 0)
+                return new OkObjectResult(null);
+            var cacheKey = $"/api/ganjoor/poet/{id}";
+            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
+            {
+                var poetResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{id}");
+                poetResponse.EnsureSuccessStatusCode();
+                poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
+                _memoryCache.Set(cacheKey, poet);
+            }
+            return new OkObjectResult(poet);
+        }
+
         private async Task _PreparePoetGroups()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/centuries");

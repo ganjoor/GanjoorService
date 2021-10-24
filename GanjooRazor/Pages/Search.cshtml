@@ -22,22 +22,21 @@
 
 </head>
 <body>
-
     <div id="hdr2" class="clearfix">
         <h1><a href="/" title="گنجور"><img src="/image/ganjadabk.gif" alt="گنجور" /></a></h1>
         <div class="actionbox">
             <form action="/search" method="get" id="searchform">
                 <input type="text" name="s" id="s" class="inputText" value="@Model.Query" placeholder="جستجو" />
-                <select name="author" id="author">
+                <select name="author" id="author" onchange="onSelectedPoetChanged()">
 
                     @{
                         if (Model.PoetId != 0)
                         {
-                            <option value="0">در آثار همه شاعران</option>
+                            <option value="0">در آثار همهٔ شاعران</option>
                         }
                         else
                         {
-                            <option value="0" selected>در آثار همه شاعران</option>
+                            <option value="0" selected>در آثار همهٔ شاعران</option>
                         }
 
                         if (Model.Poets != null)
@@ -63,11 +62,11 @@
                         <select name="cat" id="cat" style="width:150px">
                             @if (Model.CatId == 0)
                             {
-                                <option value="0" selected>در همه بخشها</option>
+                                <option value="0" selected>در همهٔ بخشها</option>
                             }
                             else
                             {
-                                <option value="0">در همه بخشها</option>
+                                <option value="0">در همهٔ بخشها</option>
                             }
 
                             @{
@@ -181,7 +180,7 @@
     </div>
 
     <script src="/lib/jquery/dist/jquery.min.js"></script>
-    <script src="/js/bk.js?version=7"></script>
+    <script src="/js/bk.js?version=8"></script>
     <script src="/js/vaabd.js"></script>
 
     @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
