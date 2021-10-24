@@ -317,7 +317,7 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                         {
                                             <tr>
                                                 <td>
-                                                    وزن
+                                                    وزن:
                                                 </td>
                                                 <td>
                                                     <a href="@Html.Raw($"/vazn/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm</a>
@@ -328,7 +328,7 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                         {
                                             <tr>
                                                 <td>
-                                                    دسته
+                                                    دسته:
                                                 </td>
                                                 <td>
                                                     <a href="@Html.Raw($"{Model.GanjoorPage.Poem.OldTagPageUrl}/")">@Model.GanjoorPage.Poem.OldTag</a>
@@ -339,7 +339,7 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                         {
                                             <tr>
                                                 <td>
-                                                    منبع اولیه
+                                                    منبع اولیه:
                                                 </td>
                                                 <td>
                                                     <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Model.GanjoorPage.Poem.SourceName</a>
