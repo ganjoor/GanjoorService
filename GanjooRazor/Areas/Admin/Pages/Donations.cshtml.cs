@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -90,6 +91,20 @@ namespace GanjooRazor.Areas.Admin.Pages
             };
 
             await ReadDonations();
+
+            if(!string.IsNullOrEmpty(Request.Query["id"]))
+            {
+                var donation = Donations.Where(d => d.Id == int.Parse(Request.Query["id"])).Single();
+                if(donation != null)
+                {
+                    int rowNumber = Donations.Length - Array.IndexOf(Donations, donation);
+                    EmailContent = $"با درود و سپاس از بزرگواری شما{Environment.NewLine}" +
+                            $"کمک دریافتی به شماره ردیف {rowNumber.ToPersianNumbers()} در این نشانی ثبت شد:{Environment.NewLine}" +
+                            $"https://ganjoor.net/donate{Environment.NewLine}" +
+                            $"نحوهٔ هزینه شدن آن متعاقباً در همان ردیف مستند خواهد شد.{Environment.NewLine}" +
+                            $"سرافراز باشید.";
+                }
+            }
 
             return Page();
         }
