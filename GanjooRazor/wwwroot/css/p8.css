@@ -150,12 +150,9 @@ form:after, form div:after {
     border: 2px solid #300;
     border-radius: 20px;
     padding: 20px;
-}
-
-
-.poem, #guides, .sitem {
     background: transparent url(/image/pbk.jpg) top center repeat scroll;
 }
+
 
 .sitem, .poem {
     margin-bottom: 3px;
