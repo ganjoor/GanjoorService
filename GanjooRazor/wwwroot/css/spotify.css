@@ -19,7 +19,7 @@
 }
 
 .poem {
-    background: transparent url(/image/pbk.jpg) repeat scroll 0%;
+    background: transparent url('/image/pbk-b.jpg') repeat scroll 0%;
     background-position: top center;
 }
 
