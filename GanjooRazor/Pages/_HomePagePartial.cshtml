@@ -5,14 +5,14 @@
 
 <div id="fa">
     <h2>
-        آثار سخنسرایان پارسی‌گو
+        دردانه‌های ادب پارسی
     </h2>
 
     <div class="actionbox">
         <form action="/search" method="get" id="searchhorm">
             <input type="text" name="s" id="s" placeholder="جستجو" class="inputText" size="35" value="" />
             <select name="author" id="author">
-                <option value="0" selected>در آثار همهٔ شاعران</option>
+                <option value="0" selected>در آثار همهٔ سخنوران</option>
                 @{
                     foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
                     {

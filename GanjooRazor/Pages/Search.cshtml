@@ -1,7 +1,7 @@
 ﻿@page
 @model GanjooRazor.Pages.SearchModel
 @{
-  Layout = null;
+    Layout = null;
 }
 
 
@@ -9,16 +9,16 @@
 <!DOCTYPE html>
 <html lang="fa-IR" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>
-    @ViewData["Title"]
-  </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        @ViewData["Title"]
+    </title>
 
-  <link href="/css/p8.css?version=12" rel="stylesheet" type="text/css" />
-  <link href="/css/fab.css" rel="stylesheet" type="text/css" />
-  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-  <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+    <link href="/css/p8.css?version=12" rel="stylesheet" type="text/css" />
+    <link href="/css/fab.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
 
 </head>
 <body>
@@ -32,11 +32,11 @@
                     @{
                         if (Model.PoetId != 0)
                         {
-                            <option value="0">در آثار همهٔ شاعران</option>
+                            <option value="0">در آثار همهٔ سخنوران</option>
                         }
                         else
                         {
-                            <option value="0" selected>در آثار همهٔ شاعران</option>
+                            <option value="0" selected>در آثار همهٔ سخنوران</option>
                         }
 
                         if (Model.Poets != null)
