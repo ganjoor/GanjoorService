@@ -154,7 +154,7 @@ namespace RMuseum.Services.Implementation
             var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
             if (cat == null)
                 return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
-            return await GetCatById(cat.Id);
+            return await GetCatById(cat.Id, poems);
         }
 
         /// <summary>
