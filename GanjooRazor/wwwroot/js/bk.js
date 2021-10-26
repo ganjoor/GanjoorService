@@ -583,7 +583,7 @@ function copyPoemLink() {
     }
     navigator.clipboard.writeText(url);
     var tooltip = document.getElementById("copylink-tooltip");
-    tooltip.innerHTML = "نشانی در حافظه رونوشت شد: " + url;
+    tooltip.innerHTML = "نشانی در حافظه رونوشت شد.";
 }
 
 function copyCoupletUrl(coupletIndex) {
@@ -594,7 +594,7 @@ function copyCoupletUrl(coupletIndex) {
     url += ( '#bn' + String(coupletIndex + 1));
     navigator.clipboard.writeText(url);
     var tooltip = document.getElementById("copylink-tooltip-" + String(coupletIndex));
-    tooltip.innerHTML = "نشانی در حافظه رونوشت شد: " + url;
+    tooltip.innerHTML = "نشانی در حافظه رونوشت شد.";
 }
 
 function getCoupletText(coupletIndex) {
@@ -818,7 +818,7 @@ function copyCommentUrl(commentId, divSuffix) {
     url += ('#comment-' + String(commentId));
     navigator.clipboard.writeText(url);
     var tooltip = document.getElementById("copycommentlink-tooltip-" + String(commentId) + divSuffix);
-    tooltip.innerHTML = "نشانی در حافظه رونوشت شد: " + url;
+    tooltip.innerHTML = "نشانی در حافظه رونوشت شد.";
 }
 
 function onSelectedPoetChanged() {
