@@ -1,0 +1,46 @@
+﻿@page
+@model GanjooRazor.Pages.MapModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet GeoJSON Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" />
+    <style type="text/css">
+        .leaflet-container {
+            background-color: #c5e8ff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map" style="height: 600px"></div>
+
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
+    <script>
+        var myGeoJSONPath = '/json/world.json';
+        var myCustomStyle = {
+            stroke: true,
+            fill: true,
+            fillColor: '#fff',
+            fillOpacity: 1,
+            weight: 1,
+            opacity: 0.5
+        }
+        $.getJSON(myGeoJSONPath,function(data){
+            var map = L.map('map').setView([34, 53.6880], 5);
+
+            L.geoJson(data, {
+                clickable: false,
+                style: myCustomStyle
+            }).addTo(map);
+        })
+    </script>
+</body>
+</html>

@@ -10,4 +10,8 @@
     <ProjectReference Include="..\RSecurityBackend\RSecurityBackend.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\json\" />
+  </ItemGroup>
+
 </Project>
