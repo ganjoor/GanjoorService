@@ -23,23 +23,63 @@
 
     <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
+    <script src="~/js/leaflet-providers.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
     <script>
         var myGeoJSONPath = '/json/world.json';
         var myCustomStyle = {
             stroke: true,
-            fill: true,
-            fillColor: '#fff',
-            fillOpacity: 1,
             weight: 1,
-            opacity: 0.5
+            color: '#300',
         }
-        $.getJSON(myGeoJSONPath,function(data){
+        $.getJSON(myGeoJSONPath, function (data) {
             var map = L.map('map').setView([34, 53.6880], 5);
+
+
 
             L.geoJson(data, {
                 clickable: false,
                 style: myCustomStyle
             }).addTo(map);
+
+            L.tileLayer.provider('Stamen.Watercolor').addTo(map);
+
+            var oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied : false});
+                        
+
+            var hafezIcon = L.icon({
+                iconUrl: 'https://ganjgah.ir/api/ganjoor/poet/image/hafez.gif',
+                iconSize: [82, 100],
+                iconAnchor: [82, 100],
+                popupAnchor: [0, -28]
+            });
+
+            var hafezMarker = L.marker([29.5926, 52.5836], { icon: hafezIcon });
+
+            hafezMarker.addTo(map);
+            oms.addMarker(hafezMarker);
+
+            var saadiIcon = L.icon({
+                iconUrl: 'https://ganjgah.ir/api/ganjoor/poet/image/saadi.gif',
+                iconSize: [82, 100],
+                iconAnchor: [82, 100],
+                popupAnchor: [0, -28]
+            });
+
+            var saadiMarker = L.marker([29.5926, 52.5836], { icon: saadiIcon });
+            saadiMarker.addTo(map);
+            oms.addMarker(saadiMarker);
+
+            var ferdousiIcon = L.icon({
+                iconUrl: 'https://ganjgah.ir/api/ganjoor/poet/image/ferdousi.gif',
+                iconSize: [82, 100],
+                iconAnchor: [82, 100],
+                popupAnchor: [0, -28]
+            });
+
+            var ferdousiMarker = L.marker([36.2605, 59.6168], { icon: ferdousiIcon });
+            ferdousiMarker.addTo(map);
+            oms.addMarker(ferdousiMarker);
         })
     </script>
 </body>
