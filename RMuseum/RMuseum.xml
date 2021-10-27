@@ -12161,6 +12161,14 @@
             <param name="List"></param>
             <returns></returns>
         </member>
+        <member name="M:ganjoor.GDBListProcessor.RetrieveListFromFile(System.String,System.String@)">
+            <summary>
+            دریافت یک فایل xml و تبدیل آن به لیستی از GDBInfoها
+            </summary>
+            <param name="fileName"></param>
+            <param name="Exception"></param>
+            <returns></returns>
+        </member>
         <member name="T:ganjoor.PoemAudio">
             <summary>
             اطلاعات فایل صوتی شعر

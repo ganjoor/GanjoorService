@@ -49,6 +49,20 @@ namespace RMuseum.Services.Implementation
                                         string outDir = Configuration.GetSection("Ganjoor")["GDBStorage"];
                                         string imgDir = Configuration.GetSection("Ganjoor")["GDBStorageImageSource"];
                                         string xmlFile = Configuration.GetSection("Ganjoor")["GDBListXMLFile"];
+                                        string preExisitingListXMLFile = Configuration.GetSection("Ganjoor")["GDBPreExisitingListXMLFile"];
+                                        List<GDBInfo> programList = new List<GDBInfo>();
+                                        if (!string.IsNullOrEmpty(preExisitingListXMLFile))
+                                        {
+                                            if (File.Exists(preExisitingListXMLFile))
+                                            {
+                                                programList = GDBListProcessor.RetrieveListFromFile(preExisitingListXMLFile, out string exception);
+                                                if (programList == null)
+                                                {
+                                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "GDBListProcessor.RetrieveListFromFile", false, exception);
+                                                    return;
+                                                }
+                                            }
+                                        }
 
                                         var poets = await context.GanjoorPoets.AsNoTracking().ToListAsync();
 
@@ -131,7 +145,13 @@ namespace RMuseum.Services.Implementation
                                         if (File.Exists(xmlFile))
                                             File.Delete(xmlFile);
 
-                                        GDBListProcessor.Save(xmlFile, "مجموعه‌های متناظر شاعران سایت", "", "", lstFiles);
+                                        if(programList.Count > 0)
+                                        {
+                                            lstFiles.AddRange(programList);
+                                        }
+
+
+                                        GDBListProcessor.Save(xmlFile, "مجموعه‌های قابل دریافت از گنجور", "", "", lstFiles);
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                     }

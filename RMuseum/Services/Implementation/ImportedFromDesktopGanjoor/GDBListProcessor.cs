@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Reflection;
+using System.IO;
 
 namespace ganjoor
 {
@@ -106,6 +107,83 @@ namespace ganjoor
                 return false;
             }
         }
-        
+
+        /// <summary>
+        /// دریافت یک فایل xml و تبدیل آن به لیستی از GDBInfoها
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="Exception"></param>
+        /// <returns></returns>
+        public static List<GDBInfo> RetrieveListFromFile(string fileName, out string Exception)
+        {
+            List<GDBInfo> lstGDBs = new List<GDBInfo>();
+            try
+            {
+                using (StreamReader reader = File.OpenText(fileName))
+                {
+                    XmlDocument doc = new XmlDocument();
+                    doc.LoadXml(reader.ReadToEnd());
+
+                    XmlNodeList gdbNodes = doc.GetElementsByTagName("gdb");
+                    foreach (XmlNode gdbNode in gdbNodes)
+                    {
+                        GDBInfo gdbInfo = new GDBInfo();
+                        foreach (XmlNode Node in gdbNode.ChildNodes)
+                        {
+                            switch (Node.Name)
+                            {
+                                case "CatName":
+                                    gdbInfo.CatName = Node.InnerText;
+                                    break;
+                                case "PoetID":
+                                    gdbInfo.PoetID = Convert.ToInt32(Node.InnerText);
+                                    break;
+                                case "CatID":
+                                    gdbInfo.CatID = Convert.ToInt32(Node.InnerText);
+                                    break;
+                                case "DownloadUrl":
+                                    gdbInfo.DownloadUrl = Node.InnerText;
+                                    break;
+                                case "BlogUrl":
+                                    gdbInfo.BlogUrl = Node.InnerText;
+                                    break;
+                                case "FileExt":
+                                    gdbInfo.FileExt = Node.InnerText;
+                                    break;
+                                case "ImageUrl":
+                                    gdbInfo.ImageUrl = Node.InnerText;
+                                    break;
+                                case "FileSizeInByte":
+                                    gdbInfo.FileSizeInByte = Convert.ToInt32(Node.InnerText);
+                                    break;
+                                case "LowestPoemID":
+                                    gdbInfo.LowestPoemID = Convert.ToInt32(Node.InnerText);
+                                    break;
+                                case "PubDate":
+                                    {
+                                        string[] dateParts = Node.InnerText.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+                                        int Year = Convert.ToInt32(dateParts[0]);
+                                        int Month = Convert.ToInt32(dateParts[1]);
+                                        int Day = Convert.ToInt32(dateParts[2]);
+                                        gdbInfo.PubDate = new DateTime(Year, Month, Day);
+                                    }
+                                    break;
+
+                            }
+
+                        }
+                        lstGDBs.Add(gdbInfo);
+                    }
+
+                }
+                Exception = string.Empty;
+                return lstGDBs;
+            }
+            catch (Exception exp)
+            {
+                Exception = exp.Message;
+                return null;
+            }
+        }
     }
 }
