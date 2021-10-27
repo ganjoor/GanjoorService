@@ -58,7 +58,7 @@ namespace ganjoor
                         XmlNode propNode = doc.CreateNode(XmlNodeType.Element, prop.Name, "");
                         if (prop.PropertyType == typeof(string))
                         {
-                            string value = prop.GetValue(gdb, null).ToString();
+                            string value = prop.GetValue(gdb, null) == null ?  "" :prop.GetValue(gdb, null).ToString();
                             if (string.IsNullOrEmpty(value))
                             {
                                 ignoreProp = true;
@@ -67,7 +67,7 @@ namespace ganjoor
                                 propNode.InnerText = value;
                         }
                         else
-                            if (prop.PropertyType == typeof(Int32))
+                            if (prop.PropertyType == typeof(int))
                             {
                                 int value = Convert.ToInt32(prop.GetValue(gdb, null));
                                 if (value == 0)
