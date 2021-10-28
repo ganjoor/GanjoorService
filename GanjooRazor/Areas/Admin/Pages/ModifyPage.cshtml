@@ -10,6 +10,8 @@
 
 <p>@Html.Raw(Model.LastMessage)</p>
 
+@if(Model.PageInformation != null)
+{
 <form method="post">
     <table style="width:100%" class="noborder">
         <tr>
@@ -173,3 +175,4 @@
         <td><a role="button" href="/Admin/PageDel/?url=@Model.PageInformation.FullUrl" class="actionlink">حذف صفحه</a></td>
     </tr>
 </table>
+}

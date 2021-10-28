@@ -122,8 +122,15 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var putResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/page/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(ModifyModel), Encoding.UTF8, "application/json"));
-                    putResponse.EnsureSuccessStatusCode();
-                    return Redirect($"/Admin/ModifyPage?id={Request.Query["id"]}&edit=true");
+                    if(!putResponse.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await putResponse.Content.ReadAsStringAsync());
+                    }
+                    else
+                    {
+                        putResponse.EnsureSuccessStatusCode();
+                        return Redirect($"/Admin/ModifyPage?id={Request.Query["id"]}&edit=true");
+                    }
                 }
                 else
                 {

@@ -853,7 +853,7 @@ namespace RMuseum.Services.Implementation
                     coupletIndex++;
                     if (((vIndex + 1) < verses.Count) && (verses[vIndex + 1].VersePosition == VersePosition.CenteredVerse2))
                     {
-                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\" ><p>{v.Text}</p>{Environment.NewLine}";
+                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\"><p>{v.Text}</p>{Environment.NewLine}";
                     }
                     else
                     {

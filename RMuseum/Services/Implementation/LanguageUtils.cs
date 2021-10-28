@@ -75,7 +75,7 @@ namespace RMuseum.Services.Implementation
                        ;
         }
 
-        public static string PrepareTextForFindingRhyme(string text)
+        private static string PrepareTextForFindingRhyme(string text)
         {
             return MakeTextSearchable(text)
                     .Replace("لله", "للاه")
@@ -84,9 +84,7 @@ namespace RMuseum.Services.Implementation
                     .Replace("‏", "")
                     .Replace("‌", "")
                     .Replace(" ", "")
-                    .Trim()
-                    ;
-            ;
+                    .Trim();
         }
 
         

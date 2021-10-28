@@ -821,6 +821,7 @@ namespace RMuseum.Services.Implementation
             {
                 int idxbn1 = poemtext.IndexOf(" id=\"bn");
                 int idxbn2 = poemtext.IndexOf("\"", idxbn1 + " id=\"bn".Length);
+                
                 poemtext = poemtext.Substring(0, idxbn1) + poemtext.Substring(idxbn2+1);
             }
 
@@ -828,7 +829,7 @@ namespace RMuseum.Services.Implementation
             poemtext = poemtext.Replace("Adaptation du milieu", "یییییییییییییییییییی");
             poemtext = poemtext.Replace("Empirique", "ببببببببب");
 
-
+            poemtext = poemtext.Replace(" >", ">");
             poemtext = poemtext.Replace("<div class=\"b\" style=\"width:750px\">", "<div class=\"b\">").Replace("<div class=\"b\" style=\"width:660px\">", "<div class=\"b\">").Replace("<div class=\"b\" style=\"width:680px\">", "<div class=\"b\">").Replace("<div class=\"b\" style=\"width:650px\">", "<div class=\"b\">").Replace("<div class=\"b\" style=\"width:690px\">", "<div class=\"b\">").Replace("<p style=\"color:#911\">", "<p>").Replace("<p style=\"color:#191\">", "<p>").Replace("<div class=\"spacer\">", "").Replace("&nbsp;", "").Replace("<div class=\"spacer\" />", "").Replace("<div class=\"b\" style=\"width:700px\">", "<div class=\"b\">");
             poemtext = poemtext.Replace("<em>", "").Replace("</em>", "");
             poemtext = poemtext.Replace("<em>", "").Replace("</em>", "").Replace("<small>", "").Replace("</small>", "");
