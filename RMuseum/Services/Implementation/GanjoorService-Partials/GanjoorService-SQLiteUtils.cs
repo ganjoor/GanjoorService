@@ -673,6 +673,14 @@ namespace RMuseum.Services.Implementation
                         case "اشعار عربی":
                             url = "arabi";
                             break;
+                        case "ماده تاریخ‌ها":
+                        case "ماده تاریخها":
+                        case "ماده تاریخ":
+                            url = "tarikh";
+                            break;
+                        case "معمیات":
+                            url = "moammiyat";
+                            break;
                     }
 
                     GanjoorCat dbCat = new GanjoorCat()
