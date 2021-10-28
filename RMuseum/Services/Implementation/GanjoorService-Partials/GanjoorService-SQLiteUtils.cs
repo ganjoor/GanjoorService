@@ -150,6 +150,7 @@ namespace RMuseum.Services.Implementation
                                             lstFiles.AddRange(programList);
                                         }
 
+                                        lstFiles.Sort((a, b) => a.CatName.CompareTo(b.CatName));
 
                                         GDBListProcessor.Save(xmlFile, "مجموعه‌های قابل دریافت از گنجور", "", "", lstFiles);
 
