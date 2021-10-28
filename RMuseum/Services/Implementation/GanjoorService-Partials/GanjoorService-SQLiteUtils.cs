@@ -662,7 +662,7 @@ namespace RMuseum.Services.Implementation
                         case "مرثیه":
                         case "رثا":
                         case "مرثیه ها":
-                            url = "hazl";
+                            url = "marsie";
                             break;
                         case "مفردات":
                             url = "mofradat";
@@ -680,6 +680,13 @@ namespace RMuseum.Services.Implementation
                             break;
                         case "معمیات":
                             url = "moammiyat";
+                            break;
+                        case "چیستان":
+                            url = "chistan";
+                            break;
+                        case "لغز":
+                        case "لغزها":
+                            url = "loghaz";
                             break;
                     }
 
