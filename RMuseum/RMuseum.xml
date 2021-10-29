@@ -1333,6 +1333,55 @@
             <param name="memoryCache"></param>
             <param name="configuration"></param>
         </member>
+        <member name="M:RMuseum.Controllers.GeoLocationController.GetLocationsAsync">
+            <summary>
+            get all locations
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GeoLocationController.GetLocationAsync(System.Int32)">
+            <summary>
+            get location by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GeoLocationController.AddLocationAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorGeoLocationViewModel)">
+            <summary>
+            add new location
+            </summary>
+            <param name="location"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GeoLocationController.UpdateLocationAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorGeoLocationViewModel)">
+            <summary>
+            update an existing location
+            </summary>
+            <param name="location"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RMuseum.Controllers.GeoLocationController.ReadOnlyMode">
+            <summary>
+            readonly mode
+            </summary>
+        </member>
+        <member name="P:RMuseum.Controllers.GeoLocationController.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.GeoLocationController._locationService">
+            <summary>
+            location service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GeoLocationController.#ctor(RMuseum.Services.IGeoLocationService,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            constructor
+            </summary>
+            <param name="locationService"></param>
+            <param name="configuration"></param>
+        </member>
         <member name="M:RMuseum.Controllers.ImageController.Get(System.Guid,System.String)">
             <summary>
             returns image stream
