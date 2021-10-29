@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -24,6 +25,47 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public GanjoorPoetViewModel[] Poets { get; set; }
 
+        public List<GanjoorGeoLocation> Locations { get; set; }
+        private async Task ReadLocationsAsync()
+        {
+            LastMessage = "";
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/locations");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return;
+                    }
+
+                    response.EnsureSuccessStatusCode();
+
+                    Locations = new List<GanjoorGeoLocation>();
+                    Locations.Add
+                        (
+                        new GanjoorGeoLocation()
+                        {
+                            Id = 0,
+                            Latitude = 0,
+                            Longitude = 0,
+                            Name = ""
+                        }
+                        );
+
+                    Locations.AddRange(JsonConvert.DeserializeObject<GanjoorGeoLocation[]>(await response.Content.ReadAsStringAsync()));
+
+                }
+                else
+                {
+                    LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                }
+
+            }
+        }
+
         public async Task<IActionResult> OnGetAsync()
         {
             LastMessage = "";
@@ -34,6 +76,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                 {
                     var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets/secure");
                     response.EnsureSuccessStatusCode();
+
+                    await ReadLocationsAsync();
 
                     Poets = JsonConvert.DeserializeObject<GanjoorPoetViewModel[]>(await response.Content.ReadAsStringAsync());
 
@@ -66,7 +110,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new OkObjectResult(false);
         }
 
-        public async Task<ActionResult> OnPostSavePoetMetaAsync(int id, int birth, int death, int pinorder)
+        public async Task<ActionResult> OnPostSavePoetMetaAsync(int id, int birth, int death, int pinorder, bool validbirth, bool validdeath, string birthlocation, string deathlocation)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -77,7 +121,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                         Id = id,
                         BirthYearInLHijri = birth,
                         DeathYearInLHijri = death,
-                        PinOrder = pinorder
+                        PinOrder = pinorder,
+                        ValidBirthDate = validbirth,
+                        ValidDeathDate = validdeath,
+                        BirthPlace = birthlocation,
+                        DeathPlace = deathlocation
                     };
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/poet/{id}", new StringContent(JsonConvert.SerializeObject(poet), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)

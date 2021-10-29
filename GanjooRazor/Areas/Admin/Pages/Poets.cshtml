@@ -22,6 +22,10 @@
                 birth: $('#birth-' + String(id)).val(),
                 death: $('#death-' + String(id)).val(),
                 pinorder: $('#pinorder-' + String(id)).val(),
+                validbirth: $('#birth-valid-' + String(id)).is(":checked"),
+                validdeath: $('#death-valid-' + String(id)).is(":checked"),
+                birthlocation: $('#birth-place-' + String(id)).val(),
+                deathlocation: $('#death-place-' + String(id)).val(),
             },
             error: function (e) {
                 if (e.responseText == null)
@@ -72,12 +76,75 @@
             </td>
             <td>
                 <input type="text" name="@($"birth-{poet.Id}")" id="@($"birth-{poet.Id}")" value="@poet.BirthYearInLHijri" />
+                @if (poet.ValidBirthDate)
+                {
+                    <input type="checkbox" name="@($"birth-valid-{poet.Id}")" id="@($"birth-valid-{poet.Id}")" checked />
+                }
+                else
+                {
+                    <input type="checkbox" name="@($"birth-valid-{poet.Id}")" id="@($"birth-valid-{poet.Id}")" />
+                }
+
             </td>
             <td>
                 <input type="text" name="@($"death-{poet.Id}")" id="@($"death-{poet.Id}")" value="@poet.DeathYearInLHijri" />
+                @if (poet.ValidDeathDate)
+                {
+                    <input type="checkbox" name="@($"death-valid-{poet.Id}")" id="@($"death-valid-{poet.Id}")" checked />
+                }
+                else
+                {
+                    <input type="checkbox" name="@($"death-valid-{poet.Id}")" id="@($"death-valid-{poet.Id}")" />
+                }
             </td>
+
             <td>
                 <input type="text" name="@($"pinorder-{poet.Id}")" id="@($"pinorder-{poet.Id}")" value="@poet.PinOrder" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                زادگاه:
+            </td>
+            <td colspan="3">
+                <select id="@($"birth-place-{poet.Id}")">
+                    @{
+                        foreach (var location in Model.Locations)
+                        {
+                            if (location.Name == poet.BirthPlace)
+                            {
+                                <option value="@location.Name" selected>@location.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@location.Name">@location.Name</option>
+                            }
+
+                        }
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                آرامگاه:
+            </td>
+            <td colspan="3">
+                <select id="@($"death-place-{poet.Id}")">
+                    @{
+                        foreach (var location in Model.Locations)
+                        {
+                            if (location.Name == poet.DeathPlace)
+                            {
+                                <option value="@location.Name" selected>@location.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@location.Name">@location.Name</option>
+                            }
+                        }
+                    }
+                </select>
             </td>
         </tr>
         <tr>
