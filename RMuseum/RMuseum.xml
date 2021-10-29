@@ -5552,14 +5552,14 @@
             Home page pin order (zero means not pinned)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.InvalidBirthDate">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.ValidBirthDate">
             <summary>
-            for some poets it is only indicator of their century of birth and should not be reported back as their valid birth date
+            BirthYearInLHijri, for some poets it is only indicator of their century of birth and should not be relied as their valid birth date
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.InvalidDeathDate">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.ValidDeathDate">
             <summary>
-            for some poets it is only indicator of their century of death and should not be reported back as their valid death date
+            DeathYearInLHijri, for some poets it is only indicator of their century of death and should not be relied as their valid death date
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.BirthLocationId">
