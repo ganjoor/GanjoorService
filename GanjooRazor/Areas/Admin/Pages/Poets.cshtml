@@ -11,38 +11,46 @@
 <p>@Model.LastMessage</p>
 
 <script>
-    function savePoetsMeta() {
-        if (!confirm('آیا از ذخیرهٔ اطلاعات سال تولد و وفات و ترتیب شاعران در صفحهٔ اول اطمینان دارید؟'))
+    function savePoetMeta(id, name) {
+        if (!confirm('آیا از ذخیرهٔ اطلاعات سال تولد و وفات و ترتیب برای ' + name + ' اطمینان دارید؟'))
             return;
-        @foreach (var poet in Model.Poets)
-        {
-            <text>
-                $.ajax({
-                    type: "POST",
-                    url: '?handler=SavePoetMeta',
-                    data: {
-                        id: @poet.Id,
-                        birth: $("#@($"birth-{poet.Id}")").val(),
-                        death: $("#@($"death-{poet.Id}")").val(),
-                        pinorder: $("#@($"pinorder-{poet.Id}")").val()
-                    },
-                    error: function () {
-                        alert('برای @poet.Nickname خطا رخ داد.')
-                    },
-                });
-            </text>
-        }
+        $.ajax({
+            type: "POST",
+            url: '?handler=SavePoetMeta',
+            data: {
+                id: id,
+                birth: $('#birth-' + String(id)).val(),
+                death: $('#death-' + String(id)).val(),
+                pinorder: $('#pinorder-' + String(id)).val(),
+            },
+            error: function (e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+            },
+            success: function () {
+                alert('انجام شد.');
+            },
+        });
+    }
 
-         $.ajax({
-                type: "POST",
-                url: '?handler=UpdatePeriods',
-                success: function () {
-                        alert('انجام شد.');
-                },
-                error: function () {
-                    alert('در مرحلهٔ نهایی خطا رخ داد.')
-                },
-                });
+    function savePoetsMeta() {
+        if (!confirm('آیا از به‌روزرسانی گروه‌بندی بر اساس قرن اطمینان دارید؟'))
+            return;
+        $.ajax({
+            type: "POST",
+            url: '?handler=UpdatePeriods',
+            success: function () {
+                alert('انجام شد.');
+            },
+            error: function (e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+            },
+        });
     }
 </script>
 
@@ -77,10 +85,15 @@
                 @Html.Raw(poet.Description)
             </td>
         </tr>
+        <tr>
+            <td colspan="4">
+                <a role="button" onclick="savePoetMeta(@poet.Id, '@poet.Nickname')" class="actionlink">ذخیره</a>
+            </td>
+        </tr>
     }
     <tr>
         <td colspan="4">
-            <a role="button" onclick="savePoetsMeta()" class="actionlink">ذخیره</a>
+            <a role="button" onclick="savePoetsMeta()" class="actionlink">ذخیرهٔ گروه‌بندی بر اساس قرن</a>
         </td>
     </tr>
 </table>
