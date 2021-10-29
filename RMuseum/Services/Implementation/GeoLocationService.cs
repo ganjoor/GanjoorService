@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
-using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Linq;
@@ -19,42 +17,34 @@ namespace RMuseum.Services.Implementation
         /// add new location
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorGeoLocationViewModel>> AddLocationAsync(string name, double x, double y)
+        public async Task<RServiceResult<GanjoorGeoLocation>> AddLocationAsync(string name, double latitude, double longitude)
         {
-            name = name == null ? "" : name.Trim();
-            if (string.IsNullOrEmpty(name))
-                return new RServiceResult<GanjoorGeoLocationViewModel>(null, "نام اجباری است.");
-            if (null != await _context.GanjoorGeoLocations.Where(l => l.Name == name).FirstOrDefaultAsync())
-                return new RServiceResult<GanjoorGeoLocationViewModel>(null, "نام  تکراری است.");
-            Point point = new Point(x, y);
-            if(null != await _context.GanjoorGeoLocations.Where(l => l.Location == point).FirstOrDefaultAsync())
-                return new RServiceResult<GanjoorGeoLocationViewModel>(null, "مختصات  تکراری است.");
             try
             {
+                name = name == null ? "" : name.Trim();
+                if (string.IsNullOrEmpty(name))
+                    return new RServiceResult<GanjoorGeoLocation>(null, "نام اجباری است.");
+                if (null != await _context.GanjoorGeoLocations.Where(l => l.Name == name).FirstOrDefaultAsync())
+                    return new RServiceResult<GanjoorGeoLocation>(null, "نام  تکراری است.");
+                if (null != await _context.GanjoorGeoLocations.Where(l => l.Latitude == latitude && l.Longitude == longitude).FirstOrDefaultAsync())
+                    return new RServiceResult<GanjoorGeoLocation>(null, "مختصات  تکراری است.");
+
                 GanjoorGeoLocation location = new GanjoorGeoLocation()
                 {
                     Name = name,
-                    Location = point
+                    Latitude = latitude,
+                    Longitude = longitude
                 };
                 _context.GanjoorGeoLocations.Add(location);
                 await _context.SaveChangesAsync();
-                return new RServiceResult<GanjoorGeoLocationViewModel>
-                    (
-                    new GanjoorGeoLocationViewModel()
-                    {
-                        Id = location.Id,
-                        Name = location.Name,
-                        X = location.Location.X,
-                        Y = location.Location.Y
-                    }
-                    );
+                return new RServiceResult<GanjoorGeoLocation>(location);                   
             }
             catch (Exception exp)
             {
-                return new RServiceResult<GanjoorGeoLocationViewModel>(null, exp.ToString());
+                return new RServiceResult<GanjoorGeoLocation>(null, exp.ToString());
             }
         }
 
@@ -63,7 +53,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="updated"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> UpdateLocationAsync(GanjoorGeoLocationViewModel updated)
+        public async Task<RServiceResult<bool>> UpdateLocationAsync(GanjoorGeoLocation updated)
         {
             try
             {
@@ -72,8 +62,8 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<bool>(false, "اطلاعات مکان یافت نشد.");
 
                 location.Name = updated.Name;
-                location.Location.X = updated.X;
-                location.Location.Y = updated.Y;
+                location.Latitude = updated.Latitude;
+                location.Longitude = updated.Longitude;
                 _context.Update(location);
 
                 await _context.SaveChangesAsync();
@@ -114,28 +104,20 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorGeoLocationViewModel>> GetLocationAsync(int id)
+        public async Task<RServiceResult<GanjoorGeoLocation>> GetLocationAsync(int id)
         {
             try
             {
-                return new RServiceResult<GanjoorGeoLocationViewModel>
+                return new RServiceResult<GanjoorGeoLocation>
                     (
                     await _context.GanjoorGeoLocations
                     .Where(l => l.Id == id)
-                    .Select(l =>
-                        new GanjoorGeoLocationViewModel()
-                        {
-                            Id = l.Id,
-                            Name = l.Name,
-                            X = l.Location.X,
-                            Y = l.Location.Y
-                        })
                     .SingleOrDefaultAsync()
                     );
             }
             catch (Exception exp)
             {
-                return new RServiceResult<GanjoorGeoLocationViewModel>(null, exp.ToString());
+                return new RServiceResult<GanjoorGeoLocation>(null, exp.ToString());
             }
         }
 
@@ -143,27 +125,19 @@ namespace RMuseum.Services.Implementation
         /// get all locations
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorGeoLocationViewModel[]>> GetLocationsAsync()
+        public async Task<RServiceResult<GanjoorGeoLocation[]>> GetLocationsAsync()
         {
             try
             {
-                return new RServiceResult<GanjoorGeoLocationViewModel[]>
+                return new RServiceResult<GanjoorGeoLocation[]>
                     (
                     await _context.GanjoorGeoLocations
-                    .Select(l =>
-                        new GanjoorGeoLocationViewModel()
-                        {
-                            Id = l.Id,
-                            Name = l.Name,
-                            X = l.Location.X,
-                            Y = l.Location.Y
-                        })
                     .OrderBy(l => l.Name).ToArrayAsync()
                     );
             }
             catch (Exception exp)
             {
-                return new RServiceResult<GanjoorGeoLocationViewModel[]>(null, exp.ToString());
+                return new RServiceResult<GanjoorGeoLocation[]>(null, exp.ToString());
             }
         }
 

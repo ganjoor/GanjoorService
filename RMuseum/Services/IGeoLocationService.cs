@@ -1,4 +1,4 @@
-﻿using RMuseum.Models.Ganjoor.ViewModels;
+﻿using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
 using System.Threading.Tasks;
 
@@ -16,14 +16,14 @@ namespace RMuseum.Services
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-       Task<RServiceResult<GanjoorGeoLocationViewModel>> AddLocationAsync(string name, double x, double y);
+       Task<RServiceResult<GanjoorGeoLocation>> AddLocationAsync(string name, double x, double y);
 
         /// <summary>
         /// update an existing location
         /// </summary>
         /// <param name="updated"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> UpdateLocationAsync(GanjoorGeoLocationViewModel updated);
+        Task<RServiceResult<bool>> UpdateLocationAsync(GanjoorGeoLocation updated);
 
         /// <summary>
         /// delete location
@@ -37,12 +37,12 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorGeoLocationViewModel>> GetLocationAsync(int id);
+        Task<RServiceResult<GanjoorGeoLocation>> GetLocationAsync(int id);
 
         /// <summary>
         /// get all locations
         /// </summary>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorGeoLocationViewModel[]>> GetLocationsAsync();
+        Task<RServiceResult<GanjoorGeoLocation[]>> GetLocationsAsync();
     }
 }

@@ -1,7 +1,4 @@
-﻿using NetTopologySuite.Geometries;
-
-
-namespace RMuseum.Models.Ganjoor
+﻿namespace RMuseum.Models.Ganjoor
 {
     /// <summary>
     /// Geo Locations (Cities) referred by Ganjoor Metadata
@@ -19,8 +16,13 @@ namespace RMuseum.Models.Ganjoor
         public string Name { get; set; }
 
         /// <summary>
-        /// geo location
+        /// Latitude
         /// </summary>
-        public Point Location { get; set; }
+        public double Latitude { get; set; }
+
+        /// <summary>
+        /// Longitude
+        /// </summary>
+        public double Longitude { get; set; }
     }
 }

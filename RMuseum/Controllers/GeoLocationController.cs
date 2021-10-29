@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using RMuseum.Models.Auth.Memory;
-using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Services;
 using RSecurityBackend.Models.Auth.Memory;
 using System.Net;
@@ -20,7 +20,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorGeoLocationViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorGeoLocation[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetLocationsAsync()
         {
@@ -38,7 +38,7 @@ namespace RMuseum.Controllers
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorGeoLocationViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorGeoLocation))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetLocationAsync(int id)
         {
@@ -56,14 +56,14 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorGeoLocationViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorGeoLocation))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public async Task<IActionResult> AddLocationAsync([FromBody] GanjoorGeoLocationViewModel location)
+        public async Task<IActionResult> AddLocationAsync([FromBody] GanjoorGeoLocation location)
         {
             if (ReadOnlyMode)
                 return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
-            var res = await _locationService.AddLocationAsync(location.Name, location.X, location.Y);
+            var res = await _locationService.AddLocationAsync(location.Name, location.Latitude, location.Longitude);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -79,7 +79,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public async Task<IActionResult> UpdateLocationAsync([FromBody] GanjoorGeoLocationViewModel location)
+        public async Task<IActionResult> UpdateLocationAsync([FromBody] GanjoorGeoLocation location)
         {
             if (ReadOnlyMode)
                 return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");

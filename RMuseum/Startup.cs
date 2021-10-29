@@ -68,7 +68,6 @@ namespace RMuseum
                             providerOptions => {
                                 providerOptions.EnableRetryOnFailure();
                                 providerOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                                providerOptions.UseNetTopologySuite();
                                 }
                             )
                         );

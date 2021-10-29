@@ -1,0 +1,78 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.LocationsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "خاستگاه‌ها";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>@Model.LastMessage</p>
+
+<form method="post">
+    <table>
+        <tr>
+            <td>
+                نام:
+            </td>
+            <td>
+                <input asp-for="Location.Name" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                عرض جغرافیایی:
+            </td>
+            <td>
+                <input asp-for="Location.Latitude" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                طول جغرافیایی:
+            </td>
+            <td>
+                <input asp-for="Location.Longitude" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="خاستگاه جدید" />
+            </td>
+        </tr>
+    </table>
+    
+   
+   
+   
+</form>
+
+@if (Model.Locations != null)
+{
+    <table>
+        <tr>
+            <th>نام</th>
+            <th>عرض جغرافیایی</th>
+            <th>طول جغرافیایی</th>
+            <th>
+                #
+            </th>
+        </tr>
+        @foreach (var location in Model.Locations)
+        {
+            <tr id="tr-@location.Id">
+                <td>@location.Name</td>
+                <td>@location.Latitude</td>
+                <td>@location.Longitude</td>
+                <td>
+                    <a role="button" onclick="editBanner(@location.Id)" class="actionlink" title="ویرایش">✎</a>
+                    <a role="button" onclick="deleteBanner(@location.Id)" class="actionlink" title="حذف">🗑</a>
+                </td>
+            </tr>
+        }
+    </table>
+
+}
+
+

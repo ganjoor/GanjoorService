@@ -1346,14 +1346,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GeoLocationController.AddLocationAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorGeoLocationViewModel)">
+        <member name="M:RMuseum.Controllers.GeoLocationController.AddLocationAsync(RMuseum.Models.Ganjoor.GanjoorGeoLocation)">
             <summary>
             add new location
             </summary>
             <param name="location"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GeoLocationController.UpdateLocationAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorGeoLocationViewModel)">
+        <member name="M:RMuseum.Controllers.GeoLocationController.UpdateLocationAsync(RMuseum.Models.Ganjoor.GanjoorGeoLocation)">
             <summary>
             update an existing location
             </summary>
@@ -4872,9 +4872,14 @@
             name
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorGeoLocation.Location">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorGeoLocation.Latitude">
             <summary>
-            geo location
+            Latitude
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorGeoLocation.Longitude">
+            <summary>
+            Longitude
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorHealthCheckError">
@@ -6411,31 +6416,6 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel.TotalParagraphs">
             <summary>
             total paragraphs
-            </summary>
-        </member>
-        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorGeoLocationViewModel">
-            <summary>
-            geo location view model
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorGeoLocationViewModel.Id">
-            <summary>
-            id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorGeoLocationViewModel.Name">
-            <summary>
-            name
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorGeoLocationViewModel.X">
-            <summary>
-            geo location x
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorGeoLocationViewModel.Y">
-            <summary>
-            geo location y
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjooRhymeAnalysisResult">
@@ -9456,7 +9436,7 @@
             <param name="y"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGeoLocationService.UpdateLocationAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorGeoLocationViewModel)">
+        <member name="M:RMuseum.Services.IGeoLocationService.UpdateLocationAsync(RMuseum.Models.Ganjoor.GanjoorGeoLocation)">
             <summary>
             update an existing location
             </summary>
@@ -11368,11 +11348,11 @@
             add new location
             </summary>
             <param name="name"></param>
-            <param name="x"></param>
-            <param name="y"></param>
+            <param name="latitude"></param>
+            <param name="longitude"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GeoLocationService.UpdateLocationAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorGeoLocationViewModel)">
+        <member name="M:RMuseum.Services.Implementation.GeoLocationService.UpdateLocationAsync(RMuseum.Models.Ganjoor.GanjoorGeoLocation)">
             <summary>
             update an existing location
             </summary>

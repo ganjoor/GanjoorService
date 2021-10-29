@@ -154,6 +154,14 @@ namespace RMuseum.DbContext
             builder.Entity<DonationExpenditure>()
             .Property(c => c.Amount)
             .HasColumnType("decimal(18,2)");
+
+            builder.Entity<GanjoorGeoLocation>()
+              .Property(c => c.Latitude)
+              .HasColumnType("decimal(12,9)");
+
+            builder.Entity<GanjoorGeoLocation>()
+              .Property(c => c.Longitude)
+              .HasColumnType("decimal(12,9)");
         }
 
 
