@@ -43,7 +43,7 @@ namespace RMuseum.Services.Implementation
             {
                 var res =
                  await
-                 (from poet in _context.GanjoorPoets
+                 (from poet in _context.GanjoorPoets.Include(p => p.BirthLocation).Include(p => p.DeathLocation)
                   join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
                   on poet.Id equals cat.PoetId
                   where !published || poet.Published
@@ -59,6 +59,10 @@ namespace RMuseum.Services.Implementation
                       ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.gif",
                       BirthYearInLHijri = poet.BirthYearInLHijri,
                       DeathYearInLHijri = poet.DeathYearInLHijri,
+                      ValidBirthDate = poet.ValidBirthDate,
+                      ValidDeathDate = poet.ValidDeathDate,
+                      BirthPlace = poet.BirthLocation == null ? "" : poet.BirthLocation.Name,
+                      DeathPlace = poet.DeathLocation == null ? "" : poet.DeathLocation.Name,
                       PinOrder = poet.PinOrder,
                   }
                   )
@@ -281,6 +285,8 @@ namespace RMuseum.Services.Implementation
                                             ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{_context.GanjoorCategories.Where(c => c.PoetId == poet.Id && c.ParentId == null).Single().FullUrl}.gif",
                                             BirthYearInLHijri = poet.BirthYearInLHijri,
                                             DeathYearInLHijri = poet.DeathYearInLHijri,
+                                            ValidBirthDate = poet.ValidBirthDate,
+                                            ValidDeathDate = poet.ValidDeathDate,
                                             PinOrder = poet.PinOrder,
                                         }).AsNoTracking().FirstOrDefaultAsync(),
                    Cat = catViewModel
@@ -392,6 +398,8 @@ namespace RMuseum.Services.Implementation
                           Published = poet.Published,
                           ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{cat.FullUrl}.gif",
                           BirthYearInLHijri = poet.BirthYearInLHijri,
+                          ValidBirthDate = poet.ValidBirthDate,
+                          ValidDeathDate = poet.ValidDeathDate,
                           DeathYearInLHijri = poet.DeathYearInLHijri,
                           PinOrder = poet.PinOrder,
                       }
