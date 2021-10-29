@@ -44,42 +44,28 @@
 
             L.tileLayer.provider('Stamen.Watercolor').addTo(map);
 
-            var oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied : false});
-                        
+            var oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: false });
 
-            var hafezIcon = L.icon({
-                iconUrl: 'https://ganjgah.ir/api/ganjoor/poet/image/hafez.gif',
-                iconSize: [82, 100],
-                iconAnchor: [82, 100],
-                popupAnchor: [0, -28]
-            });
+            @{
+                foreach (var poet in Model.PoetsWithBirthPlaces)
+                {
+                    var url = poet.FullUrl.Substring(1);
+                    <text>
+                        var @(url)Icon = L.icon({
+                            iconUrl: '@($"{GanjooRazor.APIRoot.InternetUrl}{poet.ImageUrl}")',
+                            iconSize: [82, 100],
+                            iconAnchor: [82, 100],
+                            popupAnchor: [0, -28]
+                        });
 
-            var hafezMarker = L.marker([29.5926, 52.5836], { icon: hafezIcon });
+                        var @(url)Marker = L.marker([@poet.BirthPlaceLatitude, @poet.BirthPlaceLongitude], { icon: @(url)Icon });
 
-            hafezMarker.addTo(map);
-            oms.addMarker(hafezMarker);
+                        @(url)Marker.addTo(map);
+                        oms.addMarker(@(url)Marker);
+                    </text>
 
-            var saadiIcon = L.icon({
-                iconUrl: 'https://ganjgah.ir/api/ganjoor/poet/image/saadi.gif',
-                iconSize: [82, 100],
-                iconAnchor: [82, 100],
-                popupAnchor: [0, -28]
-            });
-
-            var saadiMarker = L.marker([29.5926, 52.5836], { icon: saadiIcon });
-            saadiMarker.addTo(map);
-            oms.addMarker(saadiMarker);
-
-            var ferdousiIcon = L.icon({
-                iconUrl: 'https://ganjgah.ir/api/ganjoor/poet/image/ferdousi.gif',
-                iconSize: [82, 100],
-                iconAnchor: [82, 100],
-                popupAnchor: [0, -28]
-            });
-
-            var ferdousiMarker = L.marker([36.2605, 59.6168], { icon: ferdousiIcon });
-            ferdousiMarker.addTo(map);
-            oms.addMarker(ferdousiMarker);
+                }
+            }
         })
     </script>
 </body>
