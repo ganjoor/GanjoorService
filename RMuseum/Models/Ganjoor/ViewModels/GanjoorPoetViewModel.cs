@@ -76,9 +76,29 @@
         public string BirthPlace { get; set; }
 
         /// <summary>
+        /// birth place latitude
+        /// </summary>
+        public double BirthPlaceLatitude { get; set; }
+
+        /// <summary>
+        /// birth place longitude
+        /// </summary>
+        public double BirthPlaceLongitude { get; set; }
+
+        /// <summary>
         /// death place
         /// </summary>
         public string DeathPlace { get; set; }
+
+        /// <summary>
+        /// death place latitude
+        /// </summary>
+        public double DeathPlaceLatitude { get; set; }
+
+        /// <summary>
+        /// death place longitude
+        /// </summary>
+        public double DeathPlaceLongitude { get; set; }
 
         public override string ToString()
         {

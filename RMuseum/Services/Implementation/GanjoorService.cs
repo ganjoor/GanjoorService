@@ -62,7 +62,11 @@ namespace RMuseum.Services.Implementation
                       ValidBirthDate = poet.ValidBirthDate,
                       ValidDeathDate = poet.ValidDeathDate,
                       BirthPlace = poet.BirthLocation == null ? "" : poet.BirthLocation.Name,
+                      BirthPlaceLatitude = poet.BirthLocation == null ? 0 :  poet.BirthLocation.Latitude,
+                      BirthPlaceLongitude = poet.BirthLocation == null ? 0 : poet.BirthLocation.Longitude,
                       DeathPlace = poet.DeathLocation == null ? "" : poet.DeathLocation.Name,
+                      DeathPlaceLatitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Latitude,
+                      DeathPlaceLongitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Longitude,
                       PinOrder = poet.PinOrder,
                   }
                   )
@@ -289,7 +293,11 @@ namespace RMuseum.Services.Implementation
                                             ValidDeathDate = poet.ValidDeathDate,
                                             PinOrder = poet.PinOrder,
                                             BirthPlace = poet.BirthLocation == null ? "" : poet.BirthLocation.Name,
+                                            BirthPlaceLatitude = poet.BirthLocation == null ? 0 : poet.BirthLocation.Latitude,
+                                            BirthPlaceLongitude = poet.BirthLocation == null ? 0 : poet.BirthLocation.Longitude,
                                             DeathPlace = poet.DeathLocation == null ? "" : poet.DeathLocation.Name,
+                                            DeathPlaceLatitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Latitude,
+                                            DeathPlaceLongitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Longitude,
                                         }).AsNoTracking().FirstOrDefaultAsync(),
                    Cat = catViewModel
                }

@@ -6975,9 +6975,29 @@
             birth place
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.BirthPlaceLatitude">
+            <summary>
+            birth place latitude
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.BirthPlaceLongitude">
+            <summary>
+            birth place longitude
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.DeathPlace">
             <summary>
             death place
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.DeathPlaceLatitude">
+            <summary>
+            death place latitude
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.DeathPlaceLongitude">
+            <summary>
+            death place longitude
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPostReportCommentViewModel">
