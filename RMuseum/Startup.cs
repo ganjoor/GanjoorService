@@ -292,6 +292,9 @@ namespace RMuseum
             //numbering service
             services.AddTransient<IGanjoorNumberingService, GanjoorNumberingService>();
 
+            //geo location service
+            services.AddTransient<IGeoLocationService, GeoLocationService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {
