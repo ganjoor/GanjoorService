@@ -10,169 +10,191 @@
 
 <p>@Html.Raw(Model.LastMessage)</p>
 
-@if(Model.PageInformation != null)
+@if (Model.PageInformation != null)
 {
-<form method="post">
-    <table style="width:100%" class="noborder">
-        <tr>
-            <td>
-                <span class="inputlabel">شناسهٔ صفحه: </span>
-            </td>
-            <td>
-                <span class="inputlabel"><a href="/?p=@Request.Query["id"]">@Request.Query["id"]</a></span>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">عنوان: </span>
-            </td>
-            <td>
-                <input asp-for="ModifyModel.Title" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">نامک: </span>
-            </td>
-            <td>
-                <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.UrlSlug" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">متن: </span>
-            </td>
-            <td>
-                <textarea asp-for="ModifyModel.HtmlText" tabindex="4" rows="20" cols="80"></textarea>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">منبع (شعر): </span>
-            </td>
-            <td>
-                <table>
-                    <tr>
-                        <td><span>نام:</span> <input asp-for="ModifyModel.SourceName" /></td>
-                    </tr>
-                    <tr>
-                        <td><span>نشانی:</span> <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.SourceUrlSlug" /></td>
-                    </tr>
-                </table>
 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">دسته‌بندی کهن (شعر): </span>
-            </td>
-            <td>
-                <table>
-                    <tr>
-                        <td><span>نام:</span> <input asp-for="ModifyModel.OldTag" /></td>
-                    </tr>
-                    <tr>
-                        <td><span>نشانی:</span> <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.OldTagPageUrl" /></td>
-                    </tr>
-                </table>
+    <script>
+        function defaultHtmlText() {
+            $('#ModifyModel_HtmlText').html('@Model.DefaultHtmlText');
+        }
+    </script>
 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">وزن (شعر): </span>
-            </td>
-            <td>
-                <input asp-for="ModifyModel.Rhythm" size="50" list="rythms" />
-                <datalist id="rythms">
-                    @if (Model.Rhythms != null)
-                        @foreach (var rhythm in Model.Rhythms)
-                        {
-                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                        }
-                </datalist>
 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">حروف قافیه (شعر): </span>
-            </td>
-            <td>
-                <input asp-for="ModifyModel.RhymeLetters" />
-                <a role="button" onclick="computePoemRhyme(@Request.Query["id"], '#ModifyModel_RhymeLetters')" class="actionlink">محاسبه</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">توضیح این ویرایش: </span>
-            </td>
-            <td>
-                <input asp-for="ModifyModel.Note" />
-
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">ذخیره</button>
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                <a href="/Admin/PageHistory?id=@Request.Query["id"]">سوابق</a>
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                <a role="button" href="/Admin/CatUtils?url=@Model.PageInformation.FullUrl" class="actionlink">مدیریت بخش متناظر</a>
-            </td>
-        </tr>
-        @if (Model.PageInformation.PoetOrCat != null)
-        {
+    <form method="post">
+        <table style="width:100%" class="noborder">
             <tr>
-                <td colspan="2">
-                    <a role="button" href="/Admin/Poet?id=@Model.PageInformation.PoetOrCat.Poet.Id" class="actionlink">شاعر</a>
+                <td>
+                    <span class="inputlabel">شناسهٔ صفحه: </span>
+                </td>
+                <td>
+                    <span class="inputlabel"><a href="/?p=@Request.Query["id"]">@Request.Query["id"]</a></span>
                 </td>
             </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">عنوان: </span>
+                </td>
+                <td>
+                    <input asp-for="ModifyModel.Title" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">نامک: </span>
+                </td>
+                <td>
+                    <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.UrlSlug" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">متن: </span>
+                </td>
+                <td>
+                    <textarea asp-for="ModifyModel.HtmlText" tabindex="4" rows="20" cols="80"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">منبع (شعر): </span>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td><span>نام:</span> <input asp-for="ModifyModel.SourceName" /></td>
+                        </tr>
+                        <tr>
+                            <td><span>نشانی:</span> <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.SourceUrlSlug" /></td>
+                        </tr>
+                    </table>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">دسته‌بندی کهن (شعر): </span>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td><span>نام:</span> <input asp-for="ModifyModel.OldTag" /></td>
+                        </tr>
+                        <tr>
+                            <td><span>نشانی:</span> <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.OldTagPageUrl" /></td>
+                        </tr>
+                    </table>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">وزن (شعر): </span>
+                </td>
+                <td>
+                    <input asp-for="ModifyModel.Rhythm" size="50" list="rythms" />
+                    <datalist id="rythms">
+                        @if (Model.Rhythms != null)
+                            @foreach (var rhythm in Model.Rhythms)
+                            {
+                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                            }
+                    </datalist>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">حروف قافیه (شعر): </span>
+                </td>
+                <td>
+                    <input asp-for="ModifyModel.RhymeLetters" />
+                    <a role="button" onclick="computePoemRhyme(@Request.Query["id"], '#ModifyModel_RhymeLetters')" class="actionlink">محاسبه</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">توضیح این ویرایش: </span>
+                </td>
+                <td>
+                    <input asp-for="ModifyModel.Note" />
+
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">ذخیره</button>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <a href="/Admin/PageHistory?id=@Request.Query["id"]">سوابق</a>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <a role="button" href="/Admin/CatUtils?url=@Model.PageInformation.FullUrl" class="actionlink">مدیریت بخش متناظر</a>
+                </td>
+            </tr>
+            @if (Model.PageInformation.PoetOrCat != null)
+            {
+                <tr>
+                    <td colspan="2">
+                        <a role="button" href="/Admin/Poet?id=@Model.PageInformation.PoetOrCat.Poet.Id" class="actionlink">شاعر</a>
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </form>
+
+    <form action="?Handler=GenerateCatPage&id=@Model.PageInformation.Id" method="post">
+        <table>
+            <tr>
+                <td>
+                    <input type="radio" asp-for="GanjoorTOC" value="0" checked />بر اساس تحلیل بخش<br />
+                    <input type="radio" asp-for="GanjoorTOC" value="1" />فقط عناوین<br />
+                    <input type="radio" asp-for="GanjoorTOC" value="2" />عنوان و مصرع اول<br />
+                    <input type="radio" asp-for="GanjoorTOC" value="3" />الفبایی با مصرع اول<br />
+                    <input type="radio" asp-for="GanjoorTOC" value="4" />الفبایی با مصرع دوم<br />
+                    <input type="radio" asp-for="GanjoorTOC" value="5" />الفبایی با بیت اول<br />
+                    <input type="radio" asp-for="GanjoorTOC" value="6" />عنوان و مصرع دوم<br />
+                    <input type="radio" asp-for="GanjoorTOC" value="7" />عنوان و بیت اول<br />
+                    <input type="radio" asp-for="GanjoorTOC" value="8" />عنوان و مصرع بند<br />
+                    <input type="radio" asp-for="GanjoorTOC" value="9" />عنوان و بیت بند<br />
+                </td>
+                <td>
+                    <button type="submit" style="width:100%;color:white;background-color:blue">تولید</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    @if (Model.PageInformation.Poem != null)
+    {
+        @if (Model.PageInformation.Poem.Previous != null)
+        {
+            <p><a href="/Admin/ModifyPage?id=@Model.PageInformation.Poem.Previous.Id">ویرایش شعر قبل</a></p>
         }
+        @if (Model.PageInformation.Poem.Next != null)
+        {
+            <p><a href="/Admin/ModifyPage?id=@Model.PageInformation.Poem.Next.Id">ویرایش شعر بعد</a></p>
+        }
+    }
 
-    </table>
-</form>
+    <p><a role="button" onclick="defaultHtmlText()" class="actionlink" title="چینش پیش‌فرض ابیات">چینش پیش‌فرض ابیات</a></p>
 
-<form action="?Handler=GenerateCatPage&id=@Model.PageInformation.Id" method="post">
+    <p><a role="button" onclick="cleanCache(@Model.PageInformation.Id)" class="actionlink" title="حذف کش صفحه">حذف کش صفحه</a></p>
+
+    <p><a role="button" onclick="rebuildSitemap()" class="actionlink" title="بازسازی نقشهٔ سایت">بازسازی نقشهٔ‌سایت</a></p>
+
+    <p><a role="button" onclick="rebuildStats()" class="actionlink" title="بازسازی صفحات آمار و اوزان عروضی">بازسازی صفحات آمار و اوزان عروضی</a></p>
+
+
     <table>
         <tr>
-            <td>
-                <input type="radio" asp-for="GanjoorTOC" value="0" checked />بر اساس تحلیل بخش<br />
-                <input type="radio" asp-for="GanjoorTOC" value="1" />فقط عناوین<br />
-                <input type="radio" asp-for="GanjoorTOC" value="2" />عنوان و مصرع اول<br />
-                <input type="radio" asp-for="GanjoorTOC" value="3" />الفبایی با مصرع اول<br />
-                <input type="radio" asp-for="GanjoorTOC" value="4" />الفبایی با مصرع دوم<br />
-                <input type="radio" asp-for="GanjoorTOC" value="5" />الفبایی با بیت اول<br />
-                <input type="radio" asp-for="GanjoorTOC" value="6" />عنوان و مصرع دوم<br />
-                <input type="radio" asp-for="GanjoorTOC" value="7" />عنوان و بیت اول<br />
-                <input type="radio" asp-for="GanjoorTOC" value="8" />عنوان و مصرع بند<br />
-                <input type="radio" asp-for="GanjoorTOC" value="9" />عنوان و بیت بند<br />
-            </td>
-            <td>
-                <button type="submit" style="width:100%;color:white;background-color:blue">تولید</button>
-            </td>
+            <td><a role="button" href="/Admin/PageDel/?url=@Model.PageInformation.FullUrl" class="actionlink">حذف صفحه</a></td>
         </tr>
     </table>
-</form>
-
-<p><a role="button" onclick="cleanCache(@Model.PageInformation.Id)" class="actionlink" title="حذف کش صفحه">حذف کش صفحه</a></p>
-
-<p><a role="button" onclick="rebuildSitemap()" class="actionlink" title="بازسازی نقشهٔ سایت">بازسازی نقشهٔ‌سایت</a></p>
-
-<p><a role="button" onclick="rebuildStats()" class="actionlink" title="بازسازی صفحات آمار و اوزان عروضی">بازسازی صفحات آمار و اوزان عروضی</a></p>
-
-
-<table>
-    <tr>
-        <td><a role="button" href="/Admin/PageDel/?url=@Model.PageInformation.FullUrl" class="actionlink">حذف صفحه</a></td>
-    </tr>
-</table>
 }

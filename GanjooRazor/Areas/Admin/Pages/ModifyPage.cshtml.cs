@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,6 +61,31 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public string LastMessage { get; set; }
 
+        public string DefaultHtmlText { get; set; }
+
+        private static string _DefHtmlText(GanjoorVerseViewModel[] verses)
+        {
+            string htmlText = "";
+            int coupletIndex = 0;
+            VersePosition position = VersePosition.Right;
+            for (int vIndex = 0; vIndex < verses.Length; vIndex++)
+            {
+                GanjoorVerseViewModel v = verses[vIndex];
+                if (position == VersePosition.Right)
+                {
+                    coupletIndex++;
+                    htmlText += $"<div class=\"b\" id=\"bn{coupletIndex}\"><div class=\"m1\"><p>{v.Text}</p></div>{Environment.NewLine}";
+                    position = VersePosition.Left;
+                }
+                else
+                {
+                    htmlText += $"<div class=\"m2\"><p>{v.Text}</p></div></div>{Environment.NewLine}";
+                    position = VersePosition.Right;
+                }
+            }
+            return htmlText.Trim();
+        }
+
         private async Task PreparePage()
         {
             
@@ -79,6 +106,11 @@ namespace GanjooRazor.Areas.Admin.Pages
             pageQuery.EnsureSuccessStatusCode();
            
             PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+            if(PageInformation.Poem != null)
+            {
+                DefaultHtmlText = _DefHtmlText(PageInformation.Poem.Verses);
+            }
 
             ModifyModel = new GanjoorModifyPageViewModel()
             {
