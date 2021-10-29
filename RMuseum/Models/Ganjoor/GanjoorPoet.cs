@@ -65,5 +65,35 @@ namespace RMuseum.Models.Ganjoor
         /// Home page pin order (zero means not pinned)
         /// </summary>
         public int PinOrder { get; set; }
+
+        /// <summary>
+        /// BirthYearInLHijri, for some poets it is only indicator of their century of birth and should not be relied as their valid birth date
+        /// </summary>
+        public bool ValidBirthDate { get; set; }
+
+        /// <summary>
+        /// DeathYearInLHijri, for some poets it is only indicator of their century of death and should not be relied as their valid death date
+        /// </summary>
+        public bool ValidDeathDate { get; set; }
+
+        /// <summary>
+        /// birth location id
+        /// </summary>
+        public int? BirthLocationId { get; set; }
+
+        /// <summary>
+        /// birth location
+        /// </summary>
+        public virtual GanjoorGeoLocation BirthLocation { get; set; }
+
+        /// <summary>
+        /// death location id
+        /// </summary>
+        public int? DeathLocationId { get; set; }
+
+        /// <summary>
+        /// death location
+        /// </summary>
+        public virtual GanjoorGeoLocation DeathLocation { get; set; }
     }
 }

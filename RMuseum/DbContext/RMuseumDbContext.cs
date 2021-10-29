@@ -371,5 +371,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorCentury> GanjoorCenturies { get; set; }
 
+        /// <summary>
+        /// ganjoor cities
+        /// </summary>
+        public DbSet<GanjoorGeoLocation> GanjoorGeoLocations { get; set; }
+
     }
 }

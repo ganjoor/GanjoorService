@@ -2103,6 +2103,11 @@
             ganjoor half centuries
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorGeoLocations">
+            <summary>
+            ganjoor cities
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -4803,6 +4808,26 @@
             reported by user
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorGeoLocation">
+            <summary>
+            Geo Locations (Cities) referred by Ganjoor Metadata
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorGeoLocation.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorGeoLocation.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorGeoLocation.Location">
+            <summary>
+            geo location
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorHealthCheckError">
             <summary>
             Ganjoor Page Health Check log
@@ -5525,6 +5550,36 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.PinOrder">
             <summary>
             Home page pin order (zero means not pinned)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.InvalidBirthDate">
+            <summary>
+            for some poets it is only indicator of their century of birth and should not be reported back as their valid birth date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.InvalidDeathDate">
+            <summary>
+            for some poets it is only indicator of their century of death and should not be reported back as their valid death date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.BirthLocationId">
+            <summary>
+            birth location id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.BirthLocation">
+            <summary>
+            birth location
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.DeathLocationId">
+            <summary>
+            death location id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoet.DeathLocation">
+            <summary>
+            death location
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
