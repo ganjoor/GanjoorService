@@ -39,8 +39,49 @@
             <td><input asp-for="Poet.BirthYearInLHijri" /> </td>
         </tr>
         <tr>
+            <td>تاریخ تولد مستند است:</td>
+            <td><input asp-for="Poet.ValidBirthDate" /> </td>
+        </tr>
+        <tr>
+            <td>زادگاه:</td>
+            <td>
+                <select asp-for="Poet.BirthPlace">
+                    @{
+                        foreach (var location in Model.Locations)
+                        {
+                            <option value="@location.Name">@location.Name</option>
+                        }
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
             <td>درگذشته:</td>
             <td><input asp-for="Poet.DeathYearInLHijri" /> </td>
+        </tr>
+        <tr>
+            <td>تاریخ وفات مستند است:</td>
+            <td><input asp-for="Poet.ValidDeathDate" /> </td>
+        </tr>
+        <tr>
+            <td>آرامگاه:</td>
+            <td>
+                <select asp-for="Poet.DeathPlace">
+                    @{
+                        foreach (var location in Model.Locations)
+                        {
+                            <option value="@location.Name">@location.Name</option>
+                        }
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <p>
+                    <a href="/Admin/Locations">خاستگاه‌ها</a>
+                </p>
+            </td>
         </tr>
         <tr>
             <td>چسبانی:</td>

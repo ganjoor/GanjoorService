@@ -272,7 +272,7 @@ namespace RMuseum.Services.Implementation
                (
                new GanjoorPoetCompleteViewModel()
                {
-                   Poet = await _context.GanjoorPoets.Where(p => p.Id == cat.PoetId)
+                   Poet = await _context.GanjoorPoets.Include(p => p.BirthLocation).Include(p => p.DeathLocation).Where(p => p.Id == cat.PoetId)
                                         .Select(poet => new GanjoorPoetViewModel()
                                         {
                                             Id = poet.Id,
@@ -288,6 +288,8 @@ namespace RMuseum.Services.Implementation
                                             ValidBirthDate = poet.ValidBirthDate,
                                             ValidDeathDate = poet.ValidDeathDate,
                                             PinOrder = poet.PinOrder,
+                                            BirthPlace = poet.BirthLocation == null ? "" : poet.BirthLocation.Name,
+                                            DeathPlace = poet.DeathLocation == null ? "" : poet.DeathLocation.Name,
                                         }).AsNoTracking().FirstOrDefaultAsync(),
                    Cat = catViewModel
                }
@@ -3127,8 +3129,14 @@ namespace RMuseum.Services.Implementation
             bool publishedChange = dbPoet.Published != poet.Published;
             dbPoet.Published = poet.Published;
             dbPoet.BirthYearInLHijri = poet.BirthYearInLHijri;
+            dbPoet.ValidBirthDate = poet.ValidBirthDate;
             dbPoet.DeathYearInLHijri = poet.DeathYearInLHijri;
+            dbPoet.ValidDeathDate = poet.ValidDeathDate;
             dbPoet.PinOrder = poet.PinOrder;
+            dbPoet.BirthLocationId = string.IsNullOrEmpty(poet.BirthPlace) ? null
+                : (await _context.GanjoorGeoLocations.Where(l => l.Name == poet.BirthPlace).SingleAsync()).Id;
+            dbPoet.DeathLocationId = string.IsNullOrEmpty(poet.DeathPlace) ? null
+               : (await _context.GanjoorGeoLocations.Where(l => l.Name == poet.DeathPlace).SingleAsync()).Id;
             _context.GanjoorPoets.Update(dbPoet);
             await _context.SaveChangesAsync();
 

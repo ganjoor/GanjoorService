@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 
@@ -26,6 +27,8 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// memory cache
         /// </summary>
         private readonly IMemoryCache _memoryCache;
+
+        
 
         /// <summary>
         /// constructor
@@ -67,6 +70,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         private async Task PreparePoet()
         {
+            await ReadLocationsAsync();
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}");
 
             response.EnsureSuccessStatusCode();
@@ -77,11 +81,54 @@ namespace GanjooRazor.Areas.Admin.Pages
             Poet = poet.Poet;
         }
 
+        public List<GanjoorGeoLocation> Locations { get; set; }
+        private async Task ReadLocationsAsync()
+        {
+            LastResult = "";
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/locations");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return;
+                    }
+
+                    response.EnsureSuccessStatusCode();
+
+                    Locations = new List<GanjoorGeoLocation>();
+                    Locations.Add
+                        (
+                        new GanjoorGeoLocation()
+                        {
+                            Id = 0,
+                            Latitude = 0,
+                            Longitude = 0,
+                            Name = ""
+                        }
+                        );
+
+                    Locations.AddRange(JsonConvert.DeserializeObject<GanjoorGeoLocation[]>(await response.Content.ReadAsStringAsync()));
+
+                }
+                else
+                {
+                    LastResult = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                }
+
+            }
+        }
+
         public async Task<IActionResult> OnGetAsync()
         {
             LastResult = "";
-            if(string.IsNullOrEmpty(Request.Query["id"]))
+            
+            if (string.IsNullOrEmpty(Request.Query["id"]))
             {
+                await ReadLocationsAsync();
                 Poet = new GanjoorPoetViewModel()
                 {
                     Nickname = "",
