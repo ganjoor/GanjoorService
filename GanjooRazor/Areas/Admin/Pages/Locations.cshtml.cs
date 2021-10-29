@@ -75,5 +75,52 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             return Page();
         }
+
+        public async Task<IActionResult> OnDeleteAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/locations/{id}");
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+
+                }
+            }
+            return new JsonResult(true);
+        }
+
+        public async Task<IActionResult> OnPutEditAsync(int id, string name, double latitude, double longitude)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    GanjoorGeoLocation model = new GanjoorGeoLocation()
+                    {
+                       Id = id,
+                       Name = name,
+                       Latitude = latitude,
+                       Longitude = longitude
+                    };
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/locations", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                }
+                else
+                {
+                    LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                }
+
+            }
+
+            return new JsonResult(true);
+        }
     }
 }

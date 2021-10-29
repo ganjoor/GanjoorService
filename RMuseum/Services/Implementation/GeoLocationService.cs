@@ -60,6 +60,13 @@ namespace RMuseum.Services.Implementation
                 var location = await _context.GanjoorGeoLocations.Where(l => l.Id == updated.Id).SingleOrDefaultAsync();
                 if (location == null)
                     return new RServiceResult<bool>(false, "اطلاعات مکان یافت نشد.");
+                updated.Name = updated.Name.Trim();
+                if (string.IsNullOrEmpty(updated.Name))
+                    return new RServiceResult<bool>(false, "نام اجباری است.");
+                if (null != await _context.GanjoorGeoLocations.Where(l => l.Name == updated.Name && l.Id != updated.Id).FirstOrDefaultAsync())
+                    return new RServiceResult<bool>(false, "نام  تکراری است.");
+                if (null != await _context.GanjoorGeoLocations.Where(l => l.Latitude == updated.Latitude && l.Longitude == updated.Longitude && l.Id != updated.Id).FirstOrDefaultAsync())
+                    return new RServiceResult<bool>(false, "مختصات  تکراری است.");
 
                 location.Name = updated.Name;
                 location.Latitude = updated.Latitude;

@@ -42,14 +42,68 @@
             </td>
         </tr>
     </table>
-    
-   
-   
-   
+
+
+
+
 </form>
 
 @if (Model.Locations != null)
 {
+    <script>
+        function editLocation(itemId) {
+            var url = '?handler=Edit';
+            var nameInput = '#name-' + itemId.toString();
+            var latInput = '#lat-' + itemId.toString();
+            var lonInput = '#lon-' + itemId.toString();
+
+            $.ajax({
+                type: "PUT",
+                url: url,
+                data: {
+                    id: itemId,
+                    name: $(nameInput).val(),
+                    latitude: $(latInput).val(),
+                    longitude: $(lonInput).val(),
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function () {
+                    alert('ردیف به درستی ویرایش شد.')
+                },
+
+            });
+        }
+
+        function deleteLocation(itemId) {
+
+            if (!confirm('آیا از حذف این ردیف اطمینان دارید؟'))
+                return;
+
+
+            $.ajax({
+                type: "DELETE",
+                url: '',
+                data: {
+                    id: itemId
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function () {
+                    var itemIdBlockId = '#tr-' + itemId;
+                    $(itemIdBlockId).remove();
+                },
+            });
+    }
+    </script>
     <table>
         <tr>
             <th>نام</th>
@@ -61,15 +115,15 @@
         </tr>
         @foreach (var location in Model.Locations)
         {
-            <tr id="tr-@location.Id">
-                <td>@location.Name</td>
-                <td>@location.Latitude</td>
-                <td>@location.Longitude</td>
-                <td>
-                    <a role="button" onclick="editBanner(@location.Id)" class="actionlink" title="ویرایش">✎</a>
-                    <a role="button" onclick="deleteBanner(@location.Id)" class="actionlink" title="حذف">🗑</a>
-                </td>
-            </tr>
+    <tr id="tr-@location.Id">
+        <td><input type="text" name="name-@location.Id" id="name-@location.Id" value="@location.Name" /></td>
+        <td><input type="text" name="lat-@location.Id" id="lat-@location.Id" value="@location.Latitude" /></td>
+        <td><input type="text" name="lon-@location.Id" id="lon-@location.Id" value="@location.Longitude" /></td>
+        <td>
+            <a role="button" onclick="editLocation(@location.Id)" class="actionlink" title="ویرایش">✎</a>
+            <a role="button" onclick="deleteLocation(@location.Id)" class="actionlink" title="حذف">🗑</a>
+        </td>
+    </tr>
         }
     </table>
 
