@@ -77,7 +77,7 @@ namespace RMuseum.Services.Implementation
 
                                             await jobProgressServiceEF.UpdateJob(job.Id, poet.Id);
 
-                                            string gdbFile = (await _ExportToSqlite(context, poet.Id, outDir, null, true)).Result;
+                                            string gdbFile = (await _ExportToSqlite(context, poet.Id, outDir, null, false)).Result;
                                             string pngFile = Path.Combine(imgDir, $"{poet.Id}.png");
                                             bool hasImage = File.Exists(pngFile);
 
