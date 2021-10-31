@@ -26,6 +26,9 @@
     <script src="~/js/leaflet-providers.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
     <script>
+
+
+
         var myGeoJSONPath = '/json/world.json';
         var myCustomStyle = {
             stroke: true,
@@ -46,25 +49,21 @@
 
             var oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: false });
 
-            @{
-                foreach (var poet in Model.PoetsWithBirthPlaces)
-                {
-                    var url = poet.FullUrl.Substring(1);
-                    <text>
-                        var @(url)Icon = L.icon({
-                            iconUrl: '@($"{GanjooRazor.APIRoot.InternetUrl}{poet.ImageUrl}")',
+            var poets = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PoetsWithBirthPlaces, Newtonsoft.Json.Formatting.Indented)));
+
+            for (var i = 0; i < poets.length; i++) {
+                var poet = poets[i];
+                var icon = L.icon({
+                    iconUrl: poet.ImageUrl,
                             iconSize: [82, 100],
                             iconAnchor: [82, 100],
                             popupAnchor: [0, -28]
                         });
 
-                        var @(url)Marker = L.marker([@poet.BirthPlaceLatitude, @poet.BirthPlaceLongitude], { icon: @(url)Icon });
+                        var marker = L.marker([poet.BirthPlaceLatitude, poet.BirthPlaceLongitude], { icon: icon });
 
-                        @(url)Marker.addTo(map);
-                        oms.addMarker(@(url)Marker);
-                    </text>
-
-                }
+                        marker.addTo(map);
+                        oms.addMarker(marker);
             }
         })
     </script>

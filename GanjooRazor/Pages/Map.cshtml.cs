@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -26,6 +25,11 @@ namespace GanjooRazor.Pages
             var poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
 
             PoetsWithBirthPlaces = poets.Where(p => !string.IsNullOrEmpty(p.BirthPlace)).ToList();
+
+            foreach (var poet in PoetsWithBirthPlaces)
+            {
+                poet.ImageUrl = $"{APIRoot.InternetUrl}{poet.ImageUrl}";
+            }
         }
 
         public async Task<IActionResult> OnGetAsync()
