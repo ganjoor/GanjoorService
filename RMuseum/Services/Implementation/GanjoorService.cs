@@ -62,7 +62,7 @@ namespace RMuseum.Services.Implementation
                       ValidBirthDate = poet.ValidBirthDate,
                       ValidDeathDate = poet.ValidDeathDate,
                       BirthPlace = poet.BirthLocation == null ? "" : poet.BirthLocation.Name,
-                      BirthPlaceLatitude = poet.BirthLocation == null ? 0 :  poet.BirthLocation.Latitude,
+                      BirthPlaceLatitude = poet.BirthLocation == null ? 0 : poet.BirthLocation.Latitude,
                       BirthPlaceLongitude = poet.BirthLocation == null ? 0 : poet.BirthLocation.Longitude,
                       DeathPlace = poet.DeathLocation == null ? "" : poet.DeathLocation.Name,
                       DeathPlaceLatitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Latitude,
@@ -2871,7 +2871,7 @@ namespace RMuseum.Services.Implementation
                        async token =>
                        {
                            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
-                       {
+                           {
                                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                                var job = (await jobProgressServiceEF.NewJob($"Updating PageChildren for {dbPage.Id}", "Updating")).Result;
                                try
@@ -3210,7 +3210,17 @@ namespace RMuseum.Services.Implementation
                 Name = poet.Name,
                 Nickname = poet.Nickname,
                 Description = poet.Description,
-                Published = poet.Published
+                Published = poet.Published,
+                BirthYearInLHijri = poet.BirthYearInLHijri,
+                ValidBirthDate = poet.ValidBirthDate,
+                DeathYearInLHijri = poet.DeathYearInLHijri,
+                ValidDeathDate = poet.ValidDeathDate,
+                PinOrder = poet.PinOrder,
+                BirthLocationId = string.IsNullOrEmpty(poet.BirthPlace) ? null
+                : (await _context.GanjoorGeoLocations.Where(l => l.Name == poet.BirthPlace).SingleAsync()).Id,
+                DeathLocationId = string.IsNullOrEmpty(poet.DeathPlace) ? null
+               : (await _context.GanjoorGeoLocations.Where(l => l.Name == poet.DeathPlace).SingleAsync()).Id
+
             };
 
             _context.GanjoorPoets.Add(dbPoet);
