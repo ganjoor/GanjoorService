@@ -3201,6 +3201,15 @@ namespace RMuseum.Services.Implementation
 
             var id = 1 + await _context.GanjoorPoets.MaxAsync(p => p.Id);
 
+            for (int i = 2; i < id; i++)
+            {
+                if(!(await _context.GanjoorPoets.Where(p => p.Id == i).AnyAsync()))
+                {
+                    id = i;
+                    break;
+                }
+            }
+
             if (string.IsNullOrEmpty(poet.Description))
                 poet.Description = "";
 
@@ -3304,9 +3313,10 @@ namespace RMuseum.Services.Implementation
                                 {
                                     var pages = await context.GanjoorPages.Where(p => p.PoetId == id).ToListAsync();
                                     context.GanjoorPages.RemoveRange(pages);
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 50, "Deleting page and Querying the poet");
                                     var poet = await context.GanjoorPoets.Where(p => p.Id == id).SingleAsync();
                                     context.GanjoorPoets.Remove(poet);
-                                    await jobProgressServiceEF.UpdateJob(job.Id, 99);
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 99, "Deleting poet");
                                     await context.SaveChangesAsync();
                                     await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                 }
