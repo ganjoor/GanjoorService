@@ -3313,7 +3313,7 @@ namespace RMuseum.Services.Implementation
                                 {
                                     var pages = await context.GanjoorPages.Where(p => p.PoetId == id).ToListAsync();
                                     context.GanjoorPages.RemoveRange(pages);
-                                    await jobProgressServiceEF.UpdateJob(job.Id, 50, "Deleting page and Querying the poet");
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 50, "Deleting page and Querying the poet - if no progress unplublish and regen group by centuries");
                                     var poet = await context.GanjoorPoets.Where(p => p.Id == id).SingleAsync();
                                     context.GanjoorPoets.Remove(poet);
                                     await jobProgressServiceEF.UpdateJob(job.Id, 99, "Deleting poet");
