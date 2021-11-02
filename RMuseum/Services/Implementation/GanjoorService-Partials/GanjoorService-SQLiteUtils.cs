@@ -598,8 +598,20 @@ namespace RMuseum.Services.Implementation
 
                     var poetCatId = 1 + await context.GanjoorCategories.MaxAsync(c => c.Id);
 
-                    string url = GPersianTextSync.Farglisize(cat.text);
-                    switch(cat.text)
+                    string catTitle = cat.text;
+
+                    string url = GPersianTextSync.Farglisize(catTitle);
+                    if(catTitle.IndexOf('|') != -1)
+                    {
+                        string[] catParts = catTitle.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                        if(catParts.Length == 2)
+                        {
+                            catTitle = catParts[0].Trim();
+                            url = catParts[1].Trim();
+                        }
+                    }
+                    else
+                    switch(catTitle)
                     {
                         case "دیوان اشعار":
                             url = "divan";
@@ -694,7 +706,7 @@ namespace RMuseum.Services.Implementation
                     {
                         Id = poetCatId,
                         PoetId = poetId,
-                        Title = cat.text,
+                        Title = catTitle,
                         UrlSlug = url,
                         FullUrl = $"{parentCat.FullUrl}/{url}",
                         ParentId = parentCat.Id
