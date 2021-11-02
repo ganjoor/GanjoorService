@@ -760,14 +760,27 @@ namespace RMuseum.Services.Implementation
                     poemNumber++;
                     await jobProgressServiceEF.UpdateJob(job.Id, poemNumber, "", false);
 
+                    string title = poem.title;
+                    string urlSlug = $"sh{poemNumber}";
+                    if (title.IndexOf('|') != -1)
+                    {
+                        string[] titleParts = title.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                        if (titleParts.Length == 2)
+                        {
+                            title = titleParts[0].Trim();
+                            urlSlug = titleParts[1].Trim();
+                        }
+                    }
+                    
+
                     GanjoorPoem dbPoem = new GanjoorPoem()
                     {
                         Id = poemId,
                         CatId = parentCat.Id,
                         Title = poem.title,
-                        UrlSlug = $"sh{poemNumber}",
+                        UrlSlug = urlSlug,
                         FullTitle = $"{parentFullTitle} » {poem.title}",
-                        FullUrl = $"{parentCat.FullUrl}/sh{poemNumber}",
+                        FullUrl = $"{parentCat.FullUrl}/{urlSlug}",
                     };
 
                     List<GanjoorVerse> poemVerses = new List<GanjoorVerse>();
