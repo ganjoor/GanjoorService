@@ -777,9 +777,9 @@ namespace RMuseum.Services.Implementation
                     {
                         Id = poemId,
                         CatId = parentCat.Id,
-                        Title = poem.title,
+                        Title = title,
                         UrlSlug = urlSlug,
-                        FullTitle = $"{parentFullTitle} » {poem.title}",
+                        FullTitle = $"{parentFullTitle} » {title}",
                         FullUrl = $"{parentCat.FullUrl}/{urlSlug}",
                     };
 
