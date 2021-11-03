@@ -49,8 +49,9 @@
 
             var oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: false });
 
-            var poets = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PoetsWithBirthPlaces, Newtonsoft.Json.Formatting.Indented)));
+            var poetsgroups = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PoetGroupsWithBirthPlaces, Newtonsoft.Json.Formatting.Indented)));
 
+            var poets = poetsgroups[0].Poets;
             for (var i = 0; i < poets.length; i++) {
                 var poet = poets[i];
                 var icon = L.icon({

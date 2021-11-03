@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,26 +13,23 @@ namespace GanjooRazor.Pages
 {
     public class MapModel : PageModel
     {
-        /// <summary>
-        /// Poets
-        /// </summary>
-        public List<GanjoorPoetViewModel> PoetsWithBirthPlaces { get; set; }
-
-        private async Task _PreparePoets()
+        private async Task<List<GanjoorPoetViewModel>> _PreparePoets()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
             response.EnsureSuccessStatusCode();
             var poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
 
-            PoetsWithBirthPlaces = poets.Where(p => !string.IsNullOrEmpty(p.BirthPlace)).ToList();
+            var poetsWithBirthPlaces = poets.Where(p => !string.IsNullOrEmpty(p.BirthPlace)).ToList();
 
-            foreach (var poet in PoetsWithBirthPlaces)
+            foreach (var poet in poetsWithBirthPlaces)
             {
                 poet.ImageUrl = $"{APIRoot.InternetUrl}{poet.ImageUrl}";
             }
+
+            return poetsWithBirthPlaces;
         }
 
-        
+
         public List<GanjoorCenturyViewModel> PoetGroupsWithBirthPlaces { get; set; }
 
         private async Task _PreparePoetGroups()
@@ -41,10 +38,20 @@ namespace GanjooRazor.Pages
             response.EnsureSuccessStatusCode();
             var poetGroups = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCenturyViewModel>>();
             PoetGroupsWithBirthPlaces = new List<GanjoorCenturyViewModel>();
+            PoetGroupsWithBirthPlaces.Add
+                (
+                new GanjoorCenturyViewModel()
+                {
+                    Id = 0,
+                    Name = "همهٔ اعصار",
+                    ShowInTimeLine = true,
+                    Poets = await _PreparePoets()
+                }
+                );
             foreach (var poetGroup in poetGroups)
             {
                 poetGroup.Poets = poetGroup.Poets.Where(p => !string.IsNullOrEmpty(p.BirthPlace)).ToList();
-                if(poetGroup.Poets.Count > 0)
+                if (poetGroup.Poets.Count > 0)
                 {
                     PoetGroupsWithBirthPlaces.Add(poetGroup);
                 }
@@ -53,7 +60,6 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            await _PreparePoets();
             await _PreparePoetGroups();
             return Page();
         }
@@ -68,7 +74,7 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly IMemoryCache _memoryCache;
 
-       
+
         public MapModel(IConfiguration configuration,
             HttpClient httpClient,
             IMemoryCache memoryCache
