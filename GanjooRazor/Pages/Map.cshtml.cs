@@ -18,11 +18,17 @@ namespace GanjooRazor.Pages
         /// </summary>
         public List<GanjoorPoetViewModel> PoetsWithBirthPlaces { get; set; }
 
-        private async Task preparePoets()
+        private async Task _PreparePoets()
         {
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
-            response.EnsureSuccessStatusCode();
-            var poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
+            var cacheKey = $"/api/ganjoor/poets";
+            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
+            {
+                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
+                response.EnsureSuccessStatusCode();
+                poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
+                _memoryCache.Set(cacheKey, poets);
+            }
+
 
             PoetsWithBirthPlaces = poets.Where(p => !string.IsNullOrEmpty(p.BirthPlace)).ToList();
 
@@ -32,9 +38,29 @@ namespace GanjooRazor.Pages
             }
         }
 
+        
+        public List<GanjoorCenturyViewModel> PoetGroupsWithBirthPlaces { get; set; }
+
+        private async Task _PreparePoetGroups()
+        {
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/centuries");
+            response.EnsureSuccessStatusCode();
+            var poetGroups = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCenturyViewModel>>();
+            PoetGroupsWithBirthPlaces = new List<GanjoorCenturyViewModel>();
+            foreach (var poetGroup in poetGroups)
+            {
+                poetGroup.Poets = poetGroup.Poets.Where(p => !string.IsNullOrEmpty(p.BirthPlace)).ToList();
+                if(poetGroup.Poets.Count > 0)
+                {
+                    PoetGroupsWithBirthPlaces.Add(poetGroup);
+                }
+            }
+        }
+
         public async Task<IActionResult> OnGetAsync()
         {
-            await preparePoets();
+            await _PreparePoets();
+            await _PreparePoetGroups();
             return Page();
         }
 
