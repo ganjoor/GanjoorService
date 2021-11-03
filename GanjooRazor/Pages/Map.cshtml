@@ -1,4 +1,4 @@
-﻿@page
+﻿@page 
 @model GanjooRazor.Pages.MapModel
 @{
     Layout = null;
@@ -16,25 +16,23 @@
             background-color: #c5e8ff;
         }
     </style>
-</head>
-
-<body>
-    <div id="map" style="height: 600px"></div>
-
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="~/js/leaflet.js"></script>
     <script src="~/js/leaflet-providers.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
     <script>
-
-
-
+        var poetsgroups = [];
+        var poetGroupIndex = 0;
+        var map;
+        var oms;
+        var layerGroup;
         var myGeoJSONPath = '/json/world.json';
         var myCustomStyle = {
             stroke: true,
             weight: 1,
             color: '#300',
         }
+
         $.getJSON(myGeoJSONPath, function (data) {
             var map = L.map('map').setView([34, 53.6880], 5);
 
@@ -47,26 +45,60 @@
 
             L.tileLayer.provider('Stamen.Watercolor').addTo(map);
 
-            var oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: false });
+            oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: false });
 
-            var poetsgroups = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PoetGroupsWithBirthPlaces, Newtonsoft.Json.Formatting.Indented)));
+            poetsgroups = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PoetGroupsWithBirthPlaces, Newtonsoft.Json.Formatting.Indented)));
+
+            layerGroup = L.layerGroup().addTo(map);
 
             var poets = poetsgroups[0].Poets;
             for (var i = 0; i < poets.length; i++) {
                 var poet = poets[i];
                 var icon = L.icon({
                     iconUrl: poet.ImageUrl,
-                            iconSize: [82, 100],
-                            iconAnchor: [82, 100],
-                            popupAnchor: [0, -28]
-                        });
+                    iconSize: [82, 100],
+                    iconAnchor: [82, 100],
+                    popupAnchor: [0, -28]
+                });
 
-                        var marker = L.marker([poet.BirthPlaceLatitude, poet.BirthPlaceLongitude], { icon: icon });
+                marker = L.marker([poet.BirthPlaceLatitude, poet.BirthPlaceLongitude], { icon: icon });
 
-                        marker.addTo(map);
-                        oms.addMarker(marker);
+                marker.addTo(layerGroup);
+                oms.addMarker(marker);
             }
-        })
+        });
+
+
+        function onSelectedCenturyChanged() {
+            var index = document.getElementById('century').value;
+            layerGroup.clearLayers();
+            var poets = poetsgroups[index].Poets;
+            for (var i = 0; i < poets.length; i++) {
+                var poet = poets[i];
+                var icon = L.icon({
+                    iconUrl: poet.ImageUrl,
+                    iconSize: [82, 100],
+                    iconAnchor: [82, 100],
+                    popupAnchor: [0, -28]
+                });
+
+                var marker = L.marker([poet.BirthPlaceLatitude, poet.BirthPlaceLongitude], { icon: icon });
+
+                marker.addTo(layerGroup);
+                oms.addMarker(marker);
+            }
+        }
     </script>
+</head>
+
+<body>
+    <div id="map" style="height: 600px"></div>
+    <select name="century" id="century" onchange="onSelectedCenturyChanged()">
+        @for (int i = 0; i < Model.PoetGroupsWithBirthPlaces.Count; i++)
+        {
+            <option value="@i">@Model.PoetGroupsWithBirthPlaces[i].Name</option>
+        }
+        
+    </select>
 </body>
 </html>

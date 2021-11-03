@@ -50,9 +50,15 @@ namespace GanjooRazor.Pages
                 );
             foreach (var poetGroup in poetGroups)
             {
+                if (poetGroup.Id == 0)
+                    continue;
                 poetGroup.Poets = poetGroup.Poets.Where(p => !string.IsNullOrEmpty(p.BirthPlace)).ToList();
                 if (poetGroup.Poets.Count > 0)
                 {
+                    foreach (var poet in poetGroup.Poets)
+                    {
+                        poet.ImageUrl = $"{APIRoot.InternetUrl}{poet.ImageUrl}";
+                    }
                     PoetGroupsWithBirthPlaces.Add(poetGroup);
                 }
             }
@@ -69,19 +75,13 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly HttpClient _httpClient;
 
-        /// <summary>
-        /// memory cache
-        /// </summary>
-        private readonly IMemoryCache _memoryCache;
 
 
-        public MapModel(IConfiguration configuration,
-            HttpClient httpClient,
-            IMemoryCache memoryCache
+        public MapModel(
+            HttpClient httpClient
             )
         {
             _httpClient = httpClient;
-            _memoryCache = memoryCache;
         }
     }
 }
