@@ -20,15 +20,9 @@ namespace GanjooRazor.Pages
 
         private async Task _PreparePoets()
         {
-            var cacheKey = $"/api/ganjoor/poets";
-            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
-            {
-                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
-                response.EnsureSuccessStatusCode();
-                poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-                _memoryCache.Set(cacheKey, poets);
-            }
-
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
+            response.EnsureSuccessStatusCode();
+            var poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
 
             PoetsWithBirthPlaces = poets.Where(p => !string.IsNullOrEmpty(p.BirthPlace)).ToList();
 
@@ -74,17 +68,12 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly IMemoryCache _memoryCache;
 
-        /// <summary>
-        /// configration file reader (appsettings.json)
-        /// </summary>
-        private readonly IConfiguration _configuration;
-
+       
         public MapModel(IConfiguration configuration,
             HttpClient httpClient,
             IMemoryCache memoryCache
             )
         {
-            _configuration = configuration;
             _httpClient = httpClient;
             _memoryCache = memoryCache;
         }
