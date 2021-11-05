@@ -61,7 +61,7 @@
                 for (var i = 0; i < poetsgroups[index].Poets.length; i++) {
                     if (poetsgroups[index].Poets[i].Name == marker.desc) {
                         poetDesc = '<a target="_blank" href="' + poetsgroups[index].Poets[i].FullUrl+'">' + poetsgroups[index].Poets[i].Name + '</a>'
-                        document.getElementById('maincnt').innerHTML = poetDesc;
+                        document.getElementById('poet').innerHTML = poetDesc;
                         break;
                     }
                 }
@@ -134,11 +134,16 @@
 </head>
 
 <body>
-    <div id="fa">
-        <div id="map" style="height: 500px"></div>
-        <input type="range" id="rangeInput" name="rangeInput" step="1" min="0" max="@Model.PoetGroupsWithBirthPlaces.Count" value="0">
+    <div id="fa" style="position:absolute;top:0px;bottom:0px;width:100%">
+        <div id="map" style="height: 550px"></div>
+        <input type="range" id="rangeInput" name="rangeInput" step="1" min="0" max="@(Model.PoetGroupsWithBirthPlaces.Count-1)" value="0">
         <div class="century" id="rangeText"></div>
-        <div id="maincnt"></div>
+        <div id="poet"></div>
+        <div id="maincnt">
+            <p>
+                این نقشه بر اساس زادگاه سخنوران ساخته شده است. زادگاه برخی از آنان محل مناقشه است که قول مشهور برای انتخاب زادگاهشان مورد مراجعه قرار گرفته است. با انتخاب نشان نخستین سخنورِ شهرهایی مثل «شیراز» که زادگاه سخنوران متعددی است می‌توانید نشان سخنوران دیگر آن شهر را هم ببینید. با لمس یا انتخاب نام هر سخن‌سرا به صفحهٔ متناظر او در گنجور هدایت می‌شوید.
+            </p>
         </div>
+    </div>
 </body>
 </html>
