@@ -16,6 +16,9 @@
         .leaflet-container {
             background-color: #c5e8ff;
         }
+        .leaflet-popup-content{
+            font-family: 'Vazir'
+        }
     </style>
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="~/js/leaflet.js"></script>
@@ -46,9 +49,27 @@
 
             L.tileLayer.provider('Stamen.Watercolor').addTo(map);
 
-            oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: false });
+            oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
 
             poetsgroups = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PoetGroupsWithBirthPlaces, Newtonsoft.Json.Formatting.Indented)));
+
+            var popup = new L.Popup();
+            oms.addListener('click', function (marker) {
+                
+                var poetDesc = marker.desc;
+                var index = $('#rangeInput').val();
+                for (var i = 0; i < poetsgroups[index].Poets.length; i++) {
+                    if (poetsgroups[index].Poets[i].Name == marker.desc) {
+                        poetDesc = '<a target="_blank" href="' + poetsgroups[index].Poets[i].FullUrl+'">' + poetsgroups[index].Poets[i].Name + '</a>'
+                        document.getElementById('maincnt').innerHTML = poetDesc;
+                        break;
+                    }
+                }
+
+                popup.setContent(poetDesc);
+                popup.setLatLng(marker.getLatLng());
+                map.openPopup(popup);
+            });
 
             var rangeValues = [];
 
@@ -71,6 +92,8 @@
                 });
 
                 marker = L.marker([poet.BirthPlaceLatitude, poet.BirthPlaceLongitude], { icon: icon });
+
+                marker.desc = poet.Name;
 
                 marker.addTo(layerGroup);
                 oms.addMarker(marker);
@@ -97,6 +120,8 @@
 
                         var marker = L.marker([poet.BirthPlaceLatitude, poet.BirthPlaceLongitude], { icon: icon });
 
+                        marker.desc = poet.Name;
+
                         marker.addTo(layerGroup);
                         oms.addMarker(marker);
                     }
@@ -112,8 +137,8 @@
     <div id="fa">
         <div id="map" style="height: 500px"></div>
         <input type="range" id="rangeInput" name="rangeInput" step="1" min="0" max="@Model.PoetGroupsWithBirthPlaces.Count" value="0">
-        <div class="century" id="rangeText">
+        <div class="century" id="rangeText"></div>
+        <div id="maincnt"></div>
         </div>
-    </div>
 </body>
 </html>
