@@ -30,7 +30,7 @@ namespace GanjooRazor.Pages
         /// <summary>
         /// configration file reader (appsettings.json)
         /// </summary>
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration Configuration;
 
         /// <summary>
         /// HttpClient instance
@@ -53,7 +53,7 @@ namespace GanjooRazor.Pages
             IMemoryCache memoryCache
             )
         {
-            _configuration = configuration;
+            Configuration = configuration;
             _httpClient = httpClient;
             _memoryCache = memoryCache;
         }
@@ -511,6 +511,10 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnGetAsync()
         {
+            if(bool.Parse(Configuration["MaintenanceMode"]))
+            {
+                return StatusCode(503);
+            }
             LastError = "";
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
             CanEdit = Request.Cookies["CanEdit"] == "True";
@@ -519,7 +523,7 @@ namespace GanjooRazor.Pages
             IsPoemPage = false;
             IsHomePage = Request.Path == "/";
             PinterestUrl = Request.Query["pinterest_url"];
-            ViewData["GoogleAnalyticsCode"] = _configuration["GoogleAnalyticsCode"];
+            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
             GoogleBreadCrumbList breadCrumbList = new GoogleBreadCrumbList();
             Banner = null;
 
