@@ -1051,3 +1051,7 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
 .comment-author {
     background: rgba(255, 255, 255, 0.5);
 }
+
+#rangeInput {
+    width: 100%;
+}

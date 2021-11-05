@@ -10,6 +10,7 @@
     <title>نقشهٔ گنجور</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
+    <link href="/css/p8.css?version=13" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/css/leaflet.css" />
     <style type="text/css">
         .leaflet-container {
@@ -49,6 +50,14 @@
 
             poetsgroups = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PoetGroupsWithBirthPlaces, Newtonsoft.Json.Formatting.Indented)));
 
+            var rangeValues = [];
+
+            for (var i = 0; i < poetsgroups.length; i++) {
+                rangeValues.push(poetsgroups[i].Name);
+            }
+
+            $('#rangeText').text(poetsgroups[0].Name);
+
             layerGroup = L.layerGroup().addTo(map);
 
             var poets = poetsgroups[0].Poets;
@@ -68,37 +77,43 @@
             }
         });
 
+        $(function () {
+            $('#rangeInput').on('input change', function () {
+                var val = $(this).val();
+                if (val >= 0 && val < poetsgroups.length) {
+                    $('#rangeText').text(poetsgroups[val].Name);
 
-        function onSelectedCenturyChanged() {
-            var index = document.getElementById('century').value;
-            layerGroup.clearLayers();
-            var poets = poetsgroups[index].Poets;
-            for (var i = 0; i < poets.length; i++) {
-                var poet = poets[i];
-                var icon = L.icon({
-                    iconUrl: poet.ImageUrl,
-                    iconSize: [82, 100],
-                    iconAnchor: [82, 100],
-                    popupAnchor: [0, -28]
-                });
+                    var index = $(this).val();
+                    layerGroup.clearLayers();
+                    var poets = poetsgroups[index].Poets;
+                    for (var i = 0; i < poets.length; i++) {
+                        var poet = poets[i];
+                        var icon = L.icon({
+                            iconUrl: poet.ImageUrl,
+                            iconSize: [82, 100],
+                            iconAnchor: [82, 100],
+                            popupAnchor: [0, -28]
+                        });
 
-                var marker = L.marker([poet.BirthPlaceLatitude, poet.BirthPlaceLongitude], { icon: icon });
+                        var marker = L.marker([poet.BirthPlaceLatitude, poet.BirthPlaceLongitude], { icon: icon });
 
-                marker.addTo(layerGroup);
-                oms.addMarker(marker);
-            }
-        }
+                        marker.addTo(layerGroup);
+                        oms.addMarker(marker);
+                    }
+                }
+                
+            });
+
+        });
     </script>
 </head>
 
 <body>
-    <div id="map" style="height: 600px"></div>
-    <select name="century" id="century" onchange="onSelectedCenturyChanged()">
-        @for (int i = 0; i < Model.PoetGroupsWithBirthPlaces.Count; i++)
-        {
-            <option value="@i">@Model.PoetGroupsWithBirthPlaces[i].Name</option>
-        }
-        
-    </select>
+    <div id="fa">
+        <div id="map" style="height: 500px"></div>
+        <input type="range" id="rangeInput" name="rangeInput" step="1" min="0" max="@Model.PoetGroupsWithBirthPlaces.Count" value="0">
+        <div class="century" id="rangeText">
+        </div>
+    </div>
 </body>
 </html>
