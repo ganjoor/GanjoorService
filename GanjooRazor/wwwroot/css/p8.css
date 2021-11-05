@@ -1052,6 +1052,31 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     background: rgba(255, 255, 255, 0.5);
 }
 
+#map {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    width: 100%;
+}
+
+#map-guide {
+    position: absolute;
+    height: 250px;
+    bottom: 50px;
+    width: 90%;
+    left: 5%;
+    z-index: 1;
+    text-align: center;
+    font-family: Vazir;
+    font-size: 1em;
+    background: transparent url('/image/pbk-b.jpg') top center repeat scroll;
+    display: block;
+    background-color: #fc9;
+    border: 2px solid #300;
+    border-radius: 20px;
+    padding: 20px;
+}
+
 #rangeInput {
     width: 100%;
 }

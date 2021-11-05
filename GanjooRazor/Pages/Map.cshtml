@@ -9,14 +9,16 @@
 <head>
     <title>نقشهٔ گنجور</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
     <meta charset="utf-8" />
-    <link href="/css/p8.css?version=13" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=14" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/css/leaflet.css" />
     <style>
         .leaflet-container {
             background-color: #c5e8ff;
         }
-        .leaflet-popup-content{
+
+        .leaflet-popup-content {
             font-family: 'Vazir'
         }
     </style>
@@ -27,6 +29,8 @@
     <script>
         var poetsgroups = [];
         var poetGroupIndex = 0;
+        var iconWidth = 41;
+        var iconHeight = 50;
         var map;
         var oms;
         var layerGroup;
@@ -55,7 +59,7 @@
 
             var popup = new L.Popup();
             oms.addListener('click', function (marker) {
-                
+
                 var poetDesc = marker.desc;
                 var index = $('#rangeInput').val();
                 for (var i = 0; i < poetsgroups[index].Poets.length; i++) {
@@ -86,8 +90,8 @@
                 var poet = poets[i];
                 var icon = L.icon({
                     iconUrl: poet.ImageUrl,
-                    iconSize: [82, 100],
-                    iconAnchor: [82, 100],
+                    iconSize: [iconWidth, iconHeight],
+                    iconAnchor: [iconWidth, iconHeight],
                     popupAnchor: [0, -28]
                 });
 
@@ -105,6 +109,7 @@
                 var val = $(this).val();
                 if (val >= 0 && val < poetsgroups.length) {
                     $('#rangeText').text(poetsgroups[val].Name);
+                    document.getElementById('poet').innerHTML = '';
 
                     var index = $(this).val();
                     layerGroup.clearLayers();
@@ -113,8 +118,8 @@
                         var poet = poets[i];
                         var icon = L.icon({
                             iconUrl: poet.ImageUrl,
-                            iconSize: [82, 100],
-                            iconAnchor: [82, 100],
+                            iconSize: [iconWidth, iconHeight],
+                            iconAnchor: [iconWidth, iconHeight],
                             popupAnchor: [0, -28]
                         });
 
@@ -124,9 +129,10 @@
 
                         marker.addTo(layerGroup);
                         oms.addMarker(marker);
+
                     }
                 }
-                
+
             });
 
         });
@@ -134,15 +140,16 @@
 </head>
 
 <body>
-    <div id="fa" style="position:absolute;top:0px;bottom:0px;width:100%">
-        <div id="map" style="height: 550px"></div>
-        <input type="range" id="rangeInput" name="rangeInput" step="1" min="0" max="@(Model.PoetGroupsWithBirthPlaces.Count-1)" value="0">
-        <div class="century" id="rangeText"></div>
-        <div id="poet"></div>
-        <div id="maincnt">
-            <p>
-                این نقشه بر اساس زادگاه سخنوران ساخته شده است. زادگاه برخی از آنان محل مناقشه است که قول مشهور برای انتخاب زادگاهشان مورد مراجعه قرار گرفته است. با انتخاب نشان نخستین سخنورِ شهرهایی مثل «شیراز» که زادگاه سخنوران متعددی است می‌توانید نشان سخنوران دیگر آن شهر را هم ببینید. با لمس یا انتخاب نام هر سخن‌سرا به صفحهٔ متناظر او در گنجور هدایت می‌شوید.
-            </p>
+    <div id="map" >
+        <div id="map-guide">
+            <input type="range" id="rangeInput" name="rangeInput" step="1" min="0" max="@(Model.PoetGroupsWithBirthPlaces.Count-1)" value="0">
+            <div class="century" id="rangeText"></div>
+            <div id="poet"></div>
+            <div>
+                <p>
+                    این نقشه بر اساس زادگاه سخنوران ساخته شده است. با انتخاب نشان نخستین سخنورِ شهرهایی مثل «شیراز» که زادگاه سخنوران متعددی است می‌توانید نشان سخنوران دیگر آن شهر را هم ببینید. با لمس یا انتخاب نام هر سخن‌سرا به صفحهٔ متناظر او در گنجور هدایت می‌شوید.
+                </p>
+            </div>
         </div>
     </div>
 </body>
