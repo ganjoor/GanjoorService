@@ -48,6 +48,7 @@ namespace GanjooRazor.Pages
                     Poets = await _PreparePoets()
                 }
                 );
+            GanjoorCenturyViewModel prePoetGroup = null;
             foreach (var poetGroup in poetGroups)
             {
                 if (poetGroup.Id == 0)
@@ -59,7 +60,15 @@ namespace GanjooRazor.Pages
                     {
                         poet.ImageUrl = $"{APIRoot.InternetUrl}{poet.ImageUrl}";
                     }
-                    PoetGroupsWithBirthPlaces.Add(poetGroup);
+                    if (!poetGroup.ShowInTimeLine && prePoetGroup != null)
+                    {
+                        prePoetGroup.Poets.AddRange(poetGroup.Poets);
+                    }
+                    else
+                    {
+                        PoetGroupsWithBirthPlaces.Add(poetGroup);
+                        prePoetGroup = poetGroup;
+                    }
                 }
             }
         }
