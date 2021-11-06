@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <meta charset="utf-8" />
-    <link href="/css/p8.css?version=15" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=16" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/css/leaflet.css" />
     <style>
         .leaflet-container {
@@ -138,15 +138,14 @@
 </head>
 
 <body>
-    <div id="map" >
-        <div id="map-guide">
-            <input type="range" id="rangeInput" name="rangeInput" step="1" min="0" max="@(Model.PoetGroupsWithBirthPlaces.Count-1)" value="0">
-            <div class="century" id="rangeText"></div>
-            <div>
-                <p>
-                    این نقشه بر اساس زادگاه سخنوران ساخته شده است. با انتخاب نشان نخستین سخنورِ شهرهایی مثل «شیراز» که زادگاه سخنوران متعددی است می‌توانید نشان سخنوران دیگر آن شهر را هم ببینید. با لمس یا انتخاب نام هر سخن‌سرا به صفحهٔ متناظر او در گنجور هدایت می‌شوید.
-                </p>
-            </div>
+    <div id="map"></div>
+    <div id="map-guide">
+        <input type="range" id="rangeInput" name="rangeInput" step="1" min="0" max="@(Model.PoetGroupsWithBirthPlaces.Count-1)" value="0">
+        <div class="century" id="rangeText"></div>
+        <div>
+            <p>
+               نقشهٔ خاستگاه سخن‌سرایان گنجور
+            </p>
         </div>
     </div>
 </body>

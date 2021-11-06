@@ -986,10 +986,14 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     border-width: 3px;
 }
 
-#comments .poem-info p {
-    text-align: center;
-    text-indent: 0;
-}
+    #fa .century a {
+        color: white;
+    }
+
+    #comments .poem-info p {
+        text-align: center;
+        text-indent: 0;
+    }
 
 .poem-actions {
     display: flex;
@@ -1061,8 +1065,8 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
 
 #map-guide {
     position: absolute;
-    height: 250px;
-    bottom: 50px;
+    height: 180px;
+    bottom: 0px;
     width: 90%;
     left: 5%;
     z-index: 1000;
