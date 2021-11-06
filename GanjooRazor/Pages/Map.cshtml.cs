@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
 
@@ -73,6 +74,7 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            ViewData["GoogleAnalyticsCode"] = _configuration["GoogleAnalyticsCode"];
             await _PreparePoetGroups();
             return Page();
         }
@@ -82,13 +84,15 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly HttpClient _httpClient;
 
+        /// <summary>
+        /// configration file reader (appsettings.json)
+        /// </summary>
+        private readonly IConfiguration _configuration;
 
-
-        public MapModel(
-            HttpClient httpClient
-            )
+        public MapModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _configuration = configuration;
         }
     }
 }
