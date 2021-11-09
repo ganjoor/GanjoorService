@@ -456,7 +456,7 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                             @foreach (var image in Model.GanjoorPage.Poem.Images)
                                             {
                                                 <a target="_blank" href="@Html.Raw(image.TargetPageUrl)">
-                                                    <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" width="200" class="related-image">
+                                                    <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" width="200" class="related-image">
                                                 </a>
                                             }
                                         </div>
