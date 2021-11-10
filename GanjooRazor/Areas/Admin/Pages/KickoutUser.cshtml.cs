@@ -23,7 +23,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         [BindProperty]
         public UserCauseViewModel UserCauseViewModel { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -42,7 +42,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     }
                     else
                     {
-                        LastResult = await userInfoResponse.Content.ReadAsStringAsync();
+                        LastResult = JsonConvert.DeserializeObject<string>(await userInfoResponse.Content.ReadAsStringAsync());
                     }
                 }
                 else
@@ -50,6 +50,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     LastResult = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
                 }
             }
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -61,10 +62,14 @@ namespace GanjooRazor.Areas.Admin.Pages
 
 
                 HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/users/kickout", new StringContent(JsonConvert.SerializeObject(UserCauseViewModel), Encoding.UTF8, "application/json"));
-                response.EnsureSuccessStatusCode();
-
-
-                LastResult = "کاربر حذف شد.";
+                if(response.IsSuccessStatusCode)
+                {
+                    LastResult = "کاربر حذف شد.";
+                }
+                else
+                {
+                    LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                }
 
                 return Page();
 
