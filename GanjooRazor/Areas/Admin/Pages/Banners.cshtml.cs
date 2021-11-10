@@ -45,11 +45,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                     {
                         LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                     }
-
-                    response.EnsureSuccessStatusCode();
-
-                    Banners = JsonConvert.DeserializeObject<GanjoorSiteBannerViewModel[]>(await response.Content.ReadAsStringAsync());
-
+                    else
+                    {
+                        Banners = JsonConvert.DeserializeObject<GanjoorSiteBannerViewModel[]>(await response.Content.ReadAsStringAsync());
+                    }
                 }
                 else
                 {
