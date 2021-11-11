@@ -57,9 +57,8 @@ namespace GanjooRazor.Areas.Admin.Pages
             if (!response.IsSuccessStatusCode)
             {
                 LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return;
             }
-
-            response.EnsureSuccessStatusCode();
 
             Donations = JsonConvert.DeserializeObject<GanjoorDonationViewModel[]>(await response.Content.ReadAsStringAsync());
 
@@ -71,9 +70,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if (!resAccountInfo.IsSuccessStatusCode)
                     {
                         LastMessage = JsonConvert.DeserializeObject<string>(await resAccountInfo.Content.ReadAsStringAsync());
+                        return;
                     }
-
-                    resAccountInfo.EnsureSuccessStatusCode();
 
                     ShowAccountInfo = JsonConvert.DeserializeObject<bool>(await resAccountInfo.Content.ReadAsStringAsync()) ? "نمایش حساب فعال است." : "نمایش حساب غیرفعال است.";
                 }
@@ -152,7 +150,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/donations/page", null);
-                    response.EnsureSuccessStatusCode();
+                    if(!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
                     return new OkObjectResult(true);
                 }
             }
@@ -166,7 +167,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/donations/{id}");
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
                     return new OkObjectResult(true);
                 }
             }

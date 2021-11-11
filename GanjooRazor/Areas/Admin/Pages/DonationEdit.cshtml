@@ -8,23 +8,32 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<form method="post">
+<p>
+    @Model.LastMessage
+</p>
 
-    <table>
-        <tr>
-            <td>تاریخ:</td>
-            <td><input type="date" asp-for="Donation.Date" /> </td>
-        </tr>
-        <tr>
-            <td>اهدا کننده:</td>
-            <td><input size="50" asp-for="Donation.Description" /> </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type="submit" value="ویرایش" />
-            </td>
-        </tr>
-    </table>
+@if (Model.Donation != null)
+{
+    <form method="post">
 
-</form>
+        <table>
+            <tr>
+                <td>تاریخ:</td>
+                <td><input type="date" asp-for="Donation.Date" /> </td>
+            </tr>
+            <tr>
+                <td>اهدا کننده:</td>
+                <td><input size="50" asp-for="Donation.Description" /> </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="ویرایش" />
+                </td>
+            </tr>
+        </table>
+
+    </form>
+}
+
+
 

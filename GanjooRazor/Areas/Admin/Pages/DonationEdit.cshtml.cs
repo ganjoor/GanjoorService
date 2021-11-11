@@ -29,12 +29,17 @@ namespace GanjooRazor.Areas.Admin.Pages
         [BindProperty]
         public UpdateDateDescriptionViewModel Donation { get; set; }
 
+        public string LastMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
+            LastMessage = "";
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/donations/{Request.Query["id"]}");
-
-            response.EnsureSuccessStatusCode();
+            if(!response.IsSuccessStatusCode)
+            {
+                LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return Page();
+            }
 
             var donation = JsonConvert.DeserializeObject<GanjoorDonationViewModel>(await response.Content.ReadAsStringAsync());
 
@@ -49,11 +54,16 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
+            LastMessage = "";
             using (HttpClient secureClient = new HttpClient())
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
                 HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/donations/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(Donation), Encoding.UTF8, "application/json"));
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return Page();
+                }
 
                 return Redirect("/Admin/Donations");
             }
