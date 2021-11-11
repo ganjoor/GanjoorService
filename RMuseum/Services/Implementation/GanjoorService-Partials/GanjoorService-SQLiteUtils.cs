@@ -98,8 +98,8 @@ namespace RMuseum.Services.Implementation
                                                         var zipImgFileEntry = archive.CreateEntry(Path.GetFileName(pngFile), CompressionLevel.Optimal);
                                                         using (var zipStream = zipImgFileEntry.Open())
                                                         {
-                                                            var gdbBytes = File.ReadAllBytes(gdbFile);
-                                                            zipStream.Write(gdbBytes, 0, gdbBytes.Length);
+                                                            var pngBytes = File.ReadAllBytes(pngFile);
+                                                            zipStream.Write(pngBytes, 0, pngBytes.Length);
                                                         }
                                                     }
                                                 }
@@ -224,7 +224,9 @@ namespace RMuseum.Services.Implementation
                                 "COMMIT;";
                     await sqliteConnection.ExecuteAsync(q);
                     await sqliteConnection.ExecuteAsync("BEGIN;");
-                    await sqliteConnection.ExecuteAsync($"INSERT INTO poet (id, name, cat_id, description) VALUES ({poet.Id}, '{poet.Nickname}', {catPoet.Id}, '{(ignoreBio ? "" : poet.Description)}');");
+                    string bio = poet.Description;
+                    bio = bio.Replace("\"", "").Replace("'", "");
+                    await sqliteConnection.ExecuteAsync($"INSERT INTO poet (id, name, cat_id, description) VALUES ({poet.Id}, '{poet.Nickname}', {catPoet.Id}, '{(ignoreBio ? "" : bio)}');");
                     await ExportCatToSqlite(context, sqliteConnection, catPoet);
                     await sqliteConnection.ExecuteAsync("COMMIT;");
 
