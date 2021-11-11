@@ -175,7 +175,7 @@ namespace RMuseum.Services.Implementation
                         var imageUrl = $"{WebServiceUrl.Url}/api/rimages/{dbSinger.RImageId}.jpg";
                         htmlText += $"<div style=\"width:240px;margin:auto\">{Environment.NewLine}" +
                             $"<a href=\"{dbSinger.Url}\">{Environment.NewLine}" +
-                            $"<img src=\"{imageUrl}\" alt=\"{dbSinger.Name}\"/>{Environment.NewLine}" +
+                            $"<img src=\"{imageUrl}\" loading=\"lazy\" alt=\"{dbSinger.Name}\"/>{Environment.NewLine}" +
                             $"</a>{Environment.NewLine}" +
                             $"</div>{Environment.NewLine}";
                     }
