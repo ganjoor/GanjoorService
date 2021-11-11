@@ -33,9 +33,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if (!response.IsSuccessStatusCode)
                     {
                         LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
                     }
-
-                    response.EnsureSuccessStatusCode();
 
                     EarlierVersion = JsonConvert.DeserializeObject<GanjoorModifyPageViewModel>(await response.Content.ReadAsStringAsync());
 

@@ -12,55 +12,60 @@
 
 <p>@Model.LastMessage</p>
 
-@if(!string.IsNullOrEmpty(Model.EmailContent))
+@if (!string.IsNullOrEmpty(Model.EmailContent))
 {
     <textarea rows="5" cols="50">@Model.EmailContent</textarea>
 }
 
-<form method="post">
-    <table>
-        <tr>
-            <td>
-                تاریخ:
-            </td>
-            <td>
-                <input type="date" asp-for="Donation.RecordDate" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                مبلغ:
-            </td>
-            <td>
-                <input type="number" asp-for="Donation.Amount" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                واحد:
-            </td>
-            <td>
-                <input asp-for="Donation.Unit" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                اهدا کننده:
-            </td>
-            <td>
-                <input size="50" asp-for="Donation.DonorName" />
-            </td>
-        </tr>
+@if (Model.Donation != null)
+{
+    <form method="post">
+        <table>
+            <tr>
+                <td>
+                    تاریخ:
+                </td>
+                <td>
+                    <input type="date" asp-for="Donation.RecordDate" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    مبلغ:
+                </td>
+                <td>
+                    <input type="number" asp-for="Donation.Amount" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    واحد:
+                </td>
+                <td>
+                    <input asp-for="Donation.Unit" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    اهدا کننده:
+                </td>
+                <td>
+                    <input size="50" asp-for="Donation.DonorName" />
+                </td>
+            </tr>
 
-        <tr>
-            <td colspan="2">
-                <input type="submit" value="ثبت کمک مالی جدید" />
-            </td>
-        </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="ثبت کمک مالی جدید" />
+                </td>
+            </tr>
 
-    </table>
-    
-</form>
+        </table>
+
+    </form>
+}
+
+
 
 <p><a href="/donate" target="_blank">مشاهدهٔ صفحه</a></p>
 <p>@Model.ShowAccountInfo</p>
@@ -68,29 +73,27 @@
 
 @if (Model.Donations != null)
 {
-<table>
-    <tr>
-        <th>تاریخ</th>
-        <th>مبلغ</th>
-        <th>اهدا کننده</th>
-        <th>
-           #
-        </th>
-    </tr>
-    @foreach (var donation in Model.Donations)
-    {
-        <tr id="tr-@donation.Id">
-            <td>@donation.DateString</td>
-            <td>@donation.AmountString</td>
-            <td>@donation.DonorName</td>
-            <td>
-                <a role="button" href="/Admin/DonationEdit/?id=@donation.Id" class="actionlink" title="ویرایش">✎</a>
-                <a role="button" onclick="deleteItem(@donation.Id, 'کمک')" class="actionlink" title="حذف">🗑</a>
-                <a role="button" href="/Admin/Donations?id=@donation.Id" class="actionlink" title="تولید محتوای پیام">#</a>
-            </td>
+    <table>
+        <tr>
+            <th>تاریخ</th>
+            <th>مبلغ</th>
+            <th>اهدا کننده</th>
+            <th>
+                #
+            </th>
         </tr>
-    }
-</table>
-
- 
+        @foreach (var donation in Model.Donations)
+        {
+            <tr id="tr-@donation.Id">
+                <td>@donation.DateString</td>
+                <td>@donation.AmountString</td>
+                <td>@donation.DonorName</td>
+                <td>
+                    <a role="button" href="/Admin/DonationEdit/?id=@donation.Id" class="actionlink" title="ویرایش">✎</a>
+                    <a role="button" onclick="deleteItem(@donation.Id, 'کمک')" class="actionlink" title="حذف">🗑</a>
+                    <a role="button" href="/Admin/Donations?id=@donation.Id" class="actionlink" title="تولید محتوای پیام">#</a>
+                </td>
+            </tr>
+        }
+    </table>
 }
