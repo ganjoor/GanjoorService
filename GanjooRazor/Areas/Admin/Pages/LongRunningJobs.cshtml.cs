@@ -14,15 +14,21 @@ namespace GanjooRazor.Areas.Admin.Pages
     {
         public RLongRunningJobStatus[] Jobs { get; set; }
 
+        public string LastMessage { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
+            LastMessage = "";
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var response = await secureClient.GetAsync($"{APIRoot.Url}/api/rjobs");
-                    response.EnsureSuccessStatusCode();
-
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
                     Jobs = JsonConvert.DeserializeObject<RLongRunningJobStatus[]>(await response.Content.ReadAsStringAsync());
 
                 }
@@ -37,7 +43,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/rjobs/cleanup");
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
                 }
             }
             return new JsonResult(true);
@@ -50,7 +59,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/rjobs?id={id}");
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
                 }
             }
             return new JsonResult(true);

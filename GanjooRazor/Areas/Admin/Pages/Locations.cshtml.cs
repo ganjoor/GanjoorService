@@ -31,9 +31,6 @@ namespace GanjooRazor.Areas.Admin.Pages
                         LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                         return;
                     }
-
-                    response.EnsureSuccessStatusCode();
-
                     Locations = JsonConvert.DeserializeObject<GanjoorGeoLocation[]>(await response.Content.ReadAsStringAsync());
 
                 }

@@ -7,23 +7,29 @@
 }
 
 <h1>@ViewData["Title"]</h1>
+<p>@Model.LastMessage</p>
 
-<form method="post">
+@if (Model.Expense != null)
+{
+    <form method="post">
 
-    <table>
-        <tr>
-            <td>تاریخ:</td>
-            <td><input type="date" asp-for="Expense.Date" /> </td>
-        </tr>
-        <tr>
-            <td>شرح:</td>
-            <td><input size="50" asp-for="Expense.Description" /> </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type="submit" value="ویرایش" />
-            </td>
-        </tr>
-    </table>
+        <table>
+            <tr>
+                <td>تاریخ:</td>
+                <td><input type="date" asp-for="Expense.Date" /> </td>
+            </tr>
+            <tr>
+                <td>شرح:</td>
+                <td><input size="50" asp-for="Expense.Description" /> </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="ویرایش" />
+                </td>
+            </tr>
+        </table>
 
-</form>
+    </form>
+}
+
+

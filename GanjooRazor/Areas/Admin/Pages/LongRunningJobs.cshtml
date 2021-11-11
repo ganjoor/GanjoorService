@@ -8,28 +8,35 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<table>
-    <tr>
-        <th>کار</th>
-        <th>شروع</th>
-        <th>گام</th>
-        <th>پیشرفت</th>
-        <th>موفق</th>
-        <th>خطا</th>
-        <th>#</th>
-    </tr>
-    @foreach (var job in Model.Jobs)
-    {
-        <tr id="tr-@job.Id">
-            <td>@job.Name</td>
-            <td>@job.StartTime</td>
-            <td>@job.Step</td>
-            <td>@job.Progress</td>
-            <td>@job.Succeeded</td>
-            <td>@job.Exception</td>
-            <td><a role="button" onclick="deleteLongRunningJob('@job.Id')" class="actionlink" title="حذف">🗑</a></td>
-        </tr>
-    }
-</table>
+<p>@Model.LastMessage</p>
 
-<a role="button" onclick="cleanUpJobs()" class="actionlink" title="حذف کارهای قدیمی">حذف کارهای قدیمی 🗑</a>
+@if (Model.Jobs != null)
+{
+    <table>
+        <tr>
+            <th>کار</th>
+            <th>شروع</th>
+            <th>گام</th>
+            <th>پیشرفت</th>
+            <th>موفق</th>
+            <th>خطا</th>
+            <th>#</th>
+        </tr>
+        @foreach (var job in Model.Jobs)
+        {
+            <tr id="tr-@job.Id">
+                <td>@job.Name</td>
+                <td>@job.StartTime</td>
+                <td>@job.Step</td>
+                <td>@job.Progress</td>
+                <td>@job.Succeeded</td>
+                <td>@job.Exception</td>
+                <td><a role="button" onclick="deleteLongRunningJob('@job.Id')" class="actionlink" title="حذف">🗑</a></td>
+            </tr>
+        }
+    </table>
+
+    <a role="button" onclick="cleanUpJobs()" class="actionlink" title="حذف کارهای قدیمی">حذف کارهای قدیمی 🗑</a>
+}
+
+

@@ -49,9 +49,8 @@ namespace GanjooRazor.Areas.Admin.Pages
             if (!response.IsSuccessStatusCode)
             {
                 LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return;
             }
-
-            response.EnsureSuccessStatusCode();
 
             Expenses = JsonConvert.DeserializeObject<GanjoorExpense[]>(await response.Content.ReadAsStringAsync());
 
@@ -63,9 +62,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if (!resAccountInfo.IsSuccessStatusCode)
                     {
                         LastMessage = await resAccountInfo.Content.ReadAsStringAsync();
+                        return;
                     }
-
-                    resAccountInfo.EnsureSuccessStatusCode();
 
                     ShowAccountInfo = JsonConvert.DeserializeObject<bool>(await resAccountInfo.Content.ReadAsStringAsync()) ? "نمایش حساب فعال است." : "نمایش حساب غیرفعال است.";
                 }
@@ -81,9 +79,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 ExpenseDate = DateTime.Now.Date,
                 Unit = "تومان",
             };
-
             await ReadExpenses();
-
             return Page();
         }
 
@@ -109,9 +105,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 {
                     LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
                 }
-
             }
-
             return Page();
         }
 
@@ -122,7 +116,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/donations/page", null);
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
                     return new OkObjectResult(true);
                 }
             }
@@ -136,7 +133,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/donations/expense/{id}");
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
                     return new OkObjectResult(true);
                 }
             }
