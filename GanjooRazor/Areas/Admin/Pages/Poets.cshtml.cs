@@ -41,8 +41,6 @@ namespace GanjooRazor.Areas.Admin.Pages
                         return;
                     }
 
-                    response.EnsureSuccessStatusCode();
-
                     Locations = new List<GanjoorGeoLocation>();
                     Locations.Add
                         (
@@ -75,7 +73,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets/secure");
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
 
                     await ReadLocationsAsync();
 

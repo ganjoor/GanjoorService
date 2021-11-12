@@ -51,7 +51,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var nextResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/correction/next?skip={Skip}");
-                    nextResponse.EnsureSuccessStatusCode();
+                    if (!nextResponse.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await nextResponse.Content.ReadAsStringAsync());
+                        return Page();
+                    }
 
                     string paginnationMetadata = nextResponse.Headers.GetValues("paging-headers").FirstOrDefault();
                     if (!string.IsNullOrEmpty(paginnationMetadata))
@@ -62,11 +66,19 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if(Correction != null)
                     {
                         var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Correction.PoemId}");
-                        pageUrlResponse.EnsureSuccessStatusCode();
+                        if (!pageUrlResponse.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                            return Page();
+                        }
                         var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
 
                         var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
-                        pageQuery.EnsureSuccessStatusCode();
+                        if (!pageQuery.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                            return Page();
+                        }
                         PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
                         if (Correction.Title != null)
@@ -121,8 +133,12 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var correctionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/correction/{correctionId}");
-                    correctionResponse.EnsureSuccessStatusCode();
-                    
+                    if (!correctionResponse.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await correctionResponse.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+
                     Correction = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync());
 
                     if (Correction.Title != null)

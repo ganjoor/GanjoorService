@@ -42,16 +42,21 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public GanjoorPoetViewModel Poet { get; set; }
 
-        private async Task PreparePoet()
+        private async Task<bool> PreparePoet()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}");
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return false;
+            }
 
             var poet = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
 
 
             Poet = poet.Poet;
+            return true;
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -70,7 +75,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 
                 HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}");
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return Page();
+                }
 
                 var cacheKey1 = $"/api/ganjoor/poets";
                 if (_memoryCache.TryGetValue(cacheKey1, out List<GanjoorPoetViewModel> poets))

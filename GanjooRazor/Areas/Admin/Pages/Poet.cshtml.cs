@@ -68,17 +68,19 @@ namespace GanjooRazor.Areas.Admin.Pages
         public SQLiteCorrecionDbModel CorrecionDbModel { get; set; }
 
 
-        private async Task PreparePoet()
+        private async Task<bool> PreparePoet()
         {
             await ReadLocationsAsync();
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}");
-
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return false;
+            }
 
             var poet = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
-
-
             Poet = poet.Poet;
+            return true;
         }
 
         public List<GanjoorGeoLocation> Locations { get; set; }
@@ -96,8 +98,6 @@ namespace GanjooRazor.Areas.Admin.Pages
                         LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                         return;
                     }
-
-                    response.EnsureSuccessStatusCode();
 
                     Locations = new List<GanjoorGeoLocation>();
                     Locations.Add
@@ -156,7 +156,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (Request.Query["id"].ToString() == "0")
                 {
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/poet", new StringContent(JsonConvert.SerializeObject(Poet), Encoding.UTF8, "application/json"));
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
 
                     var poet = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
 
@@ -172,7 +176,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                 else
                 {
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(Poet), Encoding.UTF8, "application/json"));
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
 
                     var cacheKey1 = $"/api/ganjoor/poets";
                     if (_memoryCache.TryGetValue(cacheKey1, out List<GanjoorPoetViewModel> poets))
@@ -199,7 +207,10 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnPostUploadImageAsync(IFormFile Image)
         {
             LastResult = "";
-            await PreparePoet();
+            if(false == await PreparePoet())
+            {
+                return Page();
+            }
 
 
             using (HttpClient secureClient = new HttpClient())
@@ -215,7 +226,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                     form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Poet.Nickname, Image.FileName);
 
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/poet/image/{Request.Query["id"]}", form);
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
 
                     LastResult = $"تصویر بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش شاعر</a>";
 
@@ -228,7 +243,10 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnPostUploadDbAsync(IFormFile SQLiteDb)
         {
             LastResult = "";
-            await PreparePoet();
+            if(false == await PreparePoet())
+            {
+                return Page();
+            }
 
 
             using (HttpClient secureClient = new HttpClient())
@@ -244,7 +262,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                     form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Poet.Nickname, SQLiteDb.FileName);
 
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqlite/import/{Request.Query["id"]}", form);
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
 
                     LastResult = $"پایگاه داده‌ها بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش شاعر</a>";
 
@@ -257,7 +279,10 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnPostUploadCorrectionDbAsync(SQLiteCorrecionDbModel CorrecionDbModel)
         {
             LastResult = "";
-            await PreparePoet();
+            if(false == await PreparePoet())
+            {
+                return Page();
+            }
 
 
             using (HttpClient secureClient = new HttpClient())
@@ -273,7 +298,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                     form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Poet.Nickname, CorrecionDbModel.Db.FileName);
 
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqlite/update/{Request.Query["id"]}?note={CorrecionDbModel.Note}", form);
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
 
                     LastResult = $"پایگاه داده‌های اصلاحی بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش شاعر</a>";
 
@@ -288,7 +317,10 @@ namespace GanjooRazor.Areas.Admin.Pages
             using (HttpClient secureClient = new HttpClient())
             {
                 LastResult = "";
-                await PreparePoet();
+                if(false == await PreparePoet())
+                {
+                    return BadRequest(LastResult);
+                }
 
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 

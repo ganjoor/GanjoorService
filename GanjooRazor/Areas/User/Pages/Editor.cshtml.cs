@@ -103,15 +103,27 @@ namespace GanjooRazor.Areas.User.Pages
 
 
                     var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
-                    rhythmResponse.EnsureSuccessStatusCode();
+                    if (!rhythmResponse.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await rhythmResponse.Content.ReadAsStringAsync());
+                        return Page();
+                    }
                     Rhythms = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
 
                     var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
-                    pageUrlResponse.EnsureSuccessStatusCode();
+                    if (!pageUrlResponse.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                        return Page();
+                    }
                     var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
 
                     var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
-                    pageQuery.EnsureSuccessStatusCode();
+                    if (!pageQuery.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                        return Page();
+                    }
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
                 }
                 else
