@@ -73,6 +73,7 @@ namespace RMuseum.Services.Implementation
                                        sitemaps.Add(firstSitemap);
 
                                        var urls = await context.GanjoorPages.Where(p => p.PoetId == null).OrderBy(p => p.Id).Select(p => p.FullUrl).ToListAsync();
+                                       urls.Add("/map");
 
                                        urls.Remove("/audioclip");
                                        urls.Remove("/simi");
