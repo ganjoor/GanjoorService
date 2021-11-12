@@ -15,7 +15,7 @@
                     }
                     else
                     {
-            <option value="0" selected>در آثار همهٔ سخنوران</option>
+                        <option value="0" selected>در آثار همهٔ سخنوران</option>
                     }
 
                     if (Model.Poets != null)
@@ -305,10 +305,7 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
 
                         <div id="comments">
 
-                            @if (Model.GanjoorPage.Poem.GanjoorMetre != null && !string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
-                            {
-                                <div id="similar-poems-placesholder"></div>
-                            }
+
 
                             <div class="poem-info">
                                 <p>
@@ -402,6 +399,11 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                 else
                                 {
                                     <a role="button" class="textualbutton" href="/login">برای ویرایش و بهبود متن با نام کاربری خود وارد شوید</a>
+                                }
+
+                                @if (Model.GanjoorPage.Poem.GanjoorMetre != null && !string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
+                                {
+                                    <div id="similar-poems-placesholder"></div>
                                 }
 
                                 @if (Model.GanjoorPage.Poem.Songs.Length == 0)
@@ -650,7 +652,7 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                     </div>
                 }
 
-                
+
             </div>
         }
 
