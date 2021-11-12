@@ -1,5 +1,7 @@
 ﻿using DNTPersianUtils.Core;
+using GanjooRazor.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
@@ -111,6 +113,54 @@ namespace GanjooRazor.Pages
             ViewData["Title"] = $"گنجور » {GanjoorPage.Title}";
 
             GanjoorPage.HtmlText = htmlText;
+        }
+
+
+        public async Task OnGetSimilarPoemsPartialAsync(int poemId,string prosodyMetre, string rhymeLetters)
+        {
+            var cacheKey = $"/api/ganjoor/poems/similar/{poemId}";
+            if (!_memoryCache.TryGetValue(cacheKey, out InlineSimilarPoems similarPoems))
+            {
+                string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber=1&PageSize=20&metre={prosodyMetre}&rhyme={rhymeLetters}";
+                var response = await _httpClient.GetAsync(url);
+                if (!response.IsSuccessStatusCode)
+                    return;
+                var poems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
+                if (poems.Count == 0)
+                    return;
+                await preparePoets();
+                poems.Sort((a, b) => a.Category.Poet.BirthYearInLHijri.CompareTo(b.Category.Poet.BirthYearInLHijri));
+
+                int n = -1;
+                int curPoetId = -1;
+                List<GanjoorPoemCompleteViewModel> selectedPoems = new List<GanjoorPoemCompleteViewModel>();
+                List<int> poetMorePoemsLikeThisCount = new List<int>();
+                for (int i = 0; i < poems.Count; i++)
+                {
+
+                    var poem = poems[i];
+                    if (poem.Id == poemId)
+                        continue;
+                    if (poem.Category.Poet.Id == curPoetId)
+                    {
+                        poetMorePoemsLikeThisCount[n]++;
+                    }
+                    else
+                    {
+                        n++;
+                        if (n >= 5)
+                            break;
+                        poetMorePoemsLikeThisCount.Add(0);
+                        selectedPoems.Add(poem);
+                    }
+                }
+                similarPoems = new InlineSimilarPoems()
+                {
+                    Poems = selectedPoems,
+                    PoetMorePoemsLikeThisCount = poetMorePoemsLikeThisCount
+                };
+                _memoryCache.Set(cacheKey, similarPoems);
+            }
         }
     }
 }
