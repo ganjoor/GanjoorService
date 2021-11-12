@@ -19,19 +19,12 @@ namespace GanjooRazor.Areas.Admin.Pages
         private readonly HttpClient _httpClient;
 
         /// <summary>
-        /// memory cache
-        /// </summary>
-        private readonly IMemoryCache _memoryCache;
-
-        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        /// <param name="memoryCache"></param>
-        public PageDelModel(HttpClient httpClient, IMemoryCache memoryCache)
+        public PageDelModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -47,11 +40,14 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Query["url"]}");
-            pageQuery.EnsureSuccessStatusCode();
-
-            PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
-
+            LastResult = "";
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Query["url"]}");
+            if (!response.IsSuccessStatusCode)
+            {
+                LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return Page();
+            }
+            PageInformation = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
             return Page();
         }
 
@@ -63,7 +59,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 
                 HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/page/cache/{Request.Query["id"]}");
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return Page();
+                }
 
 
                 response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/page/{Request.Query["id"]}");
@@ -74,7 +74,6 @@ namespace GanjooRazor.Areas.Admin.Pages
                 }
                 else
                 {
-                    response.EnsureSuccessStatusCode();
                     LastResult = "عملیات حذف صفحه انجام شد.";
                 }
                
