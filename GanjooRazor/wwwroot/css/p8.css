@@ -369,7 +369,7 @@ div.n, div.l {
     padding-top: 20px;
 }
 
-.ganjoor-comment {
+.ganjoor-comment, .inlinesimi {
     margin-right: 20px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
@@ -377,6 +377,10 @@ div.n, div.l {
     border-radius: 20px;
     padding: 5px;
     overflow-x: hidden;
+}
+
+.inlinesimi {
+    margin-left: 20px;
 }
 
 .sit {
@@ -962,8 +966,8 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     width: 100%;
 }
 
-.pagebutton{
-    padding:5px;
+.pagebutton {
+    padding: 5px;
     font-size: 0.8em;
     margin: 5px;
 }
@@ -986,14 +990,14 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     border-width: 3px;
 }
 
-    #fa .century a {
-        color: white;
-    }
+#fa .century a {
+    color: white;
+}
 
-    #comments .poem-info p {
-        text-align: center;
-        text-indent: 0;
-    }
+#comments .poem-info p {
+    text-align: center;
+    text-indent: 0;
+}
 
 .poem-actions {
     display: flex;
@@ -1002,7 +1006,7 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     flex-wrap: wrap;
 }
 
-.related-songs, .related-images-frame, .comment-author {
+.related-songs, .related-images-frame, .comment-author, .inlinesimi-poem-more {
     border-width: 3px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     display: block;
@@ -1019,14 +1023,14 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     background: transparent url('/image/note.png') top center repeat scroll;
 }
 
-    .related-song {
-        text-align: right;
-        margin: 10px;
-        background: rgba(0,0,0,0.2);
-        border-radius: 20px;
-        color: black;
-        padding: 5px;
-    }
+.related-song {
+    text-align: right;
+    margin: 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 20px;
+    color: black;
+    padding: 5px;
+}
 
     .related-song a {
         color: black !important;
@@ -1052,7 +1056,7 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     padding: 5px;
 }
 
-.comment-author {
+.comment-author, inlinesimi-poem-more {
     background: rgba(255, 255, 255, 0.5);
 }
 
@@ -1083,4 +1087,9 @@ form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
 
 #rangeInput {
     width: 100%;
+}
+
+#comments .simitext p {
+    text-align: center;
+    text-indent: 0;
 }

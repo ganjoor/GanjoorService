@@ -56,6 +56,7 @@ function bnumClick(poemId, index) {
 
 }
 
+
 function coupletNumImage(bnum, color) {
     let canvas = document.createElement('canvas');
     canvas.width = 50;
@@ -852,4 +853,15 @@ function onSelectedPoetChanged() {
             },
         });
     }
+}
+
+function loadSimilarPoems(poemId, prosodyMetre, rhymeLetters) {
+    $.ajax({
+        type: "GET",
+        url: '?Handler=SimilarPoemsPartial&poemId=' + String(poemId) + '&prosodyMetre=' + prosodyMetre + '&rhymeLetters=' + rhymeLetters,
+        success: function (data) {
+            $(data).appendTo(document.getElementById('similar-poems-placesholder'));
+            document.getElementById('similar-poems-button').style.display = 'none';
+        },
+    });
 }

@@ -304,7 +304,12 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                         </nav>
 
                         <div id="comments">
-                            
+
+                            @if (Model.GanjoorPage.Poem.GanjoorMetre != null && !string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
+                            {
+                                <div id="similar-poems-placesholder"></div>
+                            }
+
                             <div class="poem-info">
                                 <p>
                                     <small><i class="pageicons">mouse</i> با دو بار کلیک روی واژه‌ها یا انتخاب متن و کلیک روی آنها می‌توانید آنها را در لغتنامهٔ دهخدا جستجو کنید.</small>
@@ -366,7 +371,7 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                         @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
                                         {
                                             <text>
-                                                <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای هم‌آهنگ<i class="info-buttons">search</i></a>
+                                                <a role="button" class="pagebutton" id="similar-poems-button" href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons">search</i></a>
                                             </text>
                                         }
                                     }

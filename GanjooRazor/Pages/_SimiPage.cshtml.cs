@@ -1,6 +1,9 @@
 ﻿using DNTPersianUtils.Core;
 using GanjooRazor.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -115,8 +118,7 @@ namespace GanjooRazor.Pages
             GanjoorPage.HtmlText = htmlText;
         }
 
-
-        public async Task OnGetSimilarPoemsPartialAsync(int poemId,string prosodyMetre, string rhymeLetters)
+        public async Task<ActionResult> OnGetSimilarPoemsPartialAsync(int poemId,string prosodyMetre, string rhymeLetters)
         {
             var cacheKey = $"/api/ganjoor/poems/similar/{poemId}";
             if (!_memoryCache.TryGetValue(cacheKey, out InlineSimilarPoems similarPoems))
@@ -124,7 +126,7 @@ namespace GanjooRazor.Pages
                 string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber=1&PageSize=20&metre={prosodyMetre}&rhyme={rhymeLetters}";
                 var response = await _httpClient.GetAsync(url);
                 if (!response.IsSuccessStatusCode)
-                    return;
+                    return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                 List<GanjoorPoemCompleteViewModel> selectedPoems = new List<GanjoorPoemCompleteViewModel>();
                 List<int> poetMorePoemsLikeThisCount = new List<int>();
                 var poems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
@@ -152,7 +154,9 @@ namespace GanjooRazor.Pages
                             if (n >= 5)
                                 break;
                             poetMorePoemsLikeThisCount.Add(0);
+                            poem.HtmlText = _GetPoemTextExcerpt(poem.HtmlText);
                             selectedPoems.Add(poem);
+                            curPoetId = poem.Category.Poet.Id;
                         }
                     }
                 }
@@ -164,6 +168,20 @@ namespace GanjooRazor.Pages
                 };
                 _memoryCache.Set(cacheKey, similarPoems);
             }
+
+            return new PartialViewResult()
+            {
+                ViewName = "_SimiPartialView",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _SimiPartialViewModel()
+                    {
+                        InlineSimilarPoems = similarPoems,
+                        Rhythm = prosodyMetre,
+                        RhymeLetters = rhymeLetters
+                    }
+                }
+            };
         }
     }
 }

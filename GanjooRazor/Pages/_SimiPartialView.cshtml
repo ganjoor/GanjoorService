@@ -1,0 +1,46 @@
+﻿@model GanjooRazor.Pages._SimiPartialViewModel
+@using DNTPersianUtils.Core
+@{
+    Layout = null;
+}
+
+<div class="related-images-frame">
+    @if (Model.InlineSimilarPoems.Poems.Count == 0)
+    {
+        <p>
+            <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.Rhythm)}&amp;g={Uri.EscapeUriString(Model.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons">search</i></a>
+        </p>
+    }
+    else
+    {
+        <div class="century">
+            شعرهای هم آهنگ
+        </div>
+
+        @for (int i = 0; i < Model.InlineSimilarPoems.Poems.Count; i++)
+        {
+            <div class="inlinesimi">
+                <div class="poet-pic-wrap">
+                    <a href="@Html.Raw(Model.InlineSimilarPoems.Poems[i].FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.InlineSimilarPoems.Poems[i].Category.Poet.ImageUrl)" alt="@Model.InlineSimilarPoems.Poems[i].Category.Poet.Name" /></a>
+                </div>
+                <div class="inlinesimi-poem-title">
+                    <a href="@Html.Raw(Model.InlineSimilarPoems.Poems[i].FullUrl)">@Model.InlineSimilarPoems.Poems[i].FullTitle</a><span></span>
+                </div>
+                <div class="simitext">
+                    @Html.Raw(Model.InlineSimilarPoems.Poems[i].HtmlText)
+                </div>
+
+                @if (Model.InlineSimilarPoems.PoetMorePoemsLikeThisCount[i] > 0)
+                {
+                    <div class="inlinesimi-poem-more">
+                        * دست کم @Model.InlineSimilarPoems.PoetMorePoemsLikeThisCount[i].ToPersianNumbers() شعر هم آهنگ دیگر نیز در اشعار @Model.InlineSimilarPoems.Poems[i].Category.Poet.Nickname یافت می‌شود.
+                    </div>
+                }
+            </div>
+        }
+
+        <p>
+            <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.Rhythm)}&amp;g={Uri.EscapeUriString(Model.RhymeLetters)}")">همهٔ شعرهای هم آهنگ<i class="info-buttons">search</i></a>
+        </p>
+    }
+</div>

@@ -17,7 +17,7 @@
         <meta name="robots" content="noindex, nofollow" />
     }
     <link href="/dist/skin/blue.monday/css/jplayer.blue.monday.min.css" rel="stylesheet" type="text/css" />
-    <link href="/css/p8.css?version=16" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=17" rel="stylesheet" type="text/css" />
     <link href="/css/fab.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
@@ -25,7 +25,7 @@
     <script>
         var playerScrollLock = false;
     </script>
-    <script src="/js/bk.js?version=9"></script>
+    <script src="/js/bk.js?version=10"></script>
 
     @if (Model.IsHomePage)
     {
@@ -35,13 +35,20 @@
     {
         if (Model.IsPoemPage)
         {
-            <script>
+<script>
                 $(document).ready(function () {
                     checkWebShareSupport();
                     btshmr(@Model.GanjoorPage.Id);
                     checkIfBookmarked(@Model.GanjoorPage.Id);
+                    @if (Model.GanjoorPage.Poem.GanjoorMetre != null && !string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
+                    {
+                        <text>
+                    loadSimilarPoems(@Model.GanjoorPage.Id, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters');
+                        </text>
+                    }
                 });
-            </script>
+</script>
+
         }
         <script type="application/ld+json">
         {
@@ -161,7 +168,7 @@
             paste_strip_class_attributes: true,
         });
     </script>
-  
+
 
 
 
