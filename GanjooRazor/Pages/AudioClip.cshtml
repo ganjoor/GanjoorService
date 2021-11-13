@@ -19,135 +19,141 @@
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script>
-    function wpopen(macagna) {
+        function wpopen(macagna) {
             window.open(macagna, '_blank', 'width=600,height=700,scrollbars=yes,status=yes');
         }</script>
 </head>
 <body>
-    <div style="width:95%;max-width:500px;min-width:380px;margin:auto">
-        <div id="jp_container_1" class="jp-video jp-video-270p">
-            <div class="jp-type-playlist">
-                <div id="jquery_jplayer_1" class="jp-jplayer"></div>
-                <div id="textcnt" style="display:table;width:100%;height:400px;vertical-align: bottom;background-image: url('https://source.unsplash.com/500x400/?flowers');color:white">
-                    <div id="title1" style="display: table-row">
-                        <p style="width:100%;height:25%;text-align:center;vertical-align: middle;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
-                            @Model.Poem.Category.Poet.Name
-                        </p>
-                    </div>
-                    <div id="title2" style="display: table-row">
-                        <p style="width:100%;height:25%;text-align:center;vertical-align: middle;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
-                            @for (int i = 1; i < Model.Poem.Category.Cat.Ancestors.Count; i++)
-                            {
-                                <text>
-                                    @Model.Poem.Category.Cat.Ancestors.ElementAt(i).Title &raquo;
-                                </text>
-
-                            }
-                            @Model.Poem.Category.Cat.Title
-                        </p>
-                    </div>
-                    <div id="title3" style="display: table-row">
-                        <p style="width:100%;height:25%;text-align:center;vertical-align: middle;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
-                            @Model.Recitation.AudioTitle
-                        </p>
-                    </div>
-                    <div id="title4" style="display: table-row">
-                        <p style="width:100%;height:25%;text-align:center;vertical-align: middle;font-family: 'Vazir';display: table-cell;font-size: 1em;text-shadow: 2px 2px 4px white;">
-                            به خوانش @Model.Recitation.AudioArtist
-                        </p>
-                    </div>
-
-                    <div id="verse1div" style="display: table-row;visibility: hidden;">
-                        <div style="width:100%;height:50%;text-align:center;vertical-align: bottom;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
-                            <p id="verse1" style="width:80%;margin:auto;background-color:rgba(0, 0, 0, .4);margin-bottom:5px">
+    @if (!string.IsNullOrEmpty(Model.LastError))
+    {
+        <p>@Model.LastError</p>
+    }
+    else
+    {
+        <div style="width:95%;max-width:500px;min-width:380px;margin:auto">
+            <div id="jp_container_1" class="jp-video jp-video-270p">
+                <div class="jp-type-playlist">
+                    <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+                    <div id="textcnt" style="display:table;width:100%;height:400px;vertical-align: bottom;background-image: url('https://source.unsplash.com/500x400/?flowers');color:white">
+                        <div id="title1" style="display: table-row">
+                            <p style="width:100%;height:25%;text-align:center;vertical-align: middle;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
+                                @Model.Poem.Category.Poet.Name
                             </p>
                         </div>
-                    </div>
+                        <div id="title2" style="display: table-row">
+                            <p style="width:100%;height:25%;text-align:center;vertical-align: middle;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
+                                @for (int i = 1; i < Model.Poem.Category.Cat.Ancestors.Count; i++)
+                                {
+                                    <text>
+                                        @Model.Poem.Category.Cat.Ancestors.ElementAt(i).Title &raquo;
+                                    </text>
 
-                    <div id="verse2div" style="display: table-row;visibility: hidden">
-                        <div style="width:100%;height:50%;text-align:center;vertical-align: top;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
-                            <p id="verse2" style="width:80%;margin:auto;background-color:rgba(0, 0, 0, .4);margin-top:5px">
+                                }
+                                @Model.Poem.Category.Cat.Title
                             </p>
                         </div>
-                    </div>
-
-
-                    <div id="normaldiv" style="display: table-row;visibility: hidden">
-                        <div style="width:100%;height:100%;text-align:center;vertical-align: middle;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
-                            <p id="normal" style="width:80%;margin:auto;background-color:rgba(0, 0, 0, .4);">
+                        <div id="title3" style="display: table-row">
+                            <p style="width:100%;height:25%;text-align:center;vertical-align: middle;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
+                                @Model.Recitation.AudioTitle
                             </p>
                         </div>
-                    </div>
+                        <div id="title4" style="display: table-row">
+                            <p style="width:100%;height:25%;text-align:center;vertical-align: middle;font-family: 'Vazir';display: table-cell;font-size: 1em;text-shadow: 2px 2px 4px white;">
+                                به خوانش @Model.Recitation.AudioArtist
+                            </p>
+                        </div>
 
-
-                </div>
-                <div class="jp-gui">
-                    <div class="jp-video-play">
-                        <button class="jp-video-play-icon" tabindex="0">پخش</button>
-                    </div>
-                    <div class="jp-interface">
-                        <div class="jp-progress">
-                            <div class="jp-seek-bar">
-                                <div class="jp-play-bar"></div>
+                        <div id="verse1div" style="display: table-row;visibility: hidden;">
+                            <div style="width:100%;height:50%;text-align:center;vertical-align: bottom;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
+                                <p id="verse1" style="width:80%;margin:auto;background-color:rgba(0, 0, 0, .4);margin-bottom:5px">
+                                </p>
                             </div>
                         </div>
-                        <div class="jp-current-time">&nbsp;</div>
-                        <div class="jp-duration">&nbsp;</div>
-                        <div class="jp-controls-holder">
-                            <div class="jp-controls">
-                                <button class="jp-previous" tabindex="0">قبلی</button>
-                                <button class="jp-play" tabindex="0">پخش</button>
-                                <button class="jp-next" tabindex="0">بعدی</button>
-                                <button class="jp-stop" tabindex="0">توقف</button>
+
+                        <div id="verse2div" style="display: table-row;visibility: hidden">
+                            <div style="width:100%;height:50%;text-align:center;vertical-align: top;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
+                                <p id="verse2" style="width:80%;margin:auto;background-color:rgba(0, 0, 0, .4);margin-top:5px">
+                                </p>
                             </div>
-                            <div class="jp-volume-controls">
-                                <button class="jp-mute" tabindex="0">بی‌صدا</button>
-                                <button class="jp-volume-max" tabindex="0">حداکثر صدا</button>
-                                <div class="jp-volume-bar">
-                                    <div class="jp-volume-bar-value"></div>
+                        </div>
+
+
+                        <div id="normaldiv" style="display: table-row;visibility: hidden">
+                            <div style="width:100%;height:100%;text-align:center;vertical-align: middle;font-family: 'Vazir';display: table-cell;font-size: 1.5em;text-shadow: 2px 2px 4px white;">
+                                <p id="normal" style="width:80%;margin:auto;background-color:rgba(0, 0, 0, .4);">
+                                </p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="jp-gui">
+                        <div class="jp-video-play">
+                            <button class="jp-video-play-icon" tabindex="0">پخش</button>
+                        </div>
+                        <div class="jp-interface">
+                            <div class="jp-progress">
+                                <div class="jp-seek-bar">
+                                    <div class="jp-play-bar"></div>
                                 </div>
                             </div>
-                            <div class="jp-toggles">
-                                <button class="jp-repeat" tabindex="0">تکرار</button>
+                            <div class="jp-current-time">&nbsp;</div>
+                            <div class="jp-duration">&nbsp;</div>
+                            <div class="jp-controls-holder">
+                                <div class="jp-controls">
+                                    <button class="jp-previous" tabindex="0">قبلی</button>
+                                    <button class="jp-play" tabindex="0">پخش</button>
+                                    <button class="jp-next" tabindex="0">بعدی</button>
+                                    <button class="jp-stop" tabindex="0">توقف</button>
+                                </div>
+                                <div class="jp-volume-controls">
+                                    <button class="jp-mute" tabindex="0">بی‌صدا</button>
+                                    <button class="jp-volume-max" tabindex="0">حداکثر صدا</button>
+                                    <div class="jp-volume-bar">
+                                        <div class="jp-volume-bar-value"></div>
+                                    </div>
+                                </div>
+                                <div class="jp-toggles">
+                                    <button class="jp-repeat" tabindex="0">تکرار</button>
+                                </div>
+                            </div>
+                            <div class="jp-details">
+                                <div class="jp-title">&nbsp;</div>
                             </div>
                         </div>
-                        <div class="jp-details">
-                            <div class="jp-title">&nbsp;</div>
-                        </div>
                     </div>
-                </div>
-                <div class="jp-playlist">
-                    <ul>
-                        <!-- The method Playlist.displayPlaylist() uses this unordered list -->
-                        <li>&nbsp;</li>
-                    </ul>
-                </div>
-                <div class="jp-no-solution">
-                    <span>نیاز به بروزآوری</span>
-                    جهت خوانش شعر شما یا باید از مرورگر جدیدی همچون <a href="http://getfirefox.com/">فایرفاکس</a> استفاده کنید یا افزونه <a href="http://get.adobe.com/flashplayer/" target="_blank">فلش</a> مرورگرتان را بروزآوری کنید.
+                    <div class="jp-playlist">
+                        <ul>
+                            <!-- The method Playlist.displayPlaylist() uses this unordered list -->
+                            <li>&nbsp;</li>
+                        </ul>
+                    </div>
+                    <div class="jp-no-solution">
+                        <span>نیاز به بروزآوری</span>
+                        جهت خوانش شعر شما یا باید از مرورگر جدیدی همچون <a href="http://getfirefox.com/">فایرفاکس</a> استفاده کنید یا افزونه <a href="http://get.adobe.com/flashplayer/" target="_blank">فلش</a> مرورگرتان را بروزآوری کنید.
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <p style="font-family: 'Vazir';font-size: 0.8em;color:darkgray">
-        تصویر پس‌زمینهٔ خوانش یک تصویر تصادفی از سایت <a href="https://unsplash.com/" target="_blank">unsplash.com</a> است و ارتباطی با محتوای شعر ندارد.
-    </p>
+        <p style="font-family: 'Vazir';font-size: 0.8em;color:darkgray">
+            تصویر پس‌زمینهٔ خوانش یک تصویر تصادفی از سایت <a href="https://unsplash.com/" target="_blank">unsplash.com</a> است و ارتباطی با محتوای شعر ندارد.
+        </p>
 
 
-    <p style="font-family: 'Vazir';font-size: 1em">
-        فایل صوتی متناظر را می‌توانید در قالب mp3 از <a href="@Model.Recitation.Mp3Url" download>این نشانی</a> (اندازه @Html.Raw($"{(Model.Recitation.Mp3SizeInBytes / (1024.0 * 1024.0)):0.00}".ToPersianNumbers()) مگابایت) دریافت کنید.
-    </p>
+        <p style="font-family: 'Vazir';font-size: 1em">
+            فایل صوتی متناظر را می‌توانید در قالب mp3 از <a href="@Model.Recitation.Mp3Url" download>این نشانی</a> (اندازه @Html.Raw($"{(Model.Recitation.Mp3SizeInBytes / (1024.0 * 1024.0)):0.00}".ToPersianNumbers()) مگابایت) دریافت کنید.
+        </p>
 
-    <p style="font-family: 'Vazir';font-size: 1em">
-        جهت دریافت خوانش با استفاده از گنجور رومیزی <a href="http://blog.ganjoor.net/1395/04/07/dg-274/" target="_blank">این مطلب</a> را مطالعه بفرمایید. امکان ساخت کلیپهای ویدیویی از خوانشها با استفاده از <a href="http://blog.ganjoor.net/category/gsync2vid/" target="_blank">خوانشگر گنجور رومیزی</a> وجود دارد. جهت مشارکت در خوانش اشعار <a href="http://ava.ganjoor.net/about/" target="_blank">این صفحه</a> و ویدیوهای آموزشی آن را ببینید.
-    </p>
+        <p style="font-family: 'Vazir';font-size: 1em">
+            جهت دریافت خوانش با استفاده از گنجور رومیزی <a href="http://blog.ganjoor.net/1395/04/07/dg-274/" target="_blank">این مطلب</a> را مطالعه بفرمایید. امکان ساخت کلیپهای ویدیویی از خوانشها با استفاده از <a href="http://blog.ganjoor.net/category/gsync2vid/" target="_blank">خوانشگر گنجور رومیزی</a> وجود دارد. جهت مشارکت در خوانش اشعار <a href="http://ava.ganjoor.net/about/" target="_blank">این صفحه</a> و ویدیوهای آموزشی آن را ببینید.
+        </p>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/js/bk.js?version=10"></script>
-    <script src="~/js/vaabd.js"></script>
-    <script src="~/dist/jplayer/jquery.jplayer.min.js"></script>
-    <script src="~/dist/add-on/jplayer.playlist.min.js"></script>
-    <script>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/js/bk.js?version=10"></script>
+        <script src="~/js/vaabd.js"></script>
+        <script src="~/dist/jplayer/jquery.jplayer.min.js"></script>
+        <script src="~/dist/add-on/jplayer.playlist.min.js"></script>
+        <script>
         var verses = [];
 
         @{
@@ -292,12 +298,12 @@
 
 
         });
-//]]>
-    </script>
+        //]]>
+        </script>
 
-    @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
-    {
-        <script>
+        @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
+        {
+            <script>
             (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
                     (i[r].q = i[r].q || []).push(arguments)
@@ -308,7 +314,9 @@
             ga('create', '@ViewData["GoogleAnalyticsCode"]', 'auto');
             ga('send', 'pageview');
 
-        </script>
+            </script>
+        }
     }
+
 </body>
 </html>

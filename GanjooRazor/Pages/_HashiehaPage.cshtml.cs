@@ -38,7 +38,11 @@ namespace GanjooRazor.Pages
             if (!string.IsNullOrEmpty(filterUserId))
             {
                 var responseUserProfile = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/user/profile/{filterUserId}");
-                responseUserProfile.EnsureSuccessStatusCode();
+                if (!responseUserProfile.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await responseUserProfile.Content.ReadAsStringAsync());
+                    return;
+                }
 
                 GanjoorUserPublicProfile profile = JsonConvert.DeserializeObject<GanjoorUserPublicProfile>(await responseUserProfile.Content.ReadAsStringAsync());
 
@@ -99,9 +103,11 @@ namespace GanjooRazor.Pages
             }
 
             var response = await _httpClient.GetAsync(url);
-
-
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return;
+            }
 
             string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
             PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata);

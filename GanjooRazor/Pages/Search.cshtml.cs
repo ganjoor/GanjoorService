@@ -74,32 +74,44 @@ namespace GanjooRazor.Pages
         [BindProperty]
         public LoginViewModel LoginViewModel { get; set; }
 
-        private async Task preparePoets()
+        public string LastError { get; set; }
+
+        private async Task<bool> preparePoets()
         {
             var cacheKey = $"/api/ganjoor/poets";
             if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
             {
                 var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return false;
+                }
                 poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
                 _memoryCache.Set(cacheKey, poets);
             }
 
             Poets = poets;
+            return true;
         }
 
-        private async Task preparePoet()
+        private async Task<bool> preparePoet()
         {
             var cacheKey = $"/api/ganjoor/poet/{PoetId}";
             if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
             {
                 var poetResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{PoetId}");
-                poetResponse.EnsureSuccessStatusCode();
+                if (!poetResponse.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await poetResponse.Content.ReadAsStringAsync());
+                    return false;
+                }
                 poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
                 _memoryCache.Set(cacheKey, poet);
             }
 
             Poet = poet;
+            return true;
         }
 
         public async Task<IActionResult> OnGetPoetInformationAsync(int id)
@@ -110,7 +122,10 @@ namespace GanjooRazor.Pages
             if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
             {
                 var poetResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{id}");
-                poetResponse.EnsureSuccessStatusCode();
+                if (!poetResponse.IsSuccessStatusCode)
+                {
+                    return BadRequest(JsonConvert.DeserializeObject<string>(await poetResponse.Content.ReadAsStringAsync()));
+                }
                 poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
                 _memoryCache.Set(cacheKey, poet);
             }
@@ -133,7 +148,8 @@ namespace GanjooRazor.Pages
 
             //todo: use html master layout or make it partial
             // 1. poets 
-            await preparePoets();
+            if (false == (await preparePoets()))
+                return Page();
 
             var poetName = Poets.SingleOrDefault(p => p.Id == PoetId);
             if (poetName != null)
@@ -155,8 +171,8 @@ namespace GanjooRazor.Pages
 
             if (PoetId != 0)
             {
-                await preparePoet();
-
+                if (false == (await preparePoet()))
+                    return Page();
             }
 
             // 2. search verses
@@ -172,7 +188,11 @@ namespace GanjooRazor.Pages
             {
                 searchQueryResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poems/search?term={Query}&poetId={PoetId}&catId={CatId}&PageNumber={pageNumber}&PageSize=20");
 
-                searchQueryResponse.EnsureSuccessStatusCode();
+                if (!searchQueryResponse.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await searchQueryResponse.Content.ReadAsStringAsync());
+                    return Page();
+                }
 
                 Poems = JArray.Parse(await searchQueryResponse.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
             }

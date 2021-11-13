@@ -43,6 +43,8 @@ namespace GanjooRazor.Pages
         /// </summary>
         public GanjoorPoemCompleteViewModel Poem { get; set; }
 
+        public string LastError { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (!ModelState.IsValid)
@@ -53,12 +55,20 @@ namespace GanjooRazor.Pages
             ViewData["GoogleAnalyticsCode"] = _configuration["GoogleAnalyticsCode"];
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/published/{Request.Query["a"]}");
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return Page();
+            }
 
             Recitation = JsonConvert.DeserializeObject<PublicRecitationViewModel>(await response.Content.ReadAsStringAsync());
 
             var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{Recitation.PoemId}?verseDetails=true&catInfo=true&rhymes=false&recitations=false&images=false&songs=false&comments=false&navigation=false");
-            responsePoem.EnsureSuccessStatusCode();
+            if (!responsePoem.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await responsePoem.Content.ReadAsStringAsync());
+                return Page();
+            }
 
             Poem = JsonConvert.DeserializeObject<GanjoorPoemCompleteViewModel>(await responsePoem.Content.ReadAsStringAsync());
 

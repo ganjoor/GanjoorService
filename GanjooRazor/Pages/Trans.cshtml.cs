@@ -84,7 +84,6 @@ namespace GanjooRazor.Pages
                 ErrorMessage = JsonConvert.DeserializeObject<string>(await responseLanguages.Content.ReadAsStringAsync());
                 return Page();
             }
-            responseLanguages.EnsureSuccessStatusCode();
 
             var allLanguages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await responseLanguages.Content.ReadAsStringAsync());
 
@@ -94,7 +93,6 @@ namespace GanjooRazor.Pages
                 ErrorMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                 return Page();
             }
-            response.EnsureSuccessStatusCode();
 
             Translations = JsonConvert.DeserializeObject<GanjoorPoemTranslationViewModel[]>(await response.Content.ReadAsStringAsync());
 
@@ -122,20 +120,13 @@ namespace GanjooRazor.Pages
 
             if (Translation != null)
                 LanguageId = Translation.Language.Id;
-
-
-
             var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{PoemId}?verseDetails=true&catInfo=true&rhymes=false&recitations=false&images=false&songs=false&comments=false&navigation=true");
             if (!responsePoem.IsSuccessStatusCode)
             {
                 ErrorMessage = JsonConvert.DeserializeObject<string>(await responsePoem.Content.ReadAsStringAsync());
                 return Page();
             }
-
-            responsePoem.EnsureSuccessStatusCode();
-
             Poem = JsonConvert.DeserializeObject<GanjoorPoemCompleteViewModel>(await responsePoem.Content.ReadAsStringAsync());
-
             return Page();
         }
     }

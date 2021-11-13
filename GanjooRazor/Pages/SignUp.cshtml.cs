@@ -71,7 +71,11 @@ namespace GanjooRazor.Pages
             };
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/captchaimage");
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return Page();
+            }
 
             SignUpViewModel.CaptchaImageId = JsonConvert.DeserializeObject<Guid>(await response.Content.ReadAsStringAsync());
 
@@ -94,7 +98,11 @@ namespace GanjooRazor.Pages
                 LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
 
                 response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/captchaimage");
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return Page();
+                }
 
                 ModelState.Clear();
 

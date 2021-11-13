@@ -7,7 +7,6 @@ using RSecurityBackend.Models.Generic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
@@ -35,7 +34,11 @@ namespace GanjooRazor.Pages
 
             var response = await _httpClient.GetAsync(url);
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return;
+            }
 
             GanjoorPage.Title = "شعرهای ";
             if (poetId != 0)
