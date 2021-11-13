@@ -52,7 +52,6 @@ namespace GanjooRazor.Areas.User.Pages
                             LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                             return Page();
                         }
-                        response.EnsureSuccessStatusCode();
 
                         Notifications = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<RUserNotificationViewModel>>();
 

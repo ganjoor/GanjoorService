@@ -192,7 +192,6 @@ namespace GanjooRazor.Areas.User.Pages
                         FatalError = JsonConvert.DeserializeObject<string>(await responseLanguages.Content.ReadAsStringAsync());
                         return Page();
                     }
-                    responseLanguages.EnsureSuccessStatusCode();
 
                     
                     Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await responseLanguages.Content.ReadAsStringAsync());
@@ -210,11 +209,19 @@ namespace GanjooRazor.Areas.User.Pages
 
 
                     var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={poemId}");
-                    pageUrlResponse.EnsureSuccessStatusCode();
+                    if (!pageUrlResponse.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                        return Page();
+                    }
                     var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
 
                     var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
-                    pageQuery.EnsureSuccessStatusCode();
+                    if (!pageQuery.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                        return Page();
+                    }
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
                     if(Translation == null)

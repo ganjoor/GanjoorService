@@ -38,7 +38,6 @@ namespace GanjooRazor.Areas.User.Pages
                         LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                         return Page();
                     }
-                    response.EnsureSuccessStatusCode();
 
                     Language = JsonConvert.DeserializeObject<GanjoorLanguage>(await response.Content.ReadAsStringAsync());
 
@@ -64,8 +63,6 @@ namespace GanjooRazor.Areas.User.Pages
                     LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                     return Page();
                 }
-
-                response.EnsureSuccessStatusCode();
 
                 return Redirect("/User/Languages");
             }

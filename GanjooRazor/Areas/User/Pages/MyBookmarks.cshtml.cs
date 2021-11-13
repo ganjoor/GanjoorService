@@ -49,8 +49,7 @@ namespace GanjooRazor.Areas.User.Pages
                             LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                             return Page();
                         }
-                        response.EnsureSuccessStatusCode();
-
+                        
                         Bookmarks = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorUserBookmarkViewModel>>();
 
                         string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();

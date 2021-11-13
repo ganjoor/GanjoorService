@@ -89,7 +89,6 @@ namespace GanjooRazor.Areas.User.Pages
                             LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                             return Page();
                         }
-                        response.EnsureSuccessStatusCode();
 
                         Comments = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCommentFullViewModel>>();
 
