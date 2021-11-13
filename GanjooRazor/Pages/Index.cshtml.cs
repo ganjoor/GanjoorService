@@ -464,18 +464,23 @@ namespace GanjooRazor.Pages
             return audiodesc;
         }
 
-        private async Task preparePoets()
+        private async Task<bool> preparePoets()
         {
             var cacheKey = $"/api/ganjoor/poets";
             if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
             {
                 var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return false;
+                }
                 poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
                 _memoryCache.Set(cacheKey, poets);
             }
 
             Poets = poets;
+            return true;
         }
 
         public async Task<IActionResult> OnGetPoetInformationAsync(int id)
@@ -486,18 +491,26 @@ namespace GanjooRazor.Pages
             if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
             {
                 var poetResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{id}");
-                poetResponse.EnsureSuccessStatusCode();
+                if (!poetResponse.IsSuccessStatusCode)
+                {
+                    return BadRequest(JsonConvert.DeserializeObject<string>(await poetResponse.Content.ReadAsStringAsync()));
+                }
                 poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
                 _memoryCache.Set(cacheKey, poet);
             }
             return new OkObjectResult(poet);
         }
 
-        private async Task _PreparePoetGroups()
+        private async Task<bool> _PreparePoetGroups()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/centuries");
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return false;
+            }
             PoetGroups = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCenturyViewModel>>();
+            return true;
         }
 
         /// <summary>
@@ -530,7 +543,11 @@ namespace GanjooRazor.Pages
             if (!string.IsNullOrEmpty(Request.Query["p"]))
             {
                 var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["p"]}");
-                pageUrlResponse.EnsureSuccessStatusCode();
+                if (!pageUrlResponse.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                    return Page();
+                }
                 var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
                 return Redirect(pageUrl);
             }
@@ -552,7 +569,11 @@ namespace GanjooRazor.Pages
                         return NotFound();
                     }
                 }
-                pageQuery.EnsureSuccessStatusCode();
+                if (!pageQuery.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                    return Page();
+                }
                 GanjoorPage = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
                 GanjoorPage.HtmlText = GanjoorPage.HtmlText.Replace("https://ganjoor.net/", "/").Replace("http://ganjoor.net/", "/");
                 switch (GanjoorPage.GanjoorPageType)
@@ -575,7 +596,11 @@ namespace GanjooRazor.Pages
                 if (IsPoemPage)
                 {
                     var bannerQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/banners/random");
-                    bannerQuery.EnsureSuccessStatusCode();
+                    if (!bannerQuery.IsSuccessStatusCode)
+                    {
+                        LastError = JsonConvert.DeserializeObject<string>(await bannerQuery.Content.ReadAsStringAsync());
+                        return Page();
+                    }
                     string bannerResponse = await bannerQuery.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(bannerResponse))
                     {
@@ -677,11 +702,17 @@ namespace GanjooRazor.Pages
         public async Task<ActionResult> OnGetBNumPartialAsync(int poemId, int coupletIndex)
         {
             var responseCoupletComments = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments?coupletIndex={coupletIndex}");
-            responseCoupletComments.EnsureSuccessStatusCode();
+            if (!responseCoupletComments.IsSuccessStatusCode)
+            {
+                return BadRequest(JsonConvert.DeserializeObject<string>(await responseCoupletComments.Content.ReadAsStringAsync()));
+            }
             var comments = JArray.Parse(await responseCoupletComments.Content.ReadAsStringAsync()).ToObject<List<GanjoorCommentSummaryViewModel>>();
 
             var responseCoupletNumbers = await _httpClient.GetAsync($"{APIRoot.Url}/api/numberings/couplet/{poemId}/{coupletIndex}");
-            responseCoupletNumbers.EnsureSuccessStatusCode();
+            if (!responseCoupletNumbers.IsSuccessStatusCode)
+            {
+                return BadRequest(JsonConvert.DeserializeObject<string>(await responseCoupletNumbers.Content.ReadAsStringAsync()));
+            }
             var numbers = JArray.Parse(await responseCoupletNumbers.Content.ReadAsStringAsync()).ToObject<List<GanjoorCoupletNumberViewModel>>();
 
             bool isBookmarked = false;
@@ -702,7 +733,10 @@ namespace GanjooRazor.Pages
                             if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                             {
                                 HttpResponseMessage responseIsBookmarked = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}/{coupletIndex}");
-                                responseIsBookmarked.EnsureSuccessStatusCode();
+                                if (!responseIsBookmarked.IsSuccessStatusCode)
+                                {
+                                    return BadRequest(JsonConvert.DeserializeObject<string>(await responseIsBookmarked.Content.ReadAsStringAsync()));
+                                }
 
                                 isBookmarked = JsonConvert.DeserializeObject<bool>(await responseIsBookmarked.Content.ReadAsStringAsync());
                             }
