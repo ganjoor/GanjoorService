@@ -98,7 +98,11 @@ namespace GanjooRazor.Areas.User.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var editResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/correction/last/{Request.Query["id"]}");
-                    editResponse.EnsureSuccessStatusCode();
+                    if (!editResponse.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await editResponse.Content.ReadAsStringAsync());
+                        return Page();
+                    }
                     MyLastEdit = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await editResponse.Content.ReadAsStringAsync());
 
 
@@ -142,7 +146,10 @@ namespace GanjooRazor.Areas.User.Pages
                 {
                     HttpResponseMessage response = await secureClient.DeleteAsync(
                         $"{APIRoot.Url}/api/ganjoor/poem/correction/{poemid}");
-                    response.EnsureSuccessStatusCode();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return  BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
                     return new OkObjectResult(true);
                 }
             }
