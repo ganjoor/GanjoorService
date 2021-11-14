@@ -1287,6 +1287,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartGeneratingRelatedPoemsInfo">
+            <summary>
+            start generating related poems info
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -9453,6 +9459,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartGeneratingRelatedPoemsInfo">
+            <summary>
+            start generating related poems info
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -10779,6 +10791,12 @@
             get an excerpt for the poem
             </summary>
             <param name="poemHtml"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingRelatedPoemsInfo">
+            <summary>
+            start generating related poems info
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBuildingSitemap">

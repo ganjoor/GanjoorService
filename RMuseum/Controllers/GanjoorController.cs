@@ -2148,6 +2148,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// start generating related poems info
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("generaterelatedpoemsinfo")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartGeneratingRelatedPoemsInfo()
+        {
+            RServiceResult<bool> res =
+                 _ganjoorService.StartGeneratingRelatedPoemsInfo();
+            if (res.Result)
+                return Ok();
+            return BadRequest(res.ExceptionString);
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode

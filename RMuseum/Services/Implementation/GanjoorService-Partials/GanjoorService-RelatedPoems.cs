@@ -60,15 +60,18 @@ namespace RMuseum.Services.Implementation
                     };
 
                     ganjoorCachedRelatedPoems.Add(newRelatedPoem);
+
+                    prePoetId = relatedPoem.Cat.PoetId;
                 }
                 else
                 {
                     ganjoorCachedRelatedPoems[ganjoorCachedRelatedPoems.Count - 1].PoetMorePoemsLikeThisCount++;
                 }
             }
-
-            context.GanjoorCachedRelatedPoems.AddRange(ganjoorCachedRelatedPoems);
-
+            if(ganjoorCachedRelatedPoems.Count > 0)
+            {
+                context.GanjoorCachedRelatedPoems.AddRange(ganjoorCachedRelatedPoems);
+            }
         }
 
         /// <summary>
@@ -103,6 +106,11 @@ namespace RMuseum.Services.Implementation
 
             return poemHtml;
         }
+
+        /// <summary>
+        /// start generating related poems info
+        /// </summary>
+        /// <returns></returns>
         public RServiceResult<bool> StartGeneratingRelatedPoemsInfo()
         {
             try
@@ -121,7 +129,7 @@ namespace RMuseum.Services.Implementation
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Query");
 
-                                        var poemIds = await context.GanjoorPoems.AsNoTracking().Where(p => string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).Select(p => p.Id).ToListAsync();
+                                        var poemIds = await context.GanjoorPoems.AsNoTracking().Where(p => !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).Select(p => p.Id).ToListAsync();
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating Related Poems");
                                         int percent = 0;

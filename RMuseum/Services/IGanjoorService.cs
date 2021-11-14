@@ -652,5 +652,11 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<GanjoorCenturyViewModel[]>> GetCenturiesAsync();
+
+        /// <summary>
+        /// start generating related poems info
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartGeneratingRelatedPoemsInfo();
     }
 }
