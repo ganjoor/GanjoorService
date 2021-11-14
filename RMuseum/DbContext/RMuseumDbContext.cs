@@ -136,6 +136,8 @@ namespace RMuseum.DbContext
             builder.Entity<GanjoorVerse>()
                 .HasIndex(v => new { v.PoemId, v.CoupletIndex });
 
+            builder.Entity<GanjoorCachedRelatedPoem>()
+                .HasIndex(c => new { c.PoemId, c.RelationOrder });
 
             //Index set suggested by SQL Server Tuning Wizard -- end
 
@@ -383,6 +385,11 @@ namespace RMuseum.DbContext
         /// ganjoor cities
         /// </summary>
         public DbSet<GanjoorGeoLocation> GanjoorGeoLocations { get; set; }
+
+        /// <summary>
+        /// related poems to each poem (having same rhyme letters and prosody metre)
+        /// </summary>
+        public DbSet<GanjoorCachedRelatedPoem> GanjoorCachedRelatedPoems { get; set; }
 
     }
 }
