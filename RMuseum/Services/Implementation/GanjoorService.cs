@@ -2929,6 +2929,8 @@ namespace RMuseum.Services.Implementation
                 {
                     dbPoem.SourceName = pageData.SourceName;
                     dbPoem.SourceUrlSlug = pageData.SourceUrlSlug;
+                    int? oldMetreId = dbPoem.GanjoorMetreId;
+                    string oldRhymeLetters = dbPoem.RhymeLetters;
                     if (string.IsNullOrEmpty(pageData.Rhythm))
                     {
                         dbPoem.GanjoorMetreId = null;
@@ -2999,6 +3001,17 @@ namespace RMuseum.Services.Implementation
                     }
 
                     await _FillPoemCoupletIndices(_context, id);
+
+                    if(oldMetreId != dbPoem.GanjoorMetreId || oldRhymeLetters != dbPoem.RhymeLetters)
+                    {
+                        if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
+                            await _UpdateRelatedPoems(_context, (int)oldMetreId, oldRhymeLetters);
+
+                        if (dbPoem.GanjoorMetreId != null && !string.IsNullOrEmpty(dbPoem.RhymeLetters))
+                        {
+                            await _UpdateRelatedPoems(_context, (int)dbPoem.GanjoorMetreId, dbPoem.RhymeLetters);
+                        }
+                    }
                 }
                 await _context.SaveChangesAsync();
                 CacheCleanForPageByUrl(dbPage.FullUrl);

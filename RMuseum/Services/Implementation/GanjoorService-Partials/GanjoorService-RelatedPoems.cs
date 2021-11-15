@@ -16,6 +16,32 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// update related poems info (after metreId or rhyme for one of these poems changes)
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="metreId"></param>
+        /// <param name="rhyme"></param>
+        /// <returns></returns>
+        private async Task<RServiceResult<bool>> _UpdateRelatedPoems(RMuseumDbContext context, int metreId, string rhyme)
+        {
+            try
+            {
+                var poemIds = await context.GanjoorPoems.AsNoTracking().Where(p => p.GanjoorMetreId == metreId && p.RhymeLetters == rhyme).Select(p => p.Id).ToListAsync();
+                foreach (var id in poemIds)
+                {
+                    await _UpdatePoemRelatedPoemsInfoNoSaveChanges(context, id);
+                }
+                await context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+            
+
+        }
         private async Task _UpdatePoemRelatedPoemsInfoNoSaveChanges(RMuseumDbContext context, int poemId)
         {
             var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == poemId).SingleAsync();
