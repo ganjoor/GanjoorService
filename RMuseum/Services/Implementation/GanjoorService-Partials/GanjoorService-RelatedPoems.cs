@@ -54,7 +54,7 @@ namespace RMuseum.Services.Implementation
             int metreId = (int)poem.GanjoorMetreId;
             string rhyme = poem.RhymeLetters;
 
-            var relatedPoems = context.GanjoorPoems.AsNoTracking().Include(p => p.Cat).ThenInclude(c => c.Poet)
+            var relatedPoems = await context.GanjoorPoems.AsNoTracking().Include(p => p.Cat).ThenInclude(c => c.Poet)
                 .Where(p =>
                         p.GanjoorMetreId == metreId
                         &&
@@ -62,7 +62,7 @@ namespace RMuseum.Services.Implementation
                         &&
                         p.Id != poemId
                         )
-                .OrderBy(p => p.Cat.Poet.BirthYearInLHijri).ThenBy(p => p.Cat.PoetId);
+                .OrderBy(p => p.Cat.Poet.BirthYearInLHijri).ThenBy(p => p.Cat.PoetId).ToListAsync();
 
             List<GanjoorCachedRelatedPoem> ganjoorCachedRelatedPoems = new List<GanjoorCachedRelatedPoem>();
             int r = 0;

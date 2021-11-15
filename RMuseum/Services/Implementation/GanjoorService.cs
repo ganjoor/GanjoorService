@@ -3004,6 +3004,8 @@ namespace RMuseum.Services.Implementation
 
                     if(oldMetreId != dbPoem.GanjoorMetreId || oldRhymeLetters != dbPoem.RhymeLetters)
                     {
+                        await _context.SaveChangesAsync();
+
                         if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
                             await _UpdateRelatedPoems(_context, (int)oldMetreId, oldRhymeLetters);
 

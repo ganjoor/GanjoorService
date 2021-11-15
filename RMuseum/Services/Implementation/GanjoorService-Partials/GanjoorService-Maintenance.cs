@@ -58,6 +58,11 @@ namespace RMuseum.Services.Implementation
                                     context.GanjoorPoems.Update(poem);
                                     await context.SaveChangesAsync();
                                 }
+
+                                if(poem.GanjoorMetreId != null && !string.IsNullOrEmpty(poem.RhymeLetters))
+                                {
+                                    await _UpdateRelatedPoems(context, (int)poem.GanjoorMetreId, poem.RhymeLetters);
+                                }
                             }
                         }
                     }
