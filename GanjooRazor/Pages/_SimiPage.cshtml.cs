@@ -38,8 +38,9 @@ namespace GanjooRazor.Pages
 
             string metre = Request.Query["v"];
             string rhyme = Request.Query["g"];
+            string auther = string.IsNullOrEmpty(Request.Query["a"]) ? "0" : Request.Query["a"];
 
-            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={metre}&rhyme={rhyme}";
+            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={metre}&rhyme={rhyme}&poetId={auther}";
             var response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
@@ -52,11 +53,14 @@ namespace GanjooRazor.Pages
 
             GanjoorPage.Title = "شعرهای ";
 
+            if (auther != "0")
+            {
+                GanjoorPage.Title += $"{Poets.Where(p => p.Id == int.Parse(auther)).Single().Nickname} " ;
+            }
+
             GanjoorPage.Title += $"با وزن «{metre}»";
 
             GanjoorPage.Title += $" و حروف قافیهٔ «{rhyme}»";
-
-
 
 
 
