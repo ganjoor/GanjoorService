@@ -450,6 +450,9 @@ namespace RMuseum.Migrations
                     b.Property<int>("PoemId")
                         .HasColumnType("int");
 
+                    b.Property<int>("PoetId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PoetImageUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -464,7 +467,7 @@ namespace RMuseum.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PoemId", "RelationOrder");
+                    b.HasIndex("PoemId");
 
                     b.ToTable("GanjoorCachedRelatedPoems");
                 });

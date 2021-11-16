@@ -76,6 +76,7 @@ namespace RMuseum.Services.Implementation
                     GanjoorCachedRelatedPoem newRelatedPoem = new GanjoorCachedRelatedPoem()
                     {
                         PoemId = poemId,
+                        PoetId = relatedPoem.Cat.PoetId,
                         RelationOrder = r,
                         PoetName = relatedPoem.Cat.Poet.Nickname,
                         PoetImageUrl = $"/api/ganjoor/poet/image{(await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == relatedPoem.Cat.PoetId).AsNoTracking().SingleAsync()).FullUrl}.gif",

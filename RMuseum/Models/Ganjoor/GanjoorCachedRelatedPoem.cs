@@ -13,6 +13,11 @@
         public int PoemId { get; set; }
 
         /// <summary>
+        /// poet id
+        /// </summary>
+        public int PoetId { get; set; }
+
+        /// <summary>
         /// poem
         /// </summary>
         public GanjoorPoem Poem { get; set; }

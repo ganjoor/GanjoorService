@@ -4626,6 +4626,11 @@
             poem id
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedPoem.PoetId">
+            <summary>
+            poet id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedPoem.Poem">
             <summary>
             poem

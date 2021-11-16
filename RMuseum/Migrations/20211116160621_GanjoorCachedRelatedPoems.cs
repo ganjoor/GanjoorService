@@ -13,6 +13,7 @@ namespace RMuseum.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PoemId = table.Column<int>(type: "int", nullable: false),
+                    PoetId = table.Column<int>(type: "int", nullable: false),
                     RelationOrder = table.Column<int>(type: "int", nullable: false),
                     PoetName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PoetImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -33,9 +34,9 @@ namespace RMuseum.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_GanjoorCachedRelatedPoems_PoemId_RelationOrder",
+                name: "IX_GanjoorCachedRelatedPoems_PoemId",
                 table: "GanjoorCachedRelatedPoems",
-                columns: new[] { "PoemId", "RelationOrder" });
+                column: "PoemId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

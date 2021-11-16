@@ -10,7 +10,7 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20211114151203_GanjoorCachedRelatedPoems")]
+    [Migration("20211116160621_GanjoorCachedRelatedPoems")]
     partial class GanjoorCachedRelatedPoems
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -452,6 +452,9 @@ namespace RMuseum.Migrations
                     b.Property<int>("PoemId")
                         .HasColumnType("int");
 
+                    b.Property<int>("PoetId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PoetImageUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -466,7 +469,7 @@ namespace RMuseum.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PoemId", "RelationOrder");
+                    b.HasIndex("PoemId");
 
                     b.ToTable("GanjoorCachedRelatedPoems");
                 });

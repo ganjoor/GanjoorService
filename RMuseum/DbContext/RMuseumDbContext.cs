@@ -137,7 +137,7 @@ namespace RMuseum.DbContext
                 .HasIndex(v => new { v.PoemId, v.CoupletIndex });
 
             builder.Entity<GanjoorCachedRelatedPoem>()
-                .HasIndex(c => new { c.PoemId, c.RelationOrder });
+                .HasIndex(c => new { c.PoemId });
 
             //Index set suggested by SQL Server Tuning Wizard -- end
 
