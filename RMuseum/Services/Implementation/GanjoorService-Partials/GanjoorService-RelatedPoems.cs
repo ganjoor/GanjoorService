@@ -104,7 +104,7 @@ namespace RMuseum.Services.Implementation
                         PoetName = relatedPoem.Cat.Poet.Nickname,
                         PoetImageUrl = $"/api/ganjoor/poet/image{(await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == relatedPoem.Cat.PoetId).AsNoTracking().SingleAsync()).FullUrl}.gif",
                         FullTitle = relatedPoem.FullTitle,
-                        FullUrl = relatedPoem.FullTitle,
+                        FullUrl = relatedPoem.FullUrl,
                         PoetMorePoemsLikeThisCount = 0,
                         HtmlExcerpt = GetPoemHtmlExcerpt(relatedPoem.HtmlText)
                     };

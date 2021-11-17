@@ -40,12 +40,6 @@
                     checkWebShareSupport();
                     btshmr(@Model.GanjoorPage.Id);
                     checkIfBookmarked(@Model.GanjoorPage.Id);
-                    @if (Model.GanjoorPage.Poem.GanjoorMetre != null && !string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
-                    {
-                        <text>
-                    loadSimilarPoems(@Model.GanjoorPage.Id, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters');
-                        </text>
-                    }
                 });
 </script>
 
