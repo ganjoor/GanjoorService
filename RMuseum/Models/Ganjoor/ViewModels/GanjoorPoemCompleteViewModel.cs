@@ -111,5 +111,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// Comments
         /// </summary>
         public GanjoorCommentSummaryViewModel[] Comments { get; set; }
+
+        /// <summary>
+        /// top 6 related poems
+        /// </summary>
+        public GanjoorCachedRelatedPoem[] Top6RelatedPoems { get; set; }
     }
 }

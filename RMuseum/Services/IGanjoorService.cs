@@ -94,8 +94,9 @@ namespace RMuseum.Services
         /// <param name="comments"></param>
         /// <param name="verseDetails"></param>
         /// <param name="navigation"></param>
+        /// <param name="relatedpoems"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true);
+        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true);
 
         /// <summary>
         /// Get Poem By Url
@@ -145,6 +146,15 @@ namespace RMuseum.Services
         /// <param name="coupletIndex"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex);
+
+        /// <summary>
+        /// get a poem related poems
+        /// </summary>
+        /// <param name="id">poem id</param>
+        /// <param name="skip"></param>
+        /// <param name="itemsCount">if sent 0 or less returns all items</param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCachedRelatedPoem[]>> GetRelatedPoems(int id, int skip, int itemsCount);
 
         /// <summary>
         /// send poem corrections

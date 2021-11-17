@@ -6769,6 +6769,11 @@
             Comments
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Top6RelatedPoems">
+            <summary>
+            top 6 related poems
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel">
             <summary>
             poem correction view model
@@ -8897,7 +8902,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
             </summary>
@@ -8911,6 +8916,7 @@
             <param name="comments"></param>
             <param name="verseDetails"></param>
             <param name="navigation"></param>
+            <param name="relatedpoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemByUrl(System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
@@ -8960,6 +8966,15 @@
             <param name="poemId"></param>
             <param name="userId"></param>
             <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetRelatedPoems(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            get a poem related poems
+            </summary>
+            <param name="id">poem id</param>
+            <param name="skip"></param>
+            <param name="itemsCount">if sent 0 or less returns all items</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestPoemCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
@@ -10791,6 +10806,15 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRelatedPoems(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            get a poem related poems
+            </summary>
+            <param name="id">poem id</param>
+            <param name="skip"></param>
+            <param name="itemsCount">if sent 0 or less returns all items</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._UpdateRelatedPoems(RMuseum.DbContext.RMuseumDbContext,System.Int32,System.String)">
             <summary>
             update related poems info (after metreId or rhyme for one of these poems changes)
@@ -11058,7 +11082,7 @@
             <param name="navigation"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
             </summary>

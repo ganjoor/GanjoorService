@@ -1270,7 +1270,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="verseDetails"></param>
         /// <param name="navigation"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true)
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true)
         {
             var cachKey = $"GetPoemById({id}, {catInfo}, {catPoems}, {rhymes}, {recitations}, {images}, {songs}, {comments}, {verseDetails}, {navigation})";
             if (!_memoryCache.TryGetValue(cachKey, out GanjoorPoemCompleteViewModel poemViewModel))
@@ -1408,6 +1408,16 @@ namespace RMuseum.Services.Implementation
                     poemComments = commentsRes.Result;
                 }
 
+                GanjoorCachedRelatedPoem[] top6relatedPoems = null;
+                if(relatedpoems)
+                {
+                    var relatedPoemsRes = await GetRelatedPoems(id, 0, 6);
+                    if (!string.IsNullOrEmpty(relatedPoemsRes.ExceptionString))
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, relatedPoemsRes.ExceptionString);
+                    top6relatedPoems = relatedPoemsRes.Result;
+                }
+
+
                 poemViewModel = new GanjoorPoemCompleteViewModel()
                 {
                     Id = poem.Id,
@@ -1430,7 +1440,8 @@ namespace RMuseum.Services.Implementation
                     Images = imgs,
                     Verses = verses,
                     Songs = tracks,
-                    Comments = poemComments
+                    Comments = poemComments,
+                    Top6RelatedPoems = top6relatedPoems
                 };
 
                 if (AggressiveCacheEnabled)
