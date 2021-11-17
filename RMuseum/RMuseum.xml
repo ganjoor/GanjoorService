@@ -871,7 +871,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get poem by id
             </summary>
@@ -885,6 +885,7 @@
             <param name="comments">not implemented yet</param>
             <param name="verseDetails"></param>
             <param name="navigation">next/previous</param>
+            <param name="relatedpoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemByUrl(System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
@@ -11096,6 +11097,7 @@
             <param name="comments"></param>
             <param name="verseDetails"></param>
             <param name="navigation"></param>
+            <param name="relatedpoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemSongs(System.Int32,System.Boolean,RMuseum.Models.Ganjoor.PoemMusicTrackType)">

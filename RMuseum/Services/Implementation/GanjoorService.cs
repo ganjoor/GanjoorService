@@ -1269,6 +1269,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="comments"></param>
         /// <param name="verseDetails"></param>
         /// <param name="navigation"></param>
+        /// <param name="relatedpoems"></param>
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true)
         {
