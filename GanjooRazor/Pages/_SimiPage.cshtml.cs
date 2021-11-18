@@ -127,7 +127,7 @@ namespace GanjooRazor.Pages
             GanjoorPage.HtmlText = htmlText;
         }
 
-        public async Task<ActionResult> OnGetSimilarPoemsPartialAsync(int poemId, int skip, string prosodyMetre, string rhymeLetters)
+        public async Task<ActionResult> OnGetSimilarPoemsPartialAsync(int poemId, int skip, string prosodyMetre, string rhymeLetters, string poemFullUrl)
         {
             string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/related?id={poemId}&skip={skip}&itemsCount=21";
             var response = await _httpClient.GetAsync(url);
@@ -146,7 +146,8 @@ namespace GanjooRazor.Pages
                         Rhythm = prosodyMetre,
                         RhymeLetters = rhymeLetters,
                         Skip = skip,
-                        PoemId = poemId
+                        PoemId = poemId,
+                        PoemFullUrl = poemFullUrl
                     }
                 }
             };

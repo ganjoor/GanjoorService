@@ -856,7 +856,7 @@ function onSelectedPoetChanged() {
 }
 
 
-function loadMoreRelated(poemId, skip, rhythm, rhymeLetters) {
+function loadMoreRelatedPoems(poemId, skip, rhythm, rhymeLetters, poemFullUrl) {
     var loadButton = document.getElementById('load-more-button');
     if (loadButton != null) {
         loadButton.remove();
@@ -866,7 +866,7 @@ function loadMoreRelated(poemId, skip, rhythm, rhymeLetters) {
     
     $.ajax({
         type: "GET",
-        url: '?Handler=SimilarPoemsPartial&poemId=' + String(poemId) + '&skip=' + String(skip) + '&prosodyMetre=' + rhythm + '&rhymeLetters=' + rhymeLetters,
+        url: '?Handler=SimilarPoemsPartial&poemId=' + String(poemId) + '&skip=' + String(skip) + '&prosodyMetre=' + rhythm + '&rhymeLetters=' + rhymeLetters + '&poemFullUrl=' + poemFullUrl,
         success: function (data) {
 
             var imgElement = document.getElementById('load-more-related-loadingimg');

@@ -14,5 +14,6 @@ namespace GanjooRazor.Pages
         public int Skip { get; set; }
 
         public int PoemId { get; set; }
+        public string PoemFullUrl { get; set; }
     }
 }
