@@ -3026,6 +3026,18 @@ namespace RMuseum.Services.Implementation
                             await _UpdateRelatedPoems(_context, (int)dbPoem.GanjoorMetreId, dbPoem.RhymeLetters);
                         }
                     }
+
+                    var excerptsInRelatedCaches = await _context.GanjoorCachedRelatedPoems.Where(p => p.FullUrl == dbPoem.FullUrl).ToListAsync();
+                    if(excerptsInRelatedCaches.Count > 0)
+                    {
+                        var newExcerpt = GetPoemHtmlExcerpt(dbPoem.HtmlText);
+                        foreach (var excerptsInRelatedCache in excerptsInRelatedCaches)
+                        {
+                            excerptsInRelatedCache.HtmlExcerpt = newExcerpt;
+                        }
+                        _context.GanjoorCachedRelatedPoems.UpdateRange(excerptsInRelatedCaches);
+                    }
+
                 }
                 await _context.SaveChangesAsync();
                 CacheCleanForPageByUrl(dbPage.FullUrl);
