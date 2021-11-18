@@ -4,43 +4,31 @@
     Layout = null;
 }
 
-<div class="related-images-frame">
-    @if (Model.InlineSimilarPoems.Poems.Count == 0)
-    {
-        <p>
-            <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.Rhythm)}&amp;g={Uri.EscapeUriString(Model.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons">search</i></a>
-        </p>
-    }
-    else
-    {
-        <div class="century">
-            شعرهای هم آهنگ
+@for (int i = 0; i < Math.Min(5, Model.RelatedPoems.Length); i++)
+{
+    <div class="inlinesimi">
+        <div class="poet-pic-wrap">
+            <a href="@Html.Raw(Model.RelatedPoems[i].FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.RelatedPoems[i].PoetImageUrl)" alt="@Model.RelatedPoems[i].PoetName" /></a>
+        </div>
+        <div class="inlinesimi-poem-title">
+            <a href="@Html.Raw(Model.RelatedPoems[i].FullUrl)">@Model.RelatedPoems[i].FullTitle</a><span></span>
+        </div>
+        <div class="simitext">
+            @Html.Raw(Model.RelatedPoems[i].HtmlExcerpt)
         </div>
 
-        @for (int i = 0; i < Model.InlineSimilarPoems.Poems.Count; i++)
+        @if (Model.RelatedPoems[i].PoetMorePoemsLikeThisCount > 0)
         {
-            <div class="inlinesimi">
-                <div class="poet-pic-wrap">
-                    <a href="@Html.Raw(Model.InlineSimilarPoems.Poems[i].FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.InlineSimilarPoems.Poems[i].Category.Poet.ImageUrl)" alt="@Model.InlineSimilarPoems.Poems[i].Category.Poet.Name" /></a>
-                </div>
-                <div class="inlinesimi-poem-title">
-                    <a href="@Html.Raw(Model.InlineSimilarPoems.Poems[i].FullUrl)">@Model.InlineSimilarPoems.Poems[i].FullTitle</a><span></span>
-                </div>
-                <div class="simitext">
-                    @Html.Raw(Model.InlineSimilarPoems.Poems[i].HtmlText)
-                </div>
-
-                @if (Model.InlineSimilarPoems.PoetMorePoemsLikeThisCount[i] > 0)
-                {
-                    <div class="inlinesimi-poem-more">
-                        * دست کم @Model.InlineSimilarPoems.PoetMorePoemsLikeThisCount[i].ToPersianNumbers() شعر هم آهنگ دیگر نیز در اشعار @Model.InlineSimilarPoems.Poems[i].Category.Poet.Nickname یافت می‌شود.
-                    </div>
-                }
+            <div class="inlinesimi-poem-more">
+                * @Model.RelatedPoems[i].PoetName <a href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.Rhythm)}&amp;g={Uri.EscapeUriString(Model.RhymeLetters)}&amp;a={Model.RelatedPoems[i].PoetId}")">@Model.RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() شعر هم آهنگ دیگر</a> نیز دارد.
             </div>
         }
+    </div>
+}
 
-        <p>
-            <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.Rhythm)}&amp;g={Uri.EscapeUriString(Model.RhymeLetters)}")">همهٔ شعرهای هم آهنگ<i class="info-buttons">search</i></a>
-        </p>
-    }
-</div>
+@if (Model.RelatedPoems.Length == 6)
+{
+    <div id="load-more-related">
+        <a role="button" class="pagebutton" id="load-more-button" onclick="loadMoreRelated(@Model.PoemId, @(Model.Skip + 5), '@Model.Rhythm', '@Model.RhymeLetters')">بیشتر<i class="info-buttons">autorenew</i></a>
+    </div>
+}

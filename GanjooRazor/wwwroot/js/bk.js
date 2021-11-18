@@ -855,13 +855,24 @@ function onSelectedPoetChanged() {
     }
 }
 
-function loadSimilarPoems(poemId, prosodyMetre, rhymeLetters) {
+
+function loadMoreRelated(poemId, skip, rhythm, rhymeLetters) {
+    var loadButton = document.getElementById('load-more-button');
+    if (loadButton != null) {
+        loadButton.remove();
+    }
+    var divParent = document.getElementById('load-more-related');
+    divParent.innerHTML = divParent.innerHTML + '<img id="load-more-related-loadingimg" src="/image/loading.gif" alt="بارگذاری  "/>';
+    
     $.ajax({
         type: "GET",
-        url: '?Handler=SimilarPoemsPartial&poemId=' + String(poemId) + '&prosodyMetre=' + prosodyMetre + '&rhymeLetters=' + rhymeLetters,
+        url: '?Handler=SimilarPoemsPartial&poemId=' + String(poemId) + '&skip=' + String(skip) + '&prosodyMetre=' + rhythm + '&rhymeLetters=' + rhymeLetters,
         success: function (data) {
-            $(data).appendTo(document.getElementById('similar-poems-placesholder'));
-            document.getElementById('similar-poems-button').style.display = 'none';
+
+            var imgElement = document.getElementById('load-more-related-loadingimg');
+            imgElement.remove();
+
+            $(data).appendTo(document.getElementById('more-related-placeholder'));
         },
     });
 }

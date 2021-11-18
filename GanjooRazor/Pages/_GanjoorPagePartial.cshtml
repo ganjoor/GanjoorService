@@ -405,52 +405,50 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
 
                                 @if (Model.GanjoorPage.Poem.GanjoorMetre != null && !string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
                                 {
-                                    <div class="related-images-frame">
-                                        @if (Model.GanjoorPage.Poem.Top6RelatedPoems.Length == 0)
-                                        {
-                                            <p>
-                                                <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons">search</i></a>
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            <div class="century">
-                                                شعرهای هم آهنگ
+                            <div class="related-images-frame">
+                                @if (Model.GanjoorPage.Poem.Top6RelatedPoems.Length == 0)
+                                {
+                                    <p>
+                                        <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons">search</i></a>
+                                    </p>
+                                }
+                                else
+                                {
+                                    <div class="century">
+                                        شعرهای هم آهنگ
+                                    </div>
+
+                                    @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6RelatedPoems.Length); i++)
+                                    {
+                                        <div class="inlinesimi">
+                                            <div class="poet-pic-wrap">
+                                                <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6RelatedPoems[i].FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetImageUrl)" alt="@Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetName" /></a>
+                                            </div>
+                                            <div class="inlinesimi-poem-title">
+                                                <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6RelatedPoems[i].FullUrl)">@Model.GanjoorPage.Poem.Top6RelatedPoems[i].FullTitle</a><span></span>
+                                            </div>
+                                            <div class="simitext">
+                                                @Html.Raw(Model.GanjoorPage.Poem.Top6RelatedPoems[i].HtmlExcerpt)
                                             </div>
 
-                                            @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6RelatedPoems.Length); i++)
+                                            @if (Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount > 0)
                                             {
-                                                <div class="inlinesimi">
-                                                    <div class="poet-pic-wrap">
-                                                        <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6RelatedPoems[i].FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetImageUrl)" alt="@Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetName" /></a>
-                                                    </div>
-                                                    <div class="inlinesimi-poem-title">
-                                                        <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6RelatedPoems[i].FullUrl)">@Model.GanjoorPage.Poem.Top6RelatedPoems[i].FullTitle</a><span></span>
-                                                    </div>
-                                                    <div class="simitext">
-                                                        @Html.Raw(Model.GanjoorPage.Poem.Top6RelatedPoems[i].HtmlExcerpt)
-                                                    </div>
-
-                                                    @if (Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount > 0)
-                                                    {
-                                                        <div class="inlinesimi-poem-more">
-                                                            * @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetName <a href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}&amp;a={Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId}")">@Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() شعر هم آهنگ دیگر</a> نیز دارد.
-                                                        </div>
-                                                    }
+                                                <div class="inlinesimi-poem-more">
+                                                    * @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetName <a href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}&amp;a={Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId}")">@Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() شعر هم آهنگ دیگر</a> نیز دارد.
                                                 </div>
                                             }
+                                        </div>
+                                    }
 
-                                            @if (Model.GanjoorPage.Poem.Top6RelatedPoems.Length == 6)
-                                            {
-                                                <div id="more-related-placeholder"></div>
-                                                <div id="more-related">
-                                                    <div id="load-more-related">
-                                                        <a role="button" class="pagebutton" onclick="loadMoreRelated(@Model.GanjoorPage.Poem.Id, 6, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters')">بیشتر<i class="info-buttons">autorenew</i></a>
-                                                    </div>
-                                                </div>
-                                            }
-                                        }
-                                    </div>
+                                    @if (Model.GanjoorPage.Poem.Top6RelatedPoems.Length == 6)
+                                    {
+                                        <div id="more-related-placeholder"></div>
+                                        <div id="load-more-related">
+                                            <a role="button" class="pagebutton" id="load-more-button" onclick="loadMoreRelated(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters')">بیشتر<i class="info-buttons">autorenew</i></a>
+                                        </div>
+                                    }
+                                }
+                            </div>
                                 }
 
                                 @if (Model.GanjoorPage.Poem.Songs.Length == 0)

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
@@ -126,56 +127,13 @@ namespace GanjooRazor.Pages
             GanjoorPage.HtmlText = htmlText;
         }
 
-        public async Task<ActionResult> OnGetSimilarPoemsPartialAsync(int poemId,string prosodyMetre, string rhymeLetters)
+        public async Task<ActionResult> OnGetSimilarPoemsPartialAsync(int poemId, int skip, string prosodyMetre, string rhymeLetters)
         {
-            var cacheKey = $"/api/ganjoor/poems/similar/{poemId}";
-            if (!_memoryCache.TryGetValue(cacheKey, out InlineSimilarPoems similarPoems))
-            {
-                string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber=1&PageSize=20&metre={prosodyMetre}&rhyme={rhymeLetters}";
-                var response = await _httpClient.GetAsync(url);
-                if (!response.IsSuccessStatusCode)
-                    return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                List<GanjoorPoemCompleteViewModel> selectedPoems = new List<GanjoorPoemCompleteViewModel>();
-                List<int> poetMorePoemsLikeThisCount = new List<int>();
-                var poems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
-                if (poems.Count > 0)
-                {
-                    await preparePoets();
-                    poems.Sort((a, b) => a.Category.Poet.BirthYearInLHijri.CompareTo(b.Category.Poet.BirthYearInLHijri));
-
-                    int n = -1;
-                    int curPoetId = -1;
-
-                    for (int i = 0; i < poems.Count; i++)
-                    {
-
-                        var poem = poems[i];
-                        if (poem.Id == poemId)
-                            continue;
-                        if (poem.Category.Poet.Id == curPoetId)
-                        {
-                            poetMorePoemsLikeThisCount[n]++;
-                        }
-                        else
-                        {
-                            n++;
-                            if (n >= 5)
-                                break;
-                            poetMorePoemsLikeThisCount.Add(0);
-                            poem.HtmlText = _GetPoemTextExcerpt(poem.HtmlText);
-                            selectedPoems.Add(poem);
-                            curPoetId = poem.Category.Poet.Id;
-                        }
-                    }
-                }
-                
-                similarPoems = new InlineSimilarPoems()
-                {
-                    Poems = selectedPoems,
-                    PoetMorePoemsLikeThisCount = poetMorePoemsLikeThisCount
-                };
-                _memoryCache.Set(cacheKey, similarPoems);
-            }
+            string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/related?id={poemId}&skip={skip}&itemsCount=6";
+            var response = await _httpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+            var relatedPoems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCachedRelatedPoem>>();
 
             return new PartialViewResult()
             {
@@ -184,9 +142,11 @@ namespace GanjooRazor.Pages
                 {
                     Model = new _SimiPartialViewModel()
                     {
-                        InlineSimilarPoems = similarPoems,
+                        RelatedPoems = relatedPoems.ToArray(),
                         Rhythm = prosodyMetre,
-                        RhymeLetters = rhymeLetters
+                        RhymeLetters = rhymeLetters,
+                        Skip = skip,
+                        PoemId = poemId
                     }
                 }
             };
