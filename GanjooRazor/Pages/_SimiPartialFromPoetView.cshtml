@@ -1,0 +1,20 @@
+﻿@model GanjooRazor.Pages._SimiPartialFromPoetViewModel
+@{
+    Layout = null;
+}
+
+@foreach (var poem in Model.Poems)
+{
+    <div class="inlinesimi">
+        <div class="poet-pic-wrap">
+            <a href="@Html.Raw(poem.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  poem.Category.Poet.ImageUrl)" alt="@poem.Category.Poet.Nickname" /></a>
+        </div>
+        <div class="inlinesimi-poem-title">
+            <a href="@Html.Raw(poem.FullUrl)">@poem.FullTitle</a><span></span>
+        </div>
+        <div class="simitext">
+            @Html.Raw(poem.HtmlText)
+        </div>
+    </div>
+}
+

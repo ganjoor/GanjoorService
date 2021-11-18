@@ -152,5 +152,37 @@ namespace GanjooRazor.Pages
                 }
             };
         }
+
+        public async Task<ActionResult> OnGetSimilarPoemsFromPoetPartialAsync(int poetId, string prosodyMetre, string rhymeLetters, string skipPoemFullUrl1, string skipPoemFullUrl2)
+        {
+            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?metre={prosodyMetre}&rhyme={rhymeLetters}&poetId={poetId}";
+            var response = await _httpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+            List<GanjoorPoemCompleteViewModel> selectedPoems = new List<GanjoorPoemCompleteViewModel>();
+            List<int> poetMorePoemsLikeThisCount = new List<int>();
+            var poems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
+            if (poems.Any(p => p.FullUrl == skipPoemFullUrl1))
+                poems.Remove(poems.Single(p => p.FullUrl == skipPoemFullUrl1));
+            if (poems.Any(p => p.FullUrl == skipPoemFullUrl2))
+                poems.Remove(poems.Single(p => p.FullUrl == skipPoemFullUrl2));
+
+            foreach (var poem in poems)
+            {
+                poem.HtmlText = _GetPoemTextExcerpt(poem.HtmlText);
+            }
+
+            return new PartialViewResult()
+            {
+                ViewName = "_SimiPartialFromPoetView",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _SimiPartialFromPoetViewModel()
+                    {
+                        Poems = poems
+                    }
+                }
+            };
+        }
     }
 }

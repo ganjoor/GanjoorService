@@ -876,3 +876,27 @@ function loadMoreRelatedPoems(poemId, skip, rhythm, rhymeLetters, poemFullUrl) {
         },
     });
 }
+
+function loadMoreRelatedFromPoet(poetId, rhythm, rhymeLetters, skipPoemFullUrl1, skipPoemFullUrl2) {
+    var buttonId = 'load-more-button-' + String(poetId);
+    var loadButton = document.getElementById(buttonId);
+    if (loadButton != null) {
+        loadButton.remove();
+    }
+    var divId = 'more-related-placeholder-' + String(poetId);
+    var divParent = document.getElementById(divId);
+    var imgeId = 'load-more-related-loadingimg' + String(poetId);
+    divParent.innerHTML = divParent.innerHTML + '<img id="' + imgeId + '" src="/image/loading.gif" alt="بارگذاری  "/>';
+
+    $.ajax({
+        type: "GET",
+        url: '?Handler=SimilarPoemsFromPoetPartial&poetId=' + String(poetId) + '&prosodyMetre=' + rhythm + '&rhymeLetters=' + rhymeLetters + '&skipPoemFullUrl1=' + skipPoemFullUrl1 + '&skipPoemFullUrl2=' + skipPoemFullUrl2,
+        success: function (data) {
+
+            var imgElement = document.getElementById(imgeId);
+            imgElement.remove();
+
+            $(data).appendTo(document.getElementById(divId));
+        },
+    });
+}
