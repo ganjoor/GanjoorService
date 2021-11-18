@@ -129,7 +129,7 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnGetSimilarPoemsPartialAsync(int poemId, int skip, string prosodyMetre, string rhymeLetters)
         {
-            string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/related?id={poemId}&skip={skip}&itemsCount=6";
+            string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/related?id={poemId}&skip={skip}&itemsCount=21";
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
                 return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
