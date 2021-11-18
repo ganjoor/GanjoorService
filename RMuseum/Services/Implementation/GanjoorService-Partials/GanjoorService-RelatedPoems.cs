@@ -160,8 +160,9 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// start generating related poems info
         /// </summary>
+        /// <param name="regenerate"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartGeneratingRelatedPoemsInfo()
+        public RServiceResult<bool> StartGeneratingRelatedPoemsInfo(bool regenerate)
         {
             try
             {
@@ -185,6 +186,11 @@ namespace RMuseum.Services.Implementation
                                         int percent = 0;
                                         for (int i = 0; i < poemIds.Count; i++)
                                         {
+                                            if(!regenerate)
+                                            {
+                                                if (await context.GanjoorCachedRelatedPoems.AnyAsync(r => r.PoemId == poemIds[i]))
+                                                    continue;
+                                            }
                                             if (i * 100 / poemIds.Count > percent)
                                             {
                                                 percent++;

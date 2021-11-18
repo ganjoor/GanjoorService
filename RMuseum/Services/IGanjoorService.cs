@@ -666,7 +666,8 @@ namespace RMuseum.Services
         /// <summary>
         /// start generating related poems info
         /// </summary>
+        /// <param name="regenerate"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartGeneratingRelatedPoemsInfo();
+        RServiceResult<bool> StartGeneratingRelatedPoemsInfo(bool regenerate);
     }
 }

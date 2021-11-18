@@ -2172,16 +2172,17 @@ namespace RMuseum.Controllers
         /// <summary>
         /// start generating related poems info
         /// </summary>
+        /// <param name="regenerate"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("generaterelatedpoemsinfo")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartGeneratingRelatedPoemsInfo()
+        public IActionResult StartGeneratingRelatedPoemsInfo(bool regenerate = true)
         {
             RServiceResult<bool> res =
-                 _ganjoorService.StartGeneratingRelatedPoemsInfo();
+                 _ganjoorService.StartGeneratingRelatedPoemsInfo(regenerate);
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);

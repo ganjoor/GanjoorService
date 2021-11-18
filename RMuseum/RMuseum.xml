@@ -1297,10 +1297,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartGeneratingRelatedPoemsInfo">
+        <member name="M:RMuseum.Controllers.GanjoorController.StartGeneratingRelatedPoemsInfo(System.Boolean)">
             <summary>
             start generating related poems info
             </summary>
+            <param name="regenerate"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
@@ -9489,10 +9490,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartGeneratingRelatedPoemsInfo">
+        <member name="M:RMuseum.Services.IGanjoorService.StartGeneratingRelatedPoemsInfo(System.Boolean)">
             <summary>
             start generating related poems info
             </summary>
+            <param name="regenerate"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
@@ -10841,10 +10843,11 @@
             <param name="poemHtml"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingRelatedPoemsInfo">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingRelatedPoemsInfo(System.Boolean)">
             <summary>
             start generating related poems info
             </summary>
+            <param name="regenerate"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBuildingSitemap">
