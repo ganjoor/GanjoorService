@@ -72,7 +72,7 @@ namespace RMuseum
                             )
                         );
 
-            Audit.Core.Configuration.JsonSettings.ContractResolver = AuditNetEnvironmentSkippingContractResolver.Instance;
+            //Audit.Core.Configuration.JsonSettings.ContractResolver = AuditNetEnvironmentSkippingContractResolver.Instance;
             Audit.Core.Configuration.DataProvider = new RAuditDataProvider(Configuration.GetConnectionString("DefaultConnection"));
 
             services.AddIdentityCore<RAppUser>(
