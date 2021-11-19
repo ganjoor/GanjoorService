@@ -41,7 +41,7 @@ namespace GanjooRazor.Pages
         /// <summary>
         /// configration file reader (appsettings.json)
         /// </summary>
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration Configuration;
 
 
         /// <summary>
@@ -54,7 +54,26 @@ namespace GanjooRazor.Pages
         {
             _httpClient = httpClient;
             _memoryCache = memoryCache;
-            _configuration = configuration;
+            Configuration
+                = configuration;
+        }
+
+        // <summary>
+        /// aggressive cache
+        /// </summary>
+        public bool AggressiveCacheEnabled
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration["AggressiveCacheEnabled"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
         }
 
         public List<GanjoorPoetViewModel> Poets { get; set; }
@@ -88,7 +107,10 @@ namespace GanjooRazor.Pages
                     return false;
                 }
                 poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-                _memoryCache.Set(cacheKey, poets);
+                if (AggressiveCacheEnabled)
+                {
+                    _memoryCache.Set(cacheKey, poets);
+                }
             }
 
             Poets = poets;
@@ -107,7 +129,10 @@ namespace GanjooRazor.Pages
                     return false;
                 }
                 poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
-                _memoryCache.Set(cacheKey, poet);
+                if (AggressiveCacheEnabled)
+                {
+                    _memoryCache.Set(cacheKey, poet);
+                }
             }
 
             Poet = poet;
@@ -127,7 +152,10 @@ namespace GanjooRazor.Pages
                     return BadRequest(JsonConvert.DeserializeObject<string>(await poetResponse.Content.ReadAsStringAsync()));
                 }
                 poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
-                _memoryCache.Set(cacheKey, poet);
+                if (AggressiveCacheEnabled)
+                {
+                    _memoryCache.Set(cacheKey, poet);
+                }
             }
             return new OkObjectResult(poet);
         }
@@ -144,7 +172,7 @@ namespace GanjooRazor.Pages
             PoetId = string.IsNullOrEmpty(Request.Query["author"]) ? 0 : int.Parse(Request.Query["author"]);
             CatId = string.IsNullOrEmpty(Request.Query["cat"]) ? 0 : int.Parse(Request.Query["cat"]);
 
-            ViewData["GoogleAnalyticsCode"] = _configuration["GoogleAnalyticsCode"];
+            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
 
             //todo: use html master layout or make it partial
             // 1. poets 

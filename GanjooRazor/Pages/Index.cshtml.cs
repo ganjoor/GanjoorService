@@ -42,6 +42,24 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly IMemoryCache _memoryCache;
 
+        // <summary>
+        /// aggressive cache
+        /// </summary>
+        public bool AggressiveCacheEnabled
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration["AggressiveCacheEnabled"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -476,7 +494,10 @@ namespace GanjooRazor.Pages
                     return false;
                 }
                 poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-                _memoryCache.Set(cacheKey, poets);
+                if (AggressiveCacheEnabled)
+                {
+                    _memoryCache.Set(cacheKey, poets);
+                }
             }
 
             Poets = poets;
@@ -496,7 +517,10 @@ namespace GanjooRazor.Pages
                     return BadRequest(JsonConvert.DeserializeObject<string>(await poetResponse.Content.ReadAsStringAsync()));
                 }
                 poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
-                _memoryCache.Set(cacheKey, poet);
+                if(AggressiveCacheEnabled)
+                {
+                    _memoryCache.Set(cacheKey, poet);
+                }
             }
             return new OkObjectResult(poet);
         }
