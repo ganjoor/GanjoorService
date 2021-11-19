@@ -1410,7 +1410,7 @@ namespace RMuseum.Services.Implementation
                 }
 
                 GanjoorCachedRelatedPoem[] top6relatedPoems = null;
-                if(relatedpoems)
+                if (relatedpoems)
                 {
                     var relatedPoemsRes = await GetRelatedPoems(id, 0, 6);
                     if (!string.IsNullOrEmpty(relatedPoemsRes.ExceptionString))
@@ -3014,21 +3014,8 @@ namespace RMuseum.Services.Implementation
 
                     await _FillPoemCoupletIndices(_context, id);
 
-                    if(oldMetreId != dbPoem.GanjoorMetreId || oldRhymeLetters != dbPoem.RhymeLetters)
-                    {
-                        await _context.SaveChangesAsync();
-
-                        if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
-                            await _UpdateRelatedPoems(_context, (int)oldMetreId, oldRhymeLetters);
-
-                        if (dbPoem.GanjoorMetreId != null && !string.IsNullOrEmpty(dbPoem.RhymeLetters))
-                        {
-                            await _UpdateRelatedPoems(_context, (int)dbPoem.GanjoorMetreId, dbPoem.RhymeLetters);
-                        }
-                    }
-
                     var excerptsInRelatedCaches = await _context.GanjoorCachedRelatedPoems.Where(p => p.FullUrl == dbPoem.FullUrl).ToListAsync();
-                    if(excerptsInRelatedCaches.Count > 0)
+                    if (excerptsInRelatedCaches.Count > 0)
                     {
                         var newExcerpt = GetPoemHtmlExcerpt(dbPoem.HtmlText);
                         foreach (var excerptsInRelatedCache in excerptsInRelatedCaches)
@@ -3038,6 +3025,30 @@ namespace RMuseum.Services.Implementation
                         _context.GanjoorCachedRelatedPoems.UpdateRange(excerptsInRelatedCaches);
                     }
 
+                    if (oldMetreId != dbPoem.GanjoorMetreId || oldRhymeLetters != dbPoem.RhymeLetters)
+                    {
+                        await _context.SaveChangesAsync();
+
+                        _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                                {
+                                    if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
+                                    {
+                                        await _UpdateRelatedPoems(context, (int)oldMetreId, oldRhymeLetters);
+                                        await context.SaveChangesAsync();
+                                    }
+
+                                    if (dbPoem.GanjoorMetreId != null && !string.IsNullOrEmpty(dbPoem.RhymeLetters))
+                                    {
+                                        await _UpdateRelatedPoems(context, (int)dbPoem.GanjoorMetreId, dbPoem.RhymeLetters);
+                                        await context.SaveChangesAsync();
+                                    }
+                                }
+                            });
+                    }
                 }
                 await _context.SaveChangesAsync();
                 CacheCleanForPageByUrl(dbPage.FullUrl);
@@ -3242,7 +3253,7 @@ namespace RMuseum.Services.Implementation
 
             for (int i = 2; i < id; i++)
             {
-                if(!(await _context.GanjoorPoets.Where(p => p.Id == i).AnyAsync()))
+                if (!(await _context.GanjoorPoets.Where(p => p.Id == i).AnyAsync()))
                 {
                     id = i;
                     break;
