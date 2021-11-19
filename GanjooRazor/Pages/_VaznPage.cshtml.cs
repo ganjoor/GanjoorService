@@ -61,7 +61,7 @@ namespace GanjooRazor.Pages
             {
                 htmlText += $"<div class=\"sitem\" id=\"all\">{Environment.NewLine}";
                 htmlText += $"<h2>{Environment.NewLine}";
-                htmlText += $"<a href=\"/vazn/?v={Uri.EscapeUriString(metre)}\">مشاهدهٔ فهرست شعرهای همهٔ شاعران با این وزن</a>{Environment.NewLine}";
+                htmlText += $"<a href=\"/vazn/?v={Uri.EscapeDataString(metre)}\">مشاهدهٔ فهرست شعرهای همهٔ شاعران با این وزن</a>{Environment.NewLine}";
                 htmlText += $"</h2>{Environment.NewLine}";
                 htmlText += $"</div>{Environment.NewLine}";
             }
@@ -97,7 +97,7 @@ namespace GanjooRazor.Pages
 
                 if (paginationMetadata.currentPage > 3)
                 {
-                    htmlText += $"[<a href=\"/vazn/?v={Uri.EscapeUriString(metre)}&page=1{queryPoetId}\">صفحهٔ اول</a>] …";
+                    htmlText += $"[<a href=\"/vazn/?v={Uri.EscapeDataString(metre)}&page=1{queryPoetId}\">صفحهٔ اول</a>] …";
                 }
                 for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
                 {
@@ -110,14 +110,14 @@ namespace GanjooRazor.Pages
                         }
                         else
                         {
-                            htmlText += $"<a href=\"/vazn/?v={Uri.EscapeUriString(metre)}&page={i}{queryPoetId}\">{i.ToPersianNumbers()}</a>";
+                            htmlText += $"<a href=\"/vazn/?v={Uri.EscapeDataString(metre)}&page={i}{queryPoetId}\">{i.ToPersianNumbers()}</a>";
                         }
                         htmlText += "] ";
                     }
                 }
                 if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
                 {
-                    htmlText += $"… [<a href=\"/vazn/?v={Uri.EscapeUriString(metre)}&page={paginationMetadata.totalPages}{queryPoetId}\">صفحهٔ آخر</a>]";
+                    htmlText += $"… [<a href=\"/vazn/?v={Uri.EscapeDataString(metre)}&page={paginationMetadata.totalPages}{queryPoetId}\">صفحهٔ آخر</a>]";
                 }
             }
 

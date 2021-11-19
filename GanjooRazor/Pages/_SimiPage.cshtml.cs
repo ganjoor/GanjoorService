@@ -100,7 +100,7 @@ namespace GanjooRazor.Pages
                 GanjoorPage.Title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
                 if (paginationMetadata.currentPage > 3)
                 {
-                    htmlText += $"[<a href=\"/simi/?v={Uri.EscapeUriString(metre)}&g={Uri.EscapeUriString(rhyme)}&page=1\">صفحهٔ اول</a>] …";
+                    htmlText += $"[<a href=\"/simi/?v={Uri.EscapeDataString(metre)}&g={Uri.EscapeDataString(rhyme)}&page=1\">صفحهٔ اول</a>] …";
                 }
                 for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
                 {
@@ -113,14 +113,14 @@ namespace GanjooRazor.Pages
                         }
                         else
                         {
-                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeUriString(metre)}&g={Uri.EscapeUriString(rhyme)}&page={i}\">{i.ToPersianNumbers()}</a>";
+                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(metre)}&g={Uri.EscapeDataString(rhyme)}&page={i}\">{i.ToPersianNumbers()}</a>";
                         }
                         htmlText += "] ";
                     }
                 }
                 if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
                 {
-                    htmlText += $"… [<a href=\"/simi/?v={Uri.EscapeUriString(metre)}&g={Uri.EscapeUriString(rhyme)}&page={paginationMetadata.totalPages}\">صفحهٔ آخر</a>]";
+                    htmlText += $"… [<a href=\"/simi/?v={Uri.EscapeDataString(metre)}&g={Uri.EscapeDataString(rhyme)}&page={paginationMetadata.totalPages}\">صفحهٔ آخر</a>]";
                 }
             }
 

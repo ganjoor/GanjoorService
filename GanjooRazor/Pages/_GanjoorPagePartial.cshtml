@@ -322,7 +322,7 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                                     وزن:
                                                 </td>
                                                 <td>
-                                                    <a href="@Html.Raw($"/vazn/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm</a>
+                                                    <a href="@Html.Raw($"/vazn/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm</a>
                                                 </td>
                                             </tr>
                                         }
@@ -383,7 +383,7 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                         @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
                                         {
                                             <text>
-                                                <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeUriString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeUriString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons">search</i></a>
+                                                <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons">search</i></a>
                                             </text>
                                         }
                                     }
