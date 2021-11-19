@@ -938,7 +938,7 @@ ol {
         opacity: 1;
     }
 
-form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
+.submitCommentButton, form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
     padding: 0px;
     text-align: center;
     background-color: #300;
