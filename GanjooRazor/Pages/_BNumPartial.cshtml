@@ -64,6 +64,14 @@
 @if (Model.LoggedIn)
 {
     <script>
+        var userNotifiedOnEditInsteadOfComment = false;
+
+        function createInformationNotification() {
+          tinymce.activeEditor.notificationManager.open({
+            text: 'تمنا می‌کنیم که به جای گوشزد کردن خطاهای املایی و تایپی در حاشیه‌ها از دکمهٔ «ویرایش» استفاده کنید و خطا را تصحیح کنید.',
+            type: 'info'
+          });
+        }
         tinymce.init({
             selector: 'textarea.editorbnum',
             language: 'fa_IR',
@@ -74,6 +82,22 @@
             paste_remove_styles: true,
             paste_remove_styles_if_webkit: true,
             paste_strip_class_attributes: true,
+            setup: function(editor) {
+            editor.on('tap', function(e) {
+                if(userNotifiedOnEditInsteadOfComment == false){
+                    userNotifiedOnEditInsteadOfComment = true;
+                    createInformationNotification();
+                }
+            },
+            );
+            editor.on('click', function(e) {
+                if(userNotifiedOnEditInsteadOfComment == false){
+                    userNotifiedOnEditInsteadOfComment = true;
+                    createInformationNotification();
+                }
+            },
+            );
+            },
         });
     </script>
     <form method="post" id="commentform-@Model.CoupletIndex" action="?handler=Comment">
