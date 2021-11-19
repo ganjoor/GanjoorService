@@ -112,7 +112,7 @@ namespace RMuseum
                     .IncludeHeaders(ctx => !ctx.ModelState.IsValid)
                     .IncludeRequestBody()
                     .IncludeModelState()
-                )).SetCompatibilityVersion(CompatibilityVersion.Latest);
+                ));
 
             services.AddMemoryCache();
 
