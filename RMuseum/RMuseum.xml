@@ -701,11 +701,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPoetById(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoetById(System.Int32,System.Boolean)">
             <summary>
             poet by id
             </summary>
             <param name="id"></param>
+            <param name="catPoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoetByUrl(System.String)">
@@ -8854,18 +8855,20 @@
             <param name="includeBio"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoetById(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoetById(System.Int32,System.Boolean)">
             <summary>
-            get poet by idCra
+            get poet by id
             </summary>
             <param name="id"></param>
+            <param name="catPoems"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoetByUrl(System.String)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoetByUrl(System.String,System.Boolean)">
             <summary>
             get poet by url
             </summary>
             <param name="url"></param>
+            <param name="catPoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoetImageIdByUrl(System.String)">
@@ -10907,18 +10910,20 @@
             <param name="includeBio"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetById(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetById(System.Int32,System.Boolean)">
             <summary>
             get poet by id
             </summary>
             <param name="id"></param>
+            <param name="catPoems"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetByUrl(System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetByUrl(System.String,System.Boolean)">
             <summary>
             get poet by url
             </summary>
             <param name="url"></param>
+            <param name="catPoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetImageIdByUrl(System.String)">

@@ -105,6 +105,7 @@ namespace RMuseum.Controllers
         /// poet by id
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="catPoems"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("poet/{id}")]
@@ -112,13 +113,13 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPoetById(int id)
+        public async Task<IActionResult> GetPoetById(int id, bool catPoems = false)
         {
             var cacheKey = $"poet/byid/{id}";
             if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
             {
                 RServiceResult<GanjoorPoetCompleteViewModel> res =
-                await _ganjoorService.GetPoetById(id);
+                await _ganjoorService.GetPoetById(id, catPoems);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 if (res.Result == null)
@@ -354,7 +355,7 @@ namespace RMuseum.Controllers
         {
             try
             {
-                var poet = await _ganjoorService.GetPoetById(id);
+                var poet = await _ganjoorService.GetPoetById(id, false);
                 IFormFile file = Request.Form.Files[0];
                 RServiceResult<RImage> image = await _imageFileService.Add(file, null, file.FileName, Path.Combine(Configuration.GetSection("PictureFileService")["StoragePath"], "PoetImages"));
                 if (!string.IsNullOrEmpty(image.ExceptionString))

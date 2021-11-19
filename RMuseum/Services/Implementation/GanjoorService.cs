@@ -89,8 +89,9 @@ namespace RMuseum.Services.Implementation
         /// get poet by id
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="catPoems"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetById(int id)
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetById(int id, bool catPoems = false)
         {
             var cacheKey = $"/api/ganjoor/poet/{id}";
 
@@ -100,7 +101,7 @@ namespace RMuseum.Services.Implementation
                 if (poet == null)
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
                 var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).AsNoTracking().FirstOrDefaultAsync();
-                poetCat = (await GetCatById(cat.Id)).Result;
+                poetCat = (await GetCatById(cat.Id, catPoems)).Result;
                 if (poetCat != null)
                 {
                     _memoryCache.Set(cacheKey, poetCat);
@@ -113,8 +114,9 @@ namespace RMuseum.Services.Implementation
         /// get poet by url
         /// </summary>
         /// <param name="url"></param>
+        /// <param name="catPoems"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetByUrl(string url)
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetByUrl(string url, bool catPoems = false)
         {
             // /hafez/ => /hafez :
             if (url.LastIndexOf('/') == url.Length - 1)
@@ -124,7 +126,7 @@ namespace RMuseum.Services.Implementation
             var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url && c.ParentId == null).AsNoTracking().SingleOrDefaultAsync();
             if (cat == null)
                 return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
-            return await GetCatById(cat.Id);
+            return await GetCatById(cat.Id, catPoems);
         }
 
         /// <summary>
@@ -152,7 +154,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="url"></param>
         /// <param name="poems"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = true)
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = false)
         {
             // /hafez/ => /hafez :
             if (url.LastIndexOf('/') == url.Length - 1)
@@ -171,7 +173,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="id"></param>
         /// <param name="poems"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = true)
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = false)
         {
             var cat = await _context.GanjoorCategories.Include(c => c.Poet).Include(c => c.Parent).Where(c => c.Id == id).AsNoTracking().FirstOrDefaultAsync();
             if (cat == null)
@@ -370,7 +372,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="url"></param>
         /// <param name="catPoems"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = true)
+        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = false)
         {
             if (url.IndexOf('?') != -1)
             {
@@ -442,7 +444,7 @@ namespace RMuseum.Services.Implementation
 
                     case GanjoorPageType.CatPage:
                         {
-                            var catRes = await GetCatById((int)dbPage.CatId);
+                            var catRes = await GetCatById((int)dbPage.CatId, catPoems);
                             if (!string.IsNullOrEmpty(catRes.ExceptionString))
                             {
                                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, catRes.ExceptionString);
@@ -454,7 +456,7 @@ namespace RMuseum.Services.Implementation
                         {
                             if (dbPage.PoetId != null)
                             {
-                                var poetRes = await GetPoetById((int)dbPage.PoetId);
+                                var poetRes = await GetPoetById((int)dbPage.PoetId, catPoems);
                                 if (!string.IsNullOrEmpty(poetRes.ExceptionString))
                                 {
                                     return new RServiceResult<GanjoorPageCompleteViewModel>(null, poetRes.ExceptionString);

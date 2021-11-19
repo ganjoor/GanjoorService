@@ -22,18 +22,20 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoetViewModel[]>> GetPoets(bool published, bool includeBio = true);
 
         /// <summary>
-        /// get poet by idCra
+        /// get poet by id
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="catPoems"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetById(int id);
+        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetById(int id, bool catPoems = false);
 
         /// <summary>
         /// get poet by url
         /// </summary>
         /// <param name="url"></param>
+        /// <param name="catPoems"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetByUrl(string url);
+        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetPoetByUrl(string url, bool catPoems = false);
 
         /// <summary>
         /// poet image id by url
@@ -48,7 +50,7 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <param name="poems"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = true);
+        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = false);
 
         /// <summary>
         /// get cat by url
@@ -56,7 +58,7 @@ namespace RMuseum.Services
         /// <param name="url"></param>
         /// <param name="poems"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = true);
+        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = false);
 
         /// <summary>
         /// get page by url
@@ -64,7 +66,7 @@ namespace RMuseum.Services
         /// <param name="url"></param>
         /// <param name="catPoems"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = true);
+        Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = false);
 
         /// <summary>
         /// get page url by id
