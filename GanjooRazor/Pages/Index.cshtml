@@ -35,19 +35,19 @@
     {
         if (Model.IsPoemPage)
         {
-<script>
+            <script>
                 $(document).ready(function () {
                     checkWebShareSupport();
                     btshmr(@Model.GanjoorPage.Id);
                     checkIfBookmarked(@Model.GanjoorPage.Id);
                 });
-</script>
+            </script>
 
         }
         <script type="application/ld+json">
-        {
-        @Html.Raw(@ViewData["BrearCrumpList"])
-        }
+            {
+            @Html.Raw(@ViewData["BrearCrumpList"])
+            }
         </script>
     }
 
@@ -85,49 +85,49 @@
                 <script src="/dist/jplayer/jquery.jplayer.min.js"></script>
                 <script src="/dist/add-on/jplayer.playlist.min.js"></script>
                 <script>
-                //<![CDATA[
-                $(document).ready(function () {
-                    var jlist = prepaudio(
-                        "@Html.Raw($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.GanjoorPage.Poem.Recitations[0].Id}.xml")",
-                        "@Html.Raw(Model.GanjoorPage.Poem.Recitations[0].AudioTitle)",
-                        "@Html.Raw(Model.getAudioDesc(Model.GanjoorPage.Poem.Recitations[0], true))",
-                        "",
-                        "@Html.Raw(Model.GanjoorPage.Poem.Recitations[0].Mp3Url)"
-                    );
+                    //<![CDATA[
+                    $(document).ready(function () {
+                        var jlist = prepaudio(
+                            "@Html.Raw($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.GanjoorPage.Poem.Recitations[0].Id}.xml")",
+                            "@Html.Raw(Model.GanjoorPage.Poem.Recitations[0].AudioTitle)",
+                            "@Html.Raw(Model.getAudioDesc(Model.GanjoorPage.Poem.Recitations[0], true))",
+                            "",
+                            "@Html.Raw(Model.GanjoorPage.Poem.Recitations[0].Mp3Url)"
+                        );
 
-                    @for(int x = 1; x<Model.GanjoorPage.Poem.Recitations.Length; x++)
+                    @for (int x = 1; x < Model.GanjoorPage.Poem.Recitations.Length; x++)
                     {
                         <text>
-                    addpaudio(@x, jlist,
-                        "@Html.Raw($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.GanjoorPage.Poem.Recitations[x].Id}.xml")",
-                        "@Html.Raw(Model.GanjoorPage.Poem.Recitations[x].AudioTitle)",
-                        "@Html.Raw(Model.getAudioDesc(Model.GanjoorPage.Poem.Recitations[x], false))",
-                        "",
-                        "@Html.Raw(Model.GanjoorPage.Poem.Recitations[x].Mp3Url)"
-                    );
+                            addpaudio(@x, jlist,
+                                "@Html.Raw($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.GanjoorPage.Poem.Recitations[x].Id}.xml")",
+                                "@Html.Raw(Model.GanjoorPage.Poem.Recitations[x].AudioTitle)",
+                                "@Html.Raw(Model.getAudioDesc(Model.GanjoorPage.Poem.Recitations[x], false))",
+                                "",
+                                "@Html.Raw(Model.GanjoorPage.Poem.Recitations[x].Mp3Url)"
+                            );
                         </text>
                     }
 
-                    if (playerScrollLock) {
-                        $('#scroll-lock').text('🔒');
-                    }
-                    else {
-                        $('#scroll-lock').text('🔓');
-                    }
-
-                    $('#scroll-lock').click(function () {
-                        playerScrollLock = !playerScrollLock;
                         if (playerScrollLock) {
-
                             $('#scroll-lock').text('🔒');
                         }
                         else {
                             $('#scroll-lock').text('🔓');
                         }
-                    });
 
-                });
-                //]]>
+                        $('#scroll-lock').click(function () {
+                            playerScrollLock = !playerScrollLock;
+                            if (playerScrollLock) {
+
+                                $('#scroll-lock').text('🔒');
+                            }
+                            else {
+                                $('#scroll-lock').text('🔓');
+                            }
+                        });
+
+                    });
+                    //]]>
                 </script>
             }
         }
@@ -135,14 +135,14 @@
         if (!string.IsNullOrEmpty(Model.PinterestUrl))
         {
             <script>
-                    $(function () {
-                        $("a").attr('href', function (i, h) {
-                            if (h != null) {
-                                return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
-                            }
-                            return h;
-                        });
+                $(function () {
+                    $("a").attr('href', function (i, h) {
+                        if (h != null) {
+                            return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
+                        }
+                        return h;
                     });
+                });
             </script>
         }
     }
@@ -150,6 +150,15 @@
 
     <script src="/lib/tinymce/tinymce.min.js"></script>
     <script>
+        var userNotifiedOnEditInsteadOfComment = false;
+
+        function createInformationNotification() {
+          tinymce.activeEditor.notificationManager.open({
+            text: 'تمنا می‌کنیم که به جای گوشزد کردن خطاهای املایی و تایپی در حاشیه‌ها از دکمهٔ «ویرایش» استفاده کنید و خطا را تصحیح کنید.',
+            type: 'info'
+          });
+        }
+
         tinymce.init({
             selector: 'textarea.editor',
             language: 'fa_IR',
@@ -160,6 +169,22 @@
             paste_remove_styles: true,
             paste_remove_styles_if_webkit: true,
             paste_strip_class_attributes: true,
+            setup: function(editor) {
+            editor.on('tap', function(e) {
+                if(userNotifiedOnEditInsteadOfComment == false){
+                    userNotifiedOnEditInsteadOfComment = true;
+                    createInformationNotification();
+                }
+            },
+            );
+            editor.on('click', function(e) {
+                if(userNotifiedOnEditInsteadOfComment == false){
+                    userNotifiedOnEditInsteadOfComment = true;
+                    createInformationNotification();
+                }
+            },
+            );
+            },
         });
     </script>
 
