@@ -43,7 +43,11 @@ namespace GanjooRazor.Pages
             GanjoorPage.Title = "شعرهای ";
             if (poetId != 0)
             {
-                GanjoorPage.Title += $"{Poets.Where(p => p.Id == poetId).Single().Name} ";
+                var poetInfo = Poets.Where(p => p.Id == poetId).SingleOrDefault();
+                if(poetInfo != null)
+                {
+                    GanjoorPage.Title += $"{poetInfo.Nickname} ";
+                }
             }
 
             GanjoorPage.Title += $"با وزن «{metre}»";

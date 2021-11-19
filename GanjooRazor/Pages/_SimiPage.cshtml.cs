@@ -56,7 +56,11 @@ namespace GanjooRazor.Pages
 
             if (auther != "0")
             {
-                GanjoorPage.Title += $"{Poets.Where(p => p.Id == int.Parse(auther)).Single().Nickname} " ;
+                var poetInfo = Poets.Where(p => p.Id == int.Parse(auther)).SingleOrDefault();
+                if(poetInfo != null)
+                {
+                    GanjoorPage.Title += $"{poetInfo.Nickname} ";
+                }
             }
 
             GanjoorPage.Title += $"با وزن «{metre}»";
