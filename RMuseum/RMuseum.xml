@@ -1335,6 +1335,11 @@
             IMemoryCache
             </summary>
         </member>
+        <member name="P:RMuseum.Controllers.GanjoorController.AggressiveCacheEnabled">
+            <summary>
+            aggressive cache
+            </summary>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.Configuration">
             <summary>
             Configuration

@@ -76,7 +76,8 @@ namespace RMuseum.Services.Implementation
                 StringComparer fa = StringComparer.Create(new CultureInfo("fa-IR"), true);
                 res.Sort((a, b) => fa.Compare(a.Nickname, b.Nickname));
                 poets = res.ToArray();
-                _memoryCache.Set(cacheKey, poets);
+                if (AggressiveCacheEnabled)
+                    _memoryCache.Set(cacheKey, poets);
             }
 
             return new RServiceResult<GanjoorPoetViewModel[]>
@@ -102,7 +103,7 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
                 var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).AsNoTracking().FirstOrDefaultAsync();
                 poetCat = (await GetCatById(cat.Id, catPoems)).Result;
-                if (poetCat != null)
+                if (poetCat != null && AggressiveCacheEnabled)
                 {
                     _memoryCache.Set(cacheKey, poetCat);
                 }
@@ -498,7 +499,7 @@ namespace RMuseum.Services.Implementation
                         }
                         break;
                 }
-                if ((AggressiveCacheEnabled || page.GanjoorPageType == GanjoorPageType.CatPage) && page.FullUrl != "/hashieha" && page.FullUrl != "/vazn" && page.FullUrl != "/simi" && page.FullUrl != "/audioclip")
+                if (AggressiveCacheEnabled)
                 {
                     _memoryCache.Set(cachKey, page);
                 }

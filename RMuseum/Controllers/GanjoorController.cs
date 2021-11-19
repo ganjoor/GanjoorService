@@ -49,7 +49,8 @@ namespace RMuseum.Controllers
                     return BadRequest(res.ExceptionString);
 
                 poets = res.Result;
-                _memoryCache.Set(cacheKey, poets);
+                if (AggressiveCacheEnabled)
+                    _memoryCache.Set(cacheKey, poets);
                 
             }
             return Ok(poets);
@@ -76,7 +77,8 @@ namespace RMuseum.Controllers
                     return BadRequest(res.ExceptionString);
 
                 centuries = res.Result;
-                _memoryCache.Set(cacheKey, centuries);
+                if (AggressiveCacheEnabled)
+                    _memoryCache.Set(cacheKey, centuries);
 
             }
             return Ok(centuries);
@@ -125,7 +127,8 @@ namespace RMuseum.Controllers
                 if (res.Result == null)
                     return NotFound();
                 poet = res.Result;
-                _memoryCache.Set(cacheKey, poet);
+                if (AggressiveCacheEnabled)
+                    _memoryCache.Set(cacheKey, poet);
             }
             return Ok(poet);
         }
@@ -153,7 +156,8 @@ namespace RMuseum.Controllers
                 if (res.Result == null)
                     return NotFound();
                 poet = res.Result;
-                _memoryCache.Set(cacheKey, poet);
+                if (AggressiveCacheEnabled)
+                    _memoryCache.Set(cacheKey, poet);
             }
             return Ok(poet);
         }
@@ -414,7 +418,10 @@ namespace RMuseum.Controllers
                 if (res.Result == null)
                     return NotFound();
                 cat = res.Result;
-                _memoryCache.Set(cacheKey, cat);
+                if(AggressiveCacheEnabled)
+                {
+                    _memoryCache.Set(cacheKey, cat);
+                }
             }
             return Ok(cat);
         }
@@ -443,7 +450,8 @@ namespace RMuseum.Controllers
                 if (res.Result == null)
                     return NotFound();
                 cat = res.Result;
-                _memoryCache.Set(cacheKey, cat);
+                if (AggressiveCacheEnabled)
+                    _memoryCache.Set(cacheKey, cat);
             }
 
             
@@ -2232,6 +2240,24 @@ namespace RMuseum.Controllers
         /// IMemoryCache
         /// </summary>
         protected readonly IMemoryCache _memoryCache;
+
+        /// <summary>
+        /// aggressive cache
+        /// </summary>
+        private bool AggressiveCacheEnabled
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration["AggressiveCacheEnabled"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
 
         /// <summary>
         /// Configuration
