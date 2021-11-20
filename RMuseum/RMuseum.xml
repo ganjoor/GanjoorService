@@ -2185,6 +2185,11 @@
             related poems to each poem (having same rhyme letters and prosody metre)
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.ReportedUserNotes">
+            <summary>
+            Reported User Notes
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -7838,6 +7843,41 @@
         <member name="P:RMuseum.Models.Note.RUserNote.Status">
             <summary>
             Status
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Note.RUserNoteAbuseReport">
+            <summary>
+            (Public) User Notes Abuse Report
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNoteAbuseReport.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNoteAbuseReport.NoteId">
+            <summary>
+            Note Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNoteAbuseReport.Note">
+            <summary>
+            Note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNoteAbuseReport.ReasonText">
+            <summary>
+            some explanotory text provided by reporter
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNoteAbuseReport.ReporterId">
+            <summary>
+            reporting user Id (nullable to allow deleting users and keeping this part of data if needed)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.RUserNoteAbuseReport.Reporter">
+            <summary>
+            reporting user
             </summary>
         </member>
         <member name="T:RMuseum.Models.Note.ViewModels.PostUserNote">
