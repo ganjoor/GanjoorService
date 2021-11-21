@@ -526,5 +526,35 @@ namespace RMuseum.Services
         /// <returns></returns>
         RServiceResult<bool> StartFillingGanjoorLinkOriginalSources();
 
+        /// <summary>
+        /// report a public note
+        /// </summary>
+        /// <param name="reportUserId"></param>
+        /// <param name="noteId"></param>
+        /// <param name="reasonText"></param>
+        /// <returns>id of report record</returns>
+        Task<RServiceResult<Guid>> ReportPublicNote(Guid reportUserId, Guid noteId, string reasonText);
+
+        /// <summary>
+        /// Get a list of reported notes
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, RUserNoteAbuseReportViewModel[] Items)>> GetReportedPublicNotes(PagingParameterModel paging);
+
+        /// <summary>
+        /// delete a report for abuse in public user notes
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeclinePublicNoteReport(Guid id);
+
+        /// <summary>
+        /// delete a reported user note (accept the complaint)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> AcceptPublicNoteReport(Guid id);
+
     }
 }

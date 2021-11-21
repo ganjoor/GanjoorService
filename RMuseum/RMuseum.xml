@@ -7905,6 +7905,26 @@
             Reference Note Id
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Note.ViewModels.RUserNoteAbuseReportViewModel">
+            <summary>
+            (Public) User Notes Abuse Report View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteAbuseReportViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteAbuseReportViewModel.ReasonText">
+            <summary>
+            some explanotory text provided by reporter
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteAbuseReportViewModel.Note">
+            <summary>
+            note
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Note.ViewModels.RUserNoteViewModel">
             <summary>
             Safe User Note View Model
@@ -8714,6 +8734,36 @@
             <summary>
             start filling GanjoorLink table OriginalSource values
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.ReportPublicNote(System.Guid,System.Guid,System.String)">
+            <summary>
+            report a public note
+            </summary>
+            <param name="reportUserId"></param>
+            <param name="noteId"></param>
+            <param name="reasonText"></param>
+            <returns>id of report record</returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetReportedPublicNotes(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            Get a list of reported notes
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.DeclinePublicNoteReport(System.Guid)">
+            <summary>
+            delete a report for abuse in public user notes
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.AcceptPublicNoteReport(System.Guid)">
+            <summary>
+            delete a reported user note (accept the complaint)
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IDonationService">
@@ -10219,6 +10269,36 @@
         <member name="M:RMuseum.Services.Implementation.ArtifactService.GetAllPublicNotes(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             Get All Public Notes
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.ReportPublicNote(System.Guid,System.Guid,System.String)">
+            <summary>
+            report a public note
+            </summary>
+            <param name="reportUserId"></param>
+            <param name="noteId"></param>
+            <param name="reasonText"></param>
+            <returns>id of report record</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.DeclinePublicNoteReport(System.Guid)">
+            <summary>
+            delete a report for abuse in public user notes
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.AcceptPublicNoteReport(System.Guid)">
+            <summary>
+            delete a reported user note (accept the complaint)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetReportedPublicNotes(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            Get a list of reported notes
             </summary>
             <param name="paging"></param>
             <returns></returns>

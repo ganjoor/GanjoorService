@@ -2214,6 +2214,138 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)>((paginatedResult1.PagingMeta, finalList.ToArray()));
         }
 
+        /// <summary>
+        /// report a public note
+        /// </summary>
+        /// <param name="reportUserId"></param>
+        /// <param name="noteId"></param>
+        /// <param name="reasonText"></param>
+        /// <returns>id of report record</returns>
+        public async Task<RServiceResult<Guid>> ReportPublicNote(Guid reportUserId, Guid noteId, string reasonText)
+        {
+            try
+            {
+                RUserNoteAbuseReport r = new RUserNoteAbuseReport()
+                {
+                    NoteId = noteId,
+                    ReporterId = reportUserId,
+                    ReasonText = reasonText,
+                };
+                _context.ReportedUserNotes.Add(r);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<Guid>(r.Id);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<Guid>(Guid.Empty, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete a report for abuse in public user notes
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeclinePublicNoteReport(Guid id)
+        {
+            try
+            {
+                RUserNoteAbuseReport report = await _context.ReportedUserNotes.Where(r => r.Id == id).SingleOrDefaultAsync();
+                if (report == null)
+                {
+                    return new RServiceResult<bool>(false);
+                }
+                _context.ReportedUserNotes.Remove(report);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete a reported user note (accept the complaint)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> AcceptPublicNoteReport(Guid id)
+        {
+            try
+            {
+                RUserNoteAbuseReport report = await _context.ReportedUserNotes.AsNoTracking().Where(r => r.Id == id).SingleOrDefaultAsync();
+                if (report == null)
+                {
+                    return new RServiceResult<bool>(false, "report not found");
+                }
+
+                var reasonText = report.ReasonText;
+
+                RUserNote note = await _context.UserNotes.Where(n => n.Id == report.NoteId).SingleOrDefaultAsync();
+                if(note == null)
+                {
+                    return new RServiceResult<bool>(false, "note not found!");
+                }
+
+
+                await _notificationService.PushNotification((Guid)note.RAppUserId,
+                                       "حذف یادداشت عمومی شما",
+                                       $"یادداشت عمومی شما به دلیل ناسازگاری با قوانین یادداشت‌گذاری عمومی در گنجینهٔ گنجور و طبق گزارشات دیگر کاربران حذف شده است.{Environment.NewLine}" +
+                                       $"توجه فرمایید که یادداشتهای عمومی گنجینهٔ گنجور برای بحث در مورد نسخه‌ها در نظر گرفته شده‌اند و جای بحثهای محتوایی بی‌ربط به نسخهٔ خاص می‌تواند در گنجور باشد.{Environment.NewLine}" +
+                                       $"{reasonText}" +
+                                       $"این متن یادداشت حذف شدهٔ شماست: {Environment.NewLine}" +
+                                       $"{note.HtmlContent}"
+                                       );
+                _context.UserNotes.Remove(note);
+
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Get a list of reported notes
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RUserNoteAbuseReportViewModel[] Items)>> GetReportedPublicNotes(PagingParameterModel paging)
+        {
+            var source =
+                 from report in _context.ReportedUserNotes
+                 join note in _context.UserNotes.Include(n => n.RAppUser)
+                 on report.NoteId equals note.Id
+                 select
+                 new RUserNoteAbuseReportViewModel()
+                 {
+                     Id = report.Id,
+                     ReasonText = report.ReasonText,
+                     Note = new RUserNoteViewModel()
+                     {
+                         Id = note.Id,
+                         RAppUserId = note.RAppUserId,
+                         UserName = note.RAppUser.NickName,
+                         RUserImageId = note.RAppUser.RImageId,
+                         Modified = note.Modified,
+                         NoteType = note.NoteType,
+                         HtmlContent = note.HtmlContent,
+                         ReferenceNoteId = note.ReferenceNoteId,
+                         Status = note.Status,
+                         Notes = new RUserNoteViewModel[] { },
+                         DateTime = RUserNoteViewModel.PrepareNoteDateTime(note.DateTime),
+                         LastModified = RUserNoteViewModel.PrepareNoteDateTime(note.LastModified)
+                     }
+                 };
+
+            (PaginationMetadata PagingMeta, RUserNoteAbuseReportViewModel[] Items) paginatedResult =
+                await QueryablePaginator<RUserNoteAbuseReportViewModel>.Paginate(source, paging);
+            return new RServiceResult<(PaginationMetadata PagingMeta, RUserNoteAbuseReportViewModel[] Items)>(paginatedResult);
+        }
+
 
 
         /// <summary>
