@@ -84,8 +84,6 @@ namespace RMuseum.DbContext
                .Property(c => c.ProgressPercent)
                .HasColumnType("decimal(18,2)");
 
-            //Index set suggested by SQL Server Tuning Wizard -- begin
-
             builder.Entity<GanjoorComment>()
                 .HasIndex(c => c.Status);
 
@@ -139,7 +137,8 @@ namespace RMuseum.DbContext
             builder.Entity<GanjoorCachedRelatedPoem>()
                 .HasIndex(c => new { c.PoemId });
 
-            //Index set suggested by SQL Server Tuning Wizard -- end
+            builder.Entity<GanjoorCachedRelatedPoem>()
+                .HasIndex(c => new { c.FullUrl });
 
             builder.Entity<GanjoorDonation>()
               .Property(c => c.Amount)
