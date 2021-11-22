@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RMuseum.Models.Artifact;
 using RMuseum.Models.Artifact.ViewModels;
@@ -39,8 +40,8 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RArtifactMasterRecord>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        
-        public async Task<IActionResult> Get([FromQuery]PagingParameterModel paging)
+
+        public async Task<IActionResult> Get([FromQuery] PagingParameterModel paging)
         {
             var cacheKey = $"artifacts/all/{paging.PageSize}/{paging.PageNumber}";
             if (!_memoryCache.TryGetValue(cacheKey, out RServiceResult<(PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items)> itemsInfo))
@@ -49,12 +50,12 @@ namespace RMuseum.Controllers
                 if (!string.IsNullOrEmpty(itemsInfo.ExceptionString))
                 {
                     return BadRequest(itemsInfo.ExceptionString);
-                }                
+                }
 
                 _memoryCache.Set(cacheKey, itemsInfo);
-            }            
+            }
 
-            if(itemsInfo.Result.Items.Count() > 0)
+            if (itemsInfo.Result.Items.Count() > 0)
             {
                 DateTime lastModification = itemsInfo.Result.Items.Max(i => i.LastModified);
                 Response.GetTypedHeaders().LastModified = lastModification;
@@ -123,7 +124,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RArtifactMasterRecord>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetUserVisible([FromQuery]PagingParameterModel paging)
+        public async Task<IActionResult> GetUserVisible([FromQuery] PagingParameterModel paging)
         {
             RServiceResult<PublishStatus[]> v = await _GetUserVisibleArtifactStatusSet
                 (
@@ -170,7 +171,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetByTagValue(string tagUrl, string valueUrl)
         {
-            RServiceResult<RArtifactMasterRecord[]> itemsInfo = await _artifactService.GetByTagValue(tagUrl, valueUrl, new PublishStatus[] { PublishStatus.Published } );
+            RServiceResult<RArtifactMasterRecord[]> itemsInfo = await _artifactService.GetByTagValue(tagUrl, valueUrl, new PublishStatus[] { PublishStatus.Published });
             if (!string.IsNullOrEmpty(itemsInfo.ExceptionString))
             {
                 return BadRequest(itemsInfo.ExceptionString);
@@ -217,7 +218,7 @@ namespace RMuseum.Controllers
                     return NotFound();
 
                 _memoryCache.Set(cacheKey, itemInfo);
-            }          
+            }
 
 
             Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
@@ -264,7 +265,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetByFriendlyUrlFilterItemsByTag(string friendlyUrl, string tagFriendlyUrl)
-        {          
+        {
             return await GetByFriendlyUrlFilterItemsByTag(friendlyUrl, tagFriendlyUrl, null);
         }
 
@@ -283,7 +284,7 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> GetByFriendlyUrlFilterItemsByTag(string friendlyUrl, string tagFriendlyUrl, string valueFriendlyUrl)
         {
             var cacheKey = $"{friendlyUrl}/filteritemsbytag/{tagFriendlyUrl}";
-            if(valueFriendlyUrl != null)
+            if (valueFriendlyUrl != null)
             {
                 cacheKey += $"/{valueFriendlyUrl}";
             }
@@ -295,10 +296,10 @@ namespace RMuseum.Controllers
                     return BadRequest(itemInfo.ExceptionString);
                 }
                 if (itemInfo.Result == null)
-                    return NotFound();                
+                    return NotFound();
 
                 _memoryCache.Set(cacheKey, itemInfo);
-            }            
+            }
 
             Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
 
@@ -349,11 +350,11 @@ namespace RMuseum.Controllers
                     _memoryCache.Set(cacheKey, itemInfo);
                 }
             }
-            if(itemInfo == null)
+            if (itemInfo == null)
             {
                 itemInfo = await _artifactService.GetByFriendlyUrl(friendlyUrl, visibleItems);
             }
-            
+
             if (!string.IsNullOrEmpty(itemInfo.ExceptionString))
             {
                 return BadRequest(itemInfo.ExceptionString);
@@ -412,7 +413,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(v.ExceptionString))
                 return BadRequest(v.ExceptionString);
             PublishStatus[] visibleItems = v.Result;
-            if(visibleItems.Length == 1 && visibleItems[0] == PublishStatus.Published)
+            if (visibleItems.Length == 1 && visibleItems[0] == PublishStatus.Published)
             {
                 return await GetByFriendlyUrlFilterItemsByTag(friendlyUrl, tagFriendlyUrl, valueFriendlyUrl);
             }
@@ -450,7 +451,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> Put(Guid id, [FromBody]RArtifactMasterRecord item)
+        public async Task<IActionResult> Put(Guid id, [FromBody] RArtifactMasterRecord item)
         {
             if (id != item.Id)
             {
@@ -490,12 +491,12 @@ namespace RMuseum.Controllers
                 return BadRequest(itemInfo.ExceptionString);
             }
 
-            if(itemInfo == null)
+            if (itemInfo == null)
             {
                 return NotFound();
             }
 
-            return Ok();;
+            return Ok(); ;
         }
 
         /// <summary>
@@ -508,7 +509,7 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> SetArtifactCoverItemIndex(Guid id, [FromBody]int itemIndex)
+        public async Task<IActionResult> SetArtifactCoverItemIndex(Guid id, [FromBody] int itemIndex)
         {
             RServiceResult<bool> res = await _artifactService.SetArtifactCoverItemIndex(id, itemIndex);
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -546,7 +547,7 @@ namespace RMuseum.Controllers
 
 
             RServiceResult<DateTime> lastModified = await _artifactService.GetMaxArtifactLastModified();
-            if(!string.IsNullOrEmpty(lastModified.ExceptionString))
+            if (!string.IsNullOrEmpty(lastModified.ExceptionString))
             {
                 return BadRequest(lastModified.ExceptionString);
             }
@@ -573,7 +574,7 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.TagEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RTag))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> NewTag([FromBody]RTag tag)
+        public async Task<IActionResult> NewTag([FromBody] RTag tag)
         {
             RServiceResult<RTag> res = await _artifactService.AddTag(tag.Name);
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -590,7 +591,7 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RTag>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetTags([FromQuery]PagingParameterModel paging)
+        public async Task<IActionResult> GetTags([FromQuery] PagingParameterModel paging)
         {
             RServiceResult<(PaginationMetadata PagingMeta, RTag[] Items)> itemsInfo = await _artifactService.GetAllTags(paging);
             if (!string.IsNullOrEmpty(itemsInfo.ExceptionString))
@@ -613,7 +614,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(tag.ExceptionString))
             {
                 return BadRequest(tag.ExceptionString);
-            }           
+            }
 
             return Ok(tag.Result);
         }
@@ -633,7 +634,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> PutTag(Guid tagid, [FromBody]RTag tag)
+        public async Task<IActionResult> PutTag(Guid tagid, [FromBody] RTag tag)
         {
             if (tagid != tag.Id)
             {
@@ -651,7 +652,7 @@ namespace RMuseum.Controllers
                 return NotFound();
             }
 
-            return Ok();;
+            return Ok(); ;
         }
 
         /// <summary>
@@ -756,7 +757,7 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RTagValue))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> NewArtifactTagValue(Guid artifactId, [FromBody]RTag tag)
+        public async Task<IActionResult> NewArtifactTagValue(Guid artifactId, [FromBody] RTag tag)
         {
             RServiceResult<RTagValue> res = await _artifactService.TagArtifact(artifactId, tag);
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -780,7 +781,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> PutAttributeValue(Guid artifactid, bool global, [FromBody]RTagValue tagvalue)
+        public async Task<IActionResult> PutAttributeValue(Guid artifactid, bool global, [FromBody] RTagValue tagvalue)
         {
 
             RServiceResult<RTagValue> itemInfo = await _artifactService.EditTagValue(artifactid, tagvalue, global);
@@ -794,7 +795,7 @@ namespace RMuseum.Controllers
                 return NotFound();
             }
 
-            return Ok();;
+            return Ok(); ;
         }
 
         /// <summary>
@@ -828,7 +829,7 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RTagValue))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> NewItemTagValue(Guid itemId, [FromBody]RTag tag)
+        public async Task<IActionResult> NewItemTagValue(Guid itemId, [FromBody] RTag tag)
         {
             RServiceResult<RTagValue> res = await _artifactService.TagItem(itemId, tag);
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -851,7 +852,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> PutItemTagValue(Guid itemId, bool global, [FromBody]RTagValue tagvalue)
+        public async Task<IActionResult> PutItemTagValue(Guid itemId, bool global, [FromBody] RTagValue tagvalue)
         {
 
             RServiceResult<RTagValue> itemInfo = await _artifactService.EditItemTagValue(itemId, tagvalue, global);
@@ -865,7 +866,7 @@ namespace RMuseum.Controllers
                 return NotFound();
             }
 
-            return Ok();;
+            return Ok(); ;
         }
 
         /// <summary>
@@ -1040,7 +1041,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public virtual async Task<IActionResult> Post()
         {
-            
+
             try
             {
                 NewArtifact newArtifactInfo =
@@ -1067,11 +1068,11 @@ namespace RMuseum.Controllers
                     return BadRequest(result.ExceptionString);
                 return Ok(result.Result);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return BadRequest(exp.ToString());
             }
-            
+
         }
 
         /// <summary>
@@ -1140,7 +1141,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> ReExamineLocDownloads(string pass)
         {
-            if(pass != "123456") //this is a heavy processor consuming call, so prevent mistaken call of it from swagger ui
+            if (pass != "123456") //this is a heavy processor consuming call, so prevent mistaken call of it from swagger ui
                 return BadRequest("invalid password");
             RServiceResult<string[]> res = await _artifactService.ReExamineLocDownloads();
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -1153,7 +1154,7 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + SecurableItem.AddOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<ImportJob>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetImportJobs([FromQuery]PagingParameterModel paging)
+        public async Task<IActionResult> GetImportJobs([FromQuery] PagingParameterModel paging)
         {
             RServiceResult<(PaginationMetadata PagingMeta, ImportJob[] Items)> itemsInfo = await _artifactService.GetImportJobs(paging);
             if (!string.IsNullOrEmpty(itemsInfo.ExceptionString))
@@ -1250,7 +1251,7 @@ namespace RMuseum.Controllers
         [HttpPost]
         [Route("fav/item/{itemId}")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type =  typeof(RUserBookmark))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserBookmark))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> FavItem(Guid itemId)
         {
@@ -1308,7 +1309,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserBookmark[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetUserBookmarks([FromQuery]PagingParameterModel paging)
+        public async Task<IActionResult> GetUserBookmarks([FromQuery] PagingParameterModel paging)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<PublishStatus[]> v = await _GetUserVisibleArtifactStatusSet
@@ -1320,7 +1321,7 @@ namespace RMuseum.Controllers
                 return BadRequest(v.ExceptionString);
             PublishStatus[] visibleItems = v.Result;
 
-            
+
             RServiceResult<(PaginationMetadata PagingMeta, RUserBookmarkViewModel[] Bookmarks)> res = await _artifactService.GetBookmarks(paging, loggedOnUserId, RBookmarkType.Bookmark, visibleItems);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -1338,7 +1339,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserBookmarkViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetUserFavorites([FromQuery]PagingParameterModel paging)
+        public async Task<IActionResult> GetUserFavorites([FromQuery] PagingParameterModel paging)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<PublishStatus[]> v = await _GetUserVisibleArtifactStatusSet
@@ -1368,13 +1369,13 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNoteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> AddUserNoteToArtifact([FromBody]PostUserNote note)
+        public async Task<IActionResult> AddUserNoteToArtifact([FromBody] PostUserNote note)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<RUserNoteViewModel> res = await _artifactService.AddUserNoteToArtifact(note.EntityId, loggedOnUserId, note.NoteType, note.Contents, note.ReferenceNoteId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
-            
+
             return Ok(res.Result);
         }
 
@@ -1388,7 +1389,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNoteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> AddUserNoteToArtifactItem([FromBody]PostUserNote note)
+        public async Task<IActionResult> AddUserNoteToArtifactItem([FromBody] PostUserNote note)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<RUserNoteViewModel> res = await _artifactService.AddUserNoteToArtifactItem(note.EntityId, loggedOnUserId, note.NoteType, note.Contents, note.ReferenceNoteId);
@@ -1411,7 +1412,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNoteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> EditUserNote(Guid noteId, [FromBody]PostUserNote note)
+        public async Task<IActionResult> EditUserNote(Guid noteId, [FromBody] PostUserNote note)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
@@ -1558,7 +1559,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNoteViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetUserPublicNotes([FromQuery]PagingParameterModel paging)
+        public async Task<IActionResult> GetUserPublicNotes([FromQuery] PagingParameterModel paging)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<PublishStatus[]> v = await _GetUserVisibleArtifactStatusSet
@@ -1588,7 +1589,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNoteViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetUserPrivateNotes([FromQuery]PagingParameterModel paging)
+        public async Task<IActionResult> GetUserPrivateNotes([FromQuery] PagingParameterModel paging)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<PublishStatus[]> v = await _GetUserVisibleArtifactStatusSet
@@ -1618,8 +1619,8 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserNoteViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetAllPublicNotes([FromQuery]PagingParameterModel paging)
-        {           
+        public async Task<IActionResult> GetAllPublicNotes([FromQuery] PagingParameterModel paging)
+        {
             RServiceResult<(PaginationMetadata PagingMeta, RUserNoteViewModel[] Notes)> res = await _artifactService.GetAllPublicNotes(paging);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -1627,6 +1628,116 @@ namespace RMuseum.Controllers
             HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
             return Ok(res.Result.Notes);
         }
+
+        /// <summary>
+        /// report a public note
+        /// </summary>
+        /// <param name="report"></param>
+        /// <returns>id of saved report</returns>
+        [HttpPost]
+        [Route("note/report")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Guid))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> ReportPublicNote([FromBody] PostRUserNoteAbuseReportViewModel report)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
+            Guid userId =
+                 new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId =
+                new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+            RServiceResult<bool> sessionCheckResult = await _appUserService.SessionExists(userId, sessionId);
+            if (!string.IsNullOrEmpty(sessionCheckResult.ExceptionString))
+            {
+                return StatusCode((int)HttpStatusCode.Forbidden);
+            }
+
+            RServiceResult<Guid> res = await _artifactService.ReportPublicNote(userId, report.NoteId, report.ReasonText);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        ///  Get a list of reported notes
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("notes/reported")]
+        [Authorize(Policy = RMuseumSecurableItem.NoteEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RUserNoteAbuseReportViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetReportedPublicNotes([FromQuery] PagingParameterModel paging)
+        {
+            var notes = await _artifactService.GetReportedPublicNotes(paging);
+            if (!string.IsNullOrEmpty(notes.ExceptionString))
+            {
+                return BadRequest(notes.ExceptionString);
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(notes.Result.PagingMeta));
+
+            return Ok(notes.Result.Items);
+        }
+
+        /// <summary>
+        /// delete a report for abuse in public user notes
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("note/report/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.NoteEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> DeclinePublicNoteReport(Guid id)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            RServiceResult<bool> res = await _artifactService.DeclinePublicNoteReport(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            if (!res.Result)
+            {
+                return NotFound();
+            }
+            return Ok();
+        }
+
+        /// <summary>
+        /// delete a reported user note (accept the complaint)
+        /// </summary>
+        /// <param name="reportid"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("note/reported/moderate/{reportid}")]
+        [Authorize(Policy = RMuseumSecurableItem.NoteEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> AcceptPublicNoteReport(Guid reportid)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            var res =
+                await _artifactService.AcceptPublicNoteReport(reportid);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (!res.Result)
+                return NotFound();
+            return Ok();
+        }
+
 
 
         /// <summary>
@@ -1639,7 +1750,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorLinkViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> SuggestGanjoorLink([FromBody]LinkSuggestion link)
+        public async Task<IActionResult> SuggestGanjoorLink([FromBody] LinkSuggestion link)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<GanjoorLinkViewModel> suggestion = await _artifactService.SuggestGanjoorLink(loggedOnUserId, link);
@@ -1789,7 +1900,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PinterestLinkViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> SuggestPinterestLink([FromBody]PinterestSuggestion suggestion)
+        public async Task<IActionResult> SuggestPinterestLink([FromBody] PinterestSuggestion suggestion)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<PinterestLinkViewModel> res = await _artifactService.SuggestPinterestLink(loggedOnUserId, suggestion);
@@ -1863,23 +1974,44 @@ namespace RMuseum.Controllers
                 return BadRequest(exp.ToString());
             }
         }
+        /// <summary>
+        /// readonly mode
+        /// </summary>
+        public bool ReadOnlyMode
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration["ReadOnlyMode"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
 
 
 
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="artifactService">
-        /// </param>
+        /// <param name="artifactService"></param>
         /// <param name="userPermissionChecker"></param>
         /// <param name="memoryCache"></param>
         /// <param name="captchaService"></param>
-        public ArtifactController(IArtifactService artifactService, IUserPermissionChecker userPermissionChecker, IMemoryCache memoryCache, ICaptchaService captchaService)
+        /// <param name="appUserService"></param>
+        /// <param name="configuration"></param>
+        public ArtifactController(IArtifactService artifactService, IUserPermissionChecker userPermissionChecker, IMemoryCache memoryCache, ICaptchaService captchaService, IAppUserService appUserService, IConfiguration configuration)
         {
             _artifactService = artifactService;
             _userPermissionChecker = userPermissionChecker;
             _memoryCache = memoryCache;
             _captchaService = captchaService;
+            _appUserService = appUserService;
+            Configuration = configuration;
+
         }
 
         /// <summary>
@@ -1902,6 +2034,16 @@ namespace RMuseum.Controllers
         /// </summary>
         protected readonly ICaptchaService _captchaService;
 
-        
+        /// <summary>
+        /// IAppUserService instance
+        /// </summary>
+        protected IAppUserService _appUserService;
+
+        /// <summary>
+        /// Configuration
+        /// </summary>
+        protected IConfiguration Configuration { get; }
+
+
     }
 }

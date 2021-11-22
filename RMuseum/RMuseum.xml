@@ -463,6 +463,34 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.ReportPublicNote(RMuseum.Models.Note.ViewModels.PostRUserNoteAbuseReportViewModel)">
+            <summary>
+            report a public note
+            </summary>
+            <param name="report"></param>
+            <returns>id of saved report</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetReportedPublicNotes(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+             Get a list of reported notes
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.DeclinePublicNoteReport(System.Guid)">
+            <summary>
+            delete a report for abuse in public user notes
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.AcceptPublicNoteReport(System.Guid)">
+            <summary>
+            delete a reported user note (accept the complaint)
+            </summary>
+            <param name="reportid"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.ArtifactController.SuggestGanjoorLink(RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion)">
             <summary>
             suggest ganjoor link
@@ -548,15 +576,21 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.#ctor(RMuseum.Services.IArtifactService,RSecurityBackend.Services.IUserPermissionChecker,Microsoft.Extensions.Caching.Memory.IMemoryCache,RSecurityBackend.Services.ICaptchaService)">
+        <member name="P:RMuseum.Controllers.ArtifactController.ReadOnlyMode">
+            <summary>
+            readonly mode
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.#ctor(RMuseum.Services.IArtifactService,RSecurityBackend.Services.IUserPermissionChecker,Microsoft.Extensions.Caching.Memory.IMemoryCache,RSecurityBackend.Services.ICaptchaService,RSecurityBackend.Services.IAppUserService,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             constructor
             </summary>
-            <param name="artifactService">
-            </param>
+            <param name="artifactService"></param>
             <param name="userPermissionChecker"></param>
             <param name="memoryCache"></param>
             <param name="captchaService"></param>
+            <param name="appUserService"></param>
+            <param name="configuration"></param>
         </member>
         <member name="F:RMuseum.Controllers.ArtifactController._artifactService">
             <summary>
@@ -576,6 +610,16 @@
         <member name="F:RMuseum.Controllers.ArtifactController._captchaService">
             <summary>
             Captcha service
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.ArtifactController._appUserService">
+            <summary>
+            IAppUserService instance
+            </summary>
+        </member>
+        <member name="P:RMuseum.Controllers.ArtifactController.Configuration">
+            <summary>
+            Configuration
             </summary>
         </member>
         <member name="T:RMuseum.Controllers.AuditLogController">
@@ -7878,6 +7922,21 @@
         <member name="P:RMuseum.Models.Note.RUserNoteAbuseReport.Reporter">
             <summary>
             reporting user
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Note.ViewModels.PostRUserNoteAbuseReportViewModel">
+            <summary>
+            user note report view model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.PostRUserNoteAbuseReportViewModel.NoteId">
+            <summary>
+            note Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.PostRUserNoteAbuseReportViewModel.ReasonText">
+            <summary>
+            reason text
             </summary>
         </member>
         <member name="T:RMuseum.Models.Note.ViewModels.PostUserNote">
