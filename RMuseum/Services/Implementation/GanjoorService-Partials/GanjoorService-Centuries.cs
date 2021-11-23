@@ -201,9 +201,17 @@ namespace RMuseum.Services.Implementation
                     if (firstPeriod != null)
                     {
                         period = firstPeriod;
-                        if (poet.DeathYearInLHijri - lastPeriod.StartYear >= 1)
-                            period = lastPeriod;
+                        if(lastPeriod != null)
+                        {
+                            if ((poet.DeathYearInLHijri - lastPeriod.StartYear) > (firstPeriod.EndYear - poet.BirthYearInLHijri))
+                                period = lastPeriod;
+                        }
                     }
+                    else
+                    {
+                        period = lastPeriod;
+                    }
+
 
 
                     if (period != null)
