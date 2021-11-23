@@ -27,7 +27,7 @@ namespace RMuseum.Services.Implementation
             List<GanjoorCenturyViewModel> res = new List<GanjoorCenturyViewModel>();
 
             var pinned = await _context.GanjoorPoets.AsNoTracking().Where(p => p.PinOrder != 0).OrderBy(p => p.PinOrder).ToListAsync();
-            if(pinned.Count > 0)
+            if (pinned.Count > 0)
             {
                 GanjoorCenturyViewModel model = new GanjoorCenturyViewModel()
                 {
@@ -83,14 +83,14 @@ namespace RMuseum.Services.Implementation
                 var oldOnes = await _context.GanjoorCenturies.ToArrayAsync();
                 _context.RemoveRange(oldOnes);
                 await _context.SaveChangesAsync();
-                
+
 
                 var periods = new List<GanjoorCentury>
                 {
                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 1,
-                        Name = "پیش از قرن سوم",
+                        Name = "قرن سوم",
                         StartYear = 0,
                         EndYear = 299,
                         ShowInTimeLine = true,
@@ -98,188 +98,94 @@ namespace RMuseum.Services.Implementation
                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 2,
-                        Name = "قرن سوم",
-                        StartYear = 250,
-                        EndYear = 350,
-                        ShowInTimeLine = true,
-                    },
-                     new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 3,
                         Name = "قرن چهارم",
                         StartYear = 300,
-                        EndYear = 400,
+                        EndYear = 399,
+                        ShowInTimeLine = true,
+                    },
+                    new GanjoorCentury()
+                    {
+                        HalfCenturyOrder = 3,
+                        Name = "قرن پنجم",
+                        StartYear = 400,
+                        EndYear = 499,
                         ShowInTimeLine = true,
                     },
                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 4,
-                        Name = "۴",
-                        StartYear = 350,
-                        EndYear = 450,
-                        ShowInTimeLine = false,
+                        Name = "قرن ششم",
+                        StartYear = 500,
+                        EndYear = 599,
+                        ShowInTimeLine = true,
                     },
-                     new GanjoorCentury()
+                    new GanjoorCentury()
                     {
                         HalfCenturyOrder = 5,
-                        Name = "قرن پنجم",
-                        StartYear = 400,
-                        EndYear = 500,
+                        Name = "قرن هفتم",
+                        StartYear = 600,
+                        EndYear = 699,
                         ShowInTimeLine = true,
                     },
                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 6,
-                        Name = "۵",
-                        StartYear = 450,
-                        EndYear = 550,
-                        ShowInTimeLine = false,
+                        Name = "قرن هشتم",
+                        StartYear = 700,
+                        EndYear = 799,
+                        ShowInTimeLine = true,
                     },
                      new GanjoorCentury()
                     {
                         HalfCenturyOrder = 7,
-                        Name = "قرن ششم",
-                        StartYear = 500,
-                        EndYear = 600,
+                        Name = "قرن نهم",
+                        StartYear = 800,
+                        EndYear = 899,
                         ShowInTimeLine = true,
-                    },
-                    new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 8,
-                        Name = "۶",
-                        StartYear = 550,
-                        EndYear = 650,
-                        ShowInTimeLine = false,
                     },
                      new GanjoorCentury()
                     {
-                        HalfCenturyOrder = 9,
-                        Name = "قرن هفتم",
-                        StartYear = 600,
-                        EndYear = 700,
+                        HalfCenturyOrder = 8,
+                        Name = "قرن دهم",
+                        StartYear = 900,
+                        EndYear = 999,
                         ShowInTimeLine = true,
                     },
                     new GanjoorCentury()
                     {
+                        HalfCenturyOrder = 9,
+                        Name = "قرن یازدهم",
+                        StartYear = 1000,
+                        EndYear = 1099,
+                        ShowInTimeLine = true,
+                    },
+
+                     new GanjoorCentury()
+                    {
                         HalfCenturyOrder = 10,
-                        Name = "۷",
-                        StartYear = 650,
-                        EndYear = 750,
-                        ShowInTimeLine = false,
+                        Name = "قرن دوازدهم",
+                        StartYear = 1100,
+                        EndYear = 1199,
+                        ShowInTimeLine = true,
                     },
                      new GanjoorCentury()
                     {
                         HalfCenturyOrder = 11,
-                        Name = "قرن هشتم",
-                        StartYear = 700,
-                        EndYear = 800,
+                        Name = "قرن سیزدهم",
+                        StartYear = 1200,
+                        EndYear = 1299,
                         ShowInTimeLine = true,
                     },
                     new GanjoorCentury()
                     {
                         HalfCenturyOrder = 12,
-                        Name = "۸",
-                        StartYear = 750,
-                        EndYear = 850,
-                        ShowInTimeLine = false,
-                    },
-                     new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 13,
-                        Name = "قرن نهم",
-                        StartYear = 800,
-                        EndYear = 900,
-                        ShowInTimeLine = true,
-                    },
-                    new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 14,
-                        Name = "۹",
-                        StartYear = 850,
-                        EndYear = 950,
-                        ShowInTimeLine = false,
-                    },
-                     new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 15,
-                        Name = "قرن دهم",
-                        StartYear = 900,
-                        EndYear = 1000,
-                        ShowInTimeLine = true,
-                    },
-                    new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 16,
-                        Name = "۱۰",
-                        StartYear = 950,
-                        EndYear = 1050,
-                        ShowInTimeLine = false,
-                    },
-                     new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 17,
-                        Name = "قرن یازدهم",
-                        StartYear = 1000,
-                        EndYear = 1100,
-                        ShowInTimeLine = true,
-                    },
-                    new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 18,
-                        Name = "۱۱",
-                        StartYear = 1050,
-                        EndYear = 1150,
-                        ShowInTimeLine = false,
-                    },
-                     new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 19,
-                        Name = "قرن دوازدهم",
-                        StartYear = 1100,
-                        EndYear = 1200,
-                        ShowInTimeLine = true,
-                    },
-                    new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 20,
-                        Name = "۱۲",
-                        StartYear = 1150,
-                        EndYear = 1250,
-                        ShowInTimeLine = false,
-                    },
-                     new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 21,
-                        Name = "قرن سیزدهم",
-                        StartYear = 1200,
-                        EndYear = 1300,
-                        ShowInTimeLine = true,
-                    },
-                    new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 22,
-                        Name = "۱۳",
-                        StartYear = 1250,
-                        EndYear = 1350,
-                        ShowInTimeLine = false,
-                    },
-                     new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 23,
                         Name = "قرن چهاردهم",
                         StartYear = 1300,
-                        EndYear = 1400,
+                        EndYear = 1500,
                         ShowInTimeLine = true,
                     },
-                    new GanjoorCentury()
-                    {
-                        HalfCenturyOrder = 24,
-                        Name = "۱۴",
-                        StartYear = 1350,
-                        EndYear = 1450,
-                        ShowInTimeLine = false,
-                    },
-    
+
+
                 };
 
                 var poets = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Published && p.BirthYearInLHijri != 0).OrderBy(p => p.BirthYearInLHijri).ToArrayAsync();
@@ -292,15 +198,15 @@ namespace RMuseum.Services.Implementation
                     var firstPeriod = periods.Where(p => p.StartYear <= poet.BirthYearInLHijri).LastOrDefault();
                     var lastPeriod = periods.Where(p => p.EndYear >= poet.DeathYearInLHijri).FirstOrDefault();
 
-                    if(firstPeriod != null)
+                    if (firstPeriod != null)
                     {
                         period = firstPeriod;
                         if (poet.DeathYearInLHijri - lastPeriod.StartYear >= 1)
                             period = lastPeriod;
                     }
-                    
-                    
-                    if(period != null)
+
+
+                    if (period != null)
                     {
                         if (period.Poets == null)
                             period.Poets = new List<GanjoorCenturyPoet>();
@@ -317,7 +223,7 @@ namespace RMuseum.Services.Implementation
 
                 foreach (var period in periods)
                 {
-                    if(period.Poets != null)
+                    if (period.Poets != null)
                     {
                         _context.Add(period);
                         await _context.SaveChangesAsync();
