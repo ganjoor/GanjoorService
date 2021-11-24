@@ -235,9 +235,8 @@ namespace RMuseum.Services.Implementation
                     await sqliteConnection.ExecuteAsync($"INSERT INTO poet (id, name, cat_id, description) VALUES ({poet.Id}, '{poet.Nickname}', {catPoet.Id}, '{(ignoreBio ? "" : bio)}');");
                     await ExportCatToSqlite(context, sqliteConnection, catPoet);
                     await sqliteConnection.ExecuteAsync("COMMIT;");
-
                 }
-
+                SqliteConnection.ClearAllPools();
 
                 return new RServiceResult<string>(filePath);
             }
