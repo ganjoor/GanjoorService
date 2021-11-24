@@ -15,7 +15,19 @@
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="/lib/tinymce/tinymce.min.js"></script>
-    <script>tinymce.init({ selector: 'textarea.editor', language: 'fa_IR' });</script>
+    <script>
+        tinymce.init({
+                selector: 'textarea.editor',
+                language: 'fa_IR',
+                    menubar: false,
+                    plugins: 'link paste',
+                    toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | link',
+                    paste_auto_cleanup_on_paste: true,
+                    paste_remove_styles: true,
+                    paste_remove_styles_if_webkit: true,
+                    paste_strip_class_attributes: true,
+                });
+    </script>
     <script src="/lib/diff.js"></script>
     <script>
         function moderateReportedComment(reportId) {
@@ -229,7 +241,7 @@
         }
 
         function savePoemCorrections(id, verseCount) {
-          
+
             var verseOrderText = [];
             for (var i = 0; i <= verseCount; i++) {
                 var oldElementName = '#original-' + i.toString();
