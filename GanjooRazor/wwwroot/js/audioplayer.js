@@ -17,7 +17,6 @@ var audioPlayer = function() {
     trackInfoBox: document.querySelector(".track-info-box")
   };
   var _playAHead = false;
-  var _progressCounter = 0;
   var _progressBarIndicator = _elements.progressBar.children[0].children[0].children[1];
   var _trackLoaded = false;
 
@@ -309,8 +308,8 @@ var audioPlayer = function() {
    * @param playListRows The playlist object.
    **/
   var _setTrackTitle = function(currentTrack, playListRows) {
-    var trackTitleBox = document.querySelector(".player .info-box .track-info-box .track-title-text");
-    var trackTitle = playListRows[currentTrack - 1].children[2].outerText;
+      var trackTitleBox = document.querySelector(".player .info-box .track-info-box .track-title-text");
+      var trackTitle = playListRows[currentTrack - 1].children[2].innerHTML;
 
     trackTitleBox.innerHTML = null;
 
