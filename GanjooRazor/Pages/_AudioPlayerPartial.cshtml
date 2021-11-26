@@ -57,17 +57,17 @@
         {
             var recitaion = Model.Recitations[nRecitationIndex];
             <div class="play-list-row" data-track-row="@(nRecitationIndex + 1)">
-            <div class="small-toggle-btn">
-                <i class="small-play-btn"><span class="screen-reader-text">Small toggle button</span></i>
+                <div class="small-toggle-btn">
+                    <i class="small-play-btn"><span class="screen-reader-text">Small toggle button</span></i>
+                </div>
+                <div class="track-number">
+                    @((nRecitationIndex + 1).ToPersianNumbers()).
+                </div>
+                <div class="track-title">
+                    <a class="playlist-track" href="#" data-play-track="@(nRecitationIndex + 1)">@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")</a>
+                </div>
+                <div class="xml-url-path">@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")</div>
             </div>
-            <div class="track-number">
-                @((nRecitationIndex + 1).ToPersianNumbers()).
-            </div>
-            <div class="track-title">
-                <a class="playlist-track" href="#" data-play-track="@(nRecitationIndex + 1)">@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")</a>
-            </div>
-            <div class="xml-url-path">@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")</div>
-        </div>
         }
     </div>
 

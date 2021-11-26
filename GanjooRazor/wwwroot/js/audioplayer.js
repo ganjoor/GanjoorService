@@ -200,6 +200,7 @@ var audioPlayer = function () {
 
         //User stops moving progress indicator.
         window.addEventListener("mouseup", _mouseUp, false);
+
     };
 
     /**
@@ -224,8 +225,7 @@ var audioPlayer = function () {
             var duration = parseFloat(audio.duration);
             var progressIndicatorClick = parseFloat(_handleProgressIndicatorClick(e));
             window.removeEventListener("mousemove", _moveProgressIndicator, true);
-
-            audio.currentTime = duration * progressIndicatorClick;
+            audio.currentTime += duration * progressIndicatorClick;
             audio.addEventListener("timeupdate", _trackTimeChanged, false);
             _playAHead = false;
         }

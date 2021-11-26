@@ -110,13 +110,13 @@
   position: relative;
 }
 .container .player .progress-box .progress-cell {
-  height: 12px;
+  height: 20px;
   position: relative;
 }
 .container .player .progress-box .progress-cell .progress {
   background: #fff;
   border: 1px solid #d9d9d9;
-  height: 8px;
+  height: 16px;
   position: relative;
   width: auto;
 }
@@ -130,12 +130,12 @@
   border: 1px solid #bebebe;
   border-radius: 3px;
   cursor: pointer;
-  height: 10px;
+  height: 18px;
   left: 0;
   overflow: hidden;
   position: absolute;
   top: -2px;
-  width: 22px;
+  width: 30px;
 }
 .container .player .controls-box {
   bottom: 10px;
