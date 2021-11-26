@@ -249,3 +249,7 @@
   content: "pause";
   font: 0.85em "Material Icons";
 }
+
+.xml-url-path{
+    display:none;
+}

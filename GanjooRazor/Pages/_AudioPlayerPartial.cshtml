@@ -43,8 +43,8 @@
         <!-- /.progress-box -->
 
         <div class="controls-box">
-            <i class="previous-track-btn disabled"><span class="screen-reader-text">پخش خوانش پیشین</span></i>
             <i class="next-track-btn"><span class="screen-reader-text">پخش خوانش بعدی</span></i>
+            <i class="previous-track-btn disabled"><span class="screen-reader-text">پخش خوانش پیشین</span></i>
         </div>
         <!-- /.controls-box -->
 
@@ -53,7 +53,7 @@
 
     <div class="play-list">
 
-         @for (var nRecitationIndex = 0; nRecitationIndex < Model.Recitations.Length; nRecitationIndex++)
+        @for (var nRecitationIndex = 0; nRecitationIndex < Model.Recitations.Length; nRecitationIndex++)
         {
             var recitaion = Model.Recitations[nRecitationIndex];
             <div class="play-list-row" data-track-row="@(nRecitationIndex + 1)">
@@ -66,6 +66,7 @@
             <div class="track-title">
                 <a class="playlist-track" href="#" data-play-track="@(nRecitationIndex + 1)">@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")</a>
             </div>
+            <div class="xml-url-path">@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")</div>
         </div>
         }
     </div>
