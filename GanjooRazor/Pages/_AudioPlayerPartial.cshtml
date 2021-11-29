@@ -2,76 +2,84 @@
 @using DNTPersianUtils.Core
 @{
 }
+<script>
+    var verseStart = [];
+    var verseEnd = [];
+    var verseIndex = [];
+    var nLastHighlight = -1;
+    var vCount = 0;
+
+    var _setXml = function (xmlUrl) {
+        $.ajax({
+            type: "GET",
+            url: xmlUrl,
+            dataType: "xml",
+            success: function (xml) {
+                var nOneSecondBugFix = 2000;
+                $(xml).find('OneSecondBugFix').each(function () {
+                    nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
+                });
+                var v = 0;
+                $(xml).find('SyncInfo').each(function () {
+                    verseStart[v] = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
+                    verseIndex[v] = parseInt($(this).find('VerseOrder').text());
+                    if (v > 0)
+                        verseEnd[v - 1] = verseStart[v];
+                    v++;
+                });
+                v--;
+                if (v > 1)
+                    verseEnd[v] = verseStart[v] + 2 * (verseEnd[v - 1] - verseStart[v - 1]);
+                vCount = v;
+            }
+        });
+    }
+
+    var _trackTimeChanged = function (audio) {
+        var currentTime = audio.currentTime;
+
+        if (currentTime > 0) {
+            for (var i = 0; i <= vCount; i++) {
+                if (currentTime >= verseStart[i] && currentTime <= verseEnd[i]) {
+                    hilightverse(verseIndex[i], "red", true, playerScrollLock);
+
+                    if (nLastHighlight != verseIndex[i] && nLastHighlight != -1)
+                        hilightverse(nLastHighlight, "black", false, false);
+                    nLastHighlight = verseIndex[i];
+                    break;
+                }
+            }
+        }
+    };
+</script>
+
 <div class="container">
+    @for (var nRecitationIndex = 0; nRecitationIndex < Model.Recitations.Length; nRecitationIndex++)
+    {
+        var recitaion = Model.Recitations[nRecitationIndex];
+        <div class="audio-player">
+            <audio id="audio-@(nRecitationIndex + 1)" preload="none" controls>
+                <source src="@recitaion.Mp3Url" title="@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")" data-track-number="@(nRecitationIndex + 1)" />
+                مرورگر شما از پخش صدای HTML 5 پشتیبانی نمی‌کند.
+            </audio>
+            <script>
+                document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('play', () => {
+                    var audioList = document.querySelectorAll('audio');
+                    audioList.forEach(function(audioElement) {
+                      if(audioElement != document.getElementById('audio-@(nRecitationIndex + 1)')){
+                          audioElement.pause();
+                      }
+                    });
 
-    <audio id="audio" preload="none" tabindex="0">
-        @for (var nRecitationIndex = 0; nRecitationIndex < Model.Recitations.Length; nRecitationIndex++)
-        {
-            var recitaion = Model.Recitations[nRecitationIndex];
-            <source src="@recitaion.Mp3Url" title="@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")" data-track-number="@(nRecitationIndex + 1)" />
-        }
-        مرورگر شما از پخش صدای HTML 5 پشتیبانی نمی‌کند.
-    </audio>
+                    _setXml('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")');
+                });
 
-    <div class="player">
-
-        <div class="large-toggle-btn">
-            <i class="large-play-btn"><span class="screen-reader-text">دکمهٔ بزرگ پخش و ادامه</span></i>
+                 document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('timeupdate', () => {
+                    _trackTimeChanged(document.getElementById('audio-@(nRecitationIndex + 1)'));
+                });
+            </script>
         </div>
-        <!-- /.play-box -->
-
-        <div class="info-box">
-            <div class="track-info-box">
-                <div class="track-title-text"></div>
-                <div class="audio-time">
-                    <span class="current-time">00:00</span> /
-                    <span class="duration">00:00</span>
-                </div>
-            </div>
-            <!-- /.info-box -->
-
-            <div class="progress-box">
-                <div class="progress-cell">
-                    <div class="progress">
-                        <div class="progress-buffer"></div>
-                        <div class="progress-indicator"></div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <!-- /.progress-box -->
-
-        <div class="controls-box">
-            <i class="next-track-btn"><span class="screen-reader-text">پخش خوانش بعدی</span></i>
-            <i class="previous-track-btn disabled"><span class="screen-reader-text">پخش خوانش پیشین</span></i>
-        </div>
-        <!-- /.controls-box -->
-
-    </div>
-    <!-- /.player -->
-
-    <div class="play-list">
-
-        @for (var nRecitationIndex = 0; nRecitationIndex < Model.Recitations.Length; nRecitationIndex++)
-        {
-            var recitaion = Model.Recitations[nRecitationIndex];
-            <div class="play-list-row" data-track-row="@(nRecitationIndex + 1)">
-                <div class="small-toggle-btn">
-                    <i class="small-play-btn"><span class="screen-reader-text">Small toggle button</span></i>
-                </div>
-                <div class="track-number">
-                    @((nRecitationIndex + 1).ToPersianNumbers()).
-                </div>
-                <div class="track-title">
-                    <a class="playlist-track" href="#" data-play-track="@(nRecitationIndex + 1)">@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")</a>
-                </div>
-                <div class="xml-url-path">@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")</div>
-            </div>
-        }
-    </div>
-
-    <div>می‌خواهید شما بخوانید؟ <a href='http://ava.ganjoor.net/about/'>اینجا</a> را ببینید.</div>
+    }
 </div>
 
-<script src="/js/audioplayer.js"></script>
+
