@@ -62,6 +62,9 @@
                 <source src="@recitaion.Mp3Url" title="@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")" data-track-number="@(nRecitationIndex + 1)" />
                 مرورگر شما از پخش صدای HTML 5 پشتیبانی نمی‌کند.
             </audio>
+            <div class="recitaion-info">
+                <a role="button" onclick="document.getElementById('audio-@(nRecitationIndex + 1)').play()" class="actionlink">@recitaion.AudioTitle</a> @Html.Raw(Model.getAudioDesc(recitaion, nRecitationIndex == 0))
+            </div>
             <script>
                 document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('play', () => {
                     var audioList = document.querySelectorAll('audio');
