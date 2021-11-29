@@ -125,10 +125,6 @@ function btshmr(poemId) {
     setTimeout(function () { btshmr_internal(poemId); }, 1);
 }
 
-
-
-
-
 function hilightverse(vnum, clr, sc, forceScroll) {
     var root = document;
     if (typeof root == "string") root = document.getElementById(root);
@@ -152,12 +148,12 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                     btn.setAttribute('role', 'button');
                     btn.className = 'inlineanchor';
                     btn.onclick = function () {
-                        if ($('#jquery_jplayer_1').data().jPlayer.status.paused) {
-                            $('#jquery_jplayer_1').data().jPlayer.play();
+                        if (currentAudio.paused) {
+                            currentAudio.play();
                             $('#InlinePauseButtonImage').text('pause_circle_filled');
                         }
                         else {
-                            $('#jquery_jplayer_1').data().jPlayer.pause();
+                            currentAudio.pause();
                             $('#InlinePauseButtonImage').text('play_circle_filled');
                         }
                     };
@@ -221,12 +217,12 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                             btn.setAttribute('role', 'button');
                             btn.className = 'inlineanchor';
                             btn.onclick = function () {
-                                if ($('#jquery_jplayer_1').data().jPlayer.status.paused) {
-                                    $('#jquery_jplayer_1').data().jPlayer.play();
+                                if (currentAudio.paused) {
+                                    currentAudio.play();
                                     $('#InlinePauseButtonImage').text('pause_circle_filled');
                                 }
                                 else {
-                                    $('#jquery_jplayer_1').data().jPlayer.pause();
+                                    currentAudio.pause();
                                     $('#InlinePauseButtonImage').text('play_circle_filled');
                                 }
                             };

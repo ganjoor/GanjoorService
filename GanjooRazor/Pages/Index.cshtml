@@ -55,6 +55,64 @@
 <body>
     <script src="/js/vaabd.js"></script>
 
+    @if (Model.IsPoemPage)
+    {
+        if (Model.GanjoorPage != null && Model.GanjoorPage.Poem.Recitations.Length > 0)
+        {
+            <script>
+                var currentAudio = null;
+                var verseStart = [];
+                var verseEnd = [];
+                var verseIndex = [];
+                var nLastHighlight = -1;
+                var vCount = 0;
+
+                var _setXml = function (xmlUrl) {
+                    $.ajax({
+                        type: "GET",
+                        url: xmlUrl,
+                        dataType: "xml",
+                        success: function (xml) {
+                            var nOneSecondBugFix = 2000;
+                            $(xml).find('OneSecondBugFix').each(function () {
+                                nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
+                            });
+                            var v = 0;
+                            $(xml).find('SyncInfo').each(function () {
+                                verseStart[v] = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
+                                verseIndex[v] = parseInt($(this).find('VerseOrder').text());
+                                if (v > 0)
+                                    verseEnd[v - 1] = verseStart[v];
+                                v++;
+                            });
+                            v--;
+                            if (v > 1)
+                                verseEnd[v] = verseStart[v] + 2 * (verseEnd[v - 1] - verseStart[v - 1]);
+                            vCount = v;
+                        }
+                    });
+                }
+
+                var _trackTimeChanged = function (audio) {
+                    var currentTime = audio.currentTime;
+
+                    if (currentTime > 0) {
+                        for (var i = 0; i <= vCount; i++) {
+                            if (currentTime >= verseStart[i] && currentTime <= verseEnd[i]) {
+                                hilightverse(verseIndex[i], "red", true, playerScrollLock);
+
+                                if (nLastHighlight != verseIndex[i] && nLastHighlight != -1)
+                                    hilightverse(nLastHighlight, "black", false, false);
+                                nLastHighlight = verseIndex[i];
+                                break;
+                            }
+                        }
+                    }
+                };
+            </script>
+        }
+    }
+
     @if (Model.IsHomePage)
     {
         @if (!string.IsNullOrEmpty(Model.LastError))
@@ -78,112 +136,6 @@
 
 
     @{
-        if (Model.IsPoemPage)
-        {
-            if (Model.GanjoorPage != null && Model.GanjoorPage.Poem.Recitations.Length > 0)
-            {
-                <script>
-                    var currentAudio = null;
-                    var verseStart = [];
-                    var verseEnd = [];
-                    var verseIndex = [];
-                    var nLastHighlight = -1;
-                    var vCount = 0;
-
-                    var _setXml = function (xmlUrl) {
-                        $.ajax({
-                            type: "GET",
-                            url: xmlUrl,
-                            dataType: "xml",
-                            success: function (xml) {
-                                var nOneSecondBugFix = 2000;
-                                $(xml).find('OneSecondBugFix').each(function () {
-                                    nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
-                                });
-                                var v = 0;
-                                $(xml).find('SyncInfo').each(function () {
-                                    verseStart[v] = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
-                                    verseIndex[v] = parseInt($(this).find('VerseOrder').text());
-                                    if (v > 0)
-                                        verseEnd[v - 1] = verseStart[v];
-                                    v++;
-                                });
-                                v--;
-                                if (v > 1)
-                                    verseEnd[v] = verseStart[v] + 2 * (verseEnd[v - 1] - verseStart[v - 1]);
-                                vCount = v;
-                            }
-                        });
-                    }
-
-                    var _trackTimeChanged = function (audio) {
-                        var currentTime = audio.currentTime;
-
-                        if (currentTime > 0) {
-                            for (var i = 0; i <= vCount; i++) {
-                                if (currentTime >= verseStart[i] && currentTime <= verseEnd[i]) {
-                                    hilightverse(verseIndex[i], "red", true, playerScrollLock);
-
-                                    if (nLastHighlight != verseIndex[i] && nLastHighlight != -1)
-                                        hilightverse(nLastHighlight, "black", false, false);
-                                    nLastHighlight = verseIndex[i];
-                                    break;
-                                }
-                            }
-                        }
-                    };
-                </script>
-
-                <script src="/dist/jplayer/jquery.jplayer.min.js"></script>
-                <script src="/dist/add-on/jplayer.playlist.min.js"></script>
-                <script>
-                    //<![CDATA[
-                    $(document).ready(function () {
-                        var jlist = prepaudio(
-                            "@Html.Raw($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.GanjoorPage.Poem.Recitations[0].Id}.xml")",
-                            "@Html.Raw(Model.GanjoorPage.Poem.Recitations[0].AudioTitle)",
-                            "@Html.Raw(Model.getAudioDesc(Model.GanjoorPage.Poem.Recitations[0], true))",
-                            "",
-                            "@Html.Raw(Model.GanjoorPage.Poem.Recitations[0].Mp3Url)"
-                        );
-
-                    @for (int x = 1; x < Model.GanjoorPage.Poem.Recitations.Length; x++)
-                    {
-                        <text>
-                                addpaudio(@x, jlist,
-                                    "@Html.Raw($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.GanjoorPage.Poem.Recitations[x].Id}.xml")",
-                                    "@Html.Raw(Model.GanjoorPage.Poem.Recitations[x].AudioTitle)",
-                                    "@Html.Raw(Model.getAudioDesc(Model.GanjoorPage.Poem.Recitations[x], false))",
-                                    "",
-                                    "@Html.Raw(Model.GanjoorPage.Poem.Recitations[x].Mp3Url)"
-                                );
-                        </text>
-                    }
-
-                        if (playerScrollLock) {
-                            $('#scroll-lock').text('🔒');
-                        }
-                        else {
-                            $('#scroll-lock').text('🔓');
-                        }
-
-                        $('#scroll-lock').click(function () {
-                            playerScrollLock = !playerScrollLock;
-                            if (playerScrollLock) {
-
-                                $('#scroll-lock').text('🔒');
-                            }
-                            else {
-                                $('#scroll-lock').text('🔓');
-                            }
-                        });
-
-                    });
-                    //]]>
-                </script>
-            }
-        }
-
         if (!string.IsNullOrEmpty(Model.PinterestUrl))
         {
             <script>
