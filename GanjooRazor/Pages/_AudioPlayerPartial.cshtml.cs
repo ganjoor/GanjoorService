@@ -40,5 +40,10 @@ namespace GanjooRazor.Pages
 
             return audiodesc;
         }
+
+        public string CSSClass(int recitationIndex)
+        {
+            return recitationIndex < 5 ? "audio-player" : "hidden-item";
+        }
     }
 }
