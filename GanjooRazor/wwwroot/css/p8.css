@@ -348,7 +348,7 @@ div.n, div.l {
     padding-top: 20px;
 }
 
-.ganjoor-comment, .inlinesimi {
+.ganjoor-comment, .inlinesimi, .audio-player {
     margin-right: 20px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
@@ -358,7 +358,7 @@ div.n, div.l {
     overflow-x: hidden;
 }
 
-.inlinesimi {
+.inlinesimi, .audio-player {
     margin-left: 20px;
 }
 
@@ -1123,3 +1123,11 @@ ol {
     #footer .link-list-tools li {
         padding-right: 50px;
     }
+
+.recitaion-info{
+
+}
+
+.hidden-recitation {
+    display: none;
+}

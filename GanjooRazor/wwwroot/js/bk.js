@@ -125,10 +125,6 @@ function btshmr(poemId) {
     setTimeout(function () { btshmr_internal(poemId); }, 1);
 }
 
-
-
-
-
 function hilightverse(vnum, clr, sc, forceScroll) {
     var root = document;
     if (typeof root == "string") root = document.getElementById(root);
@@ -152,12 +148,12 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                     btn.setAttribute('role', 'button');
                     btn.className = 'inlineanchor';
                     btn.onclick = function () {
-                        if ($('#jquery_jplayer_1').data().jPlayer.status.paused) {
-                            $('#jquery_jplayer_1').data().jPlayer.play();
+                        if (currentAudio.paused) {
+                            currentAudio.play();
                             $('#InlinePauseButtonImage').text('pause_circle_filled');
                         }
                         else {
-                            $('#jquery_jplayer_1').data().jPlayer.pause();
+                            currentAudio.pause();
                             $('#InlinePauseButtonImage').text('play_circle_filled');
                         }
                     };
@@ -221,12 +217,12 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                             btn.setAttribute('role', 'button');
                             btn.className = 'inlineanchor';
                             btn.onclick = function () {
-                                if ($('#jquery_jplayer_1').data().jPlayer.status.paused) {
-                                    $('#jquery_jplayer_1').data().jPlayer.play();
+                                if (currentAudio.paused) {
+                                    currentAudio.play();
                                     $('#InlinePauseButtonImage').text('pause_circle_filled');
                                 }
                                 else {
-                                    $('#jquery_jplayer_1').data().jPlayer.pause();
+                                    currentAudio.pause();
                                     $('#InlinePauseButtonImage').text('play_circle_filled');
                                 }
                             };
@@ -419,12 +415,11 @@ function getVerseIndexFromCoupleIndex(coupletIndex) {
 function playCouplet(coupletIndex) {
 
     var vIndex = getVerseIndexFromCoupleIndex(coupletIndex);
-    if (jlist.isPlaying) {
-        jlist.pause();
-    }
     var comboId = '#narrators-' + coupletIndex;
-    var recitationIndex = $(comboId).find(":selected").val()
-    jlist.select(recitationIndex);
+    var recitationIndex = parseInt($(comboId).find(":selected").val());
+    var recitationOrder = recitationIndex + 1;
+    
+    
 
     if (audioxmlfiles.length > 0) {
         $.ajax({
@@ -443,13 +438,15 @@ function playCouplet(coupletIndex) {
                     var v = parseInt($(this).find('VerseOrder').text())
                     if (v == vIndex) {
                         var verseStart = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
-                        $(jlist.cssSelector.jPlayer).jPlayer("play");
+                        var audioControl = document.getElementById('audio-' + String(recitationOrder));
+                        audioControl.play();
+                        var buttonList = '#listen-' + coupletIndex;
+                        $(buttonList).text('در حال دریافت خوانش ...');
                         setTimeout(function () {
-                            $(jlist.cssSelector.jPlayer).jPlayer("play", verseStart);
+                            audioControl.currentTime = verseStart;
+                            $(buttonList).text('در حال خواندن');
                         }, 100);
                         foundCouplet = true;
-                        var buttonList = '#listen-' + coupletIndex;
-                        $(buttonList).text('در حال خواندن');
                         return false;
                     }
                 });
@@ -899,4 +896,12 @@ function loadMoreRelatedFromPoet(poetId, rhythm, rhymeLetters, skipPoemFullUrl1,
             $(data).appendTo(document.getElementById(divId));
         },
     });
+}
+
+function showAllRecitations() {
+    const hiddenRecitations = document.querySelectorAll('.hidden-recitation');
+    hiddenRecitations.forEach(function (recitation) {
+        recitation.className = 'audio-player';
+    });
+    document.getElementById('load-all-recitations').style.display = 'none';
 }

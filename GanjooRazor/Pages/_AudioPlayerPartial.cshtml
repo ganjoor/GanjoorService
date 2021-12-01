@@ -1,0 +1,45 @@
+﻿@model GanjooRazor.Pages._AudioPlayerPartialModel
+@using DNTPersianUtils.Core
+@{
+}
+
+
+<div class="container">
+    @for (var nRecitationIndex = 0; nRecitationIndex < Model.Recitations.Length; nRecitationIndex++)
+    {
+        var recitaion = Model.Recitations[nRecitationIndex];
+        <div class="@Model.CSSClass(nRecitationIndex)">
+            <audio id="audio-@(nRecitationIndex + 1)" preload="none" controls>
+                <source src="@recitaion.Mp3Url" title="@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")" data-track-number="@(nRecitationIndex + 1)" />
+                مرورگر شما از پخش صدای HTML 5 پشتیبانی نمی‌کند.
+            </audio>
+            <div class="recitaion-info">
+                <a role="button" onclick="document.getElementById('audio-@(nRecitationIndex + 1)').play()" class="actionlink">@recitaion.AudioTitle</a> @Html.Raw(Model.getAudioDesc(recitaion, nRecitationIndex == 0))
+            </div>
+            <script>
+                document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('play', () => {
+                    currentAudio = document.getElementById('audio-@(nRecitationIndex + 1)');
+                    var audioList = document.querySelectorAll('audio');
+                    audioList.forEach(function(audioElement) {
+                      if(audioElement != currentAudio){
+                          audioElement.pause();
+                      }
+                    });
+
+                    _setXml('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")');
+                });
+
+                 document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('timeupdate', () => {
+                    _trackTimeChanged(document.getElementById('audio-@(nRecitationIndex + 1)'));
+                });
+            </script>
+        </div>
+
+        @if (nRecitationIndex == 4 && Model.Recitations.Length > 5)
+        {
+            <a role="button" class="pagebutton" id="load-all-recitations" onclick="showAllRecitations()">همهٔ خوانش‌ها<i class="info-buttons">autorenew</i></a>
+        }
+    }
+</div>
+
+

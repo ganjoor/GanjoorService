@@ -195,6 +195,14 @@ namespace GanjooRazor.Pages
             };
         }
 
+        public _AudioPlayerPartialModel GetRecitationsModel(PublicRecitationViewModel[] recitations)
+        {
+            return new _AudioPlayerPartialModel()
+            {
+                Recitations = recitations
+            };
+        }
+
         public async Task<ActionResult> OnPostReply(string replyCommentText, int refPoemId, int refCommentId)
         {
             return await OnPostComment(replyCommentText, refPoemId, refCommentId, -1);

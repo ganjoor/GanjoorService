@@ -136,7 +136,9 @@
                                 </div>
                                 <div style="width:164px;margin:auto" id="page-hierarchy">
                                     @{
-                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)</a><span> &raquo;</span>
+                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)</a>
+
+                                        <span> &raquo;</span>
                                         <h2><a href="@Html.Raw(Model.GanjoorPage.FullUrl)">@Html.Raw(Model.GanjoorPage.Title)</a></h2>
                                     }
                                 </div>
@@ -151,7 +153,9 @@
                                     @{
                                         foreach (var gran in Model.GanjoorPage.PoetOrCat.Cat.Ancestors)
                                         {
-                                            <a href="@Html.Raw(gran.FullUrl)">@Html.Raw(gran.Title)</a><span> &raquo;</span>
+                                            <a href="@Html.Raw(gran.FullUrl)">@Html.Raw(gran.Title)</a>
+
+                                            <span> &raquo;</span>
                                         }
 
                                         @if (!Model.IsPoemPage && !Model.IsCatPage && !Model.IsPoetPage)
@@ -168,7 +172,9 @@
                                         {
                                             @if (Model.IsPoemPage)
                                             {
-                                                <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</a><span> &raquo;</span>
+                                                <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</a>
+
+                                                <span> &raquo;</span>
                                                 <h2>
                                                     <a href="@Html.Raw(Model.GanjoorPage.Poem.FullUrl)" rel="bookmark">
                                                         @Html.Raw(Model.GanjoorPage.Poem.Title)
@@ -191,65 +197,7 @@
                         @Html.Raw(Model.GanjoorPage.HtmlText)
                     }
                 </article>
-                @{
-                    if (Model.IsPoemPage)
-                    {
-                        if (Model.GanjoorPage.Poem.Recitations.Length > 0)
-                        {
-                            <div class="spacer">&nbsp;</div>
-                            <div style="width:95%;max-width:500px;margin:auto">
-                                <div id="jp_container_1" class="jp-video jp-video-270p">
-                                    <div class="jp-type-playlist">
-                                        <div id="jquery_jplayer_1" class="jp-jplayer"></div>
-                                        <div class="jp-gui">
-                                            <div class="jp-video-play">
-                                                <button class="jp-video-play-icon" tabindex="0">پخش</button>
-                                            </div>
-                                            <div class="jp-interface">
-                                                <div class="jp-progress">
-                                                    <div class="jp-seek-bar">
-                                                        <div class="jp-play-bar"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="jp-current-time">&nbsp;</div>
-                                                <div class="jp-duration">&nbsp;</div>
-                                                <div class="jp-controls-holder" style="width:auto">
-                                                    <div class="jp-controls">
-                                                        <button class="jp-previous" tabindex="0">قبلی</button>
-                                                        <button class="jp-play" tabindex="0">پخش</button>
-                                                        <button class="jp-next" tabindex="0">بعدی</button>
-                                                        <button class="jp-stop" tabindex="0">توقف</button>
-                                                        <a id="scroll-lock" role="button" title="اسکرول خودکار در هنگام پخش خوانش" style="cursor: pointer; position:absolute; right: 20px; top: 10px;" tabindex="0">🔒</a>
-                                                    </div>
-                                                    <div class="jp-volume-controls">
-                                                        <button class="jp-mute" tabindex="0">بی‌صدا</button>
-                                                        <button class="jp-volume-max" tabindex="0">حداکثر صدا</button>
-                                                        <div class="jp-volume-bar">
-                                                            <div class="jp-volume-bar-value"></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="jp-details">
-                                                    <div class="jp-title">&nbsp;</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="jp-playlist">
-                                            <ul>
-                                                <!-- The method Playlist.displayPlaylist() uses this unordered list -->
-                                                <li>&nbsp;</li>
-                                            </ul>
-                                        </div>
-                                        <div class="jp-no-solution">
-                                            <span>نیاز به بروزآوری</span>
-                                            جهت خوانش شعر شما یا باید از مرورگر جدیدی همچون <a href="http://getfirefox.com/">فایرفاکس</a> استفاده کنید یا افزونه <a href="http://get.adobe.com/flashplayer/" target="_blank">فلش</a> مرورگرتان را بروزآوری کنید.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    }
-                }
+
                 @{
                     if (Model.IsCatPage)
                     {
@@ -259,13 +207,17 @@
                                 <div class="navleft">
                                     @if (Model.GanjoorPage.PoetOrCat.Cat.Next != null)
                                     {
-                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Next.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Next.Title)</a><span> &raquo;</span>
+                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Next.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Next.Title)</a>
+
+                                        <span> &raquo;</span>
                                     }
                                 </div>
                                 <div class="navright">
                                     @if (Model.GanjoorPage.PoetOrCat.Cat.Previous != null)
                                     {
-                                        <span>&laquo; </span><a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Previous.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Previous.Title)</a>
+                                        <span>&laquo; </span>
+
+                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Previous.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Previous.Title)</a>
                                     }
                                 </div>
                             </div>
@@ -281,30 +233,37 @@
                                 <div class="navleft">
                                     @if (Model.GanjoorPage.Poem.Next != null)
                                     {
-                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + Model.GanjoorPage.Poem.Next.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Next.Title): @Html.Raw(Model.GanjoorPage.Poem.Next.Excerpt)</a><span> &raquo;</span>
+                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + Model.GanjoorPage.Poem.Next.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Next.Title): @Html.Raw(Model.GanjoorPage.Poem.Next.Excerpt)</a>
+
+                                        <span> &raquo;</span>
                                     }
                                     else
-if (Model.GanjoorPage.Poem.Category.Cat.Next != null)
+                               if (Model.GanjoorPage.Poem.Category.Cat.Next != null)
                                     {
-                                        <a href="@Model.GanjoorPage.Poem.Category.Cat.Next.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Next.Title</a><span> &raquo;</span>
+                                        <a href="@Model.GanjoorPage.Poem.Category.Cat.Next.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Next.Title</a>
+
+                                        <span> &raquo;</span>
                                     }
                                 </div>
                                 <div class="navright">
                                     @if (Model.GanjoorPage.Poem.Previous != null)
                                     {
-                                        <span>&laquo; </span><a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" +Model.GanjoorPage.Poem.Previous.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Previous.Title) :@Html.Raw(Model.GanjoorPage.Poem.Previous.Excerpt)</a>
+                                        <span>&laquo; </span>
+
+                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" +Model.GanjoorPage.Poem.Previous.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Previous.Title) :@Html.Raw(Model.GanjoorPage.Poem.Previous.Excerpt)</a>
                                     }
                                     else
-if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
+                               if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                     {
-                                        <span>&laquo; </span><a href="@Model.GanjoorPage.Poem.Category.Cat.Previous.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Previous.Title</a>
+                                        <span>&laquo; </span>
+
+                                        <a href="@Model.GanjoorPage.Poem.Category.Cat.Previous.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Previous.Title</a>
                                     }
                                 </div>
                             </div>
                         </nav>
 
                         <div id="comments">
-
 
 
                             <div class="poem-info">
@@ -401,6 +360,21 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                 else
                                 {
                                     <a role="button" class="textualbutton" href="/login">برای ویرایش و بهبود متن با نام کاربری خود وارد شوید</a>
+                                }
+
+                                @{
+                                    if (Model.IsPoemPage)
+                                    {
+                                        if (Model.GanjoorPage.Poem.Recitations.Length > 0)
+                                        {
+                                            <div class="related-images-frame">
+                                                <div class="century">
+                                                    @(Model.GanjoorPage.Poem.Recitations.Length > 1 ? "خوانش‌ها" : "خوانش")
+                                                </div>
+                                                <partial name="_AudioPlayerPartial" model=Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations) />
+                                            </div>
+                                        }
+                                    }
                                 }
 
                                 @if (Model.GanjoorPage.Poem.Top6RelatedPoems.Length > 0)
@@ -595,7 +569,7 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
 
                                 <div id="id02" class="modal">
                                     <span onclick="document.getElementById('id02').style.display='none'"
-                                          class="close" title="بستن">&times;</span>
+                              class="close" title="بستن">&times;</span>
                                     <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
                                         <table style="max-width:100%; width:100%; margin:0">
                                             <tr>
@@ -617,7 +591,7 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
 
                                 <div id="id03" class="modal">
                                     <span onclick="document.getElementById('id03').style.display='none'"
-                                          class="close" title="بستن">&times;</span>
+                              class="close" title="بستن">&times;</span>
                                     <form class="modal-content animate" method="post" id="replycommentform" action="?handler=Reply">
                                         <table style="max-width:100%; width:100%; margin:0">
                                             <tr>
@@ -665,13 +639,17 @@ if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
                                 <div class="navleft">
                                     @if (Model.GanjoorPage.Next != null)
                                     {
-                                        <a href="@Html.Raw(Model.GanjoorPage.Next.FullUrl)">@Html.Raw(Model.GanjoorPage.Next.Title)</a><span> &raquo;</span>
+                                        <a href="@Html.Raw(Model.GanjoorPage.Next.FullUrl)">@Html.Raw(Model.GanjoorPage.Next.Title)</a>
+
+                                        <span> &raquo;</span>
                                     }
                                 </div>
                                 <div class="navright">
                                     @if (Model.GanjoorPage.Previous != null)
                                     {
-                                        <span>&laquo; </span><a href="@Html.Raw(Model.GanjoorPage.Previous.FullUrl)">@Html.Raw(Model.GanjoorPage.Previous.Title)</a>
+                                        <span>&laquo; </span>
+
+                                        <a href="@Html.Raw(Model.GanjoorPage.Previous.FullUrl)">@Html.Raw(Model.GanjoorPage.Previous.Title)</a>
                                     }
                                 </div>
                             </div>
