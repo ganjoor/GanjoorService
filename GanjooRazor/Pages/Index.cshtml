@@ -110,6 +110,17 @@
                     }
                 };
             </script>
+
+            <script>
+                var narrators = [];
+                @foreach (var recitation in Model.GanjoorPage.Poem.Recitations)
+                {
+                    <text>
+                        narrators.push('@Html.Raw(recitation.AudioArtist)');
+                        audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
+                    </text>
+                }
+            </script>
         }
     }
 

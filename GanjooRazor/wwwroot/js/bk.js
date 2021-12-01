@@ -415,12 +415,11 @@ function getVerseIndexFromCoupleIndex(coupletIndex) {
 function playCouplet(coupletIndex) {
 
     var vIndex = getVerseIndexFromCoupleIndex(coupletIndex);
-    if (jlist.isPlaying) {
-        jlist.pause();
-    }
     var comboId = '#narrators-' + coupletIndex;
-    var recitationIndex = $(comboId).find(":selected").val()
-    jlist.select(recitationIndex);
+    var recitationIndex = parseInt($(comboId).find(":selected").val());
+    var recitationOrder = recitationIndex + 1;
+    
+    
 
     if (audioxmlfiles.length > 0) {
         $.ajax({
@@ -439,13 +438,15 @@ function playCouplet(coupletIndex) {
                     var v = parseInt($(this).find('VerseOrder').text())
                     if (v == vIndex) {
                         var verseStart = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
-                        $(jlist.cssSelector.jPlayer).jPlayer("play");
+                        var audioControl = document.getElementById('audio-' + String(recitationOrder));
+                        audioControl.play();
+                        var buttonList = '#listen-' + coupletIndex;
+                        $(buttonList).text('در حال دریافت خوانش ...');
                         setTimeout(function () {
-                            $(jlist.cssSelector.jPlayer).jPlayer("play", verseStart);
+                            audioControl.currentTime = verseStart;
+                            $(buttonList).text('در حال خواندن');
                         }, 100);
                         foundCouplet = true;
-                        var buttonList = '#listen-' + coupletIndex;
-                        $(buttonList).text('در حال خواندن');
                         return false;
                     }
                 });
