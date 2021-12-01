@@ -896,3 +896,11 @@ function loadMoreRelatedFromPoet(poetId, rhythm, rhymeLetters, skipPoemFullUrl1,
         },
     });
 }
+
+function showAllRecitations() {
+    const hiddenRecitations = document.querySelectorAll('.hidden-recitation');
+    hiddenRecitations.forEach(function (recitation) {
+        recitation.className = 'audio-player';
+    });
+    document.getElementById('load-all-recitations').style.display = 'none';
+}

@@ -43,7 +43,7 @@ namespace GanjooRazor.Pages
 
         public string CSSClass(int recitationIndex)
         {
-            return recitationIndex < 5 ? "audio-player" : "hidden-item";
+            return recitationIndex < 5 ? "audio-player" : "hidden-recitation";
         }
     }
 }
