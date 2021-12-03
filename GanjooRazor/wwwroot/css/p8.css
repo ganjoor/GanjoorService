@@ -1101,6 +1101,8 @@ ol {
     display: block;
     clear: both;
     font-size: 0.8em;
+    border-radius: 20px;
+    background: rgba(127,127,127,0.2);
 }
 
     #footer ul {
