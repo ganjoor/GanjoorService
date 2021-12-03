@@ -267,113 +267,116 @@
 
 
                             <div class="poem-info">
-                                <p>
-                                    <small><i class="pageicons">mouse</i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
-                                </p>
 
-                                @if (Model.GanjoorPage.Poem.GanjoorMetre != null || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag) || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
-                                {
-                                    <table>
-                                        @if (Model.GanjoorPage.Poem.GanjoorMetre != null)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    وزن:
-                                                </td>
-                                                <td>
-                                                    <a href="@Html.Raw($"/vazn/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm</a>
-                                                </td>
-                                            </tr>
-                                        }
-                                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag))
-                                        {
-                                            <tr>
-                                                <td>
-                                                    دسته:
-                                                </td>
-                                                <td>
-                                                    <a href="@Html.Raw($"{Model.GanjoorPage.Poem.OldTagPageUrl}/")">@Model.GanjoorPage.Poem.OldTag</a>
-                                                </td>
-                                            </tr>
-                                        }
-                                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
-                                        {
-                                            <tr>
-                                                <td>
-                                                    منبع اولیه:
-                                                </td>
-                                                <td>
-                                                    <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Model.GanjoorPage.Poem.SourceName</a>
-                                                </td>
-                                            </tr>
-                                        }
+                                <div class="related-images-frame">
+                                    <div class="century">
+                                        ابزارها
+                                    </div>
+                                    <p>
+                                        <small><i class="pageicons">mouse</i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
+                                    </p>
 
-                                    </table>
-                                }
-
-
-
-                                <div class="poem-actions">
-                                    <a role="button" onclick="btshmr(@Model.GanjoorPage.Id)" class="pagebutton" id="bnum-button">حذف شماره‌ها<i class="info-buttons">format_list_numbered_rtl</i></a>
-                                    @if (Model.LoggedIn)
+                                    @if (Model.GanjoorPage.Poem.GanjoorMetre != null || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag) || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
                                     {
-                                        <text>
-                                            <a role="button" id="bookmark" class="pagebutton" onclick="switchBookmark(@Model.GanjoorPage.Id, 0)">نشانه‌گذاری / حذف نشانه<i class="info-buttons" id="bookmark-icon">star_border</i></a>
-                                        </text>
+                                        <table>
+                                            @if (Model.GanjoorPage.Poem.GanjoorMetre != null)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        وزن:
+                                                    </td>
+                                                    <td>
+                                                        <a href="@Html.Raw($"/vazn/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm</a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag))
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        دسته:
+                                                    </td>
+                                                    <td>
+                                                        <a href="@Html.Raw($"{Model.GanjoorPage.Poem.OldTagPageUrl}/")">@Model.GanjoorPage.Poem.OldTag</a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        منبع اولیه:
+                                                    </td>
+                                                    <td>
+                                                        <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Model.GanjoorPage.Poem.SourceName</a>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </table>
                                     }
 
-                                    <span id="copylink_span" class="w3tooltip">
-                                        <a role="button" id="copylink" class="pagebutton" onclick="copyPoemLink()">رونوشت نشانی<i class="info-buttons" id="copylink-icon">link</i></a>
-                                        <span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span>
-                                    </span>
 
-                                    <span id="copytext_span" class="w3tooltip">
-                                        <a role="button" id="copytext" class="pagebutton" onclick="copyPoemText()">رونوشت متن<i class="info-buttons" id="copytext-icon">content_copy</i></a>
-                                        <span class="w3tooltiptext" id="copytext-tooltip">رونوشت متن</span>
-                                    </span>
 
-                                    <span id="share_span">
-                                        <a role="button" id="share" class="pagebutton" onclick="webSharePoem()">همرسانی<i class="info-buttons" id="share-icon">share</i></a>
-                                    </span>
-
-                                    @if (Model.GanjoorPage.Poem.GanjoorMetre != null)
-                                    {
-
-                                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
+                                    <div class="poem-actions">
+                                        <a role="button" onclick="btshmr(@Model.GanjoorPage.Id)" class="pagebutton" id="bnum-button">حذف شماره‌ها<i class="info-buttons">format_list_numbered_rtl</i></a>
+                                        @if (Model.LoggedIn)
                                         {
                                             <text>
-                                                <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons">search</i></a>
+                                                <a role="button" id="bookmark" class="pagebutton" onclick="switchBookmark(@Model.GanjoorPage.Id, 0)">نشانه‌گذاری / حذف نشانه<i class="info-buttons" id="bookmark-icon">star_border</i></a>
                                             </text>
                                         }
-                                    }
+
+                                        <span id="copylink_span" class="w3tooltip">
+                                            <a role="button" id="copylink" class="pagebutton" onclick="copyPoemLink()">رونوشت نشانی<i class="info-buttons" id="copylink-icon">link</i></a>
+                                            <span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span>
+                                        </span>
+
+                                        <span id="copytext_span" class="w3tooltip">
+                                            <a role="button" id="copytext" class="pagebutton" onclick="copyPoemText()">رونوشت متن<i class="info-buttons" id="copytext-icon">content_copy</i></a>
+                                            <span class="w3tooltiptext" id="copytext-tooltip">رونوشت متن</span>
+                                        </span>
+
+                                        <span id="share_span">
+                                            <a role="button" id="share" class="pagebutton" onclick="webSharePoem()">همرسانی<i class="info-buttons" id="share-icon">share</i></a>
+                                        </span>
+
+                                        @if (Model.GanjoorPage.Poem.GanjoorMetre != null)
+                                        {
+
+                                            @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
+                                            {
+                                                <text>
+                                                    <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons">search</i></a>
+                                                </text>
+                                            }
+                                        }
+
+                                        @if (Model.LoggedIn)
+                                        {
+                                            <a role="button" class="pagebutton comments-link" href="@Html.Raw($"/trans?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" title="برگردان‌ها و نویسش‌ها"><i class="info-buttons">translate</i></a>
+                                        }
+                                    </div>
 
                                     @if (Model.LoggedIn)
                                     {
-                                        <a role="button" class="pagebutton comments-link" href="@Html.Raw($"/trans?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" title="برگردان‌ها و نویسش‌ها"><i class="info-buttons">translate</i></a>
+                                        <a role="button" class="textualbutton" href="/User/Editor?id=@Model.GanjoorPage.Id">ویرایش<i class="info-buttons">edit</i></a>
+                                    }
+                                    else
+                                    {
+                                        <a role="button" class="textualbutton" href="/login">برای ویرایش و بهبود متن با نام کاربری خود وارد شوید</a>
                                     }
                                 </div>
 
-                                @if (Model.LoggedIn)
-                                {
-                                    <a role="button" class="textualbutton" href="/User/Editor?id=@Model.GanjoorPage.Id">ویرایش<i class="info-buttons">edit</i></a>
-                                }
-                                else
-                                {
-                                    <a role="button" class="textualbutton" href="/login">برای ویرایش و بهبود متن با نام کاربری خود وارد شوید</a>
-                                }
-
                                 @{
-                                    if (Model.IsPoemPage)
+                                    if (Model.GanjoorPage.Poem.Recitations.Length > 0)
                                     {
-                                        if (Model.GanjoorPage.Poem.Recitations.Length > 0)
-                                        {
-                                            <div class="related-images-frame">
-                                                <div class="century">
-                                                    @(Model.GanjoorPage.Poem.Recitations.Length > 1 ? "خوانش‌ها" : "خوانش")
-                                                </div>
-                                                <partial name="_AudioPlayerPartial" model=Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations) />
+                                        <div class="related-images-frame">
+                                            <div class="century">
+                                                @(Model.GanjoorPage.Poem.Recitations.Length > 1 ? "خوانش‌ها" : "خوانش")
                                             </div>
-                                        }
+                                            <partial name="_AudioPlayerPartial" model=Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations) />
+                                        </div>
                                     }
                                 }
 
