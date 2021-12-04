@@ -807,3 +807,14 @@ function showAllRecitations() {
     });
     document.getElementById('load-all-recitations').style.display = 'none';
 }
+
+function switch_section(sectionId, buttonId){
+    if (document.getElementById(sectionId).style.display == 'none') {
+        document.getElementById(sectionId).style.display = 'block';
+        document.getElementById(buttonId).style.transform = 'rotate(180deg)';
+    }
+    else {
+        document.getElementById(sectionId).style.display = 'none';
+        document.getElementById(buttonId).style.transform = 'none';
+    }
+}
