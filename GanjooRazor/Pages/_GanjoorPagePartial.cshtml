@@ -430,15 +430,7 @@
                                 {
                                     <p>
                                         <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
-                                            @if (Model.GanjoorPage.Poem.Songs.Length == 0)
-                                            {
-                                                <text>معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است<i class="info-buttons">music_note</i></text>
-                                            }
-                                            else
-                                            {
-                                                <text>معرفی آهنگهای دیگر<i class="info-buttons">music_note</i></text>
-                                            }
-
+                                            معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است<i class="info-buttons">music_note</i>
                                         </a>
                                     </p>
                                 }
