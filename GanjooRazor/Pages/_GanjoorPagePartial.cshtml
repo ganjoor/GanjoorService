@@ -387,9 +387,9 @@
                                 {
                                     <div class="related-images-frame">
                                         <div class="century">
-                                            شعرهای هم آهنگ <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('songs-section', 'songs-collapse-button')"><i class="info-buttons" id="songs-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            شعرهای هم آهنگ <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('rpoems-section', 'rpoems-collapse-button')"><i class="info-buttons" id="rpoems-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                         </div>
-                                        <div id="songs-section">
+                                        <div id="rpoems-section">
                                             @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6RelatedPoems.Length); i++)
                                             {
                                                 <div class="inlinesimi">
@@ -438,23 +438,25 @@
                                 {
                                     <div class="related-songs">
                                         <div class="century">
-                                            این شعر را چه کسی در کدام آهنگ خوانده است؟
+                                            این شعر را چه کسی در کدام آهنگ خوانده است؟ <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('songs-section', 'songs-collapse-button')"><i class="info-buttons" id="songs-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                         </div>
-                                        @foreach (var song in Model.GanjoorPage.Poem.Songs)
-                                        {
-                                            <div class="related-song">
-                                                <i class="info-buttons">queue_music</i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
-                                                @if (song.TrackType == RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify)
-                                                {
-                                                    <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img style="display:inline;width:16px;" src="/image/sp16.png" alt="اسپاتیفای" height="16" /></a>
-                                                }
-                                            </div>
-                                        }
-                                        <p>
-                                            <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
-                                                معرفی آهنگهای دیگر<i class="info-buttons">music_note</i>
-                                            </a>
-                                        </p>
+                                        <div id="songs-section">
+                                            @foreach (var song in Model.GanjoorPage.Poem.Songs)
+                                            {
+                                                <div class="related-song">
+                                                    <i class="info-buttons">queue_music</i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
+                                                    @if (song.TrackType == RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify)
+                                                    {
+                                                        <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img style="display:inline;width:16px;" src="/image/sp16.png" alt="اسپاتیفای" height="16" /></a>
+                                                    }
+                                                </div>
+                                            }
+                                            <p>
+                                                <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
+                                                    معرفی آهنگهای دیگر<i class="info-buttons">music_note</i>
+                                                </a>
+                                            </p>
+                                        </div>
                                     </div>
                                 }
                                 <div class="related-images-frame">
