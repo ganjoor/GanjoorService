@@ -270,7 +270,7 @@
 
                                 <div class="related-images-frame">
                                     <div class="century">
-                                        ابزارها <a role="button" class="w3tooltip" id="tools-collapse" style="cursor: pointer;" onclick="switch_section('tools-section', 'tools-collapse-button')"><i class="info-buttons" id="tools-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                        ابزارها <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('tools-section', 'tools-collapse-button')"><i class="info-buttons" id="tools-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                     </div>
                                     <div id="tools-section">
                                         <p>
@@ -374,9 +374,11 @@
                                     {
                                         <div class="related-images-frame">
                                             <div class="century">
-                                                @(Model.GanjoorPage.Poem.Recitations.Length > 1 ? "خوانش‌ها" : "خوانش")
+                                                @(Model.GanjoorPage.Poem.Recitations.Length > 1 ? "خوانش‌ها" : "خوانش") <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('recitations-section', 'recitations-collapse-button')"><i class="info-buttons" id="recitations-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
-                                            <partial name="_AudioPlayerPartial" model=Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations) />
+                                            <div id="recitations-section">
+                                                <partial name="_AudioPlayerPartial" model=Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations) />
+                                            </div>
                                         </div>
                                     }
                                 }
