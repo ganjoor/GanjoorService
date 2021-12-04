@@ -463,24 +463,38 @@
                                     @if (Model.GanjoorPage.Poem.Images.Length > 0)
                                     {
                                         <div class="century">
-                                            تصاویر مرتبط در گنجینهٔ گنجور
+                                            تصاویر مرتبط در گنجینهٔ گنجور <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('images-section', 'images-collapse-button')"><i class="info-buttons" id="images-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                         </div>
-                                        <div class="related-images">
-                                            @foreach (var image in Model.GanjoorPage.Poem.Images)
-                                            {
-                                                <a target="_blank" href="@Html.Raw(image.TargetPageUrl)">
-                                                    <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" width="200" class="related-image">
-                                                </a>
-                                            }
+                                        <div id="images-section">
+                                            <div class="related-images">
+                                                @foreach (var image in Model.GanjoorPage.Poem.Images)
+                                                {
+                                                    <a target="_blank" href="@Html.Raw(image.TargetPageUrl)">
+                                                        <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" width="200" class="related-image">
+                                                    </a>
+                                                }
+                                            </div>
+                                            <div id="suggest-images">
+                                                <p>
+                                                    <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="pagebutton comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی<i class="info-buttons">photo_camera</i></a>
+                                                </p>
+                                                <p>
+                                                    <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" class="pagebutton" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور<i class="info-buttons">help</i></a>
+                                                </p>
+                                            </div>
                                         </div>
                                     }
-                                    <p>
-                                        <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="pagebutton comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی<i class="info-buttons">photo_camera</i></a>
-                                    </p>
-                                    <p>
-                                        <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" class="pagebutton" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور<i class="info-buttons">help</i></a>
-                                    </p>
-
+                                    else
+                                    {
+                                        <div id="suggest-images">
+                                            <p>
+                                                <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="pagebutton comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی<i class="info-buttons">photo_camera</i></a>
+                                            </p>
+                                            <p>
+                                                <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" class="pagebutton" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور<i class="info-buttons">help</i></a>
+                                            </p>
+                                        </div>
+                                    }
                                 </div>
 
 
