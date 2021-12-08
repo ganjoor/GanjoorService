@@ -24,8 +24,13 @@
         Approved = 2,
 
         /// <summary>
-        /// Rejected
+        /// Rejected after initial review
         /// </summary>
-        Rejected = 3
+        Rejected = 3,
+
+        /// <summary>
+        /// Rejected due to errors
+        /// </summary>
+        RejectedDueToReportedErrors = 4,
     }
 }

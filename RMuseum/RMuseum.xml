@@ -3374,7 +3374,12 @@
         </member>
         <member name="F:RMuseum.Models.GanjoorAudio.AudioReviewStatus.Rejected">
             <summary>
-            Rejected
+            Rejected after initial review
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.AudioReviewStatus.RejectedDueToReportedErrors">
+            <summary>
+            Rejected due to errors
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.AudioSyncStatus">
@@ -3593,6 +3598,46 @@
         <member name="P:RMuseum.Models.GanjoorAudio.Recitation.ReviewMsg">
             <summary>
             Review Message
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.RecitationErrorReport">
+            <summary>
+            Error Report for recitations
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationErrorReport.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationErrorReport.RecitationId">
+            <summary>
+            Recitation Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationErrorReport.Recitation">
+            <summary>
+            Recitation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationErrorReport.ReasonText">
+            <summary>
+            Reason Text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationErrorReport.ReporterId">
+            <summary>
+            Reporter User Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationErrorReport.Reporter">
+            <summary>
+            Reporter User
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationErrorReport.DateTime">
+            <summary>
+            DateTime
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker">
