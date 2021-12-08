@@ -395,5 +395,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<RUserNoteAbuseReport> ReportedUserNotes { get; set; }
 
+        /// <summary>
+        /// recitation error reports
+        /// </summary>
+        public DbSet<RecitationErrorReport> RecitationErrorReports { get; set; }
+
     }
 }

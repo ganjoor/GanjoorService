@@ -31,12 +31,12 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// Reporter User Id
         /// </summary>
-        public Guid ReporterId { get; set; }
+        public Guid? ReporterId { get; set; }
 
         /// <summary>
         /// Reporter User
         /// </summary>
-        public RAppUser Reporter { get; set; }
+        public virtual RAppUser Reporter { get; set; }
 
         /// <summary>
         /// DateTime

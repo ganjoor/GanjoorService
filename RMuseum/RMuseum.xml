@@ -2234,6 +2234,11 @@
             Reported User Notes
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.RecitationErrorReports">
+            <summary>
+            recitation error reports
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
