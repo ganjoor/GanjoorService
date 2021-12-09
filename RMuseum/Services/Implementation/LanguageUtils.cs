@@ -112,7 +112,7 @@ namespace RMuseum.Services.Implementation
                 if(secondPhase)
                 {
                     if (secondPhase) 
-                        if (rhyme[rhyme.Length - 1] == 'ی') 
+                        if (rhyme.Length > 0 && rhyme[rhyme.Length - 1] == 'ی') 
                             rhyme = rhyme.Remove(rhyme.Length - 1);
                 }
 
@@ -121,7 +121,7 @@ namespace RMuseum.Services.Implementation
                     string verseText = PrepareTextForFindingRhyme(verseTextList[j]);
                     if (secondPhase)
                     {
-                        if (verseText[verseText.Length - 1] == 'ی')
+                        if (verseText.Length > 0 && verseText[verseText.Length - 1] == 'ی')
                         {
                             verseText = verseText.Remove(verseText.Length - 1);
                         }
@@ -189,7 +189,7 @@ namespace RMuseum.Services.Implementation
                     {
                         rhyme = oldRhyme[i] + rhyme;
                         i--;
-                        if ((i == -1))
+                        if (i == -1)
                             break;
                     }
                     if (rhyme.Length == 0)
