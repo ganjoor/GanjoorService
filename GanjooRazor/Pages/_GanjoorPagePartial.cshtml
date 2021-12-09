@@ -502,139 +502,142 @@
 
                             </div>
 
-                            <div class="century">
-                                حاشیه‌ها <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('comments-section', 'comments-collapse-button')"><i class="info-buttons" id="comments-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
-                            </div>
+                            <div class="related-images-frame">
 
-                            <div id="comments-section">
-                                @switch (Model.GanjoorPage.Poem.Comments.Length)
-                                {
-                                    case 0:
-                                        <p>
-                                            تا به حال حاشیه‌ای برای این شعر نوشته نشده است. <a href="#commentform" class="comments-link" title="شما حاشیه بگذارید ...">💬 شما حاشیه بگذارید ...</a>
-                                        </p>
-                                        break;
-                                    case 1:
-                                        <p>
-                                            تا به حال یک حاشیه برای این شعر نوشته شده است. <a href="#commentform" class="comments-link" title="شما حاشیه بگذارید ...">💬 شما حاشیه بگذارید ...</a>
-                                        </p>
-                                        break;
-                                    default:
-                                        <p>
-                                            تا به حال @Html.Raw(Model.GanjoorPage.Poem.Comments.Length.ToPersianNumbers()) حاشیه برای این شعر نوشته شده است. <a href="#commentform" class="comments-link" title="شما حاشیه بگذارید ...">💬 شما حاشیه بگذارید ...</a>
-                                        </p>
-                                        break;
-                                }
-
-                                <div id="comments-block">
-                                    @foreach (var comment in Model.GanjoorPage.Poem.Comments)
-                                    {
-                                        <partial name="_CommentPartial" model=Model.GetCommentModel(comment) />
-                                    }
+                                <div class="century">
+                                    حاشیه‌ها <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('comments-section', 'comments-collapse-button')"><i class="info-buttons" id="comments-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                 </div>
 
-                                @if (Model.LoggedIn)
-                                {
+                                <div id="comments-section">
+                                    @switch (Model.GanjoorPage.Poem.Comments.Length)
+                                    {
+                                        case 0:
+                                            <p>
+                                                تا به حال حاشیه‌ای برای این شعر نوشته نشده است. <a href="#commentform" class="comments-link" title="شما حاشیه بگذارید ...">💬 شما حاشیه بگذارید ...</a>
+                                            </p>
+                                            break;
+                                        case 1:
+                                            <p>
+                                                تا به حال یک حاشیه برای این شعر نوشته شده است. <a href="#commentform" class="comments-link" title="شما حاشیه بگذارید ...">💬 شما حاشیه بگذارید ...</a>
+                                            </p>
+                                            break;
+                                        default:
+                                            <p>
+                                                تا به حال @Html.Raw(Model.GanjoorPage.Poem.Comments.Length.ToPersianNumbers()) حاشیه برای این شعر نوشته شده است. <a href="#commentform" class="comments-link" title="شما حاشیه بگذارید ...">💬 شما حاشیه بگذارید ...</a>
+                                            </p>
+                                            break;
+                                    }
 
-                                    <form method="post" id="commentform" action="?handler=Comment">
-                                        <fieldset>
-                                            <legend>💬 شما حاشیه بگذارید ...</legend>
-                                            <table style="max-width:100%; width:100%; margin:0">
-                                                <tr>
-                                                    <td>
-                                                        <div class="required">
-                                                            <textarea name="comment" id="comment" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
-                                                        </div>
-                                                        <input type="hidden" name="poemId" id="poemId" value="@Model.GanjoorPage.Id" />
-                                                        <input type="hidden" name="coupletIndex" value="-1" />
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <button name="postcomment" id="postcomment" class="submitCommentButton" onclick="return postComment('', '#postcomment');" style="width:100%">درج حاشیه</button>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                    <div id="comments-block">
+                                        @foreach (var comment in Model.GanjoorPage.Poem.Comments)
+                                        {
+                                            <partial name="_CommentPartial" model=Model.GetCommentModel(comment) />
+                                        }
+                                    </div>
+
+                                    @if (Model.LoggedIn)
+                                    {
+
+                                        <form method="post" id="commentform" action="?handler=Comment">
+                                            <fieldset>
+                                                <legend>💬 شما حاشیه بگذارید ...</legend>
+                                                <table style="max-width:100%; width:100%; margin:0">
+                                                    <tr>
+                                                        <td>
+                                                            <div class="required">
+                                                                <textarea name="comment" id="comment" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                                                            </div>
+                                                            <input type="hidden" name="poemId" id="poemId" value="@Model.GanjoorPage.Id" />
+                                                            <input type="hidden" name="coupletIndex" value="-1" />
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <button name="postcomment" id="postcomment" class="submitCommentButton" onclick="return postComment('', '#postcomment');" style="width:100%">درج حاشیه</button>
+                                                        </td>
+                                                    </tr>
+                                                </table>
 
 
-                                            <div class="notice">
-                                                <p>
-                                                    لطفاً توجه داشته باشید که حاشیه‌ها برای ثبت نظرات شما راجع به <strong>همین شعر</strong> در نظر گرفته شده‌اند. در صورتی که در متن ثبت شدهٔ شعر در گنجور تفاوتهایی غیر از موارد قابل ویرایش یافتید، در مورد این شعر نظر یا احساس خاصی دارید یا مطلب خاصی در مورد آن می‌دانید یا دوست دارید دربارهٔ آن از دیگران چیزی بپرسید یک حاشیه برای آن بنویسید. <span style="color:#f00">لطفاً از درج مطالب غیرمرتبط با متن این شعر خاص خودداری فرمایید</span> و حتی‌الامکان سعی کنید متن حاشیهٔ خود را با حروف فارسی درج کنید (حاشیه‌ها بازبینی خواهند شد و موارد غیرمرتبط و ناقض این نکات حذف می‌شوند).
-                                                </p>
-                                                <p>
-                                                    <span style="color:#f00">بحثهای مذهبی و اعتقادی و ارجاع توهین‌آمیز نسبت به بزرگان ادیان و همینطور بحثهای قومیتی و توهین به فرهنگها و قومیتها و زبانها و بحثهای مرتبط با سیاست روز از مصادیق حاشیه‌های نامناسب محسوب می‌شوند.</span> لطفاً از هیچ قوم و مذهبی با صفات زننده صحبت نکنید و به خاطر داشته باشید که همهٔ اقوام (حتی ایرانی‌ها) در مقاطعی از تاریخ خود نسبت به اقوام دیگر بدوی محسوب می‌شده‌اند یا با تعدی به خاک همسایگان خود نسبت به آنها ستم روا داشته‌اند.
-                                                </p>
-                                                <p>
-                                                    در خطاب قرار دادن کاربران دیگر -چه به شکل خاص و چه به شکل عمومی- فارغ از این که در حاشیه‌هایشان نظرات معقولی را عنوان کرده‌اند یا خیر، رعایت احترام را بفرمایید. بی‌احترامی به دیگر کاربران (و البته شخصیتهای دیگر از جمله هنرمندان و ...) از مصادیق حاشیه‌های نامناسب محسوب می‌شود و فارغ از ارزش محتوایی، حاشیهٔ فرد خاطی به محض دریافت گزارش تخلف حذف خواهد شد.
-                                                </p>
-                                                <p>
-                                                    <span style="color:#0a0">لطفاً در صورتی که تفاوتها را با استناد به نسخه‌های چاپی یا خطی گزارش می‌کنید این مسئله را با ذکر منبع مطرح نمایید. اشتباهات تایپی و غلطهای املایی را از طریق دکمهٔ «ویرایش» تصحیح کنید.</span>
-                                                </p>
-                                            </div>
-                                        </fieldset>
-
-                                    </form>
-
-
-                                    <div id="id02" class="modal">
-                                        <span onclick="document.getElementById('id02').style.display='none'"
-                                  class="close" title="بستن">&times;</span>
-                                        <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
-                                            <table style="max-width:100%; width:100%; margin:0">
-                                                <tr>
-                                                    <td>
-                                                        <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
-                                                        <input type="hidden" name="editCommentId" id="editCommentId" value="" />
-                                                        <input type="hidden" name="editCommentCoupletIndex" id="editCommentCoupletIndex" value="" />
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <button name="editcomment" id="editcomment" class="inputSubmit" onclick="return editComment();" style="width:100%">ویرایش حاشیه</button>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                                <div class="notice">
+                                                    <p>
+                                                        لطفاً توجه داشته باشید که حاشیه‌ها برای ثبت نظرات شما راجع به <strong>همین شعر</strong> در نظر گرفته شده‌اند. در صورتی که در متن ثبت شدهٔ شعر در گنجور تفاوتهایی غیر از موارد قابل ویرایش یافتید، در مورد این شعر نظر یا احساس خاصی دارید یا مطلب خاصی در مورد آن می‌دانید یا دوست دارید دربارهٔ آن از دیگران چیزی بپرسید یک حاشیه برای آن بنویسید. <span style="color:#f00">لطفاً از درج مطالب غیرمرتبط با متن این شعر خاص خودداری فرمایید</span> و حتی‌الامکان سعی کنید متن حاشیهٔ خود را با حروف فارسی درج کنید (حاشیه‌ها بازبینی خواهند شد و موارد غیرمرتبط و ناقض این نکات حذف می‌شوند).
+                                                    </p>
+                                                    <p>
+                                                        <span style="color:#f00">بحثهای مذهبی و اعتقادی و ارجاع توهین‌آمیز نسبت به بزرگان ادیان و همینطور بحثهای قومیتی و توهین به فرهنگها و قومیتها و زبانها و بحثهای مرتبط با سیاست روز از مصادیق حاشیه‌های نامناسب محسوب می‌شوند.</span> لطفاً از هیچ قوم و مذهبی با صفات زننده صحبت نکنید و به خاطر داشته باشید که همهٔ اقوام (حتی ایرانی‌ها) در مقاطعی از تاریخ خود نسبت به اقوام دیگر بدوی محسوب می‌شده‌اند یا با تعدی به خاک همسایگان خود نسبت به آنها ستم روا داشته‌اند.
+                                                    </p>
+                                                    <p>
+                                                        در خطاب قرار دادن کاربران دیگر -چه به شکل خاص و چه به شکل عمومی- فارغ از این که در حاشیه‌هایشان نظرات معقولی را عنوان کرده‌اند یا خیر، رعایت احترام را بفرمایید. بی‌احترامی به دیگر کاربران (و البته شخصیتهای دیگر از جمله هنرمندان و ...) از مصادیق حاشیه‌های نامناسب محسوب می‌شود و فارغ از ارزش محتوایی، حاشیهٔ فرد خاطی به محض دریافت گزارش تخلف حذف خواهد شد.
+                                                    </p>
+                                                    <p>
+                                                        <span style="color:#0a0">لطفاً در صورتی که تفاوتها را با استناد به نسخه‌های چاپی یا خطی گزارش می‌کنید این مسئله را با ذکر منبع مطرح نمایید. اشتباهات تایپی و غلطهای املایی را از طریق دکمهٔ «ویرایش» تصحیح کنید.</span>
+                                                    </p>
+                                                </div>
+                                            </fieldset>
 
                                         </form>
-                                    </div>
 
-                                    <div id="id03" class="modal">
-                                        <span onclick="document.getElementById('id03').style.display='none'"
-                                  class="close" title="بستن">&times;</span>
-                                        <form class="modal-content animate" method="post" id="replycommentform" action="?handler=Reply">
-                                            <table style="max-width:100%; width:100%; margin:0">
-                                                <tr>
-                                                    <td>
-                                                        <textarea name="replyCommentText" id="replyCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
-                                                        <input type="hidden" name="refPoemId" id="refPoemId" value="@Model.GanjoorPage.Id" />
-                                                        <input type="hidden" name="refCommentId" id="refCommentId" value="" />
-                                                        <input type="hidden" name="refCommentDivSuffix" id="refCommentDivSuffix" value="" />
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <button name="replycomment" id="replycomment" class="inputSubmit" onclick="return postReplyComment();" style="width:100%">درج پاسخ به حاشیه</button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <p>در پاسخ به:</p>
-                                                        <div id="refComment"></div>
-                                                    </td>
-                                                </tr>
-                                            </table>
 
-                                        </form>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="notice" id="commentform">
-                                        <p>
-                                            برای حاشیه‌گذاری باید در گنجور <a href="/signup" target="_blank">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
-                                        </p>
-                                    </div>
-                                }
+                                        <div id="id02" class="modal">
+                                            <span onclick="document.getElementById('id02').style.display='none'"
+                                      class="close" title="بستن">&times;</span>
+                                            <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
+                                                <table style="max-width:100%; width:100%; margin:0">
+                                                    <tr>
+                                                        <td>
+                                                            <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                                                            <input type="hidden" name="editCommentId" id="editCommentId" value="" />
+                                                            <input type="hidden" name="editCommentCoupletIndex" id="editCommentCoupletIndex" value="" />
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <button name="editcomment" id="editcomment" class="inputSubmit" onclick="return editComment();" style="width:100%">ویرایش حاشیه</button>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                            </form>
+                                        </div>
+
+                                        <div id="id03" class="modal">
+                                            <span onclick="document.getElementById('id03').style.display='none'"
+                                      class="close" title="بستن">&times;</span>
+                                            <form class="modal-content animate" method="post" id="replycommentform" action="?handler=Reply">
+                                                <table style="max-width:100%; width:100%; margin:0">
+                                                    <tr>
+                                                        <td>
+                                                            <textarea name="replyCommentText" id="replyCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                                                            <input type="hidden" name="refPoemId" id="refPoemId" value="@Model.GanjoorPage.Id" />
+                                                            <input type="hidden" name="refCommentId" id="refCommentId" value="" />
+                                                            <input type="hidden" name="refCommentDivSuffix" id="refCommentDivSuffix" value="" />
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <button name="replycomment" id="replycomment" class="inputSubmit" onclick="return postReplyComment();" style="width:100%">درج پاسخ به حاشیه</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p>در پاسخ به:</p>
+                                                            <div id="refComment"></div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                            </form>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="notice" id="commentform">
+                                            <p>
+                                                برای حاشیه‌گذاری باید در گنجور <a href="/signup" target="_blank">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
+                                            </p>
+                                        </div>
+                                    }
+                                </div>
                             </div>
 
 
