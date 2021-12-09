@@ -129,7 +129,7 @@ namespace RMuseum.Services.Implementationa
                 return new RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>(paginatedResult);
             }
             else
-            if(catId != 0)
+            if (catId != 0)
             {
                 var source =
                                  from audio in _context.Recitations.AsNoTracking()
@@ -1775,6 +1775,93 @@ namespace RMuseum.Services.Implementationa
             (PaginationMetadata PagingMeta, RecitationErrorReportViewModel[] Items) paginatedResult =
                 await QueryablePaginator<RecitationErrorReportViewModel>.Paginate(source, paging);
             return new RServiceResult<(PaginationMetadata PagingMeta, RecitationErrorReportViewModel[] Items)>(paginatedResult);
+        }
+
+        /// <summary>
+        /// reject a reported error for recitations and notify the reporter (and deletes the report)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rejectionNote"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> RejectReportedErrorAsync(int id, string rejectionNote = "عدم تطابق با معیارهای حذف خوانش")
+        {
+            try
+            {
+                var report = await _context.RecitationErrorReports.Where(r => r.Id == id).SingleAsync();
+                var recitation = await _context.Recitations.AsNoTracking().Where(r => r.Id == report.RecitationId).SingleAsync();
+                var userId = report.ReporterId;
+                _context.RecitationErrorReports.Remove(report);
+                await _context.SaveChangesAsync();
+
+
+                if (userId != null)
+                {
+                    await _notificationService.PushNotification
+                (
+                    (Guid)userId,
+                    "عدم پذیرش گزارش خطای خوانش",
+                    $"گزارش خطای ارسالی شما برای خوانش {recitation.AudioTitle} از {recitation.AudioArtist} به دلیل {rejectionNote} مورد پذیرش قرار نگرفت."
+                );
+                }
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// accepts a reported error for recitations and notify the reporter and recitation owner (and deletes the report)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> AcceptReportedErrorAsync(int id)
+        {
+            try
+            {
+                var report = await _context.RecitationErrorReports.Where(r => r.Id == id).SingleAsync();
+
+                var recitation = await _context.Recitations.Where(r => r.Id == report.RecitationId).SingleAsync();
+                recitation.ReviewStatus = AudioReviewStatus.RejectedDueToReportedErrors;
+                recitation.ReviewMsg = $"اشکال گزارش شده: {report.ReasonText}";
+                _context.Recitations.Update(recitation);
+                await _context.SaveChangesAsync();
+
+                var reporterUserId = report.ReporterId;
+                _context.RecitationErrorReports.Remove(report);
+                await _context.SaveChangesAsync();
+
+
+                if (reporterUserId != null)
+                {
+                    await _notificationService.PushNotification
+                (
+                    (Guid)reporterUserId,
+                    "پذیرش گزارش خطای خوانش",
+                    $"گزارش خطای ارسالی شما برای خوانش {recitation.AudioTitle} از {recitation.AudioArtist} بررسی شد و مورد پذیرش قرار گرفت.{Environment.NewLine}" +
+                    $"خوانش یاد شده از حالت انتشار خارج شده است."
+                );
+                }
+
+                await _notificationService.PushNotification
+               (
+                   recitation.OwnerId,
+                   "خروج خوانش از وضعیت انتشار به دلیل گزارش خطا",
+                   $"خوانش {recitation.AudioTitle} از {recitation.AudioArtist} به دلیل تأیید گزارش خطای ارسالی از سوی کاربران از حالت انتشار خارج شده است.{Environment.NewLine}" +
+                   $"اشکال گزارش شده: {report.ReasonText}{Environment.NewLine}" +
+                   $"لطفاً پس از بررسی مشکل خوانش یاد شده را حذف کنید."
+               );
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
         }
 
         /// <summary>

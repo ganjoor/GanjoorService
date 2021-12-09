@@ -1813,13 +1813,34 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.#ctor(RMuseum.Services.IRecitationService,RSecurityBackend.Services.IUserPermissionChecker,RSecurityBackend.Services.IAppUserService)">
+        <member name="M:RMuseum.Controllers.RecitationController.RejectReportedErrorAsync(System.Int32,System.String)">
+            <summary>
+            reject a reported error for recitations and notify the reporter (and deletes the report)
+            </summary>
+            <param name="id"></param>
+            <param name="rejectionNote"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.AcceptReportedErrorAsync(System.Int32)">
+            <summary>
+            accepts a reported error for recitations and notify the reporter and recitation owner (and deletes the report)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RMuseum.Controllers.RecitationController.ReadOnlyMode">
+            <summary>
+            readonly mode
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.#ctor(RMuseum.Services.IRecitationService,RSecurityBackend.Services.IUserPermissionChecker,RSecurityBackend.Services.IAppUserService,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             constructor
             </summary>
             <param name="audioService"></param>
             <param name="userPermissionChecker"></param>
             <param name="appUserService"></param>
+            <param name="configuration"></param>
         </member>
         <member name="F:RMuseum.Controllers.RecitationController._audioService">
             <summary>
@@ -1834,6 +1855,11 @@
         <member name="F:RMuseum.Controllers.RecitationController._appUserService">
             <summary>
             IAppUserService instance
+            </summary>
+        </member>
+        <member name="P:RMuseum.Controllers.RecitationController.Configuration">
+            <summary>
+            Configuration
             </summary>
         </member>
         <member name="T:RMuseum.Controllers.RGenericOptionsController">
@@ -12415,6 +12441,21 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.RejectReportedErrorAsync(System.Int32,System.String)">
+            <summary>
+            reject a reported error for recitations and notify the reporter (and deletes the report)
+            </summary>
+            <param name="id"></param>
+            <param name="rejectionNote"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.AcceptReportedErrorAsync(System.Int32)">
+            <summary>
+            accepts a reported error for recitations and notify the reporter and recitation owner (and deletes the report)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementationa.RecitationService.UploadEnabled">
             <summary>
             Upload Enabled (temporary switch off/on for upload)
@@ -12771,6 +12812,21 @@
             get errors reported for recitations
             </summary>
             <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.RejectReportedErrorAsync(System.Int32,System.String)">
+            <summary>
+            reject a reported error for recitations and notify the reporter (and deletes the report)
+            </summary>
+            <param name="id"></param>
+            <param name="rejectionNote"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.AcceptReportedErrorAsync(System.Int32)">
+            <summary>
+            accepts a reported error for recitations and notify the reporter and recitation owner (and deletes the report)
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.IRecitationService.UploadEnabled">

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.GanjoorAudio;
@@ -812,6 +813,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
         public async Task<IActionResult> ReportErrorAsync([FromBody] RecitationErrorReportViewModel report)
         {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             var res = await _audioService.ReportErrorAsync(loggedOnUserId, report);
             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -842,6 +846,80 @@ namespace RMuseum.Controllers
             return Ok(reports.Result.Items);
         }
 
+        /// <summary>
+        /// reject a reported error for recitations and notify the reporter (and deletes the report)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rejectionNote"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("errors/report/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.PublishOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> RejectReportedErrorAsync(int id, string rejectionNote = "عدم تطابق با معیارهای حذف خوانش")
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            RServiceResult<bool> res = await _audioService.RejectReportedErrorAsync(id, rejectionNote);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            if (!res.Result)
+            {
+                return NotFound();
+            }
+            return Ok();
+        }
+
+        /// <summary>
+        /// accepts a reported error for recitations and notify the reporter and recitation owner (and deletes the report)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpDelete]
+        [Route("errors/report/accept/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.PublishOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> AcceptReportedErrorAsync(int id)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            RServiceResult<bool> res = await _audioService.AcceptReportedErrorAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            if (!res.Result)
+            {
+                return NotFound();
+            }
+            return Ok();
+        }
+
+        /// <summary>
+        /// readonly mode
+        /// </summary>
+        public bool ReadOnlyMode
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration["ReadOnlyMode"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
 
         /// <summary>
         /// constructor
@@ -849,7 +927,8 @@ namespace RMuseum.Controllers
         /// <param name="audioService"></param>
         /// <param name="userPermissionChecker"></param>
         /// <param name="appUserService"></param>
-        public RecitationController(IRecitationService audioService, IUserPermissionChecker userPermissionChecker, IAppUserService appUserService)
+        /// <param name="configuration"></param>
+        public RecitationController(IRecitationService audioService, IUserPermissionChecker userPermissionChecker, IAppUserService appUserService, IConfiguration configuration)
         {
             _audioService = audioService;
             _userPermissionChecker = userPermissionChecker;
@@ -870,6 +949,11 @@ namespace RMuseum.Controllers
         /// IAppUserService instance
         /// </summary>
         protected IAppUserService _appUserService;
+
+        /// <summary>
+        /// Configuration
+        /// </summary>
+        protected IConfiguration Configuration { get; }
 
     }
 }

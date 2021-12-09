@@ -217,6 +217,21 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationErrorReportViewModel[] Items)>> GetReportedErrorsAsync(PagingParameterModel paging);
 
         /// <summary>
+        /// reject a reported error for recitations and notify the reporter (and deletes the report)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rejectionNote"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RejectReportedErrorAsync(int id, string rejectionNote = "عدم تطابق با معیارهای حذف خوانش");
+
+        /// <summary>
+        /// accepts a reported error for recitations and notify the reporter and recitation owner (and deletes the report)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> AcceptReportedErrorAsync(int id);
+
+        /// <summary>
         /// Upload Enabled (temporary switch off/on for upload)
         /// </summary>
         bool UploadEnabled { get; }
