@@ -3,7 +3,7 @@
 @using DNTPersianUtils.Core
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "نشانه‌های من";
+    ViewData["Title"] = "نشان‌های من";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
     string color = "gray";
 }
@@ -16,7 +16,7 @@ else
 {
     <script>
         function deleteBookmark(bookmarkId) {
-            if (!confirm('آیا از حذف این نشانه اطمینان دارید؟'))
+            if (!confirm('آیا از حذف این نشان اطمینان دارید؟'))
                 return;
 
             var url = '?handler=Bookmark';

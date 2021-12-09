@@ -1136,3 +1136,55 @@ ol {
 .hidden-recitation {
     display: none;
 }
+
+.mouse-icon::after {
+    content: 'mouse';
+}
+
+.format_list_numbered_rtl::after {
+    content: 'format_list_numbered_rtl'
+}
+
+.copylink-icon::after {
+    content: 'link';
+}
+
+.copytext-icon::after {
+    content: 'content_copy';
+}
+
+.share-icon::after {
+    content: 'share';
+}
+
+.rhyming-poems::after {
+    content: 'search';
+}
+
+.translate-button::after {
+    content: 'translate';
+}
+
+.edit-poem-button::after {
+    content: 'edit';
+}
+
+.autorenew::after {
+    content: 'autorenew';
+}
+
+.queue_music::after {
+    content: 'queue_music';
+}
+
+.music_note::after {
+    content: 'music_note';
+}
+
+.photo_camera::after {
+    content: 'photo_camera';
+}
+
+.help-button::after{
+    content: 'help';
+}

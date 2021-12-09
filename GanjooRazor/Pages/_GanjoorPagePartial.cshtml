@@ -274,7 +274,7 @@
                                     </div>
                                     <div id="tools-section">
                                         <p>
-                                            <small><i class="pageicons">mouse</i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
+                                            <small><i class="pageicons mouse-icon"></i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
                                         </p>
 
                                         @if (Model.GanjoorPage.Poem.GanjoorMetre != null || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag) || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
@@ -320,26 +320,26 @@
 
 
                                         <div class="poem-actions">
-                                            <a role="button" onclick="btshmr(@Model.GanjoorPage.Id)" class="pagebutton" id="bnum-button">حذف شماره‌ها<i class="info-buttons">format_list_numbered_rtl</i></a>
+                                            <a role="button" onclick="btshmr(@Model.GanjoorPage.Id)" class="pagebutton" id="bnum-button">حذف شماره‌ها<i class="info-buttons format_list_numbered_rtl"></i></a>
                                             @if (Model.LoggedIn)
                                             {
                                                 <text>
-                                                    <a role="button" id="bookmark" class="pagebutton" onclick="switchBookmark(@Model.GanjoorPage.Id, 0)">نشانه‌گذاری / حذف نشانه<i class="info-buttons" id="bookmark-icon">star_border</i></a>
+                                                    <a role="button" id="bookmark" class="pagebutton" onclick="switchBookmark(@Model.GanjoorPage.Id, 0)">نشان کردن / حذف نشان<i class="info-buttons" id="bookmark-icon">star_border</i></a>
                                                 </text>
                                             }
 
                                             <span id="copylink_span" class="w3tooltip">
-                                                <a role="button" id="copylink" class="pagebutton" onclick="copyPoemLink()">رونوشت نشانی<i class="info-buttons" id="copylink-icon">link</i></a>
+                                                <a role="button" id="copylink" class="pagebutton" onclick="copyPoemLink()">رونوشت نشانی<i class="info-buttons copylink-icon"></i></a>
                                                 <span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span>
                                             </span>
 
                                             <span id="copytext_span" class="w3tooltip">
-                                                <a role="button" id="copytext" class="pagebutton" onclick="copyPoemText()">رونوشت متن<i class="info-buttons" id="copytext-icon">content_copy</i></a>
+                                                <a role="button" id="copytext" class="pagebutton" onclick="copyPoemText()">رونوشت متن<i class="info-buttons copytext-icon"></i></a>
                                                 <span class="w3tooltiptext" id="copytext-tooltip">رونوشت متن</span>
                                             </span>
 
                                             <span id="share_span">
-                                                <a role="button" id="share" class="pagebutton" onclick="webSharePoem()">همرسانی<i class="info-buttons" id="share-icon">share</i></a>
+                                                <a role="button" id="share" class="pagebutton" onclick="webSharePoem()">همرسانی<i class="info-buttons share-icon"></i></a>
                                             </span>
 
                                             @if (Model.GanjoorPage.Poem.GanjoorMetre != null)
@@ -348,24 +348,24 @@
                                                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
                                                 {
                                                     <text>
-                                                        <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons">search</i></a>
+                                                        <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons rhyming-poems"></i></a>
                                                     </text>
                                                 }
                                             }
 
                                             @if (Model.LoggedIn)
                                             {
-                                                <a role="button" class="pagebutton comments-link" href="@Html.Raw($"/trans?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" title="برگردان‌ها و نویسش‌ها"><i class="info-buttons">translate</i></a>
+                                                <a role="button" class="pagebutton comments-link" href="@Html.Raw($"/trans?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" title="برگردان‌ها و نویسش‌ها"><i class="info-buttons translate-button"></i></a>
                                             }
                                         </div>
 
                                         @if (Model.LoggedIn)
                                         {
-                                            <a role="button" class="textualbutton" href="/User/Editor?id=@Model.GanjoorPage.Id">ویرایش<i class="info-buttons">edit</i></a>
+                                            <a role="button" class="textualbutton" href="/User/Editor?id=@Model.GanjoorPage.Id">ویرایش<i class="info-buttons edit-poem-button"></i></a>
                                         }
                                         else
                                         {
-                                            <a role="button" class="textualbutton" href="/login">برای ویرایش و بهبود متن با نام کاربری خود وارد شوید</a>
+                                            <a role="button" class="textualbutton" href="/login">برای ویرایش و بهبود متن با نام کاربری خود وارد شوید<i class="info-buttons edit-poem-button"></i></a>
                                         }
                                     </div>
                                 </div>
@@ -405,7 +405,7 @@
 
                                                     @if (Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount > 0)
                                                     {
-                                                        <a role="button" class="pagebutton" id="@($"load-more-button-{Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId}")" onclick="loadMoreRelatedFromPoet(@Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl', '@Model.GanjoorPage.Poem.Top6RelatedPoems[i].FullUrl')">مشاهدهٔ @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() شعر هم آهنگ دیگر از @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetName<i class="info-buttons">autorenew</i></a>
+                                                        <a role="button" class="pagebutton" id="@($"load-more-button-{Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId}")" onclick="loadMoreRelatedFromPoet(@Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl', '@Model.GanjoorPage.Poem.Top6RelatedPoems[i].FullUrl')">مشاهدهٔ @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() شعر هم آهنگ دیگر از @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetName<i class="info-buttons autorenew"></i></a>
                                                     }
                                                 </div>
 
@@ -419,7 +419,7 @@
                                             {
                                                 <div id="more-related-placeholder"></div>
                                                 <div id="load-more-related">
-                                                    <a role="button" class="pagebutton" id="load-more-button" onclick="loadMoreRelatedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl')">بیشتر<i class="info-buttons">autorenew</i></a>
+                                                    <a role="button" class="pagebutton" id="load-more-button" onclick="loadMoreRelatedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl')">بیشتر<i class="info-buttons autorenew"></i></a>
                                                 </div>
                                             }
                                         </div>
@@ -431,7 +431,7 @@
                                     <div class="related-songs">
                                         <p>
                                             <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
-                                                معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است<i class="info-buttons">music_note</i>
+                                                معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است<i class="info-buttons music_note"></i>
                                             </a>
                                         </p>
                                     </div>
@@ -446,7 +446,7 @@
                                             @foreach (var song in Model.GanjoorPage.Poem.Songs)
                                             {
                                                 <div class="related-song">
-                                                    <i class="info-buttons">queue_music</i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
+                                                    <i class="info-buttons queue_music"></i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
                                                     @if (song.TrackType == RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify)
                                                     {
                                                         <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img style="display:inline;width:16px;" src="/image/sp16.png" alt="اسپاتیفای" height="16" /></a>
@@ -455,7 +455,7 @@
                                             }
                                             <p>
                                                 <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
-                                                    معرفی آهنگهای دیگر<i class="info-buttons">music_note</i>
+                                                    معرفی آهنگهای دیگر<i class="info-buttons music_note"></i>
                                                 </a>
                                             </p>
                                         </div>
@@ -478,10 +478,10 @@
                                             </div>
                                             <div id="suggest-images">
                                                 <p>
-                                                    <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="pagebutton comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی<i class="info-buttons">photo_camera</i></a>
+                                                    <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="pagebutton comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی<i class="info-buttons photo_camera"></i></a>
                                                 </p>
                                                 <p>
-                                                    <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" class="pagebutton" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور<i class="info-buttons">help</i></a>
+                                                    <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" class="pagebutton" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور<i class="info-buttons help-button"></i></a>
                                                 </p>
                                             </div>
                                         </div>
@@ -490,10 +490,10 @@
                                     {
                                         <div id="suggest-images">
                                             <p>
-                                                <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="pagebutton comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی<i class="info-buttons">photo_camera</i></a>
+                                                <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="pagebutton comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی<i class="info-buttons photo_camera"></i></a>
                                             </p>
                                             <p>
-                                                <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" class="pagebutton" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور<i class="info-buttons">help</i></a>
+                                                <a href="http://blog.ganjoor.net/1398/07/12/mganjoor/" class="pagebutton" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور<i class="info-buttons help-button"></i></a>
                                             </p>
                                         </div>
                                     }

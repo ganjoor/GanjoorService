@@ -33,7 +33,7 @@ namespace GanjooRazor.Pages
         {
             get
             {
-                return IsBookmarked ? "حذف نشانه" : "نشانه‌گذاری";
+                return IsBookmarked ? "حذف نشان" : "نشان کردن";
             }
         }
 

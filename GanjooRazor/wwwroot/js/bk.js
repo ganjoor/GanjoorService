@@ -91,10 +91,10 @@ function btshmr_internal(poemId) {
         for (var i = 0; i < bnumdiv.length; ++i) {
             bnumdiv[i].remove();
         }
-        document.getElementById("bnum-button").innerHTML = 'شماره‌گذاری<i class="info-buttons">format_list_numbered_rtl</i>';
+        document.getElementById("bnum-button").innerHTML = 'شماره‌گذاری<i class="info-buttons" id="format_list_numbered_rtl"></i>';
         return true;
     }
-    document.getElementById("bnum-button").innerHTML = 'حذف شماره‌ها<i class="info-buttons">format_list_numbered_rtl</i>';
+    document.getElementById("bnum-button").innerHTML = 'حذف شماره‌ها<i class="info-buttons" id="format_list_numbered_rtl"></i>';
     var msr1s = getElements("m1", "b2", "n", "l");
     if (msr1s.length == 0) return true;
     var j = 0;
@@ -403,7 +403,7 @@ function switchBookmark(poemId, coupletIndex) {
                 }
 
                 if (coupletIndex == 0) {
-                    document.getElementById('bookmark').innerHTML = 'نشانه‌گذاری<i class="info-buttons" id="bookmark-icon">star_border</i>';
+                    document.getElementById('bookmark').innerHTML = 'نشان کردن<i class="info-buttons" id="bookmark-icon">star_border</i>';
                 }
             }
         },
@@ -425,7 +425,7 @@ function checkIfBookmarked(poemId) {
                     document.getElementById('bookmark').innerHTML = 'نشان شده<i class="info-buttons" id="bookmark-icon">star</i>';
                 }
                 else {
-                    document.getElementById('bookmark').innerHTML = 'نشانه‌گذاری<i class="info-buttons" id="bookmark-icon">star_border</i>';
+                    document.getElementById('bookmark').innerHTML = 'نشان کردن<i class="info-buttons" id="bookmark-icon">star_border</i>';
                 }
             },
         });
