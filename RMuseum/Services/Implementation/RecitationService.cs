@@ -1741,6 +1741,7 @@ namespace RMuseum.Services.Implementationa
                 await _context.SaveChangesAsync();
 
                 report.Id = dbModel.Id;
+                report.DateTime = dbModel.DateTime;
 
                 return new RServiceResult<RecitationErrorReportViewModel>(report);
             }
@@ -1748,6 +1749,32 @@ namespace RMuseum.Services.Implementationa
             {
                 return new RServiceResult<RecitationErrorReportViewModel>(null, exp.ToString());
             }
+        }
+
+        /// <summary>
+        /// get errors reported for recitations
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationErrorReportViewModel[] Items)>> GetReportedErrorsAsync(PagingParameterModel paging)
+        {
+            var source =
+                 from report in _context.RecitationErrorReports.Include(r => r.Recitation).Include(r => r.Reporter)
+                 join poem in _context.GanjoorPoems
+                 on report.Recitation.GanjoorPostId equals poem.Id
+                 select
+                 new RecitationErrorReportViewModel()
+                 {
+                     Id = report.Id,
+                     ReasonText = report.ReasonText,
+                     RecitationId = report.RecitationId,
+                     Recitation = new RecitationViewModel(report.Recitation, report.Recitation.Owner, poem),
+                     DateTime = report.DateTime
+                 };
+
+            (PaginationMetadata PagingMeta, RecitationErrorReportViewModel[] Items) paginatedResult =
+                await QueryablePaginator<RecitationErrorReportViewModel>.Paginate(source, paging);
+            return new RServiceResult<(PaginationMetadata PagingMeta, RecitationErrorReportViewModel[] Items)>(paginatedResult);
         }
 
         /// <summary>

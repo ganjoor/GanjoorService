@@ -1,4 +1,6 @@
-﻿namespace RMuseum.Models.GanjoorAudio.ViewModels
+﻿using System;
+
+namespace RMuseum.Models.GanjoorAudio.ViewModels
 {
     /// <summary>
     /// Post Error Report for recitations
@@ -18,5 +20,15 @@
         /// Reason Text
         /// </summary>
         public string ReasonText { get; set; }
+
+        /// <summary>
+        /// recitation
+        /// </summary>
+        public RecitationViewModel Recitation { get; set; }
+
+        /// <summary>
+        /// DateTime
+        /// </summary>
+        public DateTime DateTime { get; set; }
     }
 }

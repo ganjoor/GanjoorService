@@ -1806,6 +1806,13 @@
             <param name="report"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetReportedErrorsAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get errors reported for recitations
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.#ctor(RMuseum.Services.IRecitationService,RSecurityBackend.Services.IUserPermissionChecker,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
@@ -3902,6 +3909,16 @@
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel.ReasonText">
             <summary>
             Reason Text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel.Recitation">
+            <summary>
+            recitation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel.DateTime">
+            <summary>
+            DateTime
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel">
@@ -12391,6 +12408,13 @@
             <param name="report"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetReportedErrorsAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get errors reported for recitations
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementationa.RecitationService.UploadEnabled">
             <summary>
             Upload Enabled (temporary switch off/on for upload)
@@ -12740,6 +12764,13 @@
             </summary>
             <param name="userId"></param>
             <param name="report"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetReportedErrorsAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get errors reported for recitations
+            </summary>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.IRecitationService.UploadEnabled">

@@ -210,6 +210,13 @@ namespace RMuseum.Services
         Task<RServiceResult<RecitationErrorReportViewModel>> ReportErrorAsync(Guid userId, RecitationErrorReportViewModel report);
 
         /// <summary>
+        /// get errors reported for recitations
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationErrorReportViewModel[] Items)>> GetReportedErrorsAsync(PagingParameterModel paging);
+
+        /// <summary>
         /// Upload Enabled (temporary switch off/on for upload)
         /// </summary>
         bool UploadEnabled { get; }

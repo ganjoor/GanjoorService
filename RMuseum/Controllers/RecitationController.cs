@@ -819,6 +819,29 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// get errors reported for recitations
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        [HttpGet("errors/report")]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.PublishOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RecitationErrorReportViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetReportedErrorsAsync([FromQuery] PagingParameterModel paging)
+        {
+            var reports = await _audioService.GetReportedErrorsAsync(paging);
+            if (!string.IsNullOrEmpty(reports.ExceptionString))
+            {
+                return BadRequest(reports.ExceptionString);
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(reports.Result.PagingMeta));
+
+            return Ok(reports.Result.Items);
+        }
+
 
         /// <summary>
         /// constructor
