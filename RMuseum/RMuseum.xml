@@ -1799,6 +1799,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.ReportErrorAsync(RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel)">
+            <summary>
+            report an error in a recitation
+            </summary>
+            <param name="report"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.#ctor(RMuseum.Services.IRecitationService,RSecurityBackend.Services.IUserPermissionChecker,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
@@ -3875,6 +3882,26 @@
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.HtmlText">
             <summary>
             Poem Html Text
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel">
+            <summary>
+            Post Error Report for recitations
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel.RecitationId">
+            <summary>
+            Recitation Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel.ReasonText">
+            <summary>
+            Reason Text
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel">
@@ -12356,6 +12383,14 @@
             <param name="filteredUserId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.ReportErrorAsync(System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel)">
+            <summary>
+            report an error in a recitation
+            </summary>
+            <param name="userId"></param>
+            <param name="report"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementationa.RecitationService.UploadEnabled">
             <summary>
             Upload Enabled (temporary switch off/on for upload)
@@ -12697,6 +12732,14 @@
             Synchronization Queue
             </summary>
             <param name="filteredUserId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.ReportErrorAsync(System.Guid,RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel)">
+            <summary>
+            report an error in a recitation
+            </summary>
+            <param name="userId"></param>
+            <param name="report"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.IRecitationService.UploadEnabled">

@@ -1720,6 +1720,37 @@ namespace RMuseum.Services.Implementationa
         }
 
         /// <summary>
+        /// report an error in a recitation
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="report"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RecitationErrorReportViewModel>> ReportErrorAsync(Guid userId, RecitationErrorReportViewModel report)
+        {
+            try
+            {
+                RecitationErrorReport dbModel = new RecitationErrorReport()
+                {
+                    RecitationId = report.RecitationId,
+                    ReasonText = report.ReasonText,
+                    ReporterId = userId,
+                    DateTime = DateTime.Now
+                };
+
+                _context.RecitationErrorReports.Add(dbModel);
+                await _context.SaveChangesAsync();
+
+                report.Id = dbModel.Id;
+
+                return new RServiceResult<RecitationErrorReportViewModel>(report);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<RecitationErrorReportViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Upload Enabled (temporary switch off/on for upload)
         /// </summary>
         public bool UploadEnabled

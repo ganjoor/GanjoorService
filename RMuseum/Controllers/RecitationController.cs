@@ -800,6 +800,25 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// report an error in a recitation
+        /// </summary>
+        /// <param name="report"></param>
+        /// <returns></returns>
+        [HttpPost("errors/report")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RecitationErrorReportViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+        public async Task<IActionResult> ReportErrorAsync([FromBody] RecitationErrorReportViewModel report)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = await _audioService.ReportErrorAsync(loggedOnUserId, report);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
 
         /// <summary>
         /// constructor
