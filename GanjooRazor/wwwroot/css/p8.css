@@ -1193,3 +1193,44 @@ ol {
 .help-button::after {
     content: 'help';
 }
+
+.bnum-partial-table {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.bnum-partial-narrators {
+    width: 49%;
+    float: right;
+}
+
+.bnum-partial-narrate-btn {
+    cursor: pointer;
+    width: 49%;
+    color: white !important;
+    background-color: green;
+    display: block;
+    text-align: center;
+    border-color: #300;
+    padding: 1px;
+    float: left;
+    margin-top: 3px;
+}
+
+.bnum-partial-action-box {
+    width: 100%;
+    clear: both;
+    background-color: #300;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.color-white {
+    color: white;
+}
+
+.clear-both {
+    clear: both;
+}
