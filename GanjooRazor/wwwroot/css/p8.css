@@ -362,6 +362,11 @@ div.n, div.l {
     margin-left: 20px;
 }
 
+.audio-player {
+    padding: 20px;
+    text-indent: 0;
+}
+
 .sit {
     display: block;
     float: right;
@@ -1185,6 +1190,6 @@ ol {
     content: 'photo_camera';
 }
 
-.help-button::after{
+.help-button::after {
     content: 'help';
 }
