@@ -939,7 +939,7 @@ ol {
 }
 
 
-.textualbutton, .pagebutton {
+.textualbutton, .pagebutton, .recitation-button {
     cursor: pointer;
     color: white !important;
     background-color: #300;
@@ -1223,6 +1223,7 @@ ol {
     background-color: #300;
 }
 
+
 .cursor-pointer {
     cursor: pointer;
 }
@@ -1233,4 +1234,17 @@ ol {
 
 .clear-both {
     clear: both;
+}
+
+.audio-partial-action-box {
+}
+
+.recitation-button{
+    display:inline-flex;
+    padding:5px;
+    border-radius:10px;
+}
+
+.recitation-download::after {
+    content: 'download';
 }
