@@ -91,10 +91,10 @@ function btshmr_internal(poemId) {
         for (var i = 0; i < bnumdiv.length; ++i) {
             bnumdiv[i].remove();
         }
-        document.getElementById("bnum-button").innerHTML = 'شماره‌گذاری<i class="info-buttons" id="format_list_numbered_rtl"></i>';
+        document.getElementById("bnum-button").innerHTML = 'شماره‌گذاری<i class="info-buttons" id="format_list_numbered_rtl">format_list_numbered_rtl</i>';
         return true;
     }
-    document.getElementById("bnum-button").innerHTML = 'حذف شماره‌ها<i class="info-buttons" id="format_list_numbered_rtl"></i>';
+    document.getElementById("bnum-button").innerHTML = 'حذف شماره‌ها<i class="info-buttons" id="format_list_numbered_rtl">format_list_numbered_rtl</i>';
     var msr1s = getElements("m1", "b2", "n", "l");
     if (msr1s.length == 0) return true;
     var j = 0;
