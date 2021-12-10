@@ -17,7 +17,8 @@
                 <a role="button" onclick="document.getElementById('audio-@(nRecitationIndex + 1)').play()" class="actionlink">@recitaion.AudioTitle</a> @Html.Raw(Model.getAudioDesc(recitaion, nRecitationIndex == 0))
             </div>
             <div class="audio-partial-action-box">
-                <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/AudioClip/?a={recitaion.Id}")" onclick="wpopen(this.href); return false">دریافت <i class="recitation-icons recitation-download"></i><span class="w3tooltiptext">دریافت خوانش</span></a>
+                <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/AudioClip/?a={recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="recitation-icons recitation-download"></i><span class="w3tooltiptext">دریافت خوانش</span></a>
+                <a role="button" class="w3tooltip cursor-pointer recitation-button" onclick="switchPlayerScrollLock()"><i class="recitation-icons recitation-scrollunlock"></i><span class="w3tooltiptext">قفل متن روی خوانش</span></a>
             </div>
             <script>
                 document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('play', () => {

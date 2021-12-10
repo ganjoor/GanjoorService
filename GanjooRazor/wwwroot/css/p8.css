@@ -1253,3 +1253,11 @@ ol {
 .recitation-download::after {
     content: 'download';
 }
+
+.recitation-scrollunlock::after {
+    content: 'no_encryption';
+}
+
+.recitation-scrolllock::after {
+    content: 'lock';
+}

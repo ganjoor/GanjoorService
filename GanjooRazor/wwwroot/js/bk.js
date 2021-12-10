@@ -125,6 +125,33 @@ function btshmr(poemId) {
     setTimeout(function () { btshmr_internal(poemId); }, 1);
 }
 
+function switchPlayerScrollLock() {
+    playerScrollLock = !playerScrollLock;
+    if (playerScrollLock) {
+
+        $('#scroll-lock').text('🔒');
+    }
+    else {
+        $('#scroll-lock').text('🔓');
+    }
+
+    if (playerScrollLock) {
+        const lockButtons = document.querySelectorAll('.recitation-scrollunlock');
+        lockButtons.forEach(function (lockButton) {
+            lockButton.classList.toggle('recitation-scrollunlock');
+            lockButton.classList.toggle('recitation-scrolllock');
+        });
+    }
+    else {
+        const lockButtons = document.querySelectorAll('.recitation-scrolllock');
+        lockButtons.forEach(function (lockButtons) {
+            lockButtons.classList.toggle('recitation-scrollunlock');
+            lockButtons.classList.toggle('recitation-scrolllock');
+        });
+    }
+
+}
+
 function hilightverse(vnum, clr, sc, forceScroll) {
     var root = document;
     if (typeof root == "string") root = document.getElementById(root);
@@ -169,16 +196,7 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                     btnLock.id = "InlineLockButton";
                     btnLock.setAttribute('role', 'button');
                     btnLock.className = 'inlineanchor';
-                    btnLock.onclick = function () {
-                        playerScrollLock = !playerScrollLock;
-                        if (playerScrollLock) {
-
-                            $('#scroll-lock').text('🔒');
-                        }
-                        else {
-                            $('#scroll-lock').text('🔓');
-                        }
-                    };
+                    btnLock.onclick = switchPlayerScrollLock;
                     element.lastChild.appendChild(btnLock);
 
                     var btnLockIcon = document.createElement("i");
