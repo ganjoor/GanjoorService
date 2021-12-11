@@ -95,6 +95,14 @@ namespace GanjooRazor.Pages
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
             RecitationInfo = "";
 
+            Report.ReasonText = Report.ReasonText.Trim();
+
+            if (string.IsNullOrEmpty(Report.ReasonText))
+            {
+                LastError = "مشکل مشخص نشده است. ";
+                return Page();
+            }
+
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))

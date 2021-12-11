@@ -1729,6 +1729,11 @@ namespace RMuseum.Services.Implementationa
         {
             try
             {
+                report.ReasonText = report.ReasonText.Trim();
+                if (string.IsNullOrEmpty(report.ReasonText))
+                {
+                    return new RServiceResult<RecitationErrorReportViewModel>(null, "دلیل گزارش مشخص نیست.");
+                }
                 RecitationErrorReport dbModel = new RecitationErrorReport()
                 {
                     RecitationId = report.RecitationId,
