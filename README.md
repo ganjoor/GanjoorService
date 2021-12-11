@@ -1,5 +1,5 @@
 # GanjoorService
-Ganjoor museum and ganjoor.net own backend (ASP.NET Core Web API) and frontend (Razaor Pages) code
+Ganjoor museum and ganjoor.net own backend (ASP.NET Core Web API) and frontend (Razor Pages) code
 
 این کد وب سرویس [گنجینهٔ گنجور](https://museum.ganjoor.net) و [گنجور](https://ganjoor.net) و همچنین کد سایت گنجور است.
 
