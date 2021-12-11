@@ -1,0 +1,113 @@
+﻿@page
+@model GanjooRazor.Pages.ReportRecitationModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>گزارش خطا در خوانش</title>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <link href="/css/p8.css?version=22" rel="stylesheet" type="text/css" />
+    <style>
+        label {
+            width: 100px;
+            display: block;
+        }
+
+        input#submit {
+            text-align: center;
+            background-color: #fff;
+            border: 2px solid #300;
+            color: #300
+        }
+
+            input#submit:hover {
+                background-color: #300;
+                color: #fff;
+                border: 2px solid #433;
+            }
+    </style>
+</head>
+<body>
+    <div id="fa">
+        @if (Model.Report.RecitationId == 0)
+        {
+            <div class="width-100per">
+                <div class="width-100per text-align-center">
+                    <p class="alert-text">
+                        خطا: خوانشی انتخاب نشده است.
+                    </p>
+                </div>
+            </div>
+        }
+        else
+        if (!Model.LoggedIn)
+        {
+            <div class="width-100per">
+                <div class="width-100per text-align-center">
+                    <p class="alert-text">
+                        برای ثبت خطا در خوانش‌ها لازم است ابتدا با نام کاربری خود وارد گنجور شوید.
+                    </p>
+                    <p class="text-align-center">
+                        <a href=@Html.Raw($"/login/?redirect=/ReportRecitation/?a={Model.Report.RecitationId}")>ورود به گنجور</a>
+                    </p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="poem">
+                <h2>ثبت خطا در خوانش</h2>
+                @if (Model.PostSuccess)
+                {
+                    <p>درخواست شما ثبت شد. این درخواست در فرصت مناسب بررسی و در صورت تناسب با معیارهای حذف خوانش، این خوانش حذف خواهد شد.</p>
+                }
+                else
+               if (Model.LastError != "")
+                {
+                    <p>@Model.LastError</p>
+                }
+                else
+                {
+                    <p>
+                        <span style="color:red">لطفاً</span> تنها در صورتی که در خوانش خطایی صورت گرفته یا مشکلات فنی راجع به آن وجود دارد آن را گزارش کنید.
+                    </p>
+                }
+            </div>
+            @if (!Model.PostSuccess && Model.LastError == "")
+            {
+                <p>
+                    @Model.RecitationInfo
+                </p>
+
+                <div class="content">
+                    <form method="post">
+                        <table class="width-100per">
+                            <tr>
+                                <td>
+                                    <span class="inputlabel">این خوانش چه مشکلی دارد؟ (در صورت غلط خوانی اولین مصرع و کلمهٔ غلط خوانده شده را گزارش کنید)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <textarea rows="4" cols="50" asp-for="Report.ReasonText"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="hidden" asp-for="Report.RecitationId" />
+                                    <input type="submit" name="submit" id="submit" value="ثبت خطا" />
+                                </td>
+                            </tr>
+
+                        </table>
+                    </form>
+                </div>
+            }
+        }
+    </div>
+</body>
+</html>

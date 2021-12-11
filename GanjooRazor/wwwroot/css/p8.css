@@ -1254,6 +1254,10 @@ ol {
     content: 'download';
 }
 
+.recitation-report::after {
+    content: 'flag';
+}
+
 .recitation-scrollunlock::after {
     content: 'no_encryption';
 }
