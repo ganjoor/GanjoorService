@@ -375,6 +375,11 @@ namespace RMuseum.Services.Implementation
             context.RemoveRange(ganjoorBookmarks);
             await context.SaveChangesAsync();
 
+
+            var reportedRecitaions = await context.RecitationErrorReports.Where(r => r.ReporterId == userId).ToListAsync();
+            context.RemoveRange(reportedRecitaions);
+            await context.SaveChangesAsync();
+
             var comments = await context.GanjoorComments.Where(c => c.UserId == userId).ToListAsync();
             poemsNeededToBeRefreshed.AddRange(comments.Select(c => c.PoemId).ToList());
             foreach (var comment in comments)
