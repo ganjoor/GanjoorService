@@ -1256,6 +1256,17 @@ namespace RMuseum.Services.Implementation
                 _context.PinterestLinks.RemoveRange(pins);
             }
 
+            string artifactFolder = "";
+            if (record.Items.Count > 0)
+            {
+                var firstImage = record.Items.First();
+                if(firstImage.Images.Count > 0)
+                {
+                    artifactFolder = Path.Combine(_pictureFileService.ImageStoragePath, firstImage.Images.First().FolderName);
+                }
+                
+            }
+
 
             foreach (RArtifactItemRecord item in record.Items)
             {
@@ -1267,6 +1278,18 @@ namespace RMuseum.Services.Implementation
             _context.TagValues.RemoveRange(record.Tags);
             _context.Artifacts.Remove(record);
             await _context.SaveChangesAsync();
+
+            if(!string.IsNullOrEmpty(artifactFolder))
+            {
+                try
+                {
+                    Directory.Delete(artifactFolder, true);
+                }
+                catch
+                {
+                    //ignore errprs
+                }
+            }
 
             return new RServiceResult<bool>(true);
         }
