@@ -385,27 +385,26 @@ namespace RMuseum.Services.Implementation
             foreach (var comment in comments)
             {
                 //await _ganjoorService.DeleteMyComment(userId, comment.Id);/*had error in service initializtion, so done it in the dirty way*/
-                await DeleteComment(context, userId, comment.Id);
+                await _DeleteComment(context, comment.Id);
             }
 
 
             return await base.RemoveUserData(userId);//notifications are deleted here, some of these operations might produce new notifications
         }
 
-        private async Task<RServiceResult<bool>> DeleteComment(RMuseumDbContext context, Guid userId, int commentId)
+        private async Task<RServiceResult<bool>> _DeleteComment(RMuseumDbContext context, int commentId)
         {
-            GanjoorComment comment = await context.GanjoorComments.Where(c => c.Id == commentId && c.UserId == userId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
+            GanjoorComment comment = await context.GanjoorComments.Where(c => c.Id == commentId).SingleOrDefaultAsync();
             if (comment == null)
             {
                 return new RServiceResult<bool>(false); //not found
             }
 
-            //if user has got replies, delete them and notify their owners of what happened
-            var replies = await _FindReplies(context, comment);
-            for (int i = replies.Count - 1; i >= 0; i--)
+            foreach(var reply in await _FindReplies(context, comment))
             {
-                context.GanjoorComments.Remove(replies[i]);
+                await _DeleteComment(context, reply.Id);
             }
+
 
             context.GanjoorComments.Remove(comment);
             await _context.SaveChangesAsync();
@@ -413,19 +412,11 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<bool>(true);
         }
 
+
+
         private async Task<List<GanjoorComment>> _FindReplies(RMuseumDbContext context, GanjoorComment comment)
         {
-            List<GanjoorComment> replies = await context.GanjoorComments.Where(c => c.InReplyToId == comment.Id).AsNoTracking().ToListAsync();
-            List<GanjoorComment> replyToReplies = new List<GanjoorComment>();
-            foreach (GanjoorComment reply in replies)
-            {
-                replyToReplies.AddRange(await _FindReplies(context, reply));
-            }
-            if (replyToReplies.Count > 0)
-            {
-                replies.AddRange(replyToReplies);
-            }
-            return replies;
+            return await context.GanjoorComments.Where(c => c.InReplyToId == comment.Id).AsNoTracking().ToListAsync();
         }
     }
 }
