@@ -339,7 +339,7 @@ namespace RMuseum.Controllers
 
             if(narration.Result.ReviewStatus != metadata.ReviewStatus)
             {
-                if (metadata.ReviewStatus == AudioReviewStatus.Approved || metadata.ReviewStatus == AudioReviewStatus.Rejected)
+                if (metadata.ReviewStatus == AudioReviewStatus.Approved || metadata.ReviewStatus == AudioReviewStatus.Rejected || metadata.ReviewStatus == AudioReviewStatus.RejectedDueToReportedErrors)
                 {
                     return StatusCode((int)HttpStatusCode.Forbidden);
                 }
@@ -379,6 +379,9 @@ namespace RMuseum.Controllers
 
             if (narration.Result == null)
                 return NotFound();
+
+            if(narration.Result.ReviewStatus == AudioReviewStatus.RejectedDueToReportedErrors)
+                return StatusCode((int)HttpStatusCode.Forbidden);
 
             if (narration.Result.Owner.Id != loggedOnUserId)
             {
