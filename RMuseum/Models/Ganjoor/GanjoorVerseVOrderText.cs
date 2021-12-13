@@ -33,5 +33,10 @@
         /// note
         /// </summary>
         public string ReviewNote { get; set; }
+
+        /// <summary>
+        /// couplet indexs
+        /// </summary>
+        public int? CoupletIndex { get; set; }
     }
 }

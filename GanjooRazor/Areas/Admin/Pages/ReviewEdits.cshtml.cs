@@ -91,7 +91,9 @@ namespace GanjooRazor.Areas.Admin.Pages
                         if (Correction.VerseOrderText != null)
                             foreach (var verse in Correction.VerseOrderText)
                             {
-                                verse.OriginalText = PageInformation.Poem.Verses.Where(v => v.VOrder == verse.VORder).Single().Text;
+                                var v = PageInformation.Poem.Verses.Where(v => v.VOrder == verse.VORder).Single();
+                                verse.OriginalText = v.Text;
+                                verse.CoupletIndex = v.CoupletIndex;
                                 if (verse.OriginalText == verse.Text)
                                     verse.Result = CorrectionReviewResult.NotChanged;
                             }

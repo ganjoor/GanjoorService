@@ -6120,6 +6120,11 @@
             note
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.CoupletIndex">
+            <summary>
+            couplet indexs
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemMusicTrack">
             <summary>
             poem related track
