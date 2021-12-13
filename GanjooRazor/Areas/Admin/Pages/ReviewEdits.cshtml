@@ -42,12 +42,22 @@ else
             </tr>
             <tr>
                 <td>
-                    <p style="color:red">@Model.Correction.OriginalTitle</p>
+                    <p id="original-title" style="color:red">@Model.Correction.OriginalTitle</p>
                 </td>
                 <td>
-                    <p style="color:green">@Model.Correction.Title</p>
+                    <p id="edited-title"  style="color:green">@Model.Correction.Title</p>
                 </td>
             </tr>
+            <tr>
+                    <td colspan="2">
+                        <p id="title-compare">@Model.Correction.OriginalTitle</p>
+                        <script>
+                            $(document).ready(function () {
+                                compareCorrectionBlocks('original-title', 'edited-title', 'title-compare');
+                            });
+                        </script>
+                    </td>
+                </tr>
             <tr>
                 <td colspan="2">
                     @if (Model.Correction.Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
