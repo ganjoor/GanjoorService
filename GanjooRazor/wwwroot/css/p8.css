@@ -1265,3 +1265,7 @@ ol {
 .recitation-scrolllock::after {
     content: 'lock';
 }
+
+audio{
+    width:100%;
+}
