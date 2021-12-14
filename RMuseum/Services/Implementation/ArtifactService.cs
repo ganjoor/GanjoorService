@@ -1226,71 +1226,84 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> RemoveArtifactHavingNoNoteAndBookmarks(Guid artifactId, bool checkJobs)
         {
-            RArtifactMasterRecord record = await _context.Artifacts
-                    .Include(a => a.Items).ThenInclude(i => i.Images)
-                    .Include(a => a.Items).ThenInclude(i => i.Tags)
-                    .Include(a => a.Tags)
-                    .Where(a => a.Id == artifactId)
-                    .SingleOrDefaultAsync();
-            if (record == null)
+            try
             {
-                return new RServiceResult<bool>(false, "Artifact not found.");
-            }
-            if (record.Status == PublishStatus.Published)
-            {
-                return new RServiceResult<bool>(false, "Can not delete published artifact");
-            }
+                if (await _context.UserBookmarks.Where(b => b.RArtifactMasterRecordId == artifactId).AnyAsync())
+                    return new RServiceResult<bool>(false, "The artifcat is bookmarked by somebody and cannot be deleted");
+                if (await _context.UserNotes.Where(n => n.RArtifactMasterRecordId == artifactId).AnyAsync())
+                    return new RServiceResult<bool>(false, "The artifcat has notes by somebody and cannot be deleted");
 
-            if (checkJobs)
-            {
-                var jobs = await _context.ImportJobs.Where(j => j.ArtifactId == artifactId).ToArrayAsync();
-                if (jobs.Length > 0)
+                RArtifactMasterRecord record = await _context.Artifacts
+                        .Include(a => a.Items).ThenInclude(i => i.Images)
+                        .Include(a => a.Items).ThenInclude(i => i.Tags)
+                        .Include(a => a.Tags)
+                        .Where(a => a.Id == artifactId)
+                        .SingleOrDefaultAsync();
+                if (record == null)
                 {
-                    _context.ImportJobs.RemoveRange(jobs);
+                    return new RServiceResult<bool>(false, "Artifact not found.");
+                }
+                if (record.Status == PublishStatus.Published)
+                {
+                    return new RServiceResult<bool>(false, "Can not delete published artifact");
+                }
+
+
+
+                if (checkJobs)
+                {
+                    var jobs = await _context.ImportJobs.Where(j => j.ArtifactId == artifactId).ToArrayAsync();
+                    if (jobs.Length > 0)
+                    {
+                        _context.ImportJobs.RemoveRange(jobs);
+                    }
+                }
+
+                var pins = await _context.PinterestLinks.Where(j => j.ArtifactId == artifactId).ToArrayAsync();
+                if (pins.Length > 0)
+                {
+                    _context.PinterestLinks.RemoveRange(pins);
+                }
+
+                string artifactFolder = "";
+                if (record.Items.Count > 0)
+                {
+                    var firstImage = record.Items.First();
+                    if (firstImage.Images.Count > 0)
+                    {
+                        artifactFolder = Path.Combine(_pictureFileService.ImageStoragePath, firstImage.Images.First().FolderName);
+                    }
+
+                }
+
+
+                foreach (RArtifactItemRecord item in record.Items)
+                {
+                    _context.PictureFiles.RemoveRange(item.Images);
+                    _context.TagValues.RemoveRange(item.Tags);
+                }
+
+                _context.Items.RemoveRange(record.Items);
+                _context.TagValues.RemoveRange(record.Tags);
+                _context.Artifacts.Remove(record);
+                await _context.SaveChangesAsync();
+
+                if (!string.IsNullOrEmpty(artifactFolder))
+                {
+                    try
+                    {
+                        Directory.Delete(artifactFolder, true);
+                    }
+                    catch
+                    {
+                        //ignore errprs
+                    }
                 }
             }
-
-            var pins = await _context.PinterestLinks.Where(j => j.ArtifactId == artifactId).ToArrayAsync();
-            if (pins.Length > 0)
+            catch(Exception exp)
             {
-                _context.PinterestLinks.RemoveRange(pins);
+                return new RServiceResult<bool>(false, exp.ToString());
             }
-
-            string artifactFolder = "";
-            if (record.Items.Count > 0)
-            {
-                var firstImage = record.Items.First();
-                if(firstImage.Images.Count > 0)
-                {
-                    artifactFolder = Path.Combine(_pictureFileService.ImageStoragePath, firstImage.Images.First().FolderName);
-                }
-                
-            }
-
-
-            foreach (RArtifactItemRecord item in record.Items)
-            {
-                _context.PictureFiles.RemoveRange(item.Images);
-                _context.TagValues.RemoveRange(item.Tags);
-            }
-
-            _context.Items.RemoveRange(record.Items);
-            _context.TagValues.RemoveRange(record.Tags);
-            _context.Artifacts.Remove(record);
-            await _context.SaveChangesAsync();
-
-            if(!string.IsNullOrEmpty(artifactFolder))
-            {
-                try
-                {
-                    Directory.Delete(artifactFolder, true);
-                }
-                catch
-                {
-                    //ignore errprs
-                }
-            }
-
             return new RServiceResult<bool>(true);
         }
 
