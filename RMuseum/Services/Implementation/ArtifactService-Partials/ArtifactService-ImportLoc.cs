@@ -598,7 +598,7 @@ namespace RMuseum.Services.Implementation
                 scheduled = new List<string>();
                 foreach (ImportJob job in rescheduledJobs)
                 {
-                    await RemoveArtifactHavingNoNoteAndBookmarks((Guid)job.ArtifactId, false);
+                    await RemoveArtifact((Guid)job.ArtifactId, false);
                     _context.ImportJobs.Remove(job);
                     await _context.SaveChangesAsync();
                     RServiceResult<bool> rescheduled = await StartImportingFromTheLibraryOfCongress(job.ResourceNumber, job.FriendlyUrl, "rbc0001");//plmp

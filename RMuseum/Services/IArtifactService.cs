@@ -518,7 +518,7 @@ namespace RMuseum.Services
         /// <param name="artifactId"></param>
         /// <param name="checkJobs"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> RemoveArtifactHavingNoNoteAndBookmarks(Guid artifactId, bool checkJobs);
+        Task<RServiceResult<bool>> RemoveArtifact(Guid artifactId, bool checkJobs);
 
         /// <summary>
         /// start filling GanjoorLink table OriginalSource values

@@ -1224,15 +1224,10 @@ namespace RMuseum.Services.Implementation
         /// <param name="artifactId"></param>
         /// <param name="checkJobs"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> RemoveArtifactHavingNoNoteAndBookmarks(Guid artifactId, bool checkJobs)
+        public async Task<RServiceResult<bool>> RemoveArtifact(Guid artifactId, bool checkJobs)
         {
             try
             {
-                if (await _context.UserBookmarks.Where(b => b.RArtifactMasterRecordId == artifactId).AnyAsync())
-                    return new RServiceResult<bool>(false, "The artifcat is bookmarked by somebody and cannot be deleted");
-                if (await _context.UserNotes.Where(n => n.RArtifactMasterRecordId == artifactId).AnyAsync())
-                    return new RServiceResult<bool>(false, "The artifcat has notes by somebody and cannot be deleted");
-
                 RArtifactMasterRecord record = await _context.Artifacts
                         .Include(a => a.Items).ThenInclude(i => i.Images)
                         .Include(a => a.Items).ThenInclude(i => i.Tags)
@@ -1248,7 +1243,16 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<bool>(false, "Can not delete published artifact");
                 }
 
-
+                if (await _context.UserBookmarks.Where(b => b.RArtifactMasterRecordId == artifactId).AnyAsync())
+                {
+                    var bookmarks = await _context.UserBookmarks.Where(b => b.RArtifactMasterRecordId == artifactId).ToListAsync();
+                    _context.RemoveRange(bookmarks);
+                }
+                if (await _context.UserNotes.Where(n => n.RArtifactMasterRecordId == artifactId).AnyAsync())
+                {
+                    var notes = await _context.UserNotes.Where(n => n.RArtifactMasterRecordId == artifactId).ToListAsync();
+                    _context.RemoveRange(notes);
+                }
 
                 if (checkJobs)
                 {

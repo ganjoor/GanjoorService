@@ -50,7 +50,7 @@
             <param name="friendlyUrl"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.RemoveArtifactHavingNoNoteAndBookmarks(System.Guid)">
+        <member name="M:RMuseum.Controllers.ArtifactController.RemoveArtifact(System.Guid)">
             <summary>
             remove unpublished artifact having no notes and not bookmarked
             </summary>
@@ -8906,7 +8906,7 @@
             <param name="linkId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.RemoveArtifactHavingNoNoteAndBookmarks(System.Guid,System.Boolean)">
+        <member name="M:RMuseum.Services.IArtifactService.RemoveArtifact(System.Guid,System.Boolean)">
             <summary>
             an incomplete prototype for removing artifacts
             </summary>
@@ -10281,7 +10281,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.RemoveArtifactHavingNoNoteAndBookmarks(System.Guid,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.RemoveArtifact(System.Guid,System.Boolean)">
             <summary>
             an incomplete prototype for removing artifacts
             </summary>

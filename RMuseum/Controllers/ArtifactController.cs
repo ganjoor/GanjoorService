@@ -243,9 +243,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public async Task<IActionResult> RemoveArtifactHavingNoNoteAndBookmarks(Guid artifactId)
+        public async Task<IActionResult> RemoveArtifact(Guid artifactId)
         {
-            RServiceResult<bool> res = await _artifactService.RemoveArtifactHavingNoNoteAndBookmarks(artifactId, true);
+            RServiceResult<bool> res = await _artifactService.RemoveArtifact(artifactId, true);
             if (!string.IsNullOrEmpty(res.ExceptionString))
             {
                 return BadRequest(res.ExceptionString);
