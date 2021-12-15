@@ -1254,6 +1254,12 @@ namespace RMuseum.Services.Implementation
                     _context.RemoveRange(notes);
                 }
 
+                if(await _context.GanjoorLinks.Where(l => l.ArtifactId == artifactId).AnyAsync())
+                {
+                    var links = await _context.GanjoorLinks.Where(l => l.ArtifactId == artifactId).ToListAsync();
+                    _context.RemoveRange(links);
+                }
+
                 if (checkJobs)
                 {
                     var jobs = await _context.ImportJobs.Where(j => j.ArtifactId == artifactId).ToArrayAsync();
