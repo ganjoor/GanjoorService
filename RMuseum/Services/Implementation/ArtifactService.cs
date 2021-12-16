@@ -256,47 +256,70 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RTagBundleViewModel>> GetTagBundleByFiendlyUrl(string friendlyUrl)
         {
-            RTag tag =
-                 await _context.Tags
-                 .Where(a => a.FriendlyUrl == friendlyUrl)
-                 .AsNoTracking()
-                .SingleOrDefaultAsync();
-
-            if (tag != null)
+            try
             {
-                RTagBundleViewModel viewModel = new RTagBundleViewModel()
+                if (string.IsNullOrEmpty(friendlyUrl))
+                    return new RServiceResult<RTagBundleViewModel>(null, "friendlyUrl is null");
+                RTag tag =
+                     await _context.Tags
+                     .Where(a => a.FriendlyUrl == friendlyUrl)
+                     .AsNoTracking()
+                    .SingleOrDefaultAsync();
+
+                if (tag == null)
                 {
-                    Id = tag.Id,
-                    Name = tag.Name,
-                    PluralName = tag.PluralName,
-                    FriendlyUrl = friendlyUrl
-                };
-                List<RTagBundleValueViewModel>
-                    values = new List<RTagBundleValueViewModel>(
-                    await _context.TagValues
-                        .Where(value => value.RTagId == tag.Id && !string.IsNullOrEmpty(value.FriendlyUrl))
-                        .GroupBy(value => new { value.Value, value.FriendlyUrl, value.RTagId })
-                        .Select
-                        (
-                        g =>
-                        new RTagBundleValueViewModel()
-                        {
-                            FriendlyUrl = g.Key.FriendlyUrl,
-                            Name = g.Key.Value,
-                            Count = g.Count(),
-                            ImageId = _context.Artifacts.Include(a => a.Tags).Where(a => a.Status == PublishStatus.Published && a.Tags.Any(t => t.RTagId == g.Key.RTagId && t.Value == g.Key.Value)).FirstOrDefault().CoverImageId
-                        }
-                        )
-                        .OrderByDescending(g => g.Count)
-                        .ToArrayAsync()
-                        );
+                    return new RServiceResult<RTagBundleViewModel>(null, "tag is null");
+                }
+
+                if (tag != null)
+                {
+                    RTagBundleViewModel viewModel = new RTagBundleViewModel()
+                    {
+                        Id = tag.Id,
+                        Name = tag.Name,
+                        PluralName = tag.PluralName,
+                        FriendlyUrl = friendlyUrl
+                    };
+                    List<RTagBundleValueViewModel>
+                        values = new List<RTagBundleValueViewModel>(
+                        await _context.TagValues
+                            .Where(value => value.RTagId == tag.Id && !string.IsNullOrEmpty(value.FriendlyUrl))
+                            .GroupBy(value => new { value.Value, value.FriendlyUrl, value.RTagId })
+                            .Select
+                            (
+                            g =>
+                            new RTagBundleValueViewModel()
+                            {
+                                FriendlyUrl = g.Key.FriendlyUrl,
+                                Name = g.Key.Value,
+                                Count = g.Count(),
+                            }
+                            )
+                            .OrderByDescending(g => g.Count)
+                            .ToArrayAsync()
+                            );
+
+                    foreach (var val in values)
+                    {
+                        var firstItem = _context.Artifacts.AsNoTracking().Include(a => a.Tags).Where(a => a.Status == PublishStatus.Published
+                                    && a.Tags.Any(t => t.RTagId == tag.Id && t.Value == val.Name)).FirstOrDefault();
+                        if (firstItem != null)
+                            val.ImageId = firstItem.CoverImageId;
+                        else
+                            val.Count = 0;
+                    }
 
 
-                viewModel.Values = values.ToArray();
+                    viewModel.Values = values.Where(v => v.Count > 0).ToArray();
 
-                return new RServiceResult<RTagBundleViewModel>(viewModel);
+                    return new RServiceResult<RTagBundleViewModel>(viewModel);
+                }
+                return new RServiceResult<RTagBundleViewModel>(null);
             }
-            return new RServiceResult<RTagBundleViewModel>(null);
+            catch (Exception exp)
+            {
+                return new RServiceResult<RTagBundleViewModel>(null, exp.ToString());
+            }
         }
 
         /// <summary>
@@ -1254,7 +1277,7 @@ namespace RMuseum.Services.Implementation
                     _context.RemoveRange(notes);
                 }
 
-                if(await _context.GanjoorLinks.Where(l => l.ArtifactId == artifactId).AnyAsync())
+                if (await _context.GanjoorLinks.Where(l => l.ArtifactId == artifactId).AnyAsync())
                 {
                     var links = await _context.GanjoorLinks.Where(l => l.ArtifactId == artifactId).ToListAsync();
                     _context.RemoveRange(links);
@@ -1316,7 +1339,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
@@ -2287,7 +2310,7 @@ namespace RMuseum.Services.Implementation
                 await _context.SaveChangesAsync();
                 return new RServiceResult<Guid>(r.Id);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<Guid>(Guid.Empty, exp.ToString());
             }
@@ -2335,7 +2358,7 @@ namespace RMuseum.Services.Implementation
                 var reasonText = report.ReasonText;
 
                 RUserNote note = await _context.UserNotes.Where(n => n.Id == report.NoteId).SingleOrDefaultAsync();
-                if(note == null)
+                if (note == null)
                 {
                     return new RServiceResult<bool>(false, "note not found!");
                 }
@@ -2664,7 +2687,7 @@ namespace RMuseum.Services.Implementation
                  .SingleOrDefaultAsync();
 
             var poem = (await _ganjoorService.GetPoemById(link.GanjoorPostId)).Result;//if it fails here nothing is updated
-            string titleInTOC = poem == null ?  "" : poem.FullTitle;
+            string titleInTOC = poem == null ? "" : poem.FullTitle;
 
             if (poem != null && poem.Verses.Length > 0)
             {
