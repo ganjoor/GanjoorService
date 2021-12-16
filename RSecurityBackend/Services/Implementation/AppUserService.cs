@@ -37,6 +37,10 @@ namespace RSecurityBackend.Services.Implementation
         /// <returns></returns>
         public virtual async Task<RServiceResult<LoggedOnUserModel>> Login(LoginViewModel loginViewModel, string clientIPAddress)
         {
+            if (string.IsNullOrEmpty(loginViewModel.Username))
+                return new RServiceResult<LoggedOnUserModel>(null, "نام کاربری وارد نشده است.");
+            if (string.IsNullOrEmpty(loginViewModel.Password))
+                return new RServiceResult<LoggedOnUserModel>(null, "گذرواژه وارد نشده است.");
             //we ignore loginViewModel in automatic auditing to prevent logging password data, so we would add a manual auditing to have enough data on login intrusion and ...
             REvent log = new REvent()
             {
