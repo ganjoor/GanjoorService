@@ -1,4 +1,4 @@
-using GanjooRazor.Utils;
+﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -88,6 +88,16 @@ namespace GanjooRazor.Pages
                 }
                 else
                 {
+                    if (LoginViewModel == null)
+                    {
+                        LastError = "لطفاً پست الکترونیکی و گذرواژه‌تان را وارد کنید.";
+                        return Page();
+                    }
+                    if (string.IsNullOrEmpty(LoginViewModel.Username) || string.IsNullOrEmpty(LoginViewModel.Password))
+                    {
+                        LastError = "لطفاً پست الکترونیکی و گذرواژه‌تان را وارد کنید.";
+                        return Page();
+                    }
                     var stringContent = new StringContent(JsonConvert.SerializeObject(LoginViewModel), Encoding.UTF8, "application/json");
                     var loginUrl = $"{APIRoot.Url}/api/users/login";
                     var response = await secureClient.PostAsync(loginUrl, stringContent);
