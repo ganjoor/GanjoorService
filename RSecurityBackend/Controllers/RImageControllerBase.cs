@@ -69,7 +69,7 @@ namespace RSecurityBackend.Controllers
                 return StatusCode(StatusCodes.Status304NotModified);
             }
 
-            return new FileStreamResult(new FileStream(imgPath, FileMode.Open, FileAccess.Read), "image/jpeg");
+            return new FileStreamResult(new FileStream(imgPath, FileMode.Open, FileAccess.Read), img.ContentType);
 
         }
 

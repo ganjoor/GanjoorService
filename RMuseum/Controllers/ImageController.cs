@@ -56,7 +56,7 @@ namespace RMuseum.Controllers
                 return BadRequest(imgPath.ExceptionString);
 
 
-            return new FileStreamResult(new FileStream(imgPath.Result, FileMode.Open, FileAccess.Read), "image/jpeg");
+            return new FileStreamResult(new FileStream(imgPath.Result, FileMode.Open, FileAccess.Read), img.Result.ContentType);
            
         }
 
