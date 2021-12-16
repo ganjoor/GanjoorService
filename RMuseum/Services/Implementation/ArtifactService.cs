@@ -1179,7 +1179,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<bool>> RescheduleJobs()
         {
 
-            ImportJob[] jobs = await _context.ImportJobs.Where(j => j.Status != ImportJobStatus.Succeeded && j.JobType == JobType.ChesterBeatty).OrderByDescending(j => j.ProgressPercent).ToArrayAsync();
+            ImportJob[] jobs = await _context.ImportJobs.Where(j => j.Status != ImportJobStatus.Succeeded && j.JobType == JobType.BritishLibrary).OrderByDescending(j => j.ProgressPercent).ToArrayAsync();
 
             List<string> scheduled = new List<string>();
 
@@ -1205,7 +1205,7 @@ namespace RMuseum.Services.Implementation
                 {
                     scheduled.Add(job.ResourceNumber);
 
-                    RServiceResult<bool> rescheduled = await StartImportingFromChesterBeatty(job.ResourceNumber, job.FriendlyUrl);
+                    RServiceResult<bool> rescheduled = await StartImportingFromBritishLibrary(job.ResourceNumber, job.FriendlyUrl);
                     if (rescheduled.Result)
                     {
                         _context.ImportJobs.Remove(job);
@@ -1289,6 +1289,12 @@ namespace RMuseum.Services.Implementation
 
                 foreach (RArtifactItemRecord item in record.Items)
                 {
+                    var bookmarks = await _context.UserBookmarks.Where(b => b.RArtifactItemRecordId == item.Id).ToListAsync();
+                    _context.RemoveRange(bookmarks);
+
+                    var notes = await _context.UserNotes.Where(n => n.RArtifactItemRecordId == artifactId).ToListAsync();
+                    _context.RemoveRange(notes);
+
                     _context.PictureFiles.RemoveRange(item.Images);
                     _context.TagValues.RemoveRange(item.Tags);
                 }
