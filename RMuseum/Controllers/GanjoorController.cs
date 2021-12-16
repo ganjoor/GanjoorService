@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Auth.ViewModel;
-using RMuseum.Models.Bookmark;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
