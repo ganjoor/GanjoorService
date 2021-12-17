@@ -12102,6 +12102,11 @@
             طول تصویر بندانگشتی
             </summary>
         </member>
+        <member name="P:RMuseum.Services.Implementation.PictureFileService.ImageInfoCacheEnabled">
+            <summary>
+            image info cache
+            </summary>
+        </member>
         <member name="P:RMuseum.Services.Implementation.PictureFileService.ImageStoragePath">
             <summary>
             Image Storage Path

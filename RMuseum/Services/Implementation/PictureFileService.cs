@@ -151,12 +151,15 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<RPictureFile>> GetImage(Guid id)
         {
             var cachKey = $"PictureFileService::GetImage::{id}";
-            if (!_memoryCache.TryGetValue(cachKey, out RPictureFile pictureFile))
+            if (!ImageInfoCacheEnabled || !_memoryCache.TryGetValue(cachKey, out RPictureFile pictureFile))
             {
                 pictureFile = await _context.PictureFiles.AsNoTracking()
                      .Where(p => p.Id == id)
                      .SingleOrDefaultAsync();
-                _memoryCache.Set(cachKey, pictureFile);
+                if(ImageInfoCacheEnabled)
+                {
+                    _memoryCache.Set(cachKey, pictureFile);
+                }
             }
 
             return new RServiceResult<RPictureFile>(
@@ -283,6 +286,11 @@ namespace RMuseum.Services.Implementation
         /// طول تصویر بندانگشتی
         /// </summary>
         protected int ThumbnailImageMaxHeight { get { return int.Parse($"{Configuration.GetSection("PictureFileService")["ThumbnailMaxHeight"]}"); } }
+
+        /// <summary>
+        /// image info cache
+        /// </summary>
+        private bool ImageInfoCacheEnabled { get { return bool.Parse($"{Configuration.GetSection("PictureFileService")["ImageInfoCacheEnabled"]}"); } }
 
 
         /// <summary>
@@ -513,6 +521,8 @@ namespace RMuseum.Services.Implementation
                 }
             }
         }
+
+        
 
         /// <summary>
         /// Database Contetxt
