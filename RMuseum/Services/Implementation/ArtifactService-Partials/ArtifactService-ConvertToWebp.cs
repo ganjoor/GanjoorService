@@ -2,6 +2,7 @@
 using ImageProcessor.Plugins.WebP.Imaging.Formats;
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
+using RMuseum.Models.Artifact;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -48,8 +49,19 @@ namespace RMuseum.Services.Implementation
                                                 {
                                                     var imagePath = Path.Combine(imageStoragePath, image.FolderName, image.StoredFileName);
                                                     var webpPath = Path.Combine(imageStoragePath, image.FolderName,$"{Path.GetFileNameWithoutExtension(image.StoredFileName)}.webp");
-                                                    if(File.Exists(imagePath))
+                                                    WebpConvertionLog log = null;
+                                                    if (File.Exists(imagePath))
                                                     {
+                                                        if (File.Exists(webpPath))
+                                                            File.Delete(webpPath);
+
+                                                        log = new WebpConvertionLog()
+                                                        {
+                                                            PictureId = image.Id,
+                                                            StartTime = DateTime.Now,
+                                                            OriginalFileSizeInByte = image.FileSizeInBytes
+                                                        };
+
                                                         //convert to webp
                                                         using (ImageFactory imageFactory = new ImageFactory(preserveExifData: false))
                                                         {
@@ -66,7 +78,16 @@ namespace RMuseum.Services.Implementation
                                                         var imageInDb = await context.PictureFiles.Where(p => p.Id == image.Id).SingleAsync();
                                                         imageInDb.ContentType = "image/webp";
                                                         imageInDb.StoredFileName = imageInDb.StoredFileName.Replace(".jpg", ".webp", StringComparison.InvariantCultureIgnoreCase);
+                                                        imageInDb.FileSizeInBytes = (await File.ReadAllBytesAsync(webpPath)).Length;
                                                         context.PictureFiles.Update(imageInDb);
+
+                                                        if(log != null)
+                                                        {
+                                                            log.FinishTime = DateTime.Now;
+                                                            log.TargetFileSizeInByte = imageInDb.FileSizeInBytes;
+                                                            context.WebpConvertionLogs.Add(log);
+                                                        }
+
                                                         await context.SaveChangesAsync();
 
                                                         if(File.Exists(imagePath))

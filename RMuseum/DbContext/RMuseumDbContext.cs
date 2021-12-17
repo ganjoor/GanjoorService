@@ -400,5 +400,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<RecitationErrorReport> RecitationErrorReports { get; set; }
 
+        /// <summary>
+        /// webp convertion log
+        /// </summary>
+        public DbSet<WebpConvertionLog> WebpConvertionLogs { get; set; }
+
     }
 }
