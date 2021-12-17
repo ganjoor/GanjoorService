@@ -2288,6 +2288,11 @@
             recitation error reports
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.WebpConvertionLogs">
+            <summary>
+            webp convertion log
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -3159,6 +3164,46 @@
         <member name="P:RMuseum.Models.Artifact.ViewModels.RTitleInContents.ItemFriendlyUrl">
             <summary>
             Item Friendly Url
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Artifact.WebpConvertionLog">
+            <summary>
+            webp convertion log
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.WebpConvertionLog.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.WebpConvertionLog.PictureId">
+            <summary>
+            picture id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.WebpConvertionLog.Picture">
+            <summary>
+            picture
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.WebpConvertionLog.OriginalFileSizeInByte">
+            <summary>
+            original file size
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.WebpConvertionLog.StartTime">
+            <summary>
+            start time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.WebpConvertionLog.TargetFileSizeInByte">
+            <summary>
+            target file size
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.WebpConvertionLog.FinishTime">
+            <summary>
+            finish time
             </summary>
         </member>
         <member name="T:RMuseum.Models.Auth.Memory.RMuseumSecurableItem">
