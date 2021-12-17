@@ -1870,6 +1870,56 @@ namespace RMuseum.Services.Implementationa
         }
 
         /// <summary>
+        /// up vote a recitation
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> UpVoteRecitationAsync(int id, Guid userId)
+        {
+            try
+            {
+                var existingVote = await _context.RecitationUserUpVotes.Where(r => r.RecitationId == id && r.UserId == userId).SingleOrDefaultAsync();
+                if(existingVote != null)
+                {
+                    return new RServiceResult<bool>(false, "شما پیش‌تر به این خوانش رأی داده‌اید.");
+                }
+                var recitation = await _context.Recitations.Where(r => r.Id == id).SingleOrDefaultAsync();
+                if(recitation == null)
+                {
+                    return new RServiceResult<bool>(false, "خوانشی با این شناسه وجود ندارد.");
+                }
+                if(recitation.OwnerId == userId)
+                {
+                    return new RServiceResult<bool>(false, "شما نمی‌توانید به خوانش خودتان رأی بدهید.");
+                }
+                if(recitation.ReviewStatus != AudioReviewStatus.Approved)
+                {
+                    return new RServiceResult<bool>(false, "امکان رأی دادن به خوانش منتشر نشده وجود ندارد.");
+                }
+
+                RecitationUserUpVote vote = new RecitationUserUpVote()
+                {
+                    RecitationId = id,
+                    UserId = userId,
+                    DateTime = DateTime.Now
+                };
+
+                _context.RecitationUserUpVotes.Add(vote);
+                await _context.SaveChangesAsync();
+
+                //TODO compute new order for poem recitations here
+
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Upload Enabled (temporary switch off/on for upload)
         /// </summary>
         public bool UploadEnabled

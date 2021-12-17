@@ -163,6 +163,10 @@ namespace RMuseum.DbContext
             builder.Entity<GanjoorGeoLocation>()
               .Property(c => c.Longitude)
               .HasColumnType("decimal(12,9)");
+
+            builder.Entity<RecitationUserUpVote>()
+               .HasIndex(v => new { v.RecitationId, v.UserId })
+               .IsUnique();
         }
 
 
@@ -399,6 +403,11 @@ namespace RMuseum.DbContext
         /// recitation error reports
         /// </summary>
         public DbSet<RecitationErrorReport> RecitationErrorReports { get; set; }
+
+        /// <summary>
+        /// recitation user up votes
+        /// </summary>
+        public DbSet<RecitationUserUpVote> RecitationUserUpVotes { get; set; }
 
     }
 }
