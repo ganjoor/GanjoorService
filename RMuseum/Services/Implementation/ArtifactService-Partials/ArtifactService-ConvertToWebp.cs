@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ImageProcessor;
+using ImageProcessor.Plugins.WebP.Imaging.Formats;
+using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace RMuseum.Services.Implementation
 {
@@ -48,11 +51,35 @@ namespace RMuseum.Services.Implementation
                                                     if(File.Exists(imagePath))
                                                     {
                                                         //convert to webp
+                                                        using (ImageFactory imageFactory = new ImageFactory(preserveExifData: false))
+                                                        {
+                                                            imageFactory.Load(imagePath)
+                                                                        .Format(new WebPFormat())
+                                                                        .Quality(80)
+                                                                        .Save(webpPath);
+                                                        }
                                                     }
                                                     
                                                     if(File.Exists(webpPath))
                                                     {
                                                         //update db meta data
+                                                        var imageInDb = await context.PictureFiles.Where(p => p.Id == image.Id).SingleAsync();
+                                                        imageInDb.ContentType = "image/webp";
+                                                        imageInDb.StoredFileName = imageInDb.StoredFileName.Replace(".jpg", ".webp", StringComparison.InvariantCultureIgnoreCase);
+                                                        context.PictureFiles.Update(imageInDb);
+                                                        await context.SaveChangesAsync();
+
+                                                        if(File.Exists(imagePath))
+                                                        {
+                                                            try
+                                                            {
+                                                                File.Delete(imagePath);
+                                                            }
+                                                            catch
+                                                            {
+                                                                //ignore exception
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
