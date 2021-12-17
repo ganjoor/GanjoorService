@@ -217,7 +217,7 @@ namespace RMuseum.Services
         /// <param name="tagValueId"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> UnTagItem(Guid itemId, Guid tagValueId);
-        
+
 
 
         /// <summary>
@@ -555,12 +555,6 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> AcceptPublicNoteReport(Guid id);
-
-        /// <summary>
-        /// convert original images to webp
-        /// </summary>
-        /// <returns></returns>
-        RServiceResult<bool> StartConvertingOriginalImagesToWebp();
 
     }
 }
