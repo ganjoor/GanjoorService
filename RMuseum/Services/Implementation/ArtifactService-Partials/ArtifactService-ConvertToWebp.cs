@@ -40,7 +40,7 @@ namespace RMuseum.Services.Implementation
                                     int artifactNum = 0;
                                     foreach (var artifact in artifacts)
                                     {
-                                        await jobProgressServiceEF.UpdateJob(job.Id, ++artifactNum, $"from {artifact.ItemCount} processing {artifact.Name}");
+                                        await jobProgressServiceEF.UpdateJob(job.Id, ++artifactNum, $"{artifactNum} from {artifacts.Length} artifacts  ({artifact.Name}) containing {artifact.ItemCount} items");
                                         foreach (var item in artifact.Items)
                                         {
                                             foreach (var image in item.Images)
