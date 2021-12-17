@@ -48,7 +48,7 @@ namespace RMuseum.Services.Implementation
                                                 if(image.ContentType == "image/jpeg")
                                                 {
                                                     var imagePath = Path.Combine(imageStoragePath, image.FolderName, image.StoredFileName);
-                                                    var webpPath = Path.Combine(imageStoragePath, image.FolderName,$"{Path.GetFileNameWithoutExtension(image.StoredFileName)}.webp");
+                                                    var webpPath = Path.Combine(imageStoragePath, image.FolderName, Path.GetDirectoryName(image.StoredFileName), $"{Path.GetFileNameWithoutExtension(image.StoredFileName)}.webp");
                                                     WebpConvertionLog log = null;
                                                     if (File.Exists(imagePath))
                                                     {

@@ -556,5 +556,11 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<bool>> AcceptPublicNoteReport(Guid id);
 
+        /// <summary>
+        /// convert original images to webp
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartConvertingOriginalImagesToWebp();
+
     }
 }

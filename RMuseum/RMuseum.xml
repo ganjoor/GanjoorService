@@ -576,6 +576,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.StartConvertingOriginalImagesToWebp">
+            <summary>
+            convert original images to webp
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.ArtifactController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -9002,6 +9008,12 @@
             delete a reported user note (accept the complaint)
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartConvertingOriginalImagesToWebp">
+            <summary>
+            convert original images to webp
+            </summary>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IDonationService">
