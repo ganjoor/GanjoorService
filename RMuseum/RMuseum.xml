@@ -9933,6 +9933,15 @@
             <summary>
             IArtifactService implementation
             </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartConvertingOriginalImagesToWebp">
+            <summary>
+            convert original images to webp
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartFillingGanjoorLinkOriginalSources">
             <summary>
