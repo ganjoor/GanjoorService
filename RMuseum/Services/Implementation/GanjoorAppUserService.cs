@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Models.GanjoorAudio;
 using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -356,7 +357,6 @@ namespace RMuseum.Services.Implementation
 
             
 
-            List<int> poemsNeededToBeRefreshed = new List<int>();
 
             var bookmarks = await context.UserBookmarks.Where(b => b.RAppUserId == userId).ToListAsync();
             context.RemoveRange(bookmarks);
@@ -367,7 +367,6 @@ namespace RMuseum.Services.Implementation
             await context.SaveChangesAsync();
 
             var recitations = await context.Recitations.Where(r => r.OwnerId == userId).ToListAsync();
-            poemsNeededToBeRefreshed.AddRange(recitations.Select(r => r.GanjoorPostId).ToList());
             context.RemoveRange(recitations);
             await context.SaveChangesAsync();
 
@@ -381,11 +380,19 @@ namespace RMuseum.Services.Implementation
             await context.SaveChangesAsync();
 
             var comments = await context.GanjoorComments.Where(c => c.UserId == userId).ToListAsync();
-            poemsNeededToBeRefreshed.AddRange(comments.Select(c => c.PoemId).ToList());
             foreach (var comment in comments)
             {
                 //await _ganjoorService.DeleteMyComment(userId, comment.Id);/*had error in service initializtion, so done it in the dirty way*/
                 await _DeleteComment(context, comment.Id);
+            }
+
+            var recitationsVotes = await context.RecitationUserUpVotes.Where(c => c.UserId == userId).ToListAsync();
+            foreach (var vote in recitationsVotes)
+            {
+                int poemId = await context.Recitations.AsNoTracking().Where(r => r.Id == vote.RecitationId).Select(r => r.GanjoorPostId).SingleAsync();
+                context.Remove(vote);
+                await context.SaveChangesAsync();
+                await _ReOrderPoemRecitationsAsync(context, poemId);
             }
 
 
@@ -412,11 +419,37 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<bool>(true);
         }
 
-
-
         private async Task<List<GanjoorComment>> _FindReplies(RMuseumDbContext context, GanjoorComment comment)
         {
             return await context.GanjoorComments.Where(c => c.InReplyToId == comment.Id).AsNoTracking().ToListAsync();
+        }
+
+        private async Task _ReOrderPoemRecitationsAsync(RMuseumDbContext context, int poemId)
+        {
+            var recitations =
+                     await context.Recitations
+                         .Where(r => r.ReviewStatus == AudioReviewStatus.Approved && r.GanjoorPostId == poemId)
+                         .OrderByDescending(r => r.Id) //this causes the oldest recirations to become the first one
+                         .ToListAsync();
+
+            for (var i = 0; i < recitations.Count; i++)
+            {
+                var recitation = recitations[i];
+                //audio order is used as a temporary variable in the following line and soon is get replaced by computed value
+                recitation.AudioOrder =
+                    recitations.Count - 1 - i +
+                    await context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == recitation.Id)
+                    .CountAsync(); //this way oldest recitations have an advantage which could be beaten by user ranks over time
+            }
+
+            recitations.Sort((a, b) => a.AudioOrder.CompareTo(b.AudioOrder));
+            for (var i = 0; i < recitations.Count; i++)
+            {
+                recitations[i].AudioOrder = i + 1;
+                context.Update(recitations[i]);
+            }
+
+            await context.SaveChangesAsync();
         }
     }
 }
