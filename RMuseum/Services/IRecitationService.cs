@@ -232,6 +232,29 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> AcceptReportedErrorAsync(int id);
 
         /// <summary>
+        /// reorder poem recitations by user upvotes + being elder score
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ReOrderPoemRecitationsAsync(int poemId);
+
+        /// <summary>
+        /// up vote a recitation
+        /// </summary>
+        /// <param name="id">recitation id</param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> UpVoteRecitationAsync(int id, Guid userId);
+
+        /// <summary>
+        /// revoke recitaion up vote
+        /// </summary>
+        /// <param name="id">recitaion id</param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RevokeUpVoteFromRecitationAsync(int id, Guid userId);
+
+        /// <summary>
         /// Upload Enabled (temporary switch off/on for upload)
         /// </summary>
         bool UploadEnabled { get; }

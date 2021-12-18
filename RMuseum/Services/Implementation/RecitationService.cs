@@ -1874,7 +1874,7 @@ namespace RMuseum.Services.Implementationa
         /// </summary>
         /// <param name="poemId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ReOrderPoemRecitationsBasedOnUpVotesAndHistory(int poemId)
+        public async Task<RServiceResult<bool>> ReOrderPoemRecitationsAsync(int poemId)
         {
             try
             {
@@ -1915,19 +1915,19 @@ namespace RMuseum.Services.Implementationa
         /// <summary>
         /// up vote a recitation
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">recitation id</param>
         /// <param name="userId"></param>
         /// <returns></returns>
         public async Task<RServiceResult<bool>> UpVoteRecitationAsync(int id, Guid userId)
         {
             try
             {
-                var existingVote = await _context.RecitationUserUpVotes.Where(r => r.RecitationId == id && r.UserId == userId).SingleOrDefaultAsync();
+                var existingVote = await _context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == id && r.UserId == userId).SingleOrDefaultAsync();
                 if(existingVote != null)
                 {
                     return new RServiceResult<bool>(false, "شما پیش‌تر به این خوانش رأی داده‌اید.");
                 }
-                var recitation = await _context.Recitations.Where(r => r.Id == id).SingleOrDefaultAsync();
+                var recitation = await _context.Recitations.AsNoTracking().Where(r => r.Id == id).SingleOrDefaultAsync();
                 if(recitation == null)
                 {
                     return new RServiceResult<bool>(false, "خوانشی با این شناسه وجود ندارد.");
@@ -1951,7 +1951,37 @@ namespace RMuseum.Services.Implementationa
                 _context.RecitationUserUpVotes.Add(vote);
                 await _context.SaveChangesAsync();
 
-                await ReOrderPoemRecitationsBasedOnUpVotesAndHistory(recitation.GanjoorPostId);
+                await ReOrderPoemRecitationsAsync(recitation.GanjoorPostId);
+
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// revoke recitaion up vote
+        /// </summary>
+        /// <param name="id">recitaion id</param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> RevokeUpVoteFromRecitationAsync(int id, Guid userId)
+        {
+            try
+            {
+                var vote = await _context.RecitationUserUpVotes.Where(r => r.RecitationId == id && r.UserId == userId).SingleOrDefaultAsync();
+                if (vote == null)
+                {
+                    return new RServiceResult<bool>(false, "شما پیش‌تر به این خوانش رأی نداده‌اید.");
+                }
+                var recitation = await _context.Recitations.AsNoTracking().Where(r => r.Id == id).SingleOrDefaultAsync();
+                _context.Remove(vote);
+                await _context.SaveChangesAsync();
+
+                await ReOrderPoemRecitationsAsync(recitation.GanjoorPostId);
 
                 return new RServiceResult<bool>(true);
 
