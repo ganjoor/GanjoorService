@@ -1796,12 +1796,6 @@
             <param name="artistName"></param>
             <returns>number of transfered items</returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.MakeFFRecitationsFirst">
-            <summary>
-            Makes recitations of فریدون فرح‌اندوز first recitations
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetSynchronizationQueue">
             <summary>
             Synchronization Queue
