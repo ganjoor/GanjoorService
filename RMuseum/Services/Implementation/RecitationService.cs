@@ -1870,6 +1870,49 @@ namespace RMuseum.Services.Implementationa
         }
 
         /// <summary>
+        /// reorder poem recitations by user upvotes + being elder score
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ReOrderPoemRecitationsBasedOnUpVotesAndHistory(int poemId)
+        {
+            try
+            {
+                var recitations = 
+                    await _context.Recitations
+                        .Where(r => r.ReviewStatus == AudioReviewStatus.Approved && r.GanjoorPostId == poemId)
+                        .OrderByDescending(r => r.Id) //this causes the oldest recirations to become the first one
+                        .ToListAsync();
+
+                for (var i = 0; i< recitations.Count; i++)
+                {
+                    var recitation = recitations[i];
+                    //audio order is used as a temporary variable in the following line and soon is get replaced by computed value
+                    recitation.AudioOrder = 
+                        recitations.Count - 1 - i +
+                        await _context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == recitation.Id)
+                        .CountAsync(); //this way oldest recitations have an advantage which could be beaten by user ranks over time
+                }
+
+                recitations.Sort((a, b) => a.AudioOrder.CompareTo(b.AudioOrder));
+                for (var i = 0; i < recitations.Count; i++)
+                {
+                    recitations[i].AudioOrder = i + 1;
+                    _context.Update(recitations[i]);
+                }
+
+                await _context.SaveChangesAsync();
+
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// up vote a recitation
         /// </summary>
         /// <param name="id"></param>
@@ -1908,7 +1951,7 @@ namespace RMuseum.Services.Implementationa
                 _context.RecitationUserUpVotes.Add(vote);
                 await _context.SaveChangesAsync();
 
-                //TODO compute new order for poem recitations here
+                await ReOrderPoemRecitationsBasedOnUpVotesAndHistory(recitation.GanjoorPostId);
 
                 return new RServiceResult<bool>(true);
 

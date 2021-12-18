@@ -12515,6 +12515,21 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.ReOrderPoemRecitationsBasedOnUpVotesAndHistory(System.Int32)">
+            <summary>
+            reorder poem recitations by user upvotes + being elder score
+            </summary>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.UpVoteRecitationAsync(System.Int32,System.Guid)">
+            <summary>
+            up vote a recitation
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementationa.RecitationService.UploadEnabled">
             <summary>
             Upload Enabled (temporary switch off/on for upload)
