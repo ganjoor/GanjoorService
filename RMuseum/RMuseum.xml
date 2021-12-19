@@ -956,6 +956,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserPoemRecitationsUpVotes(System.Int32)">
+            <summary>
+            get user up votes for the recitations of a poem
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemImages(System.Int32)">
             <summary>
              get poem images  (PlainText/HtmlText are intentionally empty)
@@ -4092,6 +4099,21 @@
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.FinishDate">
             <summary>
             Finish Date
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationUserUpVoteViewModel">
+            <summary>
+            recitation user up vote
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationUserUpVoteViewModel.Id">
+            <summary>
+            reciation id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationUserUpVoteViewModel.UpVote">
+            <summary>
+            up vote
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationVerseSync">
@@ -9292,6 +9314,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUserPoemRecitationsUpVotes(System.Int32,System.Guid)">
+            <summary>
+            get user up votes for the recitations of a poem
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemImages(System.Int32)">
             <summary>
             get poem images by id (some fields are intentionally field with blank or null),
@@ -11355,6 +11385,14 @@
             get poem recitations  (PlainText/HtmlText are intentionally empty)
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserPoemRecitationsUpVotes(System.Int32,System.Guid)">
+            <summary>
+            get user up votes for the recitations of a poem
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemComments(System.Int32,System.Guid,System.Nullable{System.Int32})">

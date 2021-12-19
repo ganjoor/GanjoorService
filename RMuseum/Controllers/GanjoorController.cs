@@ -804,6 +804,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get user up votes for the recitations of a poem
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/{id}/recitations/upvotes")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RecitationUserUpVoteViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetUserPoemRecitationsUpVotes(int id)
+        {
+            var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<RecitationUserUpVoteViewModel[]> res =
+                await _ganjoorService.GetUserPoemRecitationsUpVotes(id, loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         ///  get poem images  (PlainText/HtmlText are intentionally empty)
         /// </summary>
         /// <param name="id"></param>

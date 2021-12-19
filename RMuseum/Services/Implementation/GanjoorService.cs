@@ -550,6 +550,38 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<PublicRecitationViewModel[]>(await source.AsNoTracking().ToArrayAsync());
         }
 
+        /// <summary>
+        /// get user up votes for the recitations of a poem
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RecitationUserUpVoteViewModel[]>> GetUserPoemRecitationsUpVotes(int id, Guid userId)
+        {
+            var source =
+                 from audio in _context.Recitations
+                 join poem in _context.GanjoorPoems
+                 on audio.GanjoorPostId equals poem.Id
+                 where
+                 audio.ReviewStatus == AudioReviewStatus.Approved
+                 &&
+                 poem.Id == id
+                 orderby audio.AudioOrder
+                 select new RecitationUserUpVoteViewModel
+                 {
+                     Id = audio.Id
+                 };
+                    
+            var recitationUpVotes = await source.ToArrayAsync();
+            foreach (var recitationUpVote in recitationUpVotes)
+            {
+                recitationUpVote.UpVote =
+                    await _context.RecitationUserUpVotes.Where(v => v.RecitationId == recitationUpVote.Id && v.UserId == userId).AnyAsync();
+            }
+
+            return new RServiceResult<RecitationUserUpVoteViewModel[]>(recitationUpVotes);
+        }
+
         private async Task _FillPoemCoupletIndices(RMuseumDbContext context, int poemId)
         {
             var verses = await context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();

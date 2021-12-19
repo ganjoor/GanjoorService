@@ -124,6 +124,14 @@ namespace RMuseum.Services
         Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemRecitations(int id);
 
         /// <summary>
+        /// get user up votes for the recitations of a poem
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RecitationUserUpVoteViewModel[]>> GetUserPoemRecitationsUpVotes(int id, Guid userId);
+
+        /// <summary>
         /// get poem images by id (some fields are intentionally field with blank or null),
         /// EntityImageId : the most important data field, image url is {WebServiceUrl.Url}/api/images/thumb/{EntityImageId}.jpg or {WebServiceUrl.Url}/api/images/norm/{EntityImageId}.jpg
         /// </summary>
