@@ -1267,11 +1267,11 @@ ol {
 }
 
 .recitation-novote::after {
-    content: 'favorite_border';
+    content: 'thumb_up_off_alt';
 }
 
 .recitation-vote::after {
-    content: 'favorite';
+    content: 'thumb_up_alt';
 }
 
 
