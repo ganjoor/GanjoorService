@@ -55,6 +55,7 @@ namespace RMuseum.Services.Implementation
             builder.AppendLine("    </itunes:category>");
             builder.AppendLine("    <itunes:explicit>clean</itunes:explicit>");
             builder.AppendLine("    <itunes:owner><itunes:name>گنجور</itunes:name><itunes:email>ganjoor+avarss@ganjoor.net</itunes:email></itunes:owner>");
+            builder.AppendLine("    <itunes:image href=\"https://ganjoor.net/image/rss.png\" />");
 
             foreach (PublicRecitationViewModel recitation in recitations)
             {
