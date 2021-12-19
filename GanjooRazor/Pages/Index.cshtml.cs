@@ -199,9 +199,12 @@ namespace GanjooRazor.Pages
         {
             return new _AudioPlayerPartialModel()
             {
+                LoggedIn = LoggedIn,
                 Recitations = recitations
             };
         }
+
+        
 
         public async Task<ActionResult> OnPostReply(string replyCommentText, int refPoemId, int refCommentId)
         {
@@ -832,6 +835,21 @@ namespace GanjooRazor.Pages
                 }
             }
             return new OkObjectResult(false);
+        }
+
+        public async Task<ActionResult> OnPostSwitchRecitationUpVoteAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    return new OkObjectResult(true);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ namespace GanjooRazor.Pages
 {
     public class _AudioPlayerPartialModel : PageModel
     {
+        public bool LoggedIn { get; set; }
         public PublicRecitationViewModel[] Recitations { get; set; }
 
         public string getAudioDesc(PublicRecitationViewModel recitation, bool contributionLink = false)

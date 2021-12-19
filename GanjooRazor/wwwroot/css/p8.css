@@ -1266,6 +1266,15 @@ ol {
     content: 'lock';
 }
 
+.recitation-novote::after {
+    content: 'favorite_border';
+}
+
+.recitation-vote::after {
+    content: 'favorite';
+}
+
+
 audio{
     width:100%;
 }

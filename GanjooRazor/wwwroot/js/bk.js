@@ -836,3 +836,30 @@ function switch_section(sectionId, buttonId){
         document.getElementById(buttonId).style.transform = 'none';
     }
 }
+
+function switchRecitationVote(recitationId) {
+    $.ajax({
+        type: "POST",
+        url: '?Handler=SwitchRecitationUpVote',
+        data: {
+            id: recitationId
+        },
+        success: function (upVote) {
+            if (upVote) {
+                document.getElementById('recitaion-' + String(recitationId)).classList.remove('recitation-novote');
+                document.getElementById('recitaion-' + String(recitationId)).classList.add('recitation-vote');
+            }
+            else {
+                document.getElementById('recitaion-' + String(recitationId)).classList.remove('recitation-vote');
+                document.getElementById('recitaion-' + String(recitationId)).classList.add('recitation-novote');
+            }
+            
+        },
+        error: function (e) {
+            if (e.responseText == null)
+                alert(e);
+            else
+                alert(e.responseText);
+        },
+    });
+}
