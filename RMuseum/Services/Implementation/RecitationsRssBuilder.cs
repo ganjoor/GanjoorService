@@ -46,7 +46,7 @@ namespace RMuseum.Services.Implementation
             builder.AppendLine("    <sy:updatePeriod>hourly</sy:updatePeriod>");
             builder.AppendLine("    <sy:updateFrequency>1</sy:updateFrequency>");
             builder.AppendLine("    <image>");
-            builder.AppendLine("        <url>https://i.ganjoor.net/gm.gif</url>");
+            builder.AppendLine("        <url>https://ganjoor.net/image/rss.png</url>");
             builder.AppendLine("        <title>خوانش‌های گنجور</title>");
             builder.AppendLine("        <link>http://ava.ganjoor.net</link>");
             builder.AppendLine("    </image>");
@@ -55,6 +55,7 @@ namespace RMuseum.Services.Implementation
             builder.AppendLine("    </itunes:category>");
             builder.AppendLine("    <itunes:explicit>clean</itunes:explicit>");
             builder.AppendLine("    <itunes:owner><itunes:name>گنجور</itunes:name><itunes:email>ganjoor+avarss@ganjoor.net</itunes:email></itunes:owner>");
+            builder.AppendLine("    <itunes:image href=\"https://ganjoor.net/image/rss.png\" />");
 
             foreach (PublicRecitationViewModel recitation in recitations)
             {
