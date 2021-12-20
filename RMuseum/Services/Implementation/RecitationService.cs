@@ -1890,7 +1890,7 @@ namespace RMuseum.Services.Implementationa
                     //audio order is used as a temporary variable in the following line and soon is get replaced by computed value
                     recitation.AudioOrder = 
                         recitations.Count - 1 - i +
-                        await _context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == recitation.Id)
+                        await _context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == recitation.Id && r.UserId != recitation.OwnerId)
                         .CountAsync(); //this way oldest recitations have an advantage which could be beaten by user ranks over time
                 }
 
@@ -1931,10 +1931,6 @@ namespace RMuseum.Services.Implementationa
                 if(recitation == null)
                 {
                     return new RServiceResult<bool>(false, "خوانشی با این شناسه وجود ندارد.");
-                }
-                if(recitation.OwnerId == userId)
-                {
-                    return new RServiceResult<bool>(false, "شما نمی‌توانید به خوانش خودتان رأی بدهید.");
                 }
                 if(recitation.ReviewStatus != AudioReviewStatus.Approved)
                 {
