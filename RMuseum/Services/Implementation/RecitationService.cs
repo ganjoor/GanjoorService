@@ -2022,6 +2022,49 @@ namespace RMuseum.Services.Implementationa
         }
 
         /// <summary>
+        /// get user upvoted recitations
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>> GetUserUpvotedRecitationsAsync(PagingParameterModel paging, Guid userId)
+        {
+            var source =
+                 from upvote in _context.RecitationUserUpVotes.AsNoTracking().Include(u => u.Recitation)
+                 join poem in _context.GanjoorPoems
+                 on upvote.Recitation.GanjoorPostId equals poem.Id
+                 where
+                 upvote.UserId == userId
+                 orderby upvote.DateTime descending
+                 select new PublicRecitationViewModel()
+                 {
+                     Id = upvote.Recitation.Id,
+                     PoemId = poem.Id,
+                     PoemFullTitle = poem.FullTitle,
+                     PoemFullUrl = poem.FullUrl,
+                     AudioTitle = upvote.Recitation.AudioTitle,
+                     AudioArtist = upvote.Recitation.AudioArtist,
+                     AudioArtistUrl = upvote.Recitation.AudioArtistUrl,
+                     AudioSrc = upvote.Recitation.AudioSrc,
+                     AudioSrcUrl = upvote.Recitation.AudioSrcUrl,
+                     LegacyAudioGuid = upvote.Recitation.LegacyAudioGuid,
+                     Mp3FileCheckSum = upvote.Recitation.Mp3FileCheckSum,
+                     Mp3SizeInBytes = upvote.Recitation.Mp3SizeInBytes,
+                     PublishDate = upvote.Recitation.ReviewDate,
+                     FileLastUpdated = upvote.Recitation.FileLastUpdated,
+                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{upvote.Recitation.Id}.mp3",
+                     XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{upvote.Recitation.Id}",
+                     PlainText = poem.PlainText,
+                     HtmlText = poem.HtmlText
+                 };
+
+            (PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items) paginatedResult =
+                await QueryablePaginator<PublicRecitationViewModel>.Paginate(source, paging);
+
+            return new RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>(paginatedResult);
+        }
+
+        /// <summary>
         /// Upload Enabled (temporary switch off/on for upload)
         /// </summary>
         public bool UploadEnabled

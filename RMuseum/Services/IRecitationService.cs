@@ -263,6 +263,14 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> SwitchRecitationUpVoteAsync(int id, Guid userId);
 
         /// <summary>
+        /// get user upvoted recitations
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>> GetUserUpvotedRecitationsAsync(PagingParameterModel paging, Guid userId);
+
+        /// <summary>
         /// Upload Enabled (temporary switch off/on for upload)
         /// </summary>
         bool UploadEnabled { get; }

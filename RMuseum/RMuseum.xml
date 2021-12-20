@@ -1852,6 +1852,20 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.SwitchRecitationUpVoteAsync(System.Int32)">
+            <summary>
+            revoke recitaion up vote
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetUserUpvotedRecitationsAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get user upvoted recitations
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.RecitationController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12584,6 +12598,22 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.SwitchRecitationUpVoteAsync(System.Int32,System.Guid)">
+            <summary>
+            switches recitation upvote
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <returns>upvote status</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetUserUpvotedRecitationsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+            <summary>
+            get user upvoted recitations
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementationa.RecitationService.UploadEnabled">
             <summary>
             Upload Enabled (temporary switch off/on for upload)
@@ -12977,6 +13007,22 @@
             revoke recitaion up vote
             </summary>
             <param name="id">recitaion id</param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.SwitchRecitationUpVoteAsync(System.Int32,System.Guid)">
+            <summary>
+            switches recitation upvote
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <returns>upvote status</returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetUserUpvotedRecitationsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+            <summary>
+            get user upvoted recitations
+            </summary>
+            <param name="paging"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>
