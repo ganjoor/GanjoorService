@@ -1993,6 +1993,39 @@ namespace RMuseum.Services.Implementationa
         }
 
         /// <summary>
+        /// switches recitation upvote
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns>upvote status</returns>
+        public async Task<RServiceResult<bool>> SwitchRecitationUpVoteAsync(int id, Guid userId)
+        {
+            try
+            {
+                var vote = await _context.RecitationUserUpVotes.Where(r => r.RecitationId == id && r.UserId == userId).SingleOrDefaultAsync();
+                if (vote == null)
+                {
+                    return await UpVoteRecitationAsync(id, userId);
+                }
+                else
+                {
+                    var res = await RevokeUpVoteFromRecitationAsync(id, userId);
+                    if (!string.IsNullOrEmpty(res.ExceptionString))
+                        return res;
+                    if (res.Result)
+                        return new RServiceResult<bool>(false);//actually this method should return upvote status, so FALSE is the valid result in this situation
+                }
+
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Upload Enabled (temporary switch off/on for upload)
         /// </summary>
         public bool UploadEnabled

@@ -255,6 +255,14 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> RevokeUpVoteFromRecitationAsync(int id, Guid userId);
 
         /// <summary>
+        /// switches recitation upvote
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns>upvote status</returns>
+        Task<RServiceResult<bool>> SwitchRecitationUpVoteAsync(int id, Guid userId);
+
+        /// <summary>
         /// Upload Enabled (temporary switch off/on for upload)
         /// </summary>
         bool UploadEnabled { get; }
