@@ -837,6 +837,24 @@ namespace GanjooRazor.Pages
             return new OkObjectResult(false);
         }
 
+        public async Task<IActionResult> OnGetGetUserUpvotedRecitationsAsync(int poemId)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/recitations/upvotes");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    var res = JsonConvert.DeserializeObject<RecitationUserUpVoteViewModel[]>(await response.Content.ReadAsStringAsync());
+                    return new OkObjectResult(res);
+                }
+            }
+            return new OkObjectResult("کاربر وارد سیستم نشده است یا مشکل دیگری دارد.");
+        }
+
         public async Task<ActionResult> OnPostSwitchRecitationUpVoteAsync(int id)
         {
             using (HttpClient secureClient = new HttpClient())

@@ -204,9 +204,6 @@
     </script>
 
 
-
-
-
     @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
     {
         <script>
@@ -221,6 +218,16 @@
             ga('send', 'pageview');
 
         </script>
+    }
+
+    @if(Model.LoggedIn && Model.IsPoemPage)
+    {
+        if(Model.GanjoorPage.Poem.Recitations.Length > 0)
+        {
+            <script>
+                MarkUserUpvotedRecitations(@Model.GanjoorPage.Id);
+            </script>
+        }
     }
 
 </body>
