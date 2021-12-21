@@ -852,7 +852,7 @@ namespace GanjooRazor.Pages
                     return new OkObjectResult(res);
                 }
             }
-            return new OkObjectResult("کاربر وارد سیستم نشده است یا مشکل دیگری دارد.");
+            return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
         public async Task<ActionResult> OnPostSwitchRecitationUpVoteAsync(int id)
@@ -861,7 +861,14 @@ namespace GanjooRazor.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    return new OkObjectResult(true);
+                    HttpResponseMessage response = await secureClient.PutAsync(
+                        $"{APIRoot.Url}/api/audio/vote/switch/{id}", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                    return new OkObjectResult(res);
                 }
                 else
                 {
