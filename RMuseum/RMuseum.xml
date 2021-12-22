@@ -1866,6 +1866,13 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.ComputePoemRecitationsOrdersAsync(System.Int32)">
+            <summary>
+            compute poem recitations order (no update)
+            </summary>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.RecitationController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -4038,6 +4045,41 @@
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel.Message">
             <summary>
             Rejection Message
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationOrderingViewModel">
+            <summary>
+            Recitation Ordering View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationOrderingViewModel.RecitationId">
+            <summary>
+            recitation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationOrderingViewModel.EarlynessAdvantage">
+            <summary>
+            earlyness advatage
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationOrderingViewModel.UpVotes">
+            <summary>
+            upvotes from users other than the owner
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationOrderingViewModel.Mistakes">
+            <summary>
+            approved mistaked
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationOrderingViewModel.TotalScores">
+            <summary>
+            total scores
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationOrderingViewModel.ComputedOrder">
+            <summary>
+            computed order
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel">
@@ -12560,11 +12602,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.ReOrderPoemRecitationsAsync(System.Int32)">
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.ComputePoemRecitationsOrdersAsync(System.Int32,System.Boolean)">
             <summary>
-            reorder poem recitations by user upvotes + being elder score
+            compute poem recitations order
             </summary>
             <param name="poemId"></param>
+            <param name="update"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.UpVoteRecitationAsync(System.Int32,System.Guid)">
@@ -12972,11 +13015,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IRecitationService.ReOrderPoemRecitationsAsync(System.Int32)">
+        <member name="M:RMuseum.Services.IRecitationService.ComputePoemRecitationsOrdersAsync(System.Int32,System.Boolean)">
             <summary>
-            reorder poem recitations by user upvotes + being elder score
+            compute poem recitations order
             </summary>
             <param name="poemId"></param>
+            <param name="update"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.UpVoteRecitationAsync(System.Int32,System.Guid)">

@@ -283,8 +283,8 @@ namespace RMuseum.Services.Implementation
                                                     page.Tags = new RTagValue[] { tag };
 
                                                     string imageUrlPart = $"{pageIndex}".PadLeft(4, '0');
-                                                    //string imageUrl = $"https://tile.loc.gov/image-services/iiif/service:amed:{resourcePrefix}:{resourceNumber}:{imageUrlPart}/full/pct:100/0/default.jpg";
-                                                    string imageUrl = $"https://tile.loc.gov/image-services/iiif/service:rbc:{resourcePrefix}:2015:{resourceNumber}:{imageUrlPart}/full/pct:100/0/default.jpg";
+                                                    string imageUrl = $"https://tile.loc.gov/image-services/iiif/service:amed:{resourcePrefix}:{resourceNumber}:{imageUrlPart}/full/pct:100/0/default.jpg";
+                                                    //string imageUrl = $"https://tile.loc.gov/image-services/iiif/service:rbc:{resourcePrefix}:2015:{resourceNumber}:{imageUrlPart}/full/pct:100/0/default.jpg";
                                                     /*
                                                     List<string> list = segment.SelectToken("image_url").ToObject<List<string>>();
                                                     if (list != null && list.Count > 0)
