@@ -958,7 +958,7 @@
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetUserPoemRecitationsUpVotes(System.Int32)">
             <summary>
-            get user up votes for the recitations of a poem
+            get user upvoted recitations of a poem
             </summary>
             <param name="id"></param>
             <returns></returns>
@@ -4113,21 +4113,6 @@
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel.FinishDate">
             <summary>
             Finish Date
-            </summary>
-        </member>
-        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationUserUpVoteViewModel">
-            <summary>
-            recitation user up vote
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationUserUpVoteViewModel.Id">
-            <summary>
-            reciation id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationUserUpVoteViewModel.UpVote">
-            <summary>
-            up vote
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationVerseSync">

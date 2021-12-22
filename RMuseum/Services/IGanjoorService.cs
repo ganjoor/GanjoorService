@@ -129,7 +129,7 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<RecitationUserUpVoteViewModel[]>> GetUserPoemRecitationsUpVotes(int id, Guid userId);
+        Task<RServiceResult<int[]>> GetUserPoemRecitationsUpVotes(int id, Guid userId);
 
         /// <summary>
         /// get poem images by id (some fields are intentionally field with blank or null),

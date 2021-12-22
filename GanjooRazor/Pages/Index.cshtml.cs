@@ -837,7 +837,7 @@ namespace GanjooRazor.Pages
             return new OkObjectResult(false);
         }
 
-        public async Task<IActionResult> OnGetGetUserUpvotedRecitationsAsync(int poemId)
+        public async Task<IActionResult> OnGetUserUpvotedRecitationsAsync(int poemId)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -848,7 +848,7 @@ namespace GanjooRazor.Pages
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
-                    var res = JsonConvert.DeserializeObject<RecitationUserUpVoteViewModel[]>(await response.Content.ReadAsStringAsync());
+                    var res = JsonConvert.DeserializeObject<int[]>(await response.Content.ReadAsStringAsync());
                     return new OkObjectResult(res);
                 }
             }

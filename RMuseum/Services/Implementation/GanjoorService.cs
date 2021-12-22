@@ -556,7 +556,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="id"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<RecitationUserUpVoteViewModel[]>> GetUserPoemRecitationsUpVotes(int id, Guid userId)
+        public async Task<RServiceResult<int[]>> GetUserPoemRecitationsUpVotes(int id, Guid userId)
         {
             var source =
                  from audio in _context.Recitations
@@ -567,19 +567,19 @@ namespace RMuseum.Services.Implementation
                  &&
                  poem.Id == id
                  orderby audio.AudioOrder
-                 select new RecitationUserUpVoteViewModel
-                 {
-                     Id = audio.Id
-                 };
-                    
-            var recitationUpVotes = await source.ToArrayAsync();
-            foreach (var recitationUpVote in recitationUpVotes)
+                 select audio.Id;
+
+            List<int> upVotedRecitations = new List<int>();
+            var recitationIds = await source.ToArrayAsync();
+            foreach (var recitationId in recitationIds)
             {
-                recitationUpVote.UpVote =
-                    await _context.RecitationUserUpVotes.Where(v => v.RecitationId == recitationUpVote.Id && v.UserId == userId).AnyAsync();
+                if (await _context.RecitationUserUpVotes.Where(v => v.RecitationId == recitationId && v.UserId == userId).AnyAsync())
+                {
+                    upVotedRecitations.Add(recitationId);
+                }
             }
 
-            return new RServiceResult<RecitationUserUpVoteViewModel[]>(recitationUpVotes);
+            return new RServiceResult<int[]>(upVotedRecitations.ToArray());
         }
 
         private async Task _FillPoemCoupletIndices(RMuseumDbContext context, int poemId)

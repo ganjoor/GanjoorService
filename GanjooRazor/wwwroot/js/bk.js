@@ -868,15 +868,13 @@ function MarkUserUpvotedRecitations(poemId) {
     setTimeout(function () {
         $.ajax({
             type: "GET",
-            url: '?Handler=GetUserUpvotedRecitations&poemId=' + String(poemId),
+            url: '?Handler=UserUpvotedRecitations&poemId=' + String(poemId),
             error: function (err) {
                 console.log(err);
             },
             success: function (result) {
                 for (var i = 0; i < result.length; i++) {
-                    if (result[i].upVote) {
-                        document.getElementById('recitaion-' + String(result[i].id)).classList.add('recitation-vote');
-                    }
+                    document.getElementById('recitaion-' + String(result[i])).classList.add('recitation-vote');
                 }
             },
         });
