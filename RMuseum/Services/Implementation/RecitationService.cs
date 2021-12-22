@@ -1882,7 +1882,7 @@ namespace RMuseum.Services.Implementationa
                 var recitations =
                     await _context.Recitations
                         .Where(r => r.ReviewStatus == AudioReviewStatus.Approved && r.GanjoorPostId == poemId)
-                        .OrderByDescending(r => r.Id) //this causes the oldest recirations to become the first one
+                        .OrderBy(r => r.Id) //this causes the oldest recirations to become the first one
                         .ToListAsync();
 
                 List<RecitationOrderingViewModel> scores = new List<RecitationOrderingViewModel>();
