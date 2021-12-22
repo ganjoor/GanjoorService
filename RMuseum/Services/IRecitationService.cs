@@ -232,11 +232,12 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> AcceptReportedErrorAsync(int id);
 
         /// <summary>
-        /// reorder poem recitations by user upvotes + being elder score
+        /// compute poem recitations order
         /// </summary>
         /// <param name="poemId"></param>
+        /// <param name="update"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> ReOrderPoemRecitationsAsync(int poemId);
+        Task<RServiceResult<RecitationOrderingViewModel[]>> ComputePoemRecitationsOrdersAsync(int poemId, bool update = true);
 
         /// <summary>
         /// up vote a recitation

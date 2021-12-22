@@ -973,6 +973,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// compute poem recitations order (no update)
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        [HttpGet("votes/{poemId}/scores")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RecitationOrderingViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ComputePoemRecitationsOrdersAsync(int poemId)
+        {
+            var res = await _audioService.ComputePoemRecitationsOrdersAsync(poemId, false);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode
