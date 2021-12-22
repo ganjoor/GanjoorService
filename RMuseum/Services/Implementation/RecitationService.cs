@@ -1882,7 +1882,7 @@ namespace RMuseum.Services.Implementationa
                 var recitations =
                     await _context.Recitations
                         .Where(r => r.ReviewStatus == AudioReviewStatus.Approved && r.GanjoorPostId == poemId)
-                        .OrderByDescending(r => r.Id) //this causes the oldest recirations to become the first one
+                        .OrderBy(r => r.Id) //this causes the oldest recirations to become the first one
                         .ToListAsync();
 
                 List<RecitationOrderingViewModel> scores = new List<RecitationOrderingViewModel>();
@@ -1910,7 +1910,7 @@ namespace RMuseum.Services.Implementationa
                     scores.Add(score);
                 }
 
-                recitations.Sort((a, b) => a.AudioOrder.CompareTo(b.AudioOrder));
+                recitations.Sort((a, b) => b.AudioOrder.CompareTo(a.AudioOrder));
                 for (var i = 0; i < recitations.Count; i++)
                 {
                     recitations[i].AudioOrder = i + 1;
