@@ -36,7 +36,7 @@
                     {
                         <div class="recitaion-mistake">
                             <p>
-                                @mistake.Mistake
+                                @Html.Raw(mistake.Mistake.Replace("\r\n", "<br />"))
                             </p>
                         </div>
                     }
