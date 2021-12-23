@@ -1739,7 +1739,9 @@ namespace RMuseum.Services.Implementationa
                     RecitationId = report.RecitationId,
                     ReasonText = report.ReasonText,
                     ReporterId = userId,
-                    DateTime = DateTime.Now
+                    DateTime = DateTime.Now,
+                    NumberOfLinesAffected = report.NumberOfLinesAffected,
+                    CoupletIndex = report.CoupletIndex
                 };
 
                 _context.RecitationErrorReports.Add(dbModel);
@@ -1774,7 +1776,9 @@ namespace RMuseum.Services.Implementationa
                      ReasonText = report.ReasonText,
                      RecitationId = report.RecitationId,
                      Recitation = new RecitationViewModel(report.Recitation, report.Recitation.Owner, poem),
-                     DateTime = report.DateTime
+                     DateTime = report.DateTime,
+                     NumberOfLinesAffected = report.NumberOfLinesAffected,
+                     CoupletIndex = report.CoupletIndex
                  };
 
             (PaginationMetadata PagingMeta, RecitationErrorReportViewModel[] Items) paginatedResult =
@@ -1896,7 +1900,7 @@ namespace RMuseum.Services.Implementationa
                         EarlynessAdvantage = recitations.Count - 1 - i,
                         UpVotes = await _context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == recitation.Id && r.UserId != recitation.OwnerId)
                         .CountAsync(),
-                        Mistakes = 0
+                        Mistakes = await _context.RecitationApprovedMistakes.AsNoTracking().Where(m => m.RecitationId == recitation.Id).SumAsync(m => m.NumberOfLinesAffected)
                     };
                     
 

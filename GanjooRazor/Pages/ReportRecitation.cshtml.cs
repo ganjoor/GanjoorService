@@ -62,6 +62,8 @@ namespace GanjooRazor.Pages
             Report = new RecitationErrorReportViewModel()
             {
                 ReasonText = "",
+                NumberOfLinesAffected = 1,
+                CoupletIndex = 0,
             };
 
             if (!string.IsNullOrEmpty(Request.Query["a"]))
