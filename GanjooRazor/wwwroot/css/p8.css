@@ -1274,7 +1274,29 @@ ol {
     content: 'thumb_up_alt';
 }
 
-
 audio{
     width:100%;
+}
+
+.recitaion-mistakes-header {
+    clear: both;
+    font-size: 0.8em;
+    text-align: center;
+    color: white;
+    background-color: darkred;
+    display: block;
+    text-align: center;
+    margin: 20px;
+    border-radius: 20px;
+    border-color: #300;
+    border-style: solid;
+    border-width: 3px;
+}
+
+.recitaion-mistake {
+    font-size: 0.8em;
+    width: 90%;
+    margin: auto;
+    text-align: center;
+    border-style: dotted;
 }
