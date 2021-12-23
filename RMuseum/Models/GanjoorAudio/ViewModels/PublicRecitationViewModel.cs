@@ -97,5 +97,10 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// </summary>
         public string HtmlText { get; set; }
 
+        /// <summary>
+        /// mistakes
+        /// </summary>
+        public RecitationMistakeViewModel[] Mistakes { get; set; }
+
     }
 }

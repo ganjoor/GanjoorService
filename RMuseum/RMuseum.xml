@@ -4059,6 +4059,11 @@
             Poem Html Text
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.Mistakes">
+            <summary>
+            mistakes
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel">
             <summary>
             Post Error Report for recitations
@@ -4097,6 +4102,26 @@
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel.DateTime">
             <summary>
             DateTime
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationMistakeViewModel">
+            <summary>
+            approved mistake view model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationMistakeViewModel.Mistake">
+            <summary>
+            mistake
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationMistakeViewModel.NumberOfLinesAffected">
+            <summary>
+            number of verses affected
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationMistakeViewModel.CoupletIndex">
+            <summary>
+            couplet index
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationModerateViewModel">

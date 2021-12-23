@@ -547,7 +547,20 @@ namespace RMuseum.Services.Implementation
                      PlainText = "", //poem.PlainText 
                      HtmlText = "",//poem.HtmlText
                  };
-            return new RServiceResult<PublicRecitationViewModel[]>(await source.AsNoTracking().ToArrayAsync());
+            var recitations = await source.AsNoTracking().ToArrayAsync();
+            foreach (var recitation in recitations)
+            {
+                recitation.Mistakes =
+                    await _context.RecitationApprovedMistakes.AsNoTracking()
+                          .Where(m => m.RecitationId == recitation.Id)
+                          .Select(m => new RecitationMistakeViewModel()
+                          {
+                              Mistake = m.Mistake,
+                              NumberOfLinesAffected = m.NumberOfLinesAffected,
+                              CoupletIndex = m.CoupletIndex
+                          }).ToArrayAsync();
+            }
+            return new RServiceResult<PublicRecitationViewModel[]>(recitations);
         }
 
         /// <summary>
