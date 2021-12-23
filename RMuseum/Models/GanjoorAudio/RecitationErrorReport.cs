@@ -42,5 +42,15 @@ namespace RMuseum.Models.GanjoorAudio
         /// DateTime
         /// </summary>
         public DateTime DateTime { get; set; }
+
+        /// <summary>
+        /// number of verses affected
+        /// </summary>
+        public int NumberOfLinesAffected { get; set; }
+
+        /// <summary>
+        /// couplet index
+        /// </summary>
+        public int CoupletIndex { get; set; }
     }
 }

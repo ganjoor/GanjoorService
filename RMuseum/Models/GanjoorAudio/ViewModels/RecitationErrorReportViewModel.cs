@@ -27,6 +27,16 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         public RecitationViewModel Recitation { get; set; }
 
         /// <summary>
+        /// number of verses affected
+        /// </summary>
+        public int NumberOfLinesAffected { get; set; }
+
+        /// <summary>
+        /// couplet index
+        /// </summary>
+        public int CoupletIndex { get; set; }
+
+        /// <summary>
         /// DateTime
         /// </summary>
         public DateTime DateTime { get; set; }
