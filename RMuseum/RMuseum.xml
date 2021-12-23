@@ -1833,9 +1833,16 @@
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.AcceptReportedErrorAsync(System.Int32)">
             <summary>
-            accepts a reported error for recitations and notify the reporter and recitation owner (and deletes the report)
+            accepts a reported error for recitations, change status of the recitation to rejected and notify the reporter and recitation owner (and deletes the report)
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.AddReportToTheApprovedMistakesAsync(RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel)">
+            <summary>
+            accepts a reported error for recitations, add mistake to approve the mistake and notify the reporter and recitation owner (and deletes the report)
+            </summary>
+            <param name="report"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.UpVoteRecitationAsync(System.Int32)">
@@ -12662,6 +12669,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.AddReportToTheApprovedMistakesAsync(RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel)">
+            <summary>
+            accepts a reported error for recitations, add mistake to approve the mistake and notify the reporter and recitation owner (and deletes the report)
+            </summary>
+            <param name="report"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.ComputePoemRecitationsOrdersAsync(System.Int32,System.Boolean)">
             <summary>
             compute poem recitations order
@@ -13070,9 +13084,16 @@
         </member>
         <member name="M:RMuseum.Services.IRecitationService.AcceptReportedErrorAsync(System.Int32)">
             <summary>
-            accepts a reported error for recitations and notify the reporter and recitation owner (and deletes the report)
+            accepts a reported error for recitations, change status of the recitation to rejected and notify the reporter and recitation owner (and deletes the report)
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.AddReportToTheApprovedMistakesAsync(RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel)">
+            <summary>
+            accepts a reported error for recitations, add mistake to approve the mistake and notify the reporter and recitation owner (and deletes the report)
+            </summary>
+            <param name="report"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.ComputePoemRecitationsOrdersAsync(System.Int32,System.Boolean)">

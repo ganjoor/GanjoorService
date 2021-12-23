@@ -897,6 +897,15 @@ namespace RMuseum.Services.Implementationa
                                                 existing.FileLastUpdated = session.UploadEndTime;
                                                 existing.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
                                                 context.Recitations.Update(existing);
+
+                                                bool recomputeOrders = false;
+                                                var mistakes = await context.RecitationApprovedMistakes.Where(m => m.RecitationId == existing.Id).ToListAsync();
+                                                if(mistakes.Count > 0)
+                                                {
+                                                    context.RemoveRange(mistakes);
+                                                    recomputeOrders = true;
+                                                }
+
                                                 await context.SaveChangesAsync();
 
                                                 await new RNotificationService(context).PushNotification
@@ -906,6 +915,11 @@ namespace RMuseum.Services.Implementationa
                                                     $"خوانش ارسالی {existing.AudioTitle} منتشر شد.{Environment.NewLine}" +
                                                     $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={existing.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
                                                 );
+
+                                                if(recomputeOrders)
+                                                {
+                                                    await _ComputePoemRecitationsOrdersAsync(context, existing.GanjoorPostId, true);
+                                                }
 
                                             }
                                         }
@@ -1939,10 +1953,15 @@ namespace RMuseum.Services.Implementationa
         /// <returns></returns>
         public async Task<RServiceResult<RecitationOrderingViewModel[]>> ComputePoemRecitationsOrdersAsync(int poemId, bool update = true)
         {
+            return await _ComputePoemRecitationsOrdersAsync(_context, poemId, update);
+        }
+
+        public async Task<RServiceResult<RecitationOrderingViewModel[]>> _ComputePoemRecitationsOrdersAsync(RMuseumDbContext context, int poemId, bool update)
+        {
             try
             {
                 var recitations =
-                    await _context.Recitations
+                    await context.Recitations
                         .Where(r => r.ReviewStatus == AudioReviewStatus.Approved && r.GanjoorPostId == poemId)
                         .OrderBy(r => r.Id) //this causes the oldest recirations to become the first one
                         .ToListAsync();
@@ -1956,9 +1975,9 @@ namespace RMuseum.Services.Implementationa
                     {
                         RecitationId = recitation.Id,
                         EarlynessAdvantage = recitations.Count - 1 - i,
-                        UpVotes = await _context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == recitation.Id && r.UserId != recitation.OwnerId)
+                        UpVotes = await context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == recitation.Id && r.UserId != recitation.OwnerId)
                         .CountAsync(),
-                        Mistakes = await _context.RecitationApprovedMistakes.AsNoTracking().Where(m => m.RecitationId == recitation.Id).SumAsync(m => m.NumberOfLinesAffected)
+                        Mistakes = await context.RecitationApprovedMistakes.AsNoTracking().Where(m => m.RecitationId == recitation.Id).SumAsync(m => m.NumberOfLinesAffected)
                     };
                     
 
@@ -1981,13 +2000,13 @@ namespace RMuseum.Services.Implementationa
 
                     if (update)
                     {
-                        _context.Update(recitations[i]);
+                        context.Update(recitations[i]);
                     }
                     
                 }
 
                 if (update)
-                    await _context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
 
 
                 return new RServiceResult<RecitationOrderingViewModel[]>(scores.ToArray());
