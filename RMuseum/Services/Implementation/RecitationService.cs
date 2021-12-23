@@ -1921,7 +1921,7 @@ namespace RMuseum.Services.Implementationa
                     (Guid)reporterUserId,
                     "پذیرش گزارش خطای خوانش",
                     $"گزارش خطای ارسالی شما برای خوانش {recitation.AudioTitle} از {recitation.AudioArtist} بررسی شد و مورد پذیرش قرار گرفت.{Environment.NewLine}" +
-                    $"خوانش یاد شده از حالت انتشار خارج شده است."
+                    $"خطای گزارش شده توسط شما روی سایت به کاربران نمایش داده می‌شود."
                 );
                 }
 
