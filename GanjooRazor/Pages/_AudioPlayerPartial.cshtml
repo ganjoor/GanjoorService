@@ -36,6 +36,10 @@
                     {
                         <div class="recitaion-mistake">
                             <p>
+                                @if(mistake.CoupletIndex != -1)
+                                {
+                                    <a href="@($"#bn{mistake.CoupletIndex + 1}")">#</a>
+                                }
                                 @Html.Raw(mistake.Mistake.Replace("\r\n", "<br />"))
                             </p>
                         </div>
