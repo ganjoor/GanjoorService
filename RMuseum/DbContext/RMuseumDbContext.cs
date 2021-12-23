@@ -409,5 +409,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<RecitationUserUpVote> RecitationUserUpVotes { get; set; }
 
+        /// <summary>
+        /// recitation approved mistakes
+        /// </summary>
+        public DbSet<RecitationApprovedMistake> RecitationApprovedMistakes { get; set; }
+
     }
 }

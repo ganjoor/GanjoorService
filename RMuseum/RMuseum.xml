@@ -2329,6 +2329,11 @@
             recitation user up votes
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.RecitationApprovedMistakes">
+            <summary>
+            recitation approved mistakes
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -3693,6 +3698,31 @@
         <member name="P:RMuseum.Models.GanjoorAudio.Recitation.ReviewMsg">
             <summary>
             Review Message
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.RecitationApprovedMistake">
+            <summary>
+            Recitation approved mistake
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationApprovedMistake.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationApprovedMistake.RecitationId">
+            <summary>
+            recitation id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationApprovedMistake.Recitation">
+            <summary>
+            recitation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationApprovedMistake.Mistake">
+            <summary>
+            mistake
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.RecitationErrorReport">
