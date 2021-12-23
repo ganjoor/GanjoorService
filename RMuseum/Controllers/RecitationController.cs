@@ -858,7 +858,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// accepts a reported error for recitations and notify the reporter and recitation owner (and deletes the report)
+        /// accepts a reported error for recitations, change status of the recitation to rejected and notify the reporter and recitation owner (and deletes the report)
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -874,6 +874,34 @@ namespace RMuseum.Controllers
             if (ReadOnlyMode)
                 return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             RServiceResult<bool> res = await _audioService.AcceptReportedErrorAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            if (!res.Result)
+            {
+                return NotFound();
+            }
+            return Ok();
+        }
+
+        /// <summary>
+        /// accepts a reported error for recitations, add mistake to approve the mistake and notify the reporter and recitation owner (and deletes the report)
+        /// </summary>
+        /// <param name="report"></param>
+        /// <returns></returns>
+
+        [HttpPut]
+        [Route("errors/report/save")]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.PublishOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> AddReportToTheApprovedMistakesAsync([FromBody] RecitationErrorReportViewModel report)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            RServiceResult<bool> res = await _audioService.AddReportToTheApprovedMistakesAsync(report);
             if (!string.IsNullOrEmpty(res.ExceptionString))
             {
                 return BadRequest(res.ExceptionString);

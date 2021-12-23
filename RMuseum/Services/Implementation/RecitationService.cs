@@ -1874,6 +1874,64 @@ namespace RMuseum.Services.Implementationa
         }
 
         /// <summary>
+        /// accepts a reported error for recitations, add mistake to approve the mistake and notify the reporter and recitation owner (and deletes the report)
+        /// </summary>
+        /// <param name="report"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> AddReportToTheApprovedMistakesAsync(RecitationErrorReportViewModel report)
+        {
+            try
+            {
+                var dbReport = await _context.RecitationErrorReports.Where(r => r.Id == r.Id).SingleAsync();
+
+                var recitation = await _context.Recitations.AsNoTracking().Where(r => r.Id == dbReport.RecitationId).SingleAsync();
+
+                var mistake = new RecitationApprovedMistake()
+                {
+                    RecitationId = recitation.Id,
+                    Mistake = report.ReasonText,
+                    NumberOfLinesAffected = report.NumberOfLinesAffected,
+                    CoupletIndex = report.CoupletIndex
+                };
+
+                _context.RecitationApprovedMistakes.Add(mistake);
+
+                var reporterUserId = dbReport.ReporterId;
+                _context.RecitationErrorReports.Remove(dbReport);
+                await _context.SaveChangesAsync();
+
+                if (reporterUserId != null)
+                {
+                    await _notificationService.PushNotification
+                (
+                    (Guid)reporterUserId,
+                    "پذیرش گزارش خطای خوانش",
+                    $"گزارش خطای ارسالی شما برای خوانش {recitation.AudioTitle} از {recitation.AudioArtist} بررسی شد و مورد پذیرش قرار گرفت.{Environment.NewLine}" +
+                    $"خوانش یاد شده از حالت انتشار خارج شده است."
+                );
+                }
+
+                await _notificationService.PushNotification
+               (
+                   recitation.OwnerId,
+                   "تأیید خطای خوانش ارسالی",
+                   $"خطایی در خوانش {recitation.AudioTitle} از {recitation.AudioArtist} گزارش و تأیید شده است.{Environment.NewLine}" +
+                   $"اشکال گزارش شده: {dbReport.ReasonText}{Environment.NewLine}" +
+                   $"لطفاً بررسی بفرمایید."
+               );
+
+                await ComputePoemRecitationsOrdersAsync(recitation.GanjoorPostId);
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// compute poem recitations order
         /// </summary>
         /// <param name="poemId"></param>

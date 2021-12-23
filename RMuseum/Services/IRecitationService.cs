@@ -225,11 +225,18 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> RejectReportedErrorAsync(int id, string rejectionNote = "عدم تطابق با معیارهای حذف خوانش");
 
         /// <summary>
-        /// accepts a reported error for recitations and notify the reporter and recitation owner (and deletes the report)
+        /// accepts a reported error for recitations, change status of the recitation to rejected and notify the reporter and recitation owner (and deletes the report)
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> AcceptReportedErrorAsync(int id);
+
+        /// <summary>
+        /// accepts a reported error for recitations, add mistake to approve the mistake and notify the reporter and recitation owner (and deletes the report)
+        /// </summary>
+        /// <param name="report"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> AddReportToTheApprovedMistakesAsync(RecitationErrorReportViewModel report);
 
         /// <summary>
         /// compute poem recitations order
