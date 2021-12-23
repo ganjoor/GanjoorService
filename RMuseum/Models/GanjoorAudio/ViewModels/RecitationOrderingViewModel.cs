@@ -34,5 +34,10 @@
         /// computed order
         /// </summary>
         public int ComputedOrder { get; set; }
+
+        /// <summary>
+        /// recitation (it is null by default and you should fill it using a separate api call based on RecitationId)
+        /// </summary>
+        public PublicRecitationViewModel Recitation { get; set; }
     }
 }

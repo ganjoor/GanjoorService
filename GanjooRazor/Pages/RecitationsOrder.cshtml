@@ -1,0 +1,92 @@
+﻿@page
+@model GanjooRazor.Pages.RecitationsOrderModel
+@using DNTPersianUtils.Core
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>اطلاعات رتبه‌بندی خوانش‌های شعر</title>
+    <link href="/css/p8.css?version=25" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+    <div id="fa">
+        @if (!string.IsNullOrEmpty(Model.LastError))
+        {
+            <div class="width-100per">
+                <div class="width-100per text-align-center">
+                    <p class="alert-text">
+                        @Model.LastError
+                    </p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="poem">
+                <h2>اطلاعات رتبه‌بندی خوانش‌های شعر</h2>
+                <table>
+                    <tr>
+                        <th>
+                            خوانش
+                        </th>
+                        <th>
+                            امتیاز سابقه
+                        </th>
+                        <th>
+                            آرای کاربران *
+                        </th>
+                        <th>
+                            امتیاز منفی اشکالات
+                        </th>
+                        <th>
+                            امتیاز نهایی
+                        </th>
+                        <th>
+                            ترتیب
+                        </th>
+                    </tr>
+                    @foreach (var score in Model.Scores)
+                    {
+                        <tr id="@($"a{score.RecitationId}")">
+                            <td>
+                                @($"{score.Recitation.AudioTitle} به خوانش {score.Recitation.AudioArtist}")
+                            </td>
+                            <td>
+                                @score.EarlynessAdvantage.ToPersianNumbers()
+                            </td>
+                            <td>
+                                @score.UpVotes.ToPersianNumbers()
+                            </td>
+                            <td>
+                                -@score.Mistakes.ToPersianNumbers()
+                            </td>
+                            <td>
+                                @score.TotalScores.ToPersianNumbers()
+                            </td>
+                            <td>
+                                @score.ComputedOrder.ToPersianNumbers()
+                            </td>
+
+                        </tr>
+                    }
+                </table>
+
+                <p>
+                    * رأی ثبت شده توسط کاربر مالک خوانش در محاسبه لحاظ نمی‌شود.
+                </p>
+
+
+            </div>
+
+        }
+    </div>
+</body>
+</html>
+

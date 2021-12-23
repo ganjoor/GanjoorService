@@ -1274,6 +1274,10 @@ ol {
     content: 'thumb_up_alt';
 }
 
+.recitation-score::after {
+    content: 'calculate';
+}
+
 audio{
     width:100%;
 }

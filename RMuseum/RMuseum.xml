@@ -4174,6 +4174,11 @@
             computed order
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationOrderingViewModel.Recitation">
+            <summary>
+            recitation (it is null by default and you should fill it using a separate api call based on RecitationId)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationPublishingTrackerViewModel">
             <summary>
             RecitationPublishingTracker View Model
