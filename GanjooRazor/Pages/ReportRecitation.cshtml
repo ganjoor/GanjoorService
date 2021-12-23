@@ -100,6 +100,21 @@
                             </tr>
                             <tr>
                                 <td>
+                                    در صورت نیاز خط متناظر را مشخص کنید:
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select asp-for="Report.CoupletIndex">
+                                        @foreach (var item in Model.Couplets)
+                                        {
+                                            <option value="@item.Item1">@item.Item2</option>
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
                                     <input type="hidden" asp-for="Report.RecitationId" />
                                     <input type="submit" name="submit" id="submit" value="ثبت خطا" />
                                 </td>

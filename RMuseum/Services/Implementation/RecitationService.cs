@@ -1748,6 +1748,8 @@ namespace RMuseum.Services.Implementationa
                 {
                     return new RServiceResult<RecitationErrorReportViewModel>(null, "دلیل گزارش مشخص نیست.");
                 }
+                if (report.NumberOfLinesAffected < 1)
+                    report.NumberOfLinesAffected = 1;
                 RecitationErrorReport dbModel = new RecitationErrorReport()
                 {
                     RecitationId = report.RecitationId,
