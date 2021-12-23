@@ -1531,8 +1531,14 @@ namespace RMuseum.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("CoupletIndex")
+                        .HasColumnType("int");
+
                     b.Property<string>("Mistake")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumberOfLinesAffected")
+                        .HasColumnType("int");
 
                     b.Property<int>("RecitationId")
                         .HasColumnType("int");

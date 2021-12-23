@@ -12,7 +12,7 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20211223060125_Recitation-Mistakes")]
+    [Migration("20211223081207_Recitation-Mistakes")]
     partial class RecitationMistakes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1533,8 +1533,14 @@ namespace RMuseum.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("CoupletIndex")
+                        .HasColumnType("int");
+
                     b.Property<string>("Mistake")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumberOfLinesAffected")
+                        .HasColumnType("int");
 
                     b.Property<int>("RecitationId")
                         .HasColumnType("int");

@@ -24,5 +24,15 @@
         /// mistake
         /// </summary>
         public string Mistake { get; set; }
+
+        /// <summary>
+        /// number of verses affected
+        /// </summary>
+        public int NumberOfLinesAffected { get; set; }
+
+        /// <summary>
+        /// couplet index
+        /// </summary>
+        public int CoupletIndex { get; set; }
     }
 }

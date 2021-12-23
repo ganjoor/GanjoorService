@@ -15,7 +15,9 @@ namespace RMuseum.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RecitationId = table.Column<int>(type: "int", nullable: false),
-                    Mistake = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Mistake = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NumberOfLinesAffected = table.Column<int>(type: "int", nullable: false),
+                    CoupletIndex = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

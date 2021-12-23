@@ -3725,6 +3725,16 @@
             mistake
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationApprovedMistake.NumberOfLinesAffected">
+            <summary>
+            number of verses affected
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.RecitationApprovedMistake.CoupletIndex">
+            <summary>
+            couplet index
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorAudio.RecitationErrorReport">
             <summary>
             Error Report for recitations
