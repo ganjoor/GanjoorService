@@ -71,7 +71,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
             if (string.IsNullOrEmpty(mistake))
                 ReviewMsg = src.ReviewMsg;
             else
-                ReviewMsg = src.ReviewMsg;
+                ReviewMsg = mistake;
         }
 
         /// <summary>
