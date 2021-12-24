@@ -6,6 +6,7 @@ using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio;
+using RMuseum.Models.GanjoorAudio.ViewModels;
 using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -424,32 +425,55 @@ namespace RMuseum.Services.Implementation
             return await context.GanjoorComments.Where(c => c.InReplyToId == comment.Id).AsNoTracking().ToListAsync();
         }
 
-        private async Task _ReOrderPoemRecitationsAsync(RMuseumDbContext context, int poemId)
+        private async Task _ReOrderPoemRecitationsAsync(RMuseumDbContext context, int poemId, bool update = true)
         {
             var recitations =
                      await context.Recitations
                          .Where(r => r.ReviewStatus == AudioReviewStatus.Approved && r.GanjoorPostId == poemId)
-                         .OrderByDescending(r => r.Id) //this causes the oldest recirations to become the first one
+                         .OrderBy(r => r.Id) //this causes the oldest recirations to become the first one
                          .ToListAsync();
+
+            List<RecitationOrderingViewModel> scores = new List<RecitationOrderingViewModel>();
 
             for (var i = 0; i < recitations.Count; i++)
             {
                 var recitation = recitations[i];
+                RecitationOrderingViewModel score = new RecitationOrderingViewModel()
+                {
+                    RecitationId = recitation.Id,
+                    EarlynessAdvantage = recitations.Count - 1 - i,
+                    UpVotes = await context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == recitation.Id && r.UserId != recitation.OwnerId)
+                    .CountAsync(),
+                    Mistakes = await context.RecitationApprovedMistakes.AsNoTracking().Where(m => m.RecitationId == recitation.Id).SumAsync(m => m.NumberOfLinesAffected)
+                };
+
+
+                score.TotalScores = score.EarlynessAdvantage
+                     + score.UpVotes
+                     - score.Mistakes;
+
                 //audio order is used as a temporary variable in the following line and soon is get replaced by computed value
-                recitation.AudioOrder =
-                    recitations.Count - 1 - i +
-                    await context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == recitation.Id)
-                    .CountAsync(); //this way oldest recitations have an advantage which could be beaten by user ranks over time
+                recitation.AudioOrder = score.TotalScores;
+
+                scores.Add(score);
             }
 
-            recitations.Sort((a, b) => a.AudioOrder.CompareTo(b.AudioOrder));
+            recitations.Sort((a, b) => b.AudioOrder.CompareTo(a.AudioOrder));
             for (var i = 0; i < recitations.Count; i++)
             {
                 recitations[i].AudioOrder = i + 1;
-                context.Update(recitations[i]);
+
+                scores.Where(s => s.RecitationId == recitations[i].Id).Single().ComputedOrder = i + 1;
+
+                if (update)
+                {
+                    context.Update(recitations[i]);
+                }
+
             }
 
-            await context.SaveChangesAsync();
+            if (update)
+                await context.SaveChangesAsync();
         }
     }
 }
