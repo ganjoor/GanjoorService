@@ -21,8 +21,9 @@ namespace RMuseum.Services
         /// <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
         /// <param name="status"></param>
         /// <param name="searchTerm"></param>
+        /// <param name="mistakes"></param>
         /// <returns></returns>
-        public Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> SecureGetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm);
+        public Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> SecureGetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm, bool mistakes);
 
         /// <summary>
         /// returns list of publish narrations (if poetId or catId is non-zero its ordered by poemId ascending if not it is ordered by publish date descending)

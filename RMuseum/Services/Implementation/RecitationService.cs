@@ -41,29 +41,59 @@ namespace RMuseum.Services.Implementationa
         /// <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
         /// <param name="status"></param>
         /// <param name="searchTerm"></param>
+        /// <param name="mistakes"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> SecureGetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> SecureGetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm, bool mistakes)
         {
-            //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
-            var source =
-                 from audio in _context.Recitations.AsNoTracking().Include(a => a.Owner)
-                 join poem in _context.GanjoorPoems
-                 on audio.GanjoorPostId equals poem.Id
-                 where
-                 (filteredUserId == Guid.Empty || audio.OwnerId == filteredUserId)
-                 &&
-                 (status == AudioReviewStatus.All || audio.ReviewStatus == status)
-                 &&
-                 (string.IsNullOrEmpty(searchTerm) ||
-                 (!string.IsNullOrEmpty(searchTerm) && (audio.AudioArtist.Contains(searchTerm) || audio.AudioTitle.Contains(searchTerm) || poem.FullTitle.Contains(searchTerm)))
-                 )
-                 orderby audio.UploadDate descending
-                 select new RecitationViewModel(audio, audio.Owner, poem);
+            if(!mistakes)
+            {
+                //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
+                var source =
+                     from audio in _context.Recitations.AsNoTracking().Include(a => a.Owner)
+                     join poem in _context.GanjoorPoems
+                     on audio.GanjoorPostId equals poem.Id
+                     where
+                     (filteredUserId == Guid.Empty || audio.OwnerId == filteredUserId)
+                     &&
+                     (status == AudioReviewStatus.All || audio.ReviewStatus == status)
+                     &&
+                     (string.IsNullOrEmpty(searchTerm) ||
+                     (!string.IsNullOrEmpty(searchTerm) && (audio.AudioArtist.Contains(searchTerm) || audio.AudioTitle.Contains(searchTerm) || poem.FullTitle.Contains(searchTerm)))
+                     )
+                     orderby audio.UploadDate descending
+                     select new RecitationViewModel(audio, audio.Owner, poem, "");
 
-            (PaginationMetadata PagingMeta, RecitationViewModel[] Items) paginatedResult =
-                await QueryablePaginator<RecitationViewModel>.Paginate(source, paging);
+                (PaginationMetadata PagingMeta, RecitationViewModel[] Items) paginatedResult =
+                    await QueryablePaginator<RecitationViewModel>.Paginate(source, paging);
 
-            return new RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>(paginatedResult);
+                return new RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>(paginatedResult);
+            }
+            else
+            {
+                //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
+                var source =
+                     from mistake in _context.RecitationApprovedMistakes.AsNoTracking()
+                     join audio in _context.Recitations.Include(a => a.Owner)
+                     on mistake.RecitationId equals audio.Id
+                     join poem in _context.GanjoorPoems
+                     on audio.GanjoorPostId equals poem.Id
+                     where
+                     (filteredUserId == Guid.Empty || audio.OwnerId == filteredUserId)
+                     &&
+                     (status == AudioReviewStatus.All || audio.ReviewStatus == status)
+                     &&
+                     (string.IsNullOrEmpty(searchTerm) ||
+                     (!string.IsNullOrEmpty(searchTerm) && (audio.AudioArtist.Contains(searchTerm) || audio.AudioTitle.Contains(searchTerm) || poem.FullTitle.Contains(searchTerm)))
+                     )
+                     orderby audio.UploadDate descending
+                     select new RecitationViewModel(audio, audio.Owner, poem, mistake.Mistake);
+
+                (PaginationMetadata PagingMeta, RecitationViewModel[] Items) paginatedResult =
+                    await QueryablePaginator<RecitationViewModel>.Paginate(source, paging);
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>(paginatedResult);
+            }
+            
         }
 
         /// <summary>
@@ -294,7 +324,7 @@ namespace RMuseum.Services.Implementationa
                      .Where(a => a.Id == id)
                      join poem in _context.GanjoorPoems
                      on audio.GanjoorPostId equals poem.Id
-                     select new RecitationViewModel(audio, audio.Owner, poem);
+                     select new RecitationViewModel(audio, audio.Owner, poem, "");
 
                 narration = await source.SingleOrDefaultAsync();
                 _memoryCache.Set(cachKey, narration);
@@ -521,7 +551,7 @@ namespace RMuseum.Services.Implementationa
                 await _ganjoorService.CacheCleanForPageById(narration.GanjoorPostId);
 
             }
-            return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
+            return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync(), ""));
         }
 
 
@@ -1112,7 +1142,7 @@ namespace RMuseum.Services.Implementationa
                 await _ganjoorService.CacheCleanForPageById(narration.GanjoorPostId);
             }
 
-            return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync()));
+            return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync(), ""));
         }
 
 
@@ -1728,7 +1758,7 @@ namespace RMuseum.Services.Implementationa
                  &&
                  audio.AudioSyncStatus != AudioSyncStatus.SynchronizedOrRejected
                  orderby audio.UploadDate descending
-                 select new RecitationViewModel(audio, audio.Owner, poem);
+                 select new RecitationViewModel(audio, audio.Owner, poem, "");
 
             return new RServiceResult<RecitationViewModel[]>(await source.ToArrayAsync());
         }
@@ -1791,7 +1821,7 @@ namespace RMuseum.Services.Implementationa
                      Id = report.Id,
                      ReasonText = report.ReasonText,
                      RecitationId = report.RecitationId,
-                     Recitation = new RecitationViewModel(report.Recitation, report.Recitation.Owner, poem),
+                     Recitation = new RecitationViewModel(report.Recitation, report.Recitation.Owner, poem, ""),
                      DateTime = report.DateTime,
                      NumberOfLinesAffected = report.NumberOfLinesAffected,
                      CoupletIndex = report.CoupletIndex

@@ -1640,7 +1640,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
+        <member name="M:RMuseum.Controllers.RecitationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String,System.Boolean)">
             <summary>
             Gets audio narrations, user must have recitation::moderate permission to be able to see all users narrations
             </summary>
@@ -1648,6 +1648,7 @@
             <param name="allUsers">default: false, user must have recitation::moderate permission to be able to see all users narrations</param>
             <param name="status">default: -1, unfiltered</param>
             <param name="searchTerm"></param>
+            <param name="mistakes"></param>
             <remarks>additional headers: paging-headers, audio-upload-enabled</remarks>
             <returns></returns>
         </member>
@@ -4284,13 +4285,14 @@
             parameterless constructor for deserialization support
             </summary>
         </member>
-        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.#ctor(RMuseum.Models.GanjoorAudio.Recitation,RSecurityBackend.Models.Auth.Db.RAppUser,RMuseum.Models.Ganjoor.GanjoorPoem)">
+        <member name="M:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.#ctor(RMuseum.Models.GanjoorAudio.Recitation,RSecurityBackend.Models.Auth.Db.RAppUser,RMuseum.Models.Ganjoor.GanjoorPoem,System.String)">
             <summary>
             constructor
             </summary>
             <param name="src"></param>
             <param name="appUser"></param>
             <param name="poem"></param>
+            <param name="mistake"></param>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationViewModel.Id">
             <summary>
@@ -12469,7 +12471,7 @@
             Audio Narration Service Implementation
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.SecureGetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.SecureGetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String,System.Boolean)">
             <summary>
             returns list of narrations
             </summary>
@@ -12477,6 +12479,7 @@
             <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
             <param name="status"></param>
             <param name="searchTerm"></param>
+            <param name="mistakes"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishedRecitations(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">
@@ -12902,7 +12905,7 @@
             Audio Narration Service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.IRecitationService.SecureGetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String)">
+        <member name="M:RMuseum.Services.IRecitationService.SecureGetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String,System.Boolean)">
             <summary>
             returns list of narrations
             </summary>
@@ -12910,6 +12913,7 @@
             <param name="filteredUserId">send Guid.Empty if you want all narrations</param>
             <param name="status"></param>
             <param name="searchTerm"></param>
+            <param name="mistakes"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.GetPublishedRecitations(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">

@@ -23,7 +23,8 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// <param name="src"></param>
         /// <param name="appUser"></param>
         /// <param name="poem"></param>
-        public RecitationViewModel(Recitation src, RAppUser appUser, GanjoorPoem poem)
+        /// <param name="mistake"></param>
+        public RecitationViewModel(Recitation src, RAppUser appUser, GanjoorPoem poem, string mistake)
         {
             Id = src.Id;
             Owner = new PublicRAppUser()
@@ -67,7 +68,10 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
                 PoemFullUrl = poem.FullUrl;
             }
             AudioSyncStatus = src.AudioSyncStatus;
-            ReviewMsg = src.ReviewMsg;
+            if (string.IsNullOrEmpty(mistake))
+                ReviewMsg = src.ReviewMsg;
+            else
+                ReviewMsg = src.ReviewMsg;
         }
 
         /// <summary>
