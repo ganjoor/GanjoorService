@@ -1,0 +1,69 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.UpVotedRecitationsModel
+@{
+     Layout = "_Layout";
+    ViewData["Title"] = "خوانش‌های نشان شده";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @foreach (var upvote in Model.UpVotes)
+    {
+        if (color == "gray")
+            color = "white";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="bookmark-@upvote.Id">
+            <blockquote>
+                <p>
+                    @upvote.AudioTitle به خوانش @upvote.AudioArtist (<a href="@Html.Raw(upvote.PoemFullUrl)" target="_blank">@upvote.PoemFullTitle</a>)
+                </p>
+                <a href="@($"http://ava.ganjoor.net/#/{upvote.Id}")" target="_blank">
+                    پیوند به خوانش
+                </a>
+            </blockquote>
+
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+
+}
