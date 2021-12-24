@@ -1254,6 +1254,10 @@ ol {
     content: 'download';
 }
 
+.recitation-play::after {
+    content: 'play_arrow';
+}
+
 .recitation-report::after {
     content: 'flag';
 }
@@ -1276,6 +1280,10 @@ ol {
 
 .recitation-score::after {
     content: 'calculate';
+}
+
+.recitation-website::after {
+    content: 'public';
 }
 
 audio{
