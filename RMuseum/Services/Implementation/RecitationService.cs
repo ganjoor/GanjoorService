@@ -1928,7 +1928,7 @@ namespace RMuseum.Services.Implementationa
         {
             try
             {
-                var dbReport = await _context.RecitationErrorReports.Where(r => r.Id == r.Id).SingleAsync();
+                var dbReport = await _context.RecitationErrorReports.Where(r => r.Id == report.Id).SingleAsync();
 
                 var recitation = await _context.Recitations.AsNoTracking().Where(r => r.Id == dbReport.RecitationId).SingleAsync();
 
