@@ -262,14 +262,14 @@
                             </div>
                         </nav>
 
-                         <div class="ring-menucircle open">
+                         <div class="ring-menucircle open" id="menu">
                             <div class="ring open">
-                                <a href="" class="menuItem ringmenu-icon recitation-listen"></a>
-                                <a href="" class="menuItem ringmenu-icon recitation-comments"></a>
-                                <a href="" class="menuItem ringmenu-icon edit-poem-button"></a>
-                                <a href="" class="menuItem ringmenu-icon recitation-explore"></a>
-                                <a href="" class="menuItem ringmenu-icon recitation-music"></a>
-                                <a href="" class="menuItem ringmenu-icon recitation-manuscripts"></a>
+                                <a href="#tools" class="menuItem ringmenu-icon edit-poem-button w3tooltip"><span class="w3tooltiptext">ابزارها</span></a>
+                                <a href="#discussions" class="menuItem ringmenu-icon recitation-comments w3tooltip"><span class="w3tooltiptext">حاشیه‌ها</span></a>
+                                <a href="#manuscripts" class="menuItem ringmenu-icon recitation-manuscripts w3tooltip"><span class="w3tooltiptext">نگاره‌ها</span></a>
+                                <a href="#songs" class="menuItem ringmenu-icon recitation-music w3tooltip"><span class="w3tooltiptext">ترانه‌ها</span></a>
+                                <a href="#rpoems" class="menuItem ringmenu-icon recitation-explore w3tooltip"><span class="w3tooltiptext">هم‌آهنگ‌ها</span></a>
+                                <a href="#recitations" class="menuItem ringmenu-icon recitation-listen w3tooltip"><span class="w3tooltiptext">خوانش‌ها</span></a>
                             </div>
                             <a href="#" class="ringmenu-center open ringmenu-icon recitation-navigation"></a>
                         </div>
@@ -289,9 +289,10 @@
 
                             <div class="poem-info">
 
-                                <div class="related-images-frame">
+                                <div class="related-images-frame" id="tools">
                                     <div class="century">
                                         ابزارها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('tools-section', 'tools-collapse-button')"><i class="info-buttons rotate-180" id="tools-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                        <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                     </div>
                                     <div id="tools-section">
                                         <p>
@@ -393,9 +394,10 @@
                                 @{
                                     if (Model.GanjoorPage.Poem.Recitations.Length > 0)
                                     {
-                                        <div class="related-images-frame">
+                                        <div class="related-images-frame" id="recitations">
                                             <div class="century">
                                                 @(Model.GanjoorPage.Poem.Recitations.Length > 1 ? "خوانش‌ها" : "خوانش") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('recitations-section', 'recitations-collapse-button')"><i class="info-buttons rotate-180" id="recitations-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                                <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                             </div>
                                             <div id="recitations-section">
                                                 <partial name="_AudioPlayerPartial" model=Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations) />
@@ -406,9 +408,10 @@
 
                                 @if (Model.GanjoorPage.Poem.Top6RelatedPoems.Length > 0)
                                 {
-                                    <div class="related-images-frame">
+                                    <div class="related-images-frame" id="rpoems">
                                         <div class="century">
                                             شعرهای هم آهنگ <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('rpoems-section', 'rpoems-collapse-button')"><i class="info-buttons rotate-180" id="rpoems-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                         </div>
                                         <div id="rpoems-section">
                                             @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6RelatedPoems.Length); i++)
@@ -459,9 +462,10 @@
                                 }
                                 else
                                 {
-                                    <div class="related-songs">
+                                    <div class="related-songs" id="songs">
                                         <div class="century">
                                             این شعر را چه کسی در کدام آهنگ خوانده است؟ <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('songs-section', 'songs-collapse-button')"><i class="info-buttons rotate-180" id="songs-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                         </div>
                                         <div id="songs-section">
                                             @foreach (var song in Model.GanjoorPage.Poem.Songs)
@@ -482,11 +486,12 @@
                                         </div>
                                     </div>
                                 }
-                                <div class="related-images-frame">
+                                <div class="related-images-frame" id="manuscripts">
                                     @if (Model.GanjoorPage.Poem.Images.Length > 0)
                                     {
                                         <div class="century">
                                             تصاویر مرتبط در گنجینهٔ گنجور <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('images-section', 'images-collapse-button')"><i class="info-buttons rotate-180" id="images-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                         </div>
                                         <div id="images-section">
                                             <div class="related-images">
@@ -523,10 +528,11 @@
 
                             </div>
 
-                            <div class="related-images-frame">
+                            <div class="related-images-frame" id="discussions">
 
                                 <div class="century">
                                     حاشیه‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('comments-section', 'comments-collapse-button')"><i class="info-buttons rotate-180" id="comments-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                    <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                 </div>
 
                                 <div id="comments-section">
