@@ -38,7 +38,7 @@
             @{
                 if (!Model.IsPoetPage && Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null)
                 {
-                    <select name="cat" id="cat" style="width:150px">
+                    <select name="cat" id="cat">
                         <option value="0">در همهٔ بخشها</option>
                         @{
                             foreach (var gran in Model.GanjoorPage.PoetOrCat.Cat.Ancestors)
@@ -94,13 +94,13 @@
                         }
                         else
                         {
-                            <div style="display:block;width:100%">
+                            <div class="width-100per display-block">
                                 <form method="post" action="/pin">
                                     <input type="hidden" id="RelatedImageSuggestionModel_PoemId" name="RelatedImageSuggestionModel.PoemId" value="@Model.GanjoorPage.Id">
                                     <input type="hidden" id="RelatedImageSuggestionModel_GanjoorUrl" name="RelatedImageSuggestionModel.GanjoorUrl" value="@Model.GanjoorPage.FullUrl">
                                     <input type="hidden" id="RelatedImageSuggestionModel_GanjoorTitle" name="RelatedImageSuggestionModel.GanjoorTitle" value="@Model.GanjoorPage.FullTitle">
                                     <input type="hidden" id="RelatedImageSuggestionModel_PinterestUrl" name="RelatedImageSuggestionModel.PinterestUrl" value="@Model.PinterestUrl">
-                                    <input type="submit" name="pinterest_suggest" value="انتخاب شعر" style="background-color:red;color:white;font-family:IRANSans;font-size:1.5em;width:100%;cursor:pointer;">
+                                    <input type="submit" name="pinterest_suggest" value="انتخاب شعر" class="pinterest_suggest">
                                 </form>
                                 @if (Model.PinterestUrl == "manual")
                                 {
@@ -130,11 +130,11 @@
                             <div class="spacer">&nbsp;</div>
                             @if (Model.GanjoorPage.SecondPoet != null)
                             {
-                                <div style="width:164px;margin:auto" id="poets">
-                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" style="width:auto;float:right" /></a>
-                                    <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Name)" style="width:auto;float:right" /></a>
+                                <div id="poets">
+                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" class="poets-poet" /></a>
+                                    <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Name)" class="poets-poet" /></a>
                                 </div>
-                                <div style="width:164px;margin:auto" id="page-hierarchy">
+                                <div id="page-hierarchy">
                                     @{
                                         <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)</a>
 
@@ -146,10 +146,10 @@
                             }
                             else
                             {
-                                <div style="width:82px;margin:auto" id="poet-image">
+                                <div id="poet-image">
                                     <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" /></a>
                                 </div>
-                                <div style="width:100%;margin:auto" id="page-hierarchy">
+                                <div id="page-hierarchy" class="width-100per margin-auto">
                                     @{
                                         foreach (var gran in Model.GanjoorPage.PoetOrCat.Cat.Ancestors)
                                         {
@@ -270,7 +270,7 @@
 
                                 <div class="related-images-frame">
                                     <div class="century">
-                                        ابزارها <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('tools-section', 'tools-collapse-button')"><i class="info-buttons" id="tools-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                        ابزارها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('tools-section', 'tools-collapse-button')"><i class="info-buttons rotate-180" id="tools-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                     </div>
                                     <div id="tools-section">
                                         <p>
@@ -374,7 +374,7 @@
                                     {
                                         <div class="related-images-frame">
                                             <div class="century">
-                                                @(Model.GanjoorPage.Poem.Recitations.Length > 1 ? "خوانش‌ها" : "خوانش") <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('recitations-section', 'recitations-collapse-button')"><i class="info-buttons" id="recitations-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                                @(Model.GanjoorPage.Poem.Recitations.Length > 1 ? "خوانش‌ها" : "خوانش") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('recitations-section', 'recitations-collapse-button')"><i class="info-buttons rotate-180" id="recitations-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                             <div id="recitations-section">
                                                 <partial name="_AudioPlayerPartial" model=Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations) />
@@ -387,7 +387,7 @@
                                 {
                                     <div class="related-images-frame">
                                         <div class="century">
-                                            شعرهای هم آهنگ <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('rpoems-section', 'rpoems-collapse-button')"><i class="info-buttons" id="rpoems-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            شعرهای هم آهنگ <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('rpoems-section', 'rpoems-collapse-button')"><i class="info-buttons rotate-180" id="rpoems-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                         </div>
                                         <div id="rpoems-section">
                                             @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6RelatedPoems.Length); i++)
@@ -440,7 +440,7 @@
                                 {
                                     <div class="related-songs">
                                         <div class="century">
-                                            این شعر را چه کسی در کدام آهنگ خوانده است؟ <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('songs-section', 'songs-collapse-button')"><i class="info-buttons" id="songs-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            این شعر را چه کسی در کدام آهنگ خوانده است؟ <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('songs-section', 'songs-collapse-button')"><i class="info-buttons rotate-180" id="songs-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                         </div>
                                         <div id="songs-section">
                                             @foreach (var song in Model.GanjoorPage.Poem.Songs)
@@ -449,7 +449,7 @@
                                                     <i class="info-buttons queue_music"></i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
                                                     @if (song.TrackType == RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify)
                                                     {
-                                                        <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img style="display:inline;width:16px;" src="/image/sp16.png" alt="اسپاتیفای" height="16" /></a>
+                                                        <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img class="spotify-track-icon" src="/image/sp16.png" alt="اسپاتیفای" height="16" /></a>
                                                     }
                                                 </div>
                                             }
@@ -465,7 +465,7 @@
                                     @if (Model.GanjoorPage.Poem.Images.Length > 0)
                                     {
                                         <div class="century">
-                                            تصاویر مرتبط در گنجینهٔ گنجور <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('images-section', 'images-collapse-button')"><i class="info-buttons" id="images-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            تصاویر مرتبط در گنجینهٔ گنجور <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('images-section', 'images-collapse-button')"><i class="info-buttons rotate-180" id="images-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                         </div>
                                         <div id="images-section">
                                             <div class="related-images">
@@ -505,7 +505,7 @@
                             <div class="related-images-frame">
 
                                 <div class="century">
-                                    حاشیه‌ها <a role="button" class="w3tooltip" style="cursor: pointer;" onclick="switch_section('comments-section', 'comments-collapse-button')"><i class="info-buttons" id="comments-collapse-button" style="transform: rotate(180deg)">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                    حاشیه‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('comments-section', 'comments-collapse-button')"><i class="info-buttons rotate-180" id="comments-collapse-button">expand_circle_down</i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                 </div>
 
                                 <div id="comments-section">
@@ -541,11 +541,11 @@
                                         <form method="post" id="commentform" action="?handler=Comment">
                                             <fieldset>
                                                 <legend>💬 شما حاشیه بگذارید ...</legend>
-                                                <table style="max-width:100%; width:100%; margin:0">
+                                                <table class="comment-table">
                                                     <tr>
                                                         <td>
                                                             <div class="required">
-                                                                <textarea name="comment" id="comment" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                                                                <textarea name="comment" id="comment" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
                                                             </div>
                                                             <input type="hidden" name="poemId" id="poemId" value="@Model.GanjoorPage.Id" />
                                                             <input type="hidden" name="coupletIndex" value="-1" />
@@ -553,7 +553,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <button name="postcomment" id="postcomment" class="submitCommentButton" onclick="return postComment('', '#postcomment');" style="width:100%">درج حاشیه</button>
+                                                            <button name="postcomment" id="postcomment" class="submitCommentButton width-100per" onclick="return postComment('', '#postcomment');">درج حاشیه</button>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -561,16 +561,16 @@
 
                                                 <div class="notice">
                                                     <p>
-                                                        لطفاً توجه داشته باشید که حاشیه‌ها برای ثبت نظرات شما راجع به <strong>همین شعر</strong> در نظر گرفته شده‌اند. در صورتی که در متن ثبت شدهٔ شعر در گنجور تفاوتهایی غیر از موارد قابل ویرایش یافتید، در مورد این شعر نظر یا احساس خاصی دارید یا مطلب خاصی در مورد آن می‌دانید یا دوست دارید دربارهٔ آن از دیگران چیزی بپرسید یک حاشیه برای آن بنویسید. <span style="color:#f00">لطفاً از درج مطالب غیرمرتبط با متن این شعر خاص خودداری فرمایید</span> و حتی‌الامکان سعی کنید متن حاشیهٔ خود را با حروف فارسی درج کنید (حاشیه‌ها بازبینی خواهند شد و موارد غیرمرتبط و ناقض این نکات حذف می‌شوند).
+                                                        لطفاً توجه داشته باشید که حاشیه‌ها برای ثبت نظرات شما راجع به <strong>همین شعر</strong> در نظر گرفته شده‌اند. در صورتی که در متن ثبت شدهٔ شعر در گنجور تفاوتهایی غیر از موارد قابل ویرایش یافتید، در مورد این شعر نظر یا احساس خاصی دارید یا مطلب خاصی در مورد آن می‌دانید یا دوست دارید دربارهٔ آن از دیگران چیزی بپرسید یک حاشیه برای آن بنویسید. <span class="red-color">لطفاً از درج مطالب غیرمرتبط با متن این شعر خاص خودداری فرمایید</span> و حتی‌الامکان سعی کنید متن حاشیهٔ خود را با حروف فارسی درج کنید (حاشیه‌ها بازبینی خواهند شد و موارد غیرمرتبط و ناقض این نکات حذف می‌شوند).
                                                     </p>
                                                     <p>
-                                                        <span style="color:#f00">بحثهای مذهبی و اعتقادی و ارجاع توهین‌آمیز نسبت به بزرگان ادیان و همینطور بحثهای قومیتی و توهین به فرهنگها و قومیتها و زبانها و بحثهای مرتبط با سیاست روز از مصادیق حاشیه‌های نامناسب محسوب می‌شوند.</span> لطفاً از هیچ قوم و مذهبی با صفات زننده صحبت نکنید و به خاطر داشته باشید که همهٔ اقوام (حتی ایرانی‌ها) در مقاطعی از تاریخ خود نسبت به اقوام دیگر بدوی محسوب می‌شده‌اند یا با تعدی به خاک همسایگان خود نسبت به آنها ستم روا داشته‌اند.
+                                                        <span class="red-color">بحثهای مذهبی و اعتقادی و ارجاع توهین‌آمیز نسبت به بزرگان ادیان و همینطور بحثهای قومیتی و توهین به فرهنگها و قومیتها و زبانها و بحثهای مرتبط با سیاست روز از مصادیق حاشیه‌های نامناسب محسوب می‌شوند.</span> لطفاً از هیچ قوم و مذهبی با صفات زننده صحبت نکنید و به خاطر داشته باشید که همهٔ اقوام (حتی ایرانی‌ها) در مقاطعی از تاریخ خود نسبت به اقوام دیگر بدوی محسوب می‌شده‌اند یا با تعدی به خاک همسایگان خود نسبت به آنها ستم روا داشته‌اند.
                                                     </p>
                                                     <p>
                                                         در خطاب قرار دادن کاربران دیگر -چه به شکل خاص و چه به شکل عمومی- فارغ از این که در حاشیه‌هایشان نظرات معقولی را عنوان کرده‌اند یا خیر، رعایت احترام را بفرمایید. بی‌احترامی به دیگر کاربران (و البته شخصیتهای دیگر از جمله هنرمندان و ...) از مصادیق حاشیه‌های نامناسب محسوب می‌شود و فارغ از ارزش محتوایی، حاشیهٔ فرد خاطی به محض دریافت گزارش تخلف حذف خواهد شد.
                                                     </p>
                                                     <p>
-                                                        <span style="color:#0a0">لطفاً در صورتی که تفاوتها را با استناد به نسخه‌های چاپی یا خطی گزارش می‌کنید این مسئله را با ذکر منبع مطرح نمایید. اشتباهات تایپی و غلطهای املایی را از طریق دکمهٔ «ویرایش» تصحیح کنید.</span>
+                                                        <span class="green-color">لطفاً در صورتی که تفاوتها را با استناد به نسخه‌های چاپی یا خطی گزارش می‌کنید این مسئله را با ذکر منبع مطرح نمایید. اشتباهات تایپی و غلطهای املایی را از طریق دکمهٔ «ویرایش» تصحیح کنید.</span>
                                                     </p>
                                                 </div>
                                             </fieldset>
@@ -582,21 +582,20 @@
                                             <span onclick="document.getElementById('id02').style.display='none'"
                                       class="close" title="بستن">&times;</span>
                                             <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
-                                                <table style="max-width:100%; width:100%; margin:0">
+                                                <table class="comment-table">
                                                     <tr>
                                                         <td>
-                                                            <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                                                            <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
                                                             <input type="hidden" name="editCommentId" id="editCommentId" value="" />
                                                             <input type="hidden" name="editCommentCoupletIndex" id="editCommentCoupletIndex" value="" />
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <button name="editcomment" id="editcomment" class="inputSubmit" onclick="return editComment();" style="width:100%">ویرایش حاشیه</button>
+                                                            <button name="editcomment" id="editcomment" class="inputSubmit width-100per" onclick="return editComment();">ویرایش حاشیه</button>
                                                         </td>
                                                     </tr>
                                                 </table>
-
                                             </form>
                                         </div>
 
@@ -604,10 +603,10 @@
                                             <span onclick="document.getElementById('id03').style.display='none'"
                                       class="close" title="بستن">&times;</span>
                                             <form class="modal-content animate" method="post" id="replycommentform" action="?handler=Reply">
-                                                <table style="max-width:100%; width:100%; margin:0">
+                                                <table class="comment-table">
                                                     <tr>
                                                         <td>
-                                                            <textarea name="replyCommentText" id="replyCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                                                            <textarea name="replyCommentText" id="replyCommentText" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
                                                             <input type="hidden" name="refPoemId" id="refPoemId" value="@Model.GanjoorPage.Id" />
                                                             <input type="hidden" name="refCommentId" id="refCommentId" value="" />
                                                             <input type="hidden" name="refCommentDivSuffix" id="refCommentDivSuffix" value="" />

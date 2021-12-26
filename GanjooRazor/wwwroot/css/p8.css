@@ -1312,3 +1312,62 @@ audio{
     text-align: center;
     border-style: dotted;
 }
+
+#cat {
+    width: 150px;
+}
+
+.display-block {
+    display: block;
+}
+
+.margin-auto {
+    margin: auto;
+}
+
+.pinterest_suggest {
+    background-color: red;
+    color: white;
+    font-family: Vazir;
+    font-size: 1.5em;
+    width: 100%;
+    cursor: pointer;
+}
+
+#poets, #page-hierarchy {
+    width: 164px;
+    margin: auto;
+}
+
+.poets-poet {
+    width: auto;
+    float: right;
+}
+
+#poet-image {
+    width: 82px;
+    margin: auto;
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
+.spotify-track-icon {
+    display: inline;
+    width: 16px;
+}
+
+.comment-table {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+.red-color {
+    color: #f00;
+}
+
+.green-color {
+    color: #0a0;
+}
