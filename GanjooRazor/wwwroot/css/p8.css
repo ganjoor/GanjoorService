@@ -1373,16 +1373,16 @@ audio{
 }
 
 
-.circle,
+.ring-menucircle,
 .ring {
     height: 256px;
     position: relative;
     width: 256px;
 }
 
-.circle {
+.ring-menucircle {
     margin: 0 auto;
-    clear:both;
+    clear: both;
 }
 
 .ring {
@@ -1444,10 +1444,34 @@ audio{
     width: 40px;
 }
 
-#fa .circle a{
-    color:white;
+#fa .ring-menucircle a {
+    color: white;
 }
 
 .ringmenu-icon {
     font-size: 2em;
+}
+
+.recitation-listen::after {
+    content: 'hearing';
+}
+
+.recitation-comments::after {
+    content: 'question_answer';
+}
+
+.recitation-explore::after {
+    content: 'travel_explore';
+}
+
+.recitation-music::after {
+    content: 'music_video';
+}
+
+.recitation-manuscripts::after {
+    content: 'auto_stories';
+}
+
+.recitation-navigation::after {
+    content: 'apps';
 }
