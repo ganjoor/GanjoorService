@@ -848,7 +848,7 @@ ol {
     src: url(https://fonts.gstatic.com/s/materialicons/v107/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
 }
 
-.material-icons, .pageicons, .inlinebutton, .info-buttons, .recitation-icons {
+.material-icons, .pageicons, .inlinebutton, .info-buttons, .recitation-icons, .ringmenu-icon {
     font-family: 'Material Icons';
     font-weight: normal;
     font-style: normal;
@@ -1370,4 +1370,84 @@ audio{
 
 .green-color {
     color: #0a0;
+}
+
+
+.circle,
+.ring {
+    height: 256px;
+    position: relative;
+    width: 256px;
+}
+
+.circle {
+    margin: 0 auto;
+    clear:both;
+}
+
+.ring {
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    opacity: 0;
+    -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+    -webkit-transform: scale(0.1) rotate(-270deg);
+    -moz-transform: scale(0.1) rotate(-270deg);
+    -transform: scale(0.1) rotate(-270deg);
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+}
+
+.open .ring {
+    opacity: 1;
+    -webkit-transform: scale(1) rotate(0);
+    -moz-transform: scale(1) rotate(0);
+    transform: scale(1) rotate(0);
+}
+
+.ringmenu-center {
+    background-color: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    bottom: 0;
+    color: white;
+    height: 80px;
+    left: 0;
+    line-height: 80px;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    width: 80px;
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+}
+
+.open .ringmenu-center {
+    border-color: #aaaaaa;
+}
+
+.menuItem {
+    border-radius: 50%;
+    color: #eeeeee;
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    margin-left: -20px;
+    margin-top: -20px;
+    position: absolute;
+    text-align: center;
+    width: 40px;
+}
+
+#fa .circle a{
+    color:white;
+}
+
+.ringmenu-icon {
+    font-size: 2em;
 }

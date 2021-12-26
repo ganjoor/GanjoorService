@@ -226,7 +226,6 @@
 
                     if (Model.IsPoemPage)
                     {
-
                         <nav>
                             <div class="spacer">&nbsp;</div>
                             <div class="navigation">
@@ -262,6 +261,30 @@
                                 </div>
                             </div>
                         </nav>
+
+                         <div class="circle open">
+                            <div class="ring open">
+                                <a href="" class="menuItem ringmenu-icon recitation-play"></a>
+                                <a href="" class="menuItem ringmenu-icon recitation-play"></a>
+                                <a href="" class="menuItem ringmenu-icon recitation-play"></a>
+                                <a href="" class="menuItem ringmenu-icon recitation-play"></a>
+                                <a href="" class="menuItem ringmenu-icon recitation-play"></a>
+                                <a href="" class="menuItem ringmenu-icon recitation-play"></a>
+                                <a href="" class="menuItem ringmenu-icon recitation-play"></a>
+                                <a href="" class="menuItem ringmenu-icon recitation-play"></a>
+                            </div>
+                            <a href="#" class="ringmenu-center open ringmenu-icon recitation-play"></a>
+                        </div>
+
+                        <script>
+                            var items = document.querySelectorAll('.menuItem');
+
+                            for(var i = 0, l = items.length; i < l; i++) {
+                              items[i].style.left = (50 - 35*Math.cos(-0.5 * Math.PI - 2*(1/l)*i*Math.PI)).toFixed(4) + "%";
+
+                              items[i].style.top = (50 + 35*Math.sin(-0.5 * Math.PI - 2*(1/l)*i*Math.PI)).toFixed(4) + "%";
+                            }
+                        </script>
 
                         <div id="comments">
 
