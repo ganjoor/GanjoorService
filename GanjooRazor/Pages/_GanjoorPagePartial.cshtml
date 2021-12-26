@@ -268,8 +268,14 @@
                                 <a href="#discussions" class="menuItem ringmenu-icon recitation-comments w3tooltip"><span class="w3tooltiptext">حاشیه‌ها</span></a>
                                 <a href="#manuscripts" class="menuItem ringmenu-icon recitation-manuscripts w3tooltip"><span class="w3tooltiptext">نگاره‌ها</span></a>
                                 <a href="#songs" class="menuItem ringmenu-icon recitation-music w3tooltip"><span class="w3tooltiptext">ترانه‌ها</span></a>
-                                <a href="#rpoems" class="menuItem ringmenu-icon recitation-explore w3tooltip"><span class="w3tooltiptext">هم‌آهنگ‌ها</span></a>
-                                <a href="#recitations" class="menuItem ringmenu-icon recitation-listen w3tooltip"><span class="w3tooltiptext">خوانش‌ها</span></a>
+                                @if(Model.GanjoorPage.Poem.Top6RelatedPoems.Length > 0)
+                                {
+                                    <a href="#rpoems" class="menuItem ringmenu-icon recitation-explore w3tooltip"><span class="w3tooltiptext">هم‌آهنگ‌ها</span></a>
+                                }
+                                @if(Model.GanjoorPage.Poem.Recitations.Length > 0)
+                                {
+                                    <a href="#recitations" class="menuItem ringmenu-icon recitation-listen w3tooltip"><span class="w3tooltiptext">خوانش‌ها</span></a>
+                                }
                             </div>
                             <a href="#" class="ringmenu-center open ringmenu-icon recitation-navigation"></a>
                         </div>
@@ -452,7 +458,7 @@
 
                                 @if (Model.GanjoorPage.Poem.Songs.Length == 0)
                                 {
-                                    <div class="related-songs">
+                                    <div class="related-songs" id="songs">
                                         <p>
                                             <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
                                                 معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است<i class="info-buttons music_note"></i>
