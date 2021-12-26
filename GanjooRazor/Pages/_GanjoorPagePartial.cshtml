@@ -614,7 +614,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <button name="replycomment" id="replycomment" class="inputSubmit" onclick="return postReplyComment();" style="width:100%">درج پاسخ به حاشیه</button>
+                                                            <button name="replycomment" id="replycomment" class="inputSubmit width-100per" onclick="return postReplyComment();">درج پاسخ به حاشیه</button>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -678,7 +678,7 @@
 
                 @if (Model.Banner != null)
                 {
-                    <div style="margin:auto">
+                    <div class="margin-auto">
                         <a href="@Model.Banner.TargetUrl"><img src="@($"{GanjooRazor.APIRoot.InternetUrl}/{Model.Banner.ImageUrl}")" alt="@Model.Banner.AlternateText" /></a>
                     </div>
                 }
