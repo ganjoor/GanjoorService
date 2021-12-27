@@ -45,7 +45,7 @@ namespace RMuseum.Services.Implementationa
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> SecureGetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm, bool mistakes)
         {
-            if(!mistakes)
+            if (!mistakes)
             {
                 //whenever I had not a reference to audio.Owner in the final selection it became null, so this strange arrangement is not all because of my stupidity!
                 var source =
@@ -93,7 +93,7 @@ namespace RMuseum.Services.Implementationa
 
                 return new RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>(paginatedResult);
             }
-            
+
         }
 
         /// <summary>
@@ -930,7 +930,7 @@ namespace RMuseum.Services.Implementationa
 
                                                 bool recomputeOrders = false;
                                                 var mistakes = await context.RecitationApprovedMistakes.Where(m => m.RecitationId == existing.Id).ToListAsync();
-                                                if(mistakes.Count > 0)
+                                                if (mistakes.Count > 0)
                                                 {
                                                     context.RemoveRange(mistakes);
                                                     recomputeOrders = true;
@@ -946,7 +946,7 @@ namespace RMuseum.Services.Implementationa
                                                     $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={existing.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
                                                 );
 
-                                                if(recomputeOrders)
+                                                if (recomputeOrders)
                                                 {
                                                     await _ComputePoemRecitationsOrdersAsync(context, existing.GanjoorPostId, true);
                                                 }
@@ -2011,7 +2011,7 @@ namespace RMuseum.Services.Implementationa
                         .CountAsync(),
                         Mistakes = await context.RecitationApprovedMistakes.AsNoTracking().Where(m => m.RecitationId == recitation.Id).SumAsync(m => m.NumberOfLinesAffected)
                     };
-                    
+
 
                     score.TotalScores = score.EarlynessAdvantage
                          + score.UpVotes
@@ -2034,7 +2034,7 @@ namespace RMuseum.Services.Implementationa
                     {
                         context.Update(recitations[i]);
                     }
-                    
+
                 }
 
                 if (update)
@@ -2060,16 +2060,16 @@ namespace RMuseum.Services.Implementationa
             try
             {
                 var existingVote = await _context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == id && r.UserId == userId).SingleOrDefaultAsync();
-                if(existingVote != null)
+                if (existingVote != null)
                 {
                     return new RServiceResult<bool>(false, "شما پیش‌تر به این خوانش رأی داده‌اید.");
                 }
                 var recitation = await _context.Recitations.AsNoTracking().Where(r => r.Id == id).SingleOrDefaultAsync();
-                if(recitation == null)
+                if (recitation == null)
                 {
                     return new RServiceResult<bool>(false, "خوانشی با این شناسه وجود ندارد.");
                 }
-                if(recitation.ReviewStatus != AudioReviewStatus.Approved)
+                if (recitation.ReviewStatus != AudioReviewStatus.Approved)
                 {
                     return new RServiceResult<bool>(false, "امکان رأی دادن به خوانش منتشر نشده وجود ندارد.");
                 }
@@ -2199,6 +2199,65 @@ namespace RMuseum.Services.Implementationa
                 await QueryablePaginator<PublicRecitationViewModel>.Paginate(source, paging);
 
             return new RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>(paginatedResult);
+        }
+
+
+        /// <summary>
+        /// check recitaions with missing files and add them to reported errors list
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public RServiceResult<bool> StartCheckingRecitationsHealthCheck(Guid userId)
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                        (
+                        async token =>
+                        {
+                            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                            {
+                                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                var job = (await jobProgressServiceEF.NewJob($"CheckingRecitationsHealthCheck", "Query data")).Result;
+                                try
+                                {
+                                    var recitations = await context.Recitations.AsNoTracking().ToArrayAsync();
+                                    int progress = 0;
+                                    for (int i = 0; i < recitations.Length; i++)
+                                    {
+                                        var recitation = recitations[i];
+                                        if (!File.Exists(recitation.LocalMp3FilePath) || !File.Exists(recitation.LocalXmlFilePath))
+                                        {
+
+                                            RecitationErrorReport error = new RecitationErrorReport()
+                                            {
+                                                RecitationId = recitation.Id,
+                                                CoupletIndex = -1,
+                                                NumberOfLinesAffected = 0,
+                                                ReporterId = userId,
+                                                ReasonText = File.Exists(recitation.LocalMp3FilePath) == false ? "MP3 file missing" : "XML file misssing",
+                                                DateTime = DateTime.Now
+                                            };
+
+                                            context.RecitationErrorReports.Add(error);
+                                        }
+
+                                        if (progress < (i * 100 / recitations.Length))
+                                        {
+                                            progress++;
+                                            await jobProgressServiceEF.UpdateJob(job.Id, progress);
+                                        }
+                                    }
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                }
+                                catch (Exception exp)
+                                {
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                }
+
+                            }
+                        }
+                        );
+
+            return new RServiceResult<bool>(true);
         }
 
         /// <summary>

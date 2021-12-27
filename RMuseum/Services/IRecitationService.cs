@@ -279,6 +279,14 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>> GetUserUpvotedRecitationsAsync(PagingParameterModel paging, Guid userId);
 
+
+        /// <summary>
+        /// check recitaions with missing files and add them to reported errors list
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartCheckingRecitationsHealthCheck(Guid userId);
+
         /// <summary>
         /// Upload Enabled (temporary switch off/on for upload)
         /// </summary>

@@ -1881,6 +1881,12 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.StartCheckingRecitationsHealthCheck">
+            <summary>
+            starts checking recitaions with missing files and add them to reported errors list job
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.RecitationController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12749,6 +12755,13 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.StartCheckingRecitationsHealthCheck(System.Guid)">
+            <summary>
+            check recitaions with missing files and add them to reported errors list
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementationa.RecitationService.UploadEnabled">
             <summary>
             Upload Enabled (temporary switch off/on for upload)
@@ -13167,6 +13180,13 @@
             get user upvoted recitations
             </summary>
             <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.StartCheckingRecitationsHealthCheck(System.Guid)">
+            <summary>
+            check recitaions with missing files and add them to reported errors list
+            </summary>
             <param name="userId"></param>
             <returns></returns>
         </member>

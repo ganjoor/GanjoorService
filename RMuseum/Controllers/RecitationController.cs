@@ -1020,6 +1020,25 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// starts checking recitaions with missing files and add them to reported errors list job
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("healthcheck")]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.PublishOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartCheckingRecitationsHealthCheck()
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = _audioService.StartCheckingRecitationsHealthCheck(loggedOnUserId);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok();
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode
