@@ -47,7 +47,7 @@ namespace GanjooRazor.Pages
                 GanjoorUserPublicProfile profile = JsonConvert.DeserializeObject<GanjoorUserPublicProfile>(await responseUserProfile.Content.ReadAsStringAsync());
 
 
-                ViewData["Title"] = $"گنجور &raquo; حاشیه‌های {profile.NickName}";
+                ViewData["Title"] = $"گنجور » حاشیه‌های {profile.NickName}";
 
                 GanjoorPage.Title = $"حاشیه‌های {profile.NickName}";
 

@@ -182,17 +182,17 @@ namespace GanjooRazor.Pages
             var poetName = Poets.SingleOrDefault(p => p.Id == PoetId);
             if (poetName != null)
             {
-                ViewData["Title"] = $"گنجور &raquo; نتایج جستجو برای {Query} &raquo; {poetName?.Name}";
+                ViewData["Title"] = $"گنجور » نتایج جستجو برای {Query} در آثار {poetName?.Name}";
             }
             else
             {
                 if(!string.IsNullOrEmpty(Query))
                 {
-                    ViewData["Title"] = $"گنجور &raquo; نتایج جستجو برای {Query}";
+                    ViewData["Title"] = $"گنجور » نتایج جستجو برای {Query}";
                 }
                 else
                 {
-                    ViewData["Title"] = $"گنجور &raquo; جستجو";
+                    ViewData["Title"] = $"گنجور » جستجو";
                 }
                 
             }

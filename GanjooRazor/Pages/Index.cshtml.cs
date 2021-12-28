@@ -652,17 +652,17 @@ namespace GanjooRazor.Pages
             else
             if (IsPoetPage)
             {
-                ViewData["Title"] = $"گنجور &raquo; {GanjoorPage.PoetOrCat.Poet.Name}";
+                ViewData["Title"] = $"گنجور » {GanjoorPage.PoetOrCat.Poet.Name}";
                 breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Poet.Name, GanjoorPage.PoetOrCat.Cat.FullUrl, $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}");
             }
             else
             if (IsCatPage)
             {
-                string title = $"گنجور &raquo; ";
+                string title = $"گنجور » ";
                 bool poetCat = true;
                 foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
                 {
-                    title += $"{gran.Title} &raquo; ";
+                    title += $"{gran.Title} » ";
                     breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : "https://i.ganjoor.net/cat.png");
                     poetCat = false;
                 }
@@ -673,7 +673,7 @@ namespace GanjooRazor.Pages
             else
             if (IsPoemPage)
             {
-                ViewData["Title"] = $"گنجور &raquo; {GanjoorPage.Poem.FullTitle}";
+                ViewData["Title"] = $"گنجور » {GanjoorPage.Poem.FullTitle}";
                 bool poetCat = true;
                 foreach (var gran in GanjoorPage.Poem.Category.Cat.Ancestors)
                 {
@@ -690,24 +690,24 @@ namespace GanjooRazor.Pages
                 if (GanjoorPage.PoetOrCat != null)
                 {
                     bool poetCat = true;
-                    string fullTitle = "گنجور &raquo; ";
+                    string fullTitle = "گنجور » ";
                     if (GanjoorPage.PoetOrCat.Cat.Ancestors.Count == 0)
                     {
-                        fullTitle += $"{GanjoorPage.PoetOrCat.Poet.Name} &raquo; ";
+                        fullTitle += $"{GanjoorPage.PoetOrCat.Poet.Name} » ";
                     }
                     else
                         foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
                         {
                             breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : "https://i.ganjoor.net/cat.png");
                             poetCat = false;
-                            fullTitle += $"{gran.Title} &raquo; ";
+                            fullTitle += $"{gran.Title} » ";
                         }
                     ViewData["Title"] = $"{fullTitle}{GanjoorPage.Title}";
                     breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Poet.Name, GanjoorPage.PoetOrCat.Cat.FullUrl, $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}");
                 }
                 else
                 {
-                    ViewData["Title"] = $"گنجور &raquo; {GanjoorPage.FullTitle}";
+                    ViewData["Title"] = $"گنجور » {GanjoorPage.FullTitle}";
 
 
                     switch (GanjoorPage.UrlSlug)
