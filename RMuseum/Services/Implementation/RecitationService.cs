@@ -2219,7 +2219,7 @@ namespace RMuseum.Services.Implementationa
                                 var job = (await jobProgressServiceEF.NewJob($"CheckingRecitationsHealthCheck", "Query data")).Result;
                                 try
                                 {
-                                    var recitations = await context.Recitations.AsNoTracking().ToArrayAsync();
+                                    var recitations = await context.Recitations.Where(s => s.ReviewStatus == AudioReviewStatus.Approved).AsNoTracking().ToArrayAsync();
                                     int progress = 0;
                                     for (int i = 0; i < recitations.Length; i++)
                                     {
