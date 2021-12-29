@@ -469,7 +469,6 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> BatchRenameCatPoemTitles(int id, [FromBody]GanjoorBatchNamingModel model)
         {
             Guid userId =
@@ -494,7 +493,6 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public  IActionResult FindCategoryPoemsRhymes(int id, bool retag)
         {
 
@@ -506,7 +504,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// start assigning poem rhuthmes
+        /// start assigning poem rhythms
         /// </summary>
         /// <param name="id"></param>
         /// <param name="retag"></param>
@@ -517,12 +515,31 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public IActionResult FindCategoryPoemsRhythms(int id, bool retag, string rhythm = "")
         {
 
             RServiceResult<bool> res =
                 _ganjoorService.FindCategoryPoemsRhythms(id, retag, rhythm);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// Start Finding Missing Rhythms
+        /// </summary>
+        /// <param name="onlyPoemsWithRhymes"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("startfindingmissingrhythms")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartFindingMissingRhythms(bool onlyPoemsWithRhymes)
+        {
+
+            RServiceResult<bool> res =
+                _ganjoorService.StartFindingMissingRhythms(onlyPoemsWithRhymes);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -540,7 +557,6 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GenerateTableOfContents(int id, GanjoorTOC options = GanjoorTOC.Analyse)
         {
             var res = await _ganjoorService.GenerateTableOfContents(id, options);
@@ -559,7 +575,6 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public IActionResult StartGeneratingSubCatsTOC(int id)
         {
             Guid userId =

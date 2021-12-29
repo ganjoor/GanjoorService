@@ -414,5 +414,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<RecitationApprovedMistake> RecitationApprovedMistakes { get; set; }
 
+        /// <summary>
+        /// probable metres
+        /// </summary>
+        public DbSet<GanjoorPoemProbableMetre> GanjoorPoemProbableMetres { get; set; }
+
     }
 }

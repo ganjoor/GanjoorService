@@ -843,11 +843,18 @@
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
             <summary>
-            start assigning poem rhuthmes
+            start assigning poem rhythms
             </summary>
             <param name="id"></param>
             <param name="retag"></param>
             <param name="rhythm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartFindingMissingRhythms(System.Boolean)">
+            <summary>
+            Start Finding Missing Rhythms
+            </summary>
+            <param name="onlyPoemsWithRhymes"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GenerateTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
@@ -2346,6 +2353,11 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.RecitationApprovedMistakes">
             <summary>
             recitation approved mistakes
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoemProbableMetres">
+            <summary>
+            probable metres
             </summary>
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -5956,6 +5968,31 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.AffectedThePoem">
             <summary>
             had any effect on poem after moderation? effective in history
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre">
+            <summary>
+            Probable Prosody Information for a poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre.Poem">
+            <summary>
+            poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre.Metre">
+            <summary>
+            metre
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
@@ -9892,6 +9929,13 @@
             <param name="retag"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartFindingMissingRhythms(System.Boolean)">
+            <summary>
+            Start finding missing rhthms
+            </summary>
+            <param name="onlyPoemsWithRhymes"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.FindPoemRhythm(System.Int32)">
             <summary>
             find poem rhythm
@@ -11301,6 +11345,13 @@
             <param name="catId"></param>
             <param name="retag"></param>
             <param name="rhythm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean)">
+            <summary>
+            Start finding missing rhthms
+            </summary>
+            <param name="onlyPoemsWithRhymes"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingSubCatsTOC(System.Guid,System.Int32)">

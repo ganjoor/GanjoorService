@@ -558,6 +558,13 @@ namespace RMuseum.Services
         RServiceResult<bool> FindCategoryPoemsRhymes(int catId, bool retag);
 
         /// <summary>
+        /// Start finding missing rhthms
+        /// </summary>
+        /// <param name="onlyPoemsWithRhymes"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartFindingMissingRhythms(bool onlyPoemsWithRhymes);
+
+        /// <summary>
         /// find poem rhythm
         /// </summary>
         /// <param name="id"></param>

@@ -96,6 +96,64 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<bool>(true);
         }
 
+        /// <summary>
+        /// Start finding missing rhthms
+        /// </summary>
+        /// <param name="onlyPoemsWithRhymes"></param>
+        /// <returns></returns>
+        public RServiceResult<bool> StartFindingMissingRhythms(bool onlyPoemsWithRhymes)
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                        (
+                        async token =>
+                        {
+                            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                            {
+                                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                var job = (await jobProgressServiceEF.NewJob($"StartFindingMissingRhythms", "Query data")).Result;
+                                try
+                                {
+                                    var poemIds = await context.GanjoorPoems.AsNoTracking().Where(p => p.GanjoorMetreId == null && (onlyPoemsWithRhymes == false || !string.IsNullOrEmpty(p.RhymeLetters))).Select(p => p.Id).ToArrayAsync();
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Total: {poemIds.Length}");
+                                    var metres = (await GetGanjoorMetres()).Result.Select(m => m.Rhythm).ToArray();
+                                    
+                                    using (HttpClient httpClient = new HttpClient())
+                                    {
+                                        for (int i = 0; i < poemIds.Length; i++)
+                                        {
+                                            var id = poemIds[i];
+                                            if ((await context.GanjoorPoemProbableMetres.Where(p => p.PoemId == id).AnyAsync()) == true)
+                                                continue;
+
+                                            var res = await _FindPoemRhythm(id, _context, httpClient, metres, true );
+                                            if (res.Result == null)
+                                                res.Result = "";
+
+                                            GanjoorPoemProbableMetre prometre = new GanjoorPoemProbableMetre()
+                                            {
+                                                PoemId = id,
+                                                Metre = res.Result
+                                            };
+
+                                            context.GanjoorPoemProbableMetres.Add(prometre);
+
+                                            await jobProgressServiceEF.UpdateJob(job.Id, i);
+                                        }
+                                    }
+                                        
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                }
+                                catch (Exception exp)
+                                {
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                }
+
+                            }
+                        });
+
+            return new RServiceResult<bool>(true);
+        }
+
         private async Task _GeneratingSubCatsTOC(Guid userId, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int catId)
         {
             foreach (var cat in await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).ToListAsync())

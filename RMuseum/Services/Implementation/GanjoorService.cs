@@ -3643,16 +3643,18 @@ namespace RMuseum.Services.Implementation
             var metres = (await GetGanjoorMetres()).Result.Select(m => m.Rhythm).ToArray();
             return await _FindPoemRhythm(id, _context, _httpClient, metres);
         }
-        private async Task<RServiceResult<string>> _FindPoemRhythm(int id, RMuseumDbContext context, HttpClient httpClient, string[] metres)
+        private async Task<RServiceResult<string>> _FindPoemRhythm(int id, RMuseumDbContext context, HttpClient httpClient, string[] metres, bool alwaysReturnaAResult = false)
         {
             try
             {
-                var verses = await context.GanjoorVerses.Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync();
+                var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync();
 
                 Dictionary<string, int> rhytmCounter = new Dictionary<string, int>();
 
-                foreach (var verse in verses)
+                for (int i = 0; i < Math.Max(verses.Count, 20); i++)
                 {
+                    var verse = verses[i];
+
                     try
                     {
                         var response = await httpClient.GetAsync($"http://sorud.info/?Text={HttpUtility.UrlEncode(LanguageUtils.MakeTextSearchable(verse.Text))}");
@@ -3724,6 +3726,23 @@ namespace RMuseum.Services.Implementation
                     {
                         //continue
                     }
+                }
+
+                if(alwaysReturnaAResult)
+                {
+                    int maxCount = -1;
+                    string rhytm = "";
+                    foreach (var r in rhytmCounter)
+                    {
+                        if(r.Value > maxCount)
+                        {
+                            maxCount = r.Value;
+                            rhytm = r.Key;
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(rhytm))
+                        return new RServiceResult<string>(rhytm);
                 }
 
                 return new RServiceResult<string>("");
