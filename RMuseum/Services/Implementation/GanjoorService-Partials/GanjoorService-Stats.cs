@@ -212,15 +212,21 @@ namespace RMuseum.Services.Implementation
                                                 htmlText += $"<tr>{Environment.NewLine}";
 
                                             htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                                            string rhythm = rhythmsCoupletCounts[i].GanjoorMetreId == null ? "وزنیابی نشده" :
-                                                         $"<a href=\"/vazn/?v={Uri.EscapeDataString(rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm)}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
-                                            htmlText += $"<td class=\"c2\">{rhythm}</td>{Environment.NewLine}";
+                                            var rhythm = rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single();
+                                            rhythm.VerseCount = rhythmsCoupletCounts.Count;
+                                            context.Update(rhythm);
+                                            
+                                            string rhythmName = rhythmsCoupletCounts[i].GanjoorMetreId == null ? "وزنیابی نشده" :
+                                                         $"<a href=\"/vazn/?v={Uri.EscapeDataString(rhythm.Rhythm)}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
+                                            htmlText += $"<td class=\"c2\">{rhythmName}</td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(rhythmsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c4\">{(rhythmsCoupletCounts[i].Count * 100.0 / sumRhythmsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
                                             htmlText += $"</tr>{Environment.NewLine}";
                                         }
                                         htmlText += $"</table>{Environment.NewLine}";
+
+                                        await context.SaveChangesAsync();//store rhythm[s].VerseCount
 
                                         await _UpdatePageHtmlText(context, editingUserId, dbPage, "به روزرسانی خودکار صفحهٔ آمار وزنها", htmlText);
 

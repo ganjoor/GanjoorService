@@ -35,7 +35,7 @@
         public string Description { get; set; }
 
         /// <summary>
-        /// Total Verse Count
+        /// Total Verse Count (its actually couplet count)
         /// </summary>
         public int VerseCount { get; set; }
     }

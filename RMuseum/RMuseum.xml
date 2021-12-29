@@ -5460,7 +5460,7 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorMetre.VerseCount">
             <summary>
-            Total Verse Count
+            Total Verse Count (its actually couplet count)
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorNumbering">
