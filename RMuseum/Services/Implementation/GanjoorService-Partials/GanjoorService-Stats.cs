@@ -212,10 +212,12 @@ namespace RMuseum.Services.Implementation
                                                 htmlText += $"<tr>{Environment.NewLine}";
 
                                             htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                                            var rhythm = rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single();
-                                            rhythm.VerseCount = rhythmsCoupletCounts.Count;
-                                            context.Update(rhythm);
-                                            
+                                            var rhythm = rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).SingleOrDefault();
+                                            if(rhythm != null)
+                                            {
+                                                rhythm.VerseCount = rhythmsCoupletCounts.Count;
+                                                context.Update(rhythm);
+                                            }
                                             string rhythmName = rhythmsCoupletCounts[i].GanjoorMetreId == null ? "وزنیابی نشده" :
                                                          $"<a href=\"/vazn/?v={Uri.EscapeDataString(rhythm.Rhythm)}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
                                             htmlText += $"<td class=\"c2\">{rhythmName}</td>{Environment.NewLine}";
