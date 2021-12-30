@@ -850,11 +850,12 @@
             <param name="rhythm"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartFindingMissingRhythms(System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.StartFindingMissingRhythms(System.Boolean,System.Int32)">
             <summary>
             Start Finding Missing Rhythms
             </summary>
             <param name="onlyPoemsWithRhymes"></param>
+            <param name="poemsNum"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GenerateTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
@@ -9929,11 +9930,12 @@
             <param name="retag"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartFindingMissingRhythms(System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">
             <summary>
             Start finding missing rhthms
             </summary>
             <param name="onlyPoemsWithRhymes"></param>
+            <param name="poemsNum"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.FindPoemRhythm(System.Int32)">
@@ -11347,11 +11349,12 @@
             <param name="rhythm"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">
             <summary>
             Start finding missing rhthms
             </summary>
             <param name="onlyPoemsWithRhymes"></param>
+            <param name="poemsNum"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingSubCatsTOC(System.Guid,System.Int32)">

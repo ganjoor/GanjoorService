@@ -100,8 +100,9 @@ namespace RMuseum.Services.Implementation
         /// Start finding missing rhthms
         /// </summary>
         /// <param name="onlyPoemsWithRhymes"></param>
+        /// <param name="poemsNum"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartFindingMissingRhythms(bool onlyPoemsWithRhymes)
+        public RServiceResult<bool> StartFindingMissingRhythms(bool onlyPoemsWithRhymes, int poemsNum = 1000)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
                         (
@@ -113,7 +114,15 @@ namespace RMuseum.Services.Implementation
                                 var job = (await jobProgressServiceEF.NewJob($"StartFindingMissingRhythms", "Query data")).Result;
                                 try
                                 {
-                                    var poemIds = await context.GanjoorPoems.AsNoTracking().Where(p => p.GanjoorMetreId == null && (onlyPoemsWithRhymes == false || !string.IsNullOrEmpty(p.RhymeLetters))).Select(p => p.Id).ToArrayAsync();
+                                    var poemIds = await context.GanjoorPoems.AsNoTracking()
+                                            .Where(p => 
+                                                p.GanjoorMetreId == null && (onlyPoemsWithRhymes == false || !string.IsNullOrEmpty(p.RhymeLetters))
+                                                &&
+                                                false == (context.GanjoorVerses.Where(v => v.PoemId == p.Id && (v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single)).Any() )
+                                                )
+                                            .Take(poemsNum)
+                                            .Select(p => p.Id)
+                                            .ToArrayAsync();
                                     await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Total: {poemIds.Length}");
                                     var metres = (await GetGanjoorMetres()).Result.Select(m => m.Rhythm).ToArray();
                                     

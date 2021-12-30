@@ -561,8 +561,9 @@ namespace RMuseum.Services
         /// Start finding missing rhthms
         /// </summary>
         /// <param name="onlyPoemsWithRhymes"></param>
+        /// <param name="poemsNum"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartFindingMissingRhythms(bool onlyPoemsWithRhymes);
+        RServiceResult<bool> StartFindingMissingRhythms(bool onlyPoemsWithRhymes, int poemsNum = 1000);
 
         /// <summary>
         /// find poem rhythm

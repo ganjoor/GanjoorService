@@ -529,17 +529,18 @@ namespace RMuseum.Controllers
         /// Start Finding Missing Rhythms
         /// </summary>
         /// <param name="onlyPoemsWithRhymes"></param>
+        /// <param name="poemsNum"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("startfindingmissingrhythms")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartFindingMissingRhythms(bool onlyPoemsWithRhymes)
+        public IActionResult StartFindingMissingRhythms(bool onlyPoemsWithRhymes = true, int poemsNum = 1000)
         {
 
             RServiceResult<bool> res =
-                _ganjoorService.StartFindingMissingRhythms(onlyPoemsWithRhymes);
+                _ganjoorService.StartFindingMissingRhythms(onlyPoemsWithRhymes, poemsNum);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
