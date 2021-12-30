@@ -695,5 +695,13 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetNextGanjoorPoemProbableMetre();
+
+        /// <summary>
+        /// save ganjoor poem probable metre
+        /// </summary>
+        /// <param name="id">problable metre id</param>
+        /// <param name="metre"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> SaveGanjoorPoemProbableMetre(int id, string metre);
     }
 }

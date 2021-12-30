@@ -2255,6 +2255,48 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// save ganjoor poem probable metre
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="metre"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("probablemetre/save/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> SaveGanjoorPoemProbableMetre(int id, [FromBody] string metre)
+        {
+            RServiceResult<bool> res =
+                await _ganjoorService.SaveGanjoorPoemProbableMetre(id, metre);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// dismiss ganjoor poem probable metre
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpDelete]
+        [Route("probablemetre/dismiss/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> DismissGanjoorPoemProbableMetre(int id)
+        {
+            RServiceResult<bool> res =
+                await _ganjoorService.SaveGanjoorPoemProbableMetre(id, "dismissed");
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode

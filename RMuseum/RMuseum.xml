@@ -1371,6 +1371,21 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SaveGanjoorPoemProbableMetre(System.Int32,System.String)">
+            <summary>
+            save ganjoor poem probable metre
+            </summary>
+            <param name="id"></param>
+            <param name="metre"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DismissGanjoorPoemProbableMetre(System.Int32)">
+            <summary>
+            dismiss ganjoor poem probable metre
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -10072,6 +10087,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SaveGanjoorPoemProbableMetre(System.Int32,System.String)">
+            <summary>
+            save ganjoor poem probable metre
+            </summary>
+            <param name="id">problable metre id</param>
+            <param name="metre"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -11281,6 +11304,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -11363,20 +11389,6 @@
             <param name="rhythm"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">
-            <summary>
-            Start finding missing rhthms
-            </summary>
-            <param name="onlyPoemsWithRhymes"></param>
-            <param name="poemsNum"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextGanjoorPoemProbableMetre">
-            <summary>
-            get next ganjoor poem probable metre
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingSubCatsTOC(System.Guid,System.Int32)">
             <summary>
             start generating sub cats TOC
@@ -11435,6 +11447,28 @@
             <summary>
             import GanjoorPage entity data from MySql
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">
+            <summary>
+            Start finding missing rhthms
+            </summary>
+            <param name="onlyPoemsWithRhymes"></param>
+            <param name="poemsNum"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextGanjoorPoemProbableMetre">
+            <summary>
+            get next ganjoor poem probable metre
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SaveGanjoorPoemProbableMetre(System.Int32,System.String)">
+            <summary>
+            save ganjoor poem probable metre
+            </summary>
+            <param name="id">problable metre id</param>
+            <param name="metre"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRelatedPoems(System.Int32,System.Int32,System.Int32)">
