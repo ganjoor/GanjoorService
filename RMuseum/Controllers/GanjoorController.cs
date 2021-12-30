@@ -2233,6 +2233,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get next ganjoor poem probable metre
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("probablemetre/next")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetNextGanjoorPoemProbableMetre()
+        {
+            RServiceResult<GanjoorPoemCompleteViewModel> res =
+                await _ganjoorService.GetNextGanjoorPoemProbableMetre();
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode

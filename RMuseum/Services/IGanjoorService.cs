@@ -687,5 +687,12 @@ namespace RMuseum.Services
         /// <param name="regenerate"></param>
         /// <returns></returns>
         RServiceResult<bool> StartGeneratingRelatedPoemsInfo(bool regenerate);
+
+
+        /// <summary>
+        /// get next ganjoor poem probable metre
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetNextGanjoorPoemProbableMetre();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Generic.Db;
@@ -161,6 +162,27 @@ namespace RMuseum.Services.Implementation
                         });
 
             return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
+        /// get next ganjoor poem probable metre
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetNextGanjoorPoemProbableMetre()
+        {
+            var next = await _context.GanjoorPoemProbableMetres.Where(p => p.Metre != "dismissed").AsNoTracking().FirstOrDefaultAsync();
+            if (next == null)
+                return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
+            var res = await GetPoemById(next.PoemId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return new RServiceResult<GanjoorPoemCompleteViewModel>(null, res.ExceptionString);
+            if (res.Result == null)
+                return new RServiceResult<GanjoorPoemCompleteViewModel>(null, "poem does not exist!");
+            res.Result.GanjoorMetre = new GanjoorMetre()
+            {
+                Rhythm = next.Metre
+            };
+            return res;
         }
 
         private async Task _GeneratingSubCatsTOC(Guid userId, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int catId)
