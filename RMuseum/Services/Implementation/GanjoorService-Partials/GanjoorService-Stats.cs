@@ -215,7 +215,7 @@ namespace RMuseum.Services.Implementation
                                             var rhythm = rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).SingleOrDefault();
                                             if(rhythm != null)
                                             {
-                                                rhythm.VerseCount = rhythmsCoupletCounts.Count;
+                                                rhythm.VerseCount = rhythmsCoupletCounts[i].Count;
                                                 context.Update(rhythm);
                                             }
                                             string rhythmName = rhythmsCoupletCounts[i].GanjoorMetreId == null ? "وزنیابی نشده" :
