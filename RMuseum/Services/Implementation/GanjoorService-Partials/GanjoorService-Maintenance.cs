@@ -125,7 +125,7 @@ namespace RMuseum.Services.Implementation
                                             .Select(p => p.Id)
                                             .ToArrayAsync();
                                     await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Total: {poemIds.Length}");
-                                    var metres = (await GetGanjoorMetres()).Result.Select(m => m.Rhythm).ToArray();
+                                    var metres = await context.GanjoorMetres.OrderBy(m => m.Rhythm).AsNoTracking().Select(m => m.Rhythm).ToArrayAsync();
                                     
                                     using (HttpClient httpClient = new HttpClient())
                                     {
