@@ -135,7 +135,7 @@ namespace RMuseum.Services.Implementation
                                             if ((await context.GanjoorPoemProbableMetres.Where(p => p.PoemId == id).AnyAsync()) == true)
                                                 continue;
 
-                                            var res = await _FindPoemRhythm(id, _context, httpClient, metres, true );
+                                            var res = await _FindPoemRhythm(id, context, httpClient, metres, true );
                                             if (res.Result == null)
                                                 res.Result = "";
 
