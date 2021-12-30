@@ -1864,6 +1864,7 @@ namespace RMuseum.Controllers
         /// <summary>
         /// returns ganjoor metre list ordered by rhythm
         /// </summary>
+        /// <param name="sortOnVerseCount"></param>
         /// <returns></returns>
 
         [HttpGet]
@@ -1872,9 +1873,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorMetre>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> GetGanjoorMetres()
+        public async Task<IActionResult> GetGanjoorMetres(bool sortOnVerseCount = false)
         {
-            var res = await _ganjoorService.GetGanjoorMetres();
+            var res = await _ganjoorService.GetGanjoorMetres(sortOnVerseCount);
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);

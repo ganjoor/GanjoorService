@@ -1250,10 +1250,11 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorMetres">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorMetres(System.Boolean)">
             <summary>
             returns ganjoor metre list ordered by rhythm
             </summary>
+            <param name="sortOnVerseCount"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.FindPoemRhyme(System.Int32)">
@@ -1362,6 +1363,12 @@
             start generating related poems info
             </summary>
             <param name="regenerate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetNextGanjoorPoemProbableMetre">
+            <summary>
+            get next ganjoor poem probable metre
+            </summary>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
@@ -9787,10 +9794,11 @@
             <param name="imageId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorMetres">
+        <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorMetres(System.Boolean)">
             <summary>
             returns metre list (ordered by Rhythm)
             </summary>
+            <param name="sortOnVerseCount"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.Faal(System.Int32,System.Boolean)">
@@ -10056,6 +10064,12 @@
             start generating related poems info
             </summary>
             <param name="regenerate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetNextGanjoorPoemProbableMetre">
+            <summary>
+            get next ganjoor poem probable metre
+            </summary>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
@@ -11357,6 +11371,12 @@
             <param name="poemsNum"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextGanjoorPoemProbableMetre">
+            <summary>
+            get next ganjoor poem probable metre
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingSubCatsTOC(System.Guid,System.Int32)">
             <summary>
             start generating sub cats TOC
@@ -11914,10 +11934,11 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorMetres">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorMetres(System.Boolean)">
             <summary>
             returns metre list (ordered by Rhythm)
             </summary>
+            <param name="sortOnVerseCount"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoetAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">

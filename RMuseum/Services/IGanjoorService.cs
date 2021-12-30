@@ -415,8 +415,9 @@ namespace RMuseum.Services
         /// <summary>
         /// returns metre list (ordered by Rhythm)
         /// </summary>
+        /// <param name="sortOnVerseCount"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorMetre[]>> GetGanjoorMetres();
+        Task<RServiceResult<GanjoorMetre[]>> GetGanjoorMetres(bool sortOnVerseCount = false);
 
 
         /// <summary>

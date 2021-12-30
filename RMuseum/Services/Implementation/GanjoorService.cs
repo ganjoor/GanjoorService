@@ -3172,10 +3172,16 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// returns metre list (ordered by Rhythm)
         /// </summary>
+        /// <param name="sortOnVerseCount"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorMetre[]>> GetGanjoorMetres()
+        public async Task<RServiceResult<GanjoorMetre[]>> GetGanjoorMetres(bool sortOnVerseCount = false)
         {
-            return new RServiceResult<GanjoorMetre[]>(await _context.GanjoorMetres.OrderBy(m => m.Rhythm).AsNoTracking().ToArrayAsync());
+            return new RServiceResult<GanjoorMetre[]>(
+                sortOnVerseCount ?
+                await _context.GanjoorMetres.OrderByDescending(m => m.VerseCount).AsNoTracking().ToArrayAsync()
+                :
+                await _context.GanjoorMetres.OrderBy(m => m.Rhythm).AsNoTracking().ToArrayAsync()
+                );
         }
 
         private void CleanPoetCache(int poetId)
