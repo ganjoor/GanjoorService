@@ -2015,7 +2015,7 @@ namespace RMuseum.Services.Implementationa
 
                     score.TotalScores = score.EarlynessAdvantage
                          + score.UpVotes
-                         - score.Mistakes;
+                         - (5 * score.Mistakes);
 
                     //audio order is used as a temporary variable in the following line and soon is get replaced by computed value
                     recitation.AudioOrder = score.TotalScores;
