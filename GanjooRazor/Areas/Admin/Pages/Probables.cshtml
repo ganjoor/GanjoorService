@@ -1,0 +1,73 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.ProbablesModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "اوزان محتمل";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <p>@Model.LastMessage</p>
+}
+else
+{
+    <form method="post">
+        <table>
+            <tr>
+                <td>
+                    <select asp-for="Poem.GanjoorMetre.Rhythm" style="width: 500px">
+                        @foreach (var rhythm in Model.Rhythms)
+                        {
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
+                    </select>
+                    <input type="hidden" asp-for="Poem.GanjoorMetre.Id" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="submit" style="width:100%;color:white;background-color:green">ذخیره</button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+           
+        </table>
+    </form>
+    <form method="post" action="/Admin/Probables/?Handler=Dismiss">
+        <table>
+            <tr>
+                <td>
+                    <input type="hidden" asp-for="Poem.GanjoorMetre.Id" />
+                    <button type="submit" style="width:100%;color:white;background-color:red">نادیده بگیر</button>
+                </td>
+            </tr>
+            <tr>
+        </table>
+    </form>
+
+    <table>
+        <tr>
+            <td>
+                <a href="@Model.Poem.FullUrl" target="_blank">@Model.Poem.FullTitle</a>
+            </td>
+        </tr>
+        @foreach(var verse in Model.Poem.Verses)
+        {
+            <tr>
+                <td>
+                    @verse.Text
+                </td>
+
+            </tr>
+        }
+    </table>
+}
+
+
+
