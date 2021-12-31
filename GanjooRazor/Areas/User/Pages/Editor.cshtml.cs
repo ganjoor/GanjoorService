@@ -177,7 +177,7 @@ namespace GanjooRazor.Areas.User.Pages
                                 new GanjoorVerseVOrderText()
                                 {
                                     VORder = vOrder,
-                                    Text = vParts[1]
+                                    Text = vParts[1].Replace("ۀ", "هٔ")
                                 }
                                 );
                         }
