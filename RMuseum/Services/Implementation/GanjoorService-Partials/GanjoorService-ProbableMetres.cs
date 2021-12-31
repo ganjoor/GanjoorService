@@ -103,6 +103,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorPoemCompleteViewModel>(null, "poem does not exist!");
             res.Result.GanjoorMetre = new GanjoorMetre()
             {
+                Id = next.Id,
                 Rhythm = next.Metre
             };
             return res;
