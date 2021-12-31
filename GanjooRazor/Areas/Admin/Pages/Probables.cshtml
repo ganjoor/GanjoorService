@@ -11,10 +11,27 @@
 {
     <p>@Model.LastMessage</p>
 }
-else
+else if(Model.Rhythms != null && Model.Poem != null)
 {
     <form method="post">
         <table>
+            <tr>
+                <td>
+                    <input type="text" id="select-search" value = "" oninput = "doSearchInMetreCombo()" />
+                    <script>
+                        function doSearchInMetreCombo(){
+                            var value = document.getElementById('select-search').value;
+                            var options = document.getElementById('Poem_GanjoorMetre_Rhythm').options
+                            for(var i=0; i < options.length; i++){
+                                if(options[i].value.indexOf(value) != -1){
+                                    document.getElementById('Poem_GanjoorMetre_Rhythm').value = options[i].value;
+                                    break;
+                                }
+                            }
+                        }
+                    </script>
+                </td>
+            </tr>
             <tr>
                 <td>
                     <select asp-for="Poem.GanjoorMetre.Rhythm" style="width: 500px">

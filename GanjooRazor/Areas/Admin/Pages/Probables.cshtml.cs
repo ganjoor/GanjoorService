@@ -92,7 +92,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         LastMessage = "وزنی انتخاب نشده.";
                         return Page();
                     }
-                    var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/probablemetre/save/{probableRecordId}",
+                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/probablemetre/save/{probableRecordId}",
                         new StringContent(JsonConvert.SerializeObject(metre), Encoding.UTF8, "application/json")
                         );
 
