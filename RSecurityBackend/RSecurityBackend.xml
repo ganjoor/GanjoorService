@@ -1372,7 +1372,7 @@
             username
             </summary>
             <example>
-            admin@ganjoor.net
+            email@domain.com
             </example>
         </member>
         <member name="P:RSecurityBackend.Models.Auth.ViewModels.LoginViewModel.Password">
@@ -1565,7 +1565,7 @@
             Email
             </summary>
             <example>
-            admin@ganjoor.net
+            email@domain.com
             </example>
         </member>
         <member name="P:RSecurityBackend.Models.Auth.ViewModels.ResetPasswordViewModel.Secret">
@@ -1627,7 +1627,7 @@
             Email
             </summary>
             <example>
-            admin@ganjoor.net
+            email@domain.com
             </example>
         </member>
         <member name="P:RSecurityBackend.Models.Auth.ViewModels.UnverifiedSignUpViewModel.ClientAppName">
@@ -1686,7 +1686,7 @@
             Email
             </summary>
             <example>
-            admin@ganjoor.net
+            email@domain.com
             </example>
         </member>
         <member name="P:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel.Secret">

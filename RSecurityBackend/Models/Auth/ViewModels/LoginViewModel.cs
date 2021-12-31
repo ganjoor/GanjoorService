@@ -11,7 +11,7 @@ namespace RSecurityBackend.Models.Auth.ViewModels
         /// username
         /// </summary>
         /// <example>
-        /// admin@ganjoor.net
+        /// email@domain.com
         /// </example>
         public string Username { get; set; }
 
