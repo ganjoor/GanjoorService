@@ -90,9 +90,26 @@ h1 {
     height: 100px;
 }
 
+@keyframes logo-spin {
+    from {
+        transform: rotate(325deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+.home-logo {
+    width: auto;
+    margin: auto;
+    animation: logo-spin 1s cubic-bezier(.6,-0.28,.74,.05);
+}
+
 h1 a img {
     border: none;
     display: block;
+    animation: logo-spin 1s cubic-bezier(.6,-0.28,.74,.05);
 }
 
 #fa {
