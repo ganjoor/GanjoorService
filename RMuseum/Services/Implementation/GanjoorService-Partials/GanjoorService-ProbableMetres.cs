@@ -141,10 +141,30 @@ namespace RMuseum.Services.Implementation
                     await _context.SaveChangesAsync();
                 }
                 var poem = await _context.GanjoorPoems.Where(p => p.Id == item.PoemId).SingleAsync();
+                int? oldMetreId = poem.GanjoorMetreId;
                 poem.GanjoorMetreId = rhythm.Id;
                 _context.Update(poem);
                 _context.Remove(item);
                 await _context.SaveChangesAsync();
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                        (
+                        async token =>
+                        {
+                            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                            {
+                                if (oldMetreId != null && !string.IsNullOrEmpty(poem.RhymeLetters))
+                                {
+                                    await _UpdateRelatedPoems(context, (int)oldMetreId, poem.RhymeLetters);
+                                    await context.SaveChangesAsync();
+                                }
+
+                                if (poem.GanjoorMetreId != null && !string.IsNullOrEmpty(poem.RhymeLetters))
+                                {
+                                    await _UpdateRelatedPoems(context, (int)poem.GanjoorMetreId, poem.RhymeLetters);
+                                    await context.SaveChangesAsync();
+                                }
+                            }
+                        });
                 return new RServiceResult<bool>(true);
             }
             catch(Exception exp)
