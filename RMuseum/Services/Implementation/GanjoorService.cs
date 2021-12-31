@@ -1907,7 +1907,7 @@ namespace RMuseum.Services.Implementation
                 if (dbCorrection.Result == CorrectionReviewResult.Approved)
                 {
                     dbCorrection.AffectedThePoem = true;
-                    pageViewModel.Title = moderation.Title;
+                    pageViewModel.Title = moderation.Title.Replace("ۀ", "هٔ").Replace("ك", "ک");
                 }
             }
 
@@ -1939,7 +1939,7 @@ namespace RMuseum.Services.Implementation
                 if (dbVerse.Result == CorrectionReviewResult.Approved)
                 {
                     dbCorrection.AffectedThePoem = true;
-                    poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).Single().Text = moderatedVerse.Text;
+                    poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).Single().Text = moderatedVerse.Text.Replace("ۀ", "هٔ").Replace("ك", "ک");
                 }
             }
 
