@@ -169,7 +169,7 @@ namespace GanjooRazor.Areas.User.Pages
                         var vParts = v.Split("TextSeparator", System.StringSplitOptions.RemoveEmptyEntries);
                         int vOrder = int.Parse(vParts[0]);
                         if (vOrder == 0)
-                            title = vParts[1];
+                            title = vParts[1].Replace("ۀ", "هٔ");
                         else
                         {
                             vOrderTexts.Add
