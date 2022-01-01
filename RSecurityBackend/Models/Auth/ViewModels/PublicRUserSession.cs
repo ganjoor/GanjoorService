@@ -27,7 +27,7 @@ namespace RSecurityBackend.Models.Auth.ViewModels
         /// Client Application Name
         /// </summary>
         /// <example>
-        /// Ganjoor Angular Client
+        /// App Angular Client
         /// </example>
         public string ClientAppName { get; set; }
 

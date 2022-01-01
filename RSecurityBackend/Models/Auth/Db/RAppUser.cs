@@ -6,7 +6,7 @@ using RSecurityBackend.Models.Image;
 namespace RSecurityBackend.Models.Auth.Db
 {
     /// <summary>
-    /// Ganjoor Application User
+    /// Application User
     /// </summary>
     public class RAppUser : IdentityUser<Guid>
     {   

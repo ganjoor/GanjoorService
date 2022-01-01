@@ -33,7 +33,7 @@ namespace RSecurityBackend.Models.Auth.ViewModels
         /// User Email
         /// </summary>
         /// <example>
-        /// test@ganjoor.net
+        /// email@domain.com
         /// </example>
         [EmailAddress]
         public string Email { get; set; }

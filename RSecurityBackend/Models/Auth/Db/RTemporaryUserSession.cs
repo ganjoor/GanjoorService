@@ -3,7 +3,7 @@
 namespace RSecurityBackend.Models.Auth.Db
 {
     /// <summary>
-    /// Ganjoor User Session (Temporary)
+    /// App User Session (Temporary)
     /// </summary>
     /// <remarks>
     /// Warning: Instances are supposed to delete when user logs out, so do not link anything serious to it
@@ -34,7 +34,7 @@ namespace RSecurityBackend.Models.Auth.Db
         /// Client Application Name
         /// </summary>
         /// <example>
-        /// Ganjoor Angular Client
+        /// My Angular Client
         /// </example>
         public string ClientAppName { get; set; }
 
