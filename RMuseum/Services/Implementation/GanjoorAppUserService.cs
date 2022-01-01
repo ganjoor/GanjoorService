@@ -150,6 +150,27 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// Start signup process using email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="clientIPAddress"></param>
+        /// <param name="clientAppName"></param>
+        /// <param name="langauge"></param>
+        /// <returns></returns>
+        public override async Task<RServiceResult<RVerifyQueueItem>> SignUp(string email, string clientIPAddress, string clientAppName, string langauge)
+        {
+            RServiceResult<RVerifyQueueItem> res = await base.SignUp(email, clientIPAddress, clientAppName, langauge);
+            if(res.Result == null)
+            {
+                if(res.ExceptionString == "شما قبلا ثبت نام کرده‌اید.")
+                {
+                    return new RServiceResult<RVerifyQueueItem>(null, "شما قبلا ثبت نام کرده‌اید. توجه بفرمایید که کاربران گنجینهٔ گنجور و پیشخان خوانشگران یکسانند و می‌توانید با همان نام کاربری اینجا وارد شوید.");
+                }
+            }
+            return res;
+        }
+
+        /// <summary>
         /// finalize signup and assign his or him comments to him or her
         /// </summary>
         /// <param name="email"></param>

@@ -11159,6 +11159,16 @@
             <param name="signupCallbackUrl"></param>
             <returns>html content</returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.SignUp(System.String,System.String,System.String,System.String)">
+            <summary>
+            Start signup process using email
+            </summary>
+            <param name="email"></param>
+            <param name="clientIPAddress"></param>
+            <param name="clientAppName"></param>
+            <param name="langauge"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.FinalizeSignUp(System.String,System.String,System.String,System.String,System.String)">
             <summary>
             finalize signup and assign his or him comments to him or her
