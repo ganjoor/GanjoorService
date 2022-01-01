@@ -625,51 +625,6 @@
             </summary>
             <param name="roleService"></param>
         </member>
-        <member name="T:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase">
-            <summary>
-            base class for controllers needing UserScopeCheck
-            </summary>
-        </member>
-        <member name="P:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase.UserScopeCheckEntityShortName">
-            <summary>
-            UserScopeCheck method EntityShortName;
-            </summary>
-            <example>
-            RBillingSecurableItem.TenantEntityShortName
-            </example>
-        </member>
-        <member name="P:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase.UserScopeCheckOperationShortName">
-            <summary>
-            UserScopeCheck method OperationShortName
-            </summary>
-            <example>
-            SecurableItem.ViewOperationShortName
-            </example>
-        </member>
-        <member name="M:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase.GetUserIdUnlessUserHavePermissionToReadAllUsersDataWhichReturnEmptyUserId">
-            <summary>
-            returns user id if user is a guest, and empty if he/she has access to view all users information
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase.CanReadUserData(System.Guid)">
-            <summary>
-            can current user read this userId daya
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="F:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase._userPermissionChecker">
-            <summary>
-            Permission Checker Service
-            </summary>
-        </member>
-        <member name="M:RSecurityBackend.Controllers.UserScopeCheckEnabledControllerBase.#ctor(RSecurityBackend.Services.IUserPermissionChecker)">
-            <summary>
-            constructor
-            </summary>
-            <param name="userPermissionChecker"></param>
-        </member>
         <member name="T:RSecurityBackend.DbContext.RSecurityDbContext`3">
             <summary>
             Security EF DbContext
@@ -3952,26 +3907,6 @@
             </summary>
             <param name="uniqueChars"></param>
             <returns></returns>
-        </member>
-        <member name="T:RBilling.Models.Tenant.Db.RChargableFeatureType">
-            <summary>
-            Chargable Feature For Tenant Type
-            </summary>
-        </member>
-        <member name="F:RBilling.Models.Tenant.Db.RChargableFeatureType.Boolean">
-            <summary>
-            yes/no
-            </summary>
-        </member>
-        <member name="F:RBilling.Models.Tenant.Db.RChargableFeatureType.RegularNumber">
-            <summary>
-            0, ...
-            </summary>
-        </member>
-        <member name="F:RBilling.Models.Tenant.Db.RChargableFeatureType.FloatNumber">
-            <summary>
-            1.222 or large numbers
-            </summary>
         </member>
     </members>
 </doc>
