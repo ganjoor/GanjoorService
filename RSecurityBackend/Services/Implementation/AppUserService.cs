@@ -1413,10 +1413,10 @@ namespace RSecurityBackend.Services.Implementation
             {
                 RAppUser admin = new RAppUser()
                 {
-                    UserName = "admin@ganjoor.net",
+                    UserName = $"{Configuration.GetSection("RSecurityBackend")["FirstUserEmail"]}",
                     FirstName = "راهبر",
                     SureName = "سیستم",
-                    Email = "admin@ganjoor.net",
+                    Email = $"{Configuration.GetSection("RSecurityBackend")["FirstUserEmail"]}",
                     PhoneNumber = "00989123456789",
                     CreateDate = DateTime.Now,
                     Status = RAppUserStatus.Active
@@ -1508,7 +1508,7 @@ namespace RSecurityBackend.Services.Implementation
             }
 
             var token = new JwtSecurityToken(
-                issuer: "Ganjoor",
+                issuer: $"{Configuration.GetSection("RSecurityBackend")["ApplicationName"]}",
                 audience: "Everyone",
                 claims: claims,
                 notBefore: DateTime.UtcNow,
@@ -1549,7 +1549,7 @@ namespace RSecurityBackend.Services.Implementation
                 ValidateAudience = false,
                 ValidAudience = "Everyone",
                 ValidateIssuer = true,
-                ValidIssuer = "Ganjoor",
+                ValidIssuer = $"{Configuration.GetSection("RSecurityBackend")["ApplicationName"]}",
 
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TokenSecret)),
@@ -1600,7 +1600,7 @@ namespace RSecurityBackend.Services.Implementation
         public virtual string GetEmailSubject(RVerifyQueueType op, string secretCode)
         {
             string opString = op == RVerifyQueueType.SignUp ? "SignUp" : op == RVerifyQueueType.ForgotPassword ? "Forgot Password" : op == RVerifyQueueType.KickOutUser ? "User Removal" : "Self Delete User";
-            return $"Ganjoor {opString} Code:{secretCode}";
+            return $"Application {opString} Code:{secretCode}";
         }
 
         /// <summary>
