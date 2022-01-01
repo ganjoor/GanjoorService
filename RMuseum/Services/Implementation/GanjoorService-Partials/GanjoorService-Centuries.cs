@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using RMuseum.Models.Ganjoor.ViewModels;
+using System.Globalization;
 
 namespace RMuseum.Services.Implementation
 {
@@ -45,7 +46,7 @@ namespace RMuseum.Services.Implementation
                 }
                 res.Add(model);
             }
-
+            var fa = new CultureInfo("fa-IR");
             foreach (var dbCentury in dbCenturies)
             {
                 GanjoorCenturyViewModel model = new GanjoorCenturyViewModel()
@@ -63,6 +64,8 @@ namespace RMuseum.Services.Implementation
                 {
                     model.Poets.Add(poets.Where(p => p.Id == poet.PoetId).Single());
                 }
+
+                model.Poets.Sort((a, b) => fa.CompareInfo.Compare(a.Nickname, b.Nickname));//sort each century poets alphabetically
 
                 res.Add(model);
             }
