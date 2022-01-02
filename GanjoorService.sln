@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RSecurityBackend", "RSecurityBackend\RSecurityBackend.csproj", "{1BF45DCD-40F4-4D6E-9134-D6B3DE39C56E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMuseum", "RMuseum\RMuseum.csproj", "{113EF3DE-E8A9-40EF-9DA0-8DFABB3CDD68}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GanjooRazor", "GanjooRazor\GanjooRazor.csproj", "{48F9CDFA-625F-4743-BF21-BD556F6F33E8}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1BF45DCD-40F4-4D6E-9134-D6B3DE39C56E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1BF45DCD-40F4-4D6E-9134-D6B3DE39C56E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1BF45DCD-40F4-4D6E-9134-D6B3DE39C56E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1BF45DCD-40F4-4D6E-9134-D6B3DE39C56E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{113EF3DE-E8A9-40EF-9DA0-8DFABB3CDD68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{113EF3DE-E8A9-40EF-9DA0-8DFABB3CDD68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{113EF3DE-E8A9-40EF-9DA0-8DFABB3CDD68}.Release|Any CPU.ActiveCfg = Release|Any CPU

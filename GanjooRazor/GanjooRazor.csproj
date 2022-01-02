@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RMuseum\RMuseum.csproj" />
-    <ProjectReference Include="..\RSecurityBackend\RSecurityBackend.csproj" />
   </ItemGroup>
 
   <ItemGroup>
