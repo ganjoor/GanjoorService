@@ -3657,7 +3657,7 @@ namespace RMuseum.Services.Implementation
 
                 Dictionary<string, int> rhytmCounter = new Dictionary<string, int>();
 
-                for (int i = 0; i < Math.Min(verses.Count, 20); i++)
+                for (int i = 0; i < verses.Count; i++)
                 {
                     var verse = verses[i];
 
