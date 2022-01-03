@@ -247,7 +247,7 @@ select {
         width: 100%;
         font-family: Vazir;
         font-weight: 300;
-        font-size: 0.8em;
+        font-size: 0.9em;
         text-align: center;
         margin-bottom: 30px;
     }
@@ -255,9 +255,7 @@ select {
         .poet .caption a {
             border-radius: 5px;
             display: block;
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
             padding: 5px;
-            background-color: rgba(130,0,0,0.5);
             border-radius: 5px;
             margin-top: 5px;
         }
@@ -267,12 +265,11 @@ select {
 }
 
 #fa .poet .caption a {
-    color: white;
-   
+    color: rgba(130,0,0,0.9);
 }
 
 #fa .caption a:hover {
-    font-weight: bold;
+    color: white;
     background-color: rgba(130,0,0,0.9);
 }
 
