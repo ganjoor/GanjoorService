@@ -255,7 +255,9 @@ select {
         .poet .caption a {
             border-radius: 5px;
             display: block;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
             padding: 5px;
+            background-color: darkred;
             border-radius: 5px;
             margin-top: 5px;
         }
@@ -265,12 +267,13 @@ select {
 }
 
 #fa .poet .caption a {
-    color: rgba(130,0,0,0.9);
+    color: white;
+   
 }
 
 #fa .caption a:hover {
-    color: white;
-    background-color: rgba(130,0,0,0.9);
+    font-weight: bold;
+    background-color: #300;
 }
 
 .width-100per {
