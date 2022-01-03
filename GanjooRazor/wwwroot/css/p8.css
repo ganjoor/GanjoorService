@@ -249,9 +249,31 @@ select {
         font-weight: 300;
         font-size: 0.8em;
         text-align: center;
-        margin-right: 1px;
-        margin-bottom: 25px;
+        margin-bottom: 30px;
     }
+
+        .poet .caption a {
+            border-radius: 5px;
+            display: block;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            padding: 5px;
+            background-color: #300;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+.caption {
+    max-height: 20px;
+}
+
+#fa .poet .caption a {
+    color: white;
+}
+
+#fa .caption a:hover {
+    font-weight: bold;
+}
 
 .width-100per {
     width: 100%;
@@ -261,13 +283,8 @@ select {
     text-align: center;
 }
 
-.caption {
-    max-height: 20px;
-}
 
-#fa .caption a:hover {
-    color: #300
-}
+
 
 a img {
     border: none;
@@ -944,9 +961,9 @@ ol {
         opacity: 1;
     }
 
-.w3tooltiptext{
+.w3tooltiptext {
     font-family: Vazir;
-    font-size:12px;
+    font-size: 12px;
 }
 
 .submitCommentButton, form div input.inputSubmit, #postcomment.inputSubmit, input[type="submit"] {
@@ -1262,10 +1279,10 @@ ol {
 .audio-partial-action-box {
 }
 
-.recitation-button{
-    display:inline-flex;
-    padding:5px;
-    border-radius:10px;
+.recitation-button {
+    display: inline-flex;
+    padding: 5px;
+    border-radius: 10px;
     font-size: 0.8em;
 }
 
@@ -1309,8 +1326,8 @@ ol {
     content: 'public';
 }
 
-audio{
-    width:100%;
+audio {
+    width: 100%;
 }
 
 .recitaion-mistakes-header {
