@@ -43,6 +43,8 @@ namespace RMuseum.Services.Implementation
                                                 p.GanjoorMetreId == null && (onlyPoemsWithRhymes == false || !string.IsNullOrEmpty(p.RhymeLetters))
                                                 &&
                                                 false == (context.GanjoorVerses.Where(v => v.PoemId == p.Id && (v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single)).Any())
+                                                &&
+                                                false == (context.GanjoorPoemProbableMetres.Where(r => r.PoemId == p.Id).Any())
                                                 )
                                             .Take(poemsNum)
                                             .Select(p => p.Id)
@@ -55,9 +57,6 @@ namespace RMuseum.Services.Implementation
                                         for (int i = 0; i < poemIds.Length; i++)
                                         {
                                             var id = poemIds[i];
-                                            if ((await context.GanjoorPoemProbableMetres.Where(p => p.PoemId == id).AnyAsync()) == true)
-                                                continue;
-
                                             var res = await _FindPoemRhythm(id, context, httpClient, metres, true);
                                             if (res.Result == null)
                                                 res.Result = "";
