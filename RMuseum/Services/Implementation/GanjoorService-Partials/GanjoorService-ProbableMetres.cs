@@ -109,6 +109,38 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get a list of ganjoor poems probable metres
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetUnreviewedGanjoorPoemProbableMetres(PagingParameterModel paging)
+        {
+            try
+            {
+                var source = from probable in _context.GanjoorPoemProbableMetres.AsNoTracking() where probable.Metre != "dismissed" select probable;
+                (PaginationMetadata PagingMeta, GanjoorPoemProbableMetre[] Items) paginatedResult =
+                    await QueryablePaginator<GanjoorPoemProbableMetre>.Paginate(source, paging);
+                List<GanjoorPoemCompleteViewModel> poems = new List<GanjoorPoemCompleteViewModel>();
+                foreach (var next in paginatedResult.Items)
+                {
+                    var res = await GetPoemById(next.PoemId);
+                    var poem = res.Result;
+                    poem.GanjoorMetre = new GanjoorMetre()
+                    {
+                        Id = next.Id,
+                        Rhythm = next.Metre
+                    };
+                    poems.Add(poem);
+                }
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((paginatedResult.PagingMeta, poems.ToArray()));
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// save ganjoor poem probable metre
         /// </summary>
         /// <param name="id">problable metre id</param>

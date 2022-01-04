@@ -1371,6 +1371,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUnreviewedGanjoorPoemProbableMetres(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get a list of ganjoor poems probable metres
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SaveGanjoorPoemProbableMetre(System.Int32,System.String)">
             <summary>
             save ganjoor poem probable metre
@@ -10087,6 +10094,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUnreviewedGanjoorPoemProbableMetres(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get a list of ganjoor poems probable metres
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.SaveGanjoorPoemProbableMetre(System.Int32,System.String)">
             <summary>
             save ganjoor poem probable metre
@@ -11471,6 +11485,13 @@
             <summary>
             get next ganjoor poem probable metre
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedGanjoorPoemProbableMetres(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get a list of ganjoor poems probable metres
+            </summary>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SaveGanjoorPoemProbableMetre(System.Int32,System.String)">

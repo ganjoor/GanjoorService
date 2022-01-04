@@ -2255,6 +2255,29 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get a list of ganjoor poems probable metres
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("probablemetre/list")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetUnreviewedGanjoorPoemProbableMetres([FromQuery] PagingParameterModel paging)
+        {
+            var res =
+                await _ganjoorService.GetUnreviewedGanjoorPoemProbableMetres(paging);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            return Ok(res.Result.Items);
+        }
+
+        /// <summary>
         /// save ganjoor poem probable metre
         /// </summary>
         /// <param name="id"></param>
