@@ -57,68 +57,71 @@
                 <div class="century" id="cl">
                     دسته‌بندی بر اساس قرن
                 </div>
-                <div class="circled-number-container">
-                    @foreach (var g in Model.PoetGroups)
-                    {
-                        if (g.Id != 0)
-                        {
-                            <a href="#pg-@g.Id">
-                                <div class="circled-number">
-                                    @((g.HalfCenturyOrder + 2).ToPersianNumbers())
-                                </div>
-                            </a>
-                        }
-                    }
-                    <a href="#gmap">
-                        <div class="circled-number">
-                            <i class="noindent-info-button map-icon"></i>
-                        </div>
-                    </a>
-                </div>
 
-                foreach (var poetGroup in Model.PoetGroups)
-                {
-                    if (poetGroup.Id == 0) continue;
-                    if (poetGroup.ShowInTimeLine)
-                    {
-                        <div class="century" id="pg-@poetGroup.Id">
-                            @poetGroup.Name
-                            <a role="button" class="w3tooltip cursor-pointer" href="#cl"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">برگشت</span></a>
-                        </div>
-                    }
-                    <div class="spacer">
-                        @foreach (var poet in poetGroup.Poets)
+                <div id="real-centuries">
+                    <div class="circled-number-container">
+                        @foreach (var g in Model.PoetGroups)
                         {
-                            <div class="poet">
-                                <a href="@poet.FullUrl" title="@poet.Name">
-                                    <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
+                            if (g.Id != 0)
+                            {
+                                <a href="#pg-@g.Id">
+                                    <div class="circled-number">
+                                        @((g.HalfCenturyOrder + 2).ToPersianNumbers())
+                                    </div>
                                 </a>
-                                <div class="caption">
-                                    <a href="@poet.FullUrl">@poet.Nickname</a>
-                                </div>
+                            }
+                        }
+                        <a href="#gmap">
+                            <div class="circled-number">
+                                <i class="noindent-info-button map-icon"></i>
+                            </div>
+                        </a>
+                    </div>
+
+                    @foreach (var poetGroup in Model.PoetGroups)
+                    {
+                        if (poetGroup.Id == 0) continue;
+                        if (poetGroup.ShowInTimeLine)
+                        {
+                            <div class="century" id="pg-@poetGroup.Id">
+                                @poetGroup.Name
+                                <a role="button" class="w3tooltip cursor-pointer" href="#cl"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">برگشت</span></a>
                             </div>
                         }
-                    </div>
-                    @if (poetGroup.Id == 0)
-                    {
-                        <div class="century" id="cl">
-                            دسته‌بندی بر اساس قرن
-                        </div>
-                        <div class="circled-number-container">
-                            @foreach (var g in Model.PoetGroups)
+                        <div class="spacer">
+                            @foreach (var poet in poetGroup.Poets)
                             {
-                                if (g.Id != 0)
-                                {
-                                    <a href="#pg-@g.Id">
-                                        <div class="circled-number">
-                                            @((g.HalfCenturyOrder + 2).ToPersianNumbers())
-                                        </div>
+                                <div class="poet">
+                                    <a href="@poet.FullUrl" title="@poet.Name">
+                                        <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
                                     </a>
-                                }
+                                    <div class="caption">
+                                        <a href="@poet.FullUrl">@poet.Nickname</a>
+                                    </div>
+                                </div>
                             }
                         </div>
+                        @if (poetGroup.Id == 0)
+                        {
+                            <div class="century" id="cl">
+                                دسته‌بندی بر اساس قرن
+                            </div>
+                            <div class="circled-number-container">
+                                @foreach (var g in Model.PoetGroups)
+                                {
+                                    if (g.Id != 0)
+                                    {
+                                        <a href="#pg-@g.Id">
+                                            <div class="circled-number">
+                                                @((g.HalfCenturyOrder + 2).ToPersianNumbers())
+                                            </div>
+                                        </a>
+                                    }
+                                }
+                            </div>
+                        }
                     }
-                }
+                </div>
             }
 
 
