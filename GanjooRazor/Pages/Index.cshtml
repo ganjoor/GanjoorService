@@ -116,8 +116,8 @@
                 @foreach (var recitation in Model.GanjoorPage.Poem.Recitations)
                 {
                     <text>
-                        narrators.push('@Html.Raw(recitation.AudioArtist)');
-                        audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
+                            narrators.push('@Html.Raw(recitation.AudioArtist)');
+                            audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
                     </text>
                 }
             </script>
@@ -162,48 +162,48 @@
         }
     }
 
+    @if (Model.IsPoemPage)
+    {
+        <script src="/lib/tinymce/tinymce.min.js"></script>
+        <script>
+            var userNotifiedOnEditInsteadOfComment = false;
 
-    <script src="/lib/tinymce/tinymce.min.js"></script>
-    <script>
-        var userNotifiedOnEditInsteadOfComment = false;
+            function createInformationNotification() {
+              tinymce.activeEditor.notificationManager.open({
+                text: 'تمنا می‌کنیم که به جای گوشزد کردن خطاهای املایی و تایپی در حاشیه‌ها از دکمهٔ «ویرایش» استفاده کنید و خطا را تصحیح کنید.',
+                type: 'info'
+              });
+            }
 
-        function createInformationNotification() {
-          tinymce.activeEditor.notificationManager.open({
-            text: 'تمنا می‌کنیم که به جای گوشزد کردن خطاهای املایی و تایپی در حاشیه‌ها از دکمهٔ «ویرایش» استفاده کنید و خطا را تصحیح کنید.',
-            type: 'info'
-          });
-        }
-
-        tinymce.init({
-            selector: 'textarea.editor',
-            language: 'fa_IR',
-            menubar: false,
-            plugins: 'link paste',
-            toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | link',
-            paste_auto_cleanup_on_paste: true,
-            paste_remove_styles: true,
-            paste_remove_styles_if_webkit: true,
-            paste_strip_class_attributes: true,
-            setup: function(editor) {
-            editor.on('tap', function(e) {
-                if(userNotifiedOnEditInsteadOfComment == false){
-                    userNotifiedOnEditInsteadOfComment = true;
-                    createInformationNotification();
-                }
-            },
-            );
-            editor.on('click', function(e) {
-                if(userNotifiedOnEditInsteadOfComment == false){
-                    userNotifiedOnEditInsteadOfComment = true;
-                    createInformationNotification();
-                }
-            },
-            );
-            },
-        });
-    </script>
-
-
+            tinymce.init({
+                selector: 'textarea.editor',
+                language: 'fa_IR',
+                menubar: false,
+                plugins: 'link paste',
+                toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | link',
+                paste_auto_cleanup_on_paste: true,
+                paste_remove_styles: true,
+                paste_remove_styles_if_webkit: true,
+                paste_strip_class_attributes: true,
+                setup: function(editor) {
+                editor.on('tap', function(e) {
+                    if(userNotifiedOnEditInsteadOfComment == false){
+                        userNotifiedOnEditInsteadOfComment = true;
+                        createInformationNotification();
+                    }
+                },
+                );
+                editor.on('click', function(e) {
+                    if(userNotifiedOnEditInsteadOfComment == false){
+                        userNotifiedOnEditInsteadOfComment = true;
+                        createInformationNotification();
+                    }
+                },
+                );
+                },
+            });
+        </script>
+    }
     @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
     {
         <script>
@@ -220,9 +220,9 @@
         </script>
     }
 
-    @if(Model.LoggedIn && Model.IsPoemPage)
+    @if (Model.LoggedIn && Model.IsPoemPage)
     {
-        if(Model.GanjoorPage.Poem.Recitations.Length > 0)
+        if (Model.GanjoorPage.Poem.Recitations.Length > 0)
         {
             <script>
                 MarkUserUpvotedRecitations(@Model.GanjoorPage.Id);
