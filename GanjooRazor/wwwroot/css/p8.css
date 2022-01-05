@@ -1544,3 +1544,9 @@ audio {
 .map-icon::after {
     content: 'public';
 }
+
+#findpoet{
+    margin-top: 10px;
+    text-align: center;
+}
+

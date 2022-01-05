@@ -880,3 +880,26 @@ function MarkUserUpvotedRecitations(poemId) {
         });
     }, 1);
 }
+
+function onFindPoet(value) {
+    const foundPoetsNode = document.getElementById("found-poets");
+    foundPoetsNode.innerHTML = '';
+    var c = 0;
+    if (value.length > 0) {
+        var poets = document.getElementsByClassName("poet");
+        var foundOnes = [];
+        for (var i = 0; i < poets.length; i++) {
+            var dataValue = poets[i].getAttribute("data-value");
+            if (dataValue != null) {
+                if (dataValue.indexOf(value) != -1) {
+                    foundOnes.push(poets[i]);
+                }
+            }
+        }
+
+        for (var i = 0; i < foundOnes.length; i++) {
+            var clonedPoet = foundOnes[i].cloneNode(true);
+            foundPoetsNode.appendChild(clonedPoet);
+        }
+    }
+}

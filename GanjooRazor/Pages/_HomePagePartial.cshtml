@@ -78,6 +78,11 @@
                         </a>
                     </div>
 
+                    <div class="clear-both">
+                        <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onFindPoet(this.value)" />
+                        <div class="spacer" id="found-poets"></div>
+                    </div>
+
                     @foreach (var poetGroup in Model.PoetGroups)
                     {
                         if (poetGroup.Id == 0) continue;
@@ -91,7 +96,7 @@
                         <div class="spacer">
                             @foreach (var poet in poetGroup.Poets)
                             {
-                                <div class="poet">
+                                <div class="poet" data-value="@poet.Nickname">
                                     <a href="@poet.FullUrl" title="@poet.Name">
                                         <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
                                     </a>
