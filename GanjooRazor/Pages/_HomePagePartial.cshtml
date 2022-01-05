@@ -54,6 +54,10 @@
                         </div>
                     }
                 </div>
+                 <div class="clear-both">
+                        <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onFindPoet(this.value)" />
+                        <div class="spacer" id="found-poets"></div>
+                    </div>
                 <div class="century" id="cl">
                     دسته‌بندی بر اساس قرن
                 </div>
@@ -76,11 +80,6 @@
                                 <i class="noindent-info-button map-icon"></i>
                             </div>
                         </a>
-                    </div>
-
-                    <div class="clear-both">
-                        <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onFindPoet(this.value)" />
-                        <div class="spacer" id="found-poets"></div>
                     </div>
 
                     @foreach (var poetGroup in Model.PoetGroups)
