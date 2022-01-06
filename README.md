@@ -5,5 +5,5 @@ Ganjoor museum and ganjoor.net own backend (ASP.NET Core Web API) and frontend (
 
 [فهرست توابع در دسترس](https://ganjgah.ir)
 
-![https://ganjgah.ir](https://user-images.githubusercontent.com/582212/91652208-14a63c00-eaaa-11ea-89c2-5acabdfda7de.png)
+![https://api.ganjoor.net](https://user-images.githubusercontent.com/582212/91652208-14a63c00-eaaa-11ea-89c2-5acabdfda7de.png)
 
