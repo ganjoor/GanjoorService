@@ -13375,18 +13375,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:RMuseum.Swashbuckle.SecurityRequirementsOperationFilter">
-            <summary>
-            //https://mattfrear.com/2018/07/21/add-an-authorization-header-to-your-swagger-ui-with-swashbuckle-revisited/
-            </summary>
-        </member>
-        <member name="M:RMuseum.Swashbuckle.SecurityRequirementsOperationFilter.Apply(Microsoft.OpenApi.Models.OpenApiOperation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)">
-            <summary>
-            
-            </summary>
-            <param name="operation"></param>
-            <param name="context"></param>
-        </member>
         <member name="P:RMuseum.WebServiceUrl.Url">
             <summary>
             url
