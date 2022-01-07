@@ -3749,6 +3749,9 @@ namespace RMuseum.Services.Implementation
 
                     if (!string.IsNullOrEmpty(rhytm))
                         return new RServiceResult<string>(rhytm);
+
+                    if (verses.Count < 5)
+                        return new RServiceResult<string>("dismissed");
                 }
 
                 return new RServiceResult<string>("");
