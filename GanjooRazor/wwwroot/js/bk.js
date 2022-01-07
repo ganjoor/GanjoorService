@@ -884,7 +884,6 @@ function MarkUserUpvotedRecitations(poemId) {
 function onFindPoet(value) {
     const foundPoetsNode = document.getElementById("found-poets");
     foundPoetsNode.innerHTML = '';
-    var c = 0;
     if (value.length > 0) {
         var poets = document.getElementsByClassName("poet");
         var foundOnes = [];
