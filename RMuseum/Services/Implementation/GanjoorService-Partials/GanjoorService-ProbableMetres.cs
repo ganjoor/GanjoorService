@@ -61,9 +61,6 @@ namespace RMuseum.Services.Implementation
                                             if (res.Result == null)
                                                 res.Result = "";
 
-                                            if (res.Result == "dismissed")
-                                                continue;
-
                                             GanjoorPoemProbableMetre prometre = new GanjoorPoemProbableMetre()
                                             {
                                                 PoemId = id,
