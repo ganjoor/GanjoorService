@@ -6120,6 +6120,41 @@
             comments
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemVisit">
+            <summary>
+            ganjoor user history track item (by his or her choice)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemVisit.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemVisit.UserId">
+            <summary>
+            user id (nullable to prevent a db cascade relation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemVisit.User">
+            <summary>
+            user
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemVisit.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemVisit.Poem">
+            <summary>
+            poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemVisit.DateTime">
+            <summary>
+            date/time
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoet">
             <summary>
             Ganjoor Poet
