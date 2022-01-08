@@ -9,10 +9,30 @@
             User login/logout/register/...
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.AppUserController.#ctor(Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor,RSecurityBackend.Services.IUserPermissionChecker,Microsoft.AspNetCore.Identity.UI.Services.IEmailSender,RSecurityBackend.Services.IImageFileService,RSecurityBackend.Services.ICaptchaService)">
+        <member name="M:RMuseum.Controllers.AppUserController.Login(RSecurityBackend.Models.Auth.ViewModels.LoginViewModel)">
+            <summary>
+            login
+            </summary>
+            <param name="loginViewModel">loginViewModel</param>
+            <returns>LoggedOnUserModel</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.AppUserController.ReLogin(System.Guid)">
+            <summary>
+            renew an expired session
+            </summary>
+            <param name="sessionId">user session id</param>
+            <returns>LoggedOnUserModel</returns>
+        </member>
+        <member name="F:RMuseum.Controllers.AppUserController._optionsService">
+            <summary>
+            options service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.AppUserController.#ctor(RSecurityBackend.Services.IRGenericOptionsService,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor,RSecurityBackend.Services.IUserPermissionChecker,Microsoft.AspNetCore.Identity.UI.Services.IEmailSender,RSecurityBackend.Services.IImageFileService,RSecurityBackend.Services.ICaptchaService)">
             <summary>
             constructor
             </summary>
+            <param name="optionsService"></param>
             <param name="configuration"></param>
             <param name="appUserService"></param>
             <param name="httpContextAccessor"></param>
@@ -3391,6 +3411,16 @@
         <member name="P:RMuseum.Models.Auth.ViewModel.GanjoorUserPublicProfile.Website">
             <summary>
             web site
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Auth.ViewModel.LoggedOnUserModelEx">
+            <summary>
+            LoginViewModel with app specfic properties
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Auth.ViewModel.LoggedOnUserModelEx.KeepHistory">
+            <summary>
+            keep user browsing history if he or she wants so
             </summary>
         </member>
         <member name="T:RMuseum.Models.Bookmark.RBookmarkType">
