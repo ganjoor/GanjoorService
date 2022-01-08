@@ -377,8 +377,10 @@ namespace RMuseum.Services.Implementation
 
             await context.SaveChangesAsync();
 
-            
 
+            var visits = await context.GanjoorUserPoemVisits.Where(v => v.UserId == userId).ToListAsync();
+            context.RemoveRange(visits);
+            await context.SaveChangesAsync();
 
             var bookmarks = await context.UserBookmarks.Where(b => b.RAppUserId == userId).ToListAsync();
             context.RemoveRange(bookmarks);
