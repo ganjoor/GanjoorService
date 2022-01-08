@@ -167,6 +167,9 @@ namespace RMuseum.DbContext
             builder.Entity<RecitationUserUpVote>()
                .HasIndex(v => new { v.RecitationId, v.UserId })
                .IsUnique();
+
+            builder.Entity<GanjoorUserPoemVisit>()
+                .HasIndex(v => v.UserId);
         }
 
 
