@@ -419,5 +419,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorPoemProbableMetre> GanjoorPoemProbableMetres { get; set; }
 
+        /// <summary>
+        /// ganjoor user history track items (stored by his or her choice)
+        /// </summary>
+        public DbSet<GanjoorUserPoemVisit> GanjoorUserPoemVisits { get; set; }
+
     }
 }

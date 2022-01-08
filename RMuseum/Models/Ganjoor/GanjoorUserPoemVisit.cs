@@ -4,9 +4,9 @@ using System;
 namespace RMuseum.Models.Ganjoor
 {
     /// <summary>
-    /// ganjoor user history track item (by his or her choice)
+    /// ganjoor user history track item (stored by his or her choice)
     /// </summary>
-    public class GanjoorPoemVisit
+    public class GanjoorUserPoemVisit
     {
         /// <summary>
         /// id
