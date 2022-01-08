@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
+using RMuseum.Models.Auth.ViewModel;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Auth.ViewModels;
 using System;
@@ -74,7 +75,7 @@ namespace GanjooRazor.Pages
                     {
                         Expires = DateTime.Now.AddDays(-1)
                     };
-                    foreach (var cookieName in new string[] { "UserId", "SessionId", "Token", "Username", "Name", "NickName", "CanEdit" })
+                    foreach (var cookieName in new string[] { "UserId", "SessionId", "Token", "Username", "Name", "NickName", "CanEdit", "KeepHistory" })
                     {
                         if(Request.Cookies[cookieName] != null)
                         {
@@ -108,7 +109,7 @@ namespace GanjooRazor.Pages
                         return Page();
                     }
 
-                    LoggedOnUserModel loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModel>(await response.Content.ReadAsStringAsync());
+                    LoggedOnUserModelEx loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await response.Content.ReadAsStringAsync());
 
                     var cookieOption = new CookieOptions()
                     {
@@ -121,6 +122,7 @@ namespace GanjooRazor.Pages
                     Response.Cookies.Append("Username", loggedOnUser.User.Username, cookieOption);
                     Response.Cookies.Append("Name", $"{loggedOnUser.User.FirstName} {loggedOnUser.User.SureName}", cookieOption);
                     Response.Cookies.Append("NickName", $"{loggedOnUser.User.NickName}", cookieOption);
+                    Response.Cookies.Append("KeepHistory", $"{loggedOnUser.KeepHistory}", cookieOption);
 
                     bool canEditContent = false;
                     var ganjoorEntity = loggedOnUser.SecurableItem.Where(s => s.ShortName == RMuseumSecurableItem.GanjoorEntityShortName).SingleOrDefault();

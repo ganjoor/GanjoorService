@@ -104,7 +104,7 @@ namespace GanjooRazor.Areas.User.Pages
                         {
                             Expires = DateTime.Now.AddDays(-1)
                         };
-                        foreach (var cookieName in new string[] { "UserId", "SessionId", "Token", "Username", "Name", "NickName", "CanEdit" })
+                        foreach (var cookieName in new string[] { "UserId", "SessionId", "Token", "Username", "Name", "NickName", "CanEdit", "KeepHistory" })
                         {
                             if (Request.Cookies[cookieName] != null)
                             {

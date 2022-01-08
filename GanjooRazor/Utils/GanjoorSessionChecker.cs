@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
+using RMuseum.Models.Auth.ViewModel;
 using RSecurityBackend.Models.Auth.Memory;
-using RSecurityBackend.Models.Auth.ViewModels;
 using System;
 using System.Linq;
 using System.Net;
@@ -46,7 +46,7 @@ namespace GanjooRazor.Utils
                     return false;
                 }
 
-                LoggedOnUserModel loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModel>(await reLoginResponse.Content.ReadAsStringAsync());
+                LoggedOnUserModelEx loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await reLoginResponse.Content.ReadAsStringAsync());
 
                 secureClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loggedOnUser.Token);
 
