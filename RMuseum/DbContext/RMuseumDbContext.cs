@@ -170,6 +170,9 @@ namespace RMuseum.DbContext
 
             builder.Entity<GanjoorUserPoemVisit>()
                 .HasIndex(v => v.UserId);
+
+            builder.Entity<GanjoorUserPoemVisit>()
+                .HasIndex(v => new { v.UserId, v.PoemId });
         }
 
 

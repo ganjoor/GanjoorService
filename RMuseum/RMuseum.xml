@@ -12682,6 +12682,36 @@
             <param name="imageFileService"></param>
             <param name="memoryCache"></param>
         </member>
+        <member name="T:RMuseum.Services.Implementation.UserVisitsTrackingService">
+            <summary>
+            User Visits Tracking Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.UserVisitsTrackingService.AddAsync(System.Guid,System.Int32)">
+            <summary>
+            add record
+            </summary>
+            <param name="userId"></param>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.UserVisitsTrackingService._optionsService">
+            <summary>
+            options service
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.UserVisitsTrackingService._context">
+            <summary>
+            Database Context
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.UserVisitsTrackingService.#ctor(RMuseum.DbContext.RMuseumDbContext,RSecurityBackend.Services.IRGenericOptionsService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="optionsService"></param>
+        </member>
         <member name="T:RMuseum.Services.Implementationa.RecitationService">
             <summary>
             Audio Narration Service Implementation

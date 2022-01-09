@@ -113,7 +113,7 @@ namespace RMuseum.Controllers
         /// options service
         /// </summary>
 
-        private IRGenericOptionsService _optionsService;
+        protected readonly IRGenericOptionsService _optionsService;
 
         /// <summary>
         /// constructor
