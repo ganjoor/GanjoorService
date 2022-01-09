@@ -12695,6 +12695,30 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.UserVisitsTrackingService.DeleteAsync(System.Guid,System.Guid)">
+            <summary>
+            delete record
+            </summary>
+            <param name="userId"></param>
+            <param name="recordId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.UserVisitsTrackingService.SwitchTrackingAsync(System.Guid,System.Boolean)">
+            <summary>
+            start or stop tracking user
+            </summary>
+            <param name="userId"></param>
+            <param name="start"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.UserVisitsTrackingService.GetUserHistory(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+            <summary>
+            get user history
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.UserVisitsTrackingService._optionsService">
             <summary>
             options service

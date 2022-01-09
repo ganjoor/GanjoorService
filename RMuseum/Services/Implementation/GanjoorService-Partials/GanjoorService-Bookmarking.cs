@@ -170,7 +170,7 @@ namespace RMuseum.Services.Implementation
             List<GanjoorUserBookmarkViewModel> result = new List<GanjoorUserBookmarkViewModel>();
             foreach (var bookmark in bookmarksPage.Bookmarks)
             {
-                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == bookmark.PoemId && v.CoupletIndex == bookmark.CoupletIndex).OrderBy(v => v.VOrder).ToListAsync();
+                var verses = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == bookmark.PoemId && v.CoupletIndex == bookmark.CoupletIndex).OrderBy(v => v.VOrder).ToListAsync();
                 result.Add
                     (
                     new GanjoorUserBookmarkViewModel()
