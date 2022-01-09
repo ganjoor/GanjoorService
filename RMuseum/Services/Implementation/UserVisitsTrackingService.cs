@@ -100,7 +100,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="paging"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmarkViewModel[] HistoryItems)>> GetUserHistory(PagingParameterModel paging, Guid userId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmarkViewModel[] HistoryItems)>> GetUserHistoryAsync(PagingParameterModel paging, Guid userId)
         {
             var source =
                  _context.GanjoorUserPoemVisits

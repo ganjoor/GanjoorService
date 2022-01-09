@@ -40,6 +40,6 @@ namespace RMuseum.Services
         /// <param name="paging"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmarkViewModel[] HistoryItems)>> GetUserHistory(PagingParameterModel paging, Guid userId);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmarkViewModel[] HistoryItems)>> GetUserHistoryAsync(PagingParameterModel paging, Guid userId);
     }
 }

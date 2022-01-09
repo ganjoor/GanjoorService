@@ -2154,6 +2154,50 @@
             <param name="translationService"></param>
             <param name="configuration"></param>
         </member>
+        <member name="T:RMuseum.Controllers.UserVisitsTrackingController">
+            <summary>
+            user visits tracking controller
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.UserVisitsTrackingController.GetUserHistoryAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get user history
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.UserVisitsTrackingController.AddAsync(System.Int32)">
+            <summary>
+            add a user history track
+            </summary>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.UserVisitsTrackingController.DeleteAsync(System.Guid)">
+            <summary>
+            delete a user history track
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.UserVisitsTrackingController.SwitchTrackingAsync(System.Boolean)">
+            <summary>
+            start or stop tracking user
+            </summary>
+            <param name="start"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Controllers.UserVisitsTrackingController._userVisitsTrackingService">
+            <summary>
+            User Visits Tracking Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.UserVisitsTrackingController.#ctor(RMuseum.Services.IUserVisitsTrackingService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="userVisitsTrackingService"></param>
+        </member>
         <member name="T:RMuseum.DbContext.RMuseumDbContext">
             <summary>
             Museum Database Context
@@ -12711,7 +12755,7 @@
             <param name="start"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.UserVisitsTrackingService.GetUserHistory(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.UserVisitsTrackingService.GetUserHistoryAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
             <summary>
             get user history
             </summary>
@@ -13528,7 +13572,7 @@
             <param name="start"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IUserVisitsTrackingService.GetUserHistory(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+        <member name="M:RMuseum.Services.IUserVisitsTrackingService.GetUserHistoryAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
             <summary>
             get user history
             </summary>
