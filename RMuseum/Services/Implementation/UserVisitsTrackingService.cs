@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 namespace RMuseum.Services.Implementation
 {
     /// <summary>
-    /// User Visits Tracking Service
+    /// User Visits Tracking Service Implementation
     /// </summary>
-    public class UserVisitsTrackingService
+    public class UserVisitsTrackingService : IUserVisitsTrackingService
     {
         /// <summary>
         /// add record

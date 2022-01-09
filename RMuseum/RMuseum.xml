@@ -12684,7 +12684,7 @@
         </member>
         <member name="T:RMuseum.Services.Implementation.UserVisitsTrackingService">
             <summary>
-            User Visits Tracking Service
+            User Visits Tracking Service Implementation
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.UserVisitsTrackingService.AddAsync(System.Guid,System.Int32)">
@@ -13497,6 +13497,43 @@
             <summary>
             get a random site banner
             </summary>
+            <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.IUserVisitsTrackingService">
+            <summary>
+            User Visits Tracking Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IUserVisitsTrackingService.AddAsync(System.Guid,System.Int32)">
+            <summary>
+            add record
+            </summary>
+            <param name="userId"></param>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IUserVisitsTrackingService.DeleteAsync(System.Guid,System.Guid)">
+            <summary>
+            delete record
+            </summary>
+            <param name="userId"></param>
+            <param name="recordId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IUserVisitsTrackingService.SwitchTrackingAsync(System.Guid,System.Boolean)">
+            <summary>
+            start or stop tracking user
+            </summary>
+            <param name="userId"></param>
+            <param name="start"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IUserVisitsTrackingService.GetUserHistory(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+            <summary>
+            get user history
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.WebServiceUrl.Url">
