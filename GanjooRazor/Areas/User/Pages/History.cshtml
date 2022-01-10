@@ -48,6 +48,22 @@ else
         }
     </p>
 
+    @if (Model.TrackingIsEnabled)
+    {
+        <p style="text-align:center; color: green">
+            ذخیرهٔ تاریخچهٔ بازدیدهای شما فعال است.
+        </p>
+    }
+    else
+    {
+
+        <p style="text-align:center; color: red">
+            ذخیرهٔ تاریخچهٔ بازدیدهای شما غیرفعال است.
+        </p>
+    }
+
+
+
     @foreach (var historyItem in Model.HistoryItems)
     {
         if (color == "gray")

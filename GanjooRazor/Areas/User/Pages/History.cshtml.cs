@@ -30,99 +30,114 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public List<NameIdUrlImage> PaginationLinks { get; set; }
 
+        /// <summary>
+        /// history items
+        /// </summary>
         public List<GanjoorUserBookmarkViewModel> HistoryItems { get; set; }
+
+        /// <summary>
+        /// tracking is enabled
+        /// </summary>
+        public bool TrackingIsEnabled { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
             LastError = "";
             using (HttpClient secureClient = new HttpClient())
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/options/KeepHistory");
+                    if (!response.IsSuccessStatusCode)
                     {
-                        int pageNumber = 1;
-                        if (!string.IsNullOrEmpty(Request.Query["page"]))
-                        {
-                            pageNumber = int.Parse(Request.Query["page"]);
-                        }
-                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/tracking/?PageNumber={pageNumber}&PageSize=20");
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                            return Page();
-                        }
+                        LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    TrackingIsEnabled = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()) == true.ToString();
 
-                        HistoryItems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorUserBookmarkViewModel>>();
+                    int pageNumber = 1;
+                    if (!string.IsNullOrEmpty(Request.Query["page"]))
+                    {
+                        pageNumber = int.Parse(Request.Query["page"]);
+                    }
+                    var responseHistoryItems = await secureClient.GetAsync($"{APIRoot.Url}/api/tracking/?PageNumber={pageNumber}&PageSize=20");
+                    if (!responseHistoryItems.IsSuccessStatusCode)
+                    {
+                        LastError = JsonConvert.DeserializeObject<string>(await responseHistoryItems.Content.ReadAsStringAsync());
+                        return Page();
+                    }
 
-                        string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
-                        if (!string.IsNullOrEmpty(paginnationMetadata))
+                    HistoryItems = JArray.Parse(await responseHistoryItems.Content.ReadAsStringAsync()).ToObject<List<GanjoorUserBookmarkViewModel>>();
+
+                    string paginnationMetadata = responseHistoryItems.Headers.GetValues("paging-headers").FirstOrDefault();
+                    if (!string.IsNullOrEmpty(paginnationMetadata))
+                    {
+                        PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata);
+                        PaginationLinks = new List<NameIdUrlImage>();
+                        if (paginationMetadata.totalPages > 1)
                         {
-                            PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata);
-                            PaginationLinks = new List<NameIdUrlImage>();
-                            if (paginationMetadata.totalPages > 1)
+                            if (paginationMetadata.currentPage > 3)
                             {
-                                if (paginationMetadata.currentPage > 3)
-                                {
-                                    PaginationLinks.Add
-                                        (
-                                        new NameIdUrlImage()
-                                        {
-                                            Name = "صفحهٔ اول",
-                                            Url = "/User/History/?page=1"
-                                        }
-                                        );
-                                }
-                                for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
-                                {
-                                    if (i >= 1 && i <= paginationMetadata.totalPages)
+                                PaginationLinks.Add
+                                    (
+                                    new NameIdUrlImage()
                                     {
-                                        if (i == paginationMetadata.currentPage)
-                                        {
+                                        Name = "صفحهٔ اول",
+                                        Url = "/User/History/?page=1"
+                                    }
+                                    );
+                            }
+                            for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
+                            {
+                                if (i >= 1 && i <= paginationMetadata.totalPages)
+                                {
+                                    if (i == paginationMetadata.currentPage)
+                                    {
 
-                                            PaginationLinks.Add
-                                               (
-                                               new NameIdUrlImage()
-                                               {
-                                                   Name = i.ToPersianNumbers(),
-                                               }
-                                               );
-                                        }
-                                        else
-                                        {
+                                        PaginationLinks.Add
+                                           (
+                                           new NameIdUrlImage()
+                                           {
+                                               Name = i.ToPersianNumbers(),
+                                           }
+                                           );
+                                    }
+                                    else
+                                    {
 
-                                            PaginationLinks.Add
-                                                (
-                                                new NameIdUrlImage()
-                                                {
-                                                    Name = i.ToPersianNumbers(),
-                                                    Url = $"/User/History/?page={i}"
-                                                }
-                                                );
-                                        }
+                                        PaginationLinks.Add
+                                            (
+                                            new NameIdUrlImage()
+                                            {
+                                                Name = i.ToPersianNumbers(),
+                                                Url = $"/User/History/?page={i}"
+                                            }
+                                            );
                                     }
                                 }
-                                if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
-                                {
+                            }
+                            if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
+                            {
 
-                                    PaginationLinks.Add
-                                        (
-                                        new NameIdUrlImage()
-                                        {
-                                            Name = "... ",
-                                        }
-                                        );
+                                PaginationLinks.Add
+                                    (
+                                    new NameIdUrlImage()
+                                    {
+                                        Name = "... ",
+                                    }
+                                    );
 
-                                    PaginationLinks.Add
-                                       (
-                                       new NameIdUrlImage()
-                                       {
-                                           Name = "صفحهٔ آخر",
-                                           Url = $"/User/History/?page={paginationMetadata.totalPages}"
-                                       }
-                                       );
-                                }
+                                PaginationLinks.Add
+                                   (
+                                   new NameIdUrlImage()
+                                   {
+                                       Name = "صفحهٔ آخر",
+                                       Url = $"/User/History/?page={paginationMetadata.totalPages}"
+                                   }
+                                   );
                             }
                         }
-
                     }
+
+
                 }
                 else
                 {
