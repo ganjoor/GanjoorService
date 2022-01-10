@@ -53,12 +53,28 @@ else
         <p style="text-align:center; color: green">
             ذخیرهٔ تاریخچهٔ بازدیدهای شما فعال است.
         </p>
+
+        <p>
+            <a role="button" style="color: red" onclick="switchTracking(false)" class="actionlink">توقف ذخیرهٔ تاریخچه</a>
+        </p>
+
+        <p>
+            <span style="color:red">تذکر مهم: </span> توقف ذخیرهٔ تاریخچه باعث حذف تاریخچهٔ ذخیره شده تا به حال می شود.
+        </p>
+
     }
     else
     {
-
-        <p style="text-align:center; color: red">
+        <p>
             ذخیرهٔ تاریخچهٔ بازدیدهای شما غیرفعال است.
+        </p>
+
+        <p>
+            <a role="button" style="color: green" onclick="switchTracking(true)" class="actionlink">فعالسازی ذخیرهٔ تاریخچه</a>
+        </p>
+
+        <p>
+            تاریخچهٔ بازیدهای شما فقط به به خود شما نمایش داده می‌شود و از آن استفادهٔ دیگری نمی‌شود. هر زمان که بخواهید می‌توانید ذخیرهٔ تاریخچه را متوقف کنید و تاریخچهٔ بازدیدهایتان را پاک کنید.
         </p>
     }
 
