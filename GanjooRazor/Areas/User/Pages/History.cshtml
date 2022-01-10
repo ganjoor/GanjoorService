@@ -1,0 +1,105 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.HistoryModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "ادامهٔ مطالعه";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <script>
+        function deleteHistoryItem(historyItemId) {
+            if (!confirm('آیا از حذف این مورد اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=HistoryItem';
+
+            $.ajax({
+                type: "DELETE",
+                url: url,
+                data: {
+                    id: historyItemId
+                },
+                success: function () {
+                    var notificationBlockId = '#history-item-' + historyItemId;
+                    $(notificationBlockId).remove();
+                },
+            });
+        }
+    </script>
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @foreach (var historyItem in Model.HistoryItems)
+    {
+        if (color == "gray")
+            color = "white";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="history-item-@historyItem.Id">
+            <blockquote>
+                <p>
+                    از <a href="@($"{historyItem.PoemFullUrl}#bn{historyItem.CoupletIndex + 1}")">@historyItem.PoemFullTitle</a> <small>در @historyItem.DateTime.ToFriendlyPersianDateTextify()</small>
+                </p>
+                <a href="@($"{historyItem.PoemFullUrl}#bn{historyItem.CoupletIndex + 1}")">
+                    <img src="@historyItem.PoetImageUrl" style="width:unset;display:unset;border:unset" alt="@historyItem.PoetName" />
+                </a>
+                <div id="historyItem-text-@historyItem.Id">
+                    <p>
+                        @historyItem.VerseText
+                    </p>
+
+                    @if (!string.IsNullOrEmpty(historyItem.Verse2Text))
+                    {
+                        <p>
+                            @historyItem.Verse2Text
+                        </p>
+                    }
+
+                </div>
+            </blockquote>
+            <p>
+                <a role="button" onclick="deleteHistoryItem('@historyItem.Id')" class="actionlink" title="حذف">🗑</a>
+            </p>
+
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+
+}

@@ -293,11 +293,15 @@ namespace RMuseum
             //geo location service
             services.AddTransient<IGeoLocationService, GeoLocationService>();
 
+            //tracking service
+            services.AddTransient<IUserVisitsTrackingService, UserVisitsTrackingService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {
                 options.MaxRequestBodySize = int.Parse(Configuration.GetSection("IIS")["UploadLimit"]);
             });
+
 
 
             services.AddHostedService<QueuedHostedService>();

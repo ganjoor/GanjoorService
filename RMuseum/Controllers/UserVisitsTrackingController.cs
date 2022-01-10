@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
@@ -32,7 +33,10 @@ namespace RMuseum.Controllers
             var res = await _userVisitsTrackingService.GetUserHistoryAsync(paging, loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            return Ok(res.Result.HistoryItems);
         }
 
         /// <summary>
