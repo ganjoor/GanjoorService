@@ -376,6 +376,10 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="User" asp-page="/ReportedComments">حاشیه‌های گزارش شده</a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="User" asp-page="/AwaitingComments">حاشیه‌های در انتظار تأیید</a>
+                            </li>
                         }
 
                         @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ArtifactEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName}"))

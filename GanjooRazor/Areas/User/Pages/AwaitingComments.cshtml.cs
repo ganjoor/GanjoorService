@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using DNTPersianUtils.Core;
+﻿using DNTPersianUtils.Core;
 using GanjooRazor.Utils;
 using GSpotifyProxy.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -12,21 +6,19 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
-using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace GanjooRazor.Areas.User.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public class MyCommentsModel : PageModel
+    public class AwaitingCommentsModel : PageModel
     {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public MyCommentsModel()
-        {
-        }
-
         /// <summary>
         /// Last Error
         /// </summary>
@@ -41,10 +33,6 @@ namespace GanjooRazor.Areas.User.Pages
         /// pagination links
         /// </summary>
         public List<NameIdUrlImage> PaginationLinks { get; set; }
-
-        public RegisterRAppUser UserInfo { get; set; }
-
-
         public async Task<IActionResult> OnGetAsync()
         {
             LastError = "";
@@ -52,39 +40,13 @@ namespace GanjooRazor.Areas.User.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     {
-                        var userInfoResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/users/{Request.Cookies["UserId"]}");
-                        if (userInfoResponse.IsSuccessStatusCode)
-                        {
-                            PublicRAppUser userInfo = JsonConvert.DeserializeObject<PublicRAppUser>(await userInfoResponse.Content.ReadAsStringAsync());
-
-                            UserInfo = new RegisterRAppUser()
-                            {
-                                Id = userInfo.Id,
-                                Username = userInfo.Username,
-                                FirstName = userInfo.FirstName,
-                                SureName = userInfo.SureName,
-                                NickName = userInfo.NickName,
-                                PhoneNumber = userInfo.PhoneNumber,
-                                Email = userInfo.Email,
-                                Website = userInfo.Website,
-                                Bio = userInfo.Bio,
-                                RImageId = userInfo.RImageId,
-                                Status = userInfo.Status,
-                                IsAdmin = false,
-                                Password = ""
-                            };
-                        }
-                        else
-                        {
-                            LastError = await userInfoResponse.Content.ReadAsStringAsync();
-                        }
 
                         int pageNumber = 1;
                         if (!string.IsNullOrEmpty(Request.Query["page"]))
                         {
                             pageNumber = int.Parse(Request.Query["page"]);
                         }
-                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/comments/mine?PageNumber={pageNumber}&PageSize=20");
+                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/comments/awaiting?PageNumber={pageNumber}&PageSize=20");
                         if (!response.IsSuccessStatusCode)
                         {
                             LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
@@ -107,7 +69,7 @@ namespace GanjooRazor.Areas.User.Pages
                                         new NameIdUrlImage()
                                         {
                                             Name = "صفحهٔ اول",
-                                            Url = "/User/MyComments/?page=1"
+                                            Url = "/User/AwaitingComments/?page=1"
                                         }
                                         );
                                 }
@@ -134,7 +96,7 @@ namespace GanjooRazor.Areas.User.Pages
                                                 new NameIdUrlImage()
                                                 {
                                                     Name = i.ToPersianNumbers(),
-                                                    Url = $"/User/MyComments/?page={i}"
+                                                    Url = $"/User/AwaitingComments/?page={i}"
                                                 }
                                                 );
                                         }
@@ -156,7 +118,7 @@ namespace GanjooRazor.Areas.User.Pages
                                        new NameIdUrlImage()
                                        {
                                            Name = "صفحهٔ آخر",
-                                           Url = $"/User/MyComments/?page={paginationMetadata.totalPages}"
+                                           Url = $"/User/AwaitingComments/?page={paginationMetadata.totalPages}"
                                        }
                                        );
                                 }
@@ -172,14 +134,13 @@ namespace GanjooRazor.Areas.User.Pages
             return Page();
         }
 
-
-        public async Task<IActionResult> OnDeleteMyComment(int id)
+        public async Task<IActionResult> OnDeleteCommentAsync(int id)
         {
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment?id={id}");
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment/awaiting/delete?id={id}");
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
@@ -191,13 +152,13 @@ namespace GanjooRazor.Areas.User.Pages
             return new JsonResult(true);
         }
 
-        public async Task<IActionResult> OnPutMyComment(int id, string comment)
+        public async Task<IActionResult> OnPutApproveAsync(int id)
         {
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/{id}", new StringContent(JsonConvert.SerializeObject(comment), Encoding.UTF8, "application/json"));
+                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/awaiting/publish", new StringContent(JsonConvert.SerializeObject(id), Encoding.UTF8, "application/json"));
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");

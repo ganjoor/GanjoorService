@@ -1,0 +1,123 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.AwaitingCommentsModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "حاشیه‌های در انتظار تأیید";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    <script>
+        function deleteAwaitingComment(commentId) {
+            if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=Comment';
+
+            $.ajax({
+                type: "DELETE",
+                url: url,
+                data: {
+                    id: commentId
+                },
+                error: function () {
+                alert('خطا رخ داد.');
+                },
+                success: function () {
+                    var commentBlockId = '#comment-' + commentId;
+                    $(commentBlockId).remove();
+                },
+            });
+
+        }
+
+        function publishAwaitingComment(commentId) {
+           if (!confirm('آیا از انتشار این حاشیه اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=Approve';
+
+            $.ajax({
+                type: "PUT",
+                url: url,
+                data: {
+                    id: commentId
+                },
+                error: function () {
+                alert('خطا رخ داد.');
+                },
+                success: function () {
+                    var commentBlockId = '#comment-' + commentId;
+                    $(commentBlockId).remove();
+                },
+            });
+        }
+    </script>
+
+    @foreach (var comment in Model.Comments)
+    {
+        if (color == "gray")
+            color = "white";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="comment-@comment.Id">
+            <blockquote>
+                <div id="comment-text-@comment.Id">
+                    @Html.Raw(comment.HtmlComment)
+                </div>
+                <p>
+                    @comment.AuthorName <small>در @comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>
+                </p>
+                <p>
+                    <a href="/Admin/ExamineUser?id=@comment.UserId">#</a>
+                </p>
+            </blockquote>
+            <p>
+                <a role="button" onclick="deleteAwaitingComment(@comment.Id)" class="actionlink" title="حذف حاشیه">🗑</a>
+                <a role="button" onclick="publishAwaitingComment(@comment.Id)" class="actionlink" title="انتشار حاشیه">انتشار</a>
+            </p>
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+
+}
