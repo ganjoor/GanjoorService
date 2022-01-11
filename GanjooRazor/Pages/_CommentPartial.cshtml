@@ -14,6 +14,11 @@
 else
 {
     <div class="ganjoor-comment" id="comment-@Model.Comment.Id@Model.DivSuffix">
+        @if(!string.IsNullOrEmpty(Model.Comment.PublishStatus))
+        {
+            <div class="red-color">@Model.Comment.PublishStatus</div>
+        }
+
         @if (Model.Comment.UserId != null)
         {
             <div class="comment-author"><a href="/hashieha/?userid=@Model.Comment.UserId">@(string.IsNullOrEmpty(Model.Comment.AuthorName) ? "#" : Model.Comment.AuthorName)</a> <small>در @Html.Raw($"{Model.Comment.CommentDate.ToFriendlyPersianDateTextify()}")</small> @Model.Wrote:</div>

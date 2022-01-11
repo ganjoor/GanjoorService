@@ -332,13 +332,28 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> DeleteMyComment(Guid userId, int commentId);
 
         /// <summary>
+        /// delete anybody's comment
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteAnybodyComment(int commentId);
+
+        /// <summary>
+        /// publish awaiting comment
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> PublishAwaitingComment(int commentId);
+
+        /// <summary>
         /// get recent comments
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="filterUserId">Guid.Empty</param>
         /// <param name="onlyPublished"></param>
+        /// <param name="onlyAwaiting"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging, Guid filterUserId, bool onlyPublished);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging, Guid filterUserId, bool onlyPublished, bool onlyAwaiting = false);
 
         /// <summary>
         /// report a comment

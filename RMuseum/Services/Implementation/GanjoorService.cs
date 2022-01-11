@@ -744,6 +744,15 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه خالی است.");
             }
 
+            PublishStatus status = PublishStatus.Published;
+            if (bool.Parse(Configuration.GetSection("Ganjoor")["KeepFirstTimeUsersComments"]))
+            {
+                if((await _context.GanjoorComments.AsNoTracking().Where(c => c.UserId == userId && c.Status == PublishStatus.Published).AnyAsync()) == false)//First time commenter
+                {
+                    status = PublishStatus.Awaiting;
+                }
+            }
+
             GanjoorComment comment = new GanjoorComment()
             {
                 UserId = userId,
@@ -752,7 +761,7 @@ namespace RMuseum.Services.Implementation
                 HtmlComment = content,
                 InReplyToId = inReplyTo,
                 PoemId = poemId,
-                Status = PublishStatus.Published,
+                Status = status,
                 CoupletIndex = coupletIndex,
             };
 
@@ -989,6 +998,41 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<bool>(true);
         }
 
+        /// <summary>
+        /// publish awaiting comment
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> PublishAwaitingComment(int commentId)
+        {
+            GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == commentId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
+            if (comment == null)
+            {
+                return new RServiceResult<bool>(false); //not found
+            }
+            comment.Status = PublishStatus.Published;
+            _context.Update(comment);
+            await _context.SaveChangesAsync();
+            return new RServiceResult<bool>(true);
+            
+        }
+
+        /// <summary>
+        /// delete anybody's comment
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteAnybodyComment(int commentId)
+        {
+            GanjoorComment comment = await _context.GanjoorComments.AsNoTracking().Where(c => c.Id == commentId).SingleOrDefaultAsync();//userId is not part of key but it helps making call secure
+            if (comment == null)
+            {
+                return new RServiceResult<bool>(false); //not found
+            }
+
+            return await DeleteMyComment((Guid)comment.UserId, commentId);
+        }
+
 
         /// <summary>
         /// delete user own comment
@@ -1050,13 +1094,16 @@ namespace RMuseum.Services.Implementation
         /// <param name="paging"></param>
         /// <param name="filterUserId"></param>
         /// <param name="onlyPublished"></param>
+        /// <param name="onlyAwaiting"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging, Guid filterUserId, bool onlyPublished)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging, Guid filterUserId, bool onlyPublished, bool onlyAwaiting = false)
         {
             var source =
                  from comment in _context.GanjoorComments.Include(c => c.Poem).Include(c => c.User).Include(c => c.InReplyTo).ThenInclude(r => r.User)
                  where
                   ((comment.Status == PublishStatus.Published) || !onlyPublished)
+                  &&
+                  ((comment.Status == PublishStatus.Awaiting) || !onlyAwaiting)
                  &&
                  ((filterUserId == Guid.Empty) || (filterUserId != Guid.Empty && comment.UserId == filterUserId))
                  orderby comment.CommentDate descending
