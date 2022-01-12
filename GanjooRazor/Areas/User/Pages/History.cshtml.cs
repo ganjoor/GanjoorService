@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace GanjooRazor.Areas.User.Pages
@@ -163,5 +164,43 @@ namespace GanjooRazor.Areas.User.Pages
             }
             return new JsonResult(true);
         }
+
+        public async Task<IActionResult> OnPostStopTracking()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/tracking", new StringContent(JsonConvert.SerializeObject(false), Encoding.UTF8, "application/json"));
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
+                    }
+
+                }
+            }
+            return new JsonResult(true);
+        }
+
+        public async Task<IActionResult> OnPostStartTracking()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/tracking", new StringContent(JsonConvert.SerializeObject(true), Encoding.UTF8, "application/json"));
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
+                    }
+
+                }
+            }
+            return new JsonResult(true);
+        }
+
+
     }
 }

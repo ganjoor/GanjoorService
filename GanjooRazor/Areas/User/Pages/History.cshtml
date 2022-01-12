@@ -33,6 +33,38 @@ else
                 },
             });
         }
+
+        function switchTracking(start) {
+            if(start == false){
+                if (!confirm('آیا از توقف ذخیرهٔ تاریخچه و حذف تاریخچهٔ بازدیدها اطمینان دارید؟'))
+                {
+                    return;
+                }
+
+                $.ajax({
+                type: "POST",
+                url: '?handler=StopTracking',
+                error: function() {
+                    alert('خطا رخ داد.');
+                },
+                success: function () {
+                   location.reload();
+                },
+                });
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '?handler=StartTracking',
+                error: function() {
+                    alert('خطا رخ داد.');
+                },
+                success: function () {
+                   location.reload();
+                },
+                });
+        }
     </script>
     <p style="text-align:center">
         @foreach (var paginationLink in Model.PaginationLinks)
