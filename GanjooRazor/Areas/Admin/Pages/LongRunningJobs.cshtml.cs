@@ -45,12 +45,12 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/rjobs/cleanup");
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                 }
                 else
                 {
-                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
@@ -65,12 +65,12 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/rjobs?id={id}");
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                 }
                 else
                 {
-                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);

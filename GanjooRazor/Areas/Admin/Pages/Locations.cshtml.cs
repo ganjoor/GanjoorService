@@ -83,12 +83,12 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                 }
                 else
                 {
-                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
@@ -110,12 +110,12 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/locations", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                 }
                 else
                 {
-                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
 
             }

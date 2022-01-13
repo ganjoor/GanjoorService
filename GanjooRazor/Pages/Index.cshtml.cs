@@ -315,12 +315,12 @@ namespace GanjooRazor.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                 }
                 else
                 {
-                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
@@ -341,12 +341,12 @@ namespace GanjooRazor.Pages
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/{id}", new StringContent(JsonConvert.SerializeObject(comment), Encoding.UTF8, "application/json"));
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                 }
                 else
                 {
-                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);

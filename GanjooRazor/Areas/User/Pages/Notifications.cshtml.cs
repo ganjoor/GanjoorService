@@ -144,12 +144,12 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                 }
                 else
                 {
-                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);

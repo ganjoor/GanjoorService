@@ -158,13 +158,13 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
 
                 }
                 else
                 {
-                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
@@ -180,7 +180,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
 
                     if(Request.Cookies["KeepHistory"] != null)
@@ -196,7 +196,7 @@ namespace GanjooRazor.Areas.User.Pages
                 }
                 else
                 {
-                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
@@ -212,10 +212,10 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
 
-                    bool status = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                    
                     if (Request.Cookies["KeepHistory"] != null)
                     {
                         Response.Cookies.Delete("KeepHistory");
@@ -229,7 +229,7 @@ namespace GanjooRazor.Areas.User.Pages
                 }
                 else
                 {
-                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
