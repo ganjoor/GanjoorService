@@ -142,9 +142,9 @@ else
         <div style="background-color:@color" id="history-item-@historyItem.Id">
             <blockquote>
                 <p>
-                    <a href="@($"{historyItem.PoemFullUrl}#bn{historyItem.CoupletIndex + 1}")">@historyItem.PoemFullTitle</a> <small>در @historyItem.DateTime.ToFriendlyPersianDateTextify()</small>
+                    <a href="@historyItem.PoemFullUrl">@historyItem.PoemFullTitle</a> <small>در @historyItem.DateTime.ToFriendlyPersianDateTextify()</small>
                 </p>
-                <a href="@($"{historyItem.PoemFullUrl}#bn{historyItem.CoupletIndex + 1}")">
+                <a href="@historyItem.PoemFullUrl">
                     <img src="@historyItem.PoetImageUrl" style="width:unset;display:unset;border:unset" alt="@historyItem.PoetName" />
                 </a>
                 <div id="historyItem-text-@historyItem.Id">
