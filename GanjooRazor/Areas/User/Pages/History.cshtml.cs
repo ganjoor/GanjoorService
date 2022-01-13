@@ -1,6 +1,7 @@
 ﻿using DNTPersianUtils.Core;
 using GanjooRazor.Utils;
 using GSpotifyProxy.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -157,9 +158,13 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
 
+                }
+                else
+                {
+                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
@@ -175,9 +180,24 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
 
+                    bool status = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                    if(Request.Cookies["KeepHistory"] != null)
+                    {
+                        Response.Cookies.Delete("KeepHistory");
+                    }
+                    var cookieOption = new CookieOptions()
+                    {
+                        Expires = DateTime.Now.AddDays(365),
+                    };
+                    Response.Cookies.Append("KeepHistory", $"{status}", cookieOption);
+
+                }
+                else
+                {
+                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
@@ -193,9 +213,24 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
 
+                    bool status = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                    if (Request.Cookies["KeepHistory"] != null)
+                    {
+                        Response.Cookies.Delete("KeepHistory");
+                    }
+                    var cookieOption = new CookieOptions()
+                    {
+                        Expires = DateTime.Now.AddDays(365),
+                    };
+                    Response.Cookies.Append("KeepHistory", $"{status}", cookieOption);
+
+                }
+                else
+                {
+                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
