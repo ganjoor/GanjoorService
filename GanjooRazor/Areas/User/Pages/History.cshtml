@@ -41,11 +41,15 @@ else
                     return;
                 }
 
+                document.getElementById('switch-tracking-button').style.visibility = 'hidden';
+                document.getElementById('processing').innerHTML = 'در حال پردازش ...';
+
                 $.ajax({
                 type: "POST",
                 url: '?handler=StopTracking',
                 error: function() {
                     alert('خطا رخ داد.');
+                    location.reload();
                 },
                 success: function () {
                    location.reload();
@@ -54,11 +58,15 @@ else
                 return;
             }
 
+            document.getElementById('switch-tracking-button').style.visibility = 'hidden';
+            document.getElementById('processing').innerHTML = 'در حال پردازش ...';
+
             $.ajax({
                 type: "POST",
                 url: '?handler=StartTracking',
                 error: function() {
                     alert('خطا رخ داد.');
+                    location.reload();
                 },
                 success: function () {
                    location.reload();
@@ -87,7 +95,11 @@ else
         </p>
 
         <p>
-            <a role="button" style="color: red" onclick="switchTracking(false)" class="actionlink">توقف ذخیرهٔ تاریخچه</a>
+            <a role="button" style="color: red" onclick="switchTracking(false)" id="switch-tracking-button" class="actionlink">توقف ذخیرهٔ تاریخچه</a>
+        </p>
+
+        <p id="processing">
+
         </p>
 
         <p>
@@ -102,7 +114,11 @@ else
         </p>
 
         <p>
-            <a role="button" style="color: green" onclick="switchTracking(true)" class="actionlink">فعالسازی ذخیرهٔ تاریخچه</a>
+            <a role="button" style="color: green" onclick="switchTracking(true)" id="switch-tracking-button" class="actionlink">فعالسازی ذخیرهٔ تاریخچه</a>
+        </p>
+
+        <p id="processing">
+
         </p>
 
         <p>
