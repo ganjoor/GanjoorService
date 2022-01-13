@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
@@ -48,6 +48,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                         return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                 }
+                else
+                {
+                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
             }
             return new JsonResult(true);
         }
@@ -63,6 +67,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                     {
                         return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
+                }
+                else
+                {
+                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);

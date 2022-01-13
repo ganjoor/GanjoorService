@@ -85,7 +85,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                     {
                         return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
-
+                }
+                else
+                {
+                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
@@ -99,10 +102,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                 {
                     GanjoorGeoLocation model = new GanjoorGeoLocation()
                     {
-                       Id = id,
-                       Name = name,
-                       Latitude = latitude,
-                       Longitude = longitude
+                        Id = id,
+                        Name = name,
+                        Latitude = latitude,
+                        Longitude = longitude
                     };
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/locations", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)
@@ -112,11 +115,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                 }
                 else
                 {
-                    LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
 
             }
-
             return new JsonResult(true);
         }
     }

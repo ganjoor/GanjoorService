@@ -80,14 +80,14 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/banners/{id}", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
 
 
                 }
                 else
                 {
-                    LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
 
             }
@@ -105,9 +105,13 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return Redirect($"/login?redirect={Request.Path}&error={await response.Content.ReadAsStringAsync()}");
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
 
+                }
+                else
+                {
+                    return BadRequest("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
