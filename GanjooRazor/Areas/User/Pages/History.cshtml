@@ -138,7 +138,7 @@ else
         <div style="background-color:@color" id="history-item-@historyItem.Id">
             <blockquote>
                 <p>
-                    از <a href="@($"{historyItem.PoemFullUrl}#bn{historyItem.CoupletIndex + 1}")">@historyItem.PoemFullTitle</a> <small>در @historyItem.DateTime.ToFriendlyPersianDateTextify()</small>
+                    <a href="@($"{historyItem.PoemFullUrl}#bn{historyItem.CoupletIndex + 1}")">@historyItem.PoemFullTitle</a> <small>در @historyItem.DateTime.ToFriendlyPersianDateTextify()</small>
                 </p>
                 <a href="@($"{historyItem.PoemFullUrl}#bn{historyItem.CoupletIndex + 1}")">
                     <img src="@historyItem.PoetImageUrl" style="width:unset;display:unset;border:unset" alt="@historyItem.PoetName" />
