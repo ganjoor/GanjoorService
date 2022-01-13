@@ -228,6 +228,13 @@
                 MarkUserUpvotedRecitations(@Model.GanjoorPage.Id);
             </script>
         }
+
+        if(Model.KeepHistory)
+        {
+            <script>
+                AddToMyHistory(@Model.GanjoorPage.Id);
+            </script>
+        }
     }
 
 </body>

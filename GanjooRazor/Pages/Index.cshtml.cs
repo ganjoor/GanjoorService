@@ -392,6 +392,11 @@ namespace GanjooRazor.Pages
         public bool CanEdit { get; set; }
 
         /// <summary>
+        /// keep history
+        /// </summary>
+        public bool KeepHistory { get; set; }
+
+        /// <summary>
         /// pinterest url
         /// </summary>
         public string PinterestUrl { get; set; }
@@ -575,6 +580,7 @@ namespace GanjooRazor.Pages
             LastError = "";
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
             CanEdit = Request.Cookies["CanEdit"] == "True";
+            KeepHistory = Request.Cookies["KeepHistory"] == "True";
             IsPoetPage = false;
             IsCatPage = false;
             IsPoemPage = false;
@@ -877,6 +883,40 @@ namespace GanjooRazor.Pages
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                     var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                    return new OkObjectResult(res);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
+
+        public async Task<ActionResult> OnPostAddToMyHistoryAsync(int poemId)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/tracking", new StringContent(JsonConvert.SerializeObject(poemId), Encoding.UTF8, "application/json"));
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                    if(res == false)
+                    {
+                        if (Request.Cookies["KeepHistory"] != null)
+                        {
+                            Response.Cookies.Delete("KeepHistory");
+                        }
+                        var cookieOption = new CookieOptions()
+                        {
+                            Expires = DateTime.Now.AddDays(365),
+                        };
+                        Response.Cookies.Append("KeepHistory", $"{false}", cookieOption);
+                    }
                     return new OkObjectResult(res);
                 }
                 else

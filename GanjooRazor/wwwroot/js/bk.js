@@ -902,3 +902,15 @@ function onFindPoet(value) {
         }
     }
 }
+
+function AddToMyHistory(poemId) {
+    setTimeout(function () {
+        $.ajax({
+            type: "POST",
+            url: '?Handler=AddToMyHistory&poemId=' + String(poemId),
+            error: function (err) {
+                console.log(err);
+            },
+        });
+    }, 1);
+}
