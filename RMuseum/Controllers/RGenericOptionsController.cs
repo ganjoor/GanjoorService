@@ -16,8 +16,7 @@ namespace RMuseum.Controllers
         /// constructor
         /// </summary>
         /// <param name="optionsService"></param>
-        /// <param name="memoryCache"></param>
-        public RGenericOptionsController(IRGenericOptionsService optionsService, IMemoryCache memoryCache) : base(optionsService, memoryCache)
+        public RGenericOptionsController(IRGenericOptionsService optionsService) : base(optionsService)
         {
         }
     }

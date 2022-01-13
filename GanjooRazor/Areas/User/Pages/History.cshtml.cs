@@ -183,7 +183,6 @@ namespace GanjooRazor.Areas.User.Pages
                         return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
 
-                    bool status = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
                     if(Request.Cookies["KeepHistory"] != null)
                     {
                         Response.Cookies.Delete("KeepHistory");
@@ -192,7 +191,7 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         Expires = DateTime.Now.AddDays(365),
                     };
-                    Response.Cookies.Append("KeepHistory", $"{status}", cookieOption);
+                    Response.Cookies.Append("KeepHistory", $"{false}", cookieOption);
 
                 }
                 else
@@ -225,7 +224,7 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         Expires = DateTime.Now.AddDays(365),
                     };
-                    Response.Cookies.Append("KeepHistory", $"{status}", cookieOption);
+                    Response.Cookies.Append("KeepHistory", $"{true}", cookieOption);
 
                 }
                 else
