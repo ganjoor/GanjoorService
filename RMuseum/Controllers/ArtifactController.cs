@@ -1123,7 +1123,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> RetryImport()
         {
-            RServiceResult<bool> res = await _artifactService.RescheduleJobs();
+            RServiceResult<bool> res = await _artifactService.RescheduleJobs(JobType.BritishLibrary);
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);

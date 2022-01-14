@@ -263,8 +263,9 @@ namespace RMuseum.Services
         /// <summary>
         /// reschedule jobs
         /// </summary>
+        /// <param name="jobType"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> RescheduleJobs();
+        Task<RServiceResult<bool>> RescheduleJobs(JobType jobType);
 
         /// <summary>
         /// due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely

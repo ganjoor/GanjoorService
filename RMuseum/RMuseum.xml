@@ -9081,10 +9081,11 @@
             <param name="resourcePrefix"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.RescheduleJobs">
+        <member name="M:RMuseum.Services.IArtifactService.RescheduleJobs(RMuseum.Models.ImportJob.JobType)">
             <summary>
             reschedule jobs
             </summary>
+            <param name="jobType"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IArtifactService.ReExamineLocDownloads">
@@ -10754,10 +10755,11 @@
             <param name="resourcePrefix"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.RescheduleJobs">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.RescheduleJobs(RMuseum.Models.ImportJob.JobType)">
             <summary>
             reschedule jobs
             </summary>
+            <param name="jobType"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.RemoveArtifact(System.Guid,System.Boolean)">

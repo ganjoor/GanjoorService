@@ -1198,11 +1198,12 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// reschedule jobs
         /// </summary>
+        /// <param name="jobType"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> RescheduleJobs()
+        public async Task<RServiceResult<bool>> RescheduleJobs(JobType jobType)
         {
 
-            ImportJob[] jobs = await _context.ImportJobs.Where(j => j.Status != ImportJobStatus.Succeeded && j.JobType == JobType.BritishLibrary).OrderByDescending(j => j.ProgressPercent).ToArrayAsync();
+            ImportJob[] jobs = await _context.ImportJobs.Where(j => j.Status != ImportJobStatus.Succeeded && j.JobType == jobType).OrderByDescending(j => j.ProgressPercent).ToArrayAsync();
 
             List<string> scheduled = new List<string>();
 
