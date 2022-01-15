@@ -829,12 +829,12 @@ function showAllRecitations() {
 function switch_section(sectionId, buttonId){
     if (document.getElementById(sectionId).style.display == 'none') {
         document.getElementById(sectionId).style.display = 'block';
-        document.getElementById(buttonId).style.transform = 'rotate(180deg)';
     }
     else {
         document.getElementById(sectionId).style.display = 'none';
-        document.getElementById(buttonId).style.transform = 'none';
     }
+    document.getElementById(buttonId).classList.toggle('expand_circle_down');
+    document.getElementById(buttonId).classList.toggle('collapse_circle_down');
 }
 
 function switchRecitationVote(recitationId) {

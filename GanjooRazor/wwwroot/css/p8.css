@@ -1550,3 +1550,15 @@ audio {
     text-align: center;
 }
 
+.expand_circle_down::after, .collapse_circle_down::after {
+    content: 'expand_circle_down';
+}
+
+.expand_circle_down {
+    transform: rotate(180deg);
+}
+
+.collapse_circle_down{
+    transform: none;
+}
+
