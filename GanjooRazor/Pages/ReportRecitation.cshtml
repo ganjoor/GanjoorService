@@ -1,5 +1,6 @@
 ﻿@page
 @model GanjooRazor.Pages.ReportRecitationModel
+@using DNTPersianUtils.Core
 @{
     Layout = null;
 }
@@ -108,7 +109,7 @@
                                     <select asp-for="Report.CoupletIndex">
                                         @foreach (var item in Model.Couplets)
                                         {
-                                            <option value="@item.Item1">@item.Item2</option>
+                                            <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
                                         }
                                     </select>
                                 </td>
