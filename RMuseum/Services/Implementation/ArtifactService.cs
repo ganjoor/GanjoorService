@@ -1229,7 +1229,39 @@ namespace RMuseum.Services.Implementation
                 {
                     scheduled.Add(job.ResourceNumber);
 
-                    RServiceResult<bool> rescheduled = await StartImportingFromBritishLibrary(job.ResourceNumber, job.FriendlyUrl);
+                    RServiceResult<bool> rescheduled =
+                        job.JobType == JobType.Princeton ?
+                 await StartImportingFromPrinceton(job.ResourceNumber, job.FriendlyUrl)
+                 :
+                 job.JobType == JobType.Harvard ?
+                 await StartImportingFromHarvard(job.ResourceNumber, job.FriendlyUrl)
+                 :
+                  job.JobType == JobType.HarvardDirect ?
+                 await StartImportingFromHarvardDirectly(job.ResourceNumber, job.FriendlyUrl, job.SrcUrl)
+                 :
+                  job.JobType == JobType.HathiTrust ?
+                 await StartImportingFromHathiTrust(job.ResourceNumber, job.FriendlyUrl)
+                 :
+                 job.JobType == JobType.PennLibraries ?
+                 await StartImportingFromPenLibraries(job.ResourceNumber, job.FriendlyUrl)
+                 :
+                 job.JobType == JobType.Cambridge ?
+                 await StartImportingFromCambridge(job.ResourceNumber, job.FriendlyUrl)
+                 :
+                 job.JobType == JobType.BritishLibrary ?
+                 await StartImportingFromBritishLibrary(job.ResourceNumber, job.FriendlyUrl)
+                 :
+                 job.JobType == JobType.ServerFolder ?
+                 await StartImportingFromServerFolder(job.ResourceNumber, job.FriendlyUrl, job.SrcUrl)
+                 :
+                 job.JobType == JobType.Walters ?
+                 await StartImportingFromWalters(job.ResourceNumber, job.FriendlyUrl)
+                  :
+                 job.JobType == JobType.ChesterBeatty ?
+                 await StartImportingFromChesterBeatty(job.ResourceNumber, job.FriendlyUrl)
+                 :
+                 new RServiceResult<bool>(false, "StartImportingFromTheLibraryOfCongress NOT SUPPORTED");
+
                     if (rescheduled.Result)
                     {
                         _context.ImportJobs.Remove(job);
