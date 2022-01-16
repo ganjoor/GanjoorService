@@ -258,6 +258,8 @@ namespace RMuseum.Services.Implementation
         public RServiceResult<string> GetImagePath(RPictureFile image, string sz = "orig")
         {
             string fileName = sz == "thumb" ? image.ThumbnailImageStoredFileName : sz == "norm" ? image.NormalSizeImageStoredFileName : image.StoredFileName;
+            if (string.IsNullOrEmpty(fileName))
+                return new RServiceResult<string>(null);
             return new RServiceResult<string>(Path.Combine(ImageStoragePath, image.FolderName, fileName));
         }
 
