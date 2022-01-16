@@ -56,9 +56,18 @@ namespace RMuseum.Controllers
 
             if(!System.IO.File.Exists(imgPath.Result))
             {
-                return NotFound();
+                if(size == "orig")
+                {
+                    imgPath = _pictureFileService.GetImagePath(img.Result, "norm");
+                    if (!string.IsNullOrEmpty(imgPath.ExceptionString))
+                        return BadRequest(imgPath.ExceptionString);
+                }
+                else
+                {
+                    return NotFound();
+                }
+                
             }
-
 
             return new FileStreamResult(new FileStream(imgPath.Result, FileMode.Open, FileAccess.Read),
                 size == "orig" ?
