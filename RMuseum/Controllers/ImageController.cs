@@ -1,6 +1,4 @@
-﻿using Audit.WebApi;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RMuseum.Models.Artifact;
@@ -55,6 +53,11 @@ namespace RMuseum.Controllers
             RServiceResult<string> imgPath  = _pictureFileService.GetImagePath(img.Result, size);
             if(!string.IsNullOrEmpty(imgPath.ExceptionString))
                 return BadRequest(imgPath.ExceptionString);
+
+            if(!System.IO.File.Exists(imgPath.Result))
+            {
+                return NotFound();
+            }
 
 
             return new FileStreamResult(new FileStream(imgPath.Result, FileMode.Open, FileAccess.Read),
