@@ -596,6 +596,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.StartRemovingOriginalImages">
+            <summary>
+            start removing original images
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.ArtifactController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -9377,6 +9383,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartRemovingOriginalImages">
+            <summary>
+            start removing original images
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>
             donation service
@@ -10404,6 +10416,9 @@
             <summary>
             IArtifactService implementation
             </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartFillingGanjoorLinkOriginalSources">
             <summary>
@@ -10509,6 +10524,12 @@
             </summary>
             <param name="resourceNumber">W619</param>
             <param name="friendlyUrl">golestan-walters-01</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartRemovingOriginalImages">
+            <summary>
+            start removing original images
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPrinceton(System.String,System.String)">

@@ -557,5 +557,11 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<bool>> AcceptPublicNoteReport(Guid id);
 
+        /// <summary>
+        /// start removing original images
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartRemovingOriginalImages();
+
     }
 }

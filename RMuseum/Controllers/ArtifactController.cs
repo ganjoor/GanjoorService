@@ -1974,6 +1974,32 @@ namespace RMuseum.Controllers
                 return BadRequest(exp.ToString());
             }
         }
+
+        /// <summary>
+        /// start removing original images
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpDelete("originalimages/remove")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult StartRemovingOriginalImages()
+        {
+            try
+            {
+                var res = _artifactService.StartRemovingOriginalImages();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
         /// <summary>
         /// readonly mode
         /// </summary>
