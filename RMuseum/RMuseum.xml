@@ -6285,6 +6285,106 @@
             death location
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoetPicture">
+            <summary>
+            Ganjoor Poet Picture
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetPicture.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetPicture.PoetId">
+            <summary>
+            Poet Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetPicture.Poet">
+            <summary>
+            Poet
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetPicture.PicOrder">
+            <summary>
+            order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetPicture.PictureId">
+            <summary>
+            picture id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetPicture.Picture">
+            <summary>
+            picture
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetPicture.SuggestedById">
+            <summary>
+            suggested by id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetPicture.SuggestedBy">
+            <summary>
+            suggested by
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetPicture.Published">
+            <summary>
+            published
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetPicture.ChosenOne">
+            <summary>
+            selected
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoetSpecLine">
+            <summary>
+            Ganjoor Poet Specification
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSpecLine.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSpecLine.PoetId">
+            <summary>
+            Poet Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSpecLine.Poet">
+            <summary>
+            Poet
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSpecLine.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSpecLine.SuggestedById">
+            <summary>
+            suggested by id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSpecLine.SuggestedBy">
+            <summary>
+            suggested by
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSpecLine.Published">
+            <summary>
+            published
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSpecLine.LineOrder">
+            <summary>
+            order
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
             <summary>
             ganjoor.net site banner
