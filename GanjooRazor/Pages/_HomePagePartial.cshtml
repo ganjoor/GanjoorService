@@ -28,6 +28,26 @@
 
     <div id="main">
         <div id="guides">
+            @if (Model.LoggedIn)
+            {
+                <div class="century">
+                    پیشخان کاربر
+                </div>
+                <div class="clear-both">
+                    <a href="/User/MyBookmarks" role="button" class="w3tooltip cursor-pointer">
+                        <div class="circled-number">
+                            <i class="noindent-info-button bookmarking-icon color-yellow"></i>
+                        </div>
+                        <span class="w3tooltiptext">نشان‌های من</span>
+                    </a>
+                     <a href="/User/Notifications" role="button" class="w3tooltip cursor-pointer">
+                        <div class="circled-number">
+                            <i class="noindent-info-button notifications-icon"></i>
+                        </div>
+                        <span class="w3tooltiptext">اعلان‌های من</span>
+                    </a>
+                </div>
+            }
             <div class="century">
                 شاعران پرمخاطب
             </div>
@@ -54,10 +74,10 @@
                         </div>
                     }
                 </div>
-                 <div class="clear-both">
-                        <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onFindPoet(this.value)" />
-                        <div class="spacer" id="found-poets"></div>
-                    </div>
+                <div class="clear-both">
+                    <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onFindPoet(this.value)" />
+                    <div class="spacer" id="found-poets"></div>
+                </div>
                 <div class="century" id="cl">
                     دسته‌بندی بر اساس قرن
                 </div>
