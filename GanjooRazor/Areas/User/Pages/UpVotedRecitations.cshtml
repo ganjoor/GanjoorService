@@ -28,6 +28,13 @@ else
         }
     </p>
 
+    @if(Model.UpVotes.Count == 0)
+    {
+        <p>
+            شما خوانشی را نشان نکرده‌اید. برای آشنایی با نحوهٔ نشان کردن خوانش‌ها <a href="http://blog.ganjoor.net/1400/10/03/changes-in-recitations-section/" target="_blank">اینجا</a> را ببینید.
+        </p>
+    }
+
     @foreach (var upvote in Model.UpVotes)
     {
         if (color == "gray")

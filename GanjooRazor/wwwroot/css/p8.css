@@ -1567,10 +1567,15 @@ audio {
     content: 'star'
 }
 
-.color-yellow {
-    color: yellow;
-}
-
 .notifications-icon::after {
     content: 'notifications'
 }
+
+.home-icon::after {
+    content: 'home'
+}
+
+.history-icon::after {
+    content: 'history'
+}
+

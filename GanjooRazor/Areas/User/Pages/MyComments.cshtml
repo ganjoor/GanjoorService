@@ -28,6 +28,13 @@ else
         }
     </p>
 
+    @if(Model.Comments.Count == 0)
+    {
+        <p>
+            حاشیه‌ای یافت نشد.
+        </p>
+    }
+
     @foreach (var comment in Model.Comments)
     {
         if (color == "gray")
