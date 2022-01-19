@@ -14,6 +14,64 @@
 }
 else
 {
+    <script>
+        function deleteNotification(notificationId) {
+               if (!confirm('آیا از حذف این اعلان اطمینان دارید؟'))
+                   return;
+
+               var url = '?handler=Notification';
+
+               $.ajax({
+                   type: "DELETE",
+                   url: url,
+                   data: {
+                       id: notificationId
+                   },
+                   success: function () {
+                       var notificationBlockId = '#notification-' + notificationId;
+                       $(notificationBlockId).remove();
+                   },
+               });
+           }
+
+           function markReadNotification(notificationId) {
+               var url = '?handler=MarkRead';
+
+               $.ajax({
+                   type: "PUT",
+                   url: url,
+                   data: {
+                       id: notificationId
+                   },
+                   success: function () {
+                       var notificationBlockId = '#unread-' + notificationId;
+                       $(notificationBlockId).remove();
+                   },
+               });
+           }
+
+         function markAllRead() {
+             if (!confirm('آیا از علامتگذاری همهٔ اعلانها به عنوان خوانده شده اطمینان دارید؟'))
+                   return;
+
+               var url = '?handler=MarkAllRead';
+
+               $.ajax({
+                   type: "PUT",
+                   url: url,
+                   error: function (e) {
+                   if (e.responseText == null)
+                       alert(e);
+                   else
+                       alert(e.responseText);
+                   },
+                   success: function () {
+                       location.reload();
+                   },
+               });
+         }
+    </script>
+
     <p style="text-align:center">
         @foreach (var paginationLink in Model.PaginationLinks)
         {
@@ -28,11 +86,17 @@ else
         }
     </p>
 
-    @if(Model.Notifications.Count == 0)
+    @if (Model.Notifications.Count == 0)
     {
-       <p>
-           در حال حاضر اعلانی وجود ندارد. در صورتی که کاربری با زدن دکمهٔ «پاسخگویی» برای حاشیهٔ شما پاسخی بنویسد یا شما با پیشنهاد آهنگ مرتبط با شعر یا روش دیگری در گنجور مشارکت کنید و مشارکت شما بررسی شود در قسمت «اعلان‌های من» با دریافت یک اعلان از این رویدادها مطلع می شوید.
-       </p>
+        <p>
+            در حال حاضر اعلانی وجود ندارد. در صورتی که کاربری با زدن دکمهٔ «پاسخگویی» برای حاشیهٔ شما پاسخی بنویسد یا شما با پیشنهاد آهنگ مرتبط با شعر یا روش دیگری در گنجور مشارکت کنید و مشارکت شما بررسی شود در قسمت «اعلان‌های من» با دریافت یک اعلان از این رویدادها مطلع می شوید.
+        </p>
+    }
+    else
+    {
+        <p>
+            <a role="button" onclick="markAllRead()" class="actionlink">همه را خواندم</a>
+        </p>
     }
 
     @foreach (var notification in Model.Notifications)
@@ -52,7 +116,11 @@ else
                 </div>
             </blockquote>
             <p>
-                <a role="button" onclick="deleteNotification('@notification.Id')" class="actionlink" title="حذف">🗑</a>
+                <a role="button" onclick="deleteNotification('@notification.Id')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
+                @if (notification.Status == RSecurityBackend.Models.Notification.NotificationStatus.Unread)
+                {
+                    <a role="button" onclick="markReadNotification('@notification.Id')" class="actionlink" title="خواندم" id="unread-@notification.Id"><i class="noindent-info-button done-icon"></i></a>
+                }
             </p>
         </div>
 
@@ -74,5 +142,5 @@ else
         }
     </p>
 
-    
+
 }

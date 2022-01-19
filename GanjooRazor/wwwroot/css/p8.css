@@ -1579,6 +1579,14 @@ audio {
     content: 'history'
 }
 
+.done-icon::after {
+    content: 'done'
+}
+
+.delete-icon::after {
+    content: 'delete'
+}
+
 
 .visible-notification-badge {
     position: absolute;

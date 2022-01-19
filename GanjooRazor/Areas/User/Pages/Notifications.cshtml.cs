@@ -154,5 +154,47 @@ namespace GanjooRazor.Areas.User.Pages
             }
             return new JsonResult(true);
         }
+
+        public async Task<IActionResult> OnPutMarkAllReadAsync()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/notifications/allread", null);
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+            return new JsonResult(true);
+        }
+
+        public async Task<IActionResult> OnPutMarkReadReadAsync(Guid id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/notifications/{id}", null);
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+            return new JsonResult(true);
+        }
     }
 }

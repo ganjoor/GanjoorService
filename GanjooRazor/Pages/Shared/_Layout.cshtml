@@ -84,25 +84,6 @@
 
         }
 
-        function deleteNotification(notificationId) {
-            if (!confirm('آیا از حذف این اعلان اطمینان دارید؟'))
-                return;
-
-            var url = '?handler=Notification';
-
-            $.ajax({
-                type: "DELETE",
-                url: url,
-                data: {
-                    id: notificationId
-                },
-                success: function () {
-                    var notificationBlockId = '#notification-' + notificationId;
-                    $(notificationBlockId).remove();
-                },
-            });
-        }
-
         function editMyComment(commentId) {
             var commentTextBlockId = '#comment-text-' + commentId;
             tinymce.get('editCommentText').setContent($(commentTextBlockId).html());
