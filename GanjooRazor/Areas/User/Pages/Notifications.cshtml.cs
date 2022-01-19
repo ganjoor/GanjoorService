@@ -176,7 +176,7 @@ namespace GanjooRazor.Areas.User.Pages
             return new JsonResult(true);
         }
 
-        public async Task<IActionResult> OnPutMarkReadReadAsync(Guid id)
+        public async Task<IActionResult> OnPutMarkReadAsync(Guid id)
         {
             using (HttpClient secureClient = new HttpClient())
             {
