@@ -1,4 +1,5 @@
-﻿using GanjooRazor.Utils;
+﻿using DNTPersianUtils.Core;
+using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -924,6 +925,26 @@ namespace GanjooRazor.Pages
                     return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
+        }
+
+        public async Task<IActionResult> OnGetCheckIfHasNotificationsAsync()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/notifications/unread/count");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    var res = JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync());
+                    if (res == 0)
+                        return new OkObjectResult("");
+                    return new OkObjectResult(res.ToString().ToPersianNumbers());
+                }
+            }
+            return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
         }
     }
 }

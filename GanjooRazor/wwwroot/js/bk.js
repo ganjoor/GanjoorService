@@ -914,3 +914,21 @@ function AddToMyHistory(poemId) {
         });
     }, 1);
 }
+
+function CheckIfHasNotificationsForHomePage() {
+    setTimeout(function () {
+        $.ajax({
+            type: "GET",
+            url: '?Handler=CheckIfHasNotifications',
+            error: function (err) {
+                console.log(err);
+            },
+            success: function (result) {
+                if (result != '') {
+                    document.getElementById('notification-badge').classList.toggle('hidden-recitation');
+                    document.getElementById('notification-badge').classList.toggle('visible-notification-badge');
+                }
+            },
+        });
+    }, 1);
+}

@@ -116,8 +116,8 @@
                 @foreach (var recitation in Model.GanjoorPage.Poem.Recitations)
                 {
                     <text>
-                            narrators.push('@Html.Raw(recitation.AudioArtist)');
-                            audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
+                                    narrators.push('@Html.Raw(recitation.AudioArtist)');
+                                    audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
                     </text>
                 }
             </script>
@@ -220,19 +220,29 @@
         </script>
     }
 
-    @if (Model.LoggedIn && Model.IsPoemPage)
+    @if (Model.LoggedIn)
     {
-        if (Model.GanjoorPage.Poem.Recitations.Length > 0)
+        if (Model.IsPoemPage)
         {
-            <script>
-                MarkUserUpvotedRecitations(@Model.GanjoorPage.Id);
-            </script>
+            if (Model.GanjoorPage.Poem.Recitations.Length > 0)
+            {
+                <script>
+                    MarkUserUpvotedRecitations(@Model.GanjoorPage.Id);
+                </script>
+            }
+
+            if (Model.KeepHistory)
+            {
+                <script>
+                    AddToMyHistory(@Model.GanjoorPage.Id);
+                </script>
+            }
         }
 
-        if(Model.KeepHistory)
+        if (Model.IsHomePage)
         {
             <script>
-                AddToMyHistory(@Model.GanjoorPage.Id);
+                CheckIfHasNotificationsForHomePage();
             </script>
         }
     }
