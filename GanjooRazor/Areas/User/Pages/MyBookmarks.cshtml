@@ -85,9 +85,11 @@ else
                 </div>
             </blockquote>
             <p>
-                <a role="button" onclick="deleteBookmark('@bookmark.Id')" class="actionlink" title="حذف">🗑</a>
+                <a role="button" onclick="deleteBookmark('@bookmark.Id')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
             </p>
-
+             <p>
+                <a role="button" onclick="editPrivateNote('@bookmark.Id')" class="actionlink" title="یادداشت شخصی"><i class="noindent-info-button edit-poem-button"></i></a>
+            </p>
         </div>
 
 
@@ -107,6 +109,27 @@ else
             }
         }
     </p>
+
+    <div id="id02" class="modal">
+        <span onclick="document.getElementById('id02').style.display='none'"
+              class="close" title="بستن">&times;</span>
+        <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
+            <table style="max-width:100%; width:100%; margin:0">
+                <tr>
+                    <td>
+                        <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                        <input type="hidden" name="editCommentId" id="editCommentId" value="" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button name="editcomment" id="editcomment" class="inputSubmit" onclick="return editComment();" style="width:100%">ویرایش حاشیه</button>
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
 
 
 }

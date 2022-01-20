@@ -14,6 +14,68 @@
 }
 else
 {
+
+    <script>
+        function deleteThisComment(commentId) {
+            if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=MyComment';
+
+            $.ajax({
+                type: "DELETE",
+                url: url,
+                data: {
+                    id: commentId
+                },
+                success: function () {
+                    var commentBlockId = '#comment-' + commentId;
+                    $(commentBlockId).remove();
+                },
+            });
+
+        }
+
+        function editThisComment(commentId) {
+            var commentTextBlockId = '#comment-text-' + commentId;
+            tinymce.get('editCommentText').setContent($(commentTextBlockId).html());
+            $("#editCommentId").val(commentId);
+            document.getElementById('id02').style.display = 'block';
+        }
+
+        function editCommentFinal() {
+            $("#editcommentform").unbind('submit').bind('submit', function (e) {
+
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                var url = '?handler=MyComment';
+
+                var commentId = $("#editCommentId").val();
+
+
+                $.ajax({
+                    type: "PUT",
+                    url: url,
+                    data: {
+                        id: commentId,
+                        comment: $("textarea#editCommentText").val()
+                    },
+                    success: function () {
+                        document.getElementById('id02').style.display = 'none';
+
+                        var commentTextBlockId = '#comment-text-' + commentId;
+
+                        $(commentTextBlockId).html($("textarea#editCommentText").val());
+                    },
+
+                });
+
+
+
+
+            });
+        }
+    </script>
     <p style="text-align:center">
         @foreach (var paginationLink in Model.PaginationLinks)
         {
@@ -28,7 +90,7 @@ else
         }
     </p>
 
-    @if(Model.Comments.Count == 0)
+    @if (Model.Comments.Count == 0)
     {
         <p>
             حاشیه‌ای یافت نشد.
@@ -52,8 +114,8 @@ else
                 </p>
             </blockquote>
             <p>
-                <a role="button" onclick="deleteMyComment(@comment.Id)" class="actionlink" title="حذف حاشیه">🗑</a>
-                <a role="button" onclick="editMyComment(@comment.Id)" class="actionlink" title="ویرایش حاشیه">✎</a>
+                <a role="button" onclick="deleteThisComment(@comment.Id)" class="actionlink" title="حذف حاشیه"><i class="noindent-info-button delete-icon"></i></a>
+                <a role="button" onclick="editThisComment(@comment.Id)" class="actionlink" title="ویرایش حاشیه"><i class="noindent-info-button edit-poem-button"></i></a>
             </p>
         </div>
 
@@ -77,18 +139,18 @@ else
 
     <div id="id02" class="modal">
         <span onclick="document.getElementById('id02').style.display='none'"
-              class="close" title="بستن">&times;</span>
+          class="close" title="بستن">&times;</span>
         <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
             <table style="max-width:100%; width:100%; margin:0">
                 <tr>
                     <td>
-                        <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
+                        <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor  width-100per" tabindex="4" rows="10"></textarea>
                         <input type="hidden" name="editCommentId" id="editCommentId" value="" />
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <button name="editcomment" id="editcomment" class="inputSubmit" onclick="return editComment();" style="width:100%">ویرایش حاشیه</button>
+                        <button name="editcomment" id="editcomment" class="submitCommentButton  width-100per" onclick="return editCommentFinal();">ویرایش حاشیه</button>
                     </td>
                 </tr>
             </table>

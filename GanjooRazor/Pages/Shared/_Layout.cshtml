@@ -63,65 +63,7 @@
 
         }
 
-        function deleteMyComment(commentId) {
-            if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
-                return;
 
-            var url = '?handler=MyComment';
-
-            $.ajax({
-                type: "DELETE",
-                url: url,
-                data: {
-                    id: commentId
-                },
-                success: function () {
-                    var commentBlockId = '#comment-' + commentId;
-                    $(commentBlockId).remove();
-                },
-            });
-
-        }
-
-        function editMyComment(commentId) {
-            var commentTextBlockId = '#comment-text-' + commentId;
-            tinymce.get('editCommentText').setContent($(commentTextBlockId).html());
-            $("#editCommentId").val(commentId);
-            document.getElementById('id02').style.display = 'block';
-        }
-
-        function editComment() {
-            $("#editcommentform").unbind('submit').bind('submit', function (e) {
-
-                e.preventDefault(); // avoid to execute the actual submit of the form.
-
-                var url = '?handler=MyComment';
-
-                var commentId = $("#editCommentId").val();
-
-
-                $.ajax({
-                    type: "PUT",
-                    url: url,
-                    data: {
-                        id: commentId,
-                        comment: $("textarea#editCommentText").val()
-                    },
-                    success: function () {
-                        document.getElementById('id02').style.display = 'none';
-
-                        var commentTextBlockId = '#comment-text-' + commentId;
-
-                        $(commentTextBlockId).html($("textarea#editCommentText").val());
-                    },
-
-                });
-
-
-
-
-            });
-        }
 
         function rebuildMundex() {
             if (!confirm('آیا از بازسازی صفحات نمایهٔ موسیقی اطمینان دارید؟'))
