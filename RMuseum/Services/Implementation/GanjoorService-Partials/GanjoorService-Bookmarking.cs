@@ -111,6 +111,7 @@ namespace RMuseum.Services.Implementation
                         Id = b.Id,
                         CoupletIndex = b.CoupletIndex,
                         DateTime = b.DateTime,
+                        PrivateNote = b.PrivateNote
                     }
                 )
                 .ToArrayAsync();
@@ -183,7 +184,8 @@ namespace RMuseum.Services.Implementation
                         CoupletIndex = bookmark.CoupletIndex,
                         VerseText = verses.Count == 0 ? "" : verses[0].Text,
                         Verse2Text = verses.Count < 2 ? "" : verses[1].Text,
-                        DateTime = bookmark.DateTime
+                        DateTime = bookmark.DateTime,
+                        PrivateNote = bookmark.PrivateNote
                     }
                     );
             }
