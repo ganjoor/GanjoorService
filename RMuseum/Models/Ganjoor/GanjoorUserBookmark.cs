@@ -54,5 +54,10 @@ namespace RMuseum.Models.Ganjoor
         /// DateTime
         /// </summary>
         public DateTime DateTime { get; set; }
+
+        /// <summary>
+        /// private note for bookmark
+        /// </summary>
+        public string PrivateNote { get; set; }
     }
 }
