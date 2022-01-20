@@ -150,6 +150,34 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// modify bookmark private note
+        /// </summary>
+        /// <param name="bookmarkId"></param>
+        /// <param name="userId">to make sure a user can not modify another user's bookmarks</param>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ModifyBookmarkPrivateNoteAsync(Guid bookmarkId, Guid userId, string note)
+        {
+            try
+            {
+                GanjoorUserBookmark bookmark = await _context.GanjoorUserBookmarks.Where(b => b.Id == bookmarkId && b.UserId == userId).SingleOrDefaultAsync();
+                if (bookmark == null)
+                {
+                    return new RServiceResult<bool>(false, "bookmark not found");
+                }
+                bookmark.PrivateNote = note;
+                _context.Update(bookmark);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+            
+        }
+
+        /// <summary>
         /// get user bookmarks (artifacts and items)
         /// </summary>
         /// <param name="paging"></param>

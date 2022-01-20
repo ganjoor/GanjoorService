@@ -660,6 +660,15 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> DeleteGanjoorBookmark(Guid bookmarkId, Guid userId);
 
         /// <summary>
+        /// modify bookmark private note
+        /// </summary>
+        /// <param name="bookmarkId"></param>
+        /// <param name="userId">to make sure a user can not modify another user's bookmarks</param>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ModifyBookmarkPrivateNoteAsync(Guid bookmarkId, Guid userId, string note);
+
+        /// <summary>
         /// get user ganjoor bookmarks (only  Id, CoupletIndex and DateTime are valid)
         /// </summary>
         /// <param name="userId"></param>

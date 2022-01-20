@@ -2222,6 +2222,28 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// modify bookmark private note
+        /// </summary>
+        /// <param name="bookmarkId"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("bookmark/{bookmarkId}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ModifyBookmarkPrivateNoteAsync(Guid bookmarkId, [FromBody] string note)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<bool> res = await _ganjoorService.ModifyBookmarkPrivateNoteAsync(bookmarkId, loggedOnUserId, note);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
 
         /// <summary>
         /// get poem user bookmarks (only Id, CoupletIndex and DateTime are valid in the output view model)
