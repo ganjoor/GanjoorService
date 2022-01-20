@@ -176,6 +176,27 @@ namespace GanjooRazor.Areas.User.Pages
             return new JsonResult(true);
         }
 
+        public async Task<IActionResult> OnDeleteAllReadAsync()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/notifications");
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+            return new JsonResult(true);
+        }
+
         public async Task<IActionResult> OnPutMarkReadAsync(Guid id)
         {
             using (HttpClient secureClient = new HttpClient())

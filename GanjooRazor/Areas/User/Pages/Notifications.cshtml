@@ -70,6 +70,27 @@ else
                    },
                });
          }
+
+         function deleteAllRead() {
+             if (!confirm('آیا از حذف همهٔ اعلانهای خوانده شده اطمینان دارید؟'))
+                   return;
+
+               var url = '?handler=AllRead';
+
+               $.ajax({
+                   type: "DELETE",
+                   url: url,
+                   error: function (e) {
+                   if (e.responseText == null)
+                       alert(e);
+                   else
+                       alert(e.responseText);
+                   },
+                   success: function () {
+                       location.reload();
+                   },
+               });
+         }
     </script>
 
     <p style="text-align:center">
@@ -96,6 +117,9 @@ else
     {
         <p>
             <a role="button" onclick="markAllRead()" class="actionlink">همه را خواندم</a>
+        </p>
+         <p>
+            <a role="button" onclick="deleteAllRead()" class="actionlink">حذف همهٔ خوانده شده‌ها</a>
         </p>
     }
 
