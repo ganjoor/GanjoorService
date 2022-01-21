@@ -33,6 +33,42 @@ else
                 },
             });
         }
+
+        function editPrivateNote(bookmarkId) {
+            var commentTextBlockId = '#comment-text-' + bookmarkId;
+            tinymce.get('editCommentText').setContent($(commentTextBlockId).html());
+            $("#editbookmarkId").val(bookmarkId);
+            document.getElementById('id02').style.display = 'block';
+        }
+
+        function editPrivateNoteFinal() {
+            $("#editcommentform").unbind('submit').bind('submit', function (e) {
+
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                var url = '?handler=BookmarkNote';
+
+                var bookmarkId = $("#editbookmarkId").val();
+
+
+                $.ajax({
+                    type: "PUT",
+                    url: url,
+                    data: {
+                        id: bookmarkId,
+                        note: $("textarea#editCommentText").val()
+                    },
+                    success: function () {
+                        document.getElementById('id02').style.display = 'none';
+
+                        var commentTextBlockId = '#comment-text-' + bookmarkId;
+
+                        $(commentTextBlockId).html($("textarea#editCommentText").val());
+                    },
+
+                });
+            });
+        }
     </script>
     <p style="text-align:center">
         @foreach (var paginationLink in Model.PaginationLinks)
@@ -83,6 +119,9 @@ else
                     }
 
                 </div>
+                <div id="comment-text-@bookmark.Id">
+                    @Html.Raw(bookmark.PrivateNote)
+                </div>
             </blockquote>
             <p>
                 <a role="button" onclick="deleteBookmark('@bookmark.Id')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
@@ -112,18 +151,18 @@ else
 
     <div id="id02" class="modal">
         <span onclick="document.getElementById('id02').style.display='none'"
-              class="close" title="بستن">&times;</span>
+          class="close" title="بستن">&times;</span>
         <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
             <table style="max-width:100%; width:100%; margin:0">
                 <tr>
                     <td>
-                        <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor" tabindex="4" rows="10" style="width:100%"></textarea>
-                        <input type="hidden" name="editCommentId" id="editCommentId" value="" />
+                        <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
+                        <input type="hidden" name="editbookmarkId" id="editbookmarkId" value="" />
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <button name="editcomment" id="editcomment" class="inputSubmit" onclick="return editComment();" style="width:100%">ویرایش حاشیه</button>
+                        <button name="editcomment" id="editcomment" class="submitCommentButton width-100per" onclick="return editPrivateNoteFinal();">ویرایش یادداشت</button>
                     </td>
                 </tr>
             </table>
