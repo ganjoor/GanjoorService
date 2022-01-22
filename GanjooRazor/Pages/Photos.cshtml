@@ -1,0 +1,60 @@
+﻿@page
+@model GanjooRazor.Pages.PhotosModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>
+        @Html.Raw(ViewData["Title"])
+    </title>
+    <link href="/css/p8.css?version=32" rel="stylesheet" type="text/css" />
+    <link href="/css/fab.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        var playerScrollLock = false;
+    </script>
+    <script src="/js/bk.js?version=21"></script>
+
+
+</head>
+<body>
+    <div id="hdr">
+        <h1><a href="/photos" title="گنجور"><img src="/image/gmg.gif" alt="تصاویر شاعران" class="home-logo" /></a></h1>
+    </div>
+    <div id="fa">
+        <h2>
+            تصاویر شاعران
+        </h2>
+        <div id="main">
+            <div id="guides">
+                <div class="clear-both">
+                    <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onFindPoet(this.value)" />
+                    <div class="spacer" id="found-poets"></div>
+                </div>
+                 <div class="century">
+                    فهرست شاعران
+                </div>
+                @foreach (var poet in Model.Poets)
+                {
+                    <div class="poet" data-value="@poet.Nickname">
+                        <a href="/photos?p=@poet.FullUrl.Substring(1)" title="@poet.Name"><img src="@poet.ImageUrl" alt="@poet.Name" /></a>
+                        <div class="caption">
+                            <a href="/photos?p=@poet.FullUrl.Substring(1)">@poet.Nickname</a>
+                        </div>
+                    </div>
+                }
+                <div class="spacer"></div>
+            </div>
+        </div>
+        <partial name="_FooterPartial" model="null" />
+    </div>
+
+</body>
+</html>>
