@@ -745,7 +745,8 @@ namespace RMuseum.Services.Implementation
             }
 
             PublishStatus status = PublishStatus.Published;
-            if (bool.Parse(Configuration.GetSection("Ganjoor")["KeepFirstTimeUsersComments"]))
+            var keepFirstTimeUsersComments = await _optionsService.GetValueAsync("KeepFirstTimeUsersComments", null);
+            if (keepFirstTimeUsersComments.Result == true.ToString())
             {
                 if((await _context.GanjoorComments.AsNoTracking().Where(c => c.UserId == userId && c.Status == PublishStatus.Published).AnyAsync()) == false)//First time commenter
                 {
@@ -3872,6 +3873,12 @@ namespace RMuseum.Services.Implementation
         protected readonly HttpClient _httpClient;
 
         /// <summary>
+        /// options service
+        /// </summary>
+
+        protected readonly IRGenericOptionsService _optionsService;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
@@ -3882,7 +3889,8 @@ namespace RMuseum.Services.Implementation
         /// <param name="imageFileService"></param>
         /// <param name="memoryCache"></param>
         /// <param name="httpClient"></param>
-        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService appUserService, IRNotificationService notificationService, IImageFileService imageFileService, IMemoryCache memoryCache, HttpClient httpClient)
+        /// <param name="optionsService"></param>
+        public GanjoorService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue, IAppUserService appUserService, IRNotificationService notificationService, IImageFileService imageFileService, IMemoryCache memoryCache, HttpClient httpClient, IRGenericOptionsService optionsService)
         {
             _context = context;
             _backgroundTaskQueue = backgroundTaskQueue;
@@ -3892,6 +3900,7 @@ namespace RMuseum.Services.Implementation
             _memoryCache = memoryCache;
             Configuration = configuration;
             _httpClient = httpClient;
+            _optionsService = optionsService;
         }
     }
 }

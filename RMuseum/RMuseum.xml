@@ -12443,7 +12443,12 @@
             http client
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache,System.Net.Http.HttpClient)">
+        <member name="F:RMuseum.Services.Implementation.GanjoorService._optionsService">
+            <summary>
+            options service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache,System.Net.Http.HttpClient,RSecurityBackend.Services.IRGenericOptionsService)">
             <summary>
             constructor
             </summary>
@@ -12455,6 +12460,7 @@
             <param name="imageFileService"></param>
             <param name="memoryCache"></param>
             <param name="httpClient"></param>
+            <param name="optionsService"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorTranslationService">
             <summary>

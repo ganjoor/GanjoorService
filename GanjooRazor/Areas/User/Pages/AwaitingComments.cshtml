@@ -74,7 +74,85 @@ else
                 },
             });
         }
+
+        function switchOption(start) {
+            if(start == false){
+
+                document.getElementById('switch-tracking-button').style.visibility = 'hidden';
+                document.getElementById('processing').innerHTML = 'در حال پردازش ...';
+
+                $.ajax({
+                type: "POST",
+                url: '?handler=StopKeeping',
+                error: function() {
+                    alert('خطا رخ داد.');
+                    location.reload();
+                },
+                success: function () {
+                   location.reload();
+                },
+                });
+                return;
+            }
+
+            document.getElementById('switch-tracking-button').style.visibility = 'hidden';
+            document.getElementById('processing').innerHTML = 'در حال پردازش ...';
+
+            $.ajax({
+                type: "POST",
+                url: '?handler=StartKeeping',
+                error: function() {
+                    alert('خطا رخ داد.');
+                    location.reload();
+                },
+                success: function () {
+                   location.reload();
+                },
+                });
+        }
     </script>
+
+    <div class="related-images-frame">
+        @if (Model.KeepFirstTimeUsersComments)
+        {
+            <p style="text-align:center; color: green">
+                نگه داشتن حاشیه‌های حاشیه‌گذاران بدون سابقه فعال است.
+            </p>
+
+            <p>
+                <a role="button" onclick="switchOption(false)" id="switch-tracking-button" class="pagebutton">غیرفعال کردن</a>
+            </p>
+
+            <p id="processing">
+
+            </p>
+
+        }
+        else
+        {
+            <p>
+                نگه داشتن حاشیه‌های حاشیه‌گذاران بدون سابقه غیرفعال است.
+            </p>
+
+            <p>
+                <a role="button" onclick="switchOption(true)" id="switch-tracking-button" class="pagebutton">فعال کردن</a>
+            </p>
+
+            <p id="processing">
+
+            </p>
+
+
+        }
+
+    </div>
+
+    @if (Model.Comments.Count == 0)
+    {
+        <p>
+            موردی وجود ندارد.
+        </p>
+    }
 
     @foreach (var comment in Model.Comments)
     {
@@ -96,8 +174,8 @@ else
                 </p>
             </blockquote>
             <p>
-                <a role="button" onclick="deleteAwaitingComment(@comment.Id)" class="actionlink" title="حذف حاشیه">🗑</a>
-                <a role="button" onclick="publishAwaitingComment(@comment.Id)" class="actionlink" title="انتشار حاشیه">انتشار</a>
+                <a role="button" onclick="deleteAwaitingComment(@comment.Id)" class="actionlink" title="حذف حاشیه"><i class="noindent-info-button delete-icon"></i></a>
+                <a role="button" onclick="publishAwaitingComment(@comment.Id)" class="actionlink" title="انتشار حاشیه"><i class="noindent-info-button done-icon"></i></a>
             </p>
         </div>
 
