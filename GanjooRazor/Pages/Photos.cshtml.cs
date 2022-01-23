@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
@@ -9,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
 {
-    public class PhotosModel : PageModel
+    [IgnoreAntiforgeryToken(Order = 1001)]
+    public class PhotosModel : LoginPartialEnabledPageModel
     {
         public string LastError { get; set; }
 
@@ -35,20 +35,15 @@ namespace GanjooRazor.Pages
         }
         public async Task<IActionResult> OnGetAsync()
         {
+            LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
             ViewData["Title"] = "تصاویر شاعران گنجور";
             Poets = await _PreparePoets();
             return Page();
         }
 
-        /// <summary>
-        /// HttpClient instance
-        /// </summary>
-        private readonly HttpClient _httpClient;
-
-
-        public PhotosModel(HttpClient httpClient)
+        public PhotosModel(HttpClient httpClient) : base(httpClient)
         {
-            _httpClient = httpClient;
+            
         }
     }
 }

@@ -23,7 +23,7 @@
         <div id="login-container">
             @if (Model.LoggedIn)
             {
-                <form method="post">
+                <form method="post" action="?handler=Logout">
                     <table>
                         <tr>
                             <td><input type="submit" name="submit" id="submit" value="خروج" /></td>
@@ -35,7 +35,7 @@
             }
             else
             {
-                <form method="post">
+                <form method="post" action="?handler=Login">
                     <table>
                         <tr>
                             <td>

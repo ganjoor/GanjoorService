@@ -35,11 +35,6 @@ namespace GanjooRazor.Pages
         private readonly IConfiguration Configuration;
 
         /// <summary>
-        /// HttpClient instance
-        /// </summary>
-        private readonly HttpClient _httpClient;
-
-        /// <summary>
         /// memory cache
         /// </summary>
         private readonly IMemoryCache _memoryCache;
@@ -71,10 +66,9 @@ namespace GanjooRazor.Pages
         public IndexModel(IConfiguration configuration,
             HttpClient httpClient,
             IMemoryCache memoryCache
-            )
+            ) : base(httpClient)
         {
             Configuration = configuration;
-            _httpClient = httpClient;
             _memoryCache = memoryCache;
         }
 
@@ -90,100 +84,7 @@ namespace GanjooRazor.Pages
         /// </summary>
         public GanjoorSiteBannerViewModel Banner { get; set; }
 
-        /// <summary>
-        /// Login
-        /// </summary>
-        /// <returns></returns>
-        public async Task<IActionResult> OnPostLoginAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            LoginViewModel.ClientAppName = "GanjooRazor";
-            LoginViewModel.Language = "fa-IR";
-
-            var stringContent = new StringContent(JsonConvert.SerializeObject(LoginViewModel), Encoding.UTF8, "application/json");
-            var loginUrl = $"{APIRoot.Url}/api/users/login";
-            var response = await _httpClient.PostAsync(loginUrl, stringContent);
-
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
-            }
-
-            LoggedOnUserModelEx loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await response.Content.ReadAsStringAsync());
-
-            var cookieOption = new CookieOptions()
-            {
-                Expires = DateTime.Now.AddDays(365),
-            };
-
-            Response.Cookies.Append("UserId", loggedOnUser.User.Id.ToString(), cookieOption);
-            Response.Cookies.Append("SessionId", loggedOnUser.SessionId.ToString(), cookieOption);
-            Response.Cookies.Append("Token", loggedOnUser.Token, cookieOption);
-            Response.Cookies.Append("Username", loggedOnUser.User.Username, cookieOption);
-            Response.Cookies.Append("Name", $"{loggedOnUser.User.FirstName} {loggedOnUser.User.SureName}", cookieOption);
-            Response.Cookies.Append("NickName", $"{loggedOnUser.User.NickName}", cookieOption);
-            Response.Cookies.Append("KeepHistory", $"{loggedOnUser.KeepHistory}", cookieOption);
-
-            bool canEditContent = false;
-            var ganjoorEntity = loggedOnUser.SecurableItem.Where(s => s.ShortName == RMuseumSecurableItem.GanjoorEntityShortName).SingleOrDefault();
-            if (ganjoorEntity != null)
-            {
-                var op = ganjoorEntity.Operations.Where(o => o.ShortName == SecurableItem.ModifyOperationShortName).SingleOrDefault();
-                if (op != null)
-                {
-                    canEditContent = op.Status;
-                }
-            }
-
-            Response.Cookies.Append("CanEdit", canEditContent.ToString(), cookieOption);
-
-
-            return Redirect(Request.Path);
-        }
-
-        /// <summary>
-        /// logout
-        /// </summary>
-        /// <returns></returns>
-        public async Task<IActionResult> OnPostLogoutAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            if (!string.IsNullOrEmpty(Request.Cookies["SessionId"]) && !string.IsNullOrEmpty(Request.Cookies["UserId"]))
-            {
-                using (HttpClient secureClient = new HttpClient())
-                {
-                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
-                    {
-                        var logoutUrl = $"{APIRoot.Url}/api/users/delsession?userId={Request.Cookies["UserId"]}&sessionId={Request.Cookies["SessionId"]}";
-                        await secureClient.DeleteAsync(logoutUrl);
-                    }
-                }
-            }
-
-
-            var cookieOption = new CookieOptions()
-            {
-                Expires = DateTime.Now.AddDays(-1)
-            };
-            foreach (var cookieName in new string[] { "UserId", "SessionId", "Token", "Username", "Name", "NickName", "CanEdit", "KeepHistory" })
-            {
-                if (Request.Cookies[cookieName] != null)
-                {
-                    Response.Cookies.Append(cookieName, "", cookieOption);
-                }
-            }
-
-
-            return Redirect(Request.Path);
-        }
+        
 
         public _CommentPartialModel GetCommentModel(GanjoorCommentSummaryViewModel comment)
         {

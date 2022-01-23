@@ -3,36 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DNTPersianUtils.Core;
-using GanjooRazor.Utils;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RMuseum.Models.Auth.Memory;
-using RMuseum.Models.Auth.ViewModel;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services.Implementation;
-using RSecurityBackend.Models.Auth.Memory;
-using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 
 namespace GanjooRazor.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-
     public class SearchModel : LoginPartialEnabledPageModel
     {
-        /// <summary>
-        /// HttpClient instance
-        /// </summary>
-        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// memory cache
@@ -51,9 +38,8 @@ namespace GanjooRazor.Pages
         /// <param name="httpClient"></param>
         /// <param name="memoryCache"></param>
         /// <param name="configuration"></param>
-        public SearchModel(HttpClient httpClient, IMemoryCache memoryCache, IConfiguration configuration)
+        public SearchModel(HttpClient httpClient, IMemoryCache memoryCache, IConfiguration configuration) : base(httpClient)
         {
-            _httpClient = httpClient;
             _memoryCache = memoryCache;
             Configuration
                 = configuration;
@@ -134,7 +120,7 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnGetPoetInformationAsync(int id)
         {
-            if(id == 0)
+            if (id == 0)
                 return new OkObjectResult(null);
             var cacheKey = $"/api/ganjoor/poet/{id}";
             if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
@@ -179,7 +165,7 @@ namespace GanjooRazor.Pages
             }
             else
             {
-                if(!string.IsNullOrEmpty(Query))
+                if (!string.IsNullOrEmpty(Query))
                 {
                     ViewData["Title"] = $"گنجور » نتایج جستجو برای {Query}";
                 }
@@ -187,7 +173,7 @@ namespace GanjooRazor.Pages
                 {
                     ViewData["Title"] = $"گنجور » جستجو";
                 }
-                
+
             }
 
             if (PoetId != 0)
@@ -217,14 +203,14 @@ namespace GanjooRazor.Pages
 
                 Poems = JArray.Parse(await searchQueryResponse.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
             }
-            
 
-            if(Poems != null && Poems.Count == 0)
+
+            if (Poems != null && Poems.Count == 0)
             {
                 Poems = null;
             }
 
-            if(Poems != null)
+            if (Poems != null)
             {
                 // highlight searched word
                 string[] queryParts = Query.IndexOf('"') == 0 && Query.LastIndexOf('"') == (Query.Length - 1) ?
@@ -240,7 +226,7 @@ namespace GanjooRazor.Pages
                     {
                         foreach (var queryPart in queryParts)
                         {
-                            if(lines[i].IndexOf(queryPart) != -1)
+                            if (lines[i].IndexOf(queryPart) != -1)
                             {
                                 if (i > 0)
                                 {
@@ -249,14 +235,14 @@ namespace GanjooRazor.Pages
                                         linesInExcerpt.Add(i - 1);
                                     }
                                 }
-                                if(linesInExcerpt.IndexOf(i) == -1)
+                                if (linesInExcerpt.IndexOf(i) == -1)
                                 {
                                     linesInExcerpt.Add(i);
                                 }
 
                                 if (i < (lines.Length - 1))
                                     linesInExcerpt.Add(i + 1);
-                                
+
                                 break;
                             }
                         }
@@ -290,7 +276,7 @@ namespace GanjooRazor.Pages
 
                 }
 
-                if(searchQueryResponse != null)
+                if (searchQueryResponse != null)
                 {
                     string paginationMetadataJsonValue = searchQueryResponse.Headers.GetValues("paging-headers").FirstOrDefault();
 
@@ -298,7 +284,7 @@ namespace GanjooRazor.Pages
                     {
                         PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginationMetadataJsonValue);
                         string catQuery = "";
-                        if(!string.IsNullOrEmpty(Request.Query["cat"]))
+                        if (!string.IsNullOrEmpty(Request.Query["cat"]))
                         {
                             catQuery = $"&cat={Request.Query["cat"]}";
                         }
@@ -306,10 +292,10 @@ namespace GanjooRazor.Pages
                     }
                 }
 
-               
+
             }
 
-           
+
 
             return Page();
         }
@@ -351,100 +337,6 @@ namespace GanjooRazor.Pages
             return htmlText;
         }
 
-        /// <summary>
-        /// Login
-        /// </summary>
-        /// <returns></returns>
-        public async Task<IActionResult> OnPostLoginAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            LoginViewModel.ClientAppName = "GanjooRazor";
-            LoginViewModel.Language = "fa-IR";
-
-            var stringContent = new StringContent(JsonConvert.SerializeObject(LoginViewModel), Encoding.UTF8, "application/json");
-            var loginUrl = $"{APIRoot.Url}/api/users/login";
-            var response = await _httpClient.PostAsync(loginUrl, stringContent);
-
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
-            }
-
-            LoggedOnUserModelEx loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await response.Content.ReadAsStringAsync());
-
-            var cookieOption = new CookieOptions()
-            {
-                Expires = DateTime.Now.AddDays(365),
-            };
-
-            Response.Cookies.Append("UserId", loggedOnUser.User.Id.ToString(), cookieOption);
-            Response.Cookies.Append("SessionId", loggedOnUser.SessionId.ToString(), cookieOption);
-            Response.Cookies.Append("Token", loggedOnUser.Token, cookieOption);
-            Response.Cookies.Append("Username", loggedOnUser.User.Username, cookieOption);
-            Response.Cookies.Append("Name", $"{loggedOnUser.User.FirstName} {loggedOnUser.User.SureName}", cookieOption);
-            Response.Cookies.Append("NickName", $"{loggedOnUser.User.NickName}", cookieOption);
-            Response.Cookies.Append("KeepHistory", $"{loggedOnUser.KeepHistory}", cookieOption);
-
-            bool canEditContent = false;
-            var ganjoorEntity = loggedOnUser.SecurableItem.Where(s => s.ShortName == RMuseumSecurableItem.GanjoorEntityShortName).SingleOrDefault();
-            if (ganjoorEntity != null)
-            {
-                var op = ganjoorEntity.Operations.Where(o => o.ShortName == SecurableItem.ModifyOperationShortName).SingleOrDefault();
-                if (op != null)
-                {
-                    canEditContent = op.Status;
-                }
-            }
-
-            Response.Cookies.Append("CanEdit", canEditContent.ToString(), cookieOption);
-
-
-            return Redirect(Request.Path);
-        }
-
-        /// <summary>
-        /// logout
-        /// </summary>
-        /// <returns></returns>
-        public async Task<IActionResult> OnPostLogoutAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            if (!string.IsNullOrEmpty(Request.Cookies["SessionId"]) && !string.IsNullOrEmpty(Request.Cookies["UserId"]))
-            {
-                using (HttpClient secureClient = new HttpClient())
-                {
-                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
-                    {
-                        var logoutUrl = $"{APIRoot.Url}/api/users/delsession?userId={Request.Cookies["UserId"]}&sessionId={Request.Cookies["SessionId"]}";
-                        await secureClient.DeleteAsync(logoutUrl);
-                    }
-                }
-            }
-
-
-            var cookieOption = new CookieOptions()
-            {
-                Expires = DateTime.Now.AddDays(-1)
-            };
-            foreach (var cookieName in new string[] { "UserId", "SessionId", "Token", "Username", "Name", "NickName", "CanEdit", "KeepHistory" })
-            {
-                if (Request.Cookies[cookieName] != null)
-                {
-                    Response.Cookies.Append(cookieName, "", cookieOption);
-                }
-            }
-
-
-            return Redirect(Request.Path);
-        }
     }
 
 }
