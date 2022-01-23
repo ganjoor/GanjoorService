@@ -7,14 +7,6 @@
             <i class="fab-action-button-loggedin__icon"></i>
         </span>
         <ul class="fab-buttons">
-            @if (Model.CanEdit && Model.GanjoorPage != null)
-            {
-                <li class="fab-buttons__item">
-                    <a asp-page="ModifyPage" asp-area="Admin" asp-route-id="@Model.GanjoorPage.Id" class="fab-buttons__link" data-tooltip="ویرایش">
-                        <i class="icon-material icon-material_edit"></i>
-                    </a>
-                </li>
-            }
             <li class="fab-buttons__item">
                 <a asp-page="Index" asp-area="User" class="fab-buttons__link" data-tooltip="پیشخان">
                     <i class="icon-material icon-material_panel"></i>

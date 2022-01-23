@@ -18,6 +18,14 @@
 }
 else
 {
+    @if (Model.CanEdit)
+    {
+        <div class="related-images-frame">
+            <p>
+                <a role="button" href="/Admin/ModifyPage?id=@Model.PageInformation.Id" class="pagebutton">ویرایش مستقیم</a>
+            </p>
+        </div>
+    }
     <p>لطفاً در ویرایش متن به <a href="http://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/" target="_blank">این نکات</a> توجه فرمایید.</p>
     <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
     <p><a href="/User/PoemCorrectionsHistory?id=@Model.PageInformation.Id" target="_blank">سوابق ویرایش</a></p>
@@ -96,118 +104,49 @@ else
         </table>
     }
 
-<table>
-    <tr>
-        <td>
-            <p><strong>ویرایش متن:</strong></p>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            عنوان فعلی:
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <p id="original-0">@Model.PageInformation.Poem.Title</p>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            عنوان ویراستهٔ من:
-        </td>
-    </tr>
-    <tr>
-        <td>
+    <table>
+        <tr>
+            <td>
+                <p><strong>ویرایش متن:</strong></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                عنوان فعلی:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p id="original-0">@Model.PageInformation.Poem.Title</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                عنوان ویراستهٔ من:
+            </td>
+        </tr>
+        <tr>
+            <td>
 
-            @if (Model.MyLastEdit != null && Model.MyLastEdit.Title != null)
-            {
-                <div id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.MyLastEdit.Title</div>
-                <script>
-                    $(document).ready(function () {
-                        editorcompare(0);
-                    });
-                    document.getElementById("id-0").addEventListener("input", function () {
-                        editorcompare(0)
-                    }, false);
-                </script>
-            }
-            else
-            {
-                <div type="text" id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.PageInformation.Poem.Title</div>
-                <script>
-                    document.getElementById("id-0").addEventListener("input", function () {
-                        editorcompare(0)
-                    }, false);
-                </script>
-            }
-        </td>
-    </tr>
-    <tr>
-        <td>
-            تغییرات:
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <p id="compare-0">@Model.PageInformation.Poem.Title</p>
-        </td>
-    </tr>
-    @foreach (var verse in Model.PageInformation.Poem.Verses)
-    {
-        <tr>
-            <td>
-                بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers()
-            </td>
-        </tr>
-        <tr>
-            <td>
-                مصرع @verse.VOrder.ToPersianNumbers()
-            </td>
-        </tr>
-        <tr>
-            <td>
-                نوع: @Model.GetVersePosition(verse)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                متن فعلی:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p id="original-@($"{verse.VOrder}")">@verse.Text</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                ویراستهٔ من:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
+                @if (Model.MyLastEdit != null && Model.MyLastEdit.Title != null)
                 {
-                    <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" style="background-color:white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text</div>
-
-
+                    <div id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.MyLastEdit.Title</div>
                     <script>
-                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
-                                editorcompare(@verse.VOrder)
-                            }, false);
-                            $(document).ready(function () {
-                                editorcompare(@verse.VOrder);
-                            });
+                        $(document).ready(function () {
+                            editorcompare(0);
+                        });
+                        document.getElementById("id-0").addEventListener("input", function () {
+                            editorcompare(0)
+                        }, false);
                     </script>
                 }
                 else
                 {
-                    <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" style="background-color:white">@verse.Text</div>
+                    <div type="text" id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.PageInformation.Poem.Title</div>
                     <script>
-                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
-                                editorcompare(@verse.VOrder)
-                            }, false);
+                        document.getElementById("id-0").addEventListener("input", function () {
+                            editorcompare(0)
+                        }, false);
                     </script>
                 }
             </td>
@@ -219,97 +158,166 @@ else
         </tr>
         <tr>
             <td>
-                <p id="compare-@($"{verse.VOrder}")">@verse.Text</p>
+                <p id="compare-0">@Model.PageInformation.Poem.Title</p>
             </td>
         </tr>
-
-        @if (Model.CanEdit && Model.PageInformation.Poem.Next == null && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left )
+        @foreach (var verse in Model.PageInformation.Poem.Verses)
         {
             <tr>
                 <td>
-                    <a role="button" id="breakpoem-@verse.VOrder" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">شکستن از اینجا</a>
+                    بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers()
                 </td>
             </tr>
+            <tr>
+                <td>
+                    مصرع @verse.VOrder.ToPersianNumbers()
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    نوع: @Model.GetVersePosition(verse)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    متن فعلی:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p id="original-@($"{verse.VOrder}")">@verse.Text</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    ویراستهٔ من:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
+                    {
+                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" style="background-color:white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text</div>
+
+
+                        <script>
+                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
+                                editorcompare(@verse.VOrder)
+                            }, false);
+                            $(document).ready(function () {
+                                editorcompare(@verse.VOrder);
+                            });
+                        </script>
+                    }
+                    else
+                    {
+                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" style="background-color:white">@verse.Text</div>
+                        <script>
+                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
+                                editorcompare(@verse.VOrder)
+                            }, false);
+                        </script>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    تغییرات:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p id="compare-@($"{verse.VOrder}")">@verse.Text</p>
+                </td>
+            </tr>
+
+            @if (Model.CanEdit && Model.PageInformation.Poem.Next == null && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
+            {
+                <tr>
+                    <td>
+                        <a role="button" id="breakpoem-@verse.VOrder" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">شکستن از اینجا</a>
+                    </td>
+                </tr>
+            }
+
         }
 
-    }
-
-    <tr>
-        <td>
-            وزن فعلی:
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <p id="rhythm-old">@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)</p>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            وزن ویراستهٔ من:
-        </td>
-    </tr>
-    <tr>
-        <td>
-            @if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm != null)
-            {
-                <input type="text" id="rhythm-new" name="rhythm-new" value="@Model.MyLastEdit.Rhythm" size="50" list="rythms" />
-
-            }
-            else
-            {
-                <input type="text" id="rhythm-new" name="rhythm-new" value="@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)" size="50" list="rythms" />
-            }
-            <datalist id="rythms">
-                @if (Model.Rhythms != null)
-                    @foreach (var rhythm in Model.Rhythms)
-                    {
-                        <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                    }
-            </datalist>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            توضیح این ویرایش:
-        </td>
-    </tr>
-
-    <tr>
-        <td>
-            @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.Note))
-            {
-                <input type="text" id="note" name="note" value="@Model.MyLastEdit.Note" size="50" />
-            }
-            else
-            {
-                <input type="text" id="note" name="note" value="" size="50" />
-            }
-        </td>
-    </tr>
-
-    <tr>
-        <td>
-            <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
-        </td>
-    </tr>
-
-    <tr>
-        <td><p id="saving">&nbsp;</p></td>
-    </tr>
-
-    @if (Model.PageInformation.Poem.Previous != null)
-    {
         <tr>
-            <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id">ویرایش شعر قبل</a></td>
+            <td>
+                وزن فعلی:
+            </td>
         </tr>
-    }
-    @if (Model.PageInformation.Poem.Next != null)
-    {
         <tr>
-            <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id">ویرایش شعر بعد</a></td>
+            <td>
+                <p id="rhythm-old">@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)</p>
+            </td>
         </tr>
-    }
-</table>
+        <tr>
+            <td>
+                وزن ویراستهٔ من:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm != null)
+                {
+                    <input type="text" id="rhythm-new" name="rhythm-new" value="@Model.MyLastEdit.Rhythm" size="50" list="rythms" />
+
+                }
+                else
+                {
+                    <input type="text" id="rhythm-new" name="rhythm-new" value="@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)" size="50" list="rythms" />
+                }
+                <datalist id="rythms">
+                    @if (Model.Rhythms != null)
+                        @foreach (var rhythm in Model.Rhythms)
+                        {
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
+                </datalist>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                توضیح این ویرایش:
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.Note))
+                {
+                    <input type="text" id="note" name="note" value="@Model.MyLastEdit.Note" size="50" />
+                }
+                else
+                {
+                    <input type="text" id="note" name="note" value="" size="50" />
+                }
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td><p id="saving">&nbsp;</p></td>
+        </tr>
+
+        @if (Model.PageInformation.Poem.Previous != null)
+        {
+            <tr>
+                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id">ویرایش شعر قبل</a></td>
+            </tr>
+        }
+        @if (Model.PageInformation.Poem.Next != null)
+        {
+            <tr>
+                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id">ویرایش شعر بعد</a></td>
+            </tr>
+        }
+    </table>
 
 }

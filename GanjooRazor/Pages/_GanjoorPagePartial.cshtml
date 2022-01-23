@@ -196,6 +196,8 @@
                     @{
                         @Html.Raw(Model.GanjoorPage.HtmlText)
                     }
+
+
                 </article>
 
                 @{
@@ -222,6 +224,16 @@
                                 </div>
                             </div>
                         </nav>
+                    }
+
+                    @if (Model.CanEdit && !Model.IsPoemPage)
+                    {
+                        <div class="spacer">&nbsp;</div>
+                        <div class="related-images-frame">
+                            <p>
+                                <a role="button" href="/Admin/ModifyPage?id=@Model.GanjoorPage.Id" class="pagebutton">ویرایش مستقیم</a>
+                            </p>
+                        </div>
                     }
 
                     if (Model.IsPoemPage)
@@ -262,17 +274,17 @@
                             </div>
                         </nav>
 
-                         <div class="ring-menucircle open" id="menu">
+                        <div class="ring-menucircle open" id="menu">
                             <div class="ring open">
                                 <a href="#tools" class="menuItem ringmenu-icon edit-poem-button w3tooltip"><span class="w3tooltiptext">ابزارها</span></a>
                                 <a href="#discussions" class="menuItem ringmenu-icon recitation-comments w3tooltip"><span class="w3tooltiptext">حاشیه‌ها</span></a>
                                 <a href="#manuscripts" class="menuItem ringmenu-icon recitation-manuscripts w3tooltip"><span class="w3tooltiptext">نگاره‌ها</span></a>
                                 <a href="#songs" class="menuItem ringmenu-icon recitation-music w3tooltip"><span class="w3tooltiptext">ترانه‌ها</span></a>
-                                @if(Model.GanjoorPage.Poem.Top6RelatedPoems.Length > 0)
+                                @if (Model.GanjoorPage.Poem.Top6RelatedPoems.Length > 0)
                                 {
                                     <a href="#rpoems" class="menuItem ringmenu-icon recitation-explore w3tooltip"><span class="w3tooltiptext">هم‌آهنگ‌ها</span></a>
                                 }
-                                @if(Model.GanjoorPage.Poem.Recitations.Length > 0)
+                                @if (Model.GanjoorPage.Poem.Recitations.Length > 0)
                                 {
                                     <a href="#recitations" class="menuItem ringmenu-icon recitation-listen w3tooltip"><span class="w3tooltiptext">خوانش‌ها</span></a>
                                 }
@@ -731,6 +743,8 @@
 
 
     </div>
+
+
 
     <partial name="_FooterPartial" model="null" />
 
