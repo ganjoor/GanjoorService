@@ -27,7 +27,7 @@ namespace GanjooRazor.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
 
-    public class SearchModel : PageModel
+    public class SearchModel : LoginPartialEnabledPageModel
     {
         /// <summary>
         /// HttpClient instance
@@ -85,14 +85,6 @@ namespace GanjooRazor.Pages
         public GanjoorPoetCompleteViewModel Poet { get; set; }
         public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
         public string PagingToolsHtml { get; set; }
-
-        /// <summary>
-        /// is logged on
-        /// </summary>
-        public bool LoggedIn { get; set; }
-
-        [BindProperty]
-        public LoginViewModel LoginViewModel { get; set; }
 
         public string LastError { get; set; }
 

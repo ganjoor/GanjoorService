@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
 {
-    public partial class IndexModel : PageModel
+    public partial class IndexModel : LoginPartialEnabledPageModel
     {
         /// <summary>
         /// صفحهٔ اشعار با وزن خاص

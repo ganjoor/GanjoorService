@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 namespace GanjooRazor.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public partial class IndexModel : PageModel
+    public partial class IndexModel : LoginPartialEnabledPageModel
     {
         /// <summary>
         /// configration file reader (appsettings.json)
@@ -78,8 +78,7 @@ namespace GanjooRazor.Pages
             _memoryCache = memoryCache;
         }
 
-        [BindProperty]
-        public LoginViewModel LoginViewModel { get; set; }
+
 
         /// <summary>
         /// last error
@@ -382,10 +381,7 @@ namespace GanjooRazor.Pages
         /// </summary>
         public bool IsPoemPage { get; set; }
 
-        /// <summary>
-        /// is logged on
-        /// </summary>
-        public bool LoggedIn { get; set; }
+
 
         /// <summary>
         /// can edit
