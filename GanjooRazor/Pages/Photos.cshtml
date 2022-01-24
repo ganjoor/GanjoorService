@@ -26,11 +26,21 @@
 </head>
 <body>
     <div id="hdr">
-        <h1><a href="/photos" title="گنجور"><img src="/image/gmg.gif" alt="تصاویر شاعران" class="home-logo" /></a></h1>
+        <h1>
+            @if(Model.Poet == null)
+            {
+                <a href="/photos" title="گنجور"><img src="/image/gmg.gif" alt="@ViewData["Title"]" class="home-logo" /></a>
+            }
+            else
+            {
+                 <a href="/photos" title="گنجور"><img src="@Model.Poet.ImageUrl" alt="@ViewData["Title"]" class="home-logo" /></a>
+            }
+            
+        </h1>
     </div>
     <div id="fa">
         <h2>
-            تصاویر شاعران
+            @ViewData["Title"]
         </h2>
         <div id="main">
             <div id="guides">
@@ -38,7 +48,7 @@
                     <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onFindPoet(this.value)" />
                     <div class="spacer" id="found-poets"></div>
                 </div>
-                 <div class="century">
+                <div class="century">
                     فهرست شاعران
                 </div>
                 @foreach (var poet in Model.Poets)
@@ -54,7 +64,7 @@
                 <partial name="_InlineLoginPartial" model="Model" />
             </div>
         </div>
-        
+
         <partial name="_FooterPartial" model="null" />
     </div>
 

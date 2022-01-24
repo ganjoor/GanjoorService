@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -14,6 +15,8 @@ namespace GanjooRazor.Pages
         public string LastError { get; set; }
 
         public List<GanjoorPoetViewModel> Poets { get; set; }
+
+        public GanjoorPoetViewModel Poet { get; set; }
 
         private async Task<List<GanjoorPoetViewModel>> _PreparePoets()
         {
@@ -36,8 +39,17 @@ namespace GanjooRazor.Pages
         public async Task<IActionResult> OnGetAsync()
         {
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
-            ViewData["Title"] = "تصاویر شاعران گنجور";
+           
             Poets = await _PreparePoets();
+
+            
+            if (!string.IsNullOrEmpty(Request.Query["p"]))
+            {
+                Poet = Poets.Where(p => p.FullUrl == $"/{Request.Query["p"]}").SingleOrDefault();
+            }
+
+            ViewData["Title"] = Poet == null ? "تصاویر شاعران" : $"تصاویر {Poet.Nickname}";
+
             return Page();
         }
 
