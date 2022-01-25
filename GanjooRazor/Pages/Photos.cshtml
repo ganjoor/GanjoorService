@@ -35,13 +35,31 @@
             {
                  <a href="/photos" title="گنجور"><img src="@Model.Poet.ImageUrl" alt="@ViewData["Title"]" class="home-logo" /></a>
             }
-            
         </h1>
+        <p>
+            از طریق این صفحه می‌توانید تصویر مد نظر یا طراحی شدهٔ خود را برای شاعران محبوبتان پیشنهاد دهید. در صورت تأیید و انتخاب پیشنهاد شما نام شما به عنوان انتخابگر یا طراح تصویر ثبت می‌شود.
+        </p>
     </div>
     <div id="fa">
         <h2>
-            @ViewData["Title"]
+            @if(Model.Poet == null)
+            {
+                @ViewData["Title"]
+            }
+            else
+            {
+                <text>
+                    تصاویر <a href="@Model.Poet.FullUrl" target="_blank">@Model.Poet.Nickname</a>
+                </text>
+            }
+            
         </h2>
+        @if(Model.Poet != null)
+        {
+            <h3>
+                <a href="/photos">فهرست همهٔ شاعران</a>
+            </h3>
+        }
         <div id="main">
             <div id="guides">
                 <div class="clear-both">
