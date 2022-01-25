@@ -27,34 +27,34 @@
 <body>
     <div id="hdr">
         <h1>
-            @if(Model.Poet == null)
+            @if (Model.Poet == null)
             {
                 <a href="/photos" title="گنجور"><img src="/image/gmg.gif" alt="@ViewData["Title"]" class="home-logo" /></a>
             }
             else
             {
-                 <a href="/photos" title="گنجور"><img src="@Model.Poet.ImageUrl" alt="@ViewData["Title"]" class="home-logo" /></a>
+                <a href="/photos" title="گنجور"><img src="@Model.Poet.ImageUrl" alt="@ViewData["Title"]" class="home-logo" /></a>
             }
         </h1>
         <p>
-            از طریق این صفحه می‌توانید تصویر مد نظر یا طراحی شدهٔ خود را برای شاعران محبوبتان پیشنهاد دهید. در صورت تأیید و انتخاب پیشنهاد شما نام شما به عنوان انتخابگر یا طراح تصویر ثبت می‌شود.
+            از طریق این صفحه می‌توانید تصویر مد نظر یا طراحی شدهٔ خود را برای شاعران محبوبتان پیشنهاد دهید. در صورت تأیید و انتخاب پیشنهاد شما نام شما در همین صفحه به عنوان انتخابگر یا طراح تصویر ثبت می‌شود.
         </p>
     </div>
     <div id="fa">
         <h2>
-            @if(Model.Poet == null)
+            @if (Model.Poet == null)
             {
                 @ViewData["Title"]
             }
             else
             {
                 <text>
-                    تصاویر <a href="@Model.Poet.FullUrl" target="_blank">@Model.Poet.Nickname</a>
+                    پیشنهاد تصویر برای <a href="@Model.Poet.FullUrl" target="_blank">@Model.Poet.Nickname</a>
                 </text>
             }
-            
+
         </h2>
-        @if(Model.Poet != null)
+        @if (Model.Poet != null)
         {
             <h3>
                 <a href="/photos">فهرست همهٔ شاعران</a>
@@ -62,22 +62,38 @@
         }
         <div id="main">
             <div id="guides">
-                <div class="clear-both">
-                    <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onFindPoet(this.value)" />
-                    <div class="spacer" id="found-poets"></div>
-                </div>
-                <div class="century">
-                    فهرست شاعران
-                </div>
-                @foreach (var poet in Model.Poets)
+
+                @if (Model.Poet == null)
                 {
-                    <div class="poet" data-value="@poet.Nickname">
-                        <a href="/photos?p=@poet.FullUrl.Substring(1)" title="@poet.Name"><img src="@poet.ImageUrl" alt="@poet.Name" /></a>
-                        <div class="caption">
-                            <a href="/photos?p=@poet.FullUrl.Substring(1)">@poet.Nickname</a>
+                    <div class="clear-both">
+                        <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onFindPoet(this.value)" />
+                        <div class="spacer" id="found-poets"></div>
+                    </div>
+                    <div class="century">
+                        فهرست شاعران
+                    </div>
+                    @foreach (var poet in Model.Poets)
+                    {
+                        <div class="poet" data-value="@poet.Nickname">
+                            <a href="/photos?p=@poet.FullUrl.Substring(1)" title="@poet.Name"><img src="@poet.ImageUrl" alt="@poet.Name" /></a>
+                            <div class="caption">
+                                <a href="/photos?p=@poet.FullUrl.Substring(1)">@poet.Nickname</a>
+                            </div>
                         </div>
+                    }
+                }
+
+                @if (Model.Poet != null)
+                {
+                    <div class="century">
+                        زندگینامهٔ @Model.Poet.Nickname
+                    </div>
+                    <div class="clear-both">
+                        @Model.Poet.Description
                     </div>
                 }
+
+
                 <div class="spacer"></div>
                 <partial name="_InlineLoginPartial" model="Model" />
             </div>
@@ -87,4 +103,4 @@
     </div>
 
 </body>
-</html>>
+</html>

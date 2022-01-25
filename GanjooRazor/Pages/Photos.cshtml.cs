@@ -40,15 +40,24 @@ namespace GanjooRazor.Pages
         {
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
            
-            Poets = await _PreparePoets();
-
             
             if (!string.IsNullOrEmpty(Request.Query["p"]))
             {
-                Poet = Poets.Where(p => p.FullUrl == $"/{Request.Query["p"]}").SingleOrDefault();
+                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet?url=/{Request.Query["p"]}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return Page();
+                }
+                Poet = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>().Poet;
+                Poet.ImageUrl = $"{APIRoot.InternetUrl}{Poet.ImageUrl}";
+            }
+            else
+            {
+                Poets = await _PreparePoets();
             }
 
-            ViewData["Title"] = Poet == null ? "تصاویر شاعران" : $"تصاویر {Poet.Nickname}";
+            ViewData["Title"] = Poet == null ? "پیشنهاد تصویر برای شاعران" : $"پیشنهاد تصویر برای {Poet.Nickname}";
 
             return Page();
         }
