@@ -2493,6 +2493,11 @@
             ganjoor user history track items (stored by his or her choice)
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoetSuggestedSpecLines">
+            <summary>
+            suggested spec line for poets
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -6368,29 +6373,19 @@
             Poet
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine.Description">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine.LineOrder">
             <summary>
-            Description
+            order
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine.SuggestedById">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine.Contents">
             <summary>
-            suggested by id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine.SuggestedBy">
-            <summary>
-            suggested by
+            Contents
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine.Published">
             <summary>
             published
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine.LineOrder">
-            <summary>
-            order
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
@@ -11630,6 +11625,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -11779,6 +11777,14 @@
             <summary>
             import GanjoorPage entity data from MySql
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLines(System.Int32,System.Boolean)">
+            <summary>
+            return list of suggested spec lines
+            </summary>
+            <param name="poetId"></param>
+            <param name="includeUnpublished"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">
