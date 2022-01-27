@@ -1,14 +1,6 @@
-﻿using DNTPersianUtils.Core;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using RMuseum.DbContext;
-using RMuseum.Models.Ganjoor;
-using RMuseum.Models.MusicCatalogue;
+﻿using Microsoft.EntityFrameworkCore;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
-using RSecurityBackend.Models.Generic.Db;
-using RSecurityBackend.Models.Image;
-using RSecurityBackend.Services.Implementation;
 using System;
 using System.Data;
 using System.Linq;
@@ -28,9 +20,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="userId"></param>
         /// <param name="includeUnpublished"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetSuggestedSpecLine[]>> GetPoetSuggestedSpecLines(int poetId, Guid? userId, bool includeUnpublished)
+        public async Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel[]>> GetPoetSuggestedSpecLines(int poetId, Guid? userId, bool includeUnpublished)
         {
-            return new RServiceResult<GanjoorPoetSuggestedSpecLine[]>
+            return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel[]>
                 (
                  await _context.GanjoorPoetSuggestedSpecLines
                          .Where
@@ -42,6 +34,17 @@ namespace RMuseum.Services.Implementation
                          (userId == null || r.SuggestedById == userId)
                          )
                          .OrderBy(r => r.LineOrder)
+                         .Select
+                         (
+                     r => new GanjoorPoetSuggestedSpecLineViewModel()
+                     {
+                         Id = r.Id,
+                         LineOrder = r.LineOrder,
+                         Contents = r.Contents,
+                         Published = r.Published,
+                         SuggestedById = r.SuggestedById
+                     }
+                     )
                          .ToArrayAsync()
                 );
         }
