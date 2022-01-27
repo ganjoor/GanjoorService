@@ -6388,6 +6388,16 @@
             published
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine.SuggestedById">
+            <summary>
+            suggested by id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine.SuggestedBy">
+            <summary>
+            suggested by
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
             <summary>
             ganjoor.net site banner
@@ -11779,11 +11789,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLines(System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLines(System.Int32,System.Nullable{System.Guid},System.Boolean)">
             <summary>
             return list of suggested spec lines
             </summary>
             <param name="poetId"></param>
+            <param name="userId"></param>
             <param name="includeUnpublished"></param>
             <returns></returns>
         </member>

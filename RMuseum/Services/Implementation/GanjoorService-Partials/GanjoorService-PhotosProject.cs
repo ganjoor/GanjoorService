@@ -25,9 +25,10 @@ namespace RMuseum.Services.Implementation
         /// return list of suggested spec lines
         /// </summary>
         /// <param name="poetId"></param>
+        /// <param name="userId"></param>
         /// <param name="includeUnpublished"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetSuggestedSpecLine[]>> GetPoetSuggestedSpecLines(int poetId, bool includeUnpublished)
+        public async Task<RServiceResult<GanjoorPoetSuggestedSpecLine[]>> GetPoetSuggestedSpecLines(int poetId, Guid? userId, bool includeUnpublished)
         {
             return new RServiceResult<GanjoorPoetSuggestedSpecLine[]>
                 (
@@ -37,6 +38,8 @@ namespace RMuseum.Services.Implementation
                          r => r.PoetId == poetId
                          &&
                          (includeUnpublished || r.Published == true)
+                         &&
+                         (userId == null || r.SuggestedById == userId)
                          )
                          .OrderBy(r => r.LineOrder)
                          .ToArrayAsync()

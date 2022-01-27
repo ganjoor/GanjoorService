@@ -1,4 +1,7 @@
-﻿namespace RMuseum.Models.Ganjoor
+﻿using RSecurityBackend.Models.Auth.Db;
+using System;
+
+namespace RMuseum.Models.Ganjoor
 {
     /// <summary>
     /// Ganjoor Poet Specification
@@ -35,6 +38,15 @@
         /// </summary>
         public bool Published { get; set; }
 
+        /// <summary>
+        /// suggested by id
+        /// </summary>
+        public Guid? SuggestedById { get; set; }
+
+        /// <summary>
+        /// suggested by
+        /// </summary>
+        public virtual RAppUser SuggestedBy { get; set; }
 
     }
 }
