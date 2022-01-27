@@ -7712,6 +7712,41 @@
             poet cat info
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel">
+            <summary>
+            Ganjoor Poet Specification view model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel.PoetId">
+            <summary>
+            Poet Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel.LineOrder">
+            <summary>
+            order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel.Contents">
+            <summary>
+            Contents
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel.Published">
+            <summary>
+            published
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel.SuggestedById">
+            <summary>
+            suggested by id
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel">
             <summary>
             Ganjoor Poet
@@ -11789,13 +11824,20 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLines(System.Int32,System.Nullable{System.Guid},System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32,System.Nullable{System.Guid},System.Boolean)">
             <summary>
             return list of suggested spec lines
             </summary>
             <param name="poetId"></param>
             <param name="userId"></param>
             <param name="includeUnpublished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.AddPoetSuggestedSpecLinesAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel)">
+            <summary>
+            add a suggestion for poets spec lines
+            </summary>
+            <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">

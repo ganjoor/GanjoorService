@@ -13,6 +13,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public int Id { get; set; }
 
         /// <summary>
+        /// Poet Id
+        /// </summary>
+        public int PoetId { get; set; }
+
+        /// <summary>
         /// order
         /// </summary>
         public int LineOrder { get; set; }
