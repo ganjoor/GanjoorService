@@ -745,6 +745,13 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel[]>> GetPoetSuggestedSpecLinesAsync(int poetId, Guid? userId, bool includeUnpublished);
 
         /// <summary>
+        /// returns specfic suggested line for poet
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>> GetPoetSuggestedSpecLinesAsync(int id);
+
+        /// <summary>
         /// add a suggestion for poets spec lines
         /// </summary>
         /// <param name="model"></param>

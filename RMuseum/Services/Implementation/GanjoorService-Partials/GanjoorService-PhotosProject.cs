@@ -52,6 +52,43 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// returns specfic suggested line for poet
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>> GetPoetSuggestedSpecLinesAsync(int id)
+        {
+            try
+            {
+
+                return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>
+                 (
+                  await _context.GanjoorPoetSuggestedSpecLines
+                          .Where
+                          (
+                          r => r.Id == id
+                          )
+                          .Select
+                          (
+                      r => new GanjoorPoetSuggestedSpecLineViewModel()
+                      {
+                          Id = r.Id,
+                          PoetId = r.PoetId,
+                          LineOrder = r.LineOrder,
+                          Contents = r.Contents,
+                          Published = r.Published,
+                          SuggestedById = r.SuggestedById
+                      }
+                      ).SingleAsync()
+                 );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// add a suggestion for poets spec lines
         /// </summary>
         /// <param name="model"></param>
@@ -90,7 +127,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-               
+
                 var dbModel = await _context.GanjoorPoetSuggestedSpecLines.Where(s => s.Id == model.Id).SingleAsync();
                 bool publishIsChanged = model.Published != dbModel.Published;
                 dbModel.LineOrder = model.LineOrder;
@@ -99,7 +136,7 @@ namespace RMuseum.Services.Implementation
                 _context.Update(dbModel);
                 await _context.SaveChangesAsync();
 
-                if(publishIsChanged && model.Published && dbModel.SuggestedById != null)
+                if (publishIsChanged && model.Published && dbModel.SuggestedById != null)
                 {
                     var userRes = await _appUserService.GetUserInformation((Guid)dbModel.SuggestedById);
                     var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == dbModel.PoetId).SingleAsync();
