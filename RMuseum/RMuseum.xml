@@ -10438,6 +10438,37 @@
             <param name="metre"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32,System.Nullable{System.Guid},System.Boolean)">
+            <summary>
+            return list of suggested spec lines
+            </summary>
+            <param name="poetId"></param>
+            <param name="userId"></param>
+            <param name="includeUnpublished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.AddPoetSuggestedSpecLinesAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel)">
+            <summary>
+            add a suggestion for poets spec lines
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ModifyPoetSuggestedSpecLinesAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel)">
+            <summary>
+            modify a suggestion for poets spec lines
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePoetSuggestedSpecLinesAsync(System.Int32,System.Guid)">
+            <summary>
+            delete  a suggestion for poets spec lines
+            </summary>
+            <param name="id"></param>
+            <param name="deleteUserId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -11838,6 +11869,21 @@
             add a suggestion for poets spec lines
             </summary>
             <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ModifyPoetSuggestedSpecLinesAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel)">
+            <summary>
+            modify a suggestion for poets spec lines
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoetSuggestedSpecLinesAsync(System.Int32,System.Guid)">
+            <summary>
+            delete  a suggestion for poets spec lines
+            </summary>
+            <param name="id"></param>
+            <param name="deleteUserId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">

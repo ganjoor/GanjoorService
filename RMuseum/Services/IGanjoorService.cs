@@ -734,5 +734,37 @@ namespace RMuseum.Services
         /// <param name="metre"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> SaveGanjoorPoemProbableMetre(int id, string metre);
+
+        /// <summary>
+        /// return list of suggested spec lines
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="userId"></param>
+        /// <param name="includeUnpublished"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel[]>> GetPoetSuggestedSpecLinesAsync(int poetId, Guid? userId, bool includeUnpublished);
+
+        /// <summary>
+        /// add a suggestion for poets spec lines
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+
+        Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>> AddPoetSuggestedSpecLinesAsync(GanjoorPoetSuggestedSpecLineViewModel model);
+
+        /// <summary>
+        /// modify a suggestion for poets spec lines
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ModifyPoetSuggestedSpecLinesAsync(GanjoorPoetSuggestedSpecLineViewModel model);
+
+        /// <summary>
+        /// delete  a suggestion for poets spec lines
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="deleteUserId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePoetSuggestedSpecLinesAsync(int id, Guid deleteUserId);
     }
 }
