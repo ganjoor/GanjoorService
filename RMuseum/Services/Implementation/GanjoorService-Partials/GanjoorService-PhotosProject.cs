@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Data;
@@ -18,10 +20,8 @@ namespace RMuseum.Services.Implementation
         /// return list of suggested spec lines
         /// </summary>
         /// <param name="poetId"></param>
-        /// <param name="userId"></param>
-        /// <param name="includeUnpublished"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel[]>> GetPoetSuggestedSpecLinesAsync(int poetId, Guid? userId, bool includeUnpublished)
+        public async Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel[]>> GetPoetSuggestedSpecLinesAsync(int poetId)
         {
             return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel[]>
                 (
@@ -30,9 +30,7 @@ namespace RMuseum.Services.Implementation
                          (
                          r => r.PoetId == poetId
                          &&
-                         (includeUnpublished || r.Published == true)
-                         &&
-                         (userId == null || r.SuggestedById == userId)
+                         r.Published == true
                          )
                          .OrderBy(r => r.LineOrder)
                          .Select
@@ -56,7 +54,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>> GetPoetSuggestedSpecLinesAsync(int id)
+        public async Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>> GetPoetSuggestedSpecLineAsync(int id)
         {
             try
             {
@@ -110,6 +108,23 @@ namespace RMuseum.Services.Implementation
                 await _context.SaveChangesAsync();
                 model.Published = false;
                 model.Id = dbModel.Id;
+
+                var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, SecurableItem.ModifyOperationShortName);
+                if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+                {
+                    var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == model.PoetId).SingleAsync();
+                    foreach (var moderator in moderators.Result)
+                    {
+                        await _notificationService.PushNotification
+                                        (
+                                            (Guid)moderator.Id,
+                                            "ثبت مشخصات جدید برای شاعر",
+                                            $"درخواستی برای ثبت مشخصات جدید برای «{poet.Nickname}» ثبت شده است. در صورت تمایل به بررسی، بخش مربوط به شاعر را <a href=\"/photos\">اینجا</a> ببینید.{ Environment.NewLine}" +
+                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی مشخصات است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                        );
+                    }
+                }
+
                 return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>(model);
             }
             catch (Exception exp)

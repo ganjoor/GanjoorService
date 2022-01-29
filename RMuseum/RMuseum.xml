@@ -1499,6 +1499,24 @@
             <param name="memoryCache"></param>
             <param name="configuration"></param>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController.GetPoetSuggestedSpecLinesAsync(System.Int32)">
+            <summary>
+            returns list of suggested spec lines for a poet
+            </summary>
+            <param name="id">poet id</param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController._ganjoorService">
+            <summary>
+            Ganjoor Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController.#ctor(RMuseum.Services.IGanjoorService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="ganjoorService"></param>
+        </member>
         <member name="M:RMuseum.Controllers.GeoLocationController.GetLocationsAsync">
             <summary>
             get all locations
@@ -10438,13 +10456,18 @@
             <param name="metre"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32,System.Nullable{System.Guid},System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32)">
             <summary>
             return list of suggested spec lines
             </summary>
             <param name="poetId"></param>
-            <param name="userId"></param>
-            <param name="includeUnpublished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoetSuggestedSpecLineAsync(System.Int32)">
+            <summary>
+            returns specfic suggested line for poet
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.AddPoetSuggestedSpecLinesAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel)">
@@ -11855,13 +11878,18 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32,System.Nullable{System.Guid},System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32)">
             <summary>
             return list of suggested spec lines
             </summary>
             <param name="poetId"></param>
-            <param name="userId"></param>
-            <param name="includeUnpublished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLineAsync(System.Int32)">
+            <summary>
+            returns specfic suggested line for poet
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.AddPoetSuggestedSpecLinesAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel)">
