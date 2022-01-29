@@ -99,6 +99,11 @@ namespace RMuseum.Models.Auth.Memory
         public const string Translations = "translations";
 
         /// <summary>
+        /// photos
+        /// </summary>
+        public const string ModeratePoetPhotos = "photos";
+
+        /// <summary>
         /// list of forms and their permissions
         /// </summary>
         public new static SecurableItem[] Items
@@ -149,7 +154,7 @@ namespace RMuseum.Models.Auth.Memory
                     new SecurableItem()
                     {
                         ShortName = AudioRecitationEntityShortName,
-                        Description = "خوانشها",
+                        Description = "خوانش‌ها",
                         Operations = new SecurableItemOperation[]
                         {
                             new SecurableItemOperation(PublishOperationShortName, "انتشار خوانش خود", false),
@@ -172,6 +177,7 @@ namespace RMuseum.Models.Auth.Memory
                             new SecurableItemOperation(Banners, "مدیریت آگاهی‌ها", false),
                             new SecurableItemOperation(Donations, "مدیریت کمکهای مالی", false),
                             new SecurableItemOperation(Translations, "ترجمه", false),
+                            new SecurableItemOperation(ModeratePoetPhotos, "مدیریت تصاویر شاعران", false),
                         }
                     },
 

@@ -3484,6 +3484,11 @@
             translations
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModeratePoetPhotos">
+            <summary>
+            photos
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.Items">
             <summary>
             list of forms and their permissions

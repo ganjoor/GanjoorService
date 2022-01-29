@@ -109,7 +109,7 @@ namespace RMuseum.Services.Implementation
                 model.Published = false;
                 model.Id = dbModel.Id;
 
-                var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, SecurableItem.ModifyOperationShortName);
+                var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, RMuseumSecurableItem.ModeratePoetPhotos);
                 if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
                 {
                     var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == model.PoetId).SingleAsync();
