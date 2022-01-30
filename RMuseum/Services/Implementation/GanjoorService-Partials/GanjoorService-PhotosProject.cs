@@ -50,7 +50,7 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// returns specfic suggested line for poet
+        /// returns specific suggested line for poets
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -78,6 +78,43 @@ namespace RMuseum.Services.Implementation
                           SuggestedById = r.SuggestedById
                       }
                       ).SingleAsync()
+                 );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// next unpublished suggested line for poets
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>> GetNextUnmoderatedPoetSuggestedSpecLineAsync(int skip)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>
+                 (
+                  await _context.GanjoorPoetSuggestedSpecLines
+                          .Where
+                          (
+                          r => r.Published == false
+                          )
+                          .Skip(skip)
+                          .Select
+                          (
+                      r => new GanjoorPoetSuggestedSpecLineViewModel()
+                      {
+                          Id = r.Id,
+                          PoetId = r.PoetId,
+                          LineOrder = r.LineOrder,
+                          Contents = r.Contents,
+                          Published = r.Published,
+                          SuggestedById = r.SuggestedById
+                      }
+                      ).SingleOrDefaultAsync()
                  );
             }
             catch (Exception exp)

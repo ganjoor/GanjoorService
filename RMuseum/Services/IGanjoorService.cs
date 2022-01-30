@@ -750,6 +750,13 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>> GetPoetSuggestedSpecLineAsync(int id);
 
         /// <summary>
+        /// next unpublished suggested line for poets
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>> GetNextUnmoderatedPoetSuggestedSpecLineAsync(int skip);
+
+        /// <summary>
         /// add a suggestion for poets spec lines
         /// </summary>
         /// <param name="model"></param>
