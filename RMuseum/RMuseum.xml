@@ -1506,6 +1506,34 @@
             <param name="id">poet id</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController.GetNextUnmoderatedPoetSuggestedSpecLineAsync(System.Int32)">
+            <summary>
+            return the next unpublished suggested line for poets
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController.AddPoetSuggestedSpecLinesAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel)">
+            <summary>
+            add a suggestion for poets spec lines
+            </summary>
+            <param name="spec"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController.ModifyPoetSuggestedSpecLinesAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel)">
+            <summary>
+            modify a suggestion for poets spec lines
+            </summary>
+            <param name="spec"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController.DeletePoetSuggestedSpecLinesAsync(System.Int32)">
+            <summary>
+            delete  a suggestion for poets spec lines
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController._ganjoorService">
             <summary>
             Ganjoor Service

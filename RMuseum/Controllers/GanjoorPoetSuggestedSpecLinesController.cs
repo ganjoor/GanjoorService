@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services;
+using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -47,6 +49,62 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
             if (res.Result == null)
                 return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// add a suggestion for poets spec lines
+        /// </summary>
+        /// <param name="spec"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetSuggestedSpecLineViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> AddPoetSuggestedSpecLinesAsync([FromBody] GanjoorPoetSuggestedSpecLineViewModel spec)
+        {
+            spec.SuggestedById = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = await _ganjoorService.AddPoetSuggestedSpecLinesAsync(spec);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// modify a suggestion for poets spec lines
+        /// </summary>
+        /// <param name="spec"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModeratePoetPhotos)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> ModifyPoetSuggestedSpecLinesAsync([FromBody] GanjoorPoetSuggestedSpecLineViewModel spec)
+        {
+            var res = await _ganjoorService.ModifyPoetSuggestedSpecLinesAsync(spec);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// delete  a suggestion for poets spec lines
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModeratePoetPhotos)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> DeletePoetSuggestedSpecLinesAsync(int id)
+        {
+            Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = await _ganjoorService.DeletePoetSuggestedSpecLinesAsync(id, userId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
             return Ok(res.Result);
         }
 
