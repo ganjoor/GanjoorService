@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services;
 using System.Net;
@@ -25,6 +26,27 @@ namespace RMuseum.Controllers
             var res = await _ganjoorService.GetPoetSuggestedSpecLinesAsync(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// return the next unpublished suggested line for poets
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+
+        [HttpGet("unpublished/next")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModeratePoetPhotos)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetSuggestedSpecLineViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetNextUnmoderatedPoetSuggestedSpecLineAsync(int skip)
+        {
+            var res = await _ganjoorService.GetNextUnmoderatedPoetSuggestedSpecLineAsync(skip);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
             return Ok(res.Result);
         }
 
