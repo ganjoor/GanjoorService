@@ -91,6 +91,21 @@
                     <div class="clear-both">
                         @Model.Poet.Description
                     </div>
+
+                    <div class="century">
+                        نکات مهم دربارهٔ @Model.Poet.Nickname
+                    </div>
+
+                    @foreach (var line in Model.SpecLines)
+                    {
+                        <div class="clear-both">
+                            @line.Contents
+                        </div>
+                    }
+
+                    <div class="clear-both">
+                        <p>شما نکته‌ای اضافه کنید</p>
+                    </div>
                 }
 
 

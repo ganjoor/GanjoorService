@@ -18,6 +18,8 @@ namespace GanjooRazor.Pages
 
         public GanjoorPoetViewModel Poet { get; set; }
 
+        public List<GanjoorPoetSuggestedSpecLineViewModel> SpecLines { get; set; }
+
         private async Task<List<GanjoorPoetViewModel>> _PreparePoets()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
@@ -27,7 +29,6 @@ namespace GanjooRazor.Pages
                 return new List<GanjoorPoetViewModel>();
             }
             var poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-
 
             foreach (var poet in poets)
             {
@@ -51,6 +52,14 @@ namespace GanjooRazor.Pages
                 }
                 Poet = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>().Poet;
                 Poet.ImageUrl = $"{APIRoot.InternetUrl}{Poet.ImageUrl}";
+
+                var responseLines = await _httpClient.GetAsync($"{APIRoot.Url}/api/poetspecs/poet/{Poet.Id}");
+                if (!responseLines.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await responseLines.Content.ReadAsStringAsync());
+                    return Page();
+                }
+                SpecLines = JArray.Parse(await responseLines.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetSuggestedSpecLineViewModel>>();
             }
             else
             {
