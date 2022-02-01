@@ -22,6 +22,68 @@
     </script>
     <script src="/js/bk.js?version=21"></script>
 
+    @if (Model.Poet != null)
+    {
+        <script src="/lib/tinymce/tinymce.min.js"></script>
+        <script>
+                        tinymce.init({
+                                selector: 'textarea.editor',
+                                language: 'fa_IR',
+                                    menubar: false,
+                                    plugins: 'link paste',
+                                    toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | link',
+                                    paste_auto_cleanup_on_paste: true,
+                                    paste_remove_styles: true,
+                                    paste_remove_styles_if_webkit: true,
+                                    paste_strip_class_attributes: true,
+                                });
+
+
+            function suggestNote(buttonSelector) {
+                var commentformSelector = '#commentform';
+                if (coupletIndex != '') {
+                    commentformSelector += ('-' + coupletIndex);
+                }
+                $(commentformSelector).unbind('submit').bind('submit', function (e) {
+
+                    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                    $(buttonSelector).text('در حال ارسال پیشنهاد ...');
+                    $(buttonSelector).prop("disabled", true);
+
+                    $('#comment-error').remove();
+
+                    var parent1 = $('#comments-block');
+                    var parent2 = null;
+                    if (coupletIndex != '') {
+                        parent2 = $('#comments-block-' + coupletIndex);
+                    }
+
+                    var form = $(this);
+                    var url = form.attr('action');
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: form.serialize(), // serializes the form's elements.
+                        error: function () {
+                            $(buttonSelector).text('پیشنهاد');
+                            $(buttonSelector).prop("disabled", false);
+                        },
+                        success: function (data) {
+                            $(data).appendTo(parent1);
+                            if (parent2 != null)
+                                $(data).appendTo(parent2);
+                            $(buttonSelector).text('پیشنهاد');
+                            $(buttonSelector).prop("disabled", false);
+                            form[0].reset();
+                        },
+                    });
+
+                });
+            }
+        </script>
+    }
 
 </head>
 <body>
@@ -104,7 +166,44 @@
                     }
 
                     <div class="clear-both">
-                        <p>شما نکته‌ای اضافه کنید</p>
+                        @if (Model.LoggedIn)
+                        {
+                            <form method="post" id="commentform" action="?handler=Comment">
+                                <fieldset>
+                                    <legend>💬 شما نکتهٔ تازه‌ای پیشنهاد کنید ...</legend>
+                                    <table class="comment-table">
+                                        <tr>
+                                            <td>
+                                                <div class="required">
+                                                    <textarea name="comment" id="comment" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
+                                                </div>
+                                                <input type="hidden" name="poetId" id="poetId" value="@Model.Poet.Id" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <button name="postcomment" id="postcomment" class="submitCommentButton width-100per" onclick="return suggestNote('#postcomment');">پیشنهاد</button>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+
+                                    <div class="notice">
+                                        <p>
+                                            نکات پیشنهادی پس از بررسی منتشر می‌شوند. لطفاً توجه فرمایید که نکتهٔ مد نظر پیش‌تر اضافه نشده باشد و مستند باشد.
+                                        </p>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="notice" id="commentform">
+                                <p>
+                                    برای پیشنهاد نکات دیگری راجعه به @Model.Poet.Nickname که ممکن است روی تصویر خیالی یا حقیقی او تأثیرگذار باشد در گنجور <a href="/signup" target="_blank">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
+                                </p>
+                            </div>
+                        }
                     </div>
                 }
 
