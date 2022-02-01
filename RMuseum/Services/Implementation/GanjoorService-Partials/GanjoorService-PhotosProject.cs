@@ -136,16 +136,15 @@ namespace RMuseum.Services.Implementation
                 var dbModel = new GanjoorPoetSuggestedSpecLine()
                 {
                     PoetId = model.PoetId,
-                    LineOrder = model.LineOrder,
                     Contents = model.Contents,
                     Published = false,
                     SuggestedById = model.SuggestedById,
                 };
+                dbModel.LineOrder = await _context.GanjoorPoetSuggestedSpecLines.Where(s => s.PoetId == model.PoetId).CountAsync() + 1;
                 _context.Add(dbModel);
                 await _context.SaveChangesAsync();
                 model.Published = false;
                 model.Id = dbModel.Id;
-
                 var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, RMuseumSecurableItem.ModeratePoetPhotos);
                 if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
                 {

@@ -168,14 +168,14 @@
                     <div class="clear-both">
                         @if (Model.LoggedIn)
                         {
-                            <form method="post" id="commentform" action="?handler=Comment">
+                            <form method="post" id="commentform" action="?handler=Suggest">
                                 <fieldset>
                                     <legend>💬 شما نکتهٔ تازه‌ای پیشنهاد کنید ...</legend>
                                     <table class="comment-table">
                                         <tr>
                                             <td>
                                                 <div class="required">
-                                                    <textarea name="comment" id="comment" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
+                                                    <textarea name="contents" id="contents" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
                                                 </div>
                                                 <input type="hidden" name="poetId" id="poetId" value="@Model.Poet.Id" />
                                             </td>

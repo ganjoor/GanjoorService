@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GanjooRazor.Utils;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
@@ -68,6 +71,37 @@ namespace GanjooRazor.Pages
 
             ViewData["Title"] = Poet == null ? "پیشنهاد تصویر برای شاعران" : $"پیشنهاد تصویر برای {Poet.Nickname}";
 
+            return Page();
+        }
+
+        public async Task<ActionResult> OnPostSuggestAsync(int poetId, string contents)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.PostAsync($"{APIRoot.Url}/api/poetspecs",
+                        new StringContent(
+                        JsonConvert.SerializeObject
+                        (
+                            new GanjoorPoetSuggestedSpecLineViewModel()
+                            {
+                                PoetId = poetId,
+                                Contents = contents,
+                            }
+                        ),
+                        Encoding.UTF8, "application/json")
+                        );
+                    if(response.StatusCode == HttpStatusCode.OK)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
             return Page();
         }
 
