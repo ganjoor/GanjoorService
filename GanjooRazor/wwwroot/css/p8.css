@@ -1595,3 +1595,9 @@ audio {
     bottom: 25px;
     left: 25px;
 }
+
+fieldset {
+    padding: 5px;
+    border: 2px solid #300;
+    border-radius: 20px;
+}
