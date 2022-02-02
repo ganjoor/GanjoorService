@@ -41,9 +41,7 @@
 
             function suggestNote(buttonSelector) {
                 var commentformSelector = '#commentform';
-                if (coupletIndex != '') {
-                    commentformSelector += ('-' + coupletIndex);
-                }
+
                 $(commentformSelector).unbind('submit').bind('submit', function (e) {
 
                     e.preventDefault(); // avoid to execute the actual submit of the form.
@@ -53,11 +51,7 @@
 
                     $('#comment-error').remove();
 
-                    var parent1 = $('#comments-block');
-                    var parent2 = null;
-                    if (coupletIndex != '') {
-                        parent2 = $('#comments-block-' + coupletIndex);
-                    }
+                    var parent1 = $('#lines');
 
                     var form = $(this);
                     var url = form.attr('action');
@@ -66,14 +60,13 @@
                         type: "POST",
                         url: url,
                         data: form.serialize(), // serializes the form's elements.
-                        error: function () {
+                        error: function (data) {
+                            $(data).appendTo(parent1);
                             $(buttonSelector).text('پیشنهاد');
                             $(buttonSelector).prop("disabled", false);
                         },
                         success: function (data) {
                             $(data).appendTo(parent1);
-                            if (parent2 != null)
-                                $(data).appendTo(parent2);
                             $(buttonSelector).text('پیشنهاد');
                             $(buttonSelector).prop("disabled", false);
                             form[0].reset();
@@ -158,12 +151,12 @@
                         نکات مهم دربارهٔ @Model.Poet.Nickname
                     </div>
 
-                    @foreach (var line in Model.SpecLines)
-                    {
-                        <div class="clear-both">
-                            @line.Contents
-                        </div>
-                    }
+                    <div id="lines">
+                        @foreach (var line in Model.SpecLines)
+                        {
+                            <partial name="_PoetSpecLinePartial" model=line />
+                        }
+                    </div>
 
                     <div class="clear-both">
                         @if (Model.LoggedIn)

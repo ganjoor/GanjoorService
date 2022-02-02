@@ -1,0 +1,15 @@
+﻿@model GanjooRazor.Pages._PoetSpecLinePartialModel
+@{
+    Layout = null;
+}
+
+<div class="clear-both" id="@(Model.Line.Id == 0 ? "comment-error" : $"line-{Model.Line.Id}")">
+    @Html.Raw(Model.Line.Contents)
+</div>
+
+@if (Model.Line.Id != 0 && !Model.Line.Published)
+{
+    <div class="clear-both">
+        در انتظار بررسی
+    </div>
+}

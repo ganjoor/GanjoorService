@@ -1,10 +1,11 @@
 ﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -43,8 +44,8 @@ namespace GanjooRazor.Pages
         public async Task<IActionResult> OnGetAsync()
         {
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
-           
-            
+
+
             if (!string.IsNullOrEmpty(Request.Query["p"]))
             {
                 var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet?url=/{Request.Query["p"]}");
@@ -76,6 +77,7 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnPostSuggestAsync(int poetId, string contents)
         {
+            string error = "";
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
@@ -92,22 +94,51 @@ namespace GanjooRazor.Pages
                         ),
                         Encoding.UTF8, "application/json")
                         );
-                    if(response.StatusCode == HttpStatusCode.OK)
+                    if (response.StatusCode == HttpStatusCode.OK)
                     {
-
+                        var line = JsonConvert.DeserializeObject<GanjoorPoetSuggestedSpecLineViewModel>(await response.Content.ReadAsStringAsync());
+                        return new PartialViewResult()
+                        {
+                            ViewName = "_PoetSpecLinePartial",
+                            ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                            {
+                                Model = new _PoetSpecLinePartialModel()
+                                {
+                                    Line = line
+                                }
+                            }
+                        };
                     }
                     else
                     {
-
+                        error = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                     }
                 }
+                else
+                {
+                    error = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                }
             }
-            return Page();
+            return new PartialViewResult()
+            {
+                ViewName = "_PoetSpecLinePartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _PoetSpecLinePartialModel()
+                    {
+                        Line = new GanjoorPoetSuggestedSpecLineViewModel()
+                        {
+                            Id = 0,
+                            Contents = error
+                        }
+                    }
+                }
+            };
         }
 
         public PhotosModel(HttpClient httpClient) : base(httpClient)
         {
-            
+
         }
     }
 }
