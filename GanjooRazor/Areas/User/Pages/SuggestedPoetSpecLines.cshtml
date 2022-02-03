@@ -1,5 +1,6 @@
 ﻿@page
 @model GanjooRazor.Areas.User.Pages.SuggestedPoetSpecLinesModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_Layout";
     ViewData["Title"] = "نکات پیشنهادی برای تصاویر شاعران";
@@ -52,21 +53,7 @@ else
                     <table style="width:100%" class="noborder">
                         <tr>
                             <td>
-                                <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">در آهنگ این شعر خوانده نشده</button>
-                            </td>
-
-                        </tr>
-                        <tr>
-                            <td>
-                                <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">لینک یا اطلاعات آهنگ ایراد دارد</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">رد به دلیل دیگر:</button>
-                            </td>
-                            <td>
-                                <input style="width:100%" asp-for="PoemMusicTrackViewModel.RejectionCause" /><br />
+                                <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">رد</button>
                             </td>
                         </tr>
                         <tr>
@@ -93,7 +80,4 @@ else
 
     </form>
 
-
-
-}
 }
