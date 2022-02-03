@@ -6,6 +6,7 @@ using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace GanjooRazor.Areas.User.Pages
@@ -85,6 +86,57 @@ namespace GanjooRazor.Areas.User.Pages
                 }
 
             }
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+
+            Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
+
+            if (Request.Form["next"].Count == 1)
+            {
+                return Redirect($"/User/SuggestedPoetSpecLines/?skip={Skip + 1}");
+            }
+
+            Suggestion.Published = Request.Form["approve"].Count == 1;
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    if(Suggestion.Published)
+                    {
+                        var putResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/poetspecs", new StringContent(JsonConvert.SerializeObject(Suggestion), Encoding.UTF8, "application/json"));
+                        if (!putResponse.IsSuccessStatusCode)
+                        {
+                            LastError = JsonConvert.DeserializeObject<string>(await putResponse.Content.ReadAsStringAsync());
+                        }
+                    }
+                    else
+                    {
+                        var deleteResponse = await secureClient.DeleteAsync($"{APIRoot.Url}/api/poetspecs/{Suggestion.Id}");
+                        if (!deleteResponse.IsSuccessStatusCode)
+                        {
+                            LastError = JsonConvert.DeserializeObject<string>(await deleteResponse.Content.ReadAsStringAsync());
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                }
+
+            }
+
+
+            if (!string.IsNullOrEmpty(LastError))
+            {
+                return Page();
+            }
+
+            return Redirect($"/User/SuggestedPoetSpecLines/?skip={Skip}");
+
         }
     }
 }

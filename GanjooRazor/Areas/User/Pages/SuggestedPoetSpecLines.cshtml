@@ -21,7 +21,7 @@ else
                     <span class="inputlabel">شاعر: </span>
                 </td>
                 <td>
-                    <a href="@Html.Raw(Model.Poet.FullUrl)" target="_blank">@Model.Poet.Nickname</a>
+                    <a href="@Model.Poet.FullUrl.Substring(1)" target="_blank">@Model.Poet.Nickname</a>
                     <input type="hidden" asp-for="Suggestion.Id" />
                     <input type="hidden" asp-for="Suggestion.PoetId" />
                     <input type="hidden" asp-for="Suggestion.LineOrder" />
@@ -53,7 +53,7 @@ else
                     <table style="width:100%" class="noborder">
                         <tr>
                             <td>
-                                <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">رد</button>
+                                <button type="submit" name="reject" id="reject" style="width:100%;color:white;background-color:darkred">رد</button>
                             </td>
                         </tr>
                         <tr>
