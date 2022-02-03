@@ -1,0 +1,99 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.SuggestedPoetSpecLinesModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "نکات پیشنهادی برای تصاویر شاعران";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <form method="post">
+        <table style="width:100%" class="noborder">
+            <tr>
+                <td>
+                    <span class="inputlabel">شاعر: </span>
+                </td>
+                <td>
+                    <a href="@Html.Raw(Model.Poet.FullUrl)" target="_blank">@Model.Poet.Nickname</a>
+                    <input type="hidden" asp-for="Suggestion.Id" />
+                    <input type="hidden" asp-for="Suggestion.PoetId" />
+                    <input type="hidden" asp-for="Suggestion.LineOrder" />
+                    <input type="hidden" asp-for="Suggestion.SuggestedById" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">پیشنهاد دهنده: </span>
+                </td>
+                <td>
+                    <a href="/hashieha/?userid=@Model.Suggestion.SuggestedById" target="_blank">@Model.Suggestion.SuggestedById</a>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <span class="inputlabel">نکته: </span>
+                </td>
+                <td>
+                    <textarea asp-for="Suggestion.Contents" class="editor"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">تأیید</button>
+                </td>
+                <td>
+                    <table style="width:100%" class="noborder">
+                        <tr>
+                            <td>
+                                <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">در آهنگ این شعر خوانده نشده</button>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">لینک یا اطلاعات آهنگ ایراد دارد</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">رد به دلیل دیگر:</button>
+                            </td>
+                            <td>
+                                <input style="width:100%" asp-for="PoemMusicTrackViewModel.RejectionCause" /><br />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    تعداد کل:
+                </td>
+                <td>
+                    @Model.TotalCount
+                </td>
+            </tr>
+
+
+        </table>
+
+    </form>
+
+
+
+}
+}

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services;
+using RSecurityBackend.Models.Generic;
 using System;
 using System.Linq;
 using System.Net;
@@ -49,6 +51,26 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
             if (res.Result == null)
                 return NotFound();
+
+            var resCount = await _ganjoorService.GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync();
+            if (!string.IsNullOrEmpty(resCount.ExceptionString))
+                return BadRequest(resCount.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers",
+                JsonConvert.SerializeObject(
+                    new PaginationMetadata()
+                    {
+                        totalCount = resCount.Result,
+                        pageSize = -1,
+                        currentPage = -1,
+                        hasNextPage = false,
+                        hasPreviousPage = false,
+                        totalPages = -1
+                    })
+                );
+
+
             return Ok(res.Result);
         }
 

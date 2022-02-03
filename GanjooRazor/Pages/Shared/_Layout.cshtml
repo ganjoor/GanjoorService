@@ -311,6 +311,14 @@
                             </li>
                         }
 
+
+                        @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModeratePoetPhotos}"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="User" asp-page="/SuggestedPoetSpecLines">نکات پیشنهادی</a>
+                            </li>
+                        }
+
                         @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModifyOperationShortName}"))
                         {
                             <li class="nav-item">

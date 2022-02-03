@@ -114,12 +114,36 @@ namespace RMuseum.Services.Implementation
                           Published = r.Published,
                           SuggestedById = r.SuggestedById
                       }
-                      ).SingleOrDefaultAsync()
+                      ).FirstOrDefaultAsync()
                  );
             }
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// npublished suggested lines count for poets
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync()
+        {
+            try
+            {
+                return new RServiceResult<int>
+                 (
+                  await _context.GanjoorPoetSuggestedSpecLines
+                          .Where
+                          (
+                          r => r.Published == false
+                          )
+                          .CountAsync()
+                 );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<int>(0, exp.ToString());
             }
         }
 
