@@ -154,7 +154,7 @@
                     <div id="lines">
                         @foreach (var line in Model.SpecLines)
                         {
-                            <partial name="_PoetSpecLinePartial" model=line />
+                            <partial name="_PoetSpecLinePartial" model=@(new _PoetSpecLinePartialModel(){Line = line}) />
                         }
                     </div>
 
