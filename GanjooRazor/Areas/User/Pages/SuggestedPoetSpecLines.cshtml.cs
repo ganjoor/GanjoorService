@@ -53,9 +53,12 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         if(suggestionResponse.StatusCode == System.Net.HttpStatusCode.NotFound )
                         {
-                            LastError = "مورد دیگری وجود ندارد.";
+                            LastError = "پیشنهادی وجود ندارد.";
                         }
-                        LastError = JsonConvert.DeserializeObject<string>(await suggestionResponse.Content.ReadAsStringAsync());
+                        else
+                        {
+                            LastError = JsonConvert.DeserializeObject<string>(await suggestionResponse.Content.ReadAsStringAsync());
+                        }
                         return;
                     }
                     else
