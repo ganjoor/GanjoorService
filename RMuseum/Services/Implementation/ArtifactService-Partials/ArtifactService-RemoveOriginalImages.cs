@@ -35,7 +35,7 @@ namespace RMuseum.Services.Implementation
                                         var srcPath = Configuration.GetSection("PictureFileService")["StoragePath"];
                                         var trashPath = Configuration.GetSection("PictureFileService")["TrashStoragePath"];
 
-                                        var images = await context.PictureFiles.Where(p => p.StoredFileName != null &&  p.SrcUrl != null).ToListAsync();
+                                        var images = await context.PictureFiles.Where(p => p.StoredFileName != null &&  p.SrcUrl != null && p.NormalSizeImageStoredFileName.IndexOf("orig") != 0 ).ToListAsync();
 
                                         int progress = 0;
 
