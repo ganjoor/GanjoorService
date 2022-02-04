@@ -374,6 +374,12 @@ namespace RMuseum.Services.Implementation
             foreach (var translation in translations)
                 translation.UserId = deletedUserId;
             context.UpdateRange(translations);
+            await context.SaveChangesAsync();
+
+            var suggestedPoetNotes = await context.GanjoorPoetSuggestedSpecLines.Where(s => s.SuggestedById == userId).ToListAsync();
+            foreach (var suggestedPoetNote in suggestedPoetNotes)
+                suggestedPoetNote.SuggestedById = deletedUserId;
+            context.UpdateRange(suggestedPoetNotes);
 
             await context.SaveChangesAsync();
 
