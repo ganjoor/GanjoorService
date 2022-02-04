@@ -296,6 +296,9 @@ namespace RMuseum
             //tracking service
             services.AddTransient<IUserVisitsTrackingService, UserVisitsTrackingService>();
 
+            //poet photo suggestion service
+            services.AddTransient<IPoetPhotoSuggestionService, PoetPhotoSuggestionService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {

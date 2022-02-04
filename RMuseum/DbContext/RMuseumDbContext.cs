@@ -435,5 +435,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorPoetSuggestedSpecLine> GanjoorPoetSuggestedSpecLines { get; set; }
 
+        /// <summary>
+        /// suggested pictures for poets
+        /// </summary>
+        public DbSet<GanjoorPoetSuggestedPicture> GanjoorPoetSuggestedPictures { get; set; }
+
     }
 }

@@ -2544,6 +2544,11 @@
             suggested spec line for poets
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoetSuggestedPictures">
+            <summary>
+            suggested pictures for poets
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -7761,6 +7766,51 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetCompleteViewModel.Cat">
             <summary>
             poet cat info
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel.PoetId">
+            <summary>
+            Poet Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel.PicOrder">
+            <summary>
+            order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel.Title">
+            <summary>
+            Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel.ImageUrl">
+            <summary>
+            image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel.SuggestedById">
+            <summary>
+            suggested by id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel.Published">
+            <summary>
+            published
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel.ChosenOne">
+            <summary>
+            selected
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel">
@@ -13036,6 +13086,41 @@
             <param name="simpleImageStorage"></param>
             <param name="memoryCache"></param>
         </member>
+        <member name="T:RMuseum.Services.Implementation.PoetPhotoSuggestionService">
+            <summary>
+            poet photo suggestion service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.SuggestPhotoForPoet(System.Int32,System.Guid,System.IO.Stream,System.String,System.String,System.String,System.String)">
+            <summary>
+            suggest a new photo for a poet
+            </summary>
+            <param name="poetId"></param>
+            <param name="userId"></param>
+            <param name="imageStream"></param>
+            <param name="fileName"></param>
+            <param name="title"></param>
+            <param name="description"></param>
+            <param name="srcUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.PoetPhotoSuggestionService._context">
+            <summary>
+            Database Context
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.PoetPhotoSuggestionService._pictureFileService">
+            <summary>
+            picture file service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.#ctor(RMuseum.DbContext.RMuseumDbContext,RMuseum.Services.IPictureFileService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="pictureFileService"></param>
+        </member>
         <member name="T:RMuseum.Services.Implementation.RecitationsRssBuilder">
             <summary>
             creates an RSS feed from recitations
@@ -13627,6 +13712,24 @@
             <summary>
             Image Storage Path
             </summary>
+        </member>
+        <member name="T:RMuseum.Services.IPoetPhotoSuggestionService">
+            <summary>
+            poet photo suggestion service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.SuggestPhotoForPoet(System.Int32,System.Guid,System.IO.Stream,System.String,System.String,System.String,System.String)">
+            <summary>
+            suggest a new photo for a poet
+            </summary>
+            <param name="poetId"></param>
+            <param name="userId"></param>
+            <param name="imageStream"></param>
+            <param name="fileName"></param>
+            <param name="title"></param>
+            <param name="description"></param>
+            <param name="srcUrl"></param>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IRecitationService">
             <summary>

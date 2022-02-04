@@ -4,8 +4,10 @@ using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Models.Image;
 using System;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -264,5 +266,8 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
+
+
+        
     }
 }
