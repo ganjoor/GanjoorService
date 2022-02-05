@@ -77,6 +77,72 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorPoetSuggestedPictureViewModel>(null, exp.ToString());
             }
         }
+
+        /// <summary>
+        /// next unpublished suggested photo for poets
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoetSuggestedPictureViewModel>> GetNextUnmoderatedPoetSuggestedPhotoAsync(int skip)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorPoetSuggestedPictureViewModel>
+                 (
+                  await _context.GanjoorPoetSuggestedPictures.Include(r => r.Picture)
+                          .Where
+                          (
+                          r => r.Published == false
+                          )
+                          .Skip(skip)
+                          .Select
+                          (
+                      r => new GanjoorPoetSuggestedPictureViewModel()
+                      {
+                          Id = r.Id,
+                          PoetId = r.PoetId,
+                          Title = r.Picture.Title,
+                          Description = r.Picture.Description,
+                          PicOrder = r.PicOrder,
+                          Published = r.Published,
+                          ChosenOne = r.ChosenOne,
+                          SuggestedById = r.SuggestedById,
+                          ImageUrl = $"api/rimages/{r.PictureId}.jpg"
+                      }
+                      ).FirstOrDefaultAsync()
+                 );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoetSuggestedPictureViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// unpublished suggested photos count for poets
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync()
+        {
+            try
+            {
+                return new RServiceResult<int>
+                 (
+                  await _context.GanjoorPoetSuggestedPictures
+                          .Where
+                          (
+                          r => r.Published == false
+                          )
+                          .CountAsync()
+                 );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<int>(0, exp.ToString());
+            }
+        }
+
+
         /// <summary>
         /// Database Context
         /// </summary>

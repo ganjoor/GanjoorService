@@ -11997,7 +11997,7 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync">
             <summary>
-            npublished suggested lines count for poets
+            upublished suggested lines count for poets
             </summary>
             <returns></returns>
         </member>
@@ -13104,6 +13104,19 @@
             <param name="srcUrl"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.GetNextUnmoderatedPoetSuggestedPhotoAsync(System.Int32)">
+            <summary>
+            next unpublished suggested photo for poets
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync">
+            <summary>
+            unpublished suggested photos count for poets
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.PoetPhotoSuggestionService._context">
             <summary>
             Database Context
@@ -13729,6 +13742,19 @@
             <param name="title"></param>
             <param name="description"></param>
             <param name="srcUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.GetNextUnmoderatedPoetSuggestedPhotoAsync(System.Int32)">
+            <summary>
+            next unpublished suggested photo for poets
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync">
+            <summary>
+            unpublished suggested photos count for poets
+            </summary>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IRecitationService">

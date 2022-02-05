@@ -126,7 +126,7 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// npublished suggested lines count for poets
+        /// upublished suggested lines count for poets
         /// </summary>
         /// <returns></returns>
         public async Task<RServiceResult<int>> GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync()

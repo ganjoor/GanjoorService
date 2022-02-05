@@ -23,5 +23,20 @@ namespace RMuseum.Services
         /// <param name="srcUrl"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPoetSuggestedPictureViewModel>> SuggestPhotoForPoet(int poetId, Guid userId, Stream imageStream, string fileName, string title, string description, string srcUrl);
+
+        /// <summary>
+        /// next unpublished suggested photo for poets
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoetSuggestedPictureViewModel>> GetNextUnmoderatedPoetSuggestedPhotoAsync(int skip);
+
+        /// <summary>
+        /// unpublished suggested photos count for poets
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<int>> GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync();
+
+
     }
 }
