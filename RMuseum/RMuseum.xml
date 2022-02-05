@@ -13091,6 +13091,13 @@
             poet photo suggestion service
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.GetPoetSuggestedPhotosAsync(System.Int32)">
+            <summary>
+            return list of suggested photos for a poet
+            </summary>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.SuggestPhotoForPoet(System.Int32,System.Guid,System.IO.Stream,System.String,System.String,System.String,System.String)">
             <summary>
             suggest a new photo for a poet
@@ -13127,12 +13134,24 @@
             picture file service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.#ctor(RMuseum.DbContext.RMuseumDbContext,RMuseum.Services.IPictureFileService)">
+        <member name="F:RMuseum.Services.Implementation.PoetPhotoSuggestionService._notificationService">
+            <summary>
+            Messaging service
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.PoetPhotoSuggestionService._appUserService">
+            <summary>
+            IAppUserService instance
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.#ctor(RMuseum.DbContext.RMuseumDbContext,RMuseum.Services.IPictureFileService,RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
             </summary>
             <param name="context"></param>
             <param name="pictureFileService"></param>
+            <param name="notificationService"></param>
+            <param name="appUserService"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.RecitationsRssBuilder">
             <summary>
@@ -13728,8 +13747,15 @@
         </member>
         <member name="T:RMuseum.Services.IPoetPhotoSuggestionService">
             <summary>
-            poet photo suggestion service
+            poet photo suggestion service;
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.GetPoetSuggestedPhotosAsync(System.Int32)">
+            <summary>
+            return list of suggested photos for a poet
+            </summary>
+            <param name="poetId"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.SuggestPhotoForPoet(System.Int32,System.Guid,System.IO.Stream,System.String,System.String,System.String,System.String)">
             <summary>

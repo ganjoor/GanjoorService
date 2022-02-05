@@ -7,10 +7,16 @@ using System.Threading.Tasks;
 namespace RMuseum.Services
 {
     /// <summary>
-    /// poet photo suggestion service
+    /// poet photo suggestion service;
     /// </summary>
     public interface IPoetPhotoSuggestionService
     {
+        /// <summary>
+        /// return list of suggested photos for a poet
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoetSuggestedPictureViewModel[]>> GetPoetSuggestedPhotosAsync(int poetId);
         /// <summary>
         /// suggest a new photo for a poet
         /// </summary>

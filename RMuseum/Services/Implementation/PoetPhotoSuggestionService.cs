@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
+using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Services;
 using System;
 using System.IO;
 using System.Linq;
@@ -16,6 +18,41 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public class PoetPhotoSuggestionService : IPoetPhotoSuggestionService
     {
+        /// <summary>
+        /// return list of suggested photos for a poet
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoetSuggestedPictureViewModel[]>> GetPoetSuggestedPhotosAsync(int poetId)
+        {
+            return new RServiceResult<GanjoorPoetSuggestedPictureViewModel[]>
+                (
+                  await _context.GanjoorPoetSuggestedPictures.AsNoTracking().Include(r => r.Picture)
+                          .Where
+                          (
+                          r => r.Published == true && r.PoetId == poetId
+                          )
+                          .OrderBy(r => r.PicOrder)
+                          .Select
+                          (
+                      r => new GanjoorPoetSuggestedPictureViewModel()
+                      {
+                          Id = r.Id,
+                          PoetId = r.PoetId,
+                          Title = r.Picture.Title,
+                          Description = r.Picture.Description,
+                          PicOrder = r.PicOrder,
+                          Published = r.Published,
+                          ChosenOne = r.ChosenOne,
+                          SuggestedById = r.SuggestedById,
+                          ImageUrl = $"api/rimages/{r.PictureId}.jpg"
+                      }
+                      )
+                         .ToArrayAsync()
+                );
+        }
+
+
         /// <summary>
         /// suggest a new photo for a poet
         /// </summary>
@@ -55,6 +92,22 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorPoetSuggestedPictures.Add(picture);
                 await _context.SaveChangesAsync();
 
+                var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, RMuseumSecurableItem.ModeratePoetPhotos);
+                if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+                {
+                    var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync();
+                    foreach (var moderator in moderators.Result)
+                    {
+                        await _notificationService.PushNotification
+                                        (
+                                            (Guid)moderator.Id,
+                                            "ثبت تصویر پیشنهادی جدید برای شاعر",
+                                            $"درخواستی برای ثبت تصویر پیشنهادی جدیدی برای «{poet.Nickname}» ثبت شده است. در صورت تمایل به بررسی، بخش مربوط به شاعر را <a href=\"/User/SuggestedPoetPhotos\">اینجا</a> ببینید.{ Environment.NewLine}" +
+                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی تصاویر است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                        );
+                    }
+                }
+
 
                 return new RServiceResult<GanjoorPoetSuggestedPictureViewModel>
                     (
@@ -89,7 +142,7 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<GanjoorPoetSuggestedPictureViewModel>
                  (
-                  await _context.GanjoorPoetSuggestedPictures.Include(r => r.Picture)
+                  await _context.GanjoorPoetSuggestedPictures.AsNoTracking().Include(r => r.Picture)
                           .Where
                           (
                           r => r.Published == false
@@ -152,17 +205,31 @@ namespace RMuseum.Services.Implementation
         /// picture file service
         /// </summary>
 
-        protected IPictureFileService _pictureFileService;
+        protected readonly IPictureFileService _pictureFileService;
+
+        /// <summary>
+        /// Messaging service
+        /// </summary>
+        protected readonly IRNotificationService _notificationService;
+
+        /// <summary>
+        /// IAppUserService instance
+        /// </summary>
+        protected readonly IAppUserService _appUserService;
 
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="pictureFileService"></param>
-        public PoetPhotoSuggestionService(RMuseumDbContext context, IPictureFileService pictureFileService)
+        /// <param name="notificationService"></param>
+        /// <param name="appUserService"></param>
+        public PoetPhotoSuggestionService(RMuseumDbContext context, IPictureFileService pictureFileService, IRNotificationService notificationService, IAppUserService appUserService)
         {
             _context = context;
             _pictureFileService = pictureFileService;
+            _notificationService = notificationService;
+            _appUserService = appUserService;
         }
     }
 }

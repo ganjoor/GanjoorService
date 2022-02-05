@@ -27,7 +27,7 @@ namespace RMuseum.Services.Implementation
         {
             return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel[]>
                 (
-                 await _context.GanjoorPoetSuggestedSpecLines
+                 await _context.GanjoorPoetSuggestedSpecLines.AsNoTracking()
                          .Where
                          (
                          r => r.PoetId == poetId
@@ -63,7 +63,7 @@ namespace RMuseum.Services.Implementation
 
                 return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>
                  (
-                  await _context.GanjoorPoetSuggestedSpecLines
+                  await _context.GanjoorPoetSuggestedSpecLines.AsNoTracking()
                           .Where
                           (
                           r => r.Id == id
@@ -99,7 +99,7 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>
                  (
-                  await _context.GanjoorPoetSuggestedSpecLines
+                  await _context.GanjoorPoetSuggestedSpecLines.AsNoTracking()
                           .Where
                           (
                           r => r.Published == false
@@ -181,7 +181,7 @@ namespace RMuseum.Services.Implementation
                                         (
                                             (Guid)moderator.Id,
                                             "ثبت مشخصات جدید برای شاعر",
-                                            $"درخواستی برای ثبت مشخصات جدید برای «{poet.Nickname}» ثبت شده است. در صورت تمایل به بررسی، بخش مربوط به شاعر را <a href=\"/photos\">اینجا</a> ببینید.{ Environment.NewLine}" +
+                                            $"درخواستی برای ثبت مشخصات جدید برای «{poet.Nickname}» ثبت شده است. در صورت تمایل به بررسی، بخش مربوط به شاعر را <a href=\"/User/SuggestedPoetSpecLines\">اینجا</a> ببینید.{ Environment.NewLine}" +
                                             $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی مشخصات است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
                                         );
                     }
