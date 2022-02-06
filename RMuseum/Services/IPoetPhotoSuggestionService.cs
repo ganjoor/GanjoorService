@@ -41,7 +41,22 @@ namespace RMuseum.Services
         /// unpublished suggested photos count for poets
         /// </summary>
         /// <returns></returns>
-        Task<RServiceResult<int>> GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync();
+        Task<RServiceResult<int>> GetNextUnmoderatedPoetSuggestedPhotosCountAsync();
+
+        /// <summary>
+        /// modify a suggested photo for poets
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ModifyPoetSuggestedPhotoAsync(GanjoorPoetSuggestedPictureViewModel model);
+
+        /// <summary>
+        /// delete  a suggested photo for poets
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="deleteUserId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePoetSuggestedPhotoAsync(int id, Guid deleteUserId);
 
 
     }

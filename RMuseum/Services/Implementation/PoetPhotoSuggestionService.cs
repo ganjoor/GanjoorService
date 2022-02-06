@@ -175,7 +175,7 @@ namespace RMuseum.Services.Implementation
         /// unpublished suggested photos count for poets
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<int>> GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync()
+        public async Task<RServiceResult<int>> GetNextUnmoderatedPoetSuggestedPhotosCountAsync()
         {
             try
             {
@@ -192,6 +192,78 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<int>(0, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// modify a suggested photo for poets
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ModifyPoetSuggestedPhotoAsync(GanjoorPoetSuggestedPictureViewModel model)
+        {
+            try
+            {
+
+                var dbModel = await _context.GanjoorPoetSuggestedPictures.Include(p => p.Picture).Where(s => s.Id == model.Id).SingleAsync();
+                bool publishIsChanged = model.Published != dbModel.Published;
+                dbModel.PicOrder = model.PicOrder;
+                dbModel.Picture.Title = model.Title;
+                dbModel.Picture.Description = model.Description;
+                dbModel.ChosenOne = model.ChosenOne;
+                dbModel.Published = model.Published;
+                _context.Update(dbModel);
+                await _context.SaveChangesAsync();
+
+                if (publishIsChanged && model.Published && dbModel.SuggestedById != null)
+                {
+                    var userRes = await _appUserService.GetUserInformation((Guid)dbModel.SuggestedById);
+                    var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == dbModel.PoetId).SingleAsync();
+                    await _notificationService.PushNotification((Guid)dbModel.SuggestedById,
+                                      $"انتشار تصویر پیشنهادی شما برای {poet.Nickname}",
+                                      $"با سپاس! پیشنهاد شما برای تصویر {poet.Nickname} در فهرست تصاویر قابل انتخاب برای شاعر قابل مشاهده است."
+                                      );
+                }
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete  a suggested photo for poets
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="deleteUserId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePoetSuggestedPhotoAsync(int id, Guid deleteUserId)
+        {
+            try
+            {
+                var dbModel = await _context.GanjoorPoetSuggestedPictures.Where(s => s.Id == id).SingleAsync();
+
+
+                if (!dbModel.Published && dbModel.SuggestedById != null && deleteUserId != dbModel.SuggestedById)
+                {
+                    var userRes = await _appUserService.GetUserInformation((Guid)dbModel.SuggestedById);
+                    var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == dbModel.PoetId).SingleAsync();
+                    await _notificationService.PushNotification((Guid)dbModel.SuggestedById,
+                                      $"عدم پذیرش تصویر ارسالی شما برای {poet.Nickname}",
+                                      $"متأسفانه تصویر پیشنهادی شما برای مشخصات {poet.Nickname} مورد پذیرش قرار نگرفت" 
+                                      );
+                }
+
+                _context.Remove(dbModel);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 
