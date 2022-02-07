@@ -13118,10 +13118,25 @@
             <param name="skip"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync">
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.GetNextUnmoderatedPoetSuggestedPhotosCountAsync">
             <summary>
             unpublished suggested photos count for poets
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.ModifyPoetSuggestedPhotoAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel)">
+            <summary>
+            modify a suggested photo for poets
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.DeletePoetSuggestedPhotoAsync(System.Int32,System.Guid)">
+            <summary>
+            delete  a suggested photo for poets
+            </summary>
+            <param name="id"></param>
+            <param name="deleteUserId"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.PoetPhotoSuggestionService._context">
@@ -13777,10 +13792,25 @@
             <param name="skip"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.GetNextUnmoderatedPoetSuggestedSpecLinesCountAsync">
+        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.GetNextUnmoderatedPoetSuggestedPhotosCountAsync">
             <summary>
             unpublished suggested photos count for poets
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.ModifyPoetSuggestedPhotoAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel)">
+            <summary>
+            modify a suggested photo for poets
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.DeletePoetSuggestedPhotoAsync(System.Int32,System.Guid)">
+            <summary>
+            delete  a suggested photo for poets
+            </summary>
+            <param name="id"></param>
+            <param name="deleteUserId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IRecitationService">

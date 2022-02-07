@@ -32,12 +32,12 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// picture id
         /// </summary>
-        public Guid PictureId { get; set; }
+        public Guid? PictureId { get; set; }
 
         /// <summary>
         /// picture
         /// </summary>
-        public RPictureFile Picture { get; set; }
+        public virtual RPictureFile Picture { get; set; }
 
         /// <summary>
         /// suggested by id
