@@ -380,7 +380,12 @@ namespace RMuseum.Services.Implementation
             foreach (var suggestedPoetNote in suggestedPoetNotes)
                 suggestedPoetNote.SuggestedById = deletedUserId;
             context.UpdateRange(suggestedPoetNotes);
+            await context.SaveChangesAsync();
 
+            var suggestedPoetPhotos = await context.GanjoorPoetSuggestedPictures.Where(s => s.SuggestedById == userId).ToListAsync();
+            foreach (var suggestedPoetPhoto in suggestedPoetPhotos)
+                suggestedPoetPhoto.SuggestedById = deletedUserId;
+            context.UpdateRange(suggestedPoetPhotos);
             await context.SaveChangesAsync();
 
 
