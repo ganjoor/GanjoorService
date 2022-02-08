@@ -37,6 +37,35 @@ else
                 <a href="/hashieha/?userid=@Model.Correction.UserId" target="_blank">@Model.Correction.UserNickname</a>
             </td>
         </tr>
+        <tr>
+            <td>
+                <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderatePoemCorrections(@Model.PageInformation.Poem.Verses.Length, @Model.Correction.Id)">بررسی</a>
+            </td>
+            <td>
+                <form method="post">
+                    <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
+                </form>
+            </td>
+        </tr>
+
+         <tr>
+            <td>
+                تعداد کل:
+            </td>
+            <td>
+                @Model.TotalCount
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan=2>
+                <a role="button" onclick="checkAllNotCorrect()" class="pagebutton">درست نیست</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2"><p id="saving">&nbsp;</p></td>
+        </tr>
         @if (Model.Correction.Title != null)
         {
             <tr>
@@ -230,36 +259,9 @@ else
             </tr>
         }
 
-        <tr>
-            <td>
-                <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderatePoemCorrections(@Model.PageInformation.Poem.Verses.Length, @Model.Correction.Id)">بررسی</a>
-            </td>
-            <td>
-                <form method="post">
-                    <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
-                </form>
-            </td>
-        </tr>
+        
 
-        <tr>
-            <td colspan=2>
-                <a role="button" onclick="checkAllNotCorrect()" class="pagebutton">درست نیست</a>
-            </td>
-        </tr>
-
-
-        <tr>
-            <td colspan="2"><p id="saving">&nbsp;</p></td>
-        </tr>
-
-        <tr>
-            <td>
-                تعداد کل:
-            </td>
-            <td>
-                @Model.TotalCount
-            </td>
-        </tr>
+       
 
 
     </table>
