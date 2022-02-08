@@ -259,22 +259,45 @@ else
         </tr>
         <tr>
             <td>
-                @if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm != null)
-                {
-                    <input type="text" id="rhythm-new" name="rhythm-new" value="@Model.MyLastEdit.Rhythm" size="50" list="rythms" />
-
-                }
-                else
-                {
-                    <input type="text" id="rhythm-new" name="rhythm-new" value="@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)" size="50" list="rythms" />
-                }
-                <datalist id="rythms">
-                    @if (Model.Rhythms != null)
-                        @foreach (var rhythm in Model.Rhythms)
-                        {
-                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                 <label for="select-search">جستجوی وزن:</label> <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo()" />
+                <script>
+                    function doSearchInRhythmsCombo(){
+                        var value = document.getElementById('select-search').value;
+                        var options = document.getElementById('rhythm-new').options
+                        for(var i=0; i < options.length; i++){
+                            if(options[i].value.indexOf(value) != -1){
+                                document.getElementById('rhythm-new').value = options[i].value;
+                                break;
+                            }
                         }
-                </datalist>
+                    }
+                </script>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="rhythm-new">وزن انتخاب شده:</label> <select id="rhythm-new" name="rhythm-new">
+                    @foreach (var rhythm in Model.Rhythms)
+                    {
+                        if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm == rhythm.Rhythm)
+                        {
+                            <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
+                        }
+                        else
+                        {
+                            if(Model.PageInformation.Poem.GanjoorMetre != null && Model.PageInformation.Poem.GanjoorMetre.Rhythm == rhythm.Rhythm)
+                            {
+                                <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
+                            }
+                            else
+                            {
+                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                            }
+                            
+                        }
+                        
+                    }
+                </select>
             </td>
         </tr>
         <tr>

@@ -112,7 +112,14 @@ namespace GanjooRazor.Areas.User.Pages
                         FatalError = JsonConvert.DeserializeObject<string>(await rhythmResponse.Content.ReadAsStringAsync());
                         return Page();
                     }
-                    Rhythms = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
+                    List<GanjoorMetre> rhythms = new List<GanjoorMetre>(JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync()));
+                    rhythms.Insert(0, new GanjoorMetre()
+                    {
+                        Rhythm = ""
+                    }
+                    );
+
+                    Rhythms = rhythms.ToArray();
 
                     var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
                     if (!pageUrlResponse.IsSuccessStatusCode)
