@@ -1499,6 +1499,51 @@
             <param name="memoryCache"></param>
             <param name="configuration"></param>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.GetPoetSuggestedPhotosAsync(System.Int32)">
+            <summary>
+            returns list of suggested photos for a poet
+            </summary>
+            <param name="id">poet id</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.GetNextUnmoderatedPoetSuggestedPhotoAsync(System.Int32)">
+            <summary>
+            return the next unpublished suggested line for poets
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.SuggestPhotoForPoet">
+            <summary>
+            add a suggestion for poets photos (send form) with these fields: poetId, title, description, srcUrl and an image attachment
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.ModifyPoetSuggestedPhotosAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel)">
+            <summary>
+            modify a suggestion for poets photos
+            </summary>
+            <param name="photo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.DeletePoetSuggestedPhotosAsync(System.Int32)">
+            <summary>
+            delete  a suggestion for poets photos
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController._poetPhotosService">
+            <summary>
+            Poets Photos Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.#ctor(RMuseum.Services.IPoetPhotoSuggestionService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="ganjoorService"></param>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController.GetPoetSuggestedSpecLinesAsync(System.Int32)">
             <summary>
             returns list of suggested spec lines for a poet
