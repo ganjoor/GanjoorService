@@ -12,6 +12,22 @@
         $('[contenteditable]').keypress(function (e) { return e.which != 13; });
     });
 </script>
+<script>
+    function doSearchInRhythmsCombo(){
+        var value = document.getElementById('select-search').value;
+        var options = document.getElementById('rhythm-new').options
+        for(var i=0; i < options.length; i++){
+            if(options[i].value.indexOf(value) != -1){
+                document.getElementById('rhythm-new').value = options[i].value;
+                break;
+            }
+        }
+    }
+
+    function resetRhythm() {
+        document.getElementById('rhythm-new').value = '';
+    }
+</script>
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
     <p>@Model.FatalError</p>
@@ -259,27 +275,16 @@ else
         </tr>
         <tr>
             <td>
-                 <label for="select-search">جستجوی وزن:</label><br />
-                 <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo()" list="inputRhythms" autocomplete="off" size="50" />
-                 <datalist id="inputRhythms">
+                <label for="select-search">جستجوی وزن:</label><br />
+                <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo()" list="inputRhythms" autocomplete="off" size="50" />
+                <datalist id="inputRhythms">
                     @if (Model.RhythmsByVerseCount != null)
                         @foreach (var rhythm in Model.RhythmsByVerseCount)
                         {
                             <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
                         }
                 </datalist>
-                <script>
-                    function doSearchInRhythmsCombo(){
-                        var value = document.getElementById('select-search').value;
-                        var options = document.getElementById('rhythm-new').options
-                        for(var i=0; i < options.length; i++){
-                            if(options[i].value.indexOf(value) != -1){
-                                document.getElementById('rhythm-new').value = options[i].value;
-                                break;
-                            }
-                        }
-                    }
-                </script>
+
             </td>
         </tr>
         <tr>
@@ -293,7 +298,7 @@ else
                         }
                         else
                         {
-                            if(Model.PageInformation.Poem.GanjoorMetre != null && Model.PageInformation.Poem.GanjoorMetre.Rhythm == rhythm.Rhythm)
+                            if (Model.PageInformation.Poem.GanjoorMetre != null && Model.PageInformation.Poem.GanjoorMetre.Rhythm == rhythm.Rhythm)
                             {
                                 <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
                             }
@@ -301,11 +306,12 @@ else
                             {
                                 <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
                             }
-                            
+
                         }
-                        
+
                     }
                 </select>
+                <a role="button" onclick="resetRhythm()" class="pagebutton">پاک کردن وزن</a>
             </td>
         </tr>
         <tr>
