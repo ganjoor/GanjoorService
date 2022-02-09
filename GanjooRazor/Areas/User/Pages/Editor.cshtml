@@ -259,7 +259,15 @@ else
         </tr>
         <tr>
             <td>
-                 <label for="select-search">جستجوی وزن:</label> <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo()" />
+                 <label for="select-search">جستجوی وزن:</label><br />
+                 <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo()" list="inputRhythms" autocomplete="off" size="50" />
+                 <datalist id="inputRhythms">
+                    @if (Model.RhythmsByVerseCount != null)
+                        @foreach (var rhythm in Model.RhythmsByVerseCount)
+                        {
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
+                </datalist>
                 <script>
                     function doSearchInRhythmsCombo(){
                         var value = document.getElementById('select-search').value;
@@ -276,8 +284,8 @@ else
         </tr>
         <tr>
             <td>
-                <label for="rhythm-new">وزن انتخاب شده:</label> <select id="rhythm-new" name="rhythm-new">
-                    @foreach (var rhythm in Model.Rhythms)
+                <label for="rhythm-new">وزن انتخاب شده:</label><br /><select id="rhythm-new" name="rhythm-new">
+                    @foreach (var rhythm in Model.RhythmsAlphabetically)
                     {
                         if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm == rhythm.Rhythm)
                         {

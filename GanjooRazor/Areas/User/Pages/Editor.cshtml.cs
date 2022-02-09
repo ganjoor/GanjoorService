@@ -26,9 +26,14 @@ namespace GanjooRazor.Areas.User.Pages
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
 
         /// <summary>
-        /// rythms
+        /// rhythms alphabetically
         /// </summary>
-        public GanjoorMetre[] Rhythms { get; set; }
+        public GanjoorMetre[] RhythmsAlphabetically { get; set; }
+
+        /// <summary>
+        /// rhythms by frequency
+        /// </summary>
+        public GanjoorMetre[] RhythmsByVerseCount { get; set; }
 
         /// <summary>
         /// fatal error
@@ -106,20 +111,24 @@ namespace GanjooRazor.Areas.User.Pages
                     MyLastEdit = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await editResponse.Content.ReadAsStringAsync());
 
 
-                    var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
+                    var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms?sortOnVerseCount=true");
                     if (!rhythmResponse.IsSuccessStatusCode)
                     {
                         FatalError = JsonConvert.DeserializeObject<string>(await rhythmResponse.Content.ReadAsStringAsync());
                         return Page();
                     }
-                    List<GanjoorMetre> rhythms = new List<GanjoorMetre>(JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync()));
-                    rhythms.Insert(0, new GanjoorMetre()
+
+                    RhythmsByVerseCount = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
+
+                    List<GanjoorMetre> rhythmsByVerseCount = new List<GanjoorMetre>(RhythmsByVerseCount);
+                    rhythmsByVerseCount.Sort((a, b) => a.Rhythm.CompareTo(b.Rhythm));
+                    rhythmsByVerseCount.Insert(0, new GanjoorMetre()
                     {
                         Rhythm = ""
                     }
                     );
 
-                    Rhythms = rhythms.ToArray();
+                    RhythmsAlphabetically = rhythmsByVerseCount.ToArray();
 
                     var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
                     if (!pageUrlResponse.IsSuccessStatusCode)
