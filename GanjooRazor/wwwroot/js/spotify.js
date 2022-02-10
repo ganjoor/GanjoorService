@@ -2,13 +2,25 @@
     $(".search").keyup(delay(function () {
         var searchid = $(this).val();
         var dataString = 'search=' + searchid;
+        $("#album-section").css('display', 'none');
+        $("#searching-artists").css('display', 'block');
         if (searchid != '') {
             $.ajax({
                 type: "POST",
                 url: "/spotify?handler=SearchByArtistName",
                 data: dataString,
                 cache: false,
+                error: function (e) {
+                    $("#album-section").css('display', 'block');
+                    $("#searching-artists").css('display', 'none');
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
                 success: function (html) {
+                    $("#album-section").css('display', 'block');
+                    $("#searching-artists").css('display', 'none');
                     $("#result").html(html).show();
                 }
             });
@@ -36,6 +48,10 @@
             $('#album').attr("disabled", "disabled");
             $("#track").attr("disabled", "disabled");
 
+            $("#album-section").css('display', 'none');
+            $("#searching-artists").css('display', 'block');
+
+
             $.post("/spotify?handler=FillAlbums", {
                 'artist': $artist_id
             },
@@ -55,7 +71,13 @@
                     $('#album').trigger("change");
 
 
-                }, "json");
+                }, "json").done(function () {
+                    $("#album-section").css('display', 'block');
+                    $("#searching-artists").css('display', 'none');
+                }).fail(function () {
+                    $("#album-section").css('display', 'block');
+                    $("#searching-artists").css('display', 'none');
+                });
 
 
         }
@@ -82,6 +104,7 @@
     });
 
     $(".trackq").keyup(delay(function () {
+        $("#searching-songs").css('display', 'block');
         var searchid = $(this).val();
         var dataString = 'search=' + searchid;
         if (searchid != '') {
@@ -90,7 +113,15 @@
                 url: "/spotify?handler=SearchByTrackTitle",
                 data: dataString,
                 cache: false,
+                error: function (e) {
+                    $("#searching-songs").css('display', 'none');
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
                 success: function (html) {
+                    $("#searching-songs").css('display', 'none');
                     $("#resultq").html(html).show();
                 }
             });
@@ -100,7 +131,6 @@
     jQuery("#resultq").on("click", function (e) {
         var $clicked = $(e.target);
         var $artist_name = $clicked.find('.artist_name').html();
-        var $artist_id = $clicked.find('.artist_id').html();
         var $artist_url = $clicked.find('.artist_url').html();
 
         var $album_name = $clicked.find('.album_name').html();
@@ -162,6 +192,9 @@
             $("#PoemMusicTrackViewModel_AlbumName").val($("#album option:selected").html());
             $("#PoemMusicTrackViewModel_AlbumUrl").val($album_url);
 
+            $("#song-section").css('display', 'none');
+            $("#searching-albums").css('display', 'block');
+
             $.post("/spotify?handler=FillTracks", {
                 'album': $("#album option:selected").val()
             },
@@ -174,10 +207,13 @@
                     }
                     $("#track").removeAttr("disabled");
                     $('#track').trigger("change");
-
-
-
-                }, "json");
+                }, "json").done(function () {
+                    $("#song-section").css('display', 'block');
+                    $("#searching-albums").css('display', 'none');
+                }).fail(function () {
+                    $("#song-section").css('display', 'block');
+                    $("#searching-albums").css('display', 'none');
+                });;
         }
     });
 
@@ -205,5 +241,5 @@
         }
     });
 
- 
+
 });

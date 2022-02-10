@@ -193,7 +193,7 @@ namespace GanjooRazor.Pages
                     await _RefreshSpotifyToken();
                     return await OnPostSearchByArtistNameAsync(search, true);
                 }
-                return BadRequest(response.ToString());
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
             }
 
            
