@@ -148,7 +148,7 @@
                     </div>
 
                     <div class="century">
-                        نکات مهم دربارهٔ @Model.Poet.Nickname
+                        نکات جالب توجه دربارهٔ @Model.Poet.Nickname که در انتخاب تصویر او اهمیت دارند
                     </div>
 
                     <div id="lines">
@@ -196,6 +196,28 @@
                                     برای پیشنهاد نکات دیگری راجعه به @Model.Poet.Nickname که ممکن است روی تصویر خیالی یا حقیقی او تأثیرگذار باشد در گنجور <a href="/signup" target="_blank">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
                                 </p>
                             </div>
+                        }
+                    </div>
+
+                    <div class="century">
+                        تصاویر پیشنهاد شده برای @Model.Poet.Nickname
+                    </div>
+
+                    <div id="lines">
+                        @foreach (var photo in Model.Photos)
+                        {
+                            <div class="clear-both">
+                                @photo.Title
+                            </div>
+
+                            <div class="clear-both">
+                                <img src="@Html.Raw(photo.ImageUrl)" alt="@photo.Title" />
+                            </div>
+
+                             <div class="clear-both">
+                                @photo.Description
+                            </div>
+
                         }
                     </div>
                 }

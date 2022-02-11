@@ -100,9 +100,9 @@ namespace RMuseum.Controllers
                 {
                     return BadRequest("description is null");
                 }
-                if (!Request.Form.TryGetValue("description", out Microsoft.Extensions.Primitives.StringValues srcUrl))
+                if (!Request.Form.TryGetValue("srcUrl", out Microsoft.Extensions.Primitives.StringValues srcUrl))
                 {
-                    return BadRequest("description is srcUrl");
+                    return BadRequest("srcUrl is null");
                 }
                 if (Request.Form.Files.Count != 1)
                 {
