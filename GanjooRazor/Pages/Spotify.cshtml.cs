@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
@@ -25,16 +26,22 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly HttpClient _httpClient;
 
+        /// <summary>
+        /// configuration
+        /// </summary>
+        private readonly IConfiguration Configuration;
 
 
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
+        /// <param name="configuration"></param>
 
-        public SpotifyModel(HttpClient httpClient)
+        public SpotifyModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            Configuration = configuration;
 
         }
 
@@ -155,48 +162,61 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnPostSearchByArtistNameAsync(string search, bool secondtime = false)
         {
-            string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
-            var request = new HttpRequestMessage(HttpMethod.Get,
-                $"https://api.spotify.com/v1/search?q={search}&type=artist");
-            request.Headers.Add("Authorization", spotifyToken);
-            var response = await _httpClient.SendAsync(request);
             List<NameIdUrlImage> artists = new List<NameIdUrlImage>();
-            if (response.IsSuccessStatusCode)
+            if (bool.Parse(Configuration["MockSpotify"]))
             {
-                string json = await response.Content.ReadAsStringAsync();
-                var parsed = JObject.Parse(json);
-
-                foreach (JToken artist in parsed.SelectTokens("artists.items[*]"))
-                {
-                    string imageUrl = "";
-                    foreach (JToken image in artist.SelectTokens("images[*].url"))
-                    {
-                        imageUrl = image.Value<string>();
-                        break;
-                    }
-                    artists.Add(
-                        new NameIdUrlImage()
-                        {
-                            Name = artist.SelectToken("name").Value<string>(),
-                            Id = artist.SelectToken("id").Value<string>(),
-                            Url = artist.SelectToken("external_urls.spotify").Value<string>(),
-                            Image = imageUrl
-                        }
-                        );
-                }
-
+                artists.Add(
+                           new NameIdUrlImage()
+                           {
+                               Name = "محمدرضا شجریان",
+                               Id = "1",
+                               Url = "https://beeptunes.com/artist/3403349",
+                               Image = "https://api.ganjoor.net/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg"
+                           }
+                           );
             }
             else
             {
-                if (!secondtime)
+                string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"https://api.spotify.com/v1/search?q={search}&type=artist");
+                request.Headers.Add("Authorization", spotifyToken);
+                var response = await _httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode)
                 {
-                    await _RefreshSpotifyToken();
-                    return await OnPostSearchByArtistNameAsync(search, true);
-                }
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-            }
+                    string json = await response.Content.ReadAsStringAsync();
+                    var parsed = JObject.Parse(json);
 
-           
+                    foreach (JToken artist in parsed.SelectTokens("artists.items[*]"))
+                    {
+                        string imageUrl = "";
+                        foreach (JToken image in artist.SelectTokens("images[*].url"))
+                        {
+                            imageUrl = image.Value<string>();
+                            break;
+                        }
+                        artists.Add(
+                            new NameIdUrlImage()
+                            {
+                                Name = artist.SelectToken("name").Value<string>(),
+                                Id = artist.SelectToken("id").Value<string>(),
+                                Url = artist.SelectToken("external_urls.spotify").Value<string>(),
+                                Image = imageUrl
+                            }
+                            );
+                    }
+
+                }
+                else
+                {
+                    if (!secondtime)
+                    {
+                        await _RefreshSpotifyToken();
+                        return await OnPostSearchByArtistNameAsync(search, true);
+                    }
+                    return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                }
+            }
 
             return new PartialViewResult()
             {
@@ -243,65 +263,80 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnPostFillAlbumsAsync(string artist, bool secondtime = false)
         {
-            string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
             List<NameIdUrlImage> albums = new List<NameIdUrlImage>();
-            int offest = 0;
-            int limit = 50;
-            bool newItems;
-            do
+            if (bool.Parse(Configuration["MockSpotify"]))
             {
-                var request = new HttpRequestMessage(HttpMethod.Get,
-                $"https://api.spotify.com/v1/artists/{artist}/albums?limit={limit}&offset={offest}");
-                request.Headers.Add("Authorization", spotifyToken);
-
-                var response = await _httpClient.SendAsync(request);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string json = await response.Content.ReadAsStringAsync();
-                    var parsed = JObject.Parse(json);
-                    newItems = false;
-                    foreach (JToken album in parsed.SelectTokens("items[*]"))
-                    {
-                        newItems = true;
-                        string imageUrl = "";
-                        foreach (JToken image in album.SelectTokens("images[*].url"))
-                        {
-                            imageUrl = image.Value<string>();
-                            break;
-                        }
-                        string album_type = album.SelectToken("album_type").Value<string>();
-                        if (album_type == "album" || album_type == "single")
-                        {
-                            albums.Add(
-                            new NameIdUrlImage()
-                            {
-                                Name = album.SelectToken("name").Value<string>(),
-                                Id = album.SelectToken("id").Value<string>(),
-                                Url = album.SelectToken("external_urls.spotify").Value<string>(),
-                                Image = imageUrl
-                            }
-                            );
-                        }
-                    }
-
-                }
-                else
-                {
-                    if (!secondtime && offest == 0)
-                    {
-                        await _RefreshSpotifyToken();
-                        return await OnPostFillAlbumsAsync(artist, true);
-                    }
-                    return BadRequest(response.ToString());
-                }
-                offest += limit;
+                albums.Add(
+                                 new NameIdUrlImage()
+                                 {
+                                     Name = "رباعیات خیام",
+                                     Id = "1",
+                                     Url = "https://beeptunes.com/track/3434445",
+                                     Image = "https://api.ganjoor.net/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg"
+                                 }
+                                 );
             }
-            while (newItems);
+            else
+            {
+                string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
+                int offest = 0;
+                int limit = 50;
+                bool newItems;
+                do
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"https://api.spotify.com/v1/artists/{artist}/albums?limit={limit}&offset={offest}");
+                    request.Headers.Add("Authorization", spotifyToken);
 
-            albums.Sort((a, b) => a.Name.CompareTo(b.Name));
+                    var response = await _httpClient.SendAsync(request);
 
-            
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string json = await response.Content.ReadAsStringAsync();
+                        var parsed = JObject.Parse(json);
+                        newItems = false;
+                        foreach (JToken album in parsed.SelectTokens("items[*]"))
+                        {
+                            newItems = true;
+                            string imageUrl = "";
+                            foreach (JToken image in album.SelectTokens("images[*].url"))
+                            {
+                                imageUrl = image.Value<string>();
+                                break;
+                            }
+                            string album_type = album.SelectToken("album_type").Value<string>();
+                            if (album_type == "album" || album_type == "single")
+                            {
+                                albums.Add(
+                                new NameIdUrlImage()
+                                {
+                                    Name = album.SelectToken("name").Value<string>(),
+                                    Id = album.SelectToken("id").Value<string>(),
+                                    Url = album.SelectToken("external_urls.spotify").Value<string>(),
+                                    Image = imageUrl
+                                }
+                                );
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        if (!secondtime && offest == 0)
+                        {
+                            await _RefreshSpotifyToken();
+                            return await OnPostFillAlbumsAsync(artist, true);
+                        }
+                        return BadRequest(response.ToString());
+                    }
+                    offest += limit;
+                }
+                while (newItems);
+
+                albums.Sort((a, b) => a.Name.CompareTo(b.Name));
+            }
+
+
             return new OkObjectResult(albums.ToArray());
         }
 
@@ -312,49 +347,67 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnPostFillTracksAsync(string album, bool secondtime = false)
         {
-            string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
-
-            var request = new HttpRequestMessage(HttpMethod.Get,
-            $"https://api.spotify.com/v1/albums/{album}/tracks?limit=50");
-            request.Headers.Add("Authorization", spotifyToken);
             List<NameIdUrlImage> tracks = new List<NameIdUrlImage>();
 
-            var response = await _httpClient.SendAsync(request);
-
-            if (response.IsSuccessStatusCode)
+            if (bool.Parse(Configuration["MockSpotify"]))
             {
-                string json = await response.Content.ReadAsStringAsync();
-                var parsed = JObject.Parse(json);
-
-                foreach (JToken track in parsed.SelectTokens("items[*]"))
-                {
-                    string imageUrl = "";
-                    foreach (JToken image in track.SelectTokens("images[*].url"))
-                    {
-                        imageUrl = image.Value<string>();
-                        break;
-                    }
-                    tracks.Add(
-                         new NameIdUrlImage()
-                         {
-                             Name = track.SelectToken("name").Value<string>(),
-                             Id = track.SelectToken("id").Value<string>(),
-                             Url = track.SelectToken("external_urls.spotify").Value<string>(),
-                             Image = imageUrl
-                         }
-                         );
-                }
+                tracks.Add(
+                              new NameIdUrlImage()
+                              {
+                                  Name = "من بی می ناب زیستن نتوانم",
+                                  Id = "1",
+                                  Url = "https://beeptunes.com/track/3434445",
+                                  Image = "https://api.ganjoor.net/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg"
+                              }
+                              );
             }
             else
             {
-                if (!secondtime)
+                string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
+
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                $"https://api.spotify.com/v1/albums/{album}/tracks?limit=50");
+                request.Headers.Add("Authorization", spotifyToken);
+
+                var response = await _httpClient.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    await _RefreshSpotifyToken();
-                    return await OnPostFillTracksAsync(album, true);
+                    string json = await response.Content.ReadAsStringAsync();
+                    var parsed = JObject.Parse(json);
+
+                    foreach (JToken track in parsed.SelectTokens("items[*]"))
+                    {
+                        string imageUrl = "";
+                        foreach (JToken image in track.SelectTokens("images[*].url"))
+                        {
+                            imageUrl = image.Value<string>();
+                            break;
+                        }
+                        tracks.Add(
+                             new NameIdUrlImage()
+                             {
+                                 Name = track.SelectToken("name").Value<string>(),
+                                 Id = track.SelectToken("id").Value<string>(),
+                                 Url = track.SelectToken("external_urls.spotify").Value<string>(),
+                                 Image = imageUrl
+                             }
+                             );
+                    }
                 }
-                return BadRequest(response.ToString());
+                else
+                {
+                    if (!secondtime)
+                    {
+                        await _RefreshSpotifyToken();
+                        return await OnPostFillTracksAsync(album, true);
+                    }
+                    return BadRequest(response.ToString());
+                }
             }
-           
+
+
+
             return new OkObjectResult(tracks.ToArray());
         }
 
@@ -365,88 +418,109 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnPostSearchByTrackTitleAsync(string search, bool secondtime = false)
         {
-            string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
-
-            var request = new HttpRequestMessage(HttpMethod.Get,
-            $"https://api.spotify.com/v1/search?q={search}&type=track");
-            request.Headers.Add("Authorization", spotifyToken);
-
-            var response = await _httpClient.SendAsync(request);
             List<TrackQueryResult> tracks = new List<TrackQueryResult>();
 
-            if (response.IsSuccessStatusCode)
+            if (bool.Parse(Configuration["MockSpotify"]))
             {
-                string json = await response.Content.ReadAsStringAsync();
-                var parsed = JObject.Parse(json);
-
-                foreach (JToken track in parsed.SelectTokens("tracks.items[*]"))
-                {
-                    string imageUrl = "";
-
-
-                    NameIdUrlImage artistInfo = new NameIdUrlImage()
-                    {
-                        Id = "0",
-                        Name = "",
-                        Url = "",
-                        Image = ""
-                    };
-                    foreach (JToken artist in track.SelectTokens("artists[*]"))
-                    {
-                        artistInfo.Name = artist.SelectToken("name").Value<string>();
-                        artistInfo.Id = artist.SelectToken("id").Value<string>();
-                        artistInfo.Url = artist.SelectToken("external_urls.spotify").Value<string>();
-                        break;
-                    }
-                    NameIdUrlImage albumInfo = new NameIdUrlImage()
-                    {
-                        Id = "0",
-                        Name = "",
-                        Url = "",
-                        Image = ""
-                    };
-                    JToken album = track.SelectToken("album");
-                    if (album != null)
-                    {
-                        albumInfo.Name = album.SelectToken("name").Value<string>();
-                        albumInfo.Id = album.SelectToken("id").Value<string>();
-                        albumInfo.Url = album.SelectToken("external_urls.spotify").Value<string>();
-
-                        foreach (JToken image in album.SelectTokens("images[*].url"))
-                        {
-                            imageUrl = image.Value<string>();
-                            break;
-                        }
-                    }
-                    tracks.Add(
-                        new TrackQueryResult()
-                        {
-                            Name = track.SelectToken("name").Value<string>(),
-                            Id = track.SelectToken("id").Value<string>(),
-                            Url = track.SelectToken("external_urls.spotify").Value<string>(),
-                            Image = imageUrl,
-                            ArtistName = artistInfo.Name,
-                            ArtistId = artistInfo.Id,
-                            ArtistUrl = artistInfo.Url,
-                            AlbumName = albumInfo.Name,
-                            AlbumId = albumInfo.Id,
-                            AlbunUrl = albumInfo.Url
-                        }
-                        );
-                }
-
+                tracks.Add(
+                         new TrackQueryResult()
+                         {
+                             Name = "من بی می ناب زیستن نتوانم",
+                             Id = "1",
+                             Url = "https://beeptunes.com/track/3434445",
+                             Image = "https://api.ganjoor.net/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg",
+                             ArtistName = "محمدرضا شجریان",
+                             ArtistId = "1",
+                             ArtistUrl = "https://beeptunes.com/artist/3403349",
+                             AlbumName = "رباعیات خیام",
+                             AlbumId = "1",
+                             AlbunUrl = "https://beeptunes.com/album/3412806"
+                         }
+                         );
             }
             else
             {
-                if (!secondtime)
-                {
-                    await _RefreshSpotifyToken();
-                    return await OnPostSearchByTrackTitleAsync(search, true);
-                }
-                return BadRequest(response.ToString());
-            }
+                string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
 
-            
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                $"https://api.spotify.com/v1/search?q={search}&type=track");
+                request.Headers.Add("Authorization", spotifyToken);
+
+                var response = await _httpClient.SendAsync(request);
+
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = await response.Content.ReadAsStringAsync();
+                    var parsed = JObject.Parse(json);
+
+                    foreach (JToken track in parsed.SelectTokens("tracks.items[*]"))
+                    {
+                        string imageUrl = "";
+
+
+                        NameIdUrlImage artistInfo = new NameIdUrlImage()
+                        {
+                            Id = "0",
+                            Name = "",
+                            Url = "",
+                            Image = ""
+                        };
+                        foreach (JToken artist in track.SelectTokens("artists[*]"))
+                        {
+                            artistInfo.Name = artist.SelectToken("name").Value<string>();
+                            artistInfo.Id = artist.SelectToken("id").Value<string>();
+                            artistInfo.Url = artist.SelectToken("external_urls.spotify").Value<string>();
+                            break;
+                        }
+                        NameIdUrlImage albumInfo = new NameIdUrlImage()
+                        {
+                            Id = "0",
+                            Name = "",
+                            Url = "",
+                            Image = ""
+                        };
+                        JToken album = track.SelectToken("album");
+                        if (album != null)
+                        {
+                            albumInfo.Name = album.SelectToken("name").Value<string>();
+                            albumInfo.Id = album.SelectToken("id").Value<string>();
+                            albumInfo.Url = album.SelectToken("external_urls.spotify").Value<string>();
+
+                            foreach (JToken image in album.SelectTokens("images[*].url"))
+                            {
+                                imageUrl = image.Value<string>();
+                                break;
+                            }
+                        }
+                        tracks.Add(
+                            new TrackQueryResult()
+                            {
+                                Name = track.SelectToken("name").Value<string>(),
+                                Id = track.SelectToken("id").Value<string>(),
+                                Url = track.SelectToken("external_urls.spotify").Value<string>(),
+                                Image = imageUrl,
+                                ArtistName = artistInfo.Name,
+                                ArtistId = artistInfo.Id,
+                                ArtistUrl = artistInfo.Url,
+                                AlbumName = albumInfo.Name,
+                                AlbumId = albumInfo.Id,
+                                AlbunUrl = albumInfo.Url
+                            }
+                            );
+                    }
+
+                }
+                else
+                {
+                    if (!secondtime)
+                    {
+                        await _RefreshSpotifyToken();
+                        return await OnPostSearchByTrackTitleAsync(search, true);
+                    }
+                    return BadRequest(response.ToString());
+                }
+            }
 
             return new PartialViewResult()
             {
