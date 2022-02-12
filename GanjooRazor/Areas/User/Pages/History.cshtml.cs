@@ -55,6 +55,20 @@ namespace GanjooRazor.Areas.User.Pages
                     }
                     TrackingIsEnabled = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()) == true.ToString();
 
+                    bool keepHistory = Request.Cookies["KeepHistory"] == "True";
+                    if(keepHistory != TrackingIsEnabled)
+                    {
+                        if (Request.Cookies["KeepHistory"] != null)
+                        {
+                            Response.Cookies.Delete("KeepHistory");
+                        }
+                        var cookieOption = new CookieOptions()
+                        {
+                            Expires = DateTime.Now.AddDays(365),
+                        };
+                        Response.Cookies.Append("KeepHistory", $"{TrackingIsEnabled}", cookieOption);
+                    }
+
                     int pageNumber = 1;
                     if (!string.IsNullOrEmpty(Request.Query["page"]))
                     {
