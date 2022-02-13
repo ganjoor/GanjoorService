@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -148,6 +149,45 @@ namespace GanjooRazor.Pages
                     }
                 }
             };
+        }
+
+        public async Task<IActionResult> OnPostAsync(PoetPhotoSuggestionUploadModel Upload)
+        {
+            LastError = "";
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    MultipartFormDataContent form = new MultipartFormDataContent();
+
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        form.Add(new StringContent(Upload.PoetId.ToString()), "poetId");
+                        form.Add(new StringContent(Upload.Title), "title");
+                        form.Add(new StringContent(Upload.Description), "description");
+                        form.Add(new StringContent(""), "srcUrl");
+
+
+                        await Upload.Image.CopyToAsync(stream);
+                        var fileContent = stream.ToArray();
+                        form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Upload.Image.FileName, Upload.Image.FileName);
+
+                        HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/poetphotos", form);
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        }
+                    }
+                }
+                else
+                {
+                    LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                }
+
+            }
+
+
+            return Page();
         }
 
         public PhotosModel(HttpClient httpClient) : base(httpClient)

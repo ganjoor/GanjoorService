@@ -80,7 +80,13 @@
 
 </head>
 <body>
-    <div id="hdr">
+    @if(!string.IsNullOrEmpty(Model.LastError))
+    {
+        @Model.LastError
+    }
+    else
+    {
+            <div id="hdr">
         <h1>
             @if (Model.Poet == null)
             {
@@ -297,6 +303,8 @@
 
         <partial name="_FooterPartial" model="null" />
     </div>
+    }
+
 
 </body>
 </html>

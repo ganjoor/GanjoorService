@@ -72,7 +72,6 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<GanjoorPoetSuggestedPictureViewModel>(null, imageRes.ExceptionString);
             }
-            await _context.SaveChangesAsync();
             try
             {
                 var image = imageRes.Result;
@@ -83,7 +82,7 @@ namespace RMuseum.Services.Implementation
                 {
                     PoetId = poetId,
                     PicOrder = picOrder,
-                    PictureId = image.Id,
+                    Picture = image,
                     SuggestedById = userId,
                     Published = false,
                     ChosenOne = false
