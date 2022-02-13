@@ -1,4 +1,5 @@
-﻿using GanjooRazor.Utils;
+﻿using GanjooRazor.Models;
+using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -25,6 +26,9 @@ namespace GanjooRazor.Pages
         public List<GanjoorPoetSuggestedSpecLineViewModel> SpecLines { get; set; }
 
         public List<GanjoorPoetSuggestedPictureViewModel> Photos { get; set; }
+
+        [BindProperty]
+        public PoetPhotoSuggestionUploadModel Upload { get; set; }
 
         private async Task<List<GanjoorPoetViewModel>> _PreparePoets()
         {

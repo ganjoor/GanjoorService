@@ -193,7 +193,7 @@
                         {
                             <div class="notice" id="commentform">
                                 <p>
-                                    برای پیشنهاد نکات دیگری راجعه به @Model.Poet.Nickname که ممکن است روی تصویر خیالی یا حقیقی او تأثیرگذار باشد در گنجور <a href="/signup" target="_blank">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
+                                    برای پیشنهاد نکات دیگری راجع به @Model.Poet.Nickname که ممکن است روی تصویر خیالی یا حقیقی او تأثیرگذار باشد در گنجور <a href="/signup" target="_blank">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
                                 </p>
                             </div>
                         }
@@ -214,10 +214,77 @@
                                 <img src="@Html.Raw(photo.ImageUrl)" alt="@photo.Title" />
                             </div>
 
-                             <div class="clear-both">
+                            <div class="clear-both">
                                 @photo.Description
                             </div>
 
+                        }
+                    </div>
+
+                    <div class="clear-both">
+                        @if (Model.LoggedIn)
+                        {
+                            <form method="post" enctype="multipart/form-data">
+                                <fieldset>
+                                    <legend>💬 شما تصویر تازه‌ای پیشنهاد کنید ...</legend>
+                                    <table class="comment-table">
+                                        <tr>
+                                            <td>
+                                                تصویر:
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="required">
+                                                    <input type="file" asp-for="Upload.Image" />
+                                                </div>
+                                                <input asp-for="Upload.PoetId" value="@Model.Poet.Id" type="hidden" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                عنوان:
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input asp-for="Upload.Title" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                توضیح:
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <textarea asp-for="Upload.Description" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
+                                            </td>
+                                        </tr>
+                                       
+                                        <tr>
+                                            <td>
+                                                <input type="submit" value="بارگذاری" />
+                                            </td>
+                                        </tr>
+                                    </table>
+
+
+                                    <div class="notice">
+                                        <p>
+                                            تصاویر پیشنهادی پس از بررسی منتشر می‌شوند.
+                                        </p>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="notice" id="commentform">
+                                <p>
+                                    برای پیشنهاد تصویر دیگری برای @Model.Poet.Nickname در گنجور <a href="/signup" target="_blank">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
+                                </p>
+                            </div>
                         }
                     </div>
                 }
