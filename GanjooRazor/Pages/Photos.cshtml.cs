@@ -31,6 +31,8 @@ namespace GanjooRazor.Pages
         [BindProperty]
         public PoetPhotoSuggestionUploadModel Upload { get; set; }
 
+        public GanjoorPoetSuggestedPictureViewModel UploadedPhoto { get; set; }
+
         private async Task<List<GanjoorPoetViewModel>> _PreparePoets()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
@@ -79,6 +81,11 @@ namespace GanjooRazor.Pages
                     return Page();
                 }
                 Photos = JArray.Parse(await responsePhotos.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetSuggestedPictureViewModel>>();
+
+                foreach (var photo in Photos)
+                {
+                    photo.ImageUrl = $"{APIRoot.InternetUrl}/{photo.ImageUrl}";
+                }
             }
             else
             {
@@ -153,7 +160,6 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnPostAsync(PoetPhotoSuggestionUploadModel Upload)
         {
-            LastError = "";
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
@@ -177,6 +183,12 @@ namespace GanjooRazor.Pages
                         {
                             LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                         }
+                        else
+                        {
+                            UploadedPhoto = JsonConvert.DeserializeObject<GanjoorPoetSuggestedPictureViewModel>(await response.Content.ReadAsStringAsync());
+
+                            UploadedPhoto.ImageUrl =  $"{APIRoot.InternetUrl}/{UploadedPhoto.ImageUrl}";
+                        }
                     }
                 }
                 else
@@ -187,7 +199,7 @@ namespace GanjooRazor.Pages
             }
 
 
-            return Page();
+            return await OnGetAsync();
         }
 
         public PhotosModel(HttpClient httpClient) : base(httpClient)
