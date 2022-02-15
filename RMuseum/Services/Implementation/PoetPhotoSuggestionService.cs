@@ -209,6 +209,7 @@ namespace RMuseum.Services.Implementation
                 dbModel.PicOrder = model.PicOrder;
                 dbModel.Picture.Title = model.Title;
                 dbModel.Picture.Description = model.Description;
+                bool newlyChosenOne = model.ChosenOne && !dbModel.ChosenOne;
                 dbModel.ChosenOne = model.ChosenOne;
                 dbModel.Published = model.Published;
                 _context.Update(dbModel);
@@ -221,6 +222,16 @@ namespace RMuseum.Services.Implementation
                     await _notificationService.PushNotification((Guid)dbModel.SuggestedById,
                                       $"انتشار تصویر پیشنهادی شما برای {poet.Nickname}",
                                       $"با سپاس! پیشنهاد شما برای تصویر {poet.Nickname} در فهرست تصاویر قابل انتخاب برای شاعر قابل مشاهده است."
+                                      );
+                }
+
+                if(newlyChosenOne && dbModel.SuggestedById != null)
+                {
+                    var userRes = await _appUserService.GetUserInformation((Guid)dbModel.SuggestedById);
+                    var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == dbModel.PoetId).SingleAsync();
+                    await _notificationService.PushNotification((Guid)dbModel.SuggestedById,
+                                      $"انتخاب تصویر پیشنهادی شما برای {poet.Nickname} به عنوان تصویر اصلی در گنجور",
+                                      $"با سپاس! پیشنهاد شما برای تصویر {poet.Nickname} هم‌اکنون تصویر اصلی او در گنجور است."
                                       );
                 }
 
