@@ -206,14 +206,40 @@ namespace RMuseum.Services.Implementation
 
                 var dbModel = await _context.GanjoorPoetSuggestedPictures.Include(p => p.Picture).Where(s => s.Id == model.Id).SingleAsync();
                 bool publishIsChanged = model.Published != dbModel.Published;
-                dbModel.PicOrder = model.PicOrder;
+                bool newlyChosenOne = model.ChosenOne && !dbModel.ChosenOne;
+                if (newlyChosenOne)
+                    dbModel.PicOrder = 1;
+                else
+                    dbModel.PicOrder = model.PicOrder;
                 dbModel.Picture.Title = model.Title;
                 dbModel.Picture.Description = model.Description;
-                bool newlyChosenOne = model.ChosenOne && !dbModel.ChosenOne;
                 dbModel.ChosenOne = model.ChosenOne;
                 dbModel.Published = model.Published;
                 _context.Update(dbModel);
+
+                if (newlyChosenOne)
+                {
+                    var oldChosenOnes = await _context.GanjoorPoetSuggestedPictures.Where(p => p.Id != model.Id && p.PoetId == model.PoetId && p.ChosenOne == true).ToListAsync();
+                    foreach (var photo in oldChosenOnes)
+                    {
+                        photo.ChosenOne = false;
+                    }
+                }
+
                 await _context.SaveChangesAsync();
+
+                if(newlyChosenOne)
+                {
+                    var others = await _context.GanjoorPoetSuggestedPictures.Where(p => p.Id != model.Id && p.PoetId == model.PoetId).ToListAsync();
+                    foreach (var photo in others)
+                    {
+                        photo.PicOrder = photo.PicOrder + 1;
+                    }
+                    if(others.Count > 0)
+                        await _context.SaveChangesAsync();
+                }
+
+               
 
                 if (publishIsChanged && model.Published && dbModel.SuggestedById != null)
                 {
