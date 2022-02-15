@@ -21,6 +21,7 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Net.Http;
 using System.Web;
 using System.Text.RegularExpressions;
+using RMuseum.Models.Auth.Memory;
 
 namespace RMuseum.Services.Implementation
 {
@@ -1188,6 +1189,20 @@ namespace RMuseum.Services.Implementation
             };
             _context.GanjoorReportedComments.Add(r);
             await _context.SaveChangesAsync();
+            var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, RMuseumSecurableItem.ModerateOperationShortName);
+            if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+            {
+                foreach (var moderator in moderators.Result)
+                {
+                    await _notificationService.PushNotification
+                                    (
+                                        (Guid)moderator.Id,
+                                        "گزارش حاشیه",
+                                        $"گزارشی برای یک حاشیه ثبت شده است. لطفاً بخش حاشیه‌های گزارش شده را بررسی فرمایید.{ Environment.NewLine}" +
+                                        $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی حاشیه‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                    );
+                }
+            }
             return new RServiceResult<int>(r.GanjoorCommentId);
         }
 
