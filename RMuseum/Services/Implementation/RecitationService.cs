@@ -1793,6 +1793,21 @@ namespace RMuseum.Services.Implementationa
                 _context.RecitationErrorReports.Add(dbModel);
                 await _context.SaveChangesAsync();
 
+                var moderators = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ModerateOperationShortName);
+                if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+                {
+                    foreach (var moderator in moderators.Result)
+                    {
+                        await _notificationService.PushNotification
+                                        (
+                                            (Guid)moderator.Id,
+                                            "گزارش خطا در خوانش خوانش",
+                                            $"گزارش خطایی برای یک خوانش ثبت شده است. لطفاً خوانش‌های گزارش شده را در پیشخان خوانشگران مشاهده کنید.{ Environment.NewLine}" +
+                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی خوانش‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                        );
+                    }
+                }
+
                 report.Id = dbModel.Id;
                 report.DateTime = dbModel.DateTime;
 
