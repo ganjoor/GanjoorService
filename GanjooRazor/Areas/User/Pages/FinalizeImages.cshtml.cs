@@ -36,8 +36,11 @@ namespace GanjooRazor.Areas.User.Pages
         [BindProperty]
         public ImageLinkFinalizeModel ImageLinkFinalizeModel { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             LastError = "";
             Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
             MainImage = null;
@@ -88,6 +91,7 @@ namespace GanjooRazor.Areas.User.Pages
                 }
 
             }
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

@@ -29,8 +29,11 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public int PoemId { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             PoemMusicTrackViewModel = new PoemMusicTrackViewModel()
             {
                 TrackType = RMuseum.Models.Ganjoor.PoemMusicTrackType.BeepTunesOrKhosousi,
@@ -46,6 +49,7 @@ namespace GanjooRazor.Areas.User.Pages
                 BrokenLink = false,
                 Description = ""
             };
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

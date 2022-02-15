@@ -57,8 +57,11 @@ namespace GanjooRazor.Areas.User.Pages
         /// <summary>
         /// get
         /// </summary>
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             LastError = "";
             TotalCount = 0;
             Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
@@ -113,6 +116,7 @@ namespace GanjooRazor.Areas.User.Pages
                 }
 
             }
+            return Page();
         }
 
 

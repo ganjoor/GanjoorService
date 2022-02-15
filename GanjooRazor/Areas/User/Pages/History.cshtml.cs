@@ -43,6 +43,8 @@ namespace GanjooRazor.Areas.User.Pages
         public bool TrackingIsEnabled { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
             LastError = "";
             using (HttpClient secureClient = new HttpClient())
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))

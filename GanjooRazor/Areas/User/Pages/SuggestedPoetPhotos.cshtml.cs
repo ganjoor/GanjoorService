@@ -39,8 +39,11 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public int TotalCount { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             LastError = "";
             TotalCount = 0;
             Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
@@ -59,7 +62,7 @@ namespace GanjooRazor.Areas.User.Pages
                         {
                             LastError = JsonConvert.DeserializeObject<string>(await suggestionResponse.Content.ReadAsStringAsync());
                         }
-                        return;
+                        return Page();
                     }
                     else
                     {
@@ -78,7 +81,7 @@ namespace GanjooRazor.Areas.User.Pages
                         if (!response.IsSuccessStatusCode)
                         {
                             LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                            return;
+                            return Page();
                         }
 
                         var poet = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
@@ -91,6 +94,7 @@ namespace GanjooRazor.Areas.User.Pages
                 }
 
             }
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

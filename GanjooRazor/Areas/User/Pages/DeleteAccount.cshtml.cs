@@ -39,6 +39,9 @@ namespace GanjooRazor.Areas.User.Pages
         }
         public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             FatalError = "";
             if (!string.IsNullOrEmpty(Request.Query["secret"]))
                 return await OnPostFinalizeDeleteAsync(Request.Query["secret"]);

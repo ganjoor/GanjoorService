@@ -33,14 +33,18 @@ namespace GanjooRazor.Areas.Panel.Pages
         /// </summary>
         public string PasswordChanged { get; set; }
 
+       
         /// <summary>
         /// get
         /// </summary>
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+            if(string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
             LastError = "";
             PasswordChanged = "";
             await _PreparePage();
+            return Page();
         }
 
         private async Task _PreparePage()

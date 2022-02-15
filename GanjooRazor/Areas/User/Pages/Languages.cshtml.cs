@@ -22,6 +22,9 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             LastMessage = "";
             await GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
             if (!ViewData.ContainsKey($"{RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseumSecurableItem.Translations}"))

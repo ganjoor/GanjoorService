@@ -102,6 +102,9 @@ namespace GanjooRazor.Areas.User.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             FatalError = "";
             using (HttpClient secureClient = new HttpClient())
             {
