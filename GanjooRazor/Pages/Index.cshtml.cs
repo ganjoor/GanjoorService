@@ -276,7 +276,16 @@ namespace GanjooRazor.Pages
         /// </summary>
         public bool IsPoemPage { get; set; }
 
-
+        /// <summary>
+        /// canonical url
+        /// </summary>
+        public string CanonicalUrl
+        {
+            get
+            {
+                return $"{Configuration["SiteUrl"]}{GanjoorPage.FullUrl}";
+            }
+        }
 
         /// <summary>
         /// can edit

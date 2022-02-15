@@ -12,10 +12,6 @@
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
-    @if (!string.IsNullOrEmpty(Model.PinterestUrl))
-    {
-        <meta name="robots" content="noindex, nofollow" />
-    }
     <link href="/css/p8.css?version=33" rel="stylesheet" type="text/css" />
     <link href="/css/fab.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
@@ -32,6 +28,7 @@
     }
     else
     {
+        <link  rel="canonical" href="@Model.CanonicalUrl" />
         if (Model.IsPoemPage)
         {
             <script>
@@ -116,8 +113,8 @@
                 @foreach (var recitation in Model.GanjoorPage.Poem.Recitations)
                 {
                     <text>
-                                    narrators.push('@Html.Raw(recitation.AudioArtist)');
-                                    audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
+                                        narrators.push('@Html.Raw(recitation.AudioArtist)');
+                                        audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
                     </text>
                 }
             </script>
