@@ -113,6 +113,11 @@ h1 a img {
     animation: logo-spin 1s cubic-bezier(.6,-0.28,.74,.05);
 }
 
+a {
+    text-decoration: none;
+    color: #c44
+}
+
 #fa {
     direction: rtl;
     font-family: Vazir;
@@ -121,10 +126,6 @@ h1 a img {
     background: transparent url(/image/bk.gif) top center repeat scroll;
 }
 
-    #fa a {
-        text-decoration: none;
-        color: #c44
-    }
 
 h2 {
     font-family: Vazir;

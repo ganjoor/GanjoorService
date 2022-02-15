@@ -282,7 +282,7 @@ namespace RMuseum.Services.Implementation
                 var dbModel = await _context.GanjoorPoetSuggestedPictures.Where(s => s.Id == id).SingleAsync();
 
 
-                if (!dbModel.Published && dbModel.SuggestedById != null && deleteUserId != dbModel.SuggestedById)
+                if (!dbModel.Published && dbModel.SuggestedById != null)
                 {
                     var userRes = await _appUserService.GetUserInformation((Guid)dbModel.SuggestedById);
                     var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == dbModel.PoetId).SingleAsync();
