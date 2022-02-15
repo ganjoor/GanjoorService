@@ -224,6 +224,7 @@ namespace RMuseum.Services.Implementation
                     {
                         photo.ChosenOne = false;
                     }
+                    _context.UpdateRange(oldChosenOnes);
                 }
 
                 await _context.SaveChangesAsync();
@@ -235,8 +236,11 @@ namespace RMuseum.Services.Implementation
                     {
                         photo.PicOrder = photo.PicOrder + 1;
                     }
-                    if(others.Count > 0)
+                    if (others.Count > 0)
+                    {
+                        _context.UpdateRange(others);
                         await _context.SaveChangesAsync();
+                    }
                 }
 
                
