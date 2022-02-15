@@ -47,8 +47,8 @@ else
                 <p>
                     @upvote.AudioTitle به خوانش @upvote.AudioArtist (<a href="@Html.Raw(upvote.PoemFullUrl)" target="_blank">@upvote.PoemFullTitle</a>)
                 </p>
-                <a href="@($"http://ava.ganjoor.net/#/{upvote.Id}")" target="_blank">
-                    پیوند به خوانش
+                <a href="@Model.GetRecitationUrl(upvote)" target="_blank">
+                    خوانش در گنجور
                 </a>
             </blockquote>
 

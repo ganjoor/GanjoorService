@@ -97,11 +97,10 @@ namespace GanjooRazor.Pages
             return new _AudioPlayerPartialModel()
             {
                 LoggedIn = LoggedIn,
-                Recitations = recitations
+                Recitations = recitations,
+                ShowAllRecitaions = ShowAllRecitaions
             };
         }
-
-        
 
         public async Task<ActionResult> OnPostReply(string replyCommentText, int refPoemId, int refCommentId)
         {
@@ -303,6 +302,11 @@ namespace GanjooRazor.Pages
         public string PinterestUrl { get; set; }
 
         /// <summary>
+        /// show all recitations
+        /// </summary>
+        public bool ShowAllRecitaions { get; set; }
+
+        /// <summary>
         /// prepare poem except
         /// </summary>
         /// <param name="poem"></param>
@@ -487,6 +491,7 @@ namespace GanjooRazor.Pages
             IsPoemPage = false;
             IsHomePage = Request.Path == "/";
             PinterestUrl = Request.Query["pinterest_url"];
+            ShowAllRecitaions = Request.Query["allaudio"] == "1";
             ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
             GoogleBreadCrumbList breadCrumbList = new GoogleBreadCrumbList();
             Banner = null;

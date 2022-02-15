@@ -3,6 +3,7 @@ using GanjooRazor.Utils;
 using GSpotifyProxy.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.GanjoorAudio.ViewModels;
@@ -18,6 +19,20 @@ namespace GanjooRazor.Areas.User.Pages
     public class UpVotedRecitationsModel : PageModel
     {
         /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="configuration"></param>
+        public UpVotedRecitationsModel(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        /// <summary>
+        /// configration file reader (appsettings.json)
+        /// </summary>
+        private readonly IConfiguration Configuration;
+
+        /// <summary>
         /// Last Error
         /// </summary>
         public string LastError { get; set; }
@@ -28,6 +43,11 @@ namespace GanjooRazor.Areas.User.Pages
         public List<NameIdUrlImage> PaginationLinks { get; set; }
 
         public List<PublicRecitationViewModel> UpVotes { get; set; }
+
+        public string GetRecitationUrl(PublicRecitationViewModel upvote)
+        {
+            return $"{Configuration["SiteUrl"]}{upvote.PoemFullUrl}?allaudio=1#{upvote.Id}";
+        }
 
         public async Task<IActionResult> OnGetAsync()
         {

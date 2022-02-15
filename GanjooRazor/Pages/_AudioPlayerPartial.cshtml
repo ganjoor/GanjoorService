@@ -8,7 +8,7 @@
     @for (var nRecitationIndex = 0; nRecitationIndex < Model.Recitations.Length; nRecitationIndex++)
     {
         var recitaion = Model.Recitations[nRecitationIndex];
-        <div class="@Model.CSSClass(nRecitationIndex)">
+        <div class="@Model.CSSClass(nRecitationIndex)" id="@recitaion.Id">
             <audio id="audio-@(nRecitationIndex + 1)" preload="none" controls>
                 <source src="@recitaion.Mp3Url" title="@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")" data-track-number="@(nRecitationIndex + 1)" />
                 مرورگر شما از پخش صدای HTML 5 پشتیبانی نمی‌کند.
@@ -70,7 +70,7 @@
             </script>
         </div>
 
-        @if (nRecitationIndex == 4 && Model.Recitations.Length > 5)
+        @if (!Model.ShowAllRecitaions && nRecitationIndex == 4 && Model.Recitations.Length > 5)
         {
             <a role="button" class="pagebutton" id="load-all-recitations" onclick="showAllRecitations()">همهٔ خوانش‌ها<i class="info-buttons">autorenew</i></a>
         }

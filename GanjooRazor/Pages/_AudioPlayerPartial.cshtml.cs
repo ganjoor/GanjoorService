@@ -7,6 +7,7 @@ namespace GanjooRazor.Pages
     {
         public bool LoggedIn { get; set; }
         public PublicRecitationViewModel[] Recitations { get; set; }
+        public bool ShowAllRecitaions { get; set; }
 
         public string getAudioDesc(PublicRecitationViewModel recitation, bool contributionLink = false)
         {
@@ -42,7 +43,7 @@ namespace GanjooRazor.Pages
 
         public string CSSClass(int recitationIndex)
         {
-            return recitationIndex < 5 ? "audio-player" : "hidden-recitation";
+            return ShowAllRecitaions || (recitationIndex < 5) ? "audio-player" : "hidden-recitation";
         }
     }
 }
