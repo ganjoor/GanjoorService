@@ -98,7 +98,7 @@
                 }
             </h1>
             <p>
-                از طریق این صفحه می‌توانید تصویر مد نظر یا طراحی شدهٔ خود را برای شاعران محبوبتان پیشنهاد دهید. در صورت تأیید و انتخاب پیشنهاد شما نام شما در همین صفحه به عنوان انتخابگر یا طراح تصویر ثبت می‌شود.
+                از طریق این صفحه می‌توانید تصویر مد نظر یا طراحی شدهٔ خود را برای شاعران محبوبتان پیشنهاد دهید.
             </p>
         </div>
         <div id="fa">
@@ -149,60 +149,62 @@
                         <div class="clear-both">
                             <a href="@Model.Poet.FullUrl">زندگینامه و آثار @Model.Poet.Nickname را اینجا ببینید.</a>
                         </div>
-                       
-                        
+
+
 
                         <div id="lines" class="comments-like-div">
                             <div class="century">
-                            نکات جالب توجه دربارهٔ @Model.Poet.Nickname که در انتخاب تصویر او اهمیت دارند
-                        </div>
+                                نکات جالب توجه دربارهٔ @Model.Poet.Nickname که در انتخاب تصویر او اهمیت دارند:
+                            </div>
 
                             @foreach (var line in Model.SpecLines)
                             {
                                 <partial name="_PoetSpecLinePartial" model=@(new _PoetSpecLinePartialModel(){Line = line}) />
                             }
+
+
+                            <div class="clear-both">
+                                @if (Model.LoggedIn)
+                                {
+                                    <form method="post" id="commentform" action="?handler=Suggest">
+                                        <fieldset>
+                                            <legend>💬 شما نکتهٔ تازه‌ای پیشنهاد کنید ...</legend>
+                                            <table class="comment-table">
+                                                <tr>
+                                                    <td>
+                                                        <div class="required">
+                                                            <textarea name="contents" id="contents" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
+                                                        </div>
+                                                        <input type="hidden" name="poetId" id="poetId" value="@Model.Poet.Id" />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <button name="postcomment" id="postcomment" class="submitCommentButton width-100per" onclick="return suggestNote('#postcomment');">پیشنهاد</button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+
+                                            <div class="notice">
+                                                <p>
+                                                    نکات پیشنهادی پس از بررسی منتشر می‌شوند. لطفاً توجه فرمایید که نکتهٔ مد نظر پیش‌تر اضافه نشده باشد و مستند باشد.
+                                                </p>
+                                            </div>
+                                        </fieldset>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <div class="notice" id="commentform">
+                                        <p>
+                                            برای پیشنهاد نکات دیگری راجع به @Model.Poet.Nickname که ممکن است روی تصویر خیالی یا حقیقی او تأثیرگذار باشد در گنجور <a href="/signup" target="_blank">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
+                                        </p>
+                                    </div>
+                                }
+                            </div>
                         </div>
 
-                        <div class="clear-both">
-                            @if (Model.LoggedIn)
-                            {
-                                <form method="post" id="commentform" action="?handler=Suggest">
-                                    <fieldset>
-                                        <legend>💬 شما نکتهٔ تازه‌ای پیشنهاد کنید ...</legend>
-                                        <table class="comment-table">
-                                            <tr>
-                                                <td>
-                                                    <div class="required">
-                                                        <textarea name="contents" id="contents" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
-                                                    </div>
-                                                    <input type="hidden" name="poetId" id="poetId" value="@Model.Poet.Id" />
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <button name="postcomment" id="postcomment" class="submitCommentButton width-100per" onclick="return suggestNote('#postcomment');">پیشنهاد</button>
-                                                </td>
-                                            </tr>
-                                        </table>
-
-
-                                        <div class="notice">
-                                            <p>
-                                                نکات پیشنهادی پس از بررسی منتشر می‌شوند. لطفاً توجه فرمایید که نکتهٔ مد نظر پیش‌تر اضافه نشده باشد و مستند باشد.
-                                            </p>
-                                        </div>
-                                    </fieldset>
-                                </form>
-                            }
-                            else
-                            {
-                                <div class="notice" id="commentform">
-                                    <p>
-                                        برای پیشنهاد نکات دیگری راجع به @Model.Poet.Nickname که ممکن است روی تصویر خیالی یا حقیقی او تأثیرگذار باشد در گنجور <a href="/signup" target="_blank">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
-                                    </p>
-                                </div>
-                            }
-                        </div>
 
                         <div class="century">
                             تصاویر پیشنهاد شده برای @Model.Poet.Nickname
@@ -211,105 +213,112 @@
                         <div id="photos">
                             @foreach (var photo in Model.Photos)
                             {
-                                <div class="century">
-                                    @photo.Title
+                                <div class="ganjoor-comment">
+                                    <div class="century">
+                                        @photo.Title
+                                    </div>
+
+                                    <div class="clear-both">
+                                        <img src="@Html.Raw(photo.ImageUrl)" alt="@photo.Title" style="max-width: 100%" />
+                                    </div>
+
+                                    <div class="comments-like-div">
+                                        @Html.Raw(photo.Description)
+                                    </div>
                                 </div>
 
-                                <div class="clear-both">
-                                    <img src="@Html.Raw(photo.ImageUrl)" alt="@photo.Title" style="max-width: 100%" />
-                                </div>
+                            }
 
-                                <div class="comments-like-div">
-                                    @Html.Raw(photo.Description)
+                            @if (Model.UploadedPhoto != null)
+                            {
+                                <div class="ganjoor-comment">
+                                    <div class="clear-both">
+                                        @Model.UploadedPhoto.Title
+                                    </div>
+
+                                    <div class="clear-both">
+                                        <img src="@Html.Raw(Model.UploadedPhoto.ImageUrl)" alt="@Model.UploadedPhoto.Title" style="max-width: 100%" />
+                                    </div>
+
+                                    <div class="comments-like-div">
+                                        @Html.Raw(Model.UploadedPhoto.Description)
+                                    </div>
+
+                                    <div class="clear-both red-color">
+                                        پیشنهاد شما پس از بررسی قابل مشاهده خواهد بود.
+                                    </div>
                                 </div>
                             }
+
+                            <div class="clear-both">
+                                @if (Model.LoggedIn)
+                                {
+                                    <form method="post" enctype="multipart/form-data">
+                                        <fieldset>
+                                            <legend>💬 شما تصویر تازه‌ای پیشنهاد کنید ...</legend>
+                                            <table class="comment-table">
+                                                <tr>
+                                                    <td>
+                                                        تصویر:
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="required">
+                                                            <input type="file" asp-for="Upload.Image" />
+                                                        </div>
+                                                        <input asp-for="Upload.PoetId" value="@Model.Poet.Id" type="hidden" />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        عنوان:
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <input asp-for="Upload.Title" />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        توضیح:
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <textarea asp-for="Upload.Description" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td>
+                                                        <input type="submit" value="بارگذاری" />
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+
+                                            <div class="notice">
+                                                <p>
+                                                    تصاویر پیشنهادی پس از بررسی منتشر می‌شوند.
+                                                </p>
+                                            </div>
+                                        </fieldset>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <div class="notice" id="commentform">
+                                        <p>
+                                            برای پیشنهاد تصویر دیگری برای @Model.Poet.Nickname در گنجور <a href="/signup" target="_blank">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
+                                        </p>
+                                    </div>
+                                }
+                            </div>
                         </div>
 
-                        @if (Model.UploadedPhoto != null)
-                        {
-                            <div class="clear-both">
-                                @Model.UploadedPhoto.Title
-                            </div>
 
-                            <div class="clear-both">
-                                <img src="@Html.Raw(Model.UploadedPhoto.ImageUrl)" alt="@Model.UploadedPhoto.Title"  style="max-width: 100%" />
-                            </div>
-
-                            <div class="comments-like-div">
-                                @Html.Raw(Model.UploadedPhoto.Description)
-                            </div>
-
-                            <div class="clear-both red-color">
-                                پیشنهاد شما پس از بررسی قابل مشاهده خواهد بود.
-                            </div>
-                        }
-
-                        <div class="clear-both">
-                            @if (Model.LoggedIn)
-                            {
-                                <form method="post" enctype="multipart/form-data">
-                                    <fieldset>
-                                        <legend>💬 شما تصویر تازه‌ای پیشنهاد کنید ...</legend>
-                                        <table class="comment-table">
-                                            <tr>
-                                                <td>
-                                                    تصویر:
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="required">
-                                                        <input type="file" asp-for="Upload.Image" />
-                                                    </div>
-                                                    <input asp-for="Upload.PoetId" value="@Model.Poet.Id" type="hidden" />
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    عنوان:
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input asp-for="Upload.Title" />
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    توضیح:
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <textarea asp-for="Upload.Description" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>
-                                                    <input type="submit" value="بارگذاری" />
-                                                </td>
-                                            </tr>
-                                        </table>
-
-
-                                        <div class="notice">
-                                            <p>
-                                                تصاویر پیشنهادی پس از بررسی منتشر می‌شوند.
-                                            </p>
-                                        </div>
-                                    </fieldset>
-                                </form>
-                            }
-                            else
-                            {
-                                <div class="notice" id="commentform">
-                                    <p>
-                                        برای پیشنهاد تصویر دیگری برای @Model.Poet.Nickname در گنجور <a href="/signup" target="_blank">ثبت نام</a> کنید و با نام کاربری خود از طریق آیکون 👤 گوشهٔ پایین سمت چپ صفحات به آن وارد شوید.
-                                    </p>
-                                </div>
-                            }
-                        </div>
                     }
 
 
