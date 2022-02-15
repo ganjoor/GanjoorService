@@ -20,14 +20,21 @@ namespace GanjooRazor.Areas.Admin.Pages
             _clientFactory = clientFactory;
             _configuration = configuration;
         }
-        public void OnGet(string code = "code", string state = "none")
+        public IActionResult OnGet(string code = "code", string state = "none")
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             Code = code;
             State = state;
+            return Page();
         }
 
         public async Task<ActionResult> OnPostAsync(string code)
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             var nvc = new List<KeyValuePair<string, string>>();
             nvc.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
             nvc.Add(new KeyValuePair<string, string>("code", code));

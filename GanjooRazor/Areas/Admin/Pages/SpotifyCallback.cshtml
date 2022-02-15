@@ -4,31 +4,37 @@
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "بازگشت از اسپاتیفای";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
 
-<form method="post">
-    <input asp-for="@Model.Code" type="hidden" />
+@if (ViewData.ContainsKey("ganjoor-songrevu"))
+{
+    <form method="post">
+        <input asp-for="@Model.Code" type="hidden" />
 
 
-    <div>
-        <button type="submit">ذخیره</button>
-    </div>
-</form>
-<p>
-    <strong>Code:</strong> <code>@Model.Code</code>
-</p>
-<p>
-    <strong>access_token:</strong> <code>@Model.access_token</code>
-</p>
-<p>
-    <strong>token_type:</strong> <code>@Model.token_type</code>
-</p>
-<p>
-    <strong>expires_in:</strong> <code>@Model.expires_in</code>
-</p>
-<p>
-    <strong>refresh_token:</strong> <code>@Model.refresh_token</code>
-</p>
-<p>
-    <strong>Error:</strong> <code>@Model.Error</code>
-</p>
+        <div>
+            <button type="submit">ذخیره</button>
+        </div>
+    </form>
+    <p>
+        <strong>Code:</strong> <code>@Model.Code</code>
+    </p>
+    <p>
+        <strong>access_token:</strong> <code>@Model.access_token</code>
+    </p>
+    <p>
+        <strong>token_type:</strong> <code>@Model.token_type</code>
+    </p>
+    <p>
+        <strong>expires_in:</strong> <code>@Model.expires_in</code>
+    </p>
+    <p>
+        <strong>refresh_token:</strong> <code>@Model.refresh_token</code>
+    </p>
+    <p>
+        <strong>Error:</strong> <code>@Model.Error</code>
+    </p>
+}
+
+

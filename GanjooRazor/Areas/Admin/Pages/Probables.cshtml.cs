@@ -42,6 +42,9 @@ namespace GanjooRazor.Areas.Admin.Pages
         public GanjoorPoemCompleteViewModel Poem { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             LastMessage = "";
 
             var rhythmResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms?sortOnVerseCount=true");

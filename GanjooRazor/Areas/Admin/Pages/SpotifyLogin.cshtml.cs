@@ -1,5 +1,6 @@
 using System.Net;
 using GanjooRazor.Utils;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 
@@ -12,6 +13,14 @@ namespace GanjooRazor.Areas.Admin.Pages
         public SpotifyLoginModel(IConfiguration configuration)
         {
             _configuration = configuration;
+        }
+
+        public IActionResult OnGet()
+        {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
+            return Page();
         }
 
         /// <summary>

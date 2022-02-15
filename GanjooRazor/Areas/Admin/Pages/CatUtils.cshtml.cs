@@ -110,6 +110,9 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             LastMessage = Request.Query["edit"] == "true" ? "ویرایش انجام شد." : "";
 
             if (string.IsNullOrEmpty(Request.Query["url"]))

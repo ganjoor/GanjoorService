@@ -40,6 +40,9 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             LastResult = "";
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Query["url"]}");
             if (!response.IsSuccessStatusCode)

@@ -80,6 +80,10 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
+
             LastMessage = "";
 
             Donation = new GanjoorDonationViewModel()

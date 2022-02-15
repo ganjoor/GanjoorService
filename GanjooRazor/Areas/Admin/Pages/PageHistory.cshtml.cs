@@ -18,6 +18,9 @@ namespace GanjooRazor.Areas.Admin.Pages
         public GanjoorPageSnapshotSummaryViewModel[] OlderVersions { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             LastMessage = "";
 
             using (HttpClient secureClient = new HttpClient())

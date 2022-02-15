@@ -4,8 +4,14 @@
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "ورود به اسپاتیفای";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
 
-<h1>@ViewData["Title"]</h1>
+@if (ViewData.ContainsKey("ganjoor-songrevu"))
+{
+    <h1>@ViewData["Title"]</h1>
 
-<p>Click <a href="@Model.SpotifyUrl">ورود</a></p>
+    <p>Click <a href="@Model.SpotifyUrl">ورود</a></p>
+}
+
+

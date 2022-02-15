@@ -34,6 +34,9 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
             LastMessage = "";
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/donations/expense/{Request.Query["id"]}");
 
