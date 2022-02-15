@@ -2,7 +2,7 @@
 @model GanjooRazor.Areas.User.Pages.LanguageEditModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    Layout = "_Layout";
+    Layout = "_UserPanelLayout";
     ViewData["Title"] = "ویرایش زبان یا نویسش";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }

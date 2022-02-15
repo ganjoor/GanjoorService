@@ -2,7 +2,7 @@
 @model GanjooRazor.Areas.User.Pages.HistoryModel
 @using DNTPersianUtils.Core
 @{
-    Layout = "_Layout";
+    Layout = "_UserPanelLayout";
     ViewData["Title"] = "ادامهٔ مطالعه";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
     string color = "gray";

@@ -2,7 +2,7 @@
 @model GanjooRazor.Areas.User.Pages.NotificationsModel
 @using DNTPersianUtils.Core
 @{
-    Layout = "_Layout";
+    Layout = "_UserPanelLayout";
     ViewData["Title"] = "اعلان‌های من";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
     string color = "gray";

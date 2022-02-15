@@ -2,7 +2,7 @@
 @model GanjooRazor.Areas.User.Pages.SuggestedPoetPhotosModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    Layout = "_Layout";
+    Layout = "_UserPanelLayout";
     ViewData["Title"] = "تصاویر پیشنهادی برای تصاویر شاعران";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }

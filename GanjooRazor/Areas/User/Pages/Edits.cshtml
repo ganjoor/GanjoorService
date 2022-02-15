@@ -3,7 +3,7 @@
 @using RMuseum.Models.Ganjoor
 @using RMuseum.Services.Implementation
 @{
-    Layout = "_Layout";
+    Layout = "_UserPanelLayout";
     ViewData["Title"] = "ویرایش‌های من";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
     string color = "gray";

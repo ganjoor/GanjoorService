@@ -2,7 +2,7 @@
 @model GanjooRazor.Areas.User.Pages.AddSongModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    Layout = "_Layout";
+    Layout = "_UserPanelLayout";
     ViewData["Title"] = "آهنگ مرتبط از منابع دلخواه";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }

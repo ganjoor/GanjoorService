@@ -2,7 +2,7 @@
 @model GanjooRazor.Areas.User.Pages.AwaitingCommentsModel
 @using DNTPersianUtils.Core
 @{
-    Layout = "_Layout";
+    Layout = "_UserPanelLayout";
     ViewData["Title"] = "حاشیه‌های در انتظار تأیید";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
     string color = "gray";

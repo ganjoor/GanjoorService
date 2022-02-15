@@ -1,7 +1,7 @@
 ﻿@page
 @model GanjooRazor.Areas.User.Pages.UpVotedRecitationsModel
 @{
-     Layout = "_Layout";
+     Layout = "_UserPanelLayout";
     ViewData["Title"] = "خوانش‌های نشان شده";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
     string color = "gray";

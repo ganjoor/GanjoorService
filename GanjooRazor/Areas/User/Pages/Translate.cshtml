@@ -2,7 +2,7 @@
 @model GanjooRazor.Areas.User.Pages.TranslateModel
 @using DNTPersianUtils.Core
 @{
-    Layout = "_Layout";
+    Layout = "_UserPanelLayout";
     ViewData["Title"] = "برگردان / نویسش";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }

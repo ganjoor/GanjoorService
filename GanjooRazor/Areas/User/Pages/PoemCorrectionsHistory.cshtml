@@ -4,7 +4,7 @@
 @using RMuseum.Services.Implementation
 @using DNTPersianUtils.Core; 
 @{
-    Layout = "_Layout";
+    Layout = "_UserPanelLayout";
     ViewData["Title"] = "سوابق ویرایش";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
     string color = "gray";
