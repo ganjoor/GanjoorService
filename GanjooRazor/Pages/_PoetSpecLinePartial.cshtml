@@ -3,7 +3,7 @@
     Layout = null;
 }
 
-<div class="clear-both" id="@(Model.Line.Id == 0 ? "comment-error" : $"line-{Model.Line.Id}")">
+<div class="ganjoor-comment" id="@(Model.Line.Id == 0 ? "comment-error" : $"line-{Model.Line.Id}")">
     @Html.Raw(Model.Line.Contents)
 </div>
 

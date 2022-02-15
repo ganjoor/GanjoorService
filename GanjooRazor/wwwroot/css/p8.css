@@ -410,7 +410,7 @@ div.n, div.l {
     max-width: 508px
 }
 
-#comments, #profile, .bnumdiv {
+#comments, #profile, .comments-like-div, .bnumdiv {
     margin: 20px auto 6px;
     display: block;
     background: transparent url('/image/cbk.jpg') top center repeat scroll;

@@ -12,7 +12,7 @@
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
-    <link href="/css/p8.css?version=33" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=34" rel="stylesheet" type="text/css" />
     <link href="/css/fab.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
@@ -118,7 +118,7 @@
             @if (Model.Poet != null)
             {
                 <h3>
-                    <a href="/photos">فهرست همهٔ شاعران</a>
+                    <a href="/photos">شاعران دیگر</a>
                 </h3>
             }
             <div id="main">
@@ -146,18 +146,17 @@
 
                     @if (Model.Poet != null)
                     {
-                        <div class="century">
-                            زندگینامهٔ @Model.Poet.Nickname
-                        </div>
                         <div class="clear-both">
-                            @Model.Poet.Description
+                            <a href="@Model.Poet.FullUrl">زندگینامه و آثار @Model.Poet.Nickname را اینجا ببینید.</a>
                         </div>
+                       
+                        
 
-                        <div class="century">
+                        <div id="lines" class="comments-like-div">
+                            <div class="century">
                             نکات جالب توجه دربارهٔ @Model.Poet.Nickname که در انتخاب تصویر او اهمیت دارند
                         </div>
 
-                        <div id="lines">
                             @foreach (var line in Model.SpecLines)
                             {
                                 <partial name="_PoetSpecLinePartial" model=@(new _PoetSpecLinePartialModel(){Line = line}) />
@@ -209,21 +208,20 @@
                             تصاویر پیشنهاد شده برای @Model.Poet.Nickname
                         </div>
 
-                        <div id="lines">
+                        <div id="photos">
                             @foreach (var photo in Model.Photos)
                             {
-                                <div class="clear-both">
+                                <div class="century">
                                     @photo.Title
                                 </div>
 
                                 <div class="clear-both">
-                                    <img src="@Html.Raw(photo.ImageUrl)" alt="@photo.Title" />
+                                    <img src="@Html.Raw(photo.ImageUrl)" alt="@photo.Title" style="max-width: 100%" />
                                 </div>
 
-                                <div class="clear-both">
+                                <div class="comments-like-div">
                                     @Html.Raw(photo.Description)
                                 </div>
-
                             }
                         </div>
 
@@ -234,10 +232,10 @@
                             </div>
 
                             <div class="clear-both">
-                                <img src="@Html.Raw(Model.UploadedPhoto.ImageUrl)" alt="@Model.UploadedPhoto.Title" />
+                                <img src="@Html.Raw(Model.UploadedPhoto.ImageUrl)" alt="@Model.UploadedPhoto.Title"  style="max-width: 100%" />
                             </div>
 
-                            <div class="clear-both">
+                            <div class="comments-like-div">
                                 @Html.Raw(Model.UploadedPhoto.Description)
                             </div>
 
