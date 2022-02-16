@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -33,6 +35,8 @@ namespace GanjooRazor.Pages
 
         public GanjoorPoetSuggestedPictureViewModel UploadedPhoto { get; set; }
 
+        public bool ModeratePoetPhotos { get; set; }
+
         private async Task<List<GanjoorPoetViewModel>> _PreparePoets()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
@@ -54,7 +58,8 @@ namespace GanjooRazor.Pages
         {
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
-
+           
+            
             if (!string.IsNullOrEmpty(Request.Query["p"]))
             {
                 var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet?url=/{Request.Query["p"]}");
@@ -86,6 +91,13 @@ namespace GanjooRazor.Pages
                 {
                     photo.ImageUrl = $"{APIRoot.InternetUrl}/{photo.ImageUrl}";
                 }
+
+                if (LoggedIn)
+                {
+                    await GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+                    ModeratePoetPhotos = ViewData.ContainsKey($"{RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseumSecurableItem.ModeratePoetPhotos}");
+                }
+
             }
             else
             {
@@ -200,6 +212,44 @@ namespace GanjooRazor.Pages
 
 
             return await OnGetAsync();
+        }
+
+        public async Task<IActionResult> OnPutChoosePhotoAsync(int poetId, int id)
+        {
+            var responsePhotos = await _httpClient.GetAsync($"{APIRoot.Url}/api/poetphotos/poet/{poetId}");
+            if (!responsePhotos.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await responsePhotos.Content.ReadAsStringAsync());
+                return Page();
+            }
+            var photos = JArray.Parse(await responsePhotos.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetSuggestedPictureViewModel>>();
+
+            var photo = photos.Where(p => p.Id == id).FirstOrDefault();
+            if(photo == null)
+            {
+                return new BadRequestObjectResult("تصویری با شناسهٔ ارسالی یافت نشد.");
+            }
+
+            photo.ChosenOne = true;
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/poetphotos", new StringContent(JsonConvert.SerializeObject(photo), Encoding.UTF8, "application/json"));
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+
+            return new OkResult();
         }
 
         public PhotosModel(HttpClient httpClient) : base(httpClient)

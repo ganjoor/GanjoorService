@@ -222,6 +222,36 @@
                         <div class="century">
                             تصاویر پیشنهاد شده برای @Model.Poet.Nickname
                         </div>
+                        @if (Model.ModeratePoetPhotos)
+                        {
+                            <script>
+                                function choosePhoto(poetId, id) {
+                                    if (!confirm('این تصویر انتخاب شده است؟'))
+                                          return;
+
+                                      var url = '?handler=ChoosePhoto';
+
+                                      $.ajax({
+                                          type: "PUT",
+                                          url: url,
+                                          data: {
+                                              poetId: poetId,
+                                              id: id
+                                          },
+                                          error: function (e) {
+                                          if (e.responseText == null)
+                                              alert(e);
+                                          else
+                                              alert(e.responseText);
+                                          },
+                                          success: function () {
+                                              location.reload();
+                                          },
+                                      });
+                                }
+                            </script>
+                        }
+
 
                         <div id="photos">
                             @foreach (var photo in Model.Photos)
@@ -229,6 +259,12 @@
                                 <div class="ganjoor-comment">
                                     <div class="century">
                                         @photo.Title
+                                        <text>
+                                            @if(photo.ChosenOne)
+                                            {
+                                                <i class="noindent-info-button done-icon"></i>
+                                            }
+                                        </text>
                                     </div>
 
                                     <div class="clear-both">
@@ -238,6 +274,13 @@
                                     <div class="comments-like-div">
                                         @Html.Raw(photo.Description)
                                     </div>
+
+                                    @if (Model.ModeratePoetPhotos)
+                                    {
+                                        <div class="clear-both">
+                                            <a role="button" onclick="choosePhoto(@photo.PoetId, @photo.Id)" class="pagebutton" title="انتخاب شده"><i class="noindent-info-button done-icon"></i></a>
+                                        </div>
+                                    }
                                 </div>
 
                             }
