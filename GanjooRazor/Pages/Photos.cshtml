@@ -8,7 +8,6 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex, nofollow" />
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
@@ -90,17 +89,19 @@
             <h1>
                 @if (Model.Poet == null)
                 {
-                    <a href="/photos" title="تصاویر شاعران"><img src="/image/gmg.gif" alt="@ViewData["Title"]" class="home-logo" /></a>
+                    <a href="/photos" title="چهره‌های گنجور"><img src="/image/gmg.gif" alt="@ViewData["Title"]" class="home-logo" /></a>
                 }
                 else
                 {
-                    <a href="/photos" title="تصاویر شاعران"><img src="@Model.Poet.ImageUrl" alt="@ViewData["Title"]" class="home-logo" /></a>
+                    <a href="/photos" title="چهره‌های گنجور"><img src="@Model.Poet.ImageUrl" alt="@ViewData["Title"]" class="home-logo" /></a>
                 }
             </h1>
             <h2>
                 @if (Model.Poet == null)
                 {
-                    @ViewData["Title"]
+                    <text>
+                        چهره‌های گنجور
+                    </text>
                 }
                 else
                 {
