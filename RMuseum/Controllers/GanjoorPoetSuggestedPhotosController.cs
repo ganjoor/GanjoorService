@@ -35,6 +35,23 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// returns a single suggested photo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModeratePoetPhotos)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetSuggestedPictureViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoetSuggestedPhotoByIdAsync(int id)
+        {
+            var res = await _poetPhotosService.GetPoetSuggestedPhotoByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// return the next unpublished suggested line for poets
         /// </summary>
         /// <param name="skip"></param>

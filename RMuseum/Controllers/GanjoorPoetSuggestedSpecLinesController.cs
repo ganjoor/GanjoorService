@@ -34,6 +34,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// returns specific suggested line for poets
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpGet("{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModeratePoetPhotos)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetSuggestedSpecLineViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoetSuggestedSpecLineAsync(int id)
+        {
+            var res = await _ganjoorService.GetPoetSuggestedSpecLineAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// return the next unpublished suggested line for poets
         /// </summary>
         /// <param name="skip"></param>

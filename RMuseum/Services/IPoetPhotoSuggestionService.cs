@@ -17,6 +17,13 @@ namespace RMuseum.Services
         /// <param name="poetId"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPoetSuggestedPictureViewModel[]>> GetPoetSuggestedPhotosAsync(int poetId);
+
+        /// <summary>
+        /// returns a single suggested photo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoetSuggestedPictureViewModel>> GetPoetSuggestedPhotoByIdAsync(int id);
         /// <summary>
         /// suggest a new photo for a poet
         /// </summary>

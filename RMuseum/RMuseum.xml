@@ -1506,6 +1506,13 @@
             <param name="id">poet id</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.GetPoetSuggestedPhotoByIdAsync(System.Int32)">
+            <summary>
+            returns a single suggested photo
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.GetNextUnmoderatedPoetSuggestedPhotoAsync(System.Int32)">
             <summary>
             return the next unpublished suggested line for poets
@@ -1549,6 +1556,13 @@
             returns list of suggested spec lines for a poet
             </summary>
             <param name="id">poet id</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController.GetPoetSuggestedSpecLineAsync(System.Int32)">
+            <summary>
+            returns specific suggested line for poets
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController.GetNextUnmoderatedPoetSuggestedSpecLineAsync(System.Int32)">
@@ -13143,6 +13157,13 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.GetPoetSuggestedPhotoByIdAsync(System.Int32)">
+            <summary>
+            returns a single suggested photo
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.SuggestPhotoForPoet(System.Int32,System.Guid,System.IO.Stream,System.String,System.String,System.String,System.String)">
             <summary>
             suggest a new photo for a poet
@@ -13815,6 +13836,13 @@
             return list of suggested photos for a poet
             </summary>
             <param name="poetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.GetPoetSuggestedPhotoByIdAsync(System.Int32)">
+            <summary>
+            returns a single suggested photo
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.SuggestPhotoForPoet(System.Int32,System.Guid,System.IO.Stream,System.String,System.String,System.String,System.String)">

@@ -52,6 +52,39 @@ namespace RMuseum.Services.Implementation
                 );
         }
 
+        /// <summary>
+        /// returns a single suggested photo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoetSuggestedPictureViewModel>> GetPoetSuggestedPhotoByIdAsync(int id)
+        {
+            return new RServiceResult<GanjoorPoetSuggestedPictureViewModel>
+                (
+                  await _context.GanjoorPoetSuggestedPictures.AsNoTracking().Include(r => r.Picture)
+                          .Where
+                          (
+                          r => r.Id == id
+                          )
+                          .Select
+                          (
+                      r => new GanjoorPoetSuggestedPictureViewModel()
+                      {
+                          Id = r.Id,
+                          PoetId = r.PoetId,
+                          Title = r.Picture.Title,
+                          Description = r.Picture.Description,
+                          PicOrder = r.PicOrder,
+                          Published = r.Published,
+                          ChosenOne = r.ChosenOne,
+                          SuggestedById = r.SuggestedById,
+                          ImageUrl = $"api/rimages/{r.PictureId}.jpg"
+                      }
+                      )
+                       .FirstOrDefaultAsync()
+                );
+        }
+
 
         /// <summary>
         /// suggest a new photo for a poet
@@ -229,7 +262,7 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
-                if(newlyChosenOne)
+                if (newlyChosenOne)
                 {
                     var others = await _context.GanjoorPoetSuggestedPictures.Where(p => p.Id != model.Id && p.PoetId == model.PoetId).ToListAsync();
                     foreach (var photo in others)
@@ -243,7 +276,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-               
+
 
                 if (publishIsChanged && model.Published && dbModel.SuggestedById != null)
                 {
@@ -255,7 +288,7 @@ namespace RMuseum.Services.Implementation
                                       );
                 }
 
-                if(newlyChosenOne && dbModel.SuggestedById != null)
+                if (newlyChosenOne && dbModel.SuggestedById != null)
                 {
                     var userRes = await _appUserService.GetUserInformation((Guid)dbModel.SuggestedById);
                     var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == dbModel.PoetId).SingleAsync();
@@ -292,7 +325,7 @@ namespace RMuseum.Services.Implementation
                     var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == dbModel.PoetId).SingleAsync();
                     await _notificationService.PushNotification((Guid)dbModel.SuggestedById,
                                       $"عدم پذیرش تصویر ارسالی شما برای {poet.Nickname}",
-                                      $"متأسفانه تصویر پیشنهادی شما برای مشخصات {poet.Nickname} مورد پذیرش قرار نگرفت" 
+                                      $"متأسفانه تصویر پیشنهادی شما برای مشخصات {poet.Nickname} مورد پذیرش قرار نگرفت"
                                       );
                 }
 
