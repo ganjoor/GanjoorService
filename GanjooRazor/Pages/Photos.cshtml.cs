@@ -220,7 +220,7 @@ namespace GanjooRazor.Pages
             if (!responsePhotos.IsSuccessStatusCode)
             {
                 LastError = JsonConvert.DeserializeObject<string>(await responsePhotos.Content.ReadAsStringAsync());
-                return Page();
+                return new BadRequestObjectResult(LastError);
             }
             var photos = JArray.Parse(await responsePhotos.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetSuggestedPictureViewModel>>();
 

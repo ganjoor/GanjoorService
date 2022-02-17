@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -52,30 +54,57 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var suggestionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/poetphotos/unpublished/next?skip={Skip}");
-                    if (!suggestionResponse.IsSuccessStatusCode)
+
+                    if(!string.IsNullOrEmpty(Request.Query["id"]) && !string.IsNullOrEmpty(Request.Query["id"]))
                     {
-                        if (suggestionResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        //modify mode:
+                        int id = int.Parse(Request.Query["id"]);
+                        int poetId = int.Parse(Request.Query["poetId"]);
+
+                        var responsePhotos = await secureClient.GetAsync($"{APIRoot.Url}/api/poetphotos/poet/{poetId}");
+                        if (!responsePhotos.IsSuccessStatusCode)
                         {
-                            LastError = "پیشنهادی وجود ندارد.";
+                            LastError = JsonConvert.DeserializeObject<string>(await responsePhotos.Content.ReadAsStringAsync());
+                            return Page();
                         }
-                        else
+                        var photos = JArray.Parse(await responsePhotos.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetSuggestedPictureViewModel>>();
+
+                        Suggestion = photos.Where(p => p.Id == id).FirstOrDefault();
+                        if (Suggestion == null)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await suggestionResponse.Content.ReadAsStringAsync());
+                            LastError = "تصویری با شناسهٔ ارسالی یافت نشد.";
+                            return Page();
                         }
-                        return Page();
                     }
                     else
                     {
-                        string paginnationMetadata = suggestionResponse.Headers.GetValues("paging-headers").FirstOrDefault();
-                        if (!string.IsNullOrEmpty(paginnationMetadata))
+                        //moderate mode
+                        var suggestionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/poetphotos/unpublished/next?skip={Skip}");
+                        if (!suggestionResponse.IsSuccessStatusCode)
                         {
-                            TotalCount = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata).totalCount;
+                            if (suggestionResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
+                            {
+                                LastError = "پیشنهادی وجود ندارد.";
+                            }
+                            else
+                            {
+                                LastError = JsonConvert.DeserializeObject<string>(await suggestionResponse.Content.ReadAsStringAsync());
+                            }
+                            return Page();
                         }
+                        else
+                        {
+                            string paginnationMetadata = suggestionResponse.Headers.GetValues("paging-headers").FirstOrDefault();
+                            if (!string.IsNullOrEmpty(paginnationMetadata))
+                            {
+                                TotalCount = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata).totalCount;
+                            }
+                            Suggestion = JsonConvert.DeserializeObject<GanjoorPoetSuggestedPictureViewModel>(await suggestionResponse.Content.ReadAsStringAsync());
+                        }
+                    }
 
-
-                        Suggestion = JsonConvert.DeserializeObject<GanjoorPoetSuggestedPictureViewModel>(await suggestionResponse.Content.ReadAsStringAsync());
-
+                    if (Suggestion != null)
+                    {
                         Suggestion.ImageUrl = $"{APIRoot.InternetUrl}/{Suggestion.ImageUrl}";
 
                         var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{Suggestion.PoetId}");
