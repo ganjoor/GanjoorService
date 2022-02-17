@@ -1416,6 +1416,10 @@ audio {
     color: #0a0;
 }
 
+.max-width-100per {
+    max-width: 100%;
+}
+
 
 .ring-menucircle,
 .ring {

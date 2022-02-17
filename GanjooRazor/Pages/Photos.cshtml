@@ -11,7 +11,7 @@
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
-    <link href="/css/p8.css?version=34" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=35" rel="stylesheet" type="text/css" />
     <link href="/css/fab.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
@@ -268,7 +268,7 @@
                                     </div>
 
                                     <div class="clear-both">
-                                        <img src="@Html.Raw(photo.ImageUrl)" alt="@photo.Title" style="max-width: 100%" />
+                                        <img src="@Html.Raw(photo.ImageUrl)" alt="@photo.Title" class="max-width-100per" />
                                     </div>
 
                                     <div class="comments-like-div">
@@ -293,7 +293,7 @@
                                     </div>
 
                                     <div class="clear-both">
-                                        <img src="@Html.Raw(Model.UploadedPhoto.ImageUrl)" alt="@Model.UploadedPhoto.Title" style="max-width: 100%" />
+                                        <img src="@Html.Raw(Model.UploadedPhoto.ImageUrl)" alt="@Model.UploadedPhoto.Title" class="max-width-100per" />
                                     </div>
 
                                     <div class="comments-like-div">
