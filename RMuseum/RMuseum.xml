@@ -10155,6 +10155,27 @@
             <param name="song"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemSongById(System.Int32)">
+            <summary>
+            get song by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ModifyPublishedSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            modify a published song
+            </summary>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePoemSongById(System.Int32)">
+            <summary>
+            delete poem song by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.NewComment(System.Guid,System.String,System.Int32,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
             <summary>
             new comment
@@ -12203,6 +12224,27 @@
             direct insert song
             </summary>
             <param name="song"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemSongById(System.Int32)">
+            <summary>
+            get song by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ModifyPublishedSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            modify a published song
+            </summary>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemSongById(System.Int32)">
+            <summary>
+            delete poem song by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBatchGenerateGDBFiles">

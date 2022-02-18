@@ -287,6 +287,28 @@ namespace RMuseum.Services
         Task<RServiceResult<PoemMusicTrackViewModel>> DirectInsertSong(PoemMusicTrackViewModel song);
 
         /// <summary>
+        /// get song by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        Task<RServiceResult<PoemMusicTrackViewModel>> GetPoemSongById(int id);
+
+        /// <summary>
+        /// modify a published song
+        /// </summary>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemMusicTrackViewModel>> ModifyPublishedSong(PoemMusicTrackViewModel song);
+
+        /// <summary>
+        /// delete poem song by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePoemSongById(int id);
+
+        /// <summary>
         /// new comment
         /// </summary>
         /// <param name="userId"></param>

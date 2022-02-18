@@ -385,5 +385,103 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<PoemMusicTrackViewModel>(song);
         }
 
+        /// <summary>
+        /// get song by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        public async Task<RServiceResult<PoemMusicTrackViewModel>> GetPoemSongById(int id)
+        {
+            return new RServiceResult<PoemMusicTrackViewModel>
+                (
+                await _context.GanjoorPoemMusicTracks
+                                                .Where
+                                                (
+                                                   t => t.Id == id
+                                                )
+                                                .OrderBy(t => t.SongOrder)
+                                                .Select
+                                                (
+                                                 t => new PoemMusicTrackViewModel()
+                                                 {
+                                                     Id = t.Id,
+                                                     PoemId = t.PoemId,
+                                                     TrackType = t.TrackType,
+                                                     ArtistName = t.ArtistName,
+                                                     ArtistUrl = t.ArtistUrl,
+                                                     AlbumName = t.AlbumName,
+                                                     AlbumUrl = t.AlbumUrl,
+                                                     TrackName = t.TrackName,
+                                                     TrackUrl = t.TrackUrl,
+                                                     Description = t.Description,
+                                                     BrokenLink = t.BrokenLink,
+                                                     GolhaTrackId = t.GolhaTrackId == null ? 0 : (int)t.GolhaTrackId,
+                                                     Approved = t.Approved,
+                                                     Rejected = t.Rejected,
+                                                     RejectionCause = t.RejectionCause
+
+                                                 }
+                                                ).AsNoTracking().SingleOrDefaultAsync()
+                ) ;
+        }
+
+        /// <summary>
+        /// modify a published song
+        /// </summary>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PoemMusicTrackViewModel>> ModifyPublishedSong(PoemMusicTrackViewModel song)
+        {
+            if (!song.Approved )
+                return new RServiceResult<PoemMusicTrackViewModel>(null, "!song.Approved ");
+
+
+            var track = await _context.GanjoorPoemMusicTracks.Where(t => t.Id == song.Id).SingleOrDefaultAsync();
+
+            track.TrackType = song.TrackType;
+            track.ArtistName = song.ArtistName;
+            track.ArtistUrl = song.ArtistUrl;
+            track.AlbumName = song.AlbumName;
+            track.AlbumUrl = song.AlbumUrl;
+            track.TrackName = song.TrackName;
+            track.TrackUrl = song.TrackUrl;
+            track.BrokenLink = song.BrokenLink;
+
+            GanjoorSinger singer = await _context.GanjoorSingers.AsNoTracking().Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
+            if (singer != null)
+            {
+                track.SingerId = singer.Id;
+            }
+
+            _context.GanjoorPoemMusicTracks.Update(track);
+
+            await _context.SaveChangesAsync();
+
+            await CacheCleanForPageById(track.PoemId);
+
+            return new RServiceResult<PoemMusicTrackViewModel>(song);
+        }
+
+        /// <summary>
+        /// delete poem song by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePoemSongById(int id)
+        {
+            try
+            {
+                var song = await _context.GanjoorPoemMusicTracks.Where(t => t.Id == id).SingleAsync();
+                _context.Remove(song);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
     }
 }
