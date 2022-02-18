@@ -28,6 +28,16 @@ namespace GanjooRazor.Areas.User.Pages
         public List<NameIdUrlImage> PaginationLinks { get; set; }
 
         /// <summary>
+        /// can edit
+        /// </summary>
+        public bool CanEdit { get; set; }
+
+        /// <summary>
+        /// all users edits
+        /// </summary>
+        public bool AllUsersEdits { get; set; }
+
+        /// <summary>
         /// Corrections
         /// </summary>
         public List<GanjoorPoemCorrectionViewModel> Corrections { get; set; }
@@ -35,18 +45,28 @@ namespace GanjooRazor.Areas.User.Pages
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
                 return Redirect("/");
-
+            CanEdit = Request.Cookies["CanEdit"] == "True";
+            AllUsersEdits = false;
             LastError = "";
             using (HttpClient secureClient = new HttpClient())
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     {
                         int pageNumber = 1;
+                        string url = $"{APIRoot.Url}/api/ganjoor/corrections/mine?PageNumber={pageNumber}&PageSize=20";
                         if (!string.IsNullOrEmpty(Request.Query["page"]))
                         {
                             pageNumber = int.Parse(Request.Query["page"]);
                         }
-                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/corrections/mine?PageNumber={pageNumber}&PageSize=20");
+                        if (CanEdit)
+                        {
+                            AllUsersEdits = Request.Query["AllUsers"] == "1";
+                            if (AllUsersEdits)
+                            {
+                                url = $"{APIRoot.Url}/api/ganjoor/corrections/all?PageNumber={pageNumber}&PageSize=20";
+                            }
+                        }
+                        var response = await secureClient.GetAsync(url);
                         if (!response.IsSuccessStatusCode)
                         {
                             LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
@@ -69,7 +89,7 @@ namespace GanjooRazor.Areas.User.Pages
                                         new NameIdUrlImage()
                                         {
                                             Name = "صفحهٔ اول",
-                                            Url = "/User/Edits/?page=1"
+                                            Url = AllUsersEdits ? "/User/Edits/?page=1&AllUsers=1" : "/User/Edits/?page=1"
                                         }
                                         );
                                 }
@@ -96,7 +116,7 @@ namespace GanjooRazor.Areas.User.Pages
                                                 new NameIdUrlImage()
                                                 {
                                                     Name = i.ToPersianNumbers(),
-                                                    Url = $"/User/Edits/?page={i}"
+                                                    Url = AllUsersEdits ? $"/User/Edits/?page={i}&AllUsers=1" : $"/User/Edits/?page={i}"
                                                 }
                                                 );
                                         }
@@ -118,7 +138,7 @@ namespace GanjooRazor.Areas.User.Pages
                                        new NameIdUrlImage()
                                        {
                                            Name = "صفحهٔ آخر",
-                                           Url = $"/User/Edits/?page={paginationMetadata.totalPages}"
+                                           Url = AllUsersEdits ? $"/User/Edits/?page={paginationMetadata.totalPages}&AllUsers=1" : $"/User/Edits/?page={paginationMetadata.totalPages}"
                                        }
                                        );
                                 }

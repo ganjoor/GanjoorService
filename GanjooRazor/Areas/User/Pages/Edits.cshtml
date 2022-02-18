@@ -42,6 +42,13 @@ else
                     <td colspan="3"><a href="/?p=@correction.PoemId" target="_blank">مشاهدهٔ متن شعر یا بخش</a></td>
                 </tr>
 
+                @if(Model.AllUsersEdits)
+                {
+                    <tr>
+                    <td colspan="3"><a href="/hashieha/?userid=@correction.UserId" target="_blank">@correction.UserNickname</a></td>
+                </tr>
+                }
+
                 <tr>
                     <td>متن اولیه</td>
                     <td>تغییرات من</td>
@@ -63,7 +70,7 @@ else
                                 <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
                             }
                             else
-                            @if (correction.Result == CorrectionReviewResult.Approved)
+                     @if (correction.Result == CorrectionReviewResult.Approved)
                             {
                                 <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
                             }
@@ -97,7 +104,7 @@ else
                                 <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
                             }
                             else
-                            @if (correction.RhythmResult == CorrectionReviewResult.Approved)
+                     @if (correction.RhythmResult == CorrectionReviewResult.Approved)
                             {
                                 <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
                             }
@@ -132,7 +139,7 @@ else
                                     <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.Result)</p>
                                 }
                                 else
-                                @if (verse.Result == CorrectionReviewResult.Approved)
+                               if (verse.Result == CorrectionReviewResult.Approved)
                                 {
                                     <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.Result)</p>
                                 }
@@ -195,6 +202,16 @@ else
             }
         }
     </p>
+
+
+    if (@Model.CanEdit)
+    {
+        <div class="clear-both">
+            <p>
+                <a role="button" href="/User/Edits?AllUsers=1" class="pagebutton">همهٔ ویرایش‌ها</a>
+            </p>
+        </div>
+    }
 
 
 }
