@@ -11882,6 +11882,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -12147,6 +12150,59 @@
             <summary>
             build sitemap
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemSongs(System.Int32,System.Boolean,RMuseum.Models.Ganjoor.PoemMusicTrackType)">
+            <summary>
+            get poem related songs
+            </summary>
+            <param name="id"></param>
+            <param name="approved"></param>
+            <param name="trackType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            suggest song
+            </summary>
+            <param name="userId"></param>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedSongsCount(System.Guid)">
+            <summary>
+            get unreviewed count
+            </summary>
+            <param name="suggestedById"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedSong(System.Int32,System.Guid)">
+            <summary>
+            next unreviewed track
+            </summary>
+            <param name="skip"></param>
+            <param name="suggestedById"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserSongsSuggestionsStatistics(System.Guid)">
+            <summary>
+            get track of user song suggestions
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ReviewSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            review song
+            </summary>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DirectInsertSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            direct insert song
+            </summary>
+            <param name="song"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBatchGenerateGDBFiles">
@@ -12430,15 +12486,6 @@
             <param name="relatedpoems"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemSongs(System.Int32,System.Boolean,RMuseum.Models.Ganjoor.PoemMusicTrackType)">
-            <summary>
-            get poem related songs
-            </summary>
-            <param name="id"></param>
-            <param name="approved"></param>
-            <param name="trackType"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemCorrections(System.Guid,System.Int32)">
             <summary>
             delete unreviewed user corrections for a poem
@@ -12513,50 +12560,6 @@
             <param name="poemId"></param>
             <param name="vOrder"></param>
             <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
-            <summary>
-            suggest song
-            </summary>
-            <param name="userId"></param>
-            <param name="song"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedSongsCount(System.Guid)">
-            <summary>
-            get unreviewed count
-            </summary>
-            <param name="suggestedById"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedSong(System.Int32,System.Guid)">
-            <summary>
-            next unreviewed track
-            </summary>
-            <param name="skip"></param>
-            <param name="suggestedById"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserSongsSuggestionsStatistics(System.Guid)">
-            <summary>
-            get track of user song suggestions
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ReviewSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
-            <summary>
-            review song
-            </summary>
-            <param name="song"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.DirectInsertSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
-            <summary>
-            direct insert song
-            </summary>
-            <param name="song"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._GetRandomPoemId(System.Int32,System.Int32)">
