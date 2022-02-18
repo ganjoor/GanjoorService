@@ -333,7 +333,9 @@
                             <div class="clear-both">
                                 @if (Model.LoggedIn)
                                 {
-                                    <form method="post" enctype="multipart/form-data">
+                                    @if(string.IsNullOrEmpty(Model.LastError) && Model.UploadedPhoto == null)
+                                    {
+                                         <form method="post" enctype="multipart/form-data">
                                         <fieldset>
                                             <legend>💬 شما تصویر تازه‌ای پیشنهاد کنید ...</legend>
                                             <table class="comment-table">
@@ -386,6 +388,12 @@
                                             </div>
                                         </fieldset>
                                     </form>
+                                    }
+                                    else
+                                    {
+                                        <a role="button" class="pagebutton" href="/photos?p=@Model.Poet.FullUrl.Substring(1)">بارگذاری تصویر دیگر</a>
+                                    }
+                                   
                                 }
                                 else
                                 {
