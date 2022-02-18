@@ -1058,6 +1058,13 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetAllCorrections(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get list of all suggested corrections
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemEffectiveCorrections(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             effective corrections for poem
@@ -10073,9 +10080,9 @@
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetUserCorrections(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
-            get user corrections
+            get user or all corrections
             </summary>
-            <param name="userId"></param>
+            <param name="userId">if sent empty returns all corrections</param>
             <param name="paging"></param>
             <returns></returns>
         </member>
@@ -12574,9 +12581,9 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserCorrections(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
-            get user corrections
+            get user or all corrections
             </summary>
-            <param name="userId"></param>
+            <param name="userId">if sent empty returns all corrections</param>
             <param name="paging"></param>
             <returns></returns>
         </member>

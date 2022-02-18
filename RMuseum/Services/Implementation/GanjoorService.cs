@@ -1678,16 +1678,16 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// get user corrections
+        /// get user or all corrections
         /// </summary>
-        /// <param name="userId"></param>
+        /// <param name="userId">if sent empty returns all corrections</param>
         /// <param name="paging"></param>
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCorrectionViewModel[] Items)>> GetUserCorrections(Guid userId, PagingParameterModel paging)
         {
             var source = from dbCorrection in
                              _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
-                         where dbCorrection.UserId == userId
+                         where userId == Guid.Empty || dbCorrection.UserId == userId
                          orderby dbCorrection.Id descending
                          select
                           dbCorrection;
