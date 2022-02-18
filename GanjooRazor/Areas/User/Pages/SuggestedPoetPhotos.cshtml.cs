@@ -55,21 +55,19 @@ namespace GanjooRazor.Areas.User.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
 
-                    if(!string.IsNullOrEmpty(Request.Query["id"]) && !string.IsNullOrEmpty(Request.Query["id"]))
+                    if(!string.IsNullOrEmpty(Request.Query["id"]))
                     {
                         //modify mode:
                         int id = int.Parse(Request.Query["id"]);
-                        int poetId = int.Parse(Request.Query["poetId"]);
 
-                        var responsePhotos = await secureClient.GetAsync($"{APIRoot.Url}/api/poetphotos/poet/{poetId}");
-                        if (!responsePhotos.IsSuccessStatusCode)
+                        var responsePhoto = await secureClient.GetAsync($"{APIRoot.Url}/api/poetphotos/{id}");
+                        if (!responsePhoto.IsSuccessStatusCode)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await responsePhotos.Content.ReadAsStringAsync());
+                            LastError = JsonConvert.DeserializeObject<string>(await responsePhoto.Content.ReadAsStringAsync());
                             return Page();
                         }
-                        var photos = JArray.Parse(await responsePhotos.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetSuggestedPictureViewModel>>();
+                        Suggestion = JsonConvert.DeserializeObject<GanjoorPoetSuggestedPictureViewModel>(await responsePhoto.Content.ReadAsStringAsync());
 
-                        Suggestion = photos.Where(p => p.Id == id).FirstOrDefault();
                         if (Suggestion == null)
                         {
                             LastError = "تصویری با شناسهٔ ارسالی یافت نشد.";
