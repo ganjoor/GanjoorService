@@ -214,30 +214,21 @@ namespace GanjooRazor.Pages
             return await OnGetAsync();
         }
 
-        public async Task<IActionResult> OnPutChoosePhotoAsync(int poetId, int id)
+        public async Task<IActionResult> OnPutChoosePhotoAsync(int id)
         {
-            var responsePhotos = await _httpClient.GetAsync($"{APIRoot.Url}/api/poetphotos/poet/{poetId}");
-            if (!responsePhotos.IsSuccessStatusCode)
-            {
-                LastError = JsonConvert.DeserializeObject<string>(await responsePhotos.Content.ReadAsStringAsync());
-                return new BadRequestObjectResult(LastError);
-            }
-            var photos = JArray.Parse(await responsePhotos.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetSuggestedPictureViewModel>>();
-
-            var photo = photos.Where(p => p.Id == id).FirstOrDefault();
-            if(photo == null)
-            {
-                return new BadRequestObjectResult("تصویری با شناسهٔ ارسالی یافت نشد.");
-            }
-
-            photo.ChosenOne = true;
-
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+                    var responsePhoto = await secureClient.GetAsync($"{APIRoot.Url}/api/poetphotos/{id}");
+                    if (!responsePhoto.IsSuccessStatusCode)
+                    {
+                        LastError = JsonConvert.DeserializeObject<string>(await responsePhoto.Content.ReadAsStringAsync());
+                        return new BadRequestObjectResult(LastError);
+                    }
+                    var photo = JsonConvert.DeserializeObject<GanjoorPoetSuggestedPictureViewModel>(await responsePhoto.Content.ReadAsStringAsync());
+                    photo.ChosenOne = true;
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/poetphotos", new StringContent(JsonConvert.SerializeObject(photo), Encoding.UTF8, "application/json"));
-
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
