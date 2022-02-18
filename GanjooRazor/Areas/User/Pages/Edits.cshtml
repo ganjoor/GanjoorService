@@ -15,6 +15,15 @@
 }
 else
 {
+
+    @if(Model.Corrections.Count == 0)
+    {
+        <p>
+            شما هنوز هیچ ویرایشی در گنجور انجام نداده‌اید. برای آشنایی با نحوهٔ ویرایش اشعار <a href="http://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/" target="_blank">اینجا</a> را ببینید.
+        </p>
+    }
+
+
     <p style="text-align:center">
         @foreach (var paginationLink in Model.PaginationLinks)
         {
