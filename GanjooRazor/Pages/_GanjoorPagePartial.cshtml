@@ -494,6 +494,11 @@
                                                     {
                                                         <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img class="spotify-track-icon" src="/image/sp16.png" alt="اسپاتیفای" height="16" /></a>
                                                     }
+                                                    @if(Model.CanEdit)
+                                                    {
+                                                        <a role="button" class="cursor-pointer" href="/User/ReviewSongs?id=@song.Id"><i class="info-buttons edit-poem-button"></i></a>
+                                                        <a role="button" class="cursor-pointer" href="/User/ReviewSongs?id=@song.Id"><i class="info-buttons delete-icon"></i></a>
+                                                    }
                                                 </div>
                                             }
                                             <p>
