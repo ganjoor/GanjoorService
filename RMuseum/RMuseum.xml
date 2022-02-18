@@ -1109,6 +1109,13 @@
             <param name="onlyMine"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemSongById(System.Int32)">
+            <summary>
+            get song by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetUserSongsSuggestionsStatistics(System.Guid)">
             <summary>
             history of suggested songs by a user
@@ -1119,6 +1126,20 @@
             review song
             </summary>
             <param name="song"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ModifyPublishedSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            modify a published song
+            </summary>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemSongById(System.Int32)">
+            <summary>
+            delete a poem song by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.DirectInsertSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
@@ -12242,7 +12263,7 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemSongById(System.Int32)">
             <summary>
-            delete poem song by id
+            delete a poem song by id
             </summary>
             <param name="id"></param>
             <returns></returns>

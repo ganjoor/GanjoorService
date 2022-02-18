@@ -464,7 +464,7 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// delete poem song by id
+        /// delete a poem song by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
