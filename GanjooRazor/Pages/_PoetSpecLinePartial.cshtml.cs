@@ -5,6 +5,7 @@ namespace GanjooRazor.Pages
 {
     public class _PoetSpecLinePartialModel : PageModel
     {
+        public bool ModeratePoetPhotos { get; set; }
         public GanjoorPoetSuggestedSpecLineViewModel Line { get; set; }
     }
 }

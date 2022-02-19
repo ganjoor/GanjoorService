@@ -52,30 +52,57 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var suggestionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/poetspecs/unpublished/next?skip={Skip}");
-                    if (!suggestionResponse.IsSuccessStatusCode)
+                    if (!string.IsNullOrEmpty(Request.Query["id"]))
                     {
-                        if(suggestionResponse.StatusCode == System.Net.HttpStatusCode.NotFound )
+                        //modify mode:
+                        int id = int.Parse(Request.Query["id"]);
+                        var suggestionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/poetspecs/{id}");
+                        if (!suggestionResponse.IsSuccessStatusCode)
                         {
-                            LastError = "پیشنهادی وجود ندارد.";
+                            if (suggestionResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
+                            {
+                                LastError = "پیشنهادی وجود ندارد.";
+                            }
+                            else
+                            {
+                                LastError = JsonConvert.DeserializeObject<string>(await suggestionResponse.Content.ReadAsStringAsync());
+                            }
+                            return Page();
                         }
                         else
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await suggestionResponse.Content.ReadAsStringAsync());
+                            Suggestion = JsonConvert.DeserializeObject<GanjoorPoetSuggestedSpecLineViewModel>(await suggestionResponse.Content.ReadAsStringAsync());
                         }
-                        return Page();
                     }
                     else
                     {
-                        string paginnationMetadata = suggestionResponse.Headers.GetValues("paging-headers").FirstOrDefault();
-                        if (!string.IsNullOrEmpty(paginnationMetadata))
+                        var suggestionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/poetspecs/unpublished/next?skip={Skip}");
+                        if (!suggestionResponse.IsSuccessStatusCode)
                         {
-                            TotalCount = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata).totalCount;
+                            if (suggestionResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
+                            {
+                                LastError = "پیشنهادی وجود ندارد.";
+                            }
+                            else
+                            {
+                                LastError = JsonConvert.DeserializeObject<string>(await suggestionResponse.Content.ReadAsStringAsync());
+                            }
+                            return Page();
                         }
+                        else
+                        {
+                            string paginnationMetadata = suggestionResponse.Headers.GetValues("paging-headers").FirstOrDefault();
+                            if (!string.IsNullOrEmpty(paginnationMetadata))
+                            {
+                                TotalCount = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata).totalCount;
+                            }
 
+                            Suggestion = JsonConvert.DeserializeObject<GanjoorPoetSuggestedSpecLineViewModel>(await suggestionResponse.Content.ReadAsStringAsync());
+                        }
+                    }
 
-                        Suggestion = JsonConvert.DeserializeObject<GanjoorPoetSuggestedSpecLineViewModel>(await suggestionResponse.Content.ReadAsStringAsync());
-
+                    if (Suggestion != null)
+                    {
                         var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{Suggestion.PoetId}");
                         if (!response.IsSuccessStatusCode)
                         {

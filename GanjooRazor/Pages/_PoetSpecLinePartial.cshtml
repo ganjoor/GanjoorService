@@ -13,3 +13,10 @@
         پیشنهاد شما پس از بررسی قابل مشاهده خواهد بود.
     </div>
 }
+
+@if (Model.ModeratePoetPhotos)
+{
+    <div class="clear-both">
+        <a role="button" href="/User/SuggestedPoetSpecLines?id=@Model.Line.Id" class="pagebutton" title="ویرایش"><i class="noindent-info-button edit-poem-button"></i></a>
+    </div>
+}
