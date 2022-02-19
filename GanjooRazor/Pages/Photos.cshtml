@@ -171,6 +171,34 @@
                                 نکات جالب توجه دربارهٔ @Model.Poet.Nickname که در انتخاب تصویر او اهمیت دارند:
                             </div>
 
+                            @if (Model.ModeratePoetPhotos)
+                        {
+                            <script>
+                                function deleteSpec(id) {
+                                    if (!confirm('آیا از حذف این نکته اطمینان دارید؟'))
+                                          return;
+
+
+                                      $.ajax({
+                                          type: "DELETE",
+                                          url: '?Handler=SpecLine',
+                                          data: {
+                                              id: id
+                                          },
+                                          error: function (e) {
+                                          if (e.responseText == null)
+                                              alert(e);
+                                          else
+                                              alert(e.responseText);
+                                          },
+                                          success: function () {
+                                              location.reload();
+                                          },
+                                      });
+                                }
+                            </script>
+                        }
+
                             @foreach (var line in Model.SpecLines)
                             {
                                 <partial name="_PoetSpecLinePartial" model=@(new _PoetSpecLinePartialModel(){Line = line, ModeratePoetPhotos = Model.ModeratePoetPhotos}) />
