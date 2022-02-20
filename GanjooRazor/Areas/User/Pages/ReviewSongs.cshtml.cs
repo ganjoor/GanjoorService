@@ -55,6 +55,11 @@ namespace GanjooRazor.Areas.User.Pages
         public UserSongSuggestionsHistory UserSongSuggestionsHistory { get; set; }
 
         /// <summary>
+        /// edit published song mode
+        /// </summary>
+        public bool EditMode { get; set; }
+
+        /// <summary>
         /// get
         /// </summary>
         public async Task<IActionResult> OnGetAsync()
@@ -65,21 +70,30 @@ namespace GanjooRazor.Areas.User.Pages
             LastError = "";
             TotalCount = 0;
             Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
+            EditMode = !string.IsNullOrEmpty(Request.Query["id"]);
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var trackResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/song?skip={Skip}&onlyMine=false");
+                    var trackResponse = await secureClient.GetAsync(
+                        EditMode ?
+                        $"{APIRoot.Url}/api/ganjoor/song/{Request.Query["id"]}"
+                        :
+                        $"{APIRoot.Url}/api/ganjoor/song?skip={Skip}&onlyMine=false"
+                        );
                     if (!trackResponse.IsSuccessStatusCode)
                     {
                         LastError = JsonConvert.DeserializeObject<string>(await trackResponse.Content.ReadAsStringAsync());
                     }
                     else
                     {
-                        string paginnationMetadata =  trackResponse.Headers.GetValues("paging-headers").FirstOrDefault();
-                        if (!string.IsNullOrEmpty(paginnationMetadata))
+                        if (!EditMode)
                         {
-                            TotalCount = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata).totalCount;
+                            string paginnationMetadata = trackResponse.Headers.GetValues("paging-headers").FirstOrDefault();
+                            if (!string.IsNullOrEmpty(paginnationMetadata))
+                            {
+                                TotalCount = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata).totalCount;
+                            }
                         }
 
                         PoemMusicTrackViewModel = JsonConvert.DeserializeObject<PoemMusicTrackViewModel>(await trackResponse.Content.ReadAsStringAsync());
@@ -99,15 +113,19 @@ namespace GanjooRazor.Areas.User.Pages
                             LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
                         }
 
-                        var userHistoryResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/song/user/stats/{PoemMusicTrackViewModel.SuggestedById}");
-                        if (userHistoryResponse.IsSuccessStatusCode)
+                        if (!EditMode)
                         {
-                            UserSongSuggestionsHistory = JsonConvert.DeserializeObject<UserSongSuggestionsHistory>(await userHistoryResponse.Content.ReadAsStringAsync());
+                            var userHistoryResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/song/user/stats/{PoemMusicTrackViewModel.SuggestedById}");
+                            if (userHistoryResponse.IsSuccessStatusCode)
+                            {
+                                UserSongSuggestionsHistory = JsonConvert.DeserializeObject<UserSongSuggestionsHistory>(await userHistoryResponse.Content.ReadAsStringAsync());
+                            }
+                            else
+                            {
+                                LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                            }
                         }
-                        else
-                        {
-                            LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
-                        }
+
                     }
                 }
                 else
@@ -127,44 +145,78 @@ namespace GanjooRazor.Areas.User.Pages
 
             if (Request.Form["next"].Count == 1)
             {
-                
+
                 return Redirect($"/User/ReviewSongs/?skip={Skip + 1}");
             }
 
-            PoemMusicTrackViewModel.Approved = Request.Form["approve"].Count == 1;
-            PoemMusicTrackViewModel.Rejected = (Request.Form["reject1"].Count + Request.Form["reject2"].Count + Request.Form["reject3"].Count) > 0;
-            if(string.IsNullOrEmpty(PoemMusicTrackViewModel.RejectionCause))
+            EditMode = !string.IsNullOrEmpty(Request.Query["id"]);
+            if(EditMode)
             {
-                if (Request.Form["reject1"].Count == 1)
+                using (HttpClient secureClient = new HttpClient())
                 {
-                    PoemMusicTrackViewModel.RejectionCause = "در آهنگ این شعر خوانده نشده";
-                }
-                else
-                if (Request.Form["reject2"].Count == 1)
-                {
-                    PoemMusicTrackViewModel.RejectionCause = "لینک یا اطلاعات آهنگ ایراد دارد";
-                }
-            }
-
-            using (HttpClient secureClient = new HttpClient())
-            {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
-                {
-                    var putResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/song", new StringContent(JsonConvert.SerializeObject(PoemMusicTrackViewModel), Encoding.UTF8, "application/json"));
-                    if (!putResponse.IsSuccessStatusCode)
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await putResponse.Content.ReadAsStringAsync());
+                        if (Request.Form["approve"].Count == 1)
+                        {
+                            PoemMusicTrackViewModel.Approved = true;
+                            var putResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/song/update", new StringContent(JsonConvert.SerializeObject(PoemMusicTrackViewModel), Encoding.UTF8, "application/json"));
+                            if (!putResponse.IsSuccessStatusCode)
+                            {
+                                LastError = JsonConvert.DeserializeObject<string>(await putResponse.Content.ReadAsStringAsync());
+                            }
+                        }
+                        else
+                        {
+                            var delResponse = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/song?id={string.IsNullOrEmpty(Request.Query["id"])}");
+                            if (!delResponse.IsSuccessStatusCode)
+                            {
+                                LastError = JsonConvert.DeserializeObject<string>(await delResponse.Content.ReadAsStringAsync());
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
                     }
                 }
-                else
+            }
+            else
+            {
+                PoemMusicTrackViewModel.Approved = Request.Form["approve"].Count == 1;
+                PoemMusicTrackViewModel.Rejected = (Request.Form["reject1"].Count + Request.Form["reject2"].Count + Request.Form["reject3"].Count) > 0;
+                if (string.IsNullOrEmpty(PoemMusicTrackViewModel.RejectionCause))
                 {
-                    LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    if (Request.Form["reject1"].Count == 1)
+                    {
+                        PoemMusicTrackViewModel.RejectionCause = "در آهنگ این شعر خوانده نشده";
+                    }
+                    else
+                    if (Request.Form["reject2"].Count == 1)
+                    {
+                        PoemMusicTrackViewModel.RejectionCause = "لینک یا اطلاعات آهنگ ایراد دارد";
+                    }
                 }
 
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    {
+                        var putResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/song", new StringContent(JsonConvert.SerializeObject(PoemMusicTrackViewModel), Encoding.UTF8, "application/json"));
+                        if (!putResponse.IsSuccessStatusCode)
+                        {
+                            LastError = JsonConvert.DeserializeObject<string>(await putResponse.Content.ReadAsStringAsync());
+                        }
+                    }
+                    else
+                    {
+                        LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    }
+
+                }
             }
 
-
-            if(!string.IsNullOrEmpty(LastError))
+            if (!string.IsNullOrEmpty(LastError))
             {
                 return Page();
             }

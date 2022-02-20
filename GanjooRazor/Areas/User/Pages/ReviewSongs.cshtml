@@ -45,7 +45,7 @@ else
                     <a href="/hashieha/?userid=@Model.PoemMusicTrackViewModel.SuggestedById" target="_blank">@Model.PoemMusicTrackViewModel.SuggestedByNickName</a>
                 </td>
             </tr>
-            @if ((Model.UserSongSuggestionsHistory.Approved + Model.UserSongSuggestionsHistory.Rejected) > 0)
+            @if (Model.UserSongSuggestionsHistory != null && (Model.UserSongSuggestionsHistory.Approved + Model.UserSongSuggestionsHistory.Rejected) > 0)
             {
                 <tr>
                     <td>
@@ -146,34 +146,47 @@ else
             </tr>
             <tr>
                 <td>
-                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">تأیید</button>
+                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">اصلاح</button>
                 </td>
                 <td>
                     <table style="width:100%" class="noborder">
-                        <tr>
-                            <td>
-                                <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">در آهنگ این شعر خوانده نشده</button>
-                            </td>
+                        @if (Model.EditMode)
+                        {
+                             <tr>
+                                <td>
+                                    <button type="submit" name="delsong" id="delsong" style="width:100%;color:white;background-color:darkred">حذف</button>
+                                </td>
 
-                        </tr>
-                        <tr>
-                            <td>
-                                <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">لینک یا اطلاعات آهنگ ایراد دارد</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">رد به دلیل دیگر:</button>
-                            </td>
-                            <td>
-                                <input style="width:100%" asp-for="PoemMusicTrackViewModel.RejectionCause" /><br />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
-                            </td>
-                        </tr>
+                            </tr>
+                            
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>
+                                    <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">در آهنگ این شعر خوانده نشده</button>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button type="submit" name="reject2" id="reject2" style="width:100%;color:white;background-color:darkred">لینک یا اطلاعات آهنگ ایراد دارد</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button type="submit" name="reject3" id="reject3" style="width:100%;color:white;background-color:darkred">رد به دلیل دیگر:</button>
+                                </td>
+                                <td>
+                                    <input style="width:100%" asp-for="PoemMusicTrackViewModel.RejectionCause" /><br />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
+                                </td>
+                            </tr>
+                        }
                     </table>
 
                 </td>
