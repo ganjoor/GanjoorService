@@ -146,19 +146,28 @@ else
             </tr>
             <tr>
                 <td>
-                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">اصلاح</button>
+                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">
+                        @if (Model.EditMode)
+                        {
+                            <text>اصلاح</text>
+                        }
+                        else
+                        {
+                            <text>تأیید</text>
+                        }
+                    </button>
                 </td>
                 <td>
                     <table style="width:100%" class="noborder">
                         @if (Model.EditMode)
                         {
-                             <tr>
+                            <tr>
                                 <td>
                                     <button type="submit" name="delsong" id="delsong" style="width:100%;color:white;background-color:darkred">حذف</button>
                                 </td>
 
                             </tr>
-                            
+
                         }
                         else
                         {

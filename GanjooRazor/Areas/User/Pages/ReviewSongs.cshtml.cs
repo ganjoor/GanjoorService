@@ -167,7 +167,7 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                         else
                         {
-                            var delResponse = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/song?id={string.IsNullOrEmpty(Request.Query["id"])}");
+                            var delResponse = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/song?id={Request.Query["id"]}");
                             if (!delResponse.IsSuccessStatusCode)
                             {
                                 LastError = JsonConvert.DeserializeObject<string>(await delResponse.Content.ReadAsStringAsync());
