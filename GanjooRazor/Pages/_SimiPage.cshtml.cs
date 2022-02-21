@@ -28,7 +28,7 @@ namespace GanjooRazor.Pages
             if (string.IsNullOrEmpty(Request.Query["v"]) || string.IsNullOrEmpty(Request.Query["g"]))
             {
                 GanjoorPage.HtmlText = "<p>شعری با مشخصات انتخاب شده یافت نشد.</p>";
-
+                return;
             }
 
             int pageNumber = 1;
@@ -39,6 +39,7 @@ namespace GanjooRazor.Pages
 
             string metre = Request.Query["v"];
             string rhyme = Request.Query["g"];
+           
             string auther = string.IsNullOrEmpty(Request.Query["a"]) ? "0" : Request.Query["a"];
 
             string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={metre}&rhyme={rhyme}&poetId={auther}";
@@ -62,16 +63,14 @@ namespace GanjooRazor.Pages
                     GanjoorPage.Title += $"{poetInfo.Nickname} ";
                 }
             }
-
             GanjoorPage.Title += $"با وزن «{metre}»";
-
             GanjoorPage.Title += $" و حروف قافیهٔ «{rhyme}»";
-
-
 
             string htmlText = "";
 
-
+            htmlText += $"<div class=\"sitem\" id=\"all\">{Environment.NewLine}";
+            htmlText += $"<h2>{GanjoorPage.Title}</h2>";
+            htmlText += $"</div>{Environment.NewLine}";
 
 
             foreach (var poem in poems)

@@ -57,14 +57,15 @@ namespace GanjooRazor.Pages
 
             string htmlText = "";
 
+            htmlText += $"<div class=\"sitem\" id=\"all\">{Environment.NewLine}";
+            htmlText += $"<h2>{GanjoorPage.Title}</h2>";
             if (poetId != 0)
             {
-                htmlText += $"<div class=\"sitem\" id=\"all\">{Environment.NewLine}";
-                htmlText += $"<h2>{Environment.NewLine}";
+                htmlText += $"<p>{Environment.NewLine}";
                 htmlText += $"<a href=\"/vazn/?v={Uri.EscapeDataString(metre)}\">مشاهدهٔ فهرست شعرهای همهٔ شاعران با این وزن</a>{Environment.NewLine}";
-                htmlText += $"</h2>{Environment.NewLine}";
-                htmlText += $"</div>{Environment.NewLine}";
+                htmlText += $"</p>{Environment.NewLine}";
             }
+            htmlText += $"</div>{Environment.NewLine}";
 
             var poems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
 
