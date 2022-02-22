@@ -299,6 +299,9 @@ namespace RMuseum
             //poet photo suggestion service
             services.AddTransient<IPoetPhotoSuggestionService, PoetPhotoSuggestionService>();
 
+            //faq service
+            services.AddTransient<IFAQService, FAQService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {

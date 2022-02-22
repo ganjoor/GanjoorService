@@ -2636,6 +2636,11 @@
             suggested pictures for poets
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.FAQCategories">
+            <summary>
+            faq categories
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -9945,6 +9950,32 @@
             Show Donating Information (temporary switch off/on)
             </summary>
         </member>
+        <member name="T:RMuseum.Services.IFAQService">
+            <summary>
+            faq service interface
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IFAQService.AddCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
+            <summary>
+            add faq category
+            </summary>
+            <param name="cat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IFAQService.UpdateCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
+            <summary>
+            update faq cateory
+            </summary>
+            <param name="cat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IFAQService.DeleteCategoryAsync(System.Int32)">
+            <summary>
+            delete faq category
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorNumberingService">
             <summary>
             numbering service 
@@ -11845,6 +11876,43 @@
             <param name="backgroundTaskQueue"></param>
             <param name="ganjoorService"></param>
             <param name="configuration"></param>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.FAQService">
+            <summary>
+            faq service implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.AddCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
+            <summary>
+            add faq category
+            </summary>
+            <param name="cat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.UpdateCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
+            <summary>
+            update faq cateory
+            </summary>
+            <param name="cat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.DeleteCategoryAsync(System.Int32)">
+            <summary>
+            delete faq category
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.FAQService._context">
+            <summary>
+            Database Context
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.#ctor(RMuseum.DbContext.RMuseumDbContext)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorAppUserService">
             <summary>

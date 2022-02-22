@@ -14,6 +14,7 @@ using RMuseum.Models.MusicCatalogue;
 using RMuseum.Models.Accounting;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using RMuseum.Models.FAQ;
 
 namespace RMuseum.DbContext
 {
@@ -439,6 +440,11 @@ namespace RMuseum.DbContext
         /// suggested pictures for poets
         /// </summary>
         public DbSet<GanjoorPoetSuggestedPicture> GanjoorPoetSuggestedPictures { get; set; }
+
+        /// <summary>
+        /// faq categories
+        /// </summary>
+        public DbSet<FAQCategory> FAQCategories { get; set; }
 
     }
 }
