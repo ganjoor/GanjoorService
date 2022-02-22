@@ -3,7 +3,7 @@
 @using DNTPersianUtils.Core
 @{
     Layout = "_UserPanelLayout";
-    ViewData["Title"] = "نشان‌های من";
+    ViewData["Title"] = "نشان‌شده‌های من";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
     string color = "gray";
 }
@@ -16,7 +16,7 @@ else
 {
     <script>
         function deleteBookmark(bookmarkId) {
-            if (!confirm('آیا از حذف این نشان اطمینان دارید؟'))
+            if (!confirm('آیا از حذف این نشان‌شده اطمینان دارید؟'))
                 return;
 
             var url = '?handler=Bookmark';
@@ -167,7 +167,7 @@ else
                 </tr>
                 <tr>
                     <td>
-                        یادداشتهایی که روی نشان‌ها می‌نویسید خصوصی هستند و با حذف نشان پاک می‌شوند.
+                        یادداشتهایی که روی نشان‌شده‌ها می‌نویسید خصوصی هستند و با حذف نشان‌شده پاک می‌شوند.
                     </td>
                 </tr>
             </table>
