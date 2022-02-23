@@ -1128,6 +1128,13 @@
             history of suggested songs by a user
             </summary>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserSuggestedSongs(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            user suggested songs
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ReviewSong(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             review song
@@ -10219,6 +10226,14 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUserSuggestedSongs(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            user suggested songs
+            </summary>
+            <param name="userId"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetUserCorrections(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             get user or all corrections
@@ -12386,6 +12401,14 @@
             <param name="id"></param>
             <param name="approved"></param>
             <param name="trackType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserSuggestedSongs(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            user suggested songs
+            </summary>
+            <param name="userId"></param>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">

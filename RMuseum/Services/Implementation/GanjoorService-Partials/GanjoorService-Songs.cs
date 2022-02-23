@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using DNTPersianUtils.Core;
+using RSecurityBackend.Services.Implementation;
 
 namespace RMuseum.Services.Implementation
 {
@@ -62,6 +63,42 @@ namespace RMuseum.Services.Implementation
                                                  }
                                                 ).AsNoTracking().ToArrayAsync()
                 );
+        }
+
+        /// <summary>
+        /// user suggested songs
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PoemMusicTrackViewModel[] Items)>> GetUserSuggestedSongs(Guid userId, PagingParameterModel paging)
+        {
+            var source = from track in
+                             _context.GanjoorPoemMusicTracks
+                         where track.SuggestedById == userId
+                         orderby track.SongOrder
+                         select
+                            new PoemMusicTrackViewModel()
+                            {
+                                Id = track.Id,
+                                PoemId = track.PoemId,
+                                TrackType = track.TrackType,
+                                ArtistName = track.ArtistName,
+                                ArtistUrl = track.ArtistUrl,
+                                AlbumName = track.AlbumName,
+                                AlbumUrl = track.AlbumUrl,
+                                TrackName = track.TrackName,
+                                TrackUrl = track.TrackUrl,
+                                Description = track.Description,
+                                BrokenLink = track.BrokenLink,
+                                GolhaTrackId = track.GolhaTrackId == null ? 0 : (int)track.GolhaTrackId,
+                                Approved = track.Approved,
+                                Rejected = track.Rejected,
+                                RejectionCause = track.RejectionCause
+
+                            };
+            return new RServiceResult<(PaginationMetadata, PoemMusicTrackViewModel[])>
+                (await QueryablePaginator<PoemMusicTrackViewModel>.Paginate(source, paging));
         }
 
 
@@ -423,7 +460,7 @@ namespace RMuseum.Services.Implementation
 
                                                  }
                                                 ).AsNoTracking().SingleOrDefaultAsync()
-                ) ;
+                );
         }
 
         /// <summary>
@@ -433,7 +470,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PoemMusicTrackViewModel>> ModifyPublishedSong(PoemMusicTrackViewModel song)
         {
-            if (!song.Approved )
+            if (!song.Approved)
                 return new RServiceResult<PoemMusicTrackViewModel>(null, "!song.Approved ");
 
 
@@ -482,6 +519,8 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
+
+
 
     }
 }

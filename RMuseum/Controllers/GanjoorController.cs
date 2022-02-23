@@ -1319,6 +1319,33 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// user suggested songs
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("song/mysuggestions")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCorrectionViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetUserSuggestedSongs([FromQuery] PagingParameterModel paging)
+        {
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            var res =
+                await _ganjoorService.GetUserSuggestedSongs(userId, paging);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result.Items);
+        }
+
+        /// <summary>
         /// review song
         /// </summary>
         /// <param name="song"></param>
