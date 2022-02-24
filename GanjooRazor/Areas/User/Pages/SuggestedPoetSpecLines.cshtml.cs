@@ -149,10 +149,10 @@ namespace GanjooRazor.Areas.User.Pages
                     }
                     else
                     {
-                        var deleteResponse = await secureClient.DeleteAsync($"{APIRoot.Url}/api/poetspecs/{Suggestion.Id}");
-                        if (!deleteResponse.IsSuccessStatusCode)
+                        var rejectionResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/poetspecs/reject/{Suggestion.Id}", new StringContent(JsonConvert.SerializeObject(Suggestion.RejectionCause), Encoding.UTF8, "application/json"));
+                        if (!rejectionResponse.IsSuccessStatusCode)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await deleteResponse.Content.ReadAsStringAsync());
+                            LastError = JsonConvert.DeserializeObject<string>(await rejectionResponse.Content.ReadAsStringAsync());
                         }
                     }
                     

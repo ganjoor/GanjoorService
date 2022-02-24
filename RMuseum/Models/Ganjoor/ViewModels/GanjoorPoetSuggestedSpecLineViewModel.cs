@@ -36,5 +36,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// suggested by id
         /// </summary>
         public Guid? SuggestedById { get; set; }
+
+        /// <summary>
+        /// rejection cause
+        /// </summary>
+        public string RejectionCause { get; set; }
     }
 }

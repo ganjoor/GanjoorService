@@ -49,7 +49,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// </summary>
         public bool ChosenOne { get; set; }
 
-        
+        /// <summary>
+        /// rejection cause
+        /// </summary>
+        public string RejectionCause { get; set; }
 
     }
 }

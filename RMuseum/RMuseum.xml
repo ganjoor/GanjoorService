@@ -1568,11 +1568,12 @@
             <param name="photo"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.DeletePoetSuggestedPhotosAsync(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.RejectPoetSuggestedPhotosAsync(System.Int32,System.String)">
             <summary>
-            delete  a suggestion for poets photos
+            reject  a suggestion for poets photos
             </summary>
             <param name="id"></param>
+            <param name="rejectionCause"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController._poetPhotosService">
@@ -1621,11 +1622,12 @@
             <param name="spec"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController.DeletePoetSuggestedSpecLinesAsync(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController.RejectPoetSuggestedSpecLinesAsync(System.Int32,System.String)">
             <summary>
-            delete  a suggestion for poets spec lines
+            reject  a suggestion for poets spec lines
             </summary>
             <param name="id"></param>
+            <param name="rejectionCause"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Controllers.GanjoorPoetSuggestedSpecLinesController._ganjoorService">
@@ -8022,6 +8024,11 @@
             selected
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedPictureViewModel.RejectionCause">
+            <summary>
+            rejection cause
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel">
             <summary>
             Ganjoor Poet Specification view model
@@ -8055,6 +8062,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel.SuggestedById">
             <summary>
             suggested by id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetSuggestedSpecLineViewModel.RejectionCause">
+            <summary>
+            rejection cause
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel">
@@ -10844,12 +10856,13 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.DeletePoetSuggestedSpecLinesAsync(System.Int32,System.Guid)">
+        <member name="M:RMuseum.Services.IGanjoorService.RejectPoetSuggestedSpecLinesAsync(System.Int32,System.Guid,System.String)">
             <summary>
-            delete  a suggestion for poets spec lines
+            reject  a suggestion for poets spec lines
             </summary>
             <param name="id"></param>
             <param name="deleteUserId"></param>
+            <param name="rejectionCause"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
@@ -12319,12 +12332,13 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoetSuggestedSpecLinesAsync(System.Int32,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.RejectPoetSuggestedSpecLinesAsync(System.Int32,System.Guid,System.String)">
             <summary>
             delete  a suggestion for poets spec lines
             </summary>
             <param name="id"></param>
             <param name="deleteUserId"></param>
+            <param name="rejectionCause"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">
@@ -13471,12 +13485,13 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.DeletePoetSuggestedPhotoAsync(System.Int32,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.RejectPoetSuggestedPhotosAsync(System.Int32,System.Guid,System.String)">
             <summary>
             delete  a suggested photo for poets
             </summary>
             <param name="id"></param>
             <param name="deleteUserId"></param>
+            <param name="rejectionCause"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.PoetPhotoSuggestionService._context">
@@ -14152,12 +14167,13 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.DeletePoetSuggestedPhotoAsync(System.Int32,System.Guid)">
+        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.RejectPoetSuggestedPhotosAsync(System.Int32,System.Guid,System.String)">
             <summary>
             delete  a suggested photo for poets
             </summary>
             <param name="id"></param>
             <param name="deleteUserId"></param>
+            <param name="rejectionCause"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IRecitationService">

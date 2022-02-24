@@ -57,8 +57,8 @@ namespace GanjooRazor.Pages
         {
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
-           
-            
+
+
             if (!string.IsNullOrEmpty(Request.Query["p"]))
             {
                 var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet?url=/{Request.Query["p"]}");
@@ -111,47 +111,50 @@ namespace GanjooRazor.Pages
         public async Task<ActionResult> OnPostSuggestAsync(int poetId, string contents)
         {
             string error = "";
-            using (HttpClient secureClient = new HttpClient())
-            {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+            if (string.IsNullOrEmpty(contents))
+                error = "متن خالی است.";
+            else
+                using (HttpClient secureClient = new HttpClient())
                 {
-                    var response = await secureClient.PostAsync($"{APIRoot.Url}/api/poetspecs",
-                        new StringContent(
-                        JsonConvert.SerializeObject
-                        (
-                            new GanjoorPoetSuggestedSpecLineViewModel()
-                            {
-                                PoetId = poetId,
-                                Contents = contents,
-                            }
-                        ),
-                        Encoding.UTF8, "application/json")
-                        );
-                    if (response.StatusCode == HttpStatusCode.OK)
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
-                        var line = JsonConvert.DeserializeObject<GanjoorPoetSuggestedSpecLineViewModel>(await response.Content.ReadAsStringAsync());
-                        return new PartialViewResult()
-                        {
-                            ViewName = "_PoetSpecLinePartial",
-                            ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                            {
-                                Model = new _PoetSpecLinePartialModel()
+                        var response = await secureClient.PostAsync($"{APIRoot.Url}/api/poetspecs",
+                            new StringContent(
+                            JsonConvert.SerializeObject
+                            (
+                                new GanjoorPoetSuggestedSpecLineViewModel()
                                 {
-                                    Line = line
+                                    PoetId = poetId,
+                                    Contents = contents,
                                 }
-                            }
-                        };
+                            ),
+                            Encoding.UTF8, "application/json")
+                            );
+                        if (response.StatusCode == HttpStatusCode.OK)
+                        {
+                            var line = JsonConvert.DeserializeObject<GanjoorPoetSuggestedSpecLineViewModel>(await response.Content.ReadAsStringAsync());
+                            return new PartialViewResult()
+                            {
+                                ViewName = "_PoetSpecLinePartial",
+                                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                                {
+                                    Model = new _PoetSpecLinePartialModel()
+                                    {
+                                        Line = line
+                                    }
+                                }
+                            };
+                        }
+                        else
+                        {
+                            error = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        }
                     }
                     else
                     {
-                        error = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        error = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
                     }
                 }
-                else
-                {
-                    error = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
-                }
-            }
             return new PartialViewResult()
             {
                 ViewName = "_PoetSpecLinePartial",
@@ -171,43 +174,52 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnPostAsync(PoetPhotoSuggestionUploadModel Upload)
         {
-            using (HttpClient secureClient = new HttpClient())
-            {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+            if (string.IsNullOrEmpty(Upload.Title))
+                LastError = "عنوان خالی است.";
+            else
+               if (string.IsNullOrEmpty(Upload.Description))
+                LastError = "توضیح خالی است.";
+            else
+               if (Upload.Image == null)
+                LastError = "تصویر انتخاب نشده است.";
+            else
+                using (HttpClient secureClient = new HttpClient())
                 {
-                    MultipartFormDataContent form = new MultipartFormDataContent();
-
-                    using (MemoryStream stream = new MemoryStream())
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
-                        form.Add(new StringContent(Upload.PoetId.ToString()), "poetId");
-                        form.Add(new StringContent(Upload.Title), "title");
-                        form.Add(new StringContent(Upload.Description), "description");
-                        form.Add(new StringContent(""), "srcUrl");
+                        MultipartFormDataContent form = new MultipartFormDataContent();
 
-
-                        await Upload.Image.CopyToAsync(stream);
-                        var fileContent = stream.ToArray();
-                        form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Upload.Image.FileName, Upload.Image.FileName);
-
-                        HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/poetphotos", form);
-                        if (!response.IsSuccessStatusCode)
+                        using (MemoryStream stream = new MemoryStream())
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        }
-                        else
-                        {
-                            UploadedPhoto = JsonConvert.DeserializeObject<GanjoorPoetSuggestedPictureViewModel>(await response.Content.ReadAsStringAsync());
+                            form.Add(new StringContent(Upload.PoetId.ToString()), "poetId");
+                            form.Add(new StringContent(Upload.Title), "title");
+                            form.Add(new StringContent(Upload.Description), "description");
+                            form.Add(new StringContent(""), "srcUrl");
 
-                            UploadedPhoto.ImageUrl =  $"{APIRoot.InternetUrl}/{UploadedPhoto.ImageUrl}";
+
+                            await Upload.Image.CopyToAsync(stream);
+                            var fileContent = stream.ToArray();
+                            form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Upload.Image.FileName, Upload.Image.FileName);
+
+                            HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/poetphotos", form);
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            }
+                            else
+                            {
+                                UploadedPhoto = JsonConvert.DeserializeObject<GanjoorPoetSuggestedPictureViewModel>(await response.Content.ReadAsStringAsync());
+
+                                UploadedPhoto.ImageUrl = $"{APIRoot.InternetUrl}/{UploadedPhoto.ImageUrl}";
+                            }
                         }
                     }
-                }
-                else
-                {
-                    LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
-                }
+                    else
+                    {
+                        LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    }
 
-            }
+                }
 
 
             return await OnGetAsync();
