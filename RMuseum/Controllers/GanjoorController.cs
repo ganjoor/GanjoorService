@@ -1327,7 +1327,7 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("song/mysuggestions")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCorrectionViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PoemMusicTrackViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetUserSuggestedSongs([FromQuery] PagingParameterModel paging)
         {

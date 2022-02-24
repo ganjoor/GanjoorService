@@ -1,0 +1,116 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.MySuggestedSongsModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_UserPanelLayout";
+    ViewData["Title"] = "آهنگ‌های پیشنهادی من";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @if (Model.SuggestedSongs.Count == 0)
+    {
+        <p>
+            شما هنوز هیچ آهنگ مرتبطی را پیشنهاد نداده‌اید. برای آشنایی با نحوهٔ پیشنهاد آهنگ‌های مرتبط <a href="http://blog.ganjoor.net/1395/06/28/bptags/" target="_blank">اینجا</a> را ببینید.
+        </p>
+    }
+
+    @foreach (var suggestedSong in Model.SuggestedSongs)
+    {
+        if (color == "gray")
+            color = "white";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="bookmark-@suggestedSong.Id">
+
+
+            <p>
+                وضعیت: @(suggestedSong.Rejected ? "رد شده" : suggestedSong.Approved ? "تأیید شده" : "بررسی نشده" )
+            </p>
+
+            @if (suggestedSong.Rejected)
+            {
+                <p>
+                    دلیل رد: @suggestedSong.RejectionCause
+                </p>
+            }
+
+            @if (suggestedSong.BrokenLink)
+            {
+                <p>لینک آهنگ کار نمی‌کند.</p>
+            }
+
+            <p>
+                <a href="@($"/?p={suggestedSong.PoemId}")" target="_blank">مشاهدهٔ شعر مرتبط</a>
+            </p>
+
+
+            @if (!string.IsNullOrEmpty(suggestedSong.ArtistName))
+            {
+                <p>
+                    خواننده: <a href="@Html.Raw(suggestedSong.ArtistUrl)" target="_blank">@suggestedSong.ArtistName</a>
+                </p>
+            }
+
+            @if (!string.IsNullOrEmpty(suggestedSong.AlbumName))
+            {
+                <p>
+                    آلبوم: <a href="@Html.Raw(suggestedSong.AlbumUrl)" target="_blank">@suggestedSong.AlbumName</a>
+                </p>
+            }
+
+            <p>
+                آهنگ: <a href="@Html.Raw(suggestedSong.TrackUrl)" target="_blank">@suggestedSong.TrackName</a>
+            </p>
+
+
+            @if (!string.IsNullOrEmpty(suggestedSong.Description))
+            {
+                <p>توضیح: @suggestedSong.Description</p>
+            }
+
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+}
+
+
