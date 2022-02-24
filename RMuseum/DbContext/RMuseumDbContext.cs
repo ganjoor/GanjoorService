@@ -446,5 +446,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<FAQCategory> FAQCategories { get; set; }
 
+        /// <summary>
+        /// faq items
+        /// </summary>
+        public DbSet<FAQItem> FAQItems { get; set; }
+
     }
 }

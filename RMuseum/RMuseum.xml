@@ -2650,6 +2650,11 @@
             faq categories
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.FAQItems">
+            <summary>
+            faq items
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -9976,21 +9981,42 @@
         </member>
         <member name="M:RMuseum.Services.IFAQService.AddCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
             <summary>
-            add faq category
+            add a new faq category
             </summary>
             <param name="cat"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IFAQService.UpdateCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
             <summary>
-            update faq cateory
+            update an existing faq category
             </summary>
             <param name="cat"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IFAQService.DeleteCategoryAsync(System.Int32)">
             <summary>
-            delete faq category
+            delete a faq category
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IFAQService.AddItemAsync(RMuseum.Models.FAQ.FAQItem)">
+            <summary>
+            add a new faq item
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IFAQService.UpdateItemAsync(RMuseum.Models.FAQ.FAQItem)">
+            <summary>
+            update an existing faq item
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IFAQService.DeleteItemAsync(System.Int32)">
+            <summary>
+            delete a faq item
             </summary>
             <param name="id"></param>
             <returns></returns>
@@ -11912,21 +11938,42 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.FAQService.AddCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
             <summary>
-            add faq category
+            add a new faq category
             </summary>
             <param name="cat"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.FAQService.UpdateCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
             <summary>
-            update faq cateory
+            update an existing faq category
             </summary>
             <param name="cat"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.FAQService.DeleteCategoryAsync(System.Int32)">
             <summary>
-            delete faq category
+            delete a faq category
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.AddItemAsync(RMuseum.Models.FAQ.FAQItem)">
+            <summary>
+            add a new faq item
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.UpdateItemAsync(RMuseum.Models.FAQ.FAQItem)">
+            <summary>
+            update an existing faq item
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.DeleteItemAsync(System.Int32)">
+            <summary>
+            delete a faq item
             </summary>
             <param name="id"></param>
             <returns></returns>

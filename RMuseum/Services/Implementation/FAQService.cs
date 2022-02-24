@@ -16,7 +16,7 @@ namespace RMuseum.Services.Implementation
     {
 
         /// <summary>
-        /// add faq category
+        /// add a new faq category
         /// </summary>
         /// <param name="cat"></param>
         /// <returns></returns>
@@ -36,7 +36,7 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// update faq cateory
+        /// update an existing faq category
         /// </summary>
         /// <param name="cat"></param>
         /// <returns></returns>
@@ -61,7 +61,7 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// delete faq category
+        /// delete a faq category
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -70,6 +70,81 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var dbModel = await _context.FAQCategories.Where(c => c.Id == id).SingleAsync();
+                _context.Remove(dbModel);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// add a new faq item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<FAQItem>> AddItemAsync(FAQItem item)
+        {
+            try
+            {
+                _context.FAQItems.Add(item);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<FAQItem>(item);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<FAQItem>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// update an existing faq item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> UpdateItemAsync(FAQItem item)
+        {
+            try
+            {
+                var dbModel = await _context.FAQItems.Where(i => i.Id == item.Id).SingleAsync();
+                dbModel.Question = item.Question;
+                dbModel.AnswerExcerpt = item.AnswerExcerpt;
+                dbModel.FullAnswer = item.FullAnswer;
+                dbModel.Pinned = item.Pinned;
+                dbModel.PinnedItemOrder = item.PinnedItemOrder;
+                dbModel.CategoryId = item.CategoryId;
+                dbModel.ItemOrderInCategory = item.ItemOrderInCategory;
+                dbModel.ContentForSearch = item.ContentForSearch;
+                dbModel.HashTag1 = item.HashTag1;
+                dbModel.HashTag2 = item.HashTag2;
+                dbModel.HashTag3 = item.HashTag3;
+                dbModel.HashTag4 = item.HashTag4;
+                dbModel.Published = item.Published;
+                _context.Update(dbModel);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete a faq item
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteItemAsync(int id)
+        {
+            try
+            {
+                var dbModel = await _context.FAQItems.Where(i => i.Id == id).SingleAsync();
                 _context.Remove(dbModel);
                 await _context.SaveChangesAsync();
 
