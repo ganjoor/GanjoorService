@@ -160,19 +160,20 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// delete  a suggestion for poets photos
+        /// reject  a suggestion for poets photos
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="rejectionCause"></param>
         /// <returns></returns>
-        [HttpDelete("{id}")]
+        [HttpPut("reject/{id}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModeratePoetPhotos)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public async Task<IActionResult> DeletePoetSuggestedPhotosAsync(int id)
+        public async Task<IActionResult> RejectPoetSuggestedPhotosAsync(int id, [FromBody] string rejectionCause)
         {
             Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            var res = await _poetPhotosService.DeletePoetSuggestedPhotoAsync(id, userId);
+            var res = await _poetPhotosService.RejectPoetSuggestedPhotosAsync(id, userId, rejectionCause);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

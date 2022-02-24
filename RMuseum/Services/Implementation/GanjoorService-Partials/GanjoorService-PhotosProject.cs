@@ -237,8 +237,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <param name="deleteUserId"></param>
+        /// <param name="rejectionCause"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> DeletePoetSuggestedSpecLinesAsync(int id, Guid deleteUserId)
+        public async Task<RServiceResult<bool>> RejectPoetSuggestedSpecLinesAsync(int id, Guid deleteUserId, string rejectionCause)
         {
             try
             {
@@ -249,9 +250,10 @@ namespace RMuseum.Services.Implementation
                 {
                     var userRes = await _appUserService.GetUserInformation((Guid)dbModel.SuggestedById);
                     var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == dbModel.PoetId).SingleAsync();
+                    string causePhrase = string.IsNullOrEmpty(rejectionCause) ? "" : $" به دلیل {rejectionCause} ";
                     await _notificationService.PushNotification((Guid)dbModel.SuggestedById,
                                       $"عدم پذیرش مشارکت شما در مشخصات {poet.Nickname}",
-                                      $"متأسفانه پیشنهاد شما برای مشخصات {poet.Nickname} مورد پذیرش قرار نگرفت. پیشنها شما: {Environment.NewLine}" +
+                                      $"متأسفانه پیشنهاد شما برای مشخصات {poet.Nickname}{causePhrase} مورد پذیرش قرار نگرفت. پیشنها شما: {Environment.NewLine}" +
                                       $"{dbModel.Contents}"
                                       );
                 }

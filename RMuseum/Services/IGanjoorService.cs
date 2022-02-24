@@ -808,11 +808,12 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> ModifyPoetSuggestedSpecLinesAsync(GanjoorPoetSuggestedSpecLineViewModel model);
 
         /// <summary>
-        /// delete  a suggestion for poets spec lines
+        /// reject  a suggestion for poets spec lines
         /// </summary>
         /// <param name="id"></param>
         /// <param name="deleteUserId"></param>
+        /// <param name="rejectionCause"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> DeletePoetSuggestedSpecLinesAsync(int id, Guid deleteUserId);
+        Task<RServiceResult<bool>> RejectPoetSuggestedSpecLinesAsync(int id, Guid deleteUserId, string rejectionCause);
     }
 }
