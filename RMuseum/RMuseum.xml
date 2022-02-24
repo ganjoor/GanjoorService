@@ -9979,6 +9979,20 @@
             faq service interface
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IFAQService.GetCategoriesAsync(System.Boolean)">
+            <summary>
+            get categories
+            </summary>
+            <param name="onlyPublished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IFAQService.GetCategoryByIdAsync(System.Int32)">
+            <summary>
+            get category by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IFAQService.AddCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
             <summary>
             add a new faq category
@@ -9996,6 +10010,28 @@
         <member name="M:RMuseum.Services.IFAQService.DeleteCategoryAsync(System.Int32)">
             <summary>
             delete a faq category
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IFAQService.GetPinnedItemsAsync(System.Boolean)">
+            <summary>
+            get pinned items
+            </summary>
+            <param name="onlyPublished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IFAQService.GetCategoryItemsAsync(System.Int32,System.Boolean)">
+            <summary>
+            get category items
+            </summary>
+            <param name="categoryId"></param>
+            <param name="onlyPublished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IFAQService.GetItemByIdAsync(System.Int32)">
+            <summary>
+            get item by id
             </summary>
             <param name="id"></param>
             <returns></returns>
@@ -11936,6 +11972,20 @@
             faq service implementation
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.GetCategoriesAsync(System.Boolean)">
+            <summary>
+            get categories
+            </summary>
+            <param name="onlyPublished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.GetCategoryByIdAsync(System.Int32)">
+            <summary>
+            get category by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.FAQService.AddCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
             <summary>
             add a new faq category
@@ -11953,6 +12003,28 @@
         <member name="M:RMuseum.Services.Implementation.FAQService.DeleteCategoryAsync(System.Int32)">
             <summary>
             delete a faq category
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.GetPinnedItemsAsync(System.Boolean)">
+            <summary>
+            get pinned items
+            </summary>
+            <param name="onlyPublished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.GetCategoryItemsAsync(System.Int32,System.Boolean)">
+            <summary>
+            get category items
+            </summary>
+            <param name="categoryId"></param>
+            <param name="onlyPublished"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.FAQService.GetItemByIdAsync(System.Int32)">
+            <summary>
+            get item by id
             </summary>
             <param name="id"></param>
             <returns></returns>

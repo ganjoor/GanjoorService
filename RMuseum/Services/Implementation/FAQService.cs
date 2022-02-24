@@ -16,6 +16,32 @@ namespace RMuseum.Services.Implementation
     {
 
         /// <summary>
+        /// get categories
+        /// </summary>
+        /// <param name="onlyPublished"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<FAQCategory[]>> GetCategoriesAsync(bool onlyPublished)
+        {
+            return new RServiceResult<FAQCategory[]>
+                (
+                await _context.FAQCategories.Where(c => c.Published == true || onlyPublished == false).OrderBy(c => c.CatOrder).ToArrayAsync()
+                );
+        }
+
+        /// <summary>
+        /// get category by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<FAQCategory>> GetCategoryByIdAsync(int id)
+        {
+            return new RServiceResult<FAQCategory>
+                (
+                await _context.FAQCategories.Where(c => c.Id == id).SingleOrDefaultAsync()
+                );
+        }
+
+        /// <summary>
         /// add a new faq category
         /// </summary>
         /// <param name="cat"></param>
@@ -79,6 +105,46 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
+        }
+
+        /// <summary>
+        /// get pinned items
+        /// </summary>
+        /// <param name="onlyPublished"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<FAQItem[]>> GetPinnedItemsAsync(bool onlyPublished)
+        {
+            return new RServiceResult<FAQItem[]>
+                (
+                await _context.FAQItems.Where(c => c.Pinned && (onlyPublished == false || c.Published == true)).OrderBy(c => c.PinnedItemOrder).ToArrayAsync()
+                );
+        }
+
+        /// <summary>
+        /// get category items
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="onlyPublished"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<FAQItem[]>> GetCategoryItemsAsync(int categoryId, bool onlyPublished)
+        {
+            return new RServiceResult<FAQItem[]>
+                (
+                await _context.FAQItems.Where(c => c.CategoryId == categoryId && (onlyPublished == false || c.Published == true)).OrderBy(c => c.ItemOrderInCategory).ToArrayAsync()
+                );
+        }
+
+        /// <summary>
+        /// get item by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<FAQItem>> GetItemByIdAsync(int id)
+        {
+            return new RServiceResult<FAQItem>
+                (
+                await _context.FAQItems.Where(c => c.Id == id).SingleOrDefaultAsync()
+                );
         }
 
         /// <summary>
