@@ -25,6 +25,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using DNTPersianUtils.Core;
 
 namespace RMuseum.Services.Implementation
 {
@@ -3183,6 +3184,85 @@ namespace RMuseum.Services.Implementation
             await _context.SaveChangesAsync();
             return new RServiceResult<bool>(true);
         }
+
+        /// <summary>
+        /// Search Artifacts
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items)>> SearchArtifacts(PagingParameterModel paging, string term)
+        {
+            term = term.Trim().ApplyCorrectYeKe();
+
+            if (string.IsNullOrEmpty(term))
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items)>((null, null), "خطای جستجوی عبارت خالی");
+            }
+
+            term = term.Replace("‌", " ");//replace zwnj with space
+
+            var source =
+                _context.Artifacts.AsNoTracking().Include(a => a.Tags).Include(a => a.CoverImage)
+                .Where(p =>
+                       p.Name.Contains(term)
+                       ||
+                       p.NameInEnglish.Contains(term)
+                       ||
+                       p.Description.Contains(term)
+                       ||
+                       p.DescriptionInEnglish.Contains(term)
+                       ||
+                       p.Tags.Where(t => t.Value.Contains(term) || t.ValueInEnglish.Contains(term)).Any()
+                       );
+
+
+            (PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items) paginatedResult =
+               await QueryablePaginator<RArtifactMasterRecord>.Paginate(source, paging);
+
+            
+            return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items)>(paginatedResult);
+        }
+
+        /// <summary>
+        /// search artifact items
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecord[] Items)>> SearchArtifactItems(PagingParameterModel paging, string term)
+        {
+            term = term.Trim().ApplyCorrectYeKe();
+
+            if (string.IsNullOrEmpty(term))
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecord[] Items)>((null, null), "خطای جستجوی عبارت خالی");
+            }
+
+            term = term.Replace("‌", " ");//replace zwnj with space
+
+            var source =
+                _context.Items.AsNoTracking().Include(a => a.Tags).Include(a => a.Images)
+                .Where(p =>
+                       p.Name.Contains(term)
+                       ||
+                       p.NameInEnglish.Contains(term)
+                       ||
+                       p.Description.Contains(term)
+                       ||
+                       p.DescriptionInEnglish.Contains(term)
+                       ||
+                       p.Tags.Where(t => t.Value.Contains(term) || t.ValueInEnglish.Contains(term)).Any()
+                       );
+
+
+            (PaginationMetadata PagingMeta, RArtifactItemRecord[] Items) paginatedResult =
+               await QueryablePaginator<RArtifactItemRecord>.Paginate(source, paging);
+
+            return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecord[] Items)>(paginatedResult);
+        }
+
+
 
         /// <summary>
         /// Database Contetxt

@@ -563,5 +563,21 @@ namespace RMuseum.Services
         /// <returns></returns>
         RServiceResult<bool> StartRemovingOriginalImages();
 
+        /// <summary>
+        /// Search Artifacts
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items)>> SearchArtifacts(PagingParameterModel paging, string term);
+
+        /// <summary>
+        /// search artifact items
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecord[] Items)>> SearchArtifactItems(PagingParameterModel paging, string term);
+
     }
 }

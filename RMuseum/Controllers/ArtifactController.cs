@@ -2001,6 +2001,54 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// search artifacts
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("search")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RArtifactMasterRecord>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> SearchArtifacts([FromQuery] PagingParameterModel paging, string term)
+        {
+            var pagedResult = await _artifactService.SearchArtifacts(paging, term);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.Items);
+        }
+
+        /// <summary>
+        /// search artifact items
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("search/items")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RArtifactItemRecord>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> SearchArtifactItems([FromQuery] PagingParameterModel paging, string term)
+        {
+            var pagedResult = await _artifactService.SearchArtifactItems(paging, term);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.Items);
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode

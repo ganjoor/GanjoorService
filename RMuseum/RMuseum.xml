@@ -602,6 +602,22 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.SearchArtifacts(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            search artifacts
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.SearchArtifactItems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            search artifact items
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.ArtifactController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -9977,6 +9993,22 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IArtifactService.SearchArtifacts(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            Search Artifacts
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.SearchArtifactItems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            search artifact items
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>
             donation service
@@ -11833,6 +11865,22 @@
             Synchronize suggested pinterest link
             </summary>
             <param name="linkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.SearchArtifacts(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            Search Artifacts
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.SearchArtifactItems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            search artifact items
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.ArtifactService._context">
