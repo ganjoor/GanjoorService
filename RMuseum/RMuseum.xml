@@ -772,6 +772,27 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.FAQController.AddCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
+            <summary>
+            add a new faq category
+            </summary>
+            <param name="cat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.UpdateCategoryAsync(RMuseum.Models.FAQ.FAQCategory)">
+            <summary>
+            update an existing faq category
+            </summary>
+            <param name="cat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.DeleteCategoryAsync(System.Int32)">
+            <summary>
+             delete a faq category
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.FAQController.GetPinnedItemsAsync">
             <summary>
             get published pinned items
@@ -794,6 +815,27 @@
         <member name="M:RMuseum.Controllers.FAQController.GetItemByIdAsync(System.Int32)">
             <summary>
             get item by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.AddItemAsync(RMuseum.Models.FAQ.FAQItem)">
+            <summary>
+            add a new faq item
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.UpdateItemAsync(RMuseum.Models.FAQ.FAQItem)">
+            <summary>
+            update an existing faq item
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.DeleteItemAsync(System.Int32)">
+            <summary>
+             delete a faq item
             </summary>
             <param name="id"></param>
             <returns></returns>

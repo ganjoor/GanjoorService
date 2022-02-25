@@ -62,6 +62,58 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// add a new faq category
+        /// </summary>
+        /// <param name="cat"></param>
+        /// <returns></returns>
+
+        [HttpPost("cat")]
+        [Authorize(Policy = RMuseumSecurableItem.FAQEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FAQCategory))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> AddCategoryAsync([FromBody]FAQCategory cat)
+        {
+            var res = await _faqService.AddCategoryAsync(cat);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// update an existing faq category
+        /// </summary>
+        /// <param name="cat"></param>
+        /// <returns></returns>
+        [HttpPut("cat")]
+        [Authorize(Policy = RMuseumSecurableItem.FAQEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FAQCategory))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> UpdateCategoryAsync([FromBody] FAQCategory cat)
+        {
+            var res = await _faqService.UpdateCategoryAsync(cat);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        ///  delete a faq category
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("cat/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.FAQEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteCategoryAsync(int id)
+        {
+            var res = await _faqService.DeleteCategoryAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// get published pinned items
         /// </summary>
         /// <returns></returns>
@@ -124,6 +176,60 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> GetItemByIdAsync(int id)
         {
             var res = await _faqService.GetItemByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+
+
+        /// <summary>
+        /// add a new faq item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+
+        [HttpPost]
+        [Authorize(Policy = RMuseumSecurableItem.FAQEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FAQCategory))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> AddItemAsync([FromBody] FAQItem item)
+        {
+            var res = await _faqService.AddItemAsync(item);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// update an existing faq item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Authorize(Policy = RMuseumSecurableItem.FAQEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FAQCategory))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> UpdateItemAsync([FromBody] FAQItem item)
+        {
+            var res = await _faqService.UpdateItemAsync(item);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        ///  delete a faq item
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.FAQEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteItemAsync(int id)
+        {
+            var res = await _faqService.DeleteItemAsync(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
