@@ -68,6 +68,11 @@ namespace RMuseum.Models.Auth.Memory
         /// </summary>
         public const string GanjoorEntityShortName = "ganjoor";
 
+        /// <summary>
+        /// FAQ contents
+        /// </summary>
+        public const string FAQEntityShortName = "faq";
+
         ///<summary>
         /// reorder
         /// </summary>
@@ -178,6 +183,15 @@ namespace RMuseum.Models.Auth.Memory
                             new SecurableItemOperation(Donations, "مدیریت کمکهای مالی", false),
                             new SecurableItemOperation(Translations, "ترجمه", false),
                             new SecurableItemOperation(ModeratePoetPhotos, "مدیریت تصاویر شاعران", false),
+                        }
+                    },
+                    new SecurableItem()
+                    {
+                        ShortName = FAQEntityShortName,
+                        Description = "پرسش‌های متداول",
+                        Operations = new SecurableItemOperation[]
+                        {
+                            new SecurableItemOperation(ModerateOperationShortName, "مدیریت", false),
                         }
                     },
 

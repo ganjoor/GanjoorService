@@ -753,6 +753,62 @@
             donation service
             </summary>
         </member>
+        <member name="M:RMuseum.Controllers.FAQController.GetCategoriesAsync">
+            <summary>
+            get published categories
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.GetAllCategoriesAsync">
+            <summary>
+            get all categories
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.GetCategoryByIdAsync(System.Int32)">
+            <summary>
+            get category by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.GetPinnedItemsAsync">
+            <summary>
+            get published pinned items
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.GetCategoryItemsAsync(System.Int32)">
+            <summary>
+            get published category items
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.GetAllCategoryItemsAsync(System.Int32)">
+            <summary>
+            get all category items
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.GetItemByIdAsync(System.Int32)">
+            <summary>
+            get item by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Controllers.FAQController._faqService">
+            <summary>
+            FAQ Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.FAQController.#ctor(RMuseum.Services.IFAQService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="faqService"></param>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoets">
             <summary>
             get list of published poets without their biography
@@ -3591,6 +3647,11 @@
         <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.GanjoorEntityShortName">
             <summary>
             ganjoor contents
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.FAQEntityShortName">
+            <summary>
+            FAQ contents
             </summary>
         </member>
         <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ReOrderOperationShortName">
