@@ -3264,6 +3264,7 @@ namespace RMuseum.Services.Implementation
             {
                 RArtifactItemRecordViewModel model = new RArtifactItemRecordViewModel();
                 model.Item = item;
+                model.ParentFriendlyUrl = (await _context.Artifacts.AsNoTracking().Where(a => a.Id == item.RArtifactMasterRecordId).SingleAsync()).FriendlyUrl;
                 viewModels.Add(model);
             }
 
