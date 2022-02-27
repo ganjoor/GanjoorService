@@ -577,7 +577,7 @@ namespace RMuseum.Services
         /// <param name="paging"></param>
         /// <param name="term"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecord[] Items)>> SearchArtifactItems(PagingParameterModel paging, string term);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecordViewModel[] Items)>> SearchArtifactItems(PagingParameterModel paging, string term);
 
     }
 }

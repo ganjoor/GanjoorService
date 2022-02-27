@@ -3230,13 +3230,13 @@ namespace RMuseum.Services.Implementation
         /// <param name="paging"></param>
         /// <param name="term"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecord[] Items)>> SearchArtifactItems(PagingParameterModel paging, string term)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecordViewModel[] Items)>> SearchArtifactItems(PagingParameterModel paging, string term)
         {
             term = term.Trim().ApplyCorrectYeKe();
 
             if (string.IsNullOrEmpty(term))
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecord[] Items)>((null, null), "خطای جستجوی عبارت خالی");
+                return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecordViewModel[] Items)>((null, null), "خطای جستجوی عبارت خالی");
             }
 
             term = term.Replace("‌", " ");//replace zwnj with space
@@ -3259,7 +3259,15 @@ namespace RMuseum.Services.Implementation
             (PaginationMetadata PagingMeta, RArtifactItemRecord[] Items) paginatedResult =
                await QueryablePaginator<RArtifactItemRecord>.Paginate(source, paging);
 
-            return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecord[] Items)>(paginatedResult);
+            List<RArtifactItemRecordViewModel> viewModels = new List<RArtifactItemRecordViewModel>();
+            foreach (var item in paginatedResult.Items)
+            {
+                RArtifactItemRecordViewModel model = new RArtifactItemRecordViewModel();
+                model.Item = item;
+                viewModels.Add(model);
+            }
+
+            return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecordViewModel[] Items)>((paginatedResult.PagingMeta, viewModels.ToArray()));
         }
 
 

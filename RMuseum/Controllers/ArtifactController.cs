@@ -2033,7 +2033,7 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("search/items")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RArtifactItemRecord>))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RArtifactItemRecordViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
         public async Task<IActionResult> SearchArtifactItems([FromQuery] PagingParameterModel paging, string term)
