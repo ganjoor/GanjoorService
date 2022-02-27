@@ -48,7 +48,7 @@ else
             </td>
         </tr>
 
-         <tr>
+        <tr>
             <td>
                 تعداد کل:
             </td>
@@ -131,6 +131,20 @@ else
             <tr>
                 <td colspan="2">
                     وزن
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @if (Model.PageInformation.Poem.Verses.Length > 0)
+                    {
+                        @Model.PageInformation.Poem.Verses[0].Text
+                    }
+                </td>
+                <td>
+                    @if (Model.PageInformation.Poem.Verses.Length > 1)
+                    {
+                        @Model.PageInformation.Poem.Verses[1].Text
+                    }
                 </td>
             </tr>
             <tr>
@@ -259,9 +273,9 @@ else
             </tr>
         }
 
-        
 
-       
+
+
 
 
     </table>
