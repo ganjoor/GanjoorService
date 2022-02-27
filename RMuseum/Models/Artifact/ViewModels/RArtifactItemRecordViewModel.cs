@@ -32,7 +32,7 @@ namespace RMuseum.Models.Artifact.ViewModels
                     {
                         RArtifactTagViewModel related = rItemTags.Where(t => t.Id == tag.RTagId).SingleOrDefault();
                         List<RTagValue> values = (related == null) ? new List<RTagValue>() : new List<RTagValue>(related.Values);
-                        if (related == null)
+                        if (related == null && tag.RTag != null)
                         {
                             related = new RArtifactTagViewModel()
                             {
@@ -50,9 +50,14 @@ namespace RMuseum.Models.Artifact.ViewModels
                             rItemTags.Add(related);
 
                         }
-                        values.Add(tag);
-                        values.Sort((a, b) => a.Order - b.Order);
-                        related.Values = values;
+                        
+                        if (related != null)
+                        {
+                            values.Add(tag);
+                            values.Sort((a, b) => a.Order - b.Order);
+                            related.Values = values;
+                        }
+                        
                     }
 
                     rItemTags.Sort((a, b) => a.Order - b.Order);
