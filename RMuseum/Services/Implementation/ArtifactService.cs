@@ -3202,18 +3202,73 @@ namespace RMuseum.Services.Implementation
 
             term = term.Replace("‌", " ");//replace zwnj with space
 
+            string searchConditions;
+            if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
+            {
+                searchConditions = term.Replace("\"", "").Replace("'", "");
+                searchConditions = $"\"{searchConditions}\"";
+            }
+            else
+            {
+                string[] words = term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                searchConditions = "";
+                string emptyOrAnd = "";
+                foreach (string word in words)
+                {
+                    searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
+                    emptyOrAnd = " AND ";
+                }
+            }
+
+            /*
+             CREATE FULLTEXT CATALOG RArtifactMasterRecord
+
+            GO
+
+            CREATE FULLTEXT INDEX ON [dbo].[Artifacts](
+            [Name] LANGUAGE 'English',
+            [NameInEnglish] LANGUAGE 'English',
+            [Description] LANGUAGE 'English',
+            [DescriptionInEnglish] LANGUAGE 'English'
+            )
+            KEY INDEX [PK_Artifacts]ON ([RArtifactMasterRecord], FILEGROUP [PRIMARY])
+            WITH (CHANGE_TRACKING = AUTO, STOPLIST = SYSTEM)
+
+            GO
+
+            CREATE FULLTEXT INDEX ON [dbo].[Items](
+            [Name] LANGUAGE 'English',
+            [NameInEnglish] LANGUAGE 'English',
+            [Description] LANGUAGE 'English',
+            [DescriptionInEnglish] LANGUAGE 'English'
+            )
+            KEY INDEX [PK_Items]ON ([RArtifactMasterRecord], FILEGROUP [PRIMARY])
+            WITH (CHANGE_TRACKING = AUTO, STOPLIST = SYSTEM)
+
+            GO
+
+            CREATE FULLTEXT INDEX ON [dbo].[TagValues](
+            [Value] LANGUAGE 'English',
+            [ValueInEnglish] LANGUAGE 'English'
+            )
+            KEY INDEX [PK_TagValues]ON ([RArtifactMasterRecord], FILEGROUP [PRIMARY])
+            WITH (CHANGE_TRACKING = AUTO, STOPLIST = SYSTEM)
+
+             */
+
             var source =
                 _context.Artifacts.AsNoTracking().Include(a => a.Tags).Include(a => a.CoverImage)
                 .Where(p =>
-                       p.Name.Contains(term)
+                       EF.Functions.Contains(p.Name, searchConditions)
                        ||
-                       p.NameInEnglish.Contains(term)
+                       EF.Functions.Contains(p.NameInEnglish, searchConditions)
                        ||
-                       p.Description.Contains(term)
+                       EF.Functions.Contains(p.Description, searchConditions)
                        ||
-                       p.DescriptionInEnglish.Contains(term)
+                       EF.Functions.Contains(p.DescriptionInEnglish, searchConditions)
                        ||
-                       p.Tags.Where(t => t.Value.Contains(term) || t.ValueInEnglish.Contains(term)).Any()
+                       p.Tags.Where(t => EF.Functions.Contains(t.Value, searchConditions) || EF.Functions.Contains(t.ValueInEnglish, searchConditions)).Any()
                        );
 
 
@@ -3241,18 +3296,37 @@ namespace RMuseum.Services.Implementation
 
             term = term.Replace("‌", " ");//replace zwnj with space
 
+            string searchConditions;
+            if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
+            {
+                searchConditions = term.Replace("\"", "").Replace("'", "");
+                searchConditions = $"\"{searchConditions}\"";
+            }
+            else
+            {
+                string[] words = term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                searchConditions = "";
+                string emptyOrAnd = "";
+                foreach (string word in words)
+                {
+                    searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
+                    emptyOrAnd = " AND ";
+                }
+            }
+
             var source =
                 _context.Items.AsNoTracking().Include(a => a.Tags).Include(a => a.Images)
                 .Where(p =>
-                       p.Name.Contains(term)
+                        EF.Functions.Contains(p.Name, searchConditions)
                        ||
-                       p.NameInEnglish.Contains(term)
+                       EF.Functions.Contains(p.NameInEnglish, searchConditions)
                        ||
-                       p.Description.Contains(term)
+                       EF.Functions.Contains(p.Description, searchConditions)
                        ||
-                       p.DescriptionInEnglish.Contains(term)
+                       EF.Functions.Contains(p.DescriptionInEnglish, searchConditions)
                        ||
-                       p.Tags.Where(t => t.Value.Contains(term) || t.ValueInEnglish.Contains(term)).Any()
+                       p.Tags.Where(t => EF.Functions.Contains(t.Value, searchConditions) || EF.Functions.Contains(t.ValueInEnglish, searchConditions)).Any()
                        );
 
 
