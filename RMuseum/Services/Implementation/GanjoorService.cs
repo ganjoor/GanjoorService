@@ -2355,15 +2355,17 @@ namespace RMuseum.Services.Implementation
         }
 
 
+
         /// <summary>
         /// Search
         /// You need to run this scripts manually on the database before using this method:
         /// 
-        /// CREATE FULLTEXT CATALOG [GanjoorPoemPlainTextCatalog] WITH ACCENT_SENSITIVITY = OFF
-        /// ALTER TABLE [dbo].[GanjoorPoems] ADD  CONSTRAINT [PK_GanjoorPoems] PRIMARY KEY CLUSTERED 
-        ///(
-        ///    [Id] ASC
-        ///) WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]
+        /// CREATE FULLTEXT CATALOG [GanjoorPoemPlainTextCatalog] WITH ACCENT_SENSITIVITY = OFF AS DEFAULT
+        /// 
+        /// CREATE FULLTEXT INDEX ON [dbo].[GanjoorPoems](
+        /// [PlainText] LANGUAGE 'English')
+        /// KEY INDEX [PK_GanjoorPoems]ON ([GanjoorPoemPlainTextCatalog], FILEGROUP [PRIMARY])
+        /// WITH (CHANGE_TRACKING = AUTO, STOPLIST = SYSTEM)
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="term"></param>
