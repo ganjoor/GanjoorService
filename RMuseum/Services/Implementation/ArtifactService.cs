@@ -3260,6 +3260,9 @@ namespace RMuseum.Services.Implementation
             var source =
                 _context.Artifacts.AsNoTracking().Include(a => a.Tags).Include(a => a.CoverImage)
                 .Where(p =>
+                       p.Status == PublishStatus.Published
+                       &&
+                       (
                        EF.Functions.Contains(p.Name, searchConditions)
                        ||
                        EF.Functions.Contains(p.NameInEnglish, searchConditions)
@@ -3269,6 +3272,7 @@ namespace RMuseum.Services.Implementation
                        EF.Functions.Contains(p.DescriptionInEnglish, searchConditions)
                        ||
                        p.Tags.Where(t => EF.Functions.Contains(t.Value, searchConditions) || EF.Functions.Contains(t.ValueInEnglish, searchConditions)).Any()
+                       )
                        );
 
 
@@ -3318,7 +3322,10 @@ namespace RMuseum.Services.Implementation
             var source =
                 _context.Items.AsNoTracking().Include(a => a.Tags).Include(a => a.Images)
                 .Where(p =>
-                        EF.Functions.Contains(p.Name, searchConditions)
+                        p.Images.Count > 0
+                        &&
+                       (
+                       EF.Functions.Contains(p.Name, searchConditions)
                        ||
                        EF.Functions.Contains(p.NameInEnglish, searchConditions)
                        ||
@@ -3327,6 +3334,7 @@ namespace RMuseum.Services.Implementation
                        EF.Functions.Contains(p.DescriptionInEnglish, searchConditions)
                        ||
                        p.Tags.Where(t => EF.Functions.Contains(t.Value, searchConditions) || EF.Functions.Contains(t.ValueInEnglish, searchConditions)).Any()
+                       )
                        );
 
 
