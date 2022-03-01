@@ -3345,6 +3345,10 @@ namespace RMuseum.Services.Implementation
             foreach (var item in paginatedResult.Items)
             {
                 RArtifactItemRecordViewModel model = new RArtifactItemRecordViewModel();
+                if(!item.Images.Any())//?! this sometimes happen!
+                {
+                    item.Images = (await _context.Items.AsNoTracking().Include(i => i.Images).Where(i => i.Id == item.Id).SingleAsync()).Images;
+                }
                 model.Item = item;
                 model.ParentFriendlyUrl = (await _context.Artifacts.AsNoTracking().Where(a => a.Id == item.RArtifactMasterRecordId).SingleAsync()).FriendlyUrl;
                 viewModels.Add(model);
