@@ -1,0 +1,32 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.FAQItemsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_UserPanelLayout";
+    ViewData["Title"] = "پرسش‌های متداول";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <p>
+        @Model.LastMessage
+    </p>
+}
+else
+{
+    <table>
+        <tr>
+            <td>دسته‌بندی پرسش‌ها</td>
+            <td>
+                <select name="cat" id="cat">
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.Id">@category.Title</option>
+                    }
+                </select>
+            </td>
+        </tr>
+    </table>
+
+}
