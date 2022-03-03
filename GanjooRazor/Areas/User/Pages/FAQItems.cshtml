@@ -19,6 +19,9 @@ else
         function editCategory(){
             location.href = '/User/FAQCatEdit?id=' + String(document.getElementById('cat').value);
         }
+        function newItem(){
+            location.href = '/User/FAQItemEdit?catId=' + String(document.getElementById('cat').value);
+        }
         function deleteCategory() {
 
             var sel = document.getElementById('cat');
@@ -96,7 +99,11 @@ else
     </table>
 
     <h2>پرسش‌های دستهٔ جاری</h2>
+    <p>
+        <a role="button" onclick="newItem()" class="pagebutton">پرسش جدید</a>
+    </p>
     <div id="catItems">
     </div>
+
 
 }

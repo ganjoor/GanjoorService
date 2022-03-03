@@ -1,0 +1,96 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.FAQItemEditModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_UserPanelLayout";
+    ViewData["Title"] = "ویرایش پرسش";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+<h1>@ViewData["Title"]</h1>
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <p>
+        @Model.LastMessage
+    </p>
+}
+else
+{
+    <form method="post">
+        <table>
+            <tr>
+                <td>
+                    پرسش:
+                </td>
+                <td>
+                    <input type="hidden" asp-for="Question.Id" />
+                    <input asp-for="Question.Question" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    پاسخ خلاصه:
+                </td>
+                <td>
+                    <textarea asp-for="Question.AnswerExcerpt" class="editor"></textarea>
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    پاسخ کامل:
+                </td>
+                <td>
+                    <textarea asp-for="Question.FullAnswer" class="editor"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    سنجاق شده:
+                </td>
+                <td>
+                    <input type="checkbox" asp-for="Question.Pinned" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    ترتیب سنجاق:
+                </td>
+                <td>
+                    <input asp-for="Question.PinnedItemOrder" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    منتشر شده:
+                </td>
+                <td>
+                    <input type="checkbox" asp-for="Question.Published" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    ترتیب در دسته:
+                </td>
+                <td>
+                    <input type="hidden" asp-for="Question.CategoryId" />
+                    <input asp-for="Question.ItemOrderInCategory" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    لغات کلیدی:
+                </td>
+                <td>
+                    <input asp-for="Question.ContentForSearch" />
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="ذخیره" />
+                </td>
+            </tr>
+
+        </table>
+
+    </form>
+}
