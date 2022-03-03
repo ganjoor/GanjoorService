@@ -15,9 +15,14 @@
 }
 else
 {
+    <script>
+        function editCategory(){
+            location.href = '/User/FAQCatEdit?id=' + String(document.getElementById('cat').value);
+        }
+    </script>
     <table>
         <tr>
-            <td>دسته‌بندی پرسش‌ها</td>
+            <td>دسته‌بندی پرسش‌ها:</td>
             <td>
                 <select name="cat" id="cat">
                     @foreach (var category in Model.Categories)
@@ -25,6 +30,7 @@ else
                         <option value="@category.Id">@category.Title</option>
                     }
                 </select>
+                <a role="button" onclick="editCategory()" class="actionlink" title="ویرایش"><i class="noindent-info-button edit-poem-button"></i></a>
             </td>
         </tr>
         <tr>
