@@ -69,7 +69,7 @@ else
                 success: function (items) {
                      var s = '';
                      for(var i=0; i<items.length; i++){
-                         s += ('<p><a href="/FAQItemEdit?id='+String(items[i].id)+'">' + '<p>' + items[i].question + '</a></p>');
+                         s += ('<p><a href="/User/FAQItemEdit?id='+String(items[i].id)+'">' + '<p>' + items[i].question + '</a></p>');
                      }
                      document.getElementById('catItems').innerHTML = s;
                 },
@@ -84,7 +84,14 @@ else
                 <select name="cat" id="cat" onchange="onSelectedCatChanged()">
                     @foreach (var category in Model.Categories)
                     {
-                        <option value="@category.Id">@category.Title</option>
+                        @if(category.Id == Model.CatId)
+                        {
+                            <option value="@category.Id" selected>@category.Title</option>
+                        }
+                        else
+                        {
+                            <option value="@category.Id">@category.Title</option>
+                        }
                     }
                 </select>
                 <a role="button" onclick="editCategory()" class="actionlink" title="ویرایش"><i class="noindent-info-button edit-poem-button"></i></a>
@@ -103,6 +110,10 @@ else
         <a role="button" onclick="newItem()" class="pagebutton">پرسش جدید</a>
     </p>
     <div id="catItems">
+        @foreach(var item in Model.CategoryItems)
+        {
+            <p><a href="/User/FAQItemEdit?id=@item.Id">@item.Question</a></p>
+        }
     </div>
 
 

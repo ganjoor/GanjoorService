@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.FAQ;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace GanjooRazor.Areas.User.Pages
@@ -60,6 +61,27 @@ namespace GanjooRazor.Areas.User.Pages
             }
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
+                HttpResponseMessage response =
+                    Question.Id == 0 ?
+                    await secureClient.PostAsync($"{APIRoot.Url}/api/faq", new StringContent(JsonConvert.SerializeObject(Question), Encoding.UTF8, "application/json"))
+                    :
+                    await secureClient.PutAsync($"{APIRoot.Url}/api/faq", new StringContent(JsonConvert.SerializeObject(Question), Encoding.UTF8, "application/json"))
+                    ;
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return Page();
+                }
+
+                return Redirect($"/User/FAQItems?catId={Question.CategoryId}");
+            }
         }
 
     }

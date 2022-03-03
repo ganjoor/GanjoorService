@@ -17,6 +17,10 @@ namespace GanjooRazor.Areas.User.Pages
 
         public FAQCategory[] Categories { get; set; }
 
+        public FAQItem[] CategoryItems { get; set; }
+
+        public int CatId { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if(string.IsNullOrEmpty(Request.Cookies["Token"]))
@@ -30,6 +34,8 @@ namespace GanjooRazor.Areas.User.Pages
                 return Page();
             }
 
+            CatId = 0;
+
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
@@ -42,6 +48,24 @@ namespace GanjooRazor.Areas.User.Pages
                     }
 
                     Categories = JsonConvert.DeserializeObject<FAQCategory[]>(await response.Content.ReadAsStringAsync());
+
+                    if(Categories.Length > 0)
+                    {
+                        CatId = string.IsNullOrEmpty(Request.Query["catId"]) ? Categories[0].Id : int.Parse(Request.Query["catId"]);
+                        response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/cat/items?catId={CatId}");
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        }
+
+                        var items = JsonConvert.DeserializeObject<FAQItem[]>(await response.Content.ReadAsStringAsync());
+                        if (items == null)
+                        {
+                            items = new FAQItem[] { };
+                        }
+
+                        CategoryItems = items;
+                    }
 
                 }
                 else
@@ -80,7 +104,7 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/cat/secure/items?catId={id}");
+                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/cat/items?catId={id}");
                     if (!response.IsSuccessStatusCode)
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
