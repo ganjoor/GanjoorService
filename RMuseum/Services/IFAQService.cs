@@ -48,9 +48,8 @@ namespace RMuseum.Services
         /// <summary>
         /// get pinned items
         /// </summary>
-        /// <param name="onlyPublished"></param>
         /// <returns></returns>
-        Task<RServiceResult<FAQItem[]>> GetPinnedItemsAsync(bool onlyPublished);
+        Task<RServiceResult<FAQCategory[]>> GetPinnedItemsAsync();
 
         /// <summary>
         /// get category items

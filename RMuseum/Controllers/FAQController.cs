@@ -119,11 +119,11 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet("pinned")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FAQItem[]))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FAQCategory[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetPinnedItemsAsync()
         {
-            var res = await _faqService.GetPinnedItemsAsync(true);
+            var res = await _faqService.GetPinnedItemsAsync();
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

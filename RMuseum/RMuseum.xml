@@ -10154,11 +10154,10 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IFAQService.GetPinnedItemsAsync(System.Boolean)">
+        <member name="M:RMuseum.Services.IFAQService.GetPinnedItemsAsync">
             <summary>
             get pinned items
             </summary>
-            <param name="onlyPublished"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IFAQService.GetCategoryItemsAsync(System.Int32,System.Boolean)">
@@ -12163,11 +12162,10 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.FAQService.GetPinnedItemsAsync(System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.FAQService.GetPinnedItemsAsync">
             <summary>
             get pinned items
             </summary>
-            <param name="onlyPublished"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.FAQService.GetCategoryItemsAsync(System.Int32,System.Boolean)">

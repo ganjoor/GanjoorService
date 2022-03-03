@@ -3,6 +3,7 @@ using RMuseum.DbContext;
 using RMuseum.Models.FAQ;
 using RSecurityBackend.Models.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -110,15 +111,41 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// get pinned items
         /// </summary>
-        /// <param name="onlyPublished"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<FAQItem[]>> GetPinnedItemsAsync(bool onlyPublished)
+        public async Task<RServiceResult<FAQCategory[]>> GetPinnedItemsAsync()
         {
-            var items = await _context.FAQItems.Where(c => c.Pinned && (c.Published == onlyPublished || c.Published == true)).OrderBy(c => c.PinnedItemOrder).ToArrayAsync();
-            return new RServiceResult<FAQItem[]>
-                (
-                items
-                );
+            var items = await _context.FAQItems.Include(i => i.Category).Where(c => c.Pinned && c.Published == true).OrderBy(c => c.Category.CatOrder).ThenBy(c => c.PinnedItemOrder).ThenBy(c => c.ItemOrderInCategory).ToArrayAsync();
+            List<FAQCategory> result = new List<FAQCategory>();
+            FAQCategory cat = null;
+            int catId = -1;
+            foreach (var item in items)
+            {
+                if(item.CategoryId != catId)
+                {
+                    if(cat != null)
+                    {
+                        result.Add(cat);
+                    }
+                    cat = item.Category;
+                    catId = item.CategoryId;
+                    cat.Items = new List<FAQItem>();
+                }
+                cat.Items.Add(item);
+            }
+            if (cat != null)
+            {
+                result.Add(cat);
+            }
+
+            foreach (var resultCat in result)
+            {
+                foreach (var item in resultCat.Items)
+                {
+                    item.Category = null;
+                }
+            }
+            
+            return new RServiceResult<FAQCategory[]>(result.ToArray());
         }
 
         /// <summary>
