@@ -20,7 +20,7 @@ else
             location.href = '/User/FAQCatEdit?id=' + String(document.getElementById('cat').value);
         }
         function deleteCategory() {
-            
+
             var sel = document.getElementById('cat');
             var text= sel.options[sel.selectedIndex].text;
 
@@ -45,12 +45,40 @@ else
             });
 
         }
+
+        function onSelectedCatChanged(){
+            var sel = document.getElementById('cat');
+            if(sel.selectedIndex >= 0){
+                document.getElementById('catItems').innerHTML = 'در حال بارگذاری ...';
+                $.ajax({
+                type: "GET",
+                url: '?Handler=CategoryItems',
+                data: {
+                    id: sel.value
+                },
+                error: function (e) {
+                    document.getElementById('catItems').innerHTML = '';
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function (items) {
+                     var s = '';
+                     for(var i=0; i<items.length; i++){
+                         s += ('<p><a href="/FAQItemEdit?id='+String(items[i].id)+'">' + '<p>' + items[i].question + '</a></p>');
+                     }
+                     document.getElementById('catItems').innerHTML = s;
+                },
+            });
+            }
+        }
     </script>
     <table>
         <tr>
             <td>دسته‌بندی پرسش‌ها:</td>
             <td>
-                <select name="cat" id="cat">
+                <select name="cat" id="cat" onchange="onSelectedCatChanged()">
                     @foreach (var category in Model.Categories)
                     {
                         <option value="@category.Id">@category.Title</option>
@@ -66,5 +94,9 @@ else
             </td>
         </tr>
     </table>
+
+    <h2>پرسش‌های دستهٔ جاری</h2>
+    <div id="catItems">
+    </div>
 
 }

@@ -16,6 +16,7 @@ namespace GanjooRazor.Areas.User.Pages
         public string LastMessage { get; set; }
 
         public FAQCategory[] Categories { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if(string.IsNullOrEmpty(Request.Cookies["Token"]))
@@ -64,7 +65,6 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
-
                 }
                 else
                 {
@@ -72,6 +72,33 @@ namespace GanjooRazor.Areas.User.Pages
                 }
             }
             return new JsonResult(true);
+        }
+
+        public async Task<IActionResult> OnGetCategoryItemsAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/cat/secure/items?catId={id}");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+
+                    var items = JsonConvert.DeserializeObject<FAQItem[]>(await response.Content.ReadAsStringAsync());
+                    if(items == null)
+                    {
+                        items = new FAQItem[] { };
+                    }
+                    return new JsonResult(items);
+
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
         }
     }
 }
