@@ -52,19 +52,13 @@ namespace GanjooRazor.Areas.User.Pages
                     if(Categories.Length > 0)
                     {
                         CatId = string.IsNullOrEmpty(Request.Query["catId"]) ? Categories[0].Id : int.Parse(Request.Query["catId"]);
-                        response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/cat/items?catId={CatId}");
+                        response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/cat/items/secure?catId={CatId}");
                         if (!response.IsSuccessStatusCode)
                         {
                             return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                         }
 
-                        var items = JsonConvert.DeserializeObject<FAQItem[]>(await response.Content.ReadAsStringAsync());
-                        if (items == null)
-                        {
-                            items = new FAQItem[] { };
-                        }
-
-                        CategoryItems = items;
+                        CategoryItems = JsonConvert.DeserializeObject<FAQItem[]>(await response.Content.ReadAsStringAsync());
                     }
 
                 }
@@ -104,18 +98,13 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/cat/items?catId={id}");
+                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/cat/items/secure?catId={id}");
                     if (!response.IsSuccessStatusCode)
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
 
-                    var items = JsonConvert.DeserializeObject<FAQItem[]>(await response.Content.ReadAsStringAsync());
-                    if(items == null)
-                    {
-                        items = new FAQItem[] { };
-                    }
-                    return new JsonResult(items);
+                    return new JsonResult(JsonConvert.DeserializeObject<FAQItem[]>(await response.Content.ReadAsStringAsync()));
 
                 }
                 else

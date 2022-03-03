@@ -114,9 +114,10 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<FAQItem[]>> GetPinnedItemsAsync(bool onlyPublished)
         {
+            var items = await _context.FAQItems.Where(c => c.Pinned && (c.Published == onlyPublished || c.Published == true)).OrderBy(c => c.PinnedItemOrder).ToArrayAsync();
             return new RServiceResult<FAQItem[]>
                 (
-                await _context.FAQItems.Where(c => c.Pinned && (c.Published == onlyPublished || c.Published == true)).OrderBy(c => c.PinnedItemOrder).ToArrayAsync()
+                items
                 );
         }
 
@@ -128,9 +129,10 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<FAQItem[]>> GetCategoryItemsAsync(int categoryId, bool onlyPublished)
         {
+            var items = await _context.FAQItems.Where(c => c.CategoryId == categoryId && (c.Published == onlyPublished || c.Published == true)).OrderBy(c => c.ItemOrderInCategory).ToArrayAsync();
             return new RServiceResult<FAQItem[]>
                 (
-                await _context.FAQItems.Where(c => c.CategoryId == categoryId && (c.Published == onlyPublished || c.Published == true)).OrderBy(c => c.ItemOrderInCategory).ToArrayAsync()
+                items
                 );
         }
 

@@ -84,7 +84,7 @@ else
                 <select name="cat" id="cat" onchange="onSelectedCatChanged()">
                     @foreach (var category in Model.Categories)
                     {
-                        @if(category.Id == Model.CatId)
+                        @if (category.Id == Model.CatId)
                         {
                             <option value="@category.Id" selected>@category.Title</option>
                         }
@@ -110,9 +110,12 @@ else
         <a role="button" onclick="newItem()" class="pagebutton">پرسش جدید</a>
     </p>
     <div id="catItems">
-        @foreach(var item in Model.CategoryItems)
+        @if (Model.CategoryItems != null)
         {
-            <p><a href="/User/FAQItemEdit?id=@item.Id">@item.Question</a></p>
+            @foreach (var item in Model.CategoryItems)
+            {
+                <p><a href="/User/FAQItemEdit?id=@item.Id">@item.Question</a></p>
+            }
         }
     </div>
 

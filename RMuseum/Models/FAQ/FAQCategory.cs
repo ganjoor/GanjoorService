@@ -1,4 +1,7 @@
-﻿namespace RMuseum.Models.FAQ
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RMuseum.Models.FAQ
 {
     /// <summary>
     /// FAQ Category
@@ -29,5 +32,11 @@
         /// published
         /// </summary>
         public bool Published { get; set; }
+
+        /// <summary>
+        /// category items
+        /// </summary>
+        [NotMapped]
+        public List<FAQItem> Items { get; set; }
     }
 }
