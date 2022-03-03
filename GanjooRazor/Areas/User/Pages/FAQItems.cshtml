@@ -19,6 +19,32 @@ else
         function editCategory(){
             location.href = '/User/FAQCatEdit?id=' + String(document.getElementById('cat').value);
         }
+        function deleteCategory() {
+            
+            var sel = document.getElementById('cat');
+            var text= sel.options[sel.selectedIndex].text;
+
+            if (!confirm('آیا از حذف '+text+' اطمینان دارید؟'))
+                return;
+
+            $.ajax({
+                type: "DELETE",
+                url: '',
+                data: {
+                    id: sel.value
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function () {
+                     location.reload();
+                },
+            });
+
+        }
     </script>
     <table>
         <tr>
@@ -31,6 +57,7 @@ else
                     }
                 </select>
                 <a role="button" onclick="editCategory()" class="actionlink" title="ویرایش"><i class="noindent-info-button edit-poem-button"></i></a>
+                <a role="button" onclick="deleteCategory()" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
             </td>
         </tr>
         <tr>
