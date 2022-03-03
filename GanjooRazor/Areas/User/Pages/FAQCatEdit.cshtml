@@ -1,0 +1,65 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.FAQCatEditModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+     Layout = "_UserPanelLayout";
+    ViewData["Title"] = "ویرایش دسته‌بندی";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <p>
+        @Model.LastMessage
+    </p>
+}
+else
+{
+    <form method="post">
+        <table>
+            <tr>
+                <td>
+                    عنوان:
+                </td>
+                <td>
+                    <input type="hidden" asp-for="Category.Id" />
+                    <input asp-for="Category.Title" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    شرح:
+                </td>
+                <td>
+                    <input asp-for="Category.Description" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    ترتیب:
+                </td>
+                <td>
+                    <input asp-for="Category.CatOrder" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    منتشر شده:
+                </td>
+                <td>
+                    <input type="checkbox" asp-for="Category.Published" />
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="ذخیره" />
+                </td>
+            </tr>
+
+        </table>
+
+    </form>
+}
+
