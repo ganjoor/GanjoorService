@@ -116,7 +116,7 @@ namespace RMuseum.Services.Implementation
         {
             return new RServiceResult<FAQItem[]>
                 (
-                await _context.FAQItems.Where(c => c.Pinned && (onlyPublished == false || c.Published == true)).OrderBy(c => c.PinnedItemOrder).ToArrayAsync()
+                await _context.FAQItems.Where(c => c.Pinned && (c.Published == onlyPublished || c.Published == true)).OrderBy(c => c.PinnedItemOrder).ToArrayAsync()
                 );
         }
 
@@ -130,7 +130,7 @@ namespace RMuseum.Services.Implementation
         {
             return new RServiceResult<FAQItem[]>
                 (
-                await _context.FAQItems.Where(c => c.CategoryId == categoryId && (onlyPublished == false || c.Published == true)).OrderBy(c => c.ItemOrderInCategory).ToArrayAsync()
+                await _context.FAQItems.Where(c => c.CategoryId == categoryId && (c.Published == onlyPublished || c.Published == true)).OrderBy(c => c.ItemOrderInCategory).ToArrayAsync()
                 );
         }
 
