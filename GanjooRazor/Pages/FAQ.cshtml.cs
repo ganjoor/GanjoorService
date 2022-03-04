@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Models.FAQ;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Auth.ViewModels;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace GanjooRazor.Pages
         public string LastError { get; set; }
 
         public List<GanjoorPoetViewModel> Poets { get; set; }
+
+        public List<FAQCategory> PinnedItemsCategories { get; set; }
 
         private async Task<bool> preparePoets()
         {
@@ -42,6 +45,14 @@ namespace GanjooRazor.Pages
             //todo: use html master layout or make it partial
             if (false == (await preparePoets()))
                 return Page();
+
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/faq/pinned");
+            if (!response.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return Page();
+            }
+            PinnedItemsCategories = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<FAQCategory>>();
 
             return Page();
         }
