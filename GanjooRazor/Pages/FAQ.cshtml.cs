@@ -56,7 +56,7 @@ namespace GanjooRazor.Pages
                     LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                     if(string.IsNullOrEmpty(LastError))
                     {
-                        LastError = $"خطا در دریافت اطلاعات پرسش مد نظر - کد خظا = {response.StatusCode}";
+                        LastError = $"خطا در دریافت اطلاعات پرسش مد نظر - کد خطا = {response.StatusCode}";
                     }
                     return Page();
                 }
