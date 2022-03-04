@@ -55,28 +55,45 @@
         <div id="fa">
             <div id="maincnt">
                 <div class="poem">
-                    <h2><a href="/faq">پرسش‌های متداول</a></h2>
-                    @foreach (var category in Model.PinnedItemsCategories)
+                    <h2>
+                        <a href="/faq">پرسش‌های متداول</a>
+                    </h2>
+                    @if (Model.Question != null)
                     {
-                        <div class="comments-like-div">
-                            <h2>
-                                @category.Title
-                            </h2>
-                            @foreach (var item in category.Items)
-                            {
-                                <div class="related-images-frame" id="item-@item.Id">
-                                    <div class="century">
-                                        @item.Question <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('item-section-@item.Id', 'item-collapse-button-@item.Id')"><i class="info-buttons collapse_circle_down" id="item-collapse-button-@item.Id"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
-                                    </div>
-                                    <div id="item-section-@item.Id" style="display:none">
-                                        <div class="ganjoor-comment">
-                                            @Html.Raw(item.AnswerExcerpt)
-                                        </div>
-                                    </div>
+                        <div class="related-images-frame" id="item-@Model.Question.Id">
+                            <div class="century">
+                                <a href="/faq?id=@Model.Question.Id">@Model.Question.Question</a>
+                            </div>
+                            <div id="item-section-@Model.Question.Id">
+                                <div class="ganjoor-comment">
+                                    @Html.Raw(Model.Question.AnswerExcerpt)
                                 </div>
-                            }
+                            </div>
                         </div>
                     }
+                    else
+                        @foreach (var category in Model.PinnedItemsCategories)
+                        {
+                            <div class="comments-like-div">
+                                <h2>
+                                    @category.Title
+                                </h2>
+                                @foreach (var item in category.Items)
+                                {
+                                    <div class="related-images-frame" id="item-@item.Id">
+                                        <div class="century">
+                                            @item.Question <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('item-section-@item.Id', 'item-collapse-button-@item.Id')"><i class="info-buttons collapse_circle_down" id="item-collapse-button-@item.Id"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            <a role="button" class="w3tooltip cursor-pointer" href="/faq?id=@item.Id"><i class="info-buttons copylink-icon"></i><span class="w3tooltiptext">نشانی این پرسش</span></a>
+                                        </div>
+                                        <div id="item-section-@item.Id" style="display:none">
+                                            <div class="ganjoor-comment">
+                                                @Html.Raw(item.AnswerExcerpt)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
                 </div>
             </div>
 

@@ -181,7 +181,24 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
-
+        /// <summary>
+        /// get published item by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FAQItem))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPublishedItemByIdAsync(int id)
+        {
+            var res = await _faqService.GetItemByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (!res.Result.Published)
+                return NotFound();
+            return Ok(res.Result);
+        }
 
         /// <summary>
         /// add a new faq item

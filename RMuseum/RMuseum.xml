@@ -835,6 +835,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.FAQController.GetPublishedItemByIdAsync(System.Int32)">
+            <summary>
+            get published item by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.FAQController.AddItemAsync(RMuseum.Models.FAQ.FAQItem)">
             <summary>
             add a new faq item

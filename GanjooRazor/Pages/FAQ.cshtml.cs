@@ -21,6 +21,8 @@ namespace GanjooRazor.Pages
 
         public List<FAQCategory> PinnedItemsCategories { get; set; }
 
+        public FAQItem Question { get; set; }
+
         private async Task<bool> preparePoets()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
@@ -46,13 +48,30 @@ namespace GanjooRazor.Pages
             if (false == (await preparePoets()))
                 return Page();
 
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/faq/pinned");
-            if (!response.IsSuccessStatusCode)
+            if(!string.IsNullOrEmpty(Request.Query["id"]))
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                return Page();
+                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/faq/{Request.Query["id"]}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    if(string.IsNullOrEmpty(LastError))
+                    {
+                        LastError = $"خطا در دریافت اطلاعات پرسش مد نظر - کد خظا = {response.StatusCode}";
+                    }
+                    return Page();
+                }
+                Question = JsonConvert.DeserializeObject<FAQItem>(await response.Content.ReadAsStringAsync());
             }
-            PinnedItemsCategories = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<FAQCategory>>();
+            else
+            {
+                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/faq/pinned");
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return Page();
+                }
+                PinnedItemsCategories = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<FAQCategory>>();
+            }
 
             return Page();
         }
