@@ -45,7 +45,7 @@ namespace GanjooRazor.Pages
                 = configuration;
         }
 
-        // <summary>
+        /// <summary>
         /// aggressive cache
         /// </summary>
         public bool AggressiveCacheEnabled
