@@ -113,5 +113,26 @@ namespace GanjooRazor.Areas.User.Pages
                 }
             }
         }
+
+        public async Task<IActionResult> OnDeleteItemAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/faq/{id}");
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+            return new JsonResult(true);
+        }
     }
 }

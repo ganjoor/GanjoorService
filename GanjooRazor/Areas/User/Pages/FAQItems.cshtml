@@ -48,7 +48,28 @@ else
             });
 
         }
+        function deleteItem(id) {
+            if (!confirm('آیا از حذف این پرسش اطمینان دارید؟'))
+                return;
 
+            $.ajax({
+                type: "DELETE",
+                url: '?Handler=Item',
+                data: {
+                    id: id
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function () {
+                     location.reload();
+                },
+            });
+
+        }
         function onSelectedCatChanged(){
             var sel = document.getElementById('cat');
             if(sel.selectedIndex >= 0){
@@ -70,6 +91,7 @@ else
                      var s = '';
                      for(var i=0; i<items.length; i++){
                          s += ('<p><a href="/User/FAQItemEdit?id='+String(items[i].id)+'">' + '<p>' + items[i].question + '</a></p>');
+                         s += ('<a role="button" onclick="deleteItem('+String(items[i].id)+')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>');
                      }
                      document.getElementById('catItems').innerHTML = s;
                 },
@@ -115,6 +137,7 @@ else
             @foreach (var item in Model.CategoryItems)
             {
                 <p><a href="/User/FAQItemEdit?id=@item.Id">@item.Question</a></p>
+                <a role="button" onclick="deleteItem(@item.Id)" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
             }
         }
     </div>
