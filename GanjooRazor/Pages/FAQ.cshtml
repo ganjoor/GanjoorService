@@ -53,31 +53,31 @@
         <!-- #hdr2 -->
 
         <div id="fa">
-
-
-
             <div id="maincnt">
-                @foreach (var category in Model.PinnedItemsCategories)
-                {
-                    <div class="poem">
-                        <div class="century">
-                            @category.Title
+                <div class="poem">
+                    <h2><a href="/faq">پرسش‌های متداول</a></h2>
+                    @foreach (var category in Model.PinnedItemsCategories)
+                    {
+                        <div class="comments-like-div">
+                            <h2>
+                                @category.Title
+                            </h2>
+                            @foreach (var item in category.Items)
+                            {
+                                <div class="related-images-frame" id="item-@item.Id">
+                                    <div class="century">
+                                        @item.Question <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('item-section-@item.Id', 'item-collapse-button-@item.Id')"><i class="info-buttons collapse_circle_down" id="item-collapse-button-@item.Id"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                    </div>
+                                    <div id="item-section-@item.Id" style="display:none">
+                                        <div class="ganjoor-comment">
+                                            @Html.Raw(item.AnswerExcerpt)
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
-                        @foreach (var item in category.Items)
-                        {
-                            <div class="related-images-frame" id="item-@item.Id">
-                                <div class="century">
-                                    @item.Question <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('item-section-@item.Id', 'item-collapse-button-@item.Id')"><i class="info-buttons collapse_circle_down" id="item-collapse-button-@item.Id"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
-                                </div>
-                                <div id="item-section-@item.Id" style="display:none">
-                                     <div class="ganjoor-comment">
-                                         @Html.Raw(item.AnswerExcerpt)
-                                     </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
+                    }
+                </div>
             </div>
 
             <partial name="_InlineLoginPartial" model="Model" />
