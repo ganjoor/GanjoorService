@@ -21,8 +21,6 @@ namespace GanjooRazor.Utils
                 Dictionary<string, string> options = new Dictionary<string, string>();
                 options.Add("access_token", "");
                 options.Add("refresh_token", "");
-                options.Add("client_id", "");
-                options.Add("client_secret", "");
                 if (System.IO.File.Exists(OptionFilePath))
                 {
                     string[] lines = System.IO.File.ReadAllLines(OptionFilePath);

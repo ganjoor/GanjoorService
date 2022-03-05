@@ -241,7 +241,7 @@ namespace GanjooRazor.Pages
             var request = new HttpRequestMessage(HttpMethod.Post,
             "https://accounts.spotify.com/api/token");
             request.Content = formContent;
-            string authValue = Convert.ToBase64String(new ASCIIEncoding().GetBytes($"{SpotifyOptions.Options["client_id"]}:{SpotifyOptions.Options["client_secret"]}"));
+            string authValue = Convert.ToBase64String(new ASCIIEncoding().GetBytes($"{Configuration.GetSection("Spotify")["client_id"]}:{Configuration.GetSection("Spotify")["client_secret"]}"));
             request.Headers.Add("Authorization", $"Basic {authValue}");
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)

@@ -18,7 +18,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         public SpotifyCallbackModel(IHttpClientFactory clientFactory, IConfiguration configuration)
         {
             _clientFactory = clientFactory;
-            _configuration = configuration;
+            Configuration = configuration;
         }
         public IActionResult OnGet(string code = "code", string state = "none")
         {
@@ -39,7 +39,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             nvc.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
             nvc.Add(new KeyValuePair<string, string>("code", code));
 
-            string callbackUrl = $"{_configuration["SiteUrl"]}/Admin/SpotifyCallback";
+            string callbackUrl = $"{Configuration["SiteUrl"]}/Admin/SpotifyCallback";
 
             nvc.Add(new KeyValuePair<string, string>("redirect_uri", callbackUrl));
 
@@ -48,7 +48,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             var request = new HttpRequestMessage(HttpMethod.Post,
             "https://accounts.spotify.com/api/token");
             request.Content = formContent;
-            string authValue = Convert.ToBase64String(new ASCIIEncoding().GetBytes($"{SpotifyOptions.Options["client_id"]}:{SpotifyOptions.Options["client_secret"]}"));
+            string authValue = Convert.ToBase64String(new ASCIIEncoding().GetBytes($"{Configuration.GetSection("Spotify")["client_id"]}:{Configuration.GetSection("Spotify")["client_secret"]}"));
             request.Headers.Add("Authorization", $"Basic {authValue}");
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -62,8 +62,6 @@ namespace GanjooRazor.Areas.Admin.Pages
 
 
                 Dictionary<string, string> options = new Dictionary<string, string>();
-                options.Add("client_id", SpotifyOptions.Options["client_id"]);
-                options.Add("client_secret", SpotifyOptions.Options["client_secret"]);
                 options.Add("access_token", access_token);
                 options.Add("refresh_token", refresh_token);
                 SpotifyOptions.Options = options;
@@ -86,6 +84,6 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         private readonly IHttpClientFactory _clientFactory;
 
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration Configuration;
     }
 }
