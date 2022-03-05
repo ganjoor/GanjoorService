@@ -1423,6 +1423,10 @@ audio {
     max-width: 100%;
 }
 
+.max-width-none {
+    max-width: none;
+}
+
 
 .ring-menucircle,
 .ring {

@@ -16,14 +16,14 @@
 else
 {
     <form method="post">
-        <table>
+        <table class="width-100per max-width-none">
             <tr>
                 <td>
                     پرسش:
                 </td>
                 <td>
                     <input type="hidden" asp-for="Question.Id" />
-                    <input asp-for="Question.Question" />
+                    <input class="width-100per" asp-for="Question.Question" />
                 </td>
             </tr>
             <tr>
@@ -31,7 +31,7 @@ else
                     پاسخ خلاصه:
                 </td>
                 <td>
-                    <textarea asp-for="Question.AnswerExcerpt" class="editor"></textarea>
+                    <textarea asp-for="Question.AnswerExcerpt" class="editor editor width-100per"></textarea>
                 </td>
             </tr>
              <tr>
@@ -39,7 +39,7 @@ else
                     پاسخ کامل:
                 </td>
                 <td>
-                    <textarea asp-for="Question.FullAnswer" class="editor"></textarea>
+                    <textarea asp-for="Question.FullAnswer" class="editor editor width-100per"></textarea>
                 </td>
             </tr>
             <tr>
@@ -80,13 +80,13 @@ else
                     لغات کلیدی:
                 </td>
                 <td>
-                    <input asp-for="Question.ContentForSearch" />
+                    <input class="width-100per" asp-for="Question.ContentForSearch" />
                 </td>
             </tr>
 
             <tr>
                 <td colspan="2">
-                    <input type="submit" value="ذخیره" />
+                    <input type="submit" class="width-100per" value="ذخیره" />
                 </td>
             </tr>
 
