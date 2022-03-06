@@ -295,28 +295,25 @@ namespace GanjooRazor.Pages
                 }
             }
 
-            if (!_memoryCache.TryGetValue("SpotifyRefreshToken", out string refresh_token))
+            string refresh_token;
+            using (HttpClient secureClient = new HttpClient())
             {
-                using (HttpClient secureClient = new HttpClient())
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
-                    {
-                        var responseOption = await secureClient.GetAsync($"{APIRoot.Url}/api/options/global/SpotifyRefreshToken");
-                        if (!responseOption.IsSuccessStatusCode)
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            string encryptedRefreshToken = JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync());
-                            refresh_token = EncDecUtil.Decrypt(encryptedRefreshToken, Configuration.GetSection("Spotify")["Salt"]);
-                            _memoryCache.Set("SpotifyRefreshToken", refresh_token);
-                        }
-                    }
-                    else
+                    var responseOption = await secureClient.GetAsync($"{APIRoot.Url}/api/options/global/SpotifyRefreshToken");
+                    if (!responseOption.IsSuccessStatusCode)
                     {
                         return;
                     }
+                    else
+                    {
+                        string encryptedRefreshToken = JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync());
+                        refresh_token = EncDecUtil.Decrypt(encryptedRefreshToken, Configuration.GetSection("Spotify")["Salt"]);
+                    }
+                }
+                else
+                {
+                    return;
                 }
             }
 
