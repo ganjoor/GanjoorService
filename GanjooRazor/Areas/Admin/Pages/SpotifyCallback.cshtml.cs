@@ -57,6 +57,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                 var parsed = JObject.Parse(json);
                 access_token = parsed.SelectToken("access_token").Value<string>();
                 refresh_token = parsed.SelectToken("refresh_token").Value<string>();
+                token_type = parsed.SelectToken("token_type").Value<string>();
+                expires_in = parsed.SelectToken("expires_in").Value<string>();
 
                 string encryptedAccessToken = EncDecUtil.Encrypt(access_token, Configuration.GetSection("Spotify")["Salt"]);
                 string encryptedRefreshToken = EncDecUtil.Encrypt(refresh_token, Configuration.GetSection("Spotify")["Salt"]);
