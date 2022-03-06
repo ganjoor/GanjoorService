@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -56,15 +56,35 @@ namespace GanjooRazor.Areas.Admin.Pages
                 string json = await response.Content.ReadAsStringAsync();
                 var parsed = JObject.Parse(json);
                 access_token = parsed.SelectToken("access_token").Value<string>();
-                token_type = parsed.SelectToken("token_type").Value<string>();
-                expires_in = parsed.SelectToken("expires_in").Value<string>();
                 refresh_token = parsed.SelectToken("refresh_token").Value<string>();
 
+                string encryptedAccessToken = EncDecUtil.Encrypt(access_token, Configuration.GetSection("Spotify")["Salt"]);
+                string encryptedRefreshToken = EncDecUtil.Encrypt(refresh_token, Configuration.GetSection("Spotify")["Salt"]);
 
-                Dictionary<string, string> options = new Dictionary<string, string>();
-                options.Add("access_token", access_token);
-                options.Add("refresh_token", refresh_token);
-                SpotifyOptions.Options = options;
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    {
+                        var responseSaveOption = await secureClient.PutAsync($"{APIRoot.Url}/api/options/global/SpotifyAccessToken", new StringContent(JsonConvert.SerializeObject(encryptedAccessToken), Encoding.UTF8, "application/json"));
+                        if (!responseSaveOption.IsSuccessStatusCode)
+                        {
+                            Error = JsonConvert.DeserializeObject<string>(await responseSaveOption.Content.ReadAsStringAsync());
+                        }
+                        else
+                        {
+                            responseSaveOption = await secureClient.PutAsync($"{APIRoot.Url}/api/options/global/SpotifyRefreshToken", new StringContent(JsonConvert.SerializeObject(encryptedRefreshToken), Encoding.UTF8, "application/json"));
+                            if (!responseSaveOption.IsSuccessStatusCode)
+                            {
+                                Error = JsonConvert.DeserializeObject<string>(await responseSaveOption.Content.ReadAsStringAsync());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Error = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    }
+                }
+
             }
             else
             {
