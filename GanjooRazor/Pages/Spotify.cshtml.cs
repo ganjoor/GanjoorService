@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -31,6 +32,11 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly IConfiguration Configuration;
 
+        /// <summary>
+        /// memory cache
+        /// </summary>
+        private readonly IMemoryCache _memoryCache;
+
 
         /// <summary>
         /// constructor
@@ -38,11 +44,11 @@ namespace GanjooRazor.Pages
         /// <param name="httpClient"></param>
         /// <param name="configuration"></param>
 
-        public SpotifyModel(HttpClient httpClient, IConfiguration configuration)
+        public SpotifyModel(HttpClient httpClient, IConfiguration configuration, IMemoryCache memoryCache)
         {
             _httpClient = httpClient;
             Configuration = configuration;
-
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -177,7 +183,33 @@ namespace GanjooRazor.Pages
             }
             else
             {
-                string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
+                if (!_memoryCache.TryGetValue("SpotifyAccessToken", out string spotifyAccessToken))
+                {
+                    using (HttpClient secureClient = new HttpClient())
+                    {
+                        if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                        {
+                            var responseOption = await secureClient.GetAsync($"{APIRoot.Url}/api/options/global/SpotifyAccessToken");
+                            if (!responseOption.IsSuccessStatusCode)
+                            {
+                                spotifyAccessToken = "";
+                                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync()));
+                            }
+                            else
+                            {
+                                string encryptedAccessToken = JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync());
+                                spotifyAccessToken = EncDecUtil.Decrypt(encryptedAccessToken, Configuration.GetSection("Spotify")["Salt"]);
+                                _memoryCache.Set("SpotifyAccessToken", spotifyAccessToken);
+                            }
+                        }
+                        else
+                        {
+                            return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>("لطفا از گنجور خارج و مجددا به آن وارد شوید."));
+                        }
+                    }
+                }
+
+                string spotifyToken = $"Bearer {spotifyAccessToken}";
                 var request = new HttpRequestMessage(HttpMethod.Get,
                     $"https://api.spotify.com/v1/search?q={search}&type=artist");
                 request.Headers.Add("Authorization", spotifyToken);
@@ -233,7 +265,61 @@ namespace GanjooRazor.Pages
 
         private async Task _RefreshSpotifyToken()
         {
-            string refresh_token = SpotifyOptions.Options["refresh_token"];
+            if (_memoryCache.TryGetValue("SpotifyAccessToken", out string spotifyAccessToken))
+            {
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    {
+                        var responseOption = await secureClient.GetAsync($"{APIRoot.Url}/api/options/global/SpotifyAccessToken");
+                        if (!responseOption.IsSuccessStatusCode)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            string encryptedAccessToken = JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync());
+                            string newSpotifyAccessToken = EncDecUtil.Decrypt(encryptedAccessToken, Configuration.GetSection("Spotify")["Salt"]);
+                            if(newSpotifyAccessToken != spotifyAccessToken)
+                            {
+                                _memoryCache.Set("SpotifyAccessToken", newSpotifyAccessToken);
+                                return;
+                            }
+                            
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+
+            if (!_memoryCache.TryGetValue("SpotifyRefreshToken", out string refresh_token))
+            {
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    {
+                        var responseOption = await secureClient.GetAsync($"{APIRoot.Url}/api/options/global/SpotifyRefreshToken");
+                        if (!responseOption.IsSuccessStatusCode)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            string encryptedRefreshToken = JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync());
+                            refresh_token = EncDecUtil.Decrypt(encryptedRefreshToken, Configuration.GetSection("Spotify")["Salt"]);
+                            _memoryCache.Set("SpotifyRefreshToken", refresh_token);
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+
             var nvc = new List<KeyValuePair<string, string>>();
             nvc.Add(new KeyValuePair<string, string>("grant_type", "refresh_token"));
             nvc.Add(new KeyValuePair<string, string>("refresh_token", refresh_token));
@@ -249,10 +335,20 @@ namespace GanjooRazor.Pages
                 string json = await response.Content.ReadAsStringAsync();
                 var parsed = JObject.Parse(json);
                 string access_token = parsed.SelectToken("access_token").Value<string>();
+                string encryptedAccessToken = EncDecUtil.Encrypt(access_token, Configuration.GetSection("Spotify")["Salt"]);
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    {
+                        var responseSaveOption = await secureClient.PutAsync($"{APIRoot.Url}/api/options/global/SpotifyAccessToken", new StringContent(JsonConvert.SerializeObject(encryptedAccessToken), Encoding.UTF8, "application/json"));
+                        if (!responseSaveOption.IsSuccessStatusCode)
+                        {
+                            return;
+                        }
+                        _memoryCache.Set("SpotifyAccessToken", access_token);
+                    }
+                }
 
-                var options = SpotifyOptions.Options;
-                options["access_token"] = access_token;
-                SpotifyOptions.Options = options;
             }
         }
 
@@ -278,7 +374,33 @@ namespace GanjooRazor.Pages
             }
             else
             {
-                string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
+                if (!_memoryCache.TryGetValue("SpotifyAccessToken", out string spotifyAccessToken))
+                {
+                    using (HttpClient secureClient = new HttpClient())
+                    {
+                        if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                        {
+                            var responseOption = await secureClient.GetAsync($"{APIRoot.Url}/api/options/global/SpotifyAccessToken");
+                            if (!responseOption.IsSuccessStatusCode)
+                            {
+                                spotifyAccessToken = "";
+                                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync()));
+                            }
+                            else
+                            {
+                                string encryptedAccessToken = JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync());
+                                spotifyAccessToken = EncDecUtil.Decrypt(encryptedAccessToken, Configuration.GetSection("Spotify")["Salt"]);
+                                _memoryCache.Set("SpotifyAccessToken", spotifyAccessToken);
+                            }
+                        }
+                        else
+                        {
+                            return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>("لطفا از گنجور خارج و مجددا به آن وارد شوید."));
+                        }
+                    }
+                }
+
+                string spotifyToken = $"Bearer {spotifyAccessToken}";
                 int offest = 0;
                 int limit = 50;
                 bool newItems;
@@ -363,7 +485,33 @@ namespace GanjooRazor.Pages
             }
             else
             {
-                string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
+                if (!_memoryCache.TryGetValue("SpotifyAccessToken", out string spotifyAccessToken))
+                {
+                    using (HttpClient secureClient = new HttpClient())
+                    {
+                        if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                        {
+                            var responseOption = await secureClient.GetAsync($"{APIRoot.Url}/api/options/global/SpotifyAccessToken");
+                            if (!responseOption.IsSuccessStatusCode)
+                            {
+                                spotifyAccessToken = "";
+                                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync()));
+                            }
+                            else
+                            {
+                                string encryptedAccessToken = JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync());
+                                spotifyAccessToken = EncDecUtil.Decrypt(encryptedAccessToken, Configuration.GetSection("Spotify")["Salt"]);
+                                _memoryCache.Set("SpotifyAccessToken", spotifyAccessToken);
+                            }
+                        }
+                        else
+                        {
+                            return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>("لطفا از گنجور خارج و مجددا به آن وارد شوید."));
+                        }
+                    }
+                }
+
+                string spotifyToken = $"Bearer {spotifyAccessToken}";
 
                 var request = new HttpRequestMessage(HttpMethod.Get,
                 $"https://api.spotify.com/v1/albums/{album}/tracks?limit=50");
@@ -440,7 +588,33 @@ namespace GanjooRazor.Pages
             }
             else
             {
-                string spotifyToken = $"Bearer {SpotifyOptions.Options["access_token"]}";
+                if (!_memoryCache.TryGetValue("SpotifyAccessToken", out string spotifyAccessToken))
+                {
+                    using (HttpClient secureClient = new HttpClient())
+                    {
+                        if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                        {
+                            var responseOption = await secureClient.GetAsync($"{APIRoot.Url}/api/options/global/SpotifyAccessToken");
+                            if (!responseOption.IsSuccessStatusCode)
+                            {
+                                spotifyAccessToken = "";
+                                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync()));
+                            }
+                            else
+                            {
+                                string encryptedAccessToken = JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync());
+                                spotifyAccessToken = EncDecUtil.Decrypt(encryptedAccessToken, Configuration.GetSection("Spotify")["Salt"]);
+                                _memoryCache.Set("SpotifyAccessToken", spotifyAccessToken);
+                            }
+                        }
+                        else
+                        {
+                            return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>("لطفا از گنجور خارج و مجددا به آن وارد شوید."));
+                        }
+                    }
+                }
+
+                string spotifyToken = $"Bearer {spotifyAccessToken}";
 
                 var request = new HttpRequestMessage(HttpMethod.Get,
                 $"https://api.spotify.com/v1/search?q={search}&type=track");
