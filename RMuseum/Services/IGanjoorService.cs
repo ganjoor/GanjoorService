@@ -504,12 +504,6 @@ namespace RMuseum.Services
         RServiceResult<bool> StartBatchGenerateGDBFiles();
 
         /// <summary>
-        /// import GanjoorPage entity data from MySql
-        /// </summary>
-        /// <returns></returns>
-        RServiceResult<bool> ImportFromMySql();
-
-        /// <summary>
         /// examine site pages for broken links
         /// </summary>
         /// <returns></returns>

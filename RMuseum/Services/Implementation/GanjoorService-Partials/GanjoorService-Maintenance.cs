@@ -695,6 +695,56 @@ namespace RMuseum.Services.Implementation
             return commentText;
         }
 
+        private string _Linkify(string SearchText)
+        {
+            if (SearchText.IndexOf("href") != -1)
+                return SearchText;
+            int linkIndex = SearchText.IndexOf("http");
+            while (linkIndex != -1)
+            {
+                int linkEndIndex = SearchText.IndexOfAny(new char[] { '\r', '\n', '<', ' ' }, linkIndex);
+                if (linkEndIndex == -1)
+                    linkEndIndex = SearchText.Length - 1;
+                if (linkEndIndex != -1)
+                {
+                    string link = SearchText.Substring(linkIndex, linkEndIndex - linkIndex);
+                    SearchText
+                        =
+                        SearchText.Substring(0, linkIndex)
+                        +
+                        "<a href=\""
+                        +
+                        link
+                        +
+                        "\" rel=\"nofollow\">"
+                        +
+                        link
+                        +
+                        "</a>"
+                        +
+                        SearchText.Substring(linkEndIndex);
+                    linkIndex =
+                        (
+                        SearchText.Substring(0, linkIndex)
+                        +
+                        "<a href=\""
+                        +
+                        link
+                        +
+                        "\" rel=\"nofollow\">"
+                        +
+                        link
+                        +
+                        "</a>"
+                        ).Length;
+                    linkIndex = SearchText.IndexOf("http", linkIndex);
+                }
+                else
+                    linkIndex = SearchText.IndexOf("http", linkIndex + "http".Length);
+            }
+            return SearchText;
+        }
+
         /// <summary>
         /// examine comments for long links
         /// </summary>

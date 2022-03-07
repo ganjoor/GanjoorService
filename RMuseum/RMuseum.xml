@@ -1420,12 +1420,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.ImportFromMySql">
-            <summary>
-            imports data from ganjoor MySql database
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetUserPublicProfile(System.Guid)">
             <summary>
             Get user public profile
@@ -10766,12 +10760,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.ImportFromMySql">
-            <summary>
-            import GanjoorPage entity data from MySql
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Services.IGanjoorService.HealthCheckContents">
             <summary>
             examine site pages for broken links
@@ -12562,12 +12550,6 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartUpdatingMundexPage(System.Guid)">
             <summary>
             start updating stats page
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportFromMySql">
-            <summary>
-            import GanjoorPage entity data from MySql
             </summary>
             <returns></returns>
         </member>
