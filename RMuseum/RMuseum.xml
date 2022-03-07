@@ -2097,12 +2097,6 @@
             </param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.MysqlonetimeImport">
-            <summary>
-            imports data from ganjoor MySql database
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetUserNarrationProfiles(System.String)">
             <summary>
             Get User Profiles
@@ -13530,15 +13524,6 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.MusicCatalogueService.ImportFromMySql(System.String,RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF,RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus)">
-            <summary>
-            import catalogue from ganjoor.net MySql db
-            </summary>
-            <param name="jobName"></param>
-            <param name="jobProgressServiceEF"></param>
-            <param name="job"></param>
-            <returns></returns>
-        </member>
         <member name="P:RMuseum.Services.Implementation.MusicCatalogueService.Configuration">
             <summary>
             Configuration
@@ -14006,12 +13991,6 @@
             <param name="id"></param>
             <param name="metadata"></param>
             <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.OneTimeImport(System.Guid)">
-            <summary>
-            imports data from ganjoor MySql database
-            </summary>
-            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
         </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.BuildProfilesFromExistingData(System.Guid)">
             <summary>
@@ -14500,13 +14479,6 @@
             </summary>
             <param name="id"></param>
             <param name="metadata"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IRecitationService.OneTimeImport(System.Guid)">
-            <summary>
-            imports narration data from ganjoor MySql database
-            </summary>
-            <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.BuildProfilesFromExistingData(System.Guid)">

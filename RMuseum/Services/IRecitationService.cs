@@ -73,13 +73,6 @@ namespace RMuseum.Services
         Task<RServiceResult<RecitationViewModel>> UpdatePoemNarration(int id, RecitationViewModel metadata);
 
         /// <summary>
-        /// imports narration data from ganjoor MySql database
-        /// </summary>
-        /// <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
-        /// <returns></returns>
-        Task<RServiceResult<bool>> OneTimeImport(Guid ownerRAppUserId);
-
-        /// <summary>
         /// build profiles from exisng narrations data
         /// </summary>
         /// <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>

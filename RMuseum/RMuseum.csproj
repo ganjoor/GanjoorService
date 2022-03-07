@@ -19,7 +19,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="MySql.Data" Version="8.0.28" />
     <PackageReference Include="NAudio" Version="2.0.1" />
     <PackageReference Include="RSecurityBackend" Version="1.0.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />

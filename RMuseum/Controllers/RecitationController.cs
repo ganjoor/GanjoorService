@@ -551,27 +551,7 @@ namespace RMuseum.Controllers
                 return BadRequest(exp.ToString());
             }
         }
-
-
-        /// <summary>
-        /// imports data from ganjoor MySql database
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("mysqlonetimeimport")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> MysqlonetimeImport()
-        {
-            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<bool> res =
-                await _audioService.OneTimeImport(loggedOnUserId);
-            if (res.Result)
-                return Ok();
-            return BadRequest(res.ExceptionString);
-        }
-
+ 
         /// <summary>
         /// Get User Profiles
         /// </summary>

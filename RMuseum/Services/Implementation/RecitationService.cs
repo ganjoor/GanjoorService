@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using MySql.Data.MySqlClient;
 using RMuseum.DbContext;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
@@ -552,86 +551,6 @@ namespace RMuseum.Services.Implementationa
 
             }
             return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync(), ""));
-        }
-
-
-
-
-        /// <summary>
-        /// imports data from ganjoor MySql database
-        /// </summary>
-        /// <param name="ownerRAppUserId">User Id which becomes owner of imported data</param>
-        public async Task<RServiceResult<bool>> OneTimeImport(Guid ownerRAppUserId)
-        {
-            Recitation sampleCheck = await _context.Recitations.FirstOrDefaultAsync();
-            if (sampleCheck != null)
-            {
-                return new RServiceResult<bool>(false, "OneTimeImport is a one time operation and cannot be called multiple times.");
-            }
-            using (MySqlConnection connection = new MySqlConnection
-                (
-                $"server={Configuration.GetSection("AudioMySqlServer")["Server"]};uid={Configuration.GetSection("AudioMySqlServer")["Username"]};pwd={Configuration.GetSection("AudioMySqlServer")["Password"]};database={Configuration.GetSection("AudioMySqlServer")["Database"]};charset=utf8"
-                ))
-            {
-                connection.Open();
-                //I thought that result Id fields would become corresponant to order of selection (and later insertions) but it is not
-                //the case in batch insertion, so this ORDER BY clause is useless unless we do save every time we insert a record
-                //which I guess might take much longer
-                using MySqlDataAdapter src = new MySqlDataAdapter(
-                    "SELECT audio_ID, audio_post_ID, audio_order, audio_xml, audio_ogg, audio_mp3, " +
-                    "audio_title,  audio_artist, audio_artist_url, audio_src,  audio_src_url, audio_guid, " +
-                    "audio_fchecksum,  audio_mp3bsize,  audio_oggbsize,  audio_date " +
-                    "FROM ganja_gaudio ORDER BY audio_date",
-                    connection
-                    );
-                using DataTable srcData = new DataTable();
-                await src.FillAsync(srcData);
-
-
-                foreach (DataRow row in srcData.Rows)
-                {
-                    Recitation newRecord = new Recitation()
-                    {
-                        OwnerId = ownerRAppUserId,
-                        GanjoorAudioId = int.Parse(row["audio_ID"].ToString()),
-                        GanjoorPostId = (int)row["audio_post_ID"],
-                        AudioOrder = (int)row["audio_order"],
-                        AudioTitle = row["audio_title"].ToString(),
-                        AudioArtist = row["audio_artist"].ToString(),
-                        AudioArtistUrl = row["audio_artist_url"].ToString(),
-                        AudioSrc = row["audio_src"].ToString(),
-                        AudioSrcUrl = row["audio_src_url"].ToString(),
-                        LegacyAudioGuid = new Guid(row["audio_guid"].ToString()),
-                        Mp3FileCheckSum = row["audio_fchecksum"].ToString(),
-                        Mp3SizeInBytes = (int)row["audio_mp3bsize"],
-                        OggSizeInBytes = (int)row["audio_oggbsize"],
-                        UploadDate = (DateTime)row["audio_date"],
-                        AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected,
-                        ReviewStatus = AudioReviewStatus.Approved
-                    };
-                    newRecord.FileLastUpdated = newRecord.UploadDate;
-                    newRecord.ReviewDate = newRecord.UploadDate;
-                    string audio_xml = row["audio_xml"].ToString();
-                    //sample audio_xml value: /i/a/x/11876-Simorgh.xml
-                    audio_xml = audio_xml["/i/".Length..]; // /i/a/x/11876-Simorgh.xml -> a/x/11876-Simorgh.xml
-                    newRecord.SoundFilesFolder = audio_xml.Substring(0, audio_xml.IndexOf('/')); //(a)
-                    string targetForAudioFile = Path.Combine(Configuration.GetSection("AudioUploadService")["LocalAudioRepositoryPath"], newRecord.SoundFilesFolder);
-                    string targetForXmlAudioFile = Path.Combine(targetForAudioFile, "x");
-
-                    newRecord.FileNameWithoutExtension = Path.GetFileNameWithoutExtension(audio_xml[(audio_xml.LastIndexOf('/') + 1)..]); //(11876-Simorgh)
-                    newRecord.LocalMp3FilePath = Path.Combine(targetForAudioFile, $"{newRecord.FileNameWithoutExtension}.mp3");
-                    newRecord.LocalXmlFilePath = Path.Combine(targetForXmlAudioFile, $"{newRecord.FileNameWithoutExtension}.xml");
-
-                    _context.Recitations.Add(newRecord);
-                    await _context.SaveChangesAsync(); //this logically should be outside this loop, 
-                                                       //but it messes with the order of records so I decided 
-                                                       //to wait a little longer and have an ordered set of records
-                }
-            }
-            string err = await BuildProfilesFromExistingData(ownerRAppUserId);
-            if (!string.IsNullOrEmpty(err))
-                return new RServiceResult<bool>(false, err);
-            return new RServiceResult<bool>(true);
         }
 
         /// <summary>
