@@ -716,7 +716,8 @@ namespace RMuseum.Services.Implementation
                         Title = catTitle,
                         UrlSlug = url,
                         FullUrl = $"{parentCat.FullUrl}/{url}",
-                        ParentId = parentCat.Id
+                        ParentId = parentCat.Id,
+                        TableOfContentsStyle = GanjoorTOC.Analyse,
                     };
                     context.GanjoorCategories.Add(dbCat);
 

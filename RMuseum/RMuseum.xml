@@ -5678,6 +5678,11 @@
             sample: /hafez/ghazal
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.TableOfContentsStyle">
+            <summary>
+            TOC Style
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorCentury">
             <summary>
             half century

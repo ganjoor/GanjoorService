@@ -48,5 +48,10 @@ namespace RMuseum.Models.Ganjoor
         /// sample: /hafez/ghazal
         /// </summary>
         public string FullUrl { get; set; }
+
+        /// <summary>
+        /// TOC Style
+        /// </summary>
+        public GanjoorTOC TableOfContentsStyle { get; set; }
     }
 }

@@ -3041,7 +3041,8 @@ namespace RMuseum.Services.Implementation
                 PoetId = id,
                 Title = poet.Nickname,
                 UrlSlug = poet.FullUrl.Substring(1),
-                FullUrl = poet.FullUrl
+                FullUrl = poet.FullUrl,
+                TableOfContentsStyle = GanjoorTOC.Analyse,
             };
             _context.GanjoorCategories.Add(dbCat);
 
