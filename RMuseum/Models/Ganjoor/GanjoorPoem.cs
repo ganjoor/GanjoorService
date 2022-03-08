@@ -93,5 +93,20 @@ namespace RMuseum.Models.Ganjoor
         /// old collection page url e.g /saadi/tayyebat
         /// </summary>
         public string OldTagPageUrl { get; set; }
+
+        /// <summary>
+        /// order when mixed with categories
+        /// </summary>
+        public int MixedModeOrder { get; set; }
+
+        /// <summary>
+        /// published
+        /// </summary>
+        public bool Published { get; set; }
+
+        /// <summary>
+        /// language
+        /// </summary>
+        public string Language { get; set; }
     }
 }

@@ -53,5 +53,25 @@ namespace RMuseum.Models.Ganjoor
         /// TOC Style
         /// </summary>
         public GanjoorTOC TableOfContentsStyle { get; set; }
+
+        /// <summary>
+        /// Category Type
+        /// </summary>
+        public GanjoorCatType CatType { get; set; }
+
+        /// <summary>
+        /// additional descripion or note
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// order when mixed with poems
+        /// </summary>
+        public int MixedModeOrder { get; set; }
+
+        /// <summary>
+        /// published
+        /// </summary>
+        public bool Published { get; set; }
     }
 }

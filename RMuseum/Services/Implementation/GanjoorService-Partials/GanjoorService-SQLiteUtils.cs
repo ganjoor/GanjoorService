@@ -718,6 +718,7 @@ namespace RMuseum.Services.Implementation
                         FullUrl = $"{parentCat.FullUrl}/{url}",
                         ParentId = parentCat.Id,
                         TableOfContentsStyle = GanjoorTOC.Analyse,
+                        Published = true,
                     };
                     context.GanjoorCategories.Add(dbCat);
 
@@ -789,6 +790,7 @@ namespace RMuseum.Services.Implementation
                         UrlSlug = urlSlug,
                         FullTitle = $"{parentFullTitle} » {title}",
                         FullUrl = $"{parentCat.FullUrl}/{urlSlug}",
+                        Published = true,
                     };
 
                     List<GanjoorVerse> poemVerses = new List<GanjoorVerse>();

@@ -2053,7 +2053,8 @@ namespace RMuseum.Services.Implementation
                     FullUrl = $"{parentPage.FullUrl}/{nextPoemUrlSluf}",
                     GanjoorMetreId = poem.GanjoorMetre == null ? null : poem.GanjoorMetre.Id,
                     SourceName = poem.SourceName,
-                    SourceUrlSlug = poem.SourceUrlSlug
+                    SourceUrlSlug = poem.SourceUrlSlug,
+                    Published = true,
                 };
 
 
@@ -3043,6 +3044,7 @@ namespace RMuseum.Services.Implementation
                 UrlSlug = poet.FullUrl.Substring(1),
                 FullUrl = poet.FullUrl,
                 TableOfContentsStyle = GanjoorTOC.Analyse,
+                Published = true,
             };
             _context.GanjoorCategories.Add(dbCat);
 

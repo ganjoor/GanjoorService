@@ -5683,6 +5683,31 @@
             TOC Style
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.CatType">
+            <summary>
+            Category Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.Description">
+            <summary>
+            additional descripion or note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.MixedModeOrder">
+            <summary>
+            order when mixed with poems
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.Published">
+            <summary>
+            published
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorCatType">
+            <summary>
+            Ganjoor Category Type
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorCentury">
             <summary>
             half century
@@ -6184,6 +6209,16 @@
             post date
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.NoIndex">
+            <summary>
+            no index (search engines are blocked to index the page)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPage.RedirectFromFullUrl">
+            <summary>
+            if a page url is changed, store the old URL here to be redirected automatically
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPageSnapshot">
             <summary>
             snapshot of ganjoor pages to keep track of their changes
@@ -6402,6 +6437,21 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.OldTagPageUrl">
             <summary>
             old collection page url e.g /saadi/tayyebat
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.MixedModeOrder">
+            <summary>
+            order when mixed with categories
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.Published">
+            <summary>
+            published
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.Language">
+            <summary>
+            language
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemCorrection">
@@ -6964,6 +7014,11 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.CoupletIndex">
             <summary>
             couplet index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.Language">
+            <summary>
+            language
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Id">
