@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RMuseum.Models.Ganjoor
@@ -65,6 +66,11 @@ namespace RMuseum.Models.Ganjoor
         public string Description { get; set; }
 
         /// <summary>
+        /// html mode of additional descripion or note
+        /// </summary>
+        public string DescriptionHtml { get; set; }
+
+        /// <summary>
         /// order when mixed with poems
         /// </summary>
         public int MixedModeOrder { get; set; }
@@ -72,6 +78,7 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// published
         /// </summary>
+        [DefaultValue(true)]
         public bool Published { get; set; }
     }
 }

@@ -5693,6 +5693,11 @@
             additional descripion or note
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.DescriptionHtml">
+            <summary>
+            html mode of additional descripion or note
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.MixedModeOrder">
             <summary>
             order when mixed with poems
