@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RMuseum.Models.Ganjoor
@@ -78,7 +77,6 @@ namespace RMuseum.Models.Ganjoor
         /// <summary>
         /// published
         /// </summary>
-        [DefaultValue(true)]
         public bool Published { get; set; }
     }
 }
