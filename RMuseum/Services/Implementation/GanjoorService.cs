@@ -387,11 +387,26 @@ namespace RMuseum.Services.Implementation
 
             url = url.Replace("//", "/"); //duplicated slashes would be merged
 
-            var dbPage = await _context.GanjoorPages.Where(p => p.RedirectFromFullUrl == url).AsNoTracking().SingleOrDefaultAsync();
-            if (dbPage == null)
+            var pages = await _context.GanjoorPages.Where(p => url.StartsWith(p.RedirectFromFullUrl)).AsNoTracking().ToListAsync();
+            if (pages.Count == 0)
                 return new RServiceResult<string>(null); //not found
 
-            return new RServiceResult<string>(dbPage.FullUrl);
+            var dbPage = pages[0];
+            for (int i= 1; i < pages.Count; i++)
+            {
+                if(pages[i].RedirectFromFullUrl.Length > dbPage.RedirectFromFullUrl.Length)
+                {
+                    dbPage = pages[i];
+                }
+            }
+
+            var target = dbPage.FullUrl;
+            if(url != dbPage.RedirectFromFullUrl)
+            {
+                target = dbPage.FullUrl + url.Substring(dbPage.RedirectFromFullUrl.Length);
+            }
+
+            return new RServiceResult<string>(target);
         }
 
         /// <summary>
