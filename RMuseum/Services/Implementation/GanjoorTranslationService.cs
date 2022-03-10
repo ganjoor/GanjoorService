@@ -247,7 +247,8 @@ namespace RMuseum.Services.Implementation
                                             VersePosition = pv.VersePosition,
                                             CoupletIndex = pv.CoupletIndex,
                                             VOrder = pv.VOrder,
-                                            Text = pv.Text
+                                            Text = pv.Text,
+                                            Language = pv.Language,
                                         }
                                         ).Single(),
                                     TText = v.TText

@@ -31,6 +31,11 @@
         /// </summary>
         public string Text { get; set; }
 
+        /// <summary>
+        /// language
+        /// </summary>
+        public string Language { get; set; }
+
         public override string ToString()
         {
             return Text;

@@ -1494,7 +1494,8 @@ namespace RMuseum.Services.Implementation
                                                             VOrder = v.VOrder,
                                                             CoupletIndex = v.CoupletIndex,
                                                             VersePosition = v.VersePosition,
-                                                            Text = v.Text
+                                                            Text = v.Text,
+                                                            Language = v.Language,
                                                         }
                                                     ).AsNoTracking().ToArrayAsync();
                 };
@@ -1544,6 +1545,9 @@ namespace RMuseum.Services.Implementation
                     SourceUrlSlug = poem.SourceUrlSlug,
                     OldTag = poem.OldTag,
                     OldTagPageUrl = poem.OldTagPageUrl,
+                    MixedModeOrder = poem.MixedModeOrder,
+                    Published = poem.Published,
+                    Language = poem.Language,
                     Category = cat,
                     Next = next,
                     Previous = previous,
@@ -2308,6 +2312,9 @@ namespace RMuseum.Services.Implementation
                         PlainText = poem.PlainText,
                         GanjoorMetre = poem.GanjoorMetre,
                         RhymeLetters = poem.RhymeLetters,
+                        MixedModeOrder = poem.MixedModeOrder,
+                        Published = poem.Published,
+                        Language = poem.Language,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()
@@ -2444,6 +2451,9 @@ namespace RMuseum.Services.Implementation
                         PlainText = poem.PlainText,
                         GanjoorMetre = poem.GanjoorMetre,
                         RhymeLetters = poem.RhymeLetters,
+                        MixedModeOrder = poem.MixedModeOrder,
+                        Published = poem.Published,
+                        Language = poem.Language,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()

@@ -7926,6 +7926,21 @@
             old collection page url e.g /saadi/tayyebat
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.MixedModeOrder">
+            <summary>
+            order when mixed with categories
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Published">
+            <summary>
+            published
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Language">
+            <summary>
+            language
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Category">
             <summary>
             category
@@ -8546,6 +8561,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.Text">
             <summary>
             text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.Language">
+            <summary>
+            language
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel">
