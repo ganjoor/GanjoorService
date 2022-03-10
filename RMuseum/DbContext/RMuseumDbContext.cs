@@ -30,6 +30,7 @@ namespace RMuseum.DbContext
                    .Build();
             if (bool.Parse(configuration["DatabaseMigrate"]))
             {
+                Database.SetCommandTimeout(18000);//set time out for migration to 5 hours
                 Database.Migrate();
             }
         }
