@@ -368,6 +368,33 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get redirect url for a url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<string>> GetRedirectAddressForPageUrl(string url)
+        {
+            if (url.IndexOf('?') != -1)
+            {
+                url = url.Substring(0, url.IndexOf('?'));
+            }
+
+            // /hafez/ => /hafez :
+            if (url.LastIndexOf('/') == url.Length - 1)
+            {
+                url = url.Substring(0, url.Length - 1);
+            }
+
+            url = url.Replace("//", "/"); //duplicated slashes would be merged
+
+            var dbPage = await _context.GanjoorPages.Where(p => p.RedirectFromFullUrl == url).AsNoTracking().SingleOrDefaultAsync();
+            if (dbPage == null)
+                return new RServiceResult<string>(null); //not found
+
+            return new RServiceResult<string>(dbPage.FullUrl);
+        }
+
+        /// <summary>
         /// get page by url
         /// </summary>
         /// <param name="url"></param>
@@ -427,7 +454,9 @@ namespace RMuseum.Services.Implementation
                     UrlSlug = dbPage.UrlSlug,
                     FullUrl = dbPage.FullUrl,
                     HtmlText = dbPage.HtmlText,
-                    SecondPoet = secondPoet
+                    SecondPoet = secondPoet,
+                    NoIndex = dbPage.NoIndex,
+                    RedirectFromFullUrl = dbPage.RedirectFromFullUrl,
 
                 };
                 switch (page.GanjoorPageType)
@@ -2579,6 +2608,8 @@ namespace RMuseum.Services.Implementation
                 await _context.SaveChangesAsync();
 
                 dbPage.HtmlText = pageData.HtmlText;
+                dbPage.NoIndex = pageData.NoIndex;
+                dbPage.RedirectFromFullUrl = string.IsNullOrEmpty(pageData.RedirectFromFullUrl) ? null : pageData.RedirectFromFullUrl;
                 bool messWithTitles = dbPage.Title != pageData.Title;
                 bool messWithUrls = dbPage.UrlSlug != pageData.UrlSlug;
 

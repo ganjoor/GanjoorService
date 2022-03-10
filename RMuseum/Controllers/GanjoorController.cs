@@ -738,6 +738,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get redirect url for a url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("redirecturl")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetRedirectAddressForPageUrl(string url)
+        {
+            RServiceResult<string> res =
+                await _ganjoorService.GetRedirectAddressForPageUrl(url);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (string.IsNullOrEmpty(res.Result))
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// get poem by id
         /// </summary>
         /// <param name="id"></param>

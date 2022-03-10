@@ -75,6 +75,12 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<string>> GetPageUrlById(int id);
 
+        /// <summary>
+        /// get redirect url for a url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        Task<RServiceResult<string>> GetRedirectAddressForPageUrl(string url);
 
         /// <summary>
         /// delete page

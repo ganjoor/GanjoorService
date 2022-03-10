@@ -726,6 +726,7 @@ namespace RMuseum.Services.Implementation
                     HtmlText = htmlText,
                     Note = note,
                     UrlSlug = dbPage.UrlSlug,
+                    NoIndex = dbPage.NoIndex,
                 }
                 );
 

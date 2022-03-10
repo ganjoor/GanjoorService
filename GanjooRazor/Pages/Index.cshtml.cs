@@ -522,6 +522,12 @@ namespace GanjooRazor.Pages
                 {
                     if (pageQuery.StatusCode == HttpStatusCode.NotFound)
                     {
+                        var redirectQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/redirecturl?url={Request.Path}");
+                        if(redirectQuery.IsSuccessStatusCode)
+                        {
+                            var redirectUrl = JsonConvert.DeserializeObject<string>(await redirectQuery.Content.ReadAsStringAsync());
+                            return Redirect(redirectUrl);
+                        }
                         return NotFound();
                     }
                 }

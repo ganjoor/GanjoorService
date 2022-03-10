@@ -1071,6 +1071,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetRedirectAddressForPageUrl(System.String)">
+            <summary>
+            get redirect url for a url
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get poem by id
@@ -7746,6 +7753,16 @@
             old collection page url e.g /saadi/tayyebat
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.NoIndex">
+            <summary>
+            no index (search engines are blocked to index the page)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.RedirectFromFullUrl">
+            <summary>
+            if a page url is changed, store the old URL here to be redirected automatically
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.Note">
             <summary>
             a description of the modfication
@@ -7789,6 +7806,16 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPageCompleteViewModel.HtmlText">
             <summary>
             Html Text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPageCompleteViewModel.NoIndex">
+            <summary>
+            no index (search engines are blocked to index the page)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPageCompleteViewModel.RedirectFromFullUrl">
+            <summary>
+            if a page url is changed, store the old URL here to be redirected automatically
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPageCompleteViewModel.PoetOrCat">
@@ -10414,6 +10441,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetRedirectAddressForPageUrl(System.String)">
+            <summary>
+            get redirect url for a url
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.DeletePageAsync(System.Int32)">
             <summary>
             delete page
@@ -12946,6 +12980,13 @@
             clean cache for page by comment
             </summary>
             <param name="commentId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRedirectAddressForPageUrl(System.String)">
+            <summary>
+            get redirect url for a url
+            </summary>
+            <param name="url"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPageByUrl(System.String,System.Boolean)">

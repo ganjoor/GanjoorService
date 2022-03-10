@@ -40,6 +40,16 @@
         public string HtmlText { get; set; }
 
         /// <summary>
+        /// no index (search engines are blocked to index the page)
+        /// </summary>
+        public bool NoIndex { get; set; }
+
+        /// <summary>
+        /// if a page url is changed, store the old URL here to be redirected automatically
+        /// </summary>
+        public string RedirectFromFullUrl { get; set; }
+
+        /// <summary>
         /// Poet or Cat
         /// </summary>
         public GanjoorPoetCompleteViewModel PoetOrCat { get; set; }

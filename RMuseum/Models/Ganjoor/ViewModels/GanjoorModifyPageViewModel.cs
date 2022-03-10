@@ -51,6 +51,16 @@
         public string OldTagPageUrl { get; set; }
 
         /// <summary>
+        /// no index (search engines are blocked to index the page)
+        /// </summary>
+        public bool NoIndex { get; set; }
+
+        /// <summary>
+        /// if a page url is changed, store the old URL here to be redirected automatically
+        /// </summary>
+        public string RedirectFromFullUrl { get; set; }
+
+        /// <summary>
         /// a description of the modfication
         /// </summary>
         public string Note { get; set; }
