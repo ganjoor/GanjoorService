@@ -61,6 +61,21 @@
         public string RedirectFromFullUrl { get; set; }
 
         /// <summary>
+        /// order when mixed with categories
+        /// </summary>
+        public int MixedModeOrder { get; set; }
+
+        /// <summary>
+        /// published
+        /// </summary>
+        public bool Published { get; set; }
+
+        /// <summary>
+        /// language (this is intended to affect html page encodings and not determine actuallly accents and ....)
+        /// </summary>
+        public string Language { get; set; }
+
+        /// <summary>
         /// a description of the modfication
         /// </summary>
         public string Note { get; set; }

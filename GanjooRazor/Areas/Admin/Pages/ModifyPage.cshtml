@@ -119,12 +119,41 @@
                     <input type="checkbox" asp-for="ModifyModel.NoIndex" />
                 </td>
             </tr>
-             <tr>
+            <tr>
                 <td>
                     <span class="inputlabel">از این نشانی (کامل) هم به این صفحه ری‌دایرکت شود</span>
                 </td>
                 <td>
                     <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.RedirectFromFullUrl" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">منتشر شده (فقط شعر - فعلا استفاده نشده)</span>
+                </td>
+                <td>
+                    <input type="checkbox" asp-for="ModifyModel.Published" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">ترتیب در فهرستها (فقط شعر)</span>
+                </td>
+                <td>
+                    <input asp-for="ModifyModel.MixedModeOrder" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    <span class="inputlabel">زبان (فقط شعر و برای کدگذاری صفحه و نه مشخصات لهجه‌ها)</span>
+                </td>
+                <td>
+                    <select asp-for="ModifyModel.Language">
+                        <option value ="">فارسی</option>
+                        <option value="azb">ترکی آذری</option>
+                        <option value="ar">عربی</option>
+                        <option value="ckb">کردی</option>
+                    </select>
                 </td>
             </tr>
             <tr>

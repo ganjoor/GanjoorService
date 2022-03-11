@@ -134,6 +134,9 @@ namespace GanjooRazor.Areas.Admin.Pages
                 Rhythm = PageInformation.Poem == null ? null : PageInformation.Poem.GanjoorMetre == null ? null : PageInformation.Poem.GanjoorMetre.Rhythm,
                 NoIndex = PageInformation.NoIndex,
                 RedirectFromFullUrl = PageInformation.RedirectFromFullUrl,
+                Language = PageInformation.Poem.Language,
+                MixedModeOrder = PageInformation.Poem.MixedModeOrder,
+                Published = PageInformation.Poem.Published,
             };
             return true;
         }

@@ -41,7 +41,7 @@
         public int? CoupletIndex { get; set; }
 
         /// <summary>
-        /// language
+        /// language  (this is intended to affect html page encodings and not determine actuallly accents and ....), so it is unusable for verses I guess
         /// </summary>
         public string Language { get; set; }
 

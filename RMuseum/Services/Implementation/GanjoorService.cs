@@ -1944,6 +1944,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorPoemCorrectionViewModel>(null);
 
             var dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
+            var dbPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
 
             GanjoorModifyPageViewModel pageViewModel = new GanjoorModifyPageViewModel()
             {
@@ -1956,6 +1957,11 @@ namespace RMuseum.Services.Implementation
                 HtmlText = dbPoem.HtmlText,
                 SourceName = dbPoem.SourceName,
                 SourceUrlSlug = dbPoem.SourceUrlSlug,
+                MixedModeOrder = dbPoem.MixedModeOrder,
+                Published = dbPoem.Published,
+                Language = dbPoem.Language,
+                NoIndex = dbPage.NoIndex,
+                RedirectFromFullUrl = dbPage.RedirectFromFullUrl,
                 Note = dbCorrection.Note
             };
 
@@ -2049,6 +2055,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var dbMainPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();
+                var dbPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == poemId).SingleOrDefaultAsync();
 
                 GanjoorModifyPageViewModel pageViewModel = new GanjoorModifyPageViewModel()
                 {
@@ -2061,6 +2068,11 @@ namespace RMuseum.Services.Implementation
                     HtmlText = dbMainPoem.HtmlText,
                     SourceName = dbMainPoem.SourceName,
                     SourceUrlSlug = dbMainPoem.SourceUrlSlug,
+                    RedirectFromFullUrl = dbPage.RedirectFromFullUrl,
+                    NoIndex = dbPage.NoIndex,
+                    Language = dbMainPoem.Language,
+                    MixedModeOrder = dbMainPoem.MixedModeOrder,
+                    Published = dbMainPoem.Published,
                     Note = "گام اول شکستن شعر به اشعار مجزا"
                 };
 
@@ -2102,7 +2114,9 @@ namespace RMuseum.Services.Implementation
                     GanjoorMetreId = poem.GanjoorMetre == null ? null : poem.GanjoorMetre.Id,
                     SourceName = poem.SourceName,
                     SourceUrlSlug = poem.SourceUrlSlug,
-                    Published = true,
+                    Language = dbMainPoem.Language,
+                    MixedModeOrder = dbMainPoem.MixedModeOrder,
+                    Published = dbMainPoem.Published,
                 };
 
 
@@ -2168,6 +2182,11 @@ namespace RMuseum.Services.Implementation
                     HtmlText = dbMainPoem.HtmlText,
                     SourceName = dbMainPoem.SourceName,
                     SourceUrlSlug = dbMainPoem.SourceUrlSlug,
+                    RedirectFromFullUrl = dbPage.RedirectFromFullUrl,
+                    NoIndex = dbPage.NoIndex,
+                    Language = dbMainPoem.Language,
+                    MixedModeOrder = dbMainPoem.MixedModeOrder,
+                    Published = dbMainPoem.Published,
                     Note = "گام نهایی شکستن شعر به اشعار مجزا"
                 };
 
@@ -2765,6 +2784,10 @@ namespace RMuseum.Services.Implementation
                     dbPoem.RhymeLetters = pageData.RhymeLetters;
                     dbPoem.OldTag = pageData.OldTag;
                     dbPoem.OldTagPageUrl = pageData.OldTagPageUrl;
+                    dbPoem.MixedModeOrder = pageData.MixedModeOrder;
+                    dbPoem.Language = pageData.Language;
+                    dbPoem.Published = pageData.Published;
+                         
 
                     dbPoem.HtmlText = pageData.HtmlText;
                     dbPoem.Title = pageData.Title;
