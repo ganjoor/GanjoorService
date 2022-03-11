@@ -248,7 +248,6 @@ namespace RMuseum.Services.Implementation
                                             CoupletIndex = pv.CoupletIndex,
                                             VOrder = pv.VOrder,
                                             Text = pv.Text,
-                                            Language = pv.Language,
                                         }
                                         ).Single(),
                                     TText = v.TText

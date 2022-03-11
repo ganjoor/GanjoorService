@@ -17,7 +17,7 @@ namespace RMuseum.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.2")
+                .HasAnnotation("ProductVersion", "6.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -1457,9 +1457,6 @@ namespace RMuseum.Migrations
 
                     b.Property<int?>("CoupletIndex")
                         .HasColumnType("int");
-
-                    b.Property<string>("Language")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PoemId")
                         .HasColumnType("int");

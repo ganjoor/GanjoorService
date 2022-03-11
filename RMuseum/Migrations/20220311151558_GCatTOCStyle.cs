@@ -4,16 +4,10 @@
 
 namespace RMuseum.Migrations
 {
-    public partial class MultipleNewFields : Migration
+    public partial class GCatTOCStyle : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Language",
-                table: "GanjoorVerses",
-                type: "nvarchar(max)",
-                nullable: true);
-
             migrationBuilder.AddColumn<string>(
                 name: "Language",
                 table: "GanjoorPoems",
@@ -32,7 +26,7 @@ namespace RMuseum.Migrations
                 table: "GanjoorPoems",
                 type: "bit",
                 nullable: false,
-                defaultValue: true);
+                defaultValue: false);
 
             migrationBuilder.AddColumn<bool>(
                 name: "NoIndex",
@@ -78,7 +72,7 @@ namespace RMuseum.Migrations
                 table: "GanjoorCategories",
                 type: "bit",
                 nullable: false,
-                defaultValue: true);
+                defaultValue: false);
 
             migrationBuilder.AddColumn<int>(
                 name: "TableOfContentsStyle",
@@ -90,10 +84,6 @@ namespace RMuseum.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Language",
-                table: "GanjoorVerses");
-
             migrationBuilder.DropColumn(
                 name: "Language",
                 table: "GanjoorPoems");

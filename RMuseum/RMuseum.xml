@@ -7028,11 +7028,6 @@
             couplet index
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.Language">
-            <summary>
-            language  (this is intended to affect html page encodings and not determine actuallly accents and ....), so it is unusable for verses I guess
-            </summary>
-        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Id">
             <summary>
             id
@@ -8603,11 +8598,6 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.Text">
             <summary>
             text
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.Language">
-            <summary>
-            language
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel">

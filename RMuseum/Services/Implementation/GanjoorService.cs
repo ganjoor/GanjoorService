@@ -1539,7 +1539,6 @@ namespace RMuseum.Services.Implementation
                                                             CoupletIndex = v.CoupletIndex,
                                                             VersePosition = v.VersePosition,
                                                             Text = v.Text,
-                                                            Language = v.Language,
                                                         }
                                                     ).AsNoTracking().ToArrayAsync();
                 };
