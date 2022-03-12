@@ -22,6 +22,11 @@
     </script>
     <script src="/js/bk.js?version=21"></script>
 
+    @if(Model.GanjoorPage != null && Model.GanjoorPage.NoIndex)
+    {
+        <meta name="robots" content="noindex, nofollow" />
+    }
+
     @if (Model.IsHomePage)
     {
         <meta name="description" content="جستجو در شعر فارسی" />
