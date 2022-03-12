@@ -7393,6 +7393,11 @@
             full url
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.MixedModeOrder">
+            <summary>
+            order when mixed with poems
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Next">
             <summary>
             Next Category without Ancestors/Children/Poems info

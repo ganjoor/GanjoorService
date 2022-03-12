@@ -28,6 +28,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public string FullUrl { get; set; }
 
         /// <summary>
+        /// order when mixed with poems
+        /// </summary>
+        public int MixedModeOrder { get; set; }
+
+        /// <summary>
         /// Next Category without Ancestors/Children/Poems info
         /// </summary>
         public GanjoorCatViewModel Next { get; set; }

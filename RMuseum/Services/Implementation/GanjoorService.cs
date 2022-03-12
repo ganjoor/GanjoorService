@@ -190,7 +190,8 @@ namespace RMuseum.Services.Implementation
                     Id = parent.Id,
                     Title = parent.Title,
                     UrlSlug = parent.UrlSlug,
-                    FullUrl = parent.FullUrl
+                    FullUrl = parent.FullUrl,
+                    MixedModeOrder = parent.MixedModeOrder,
                 });
 
                 parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).AsNoTracking().FirstOrDefaultAsync();
@@ -213,7 +214,8 @@ namespace RMuseum.Services.Implementation
                                                     Id = c.Id,
                                                     Title = c.Title,
                                                     UrlSlug = c.UrlSlug,
-                                                    FullUrl = c.FullUrl
+                                                    FullUrl = c.FullUrl,
+                                                    MixedModeOrder = c.MixedModeOrder,
                                                     //other fields null
                                                 }
                                         ).AsNoTracking().SingleOrDefaultAsync();
@@ -234,7 +236,8 @@ namespace RMuseum.Services.Implementation
                                                     Id = c.Id,
                                                     Title = c.Title,
                                                     UrlSlug = c.UrlSlug,
-                                                    FullUrl = c.FullUrl
+                                                    FullUrl = c.FullUrl,
+                                                    MixedModeOrder = c.MixedModeOrder,
                                                     //other fields null
                                                 }
                                         ).AsNoTracking().SingleOrDefaultAsync();
@@ -245,6 +248,7 @@ namespace RMuseum.Services.Implementation
                 Title = cat.Title,
                 UrlSlug = cat.UrlSlug,
                 FullUrl = cat.FullUrl,
+                MixedModeOrder = cat.MixedModeOrder,
                 Next = nextCat,
                 Previous = preCat,
                 Ancestors = ancetors,
@@ -255,7 +259,8 @@ namespace RMuseum.Services.Implementation
                      Id = c.Id,
                      Title = c.Title,
                      UrlSlug = c.UrlSlug,
-                     FullUrl = c.FullUrl
+                     FullUrl = c.FullUrl,
+                     MixedModeOrder = c.MixedModeOrder,
                  }
                  ).AsNoTracking().ToListAsync(),
                 Poems = poems ? await _context.GanjoorPoems.Include(p => p.GanjoorMetre)
@@ -2690,6 +2695,8 @@ namespace RMuseum.Services.Implementation
                                     cat.UrlSlug = dbPage.UrlSlug;
                                     cat.FullUrl = dbPage.FullUrl;
                                 }
+
+                                cat.MixedModeOrder = pageData.MixedModeOrder;
 
                                 _context.GanjoorCategories.Update(cat);
                                 await _context.SaveChangesAsync();
