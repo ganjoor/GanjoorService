@@ -33,6 +33,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public int MixedModeOrder { get; set; }
 
         /// <summary>
+        /// published
+        /// </summary>
+        public bool Published { get; set; }
+
+        /// <summary>
         /// Next Category without Ancestors/Children/Poems info
         /// </summary>
         public GanjoorCatViewModel Next { get; set; }

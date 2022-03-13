@@ -136,7 +136,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 RedirectFromFullUrl = PageInformation.RedirectFromFullUrl,
                 Language = PageInformation.Poem == null ? null : PageInformation.Poem.Language,
                 MixedModeOrder = PageInformation.Poem == null ? (PageInformation.GanjoorPageType == GanjoorPageType.CatPage ? PageInformation.PoetOrCat.Cat.MixedModeOrder : 0) : PageInformation.Poem.MixedModeOrder,
-                Published = PageInformation.Poem == null ? true : PageInformation.Poem.Published,
+                Published = PageInformation.Poem == null ? (PageInformation.GanjoorPageType == GanjoorPageType.CatPage ? PageInformation.PoetOrCat.Cat.Published : true) : PageInformation.Poem.Published,
             };
             return true;
         }
