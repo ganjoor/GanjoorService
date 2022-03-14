@@ -28,6 +28,26 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public string FullUrl { get; set; }
 
         /// <summary>
+        /// TOC Style
+        /// </summary>
+        public GanjoorTOC TableOfContentsStyle { get; set; }
+
+        /// <summary>
+        /// Category Type
+        /// </summary>
+        public GanjoorCatType CatType { get; set; }
+
+        /// <summary>
+        /// additional descripion or note
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// html mode of additional descripion or note
+        /// </summary>
+        public string DescriptionHtml { get; set; }
+
+        /// <summary>
         /// order when mixed with poems
         /// </summary>
         public int MixedModeOrder { get; set; }

@@ -7393,6 +7393,26 @@
             full url
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.TableOfContentsStyle">
+            <summary>
+            TOC Style
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.CatType">
+            <summary>
+            Category Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Description">
+            <summary>
+            additional descripion or note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.DescriptionHtml">
+            <summary>
+            html mode of additional descripion or note
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.MixedModeOrder">
             <summary>
             order when mixed with poems
