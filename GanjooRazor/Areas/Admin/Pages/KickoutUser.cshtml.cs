@@ -40,7 +40,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         UserCauseViewModel = new UserCauseViewModel()
                         {
                             UserId = (Guid)UserInfo.Id,
-                            Cause = "ارسال اسپم در حاشیه‌ها"
+                            Cause = "نقض قوانین حاشیه‌گذاری"
                         };
                     }
                     else
