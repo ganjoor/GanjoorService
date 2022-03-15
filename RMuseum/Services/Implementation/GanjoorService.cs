@@ -2719,6 +2719,10 @@ namespace RMuseum.Services.Implementation
 
                                 cat.Published = pageData.Published;
                                 cat.MixedModeOrder = pageData.MixedModeOrder;
+                                cat.TableOfContentsStyle = pageData.TableOfContentsStyle;
+                                cat.CatType = pageData.CatType;
+                                cat.Description = pageData.Description;
+                                cat.DescriptionHtml = pageData.DescriptionHtml;
 
                                 _context.GanjoorCategories.Update(cat);
                                 await _context.SaveChangesAsync();

@@ -76,6 +76,26 @@
         public string Language { get; set; }
 
         /// <summary>
+        /// TOC Style
+        /// </summary>
+        public GanjoorTOC TableOfContentsStyle { get; set; }
+
+        /// <summary>
+        /// Category Type
+        /// </summary>
+        public GanjoorCatType CatType { get; set; }
+
+        /// <summary>
+        /// additional descripion or note
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// html mode of additional descripion or note
+        /// </summary>
+        public string DescriptionHtml { get; set; }
+
+        /// <summary>
         /// a description of the modfication
         /// </summary>
         public string Note { get; set; }

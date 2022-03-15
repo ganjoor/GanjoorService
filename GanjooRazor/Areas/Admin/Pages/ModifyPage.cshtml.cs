@@ -137,6 +137,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                 Language = PageInformation.Poem == null ? null : PageInformation.Poem.Language,
                 MixedModeOrder = PageInformation.Poem == null ? (PageInformation.GanjoorPageType == GanjoorPageType.CatPage ? PageInformation.PoetOrCat.Cat.MixedModeOrder : 0) : PageInformation.Poem.MixedModeOrder,
                 Published = PageInformation.Poem == null ? (PageInformation.GanjoorPageType == GanjoorPageType.CatPage ? PageInformation.PoetOrCat.Cat.Published : true) : PageInformation.Poem.Published,
+                TableOfContentsStyle = PageInformation.GanjoorPageType == GanjoorPageType.CatPage ? PageInformation.PoetOrCat.Cat.TableOfContentsStyle : GanjoorTOC.Analyse,
+                CatType = PageInformation.GanjoorPageType == GanjoorPageType.CatPage ? PageInformation.PoetOrCat.Cat.CatType : GanjoorCatType.Default,
+                Description = PageInformation.GanjoorPageType == GanjoorPageType.CatPage ? PageInformation.PoetOrCat.Cat.Description : "",
+                DescriptionHtml = PageInformation.GanjoorPageType == GanjoorPageType.CatPage ? PageInformation.PoetOrCat.Cat.DescriptionHtml : ""
             };
             return true;
         }

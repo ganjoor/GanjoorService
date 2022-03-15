@@ -7803,6 +7803,26 @@
             language (this is intended to affect html page encodings and not determine actuallly accents and ....)
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.TableOfContentsStyle">
+            <summary>
+            TOC Style
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.CatType">
+            <summary>
+            Category Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.Description">
+            <summary>
+            additional descripion or note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.DescriptionHtml">
+            <summary>
+            html mode of additional descripion or note
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.Note">
             <summary>
             a description of the modfication
