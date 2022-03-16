@@ -6,8 +6,7 @@
     public enum GanjoorCatType
     {
         Default = 0,
-        Poet = 1,
-        Book = 2,
-        BookPart = 3,
+        Book = 1,
+        BookPart = 2,
     }
 }

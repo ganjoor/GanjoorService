@@ -2672,6 +2672,20 @@ namespace RMuseum.Services.Implementation
                 bool messWithTitles = dbPage.Title != pageData.Title;
                 bool messWithUrls = dbPage.UrlSlug != pageData.UrlSlug;
 
+                if(dbPage.GanjoorPageType == GanjoorPageType.CatPage)
+                {
+                    GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
+                    cat.Published = pageData.Published;
+                    cat.MixedModeOrder = pageData.MixedModeOrder;
+                    cat.TableOfContentsStyle = pageData.TableOfContentsStyle;
+                    cat.CatType = pageData.CatType;
+                    cat.Description = pageData.Description;
+                    cat.DescriptionHtml = pageData.DescriptionHtml;
+
+                    _context.GanjoorCategories.Update(cat);
+                    await _context.SaveChangesAsync();
+                }
+
                 if (messWithTitles || messWithUrls)
                 {
 
@@ -2716,13 +2730,6 @@ namespace RMuseum.Services.Implementation
                                     cat.UrlSlug = dbPage.UrlSlug;
                                     cat.FullUrl = dbPage.FullUrl;
                                 }
-
-                                cat.Published = pageData.Published;
-                                cat.MixedModeOrder = pageData.MixedModeOrder;
-                                cat.TableOfContentsStyle = pageData.TableOfContentsStyle;
-                                cat.CatType = pageData.CatType;
-                                cat.Description = pageData.Description;
-                                cat.DescriptionHtml = pageData.DescriptionHtml;
 
                                 _context.GanjoorCategories.Update(cat);
                                 await _context.SaveChangesAsync();

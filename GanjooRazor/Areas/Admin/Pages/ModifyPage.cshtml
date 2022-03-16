@@ -143,7 +143,7 @@
                     <input asp-for="ModifyModel.MixedModeOrder" />
                 </td>
             </tr>
-             <tr>
+            <tr>
                 <td>
                     <span class="inputlabel">زبان (فقط شعر و برای کدگذاری صفحه و نه مشخصات لهجه‌ها)</span>
                 </td>
@@ -153,6 +153,18 @@
                         <option value="azb">ترکی آذری</option>
                         <option value="ar">عربی</option>
                         <option value="ckb">کردی</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">نوع بخش</span>
+                </td>
+                <td>
+                    <select asp-for="ModifyModel.CatType">
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorCatType.Default">پیش‌فرض</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorCatType.Book">کتاب</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorCatType.BookPart">بخش</option>
                     </select>
                 </td>
             </tr>
