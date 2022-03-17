@@ -543,7 +543,10 @@ namespace GanjooRazor.Pages
                     return Page();
                 }
                 GanjoorPage = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
-                GanjoorPage.HtmlText = GanjoorPage.HtmlText.Replace("https://ganjoor.net/", "/").Replace("http://ganjoor.net/", "/");
+                if(!string.IsNullOrEmpty(GanjoorPage.HtmlText))
+                {
+                    GanjoorPage.HtmlText = GanjoorPage.HtmlText.Replace("https://ganjoor.net/", "/").Replace("http://ganjoor.net/", "/");
+                }
                 switch (GanjoorPage.GanjoorPageType)
                 {
                     case GanjoorPageType.PoemPage:
