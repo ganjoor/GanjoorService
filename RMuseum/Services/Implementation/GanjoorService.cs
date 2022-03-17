@@ -2672,7 +2672,7 @@ namespace RMuseum.Services.Implementation
                 bool messWithTitles = dbPage.Title != pageData.Title;
                 bool messWithUrls = dbPage.UrlSlug != pageData.UrlSlug;
 
-                if(dbPage.GanjoorPageType == GanjoorPageType.CatPage)
+                if(dbPage.GanjoorPageType == GanjoorPageType.CatPage || dbPage.GanjoorPageType == GanjoorPageType.PoetPage)
                 {
                     GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
                     cat.Published = pageData.Published;

@@ -128,7 +128,7 @@
                 </tr>
             }
 
-            @if (Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.CatPage || Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.PoemPage)
+            @if (Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.CatPage || Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.PoetPage || Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.PoemPage)
             {
                 <tr>
                     <td>
@@ -149,7 +149,7 @@
             }
 
 
-            @if (Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.CatPage)
+            @if (Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.CatPage || Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.PoetPage )
             {
                 <tr>
                     <td>
