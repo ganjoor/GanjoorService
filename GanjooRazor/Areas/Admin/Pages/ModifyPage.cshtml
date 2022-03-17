@@ -158,13 +158,32 @@
             </tr>
             <tr>
                 <td>
-                    <span class="inputlabel">نوع بخش</span>
+                    <span class="inputlabel">نوع بخش (فقط بخش‌ها)</span>
                 </td>
                 <td>
                     <select asp-for="ModifyModel.CatType">
                         <option value ="@RMuseum.Models.Ganjoor.GanjoorCatType.Default">پیش‌فرض</option>
                         <option value ="@RMuseum.Models.Ganjoor.GanjoorCatType.Book">کتاب</option>
                         <option value ="@RMuseum.Models.Ganjoor.GanjoorCatType.BookPart">بخش</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="inputlabel">نحوهٔ فهرست‌گذاری بخش (فقط بخش‌ها)</span>
+                </td>
+                <td>
+                    <select asp-for="ModifyModel.TableOfContentsStyle">
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.Analyse">بر اساس تحلیل بخش</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.OnlyTitles">فقط عناوین</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstVerse">عنوان و مصرع اول</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstVerse">الفبایی با مصرع اول</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithSecondVerse">الفبایی با مصرع دوم</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstCouplet">الفبایی با بیت اول</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndSecondVerse">عنوان و مصرع دوم</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCouplet">عنوان و بیت اول</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCenteredVerse">عنوان و مصرع بند</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCenteredCouplet">عنوان و بیت بند</option>
                     </select>
                 </td>
             </tr>
@@ -210,16 +229,18 @@
         <table>
             <tr>
                 <td>
-                    <input type="radio" asp-for="GanjoorTOC" value="0" checked />بر اساس تحلیل بخش<br />
-                    <input type="radio" asp-for="GanjoorTOC" value="1" />فقط عناوین<br />
-                    <input type="radio" asp-for="GanjoorTOC" value="2" />عنوان و مصرع اول<br />
-                    <input type="radio" asp-for="GanjoorTOC" value="3" />الفبایی با مصرع اول<br />
-                    <input type="radio" asp-for="GanjoorTOC" value="4" />الفبایی با مصرع دوم<br />
-                    <input type="radio" asp-for="GanjoorTOC" value="5" />الفبایی با بیت اول<br />
-                    <input type="radio" asp-for="GanjoorTOC" value="6" />عنوان و مصرع دوم<br />
-                    <input type="radio" asp-for="GanjoorTOC" value="7" />عنوان و بیت اول<br />
-                    <input type="radio" asp-for="GanjoorTOC" value="8" />عنوان و مصرع بند<br />
-                    <input type="radio" asp-for="GanjoorTOC" value="9" />عنوان و بیت بند<br />
+                     <select asp-for="GanjoorTOC">
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.Analyse">بر اساس تحلیل بخش</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.OnlyTitles">فقط عناوین</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstVerse">عنوان و مصرع اول</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstVerse">الفبایی با مصرع اول</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithSecondVerse">الفبایی با مصرع دوم</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstCouplet">الفبایی با بیت اول</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndSecondVerse">عنوان و مصرع دوم</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCouplet">عنوان و بیت اول</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCenteredVerse">عنوان و مصرع بند</option>
+                        <option value ="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCenteredCouplet">عنوان و بیت بند</option>
+                    </select>
                 </td>
                 <td>
                     <button type="submit" style="width:100%;color:white;background-color:blue">تولید</button>

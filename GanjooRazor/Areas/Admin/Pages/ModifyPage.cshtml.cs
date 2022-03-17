@@ -142,6 +142,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 Description = PageInformation.GanjoorPageType == GanjoorPageType.CatPage ? PageInformation.PoetOrCat.Cat.Description : "",
                 DescriptionHtml = PageInformation.GanjoorPageType == GanjoorPageType.CatPage ? PageInformation.PoetOrCat.Cat.DescriptionHtml : ""
             };
+            GanjoorTOC = ModifyModel.TableOfContentsStyle;
             return true;
         }
 
