@@ -2684,6 +2684,14 @@ namespace RMuseum.Services.Implementation
 
                     _context.GanjoorCategories.Update(cat);
                     await _context.SaveChangesAsync();
+
+                    if (dbPage.GanjoorPageType == GanjoorPageType.PoetPage)
+                    {
+                        var poet = await _context.GanjoorPoets.Where(p => p.Id == dbPage.PoetId).SingleAsync();
+                        poet.Description = cat.Description;
+                        _context.Update(poet);
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
                 if (messWithTitles || messWithUrls)
