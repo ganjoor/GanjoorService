@@ -24,6 +24,20 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<int>> BreakPoemAsync(int poemId, int vOrder, Guid userId)
         {
+            var poem = (await GetPoemById(poemId, true, false, true, false, false, false, false, true, true)).Result;
+            if (poem.Next == null)
+            {
+                return await _BreakLastPoemInItsCategoryAsync(poemId, vOrder, userId, poem);
+            }
+            return new RServiceResult<int>(0, "poem.Next != null");
+        }
+
+            
+        private async Task<RServiceResult<int>> _BreakLastPoemInItsCategoryAsync(int poemId, int vOrder, Guid userId, GanjoorPoemCompleteViewModel poem)
+        {
+            if (poem.Next != null)
+                return new RServiceResult<int>(-1, "poem.Next != null");
+
             try
             {
                 var dbMainPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();
@@ -53,9 +67,7 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<int>(0, res.ExceptionString);
 
 
-                var poem = (await GetPoemById(poemId, true, false, true, false, false, false, false, true, true)).Result;
-                if (poem.Next != null)
-                    return new RServiceResult<int>(-1, "poem.Next != null");
+
 
                 if (poem.UrlSlug.IndexOf("sh") != 0)
                     return new RServiceResult<int>(-1, "poem.UrlSlug.IndexOf(\"sh\") != 0");
