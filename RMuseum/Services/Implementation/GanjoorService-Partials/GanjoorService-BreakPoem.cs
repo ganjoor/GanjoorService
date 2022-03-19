@@ -179,6 +179,45 @@ namespace RMuseum.Services.Implementation
                     _context.UpdateRange(poemCorrections);
                     await _context.SaveChangesAsync();
 
+                    var userBookmarks = await _context.GanjoorUserBookmarks.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < userBookmarks.Count; i++)
+                    {
+                        userBookmarks[i].PoemId = targetPoemId;
+                    }
+                    _context.UpdateRange(userBookmarks);
+                    await _context.SaveChangesAsync();
+
+                    var verseNumberings = await _context.GanjoorVerseNumbers.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < verseNumberings.Count; i++)
+                    {
+                        verseNumberings[i].PoemId = targetPoemId;
+                    }
+                    _context.UpdateRange(verseNumberings);
+                    await _context.SaveChangesAsync();
+
+                    var relatedPoems = await _context.GanjoorCachedRelatedPoems.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < relatedPoems.Count; i++)
+                    {
+                        relatedPoems[i].PoemId = targetPoemId;
+                    }
+                    _context.UpdateRange(relatedPoems);
+                    await _context.SaveChangesAsync();
+
+                    var probables = await _context.GanjoorPoemProbableMetres.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < probables.Count; i++)
+                    {
+                        probables[i].PoemId = targetPoemId;
+                    }
+                    _context.UpdateRange(probables);
+                    await _context.SaveChangesAsync();
+
+                    var visits = await _context.GanjoorUserPoemVisits.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < visits.Count; i++)
+                    {
+                        visits[i].PoemId = targetPoemId;
+                    }
+                    _context.UpdateRange(visits);
+                    await _context.SaveChangesAsync();
 
 
                     targetPoemId = sourcePoem.Id;
