@@ -219,6 +219,27 @@ namespace RMuseum.Services.Implementation
                     _context.UpdateRange(visits);
                     await _context.SaveChangesAsync();
 
+                    var links = await _context.GanjoorLinks.Where(l => l.GanjoorPostId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < links.Count; i++)
+                    {
+                        links[i].GanjoorPostId = targetPoemId;
+                        links[i].GanjoorUrl = $"https://ganjoor.net{targetPoem.FullUrl}";
+                        links[i].GanjoorTitle = targetPoem.FullTitle;
+                    }
+                    _context.UpdateRange(links);
+                    await _context.SaveChangesAsync();
+
+                    var pinterests = await _context.PinterestLinks.Where(l => l.GanjoorPostId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < pinterests.Count; i++)
+                    {
+                        pinterests[i].GanjoorPostId = targetPoemId;
+                        pinterests[i].GanjoorUrl = $"https://ganjoor.net{targetPoem.FullUrl}";
+                        pinterests[i].GanjoorTitle = targetPoem.FullTitle;
+                    }
+                    _context.UpdateRange(pinterests);
+                    await _context.SaveChangesAsync();
+
+
 
                     targetPoemId = sourcePoem.Id;
                 }
