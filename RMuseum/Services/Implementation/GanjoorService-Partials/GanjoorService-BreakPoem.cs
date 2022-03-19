@@ -150,11 +150,6 @@ namespace RMuseum.Services.Implementation
                     targetPage.HtmlText = sourcePage.HtmlText; 
                     _context.Update(targetPage);
 
-                    await _context.SaveChangesAsync();
-
-                    var oldPoemVerses = await _context.GanjoorVerses.Where(v => v.PoemId == targetPoemId).ToListAsync();
-                    _context.RemoveRange(oldPoemVerses);
-                    await _context.SaveChangesAsync();
 
                     var poemVerses = await _context.GanjoorVerses.Where(v => v.PoemId == sourcePoem.Id).OrderBy(v => v.VOrder).ToListAsync();
                     for (int i = 0; i < poemVerses.Count; i++)
@@ -162,7 +157,7 @@ namespace RMuseum.Services.Implementation
                         poemVerses[i].PoemId = targetPoemId;
                     }
                     _context.GanjoorVerses.UpdateRange(poemVerses);
-                    await _context.SaveChangesAsync();
+                    
 
                     var recitaions = await _context.Recitations.Where(r => r.GanjoorPostId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < recitaions.Count; i++)
@@ -170,7 +165,7 @@ namespace RMuseum.Services.Implementation
                         recitaions[i].GanjoorPostId = targetPoemId;
                     }
                     _context.UpdateRange(recitaions);
-                    await _context.SaveChangesAsync();
+                    
 
                     var tracks = await _context.GanjoorPoemMusicTracks.Where(t => t.PoemId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < tracks.Count; i++)
@@ -178,7 +173,7 @@ namespace RMuseum.Services.Implementation
                         tracks[i].PoemId = targetPoemId;
                     }
                     _context.UpdateRange(tracks);
-                    await _context.SaveChangesAsync();
+                    
 
                     var comments = await _context.GanjoorComments.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < comments.Count; i++)
@@ -186,7 +181,7 @@ namespace RMuseum.Services.Implementation
                         comments[i].PoemId = targetPoemId;
                     }
                     _context.UpdateRange(comments);
-                    await _context.SaveChangesAsync();
+                    
 
                     var pageSnapshots = await _context.GanjoorPageSnapshots.Where(c => c.GanjoorPageId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < pageSnapshots.Count; i++)
@@ -194,7 +189,7 @@ namespace RMuseum.Services.Implementation
                         pageSnapshots[i].GanjoorPageId = targetPoemId;
                     }
                     _context.UpdateRange(pageSnapshots);
-                    await _context.SaveChangesAsync();
+                    
 
                     var poemCorrections = await _context.GanjoorPoemCorrections.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < poemCorrections.Count; i++)
@@ -202,7 +197,7 @@ namespace RMuseum.Services.Implementation
                         poemCorrections[i].PoemId = targetPoemId;
                     }
                     _context.UpdateRange(poemCorrections);
-                    await _context.SaveChangesAsync();
+                    
 
                     var userBookmarks = await _context.GanjoorUserBookmarks.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < userBookmarks.Count; i++)
@@ -210,7 +205,7 @@ namespace RMuseum.Services.Implementation
                         userBookmarks[i].PoemId = targetPoemId;
                     }
                     _context.UpdateRange(userBookmarks);
-                    await _context.SaveChangesAsync();
+                    
 
                     var verseNumberings = await _context.GanjoorVerseNumbers.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < verseNumberings.Count; i++)
@@ -218,7 +213,7 @@ namespace RMuseum.Services.Implementation
                         verseNumberings[i].PoemId = targetPoemId;
                     }
                     _context.UpdateRange(verseNumberings);
-                    await _context.SaveChangesAsync();
+                    
 
                     var relatedPoems = await _context.GanjoorCachedRelatedPoems.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < relatedPoems.Count; i++)
@@ -226,7 +221,7 @@ namespace RMuseum.Services.Implementation
                         relatedPoems[i].PoemId = targetPoemId;
                     }
                     _context.UpdateRange(relatedPoems);
-                    await _context.SaveChangesAsync();
+                    
 
                     var probables = await _context.GanjoorPoemProbableMetres.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < probables.Count; i++)
@@ -234,7 +229,7 @@ namespace RMuseum.Services.Implementation
                         probables[i].PoemId = targetPoemId;
                     }
                     _context.UpdateRange(probables);
-                    await _context.SaveChangesAsync();
+                    
 
                     var visits = await _context.GanjoorUserPoemVisits.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < visits.Count; i++)
@@ -242,7 +237,7 @@ namespace RMuseum.Services.Implementation
                         visits[i].PoemId = targetPoemId;
                     }
                     _context.UpdateRange(visits);
-                    await _context.SaveChangesAsync();
+                    
 
                     var links = await _context.GanjoorLinks.Where(l => l.GanjoorPostId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < links.Count; i++)
@@ -252,7 +247,7 @@ namespace RMuseum.Services.Implementation
                         links[i].GanjoorTitle = targetPoem.FullTitle;
                     }
                     _context.UpdateRange(links);
-                    await _context.SaveChangesAsync();
+                    
 
                     var pinterests = await _context.PinterestLinks.Where(l => l.GanjoorPostId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < pinterests.Count; i++)
@@ -262,14 +257,16 @@ namespace RMuseum.Services.Implementation
                         pinterests[i].GanjoorTitle = targetPoem.FullTitle;
                     }
                     _context.UpdateRange(pinterests);
-                    await _context.SaveChangesAsync();
+                    
 
 
 
                     targetPoemId = sourcePoem.Id;
                 }
 
-                
+                await _context.SaveChangesAsync();
+
+
 
                 var dbLastTargetPoem = await _context.GanjoorPoems.Where(p => p.Id == targetPoemId).SingleAsync();
 
@@ -303,6 +300,19 @@ namespace RMuseum.Services.Implementation
                 {
 
                 }
+
+                var dbLastTargetPage = await _context.GanjoorPages.Where(p => p.Id == targetPoemId).SingleAsync();
+                dbLastTargetPage.Published = dbPage.Published;
+                dbLastTargetPage.PageOrder = dbPage.PageOrder;
+                dbLastTargetPage.ParentId = dbPage.ParentId;
+                dbLastTargetPage.PoetId = dbPage.PoetId;
+                dbLastTargetPage.CatId = dbPage.CatId;
+                dbLastTargetPage.PostDate = dbPage.PostDate;
+                dbLastTargetPage.NoIndex = dbPage.NoIndex;
+                dbLastTargetPage.HtmlText = dbLastTargetPoem.HtmlText;
+                _context.Update(dbLastTargetPage);
+
+
                 _context.Update(dbLastTargetPoem);
                 _context.GanjoorVerses.UpdateRange(mainPoemVerses);
 
