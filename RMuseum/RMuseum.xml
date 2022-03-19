@@ -12576,6 +12576,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -12643,6 +12646,15 @@
             get user bookmarks (artifacts and items)
             </summary>
             <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BreakPoemAsync(System.Int32,System.Int32,System.Guid)">
+            <summary>
+            break a poem from a verse forward
+            </summary>
+            <param name="poemId"></param>
+            <param name="vOrder"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>
@@ -13273,15 +13285,6 @@
             </summary>
             <param name="userId"></param>
             <param name="moderation"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.BreakPoemAsync(System.Int32,System.Int32,System.Guid)">
-            <summary>
-            break a poem from a verse forward
-            </summary>
-            <param name="poemId"></param>
-            <param name="vOrder"></param>
-            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._GetRandomPoemId(System.Int32,System.Int32)">
