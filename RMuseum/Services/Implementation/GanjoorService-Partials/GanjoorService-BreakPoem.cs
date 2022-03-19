@@ -87,10 +87,62 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorPages.Add(dbPoemNewPage);
                 await _context.SaveChangesAsync();
 
-                var targetPoem = dbNewPoem;
-                var targetPage = dbPoemNewPage;
+                int targetPoemId = dbPoemNewPage.Id;
 
                 //now copy each poem to its next sibling in their category
+                for (int nPoemIndex = poemList.Count - 1; nPoemIndex >= 0; nPoemIndex--)
+                {
+
+                    var sourcePoem = poemList[nPoemIndex];
+
+
+                    var targetPoem = await _context.GanjoorPoems.Where(p => p.Id == targetPoemId).SingleAsync();
+                    //copy everything but url and title:
+                    targetPoem.HtmlText = sourcePoem.HtmlText;
+                    targetPoem.PlainText = sourcePoem.PlainText;
+                    targetPoem.GanjoorMetreId = sourcePoem.GanjoorMetreId;
+                    targetPoem.RhymeLetters = sourcePoem.RhymeLetters;
+                    targetPoem.SourceName = sourcePoem.SourceName;
+                    targetPoem.SourceUrlSlug = sourcePoem.SourceUrlSlug;
+                    targetPoem.OldTag = sourcePoem.OldTag;
+                    targetPoem.OldTagPageUrl = sourcePoem.OldTagPageUrl;
+                    targetPoem.MixedModeOrder = sourcePoem.MixedModeOrder;
+                    targetPoem.Published = sourcePoem.Published;
+                    targetPoem.Language = sourcePoem.Language;
+                    _context.Update(targetPoem);
+
+
+                    var sourcePage = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == sourcePoem.Id).SingleAsync();
+                    var targetPage = await _context.GanjoorPages.Where(p => p.Id == targetPoemId).SingleAsync();
+                    //copy everything but url and title:
+                    targetPage.Published = sourcePage.Published;
+                    targetPage.PageOrder = sourcePage.PageOrder;
+                    targetPage.ParentId = sourcePage.ParentId;
+                    targetPage.PoetId = sourcePage.PoetId;
+                    targetPage.CatId = sourcePage.CatId;
+                    targetPage.PostDate = sourcePage.PostDate;
+                    targetPage.NoIndex = sourcePage.NoIndex;
+                    targetPage.HtmlText = sourcePage.HtmlText; 
+                    _context.Update(targetPage);
+
+                    await _context.SaveChangesAsync();
+
+                    var oldPoemVerses = await _context.GanjoorVerses.Where(v => v.PoemId == targetPoemId).ToListAsync();
+                    _context.RemoveRange(oldPoemVerses);
+                    await _context.SaveChangesAsync();
+
+                    var poemVerses = await _context.GanjoorVerses.Where(v => v.PoemId == sourcePoem.Id).OrderBy(v => v.VOrder).ToListAsync();
+                    for (int i = 0; i < poemVerses.Count; i++)
+                    {
+                        poemVerses[i].PoemId = targetPoemId;
+                    }
+                    _context.GanjoorVerses.UpdateRange(poemVerses);
+
+                    await _context.SaveChangesAsync();
+
+
+                    targetPoemId = sourcePoem.Id;
+                }
 
 
                 return new RServiceResult<int>(0, "poem.Next != null");
