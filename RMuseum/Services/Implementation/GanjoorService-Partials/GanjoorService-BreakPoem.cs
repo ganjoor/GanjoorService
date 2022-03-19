@@ -137,8 +137,48 @@ namespace RMuseum.Services.Implementation
                         poemVerses[i].PoemId = targetPoemId;
                     }
                     _context.GanjoorVerses.UpdateRange(poemVerses);
-
                     await _context.SaveChangesAsync();
+
+                    var recitaions = await _context.Recitations.Where(r => r.GanjoorPostId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < recitaions.Count; i++)
+                    {
+                        recitaions[i].GanjoorPostId = targetPoemId;
+                    }
+                    _context.UpdateRange(recitaions);
+                    await _context.SaveChangesAsync();
+
+                    var tracks = await _context.GanjoorPoemMusicTracks.Where(t => t.PoemId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < tracks.Count; i++)
+                    {
+                        tracks[i].PoemId = targetPoemId;
+                    }
+                    _context.UpdateRange(tracks);
+                    await _context.SaveChangesAsync();
+
+                    var comments = await _context.GanjoorComments.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < comments.Count; i++)
+                    {
+                        comments[i].PoemId = targetPoemId;
+                    }
+                    _context.UpdateRange(comments);
+                    await _context.SaveChangesAsync();
+
+                    var pageSnapshots = await _context.GanjoorPageSnapshots.Where(c => c.GanjoorPageId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < pageSnapshots.Count; i++)
+                    {
+                        pageSnapshots[i].GanjoorPageId = targetPoemId;
+                    }
+                    _context.UpdateRange(pageSnapshots);
+                    await _context.SaveChangesAsync();
+
+                    var poemCorrections = await _context.GanjoorPoemCorrections.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < poemCorrections.Count; i++)
+                    {
+                        poemCorrections[i].PoemId = targetPoemId;
+                    }
+                    _context.UpdateRange(poemCorrections);
+                    await _context.SaveChangesAsync();
+
 
 
                     targetPoemId = sourcePoem.Id;
