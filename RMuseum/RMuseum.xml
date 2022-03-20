@@ -12579,6 +12579,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -12975,6 +12978,15 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePageAsync(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
+            <summary>
+            modify page
+            </summary>
+            <param name="id"></param>
+            <param name="editingUserId"></param>
+            <param name="pageData"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean,System.Boolean)">
             <summary>
             Get List of poets
@@ -13327,15 +13339,6 @@
             <param name="term"></param>
             <param name="poetId"></param>
             <param name="catId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePageAsync(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
-            <summary>
-            modify page
-            </summary>
-            <param name="id"></param>
-            <param name="editingUserId"></param>
-            <param name="pageData"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetOlderVersionsOfPage(System.Int32)">
