@@ -44,6 +44,10 @@
                 vOrder: vOrder
             },
             success: function (id) {
+                if(String(id) == '-1'){
+                    alert('کار شکستن شعر شروع شد.');
+                    return;
+                }
                 location.href = '/?p=' + String(id);
             },
             error: function (e) {
@@ -276,7 +280,7 @@ else
                 </td>
             </tr>
 
-            @if (Model.CanEdit && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
+            @if (Model.CanEdit && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
             {
                 <tr>
                     <td>

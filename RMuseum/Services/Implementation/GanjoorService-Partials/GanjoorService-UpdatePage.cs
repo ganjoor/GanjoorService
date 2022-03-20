@@ -270,6 +270,7 @@ namespace RMuseum.Services.Implementation
                             context.GanjoorVerses.Remove(oldVerses[v]);
                         }
                     }
+                    await context.SaveChangesAsync();
 
                     await _FillPoemCoupletIndices(context, id);
 

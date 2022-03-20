@@ -2465,7 +2465,7 @@ namespace RMuseum.Services.Implementation
         {
             var poem = (await GetPoemById(poemId, true, false, true, false, false, false, false, true, true)).Result;
             var parentPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == poem.Category.Cat.Id).SingleAsync();
-            var poemTitleStaticPart = poem.Title.Replace("۰", "").Replace("۱", "1").Replace("۲", "").Replace("۳", "").Replace("۴", "").Replace("۵", "").Replace("۶", "").Replace("۷", "").Replace("۸", "1").Replace("۹", "").Trim();
+            var poemTitleStaticPart = poem.Title.Replace("۰", "").Replace("۱", "").Replace("۲", "").Replace("۳", "").Replace("۴", "").Replace("۵", "").Replace("۶", "").Replace("۷", "").Replace("۸", "").Replace("۹", "").Trim();
             if (poem.Next == null)
             {
                 return await _BreakLastPoemInItsCategoryAsync(_context, poemId, vOrder, userId, poem, parentPage, poemTitleStaticPart);
