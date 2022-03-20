@@ -17,18 +17,12 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
-        /// <summary>
-        /// modify page
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="editingUserId"></param>
-        /// <param name="pageData"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> UpdatePageAsync(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData)
+
+        private async Task<RServiceResult<GanjoorPageCompleteViewModel>> _UpdatePageAsync(RMuseumDbContext context, int id, Guid editingUserId, GanjoorModifyPageViewModel pageData, bool needsReturn)
         {
             try
             {
-                var dbPage = await _context.GanjoorPages.Where(p => p.Id == id).SingleOrDefaultAsync();
+                var dbPage = await context.GanjoorPages.Where(p => p.Id == id).SingleOrDefaultAsync();
                 if (dbPage == null)
                     return new RServiceResult<GanjoorPageCompleteViewModel>(null);//not found
 
@@ -49,7 +43,7 @@ namespace RMuseum.Services.Implementation
 
                 if (dbPage.GanjoorPageType == GanjoorPageType.PoemPage)
                 {
-                    dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).SingleOrDefaultAsync();
+                    dbPoem = await context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).SingleOrDefaultAsync();
 
                     snapshot.SourceName = dbPoem.SourceName;
                     snapshot.SourceUrlSlug = dbPoem.SourceUrlSlug;
@@ -59,8 +53,8 @@ namespace RMuseum.Services.Implementation
                     snapshot.OldTagPageUrl = dbPoem.OldTagPageUrl;
                 }
 
-                _context.GanjoorPageSnapshots.Add(snapshot);
-                await _context.SaveChangesAsync();
+                context.GanjoorPageSnapshots.Add(snapshot);
+                await context.SaveChangesAsync();
 
                 dbPage.HtmlText = pageData.HtmlText;
                 dbPage.NoIndex = pageData.NoIndex;
@@ -70,7 +64,7 @@ namespace RMuseum.Services.Implementation
 
                 if (dbPage.GanjoorPageType == GanjoorPageType.CatPage || dbPage.GanjoorPageType == GanjoorPageType.PoetPage)
                 {
-                    GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
+                    GanjoorCat cat = await context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
                     cat.Published = pageData.Published;
                     cat.MixedModeOrder = pageData.MixedModeOrder;
                     cat.TableOfContentsStyle = pageData.TableOfContentsStyle;
@@ -78,15 +72,15 @@ namespace RMuseum.Services.Implementation
                     cat.Description = pageData.Description;
                     cat.DescriptionHtml = pageData.DescriptionHtml;
 
-                    _context.GanjoorCategories.Update(cat);
-                    await _context.SaveChangesAsync();
+                    context.GanjoorCategories.Update(cat);
+                    await context.SaveChangesAsync();
 
                     if (dbPage.GanjoorPageType == GanjoorPageType.PoetPage)
                     {
-                        var poet = await _context.GanjoorPoets.Where(p => p.Id == dbPage.PoetId).SingleAsync();
+                        var poet = await context.GanjoorPoets.Where(p => p.Id == dbPage.PoetId).SingleAsync();
                         poet.Description = cat.Description;
-                        _context.Update(poet);
-                        await _context.SaveChangesAsync();
+                        context.Update(poet);
+                        await context.SaveChangesAsync();
                     }
                 }
 
@@ -98,7 +92,7 @@ namespace RMuseum.Services.Implementation
 
                     if (dbPage.ParentId != null)
                     {
-                        GanjoorPage parent = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == dbPage.ParentId).SingleAsync();
+                        GanjoorPage parent = await context.GanjoorPages.AsNoTracking().Where(p => p.Id == dbPage.ParentId).SingleAsync();
                         if (messWithUrls)
                         {
                             dbPage.FullUrl = parent.FullUrl + "/" + pageData.UrlSlug;
@@ -126,7 +120,7 @@ namespace RMuseum.Services.Implementation
                     {
                         case GanjoorPageType.CatPage:
                             {
-                                GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
+                                GanjoorCat cat = await context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
                                 if (messWithTitles)
                                     cat.Title = dbPage.Title;
                                 if (messWithUrls)
@@ -135,8 +129,8 @@ namespace RMuseum.Services.Implementation
                                     cat.FullUrl = dbPage.FullUrl;
                                 }
 
-                                _context.GanjoorCategories.Update(cat);
-                                await _context.SaveChangesAsync();
+                                context.GanjoorCategories.Update(cat);
+                                await context.SaveChangesAsync();
                             }
                             break;
                     }
@@ -144,7 +138,7 @@ namespace RMuseum.Services.Implementation
                        (
                        async token =>
                        {
-                           using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                           using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
                            {
                                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(inlineContext);
                                var job = (await jobProgressServiceEF.NewJob($"Updating PageChildren for {dbPage.Id}", "Updating")).Result;
@@ -171,14 +165,13 @@ namespace RMuseum.Services.Implementation
                 {
                     if (messWithTitles)
                     {
-                        GanjoorPoet poet = await _context.GanjoorPoets.Where(p => p.Id == dbPage.PoetId).SingleAsync();
+                        GanjoorPoet poet = await context.GanjoorPoets.Where(p => p.Id == dbPage.PoetId).SingleAsync();
                         poet.Nickname = dbPage.Title;
-                        //poet.Description = dbPage.HtmlText; -- description might become html free
-                        _context.GanjoorPoets.Update(poet);
+                        context.GanjoorPoets.Update(poet);
                     }
 
 
-                    GanjoorCat cat = await _context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
+                    GanjoorCat cat = await context.GanjoorCategories.Where(c => c.Id == dbPage.CatId).SingleAsync();
                     if (messWithTitles)
                     {
                         cat.Title = dbPage.Title;
@@ -190,14 +183,14 @@ namespace RMuseum.Services.Implementation
                     }
 
 
-                    _context.GanjoorCategories.Update(cat);
+                    context.GanjoorCategories.Update(cat);
 
-                    await _context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
 
                     CleanPoetCache((int)dbPage.PoetId);
                 }
 
-                _context.GanjoorPages.Update(dbPage);
+                context.GanjoorPages.Update(dbPage);
 
                 if (dbPoem != null)
                 {
@@ -211,7 +204,7 @@ namespace RMuseum.Services.Implementation
                     }
                     else
                     {
-                        var metre = await _context.GanjoorMetres.Where(m => m.Rhythm == pageData.Rhythm).SingleOrDefaultAsync();
+                        var metre = await context.GanjoorMetres.Where(m => m.Rhythm == pageData.Rhythm).SingleOrDefaultAsync();
                         if (metre == null)
                         {
                             metre = new GanjoorMetre()
@@ -219,8 +212,8 @@ namespace RMuseum.Services.Implementation
                                 Rhythm = pageData.Rhythm,
                                 VerseCount = 0
                             };
-                            _context.GanjoorMetres.Add(metre);
-                            await _context.SaveChangesAsync();
+                            context.GanjoorMetres.Add(metre);
+                            await context.SaveChangesAsync();
                         }
                         dbPoem.GanjoorMetreId = metre.Id;
                     }
@@ -242,10 +235,10 @@ namespace RMuseum.Services.Implementation
 
                     dbPoem.PlainText = PreparePlainText(verses);
 
-                    _context.GanjoorPoems.Update(dbPoem);
+                    context.GanjoorPoems.Update(dbPoem);
 
 
-                    var oldVerses = await _context.GanjoorVerses.Where(v => v.PoemId == id).ToListAsync();
+                    var oldVerses = await context.GanjoorVerses.Where(v => v.PoemId == id).ToListAsync();
 
                     if (oldVerses.Count <= verses.Count)
                     {
@@ -254,12 +247,12 @@ namespace RMuseum.Services.Implementation
                             oldVerses[v].Text = verses[v].Text;
                             oldVerses[v].VersePosition = verses[v].VersePosition;
                             oldVerses[v].VOrder = verses[v].VOrder;
-                            _context.GanjoorVerses.Update(oldVerses[v]);
+                            context.GanjoorVerses.Update(oldVerses[v]);
                         }
 
                         for (int v = oldVerses.Count; v < verses.Count; v++)
                         {
-                            _context.GanjoorVerses.Add(verses[v]);
+                            context.GanjoorVerses.Add(verses[v]);
                         }
                     }
                     else
@@ -269,18 +262,18 @@ namespace RMuseum.Services.Implementation
                             oldVerses[v].Text = verses[v].Text;
                             oldVerses[v].VersePosition = verses[v].VersePosition;
                             oldVerses[v].VOrder = verses[v].VOrder;
-                            _context.GanjoorVerses.Update(oldVerses[v]);
+                            context.GanjoorVerses.Update(oldVerses[v]);
                         }
 
                         for (int v = verses.Count; v < oldVerses.Count; v++)
                         {
-                            _context.GanjoorVerses.Remove(oldVerses[v]);
+                            context.GanjoorVerses.Remove(oldVerses[v]);
                         }
                     }
 
-                    await _FillPoemCoupletIndices(_context, id);
+                    await _FillPoemCoupletIndices(context, id);
 
-                    var excerptsInRelatedCaches = await _context.GanjoorCachedRelatedPoems.Where(p => p.FullUrl == dbPoem.FullUrl).ToListAsync();
+                    var excerptsInRelatedCaches = await context.GanjoorCachedRelatedPoems.Where(p => p.FullUrl == dbPoem.FullUrl).ToListAsync();
                     if (excerptsInRelatedCaches.Count > 0)
                     {
                         var newExcerpt = GetPoemHtmlExcerpt(dbPoem.HtmlText);
@@ -288,18 +281,18 @@ namespace RMuseum.Services.Implementation
                         {
                             excerptsInRelatedCache.HtmlExcerpt = newExcerpt;
                         }
-                        _context.GanjoorCachedRelatedPoems.UpdateRange(excerptsInRelatedCaches);
+                        context.GanjoorCachedRelatedPoems.UpdateRange(excerptsInRelatedCaches);
                     }
 
                     if (oldMetreId != dbPoem.GanjoorMetreId || oldRhymeLetters != dbPoem.RhymeLetters)
                     {
-                        await _context.SaveChangesAsync();
+                        await context.SaveChangesAsync();
 
                         _backgroundTaskQueue.QueueBackgroundWorkItem
                             (
                             async token =>
                             {
-                                using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                                using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
                                 {
                                     if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
                                     {
@@ -316,11 +309,15 @@ namespace RMuseum.Services.Implementation
                             });
                     }
                 }
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
                 CacheCleanForPageByUrl(dbPage.FullUrl);
 
-
-                return await GetPageByUrl(dbPage.FullUrl);
+                if(needsReturn)
+                {
+                    return await GetPageByUrl(dbPage.FullUrl);
+                }
+                return new RServiceResult<GanjoorPageCompleteViewModel>(null);
+               
             }
             catch (Exception exp)
             {

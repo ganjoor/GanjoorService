@@ -2443,6 +2443,18 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// modify page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="editingUserId"></param>
+        /// <param name="pageData"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> UpdatePageAsync(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData)
+        {
+            return await _UpdatePageAsync(_context, id, editingUserId, pageData, true);
+        }
+
+        /// <summary>
         /// return page modifications history
         /// </summary>
         /// <param name="pageId"></param>
