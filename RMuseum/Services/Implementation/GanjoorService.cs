@@ -2455,6 +2455,18 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// break a poem from a verse forward
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="vOrder"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> BreakPoemAsync(int poemId, int vOrder, Guid userId)
+        {
+            return await _BreakPoemAsync(_context, poemId, vOrder, userId);
+        }
+
+        /// <summary>
         /// return page modifications history
         /// </summary>
         /// <param name="pageId"></param>
