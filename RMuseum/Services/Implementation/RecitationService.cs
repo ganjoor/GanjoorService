@@ -1971,7 +1971,7 @@ namespace RMuseum.Services.Implementationa
 
                 }
 
-                scores.Sort((a, b) => b.ComputedOrder.CompareTo(a.ComputedOrder));//sort descending
+                scores.Sort((a, b) => a.ComputedOrder.CompareTo(b.ComputedOrder));
 
                 if (update)
                     await context.SaveChangesAsync();
