@@ -348,16 +348,17 @@ namespace RMuseum.Services.Implementation
                     var taggedPoems = poems.Where(p => !string.IsNullOrEmpty(p.RhymeLetters)).ToArray();
                     if (taggedPoems.Length > 0)
                     {
-                        html += $"<p>فهرست شعرها به ترتیب آخر حرف قافیه گردآوری شده است. برای پیدا کردن یک شعر کافی است حرف آخر قافیهٔ آن را در نظر بگیرید تا بتوانید آن  را پیدا کنید.</p>{Environment.NewLine}";
+                        html += $"<div class=\"notice\"><p>فهرست شعرها به ترتیب آخر حرف قافیه گردآوری شده است. برای پیدا کردن یک شعر کافی است حرف آخر قافیهٔ آن را در نظر بگیرید تا بتوانید آن  را پیدا کنید.</p>{Environment.NewLine}";
                         var randomPoem = taggedPoems[new Random(DateTime.Now.Millisecond).Next(taggedPoems.Length)];
                         var randomPoemVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == randomPoem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
                         if (randomPoemVerses.Length > 2)
                         {
-                            html += $"<p>مثلاً برای پیدا کردن شعری که مصرع <em>{randomPoemVerses[1].Text}</em> مصرع دوم یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
+                            string versePosition = options == GanjoorTOC.AlphabeticWithFirstVerse ? "اول" : "دوم";
+                            string sampleVerse = options == GanjoorTOC.AlphabeticWithFirstVerse ? randomPoemVerses[0].Text : randomPoemVerses[1].Text;
+                            html += $"<p>مثلاً برای پیدا کردن شعری که مصرع «<em>{sampleVerse}</em>» مصرع {versePosition} یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p></div>{Environment.NewLine}";
                         }
 
-                        html += $"<h3><a id=\"index\">دسترسی سریع به حروف</a></h3>{Environment.NewLine}";
-                        html += $"<p>{Environment.NewLine}";
+                        html += $"<h3><a id=\"index\">حرف آخر قافیه</a></h3>{Environment.NewLine}";
                         string lastChar = "";
                         List<string> visitedLastChart = new List<string>();
                         foreach (var poem in taggedPoems)
@@ -367,18 +368,14 @@ namespace RMuseum.Services.Implementation
                             {
                                 if (visitedLastChart.IndexOf(poemLastChar) == -1)
                                 {
-                                    if (lastChar != "")
-                                    {
-                                        html += " | ";
-                                    }
-                                    html += $"<a href=\"#{GPersianTextSync.UniquelyFarglisize(poemLastChar)}\">{poemLastChar}</a>";
+                                    string rep = poemLastChar == "ا" ? "الف" : poemLastChar;
+                                    html += $"<a href=\"#{GPersianTextSync.UniquelyFarglisize(poemLastChar)}\"><div class=\"circled-number\">{rep}</div></a>";
                                     lastChar = poemLastChar;
 
                                     visitedLastChart.Add(poemLastChar);
                                 }
                             }
                         }
-                        html += $"</p>{Environment.NewLine}";
                     }
                 }
 
@@ -403,7 +400,8 @@ namespace RMuseum.Services.Implementation
                             {
                                 if (visitedLast.IndexOf(poemLast) == -1)
                                 {
-                                    html += $"<h3><a href=\"#index\" id=\"{GPersianTextSync.UniquelyFarglisize(poemLast)}\">{poemLast}</a></h3>{Environment.NewLine}";
+                                    string rep = poemLast == "ا" ? "الف" : poemLast;
+                                    html += $"<div class=\"century\" id=\"{GPersianTextSync.UniquelyFarglisize(poemLast)}\"><a href=\"#index\">{rep}</a></div>{Environment.NewLine}";
                                     last = poemLast;
                                     visitedLast.Add(poemLast);
                                 }
