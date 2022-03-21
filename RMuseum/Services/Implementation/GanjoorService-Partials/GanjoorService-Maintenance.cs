@@ -166,181 +166,218 @@ namespace RMuseum.Services.Implementation
         {
             return await _GenerateTableOfContents(_context, catId, options);
         }
-
-
         private async Task<RServiceResult<string>> _GenerateTableOfContents(RMuseumDbContext context, int catId, GanjoorTOC options)
         {
-            string html = "";
-            var subCats = await context.GanjoorCategories.Where(c => c.ParentId == catId).OrderBy(c => c.Id).AsNoTracking().ToArrayAsync();
-
-            foreach (var cat in subCats)
+            try
             {
-                html += $"<p><a href=\"{cat.FullUrl}\">{cat.Title}</a></p>{Environment.NewLine}";
-            }
+                var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
+                string html = string.IsNullOrEmpty(cat.DescriptionHtml) ? "" :  cat.DescriptionHtml;
+                var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id) .ToListAsync();
+                var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.MixedModeOrder).ThenBy(p => p.Id).ToListAsync();
 
-            var poems = await context.GanjoorPoems.Where(p => p.CatId == catId).OrderBy(p => p.Id).AsNoTracking().ToArrayAsync();
-
-            if (poems.Length > 0)
-            {
-                if (options == GanjoorTOC.Analyse)
+                if (subCats.Where(c => c.MixedModeOrder != 0).Any() || poems.Where(p => p.MixedModeOrder != 0).Any())//ignore options parameter
                 {
-                    if (poems.Where(p => !string.IsNullOrEmpty(p.RhymeLetters)).Count() * 100 / poems.Length > 50)
+                    if (subCats.Where(c => c.MixedModeOrder == 0).Any() || poems.Where(p => p.MixedModeOrder == 0).Any())
                     {
-                        options = GanjoorTOC.AlphabeticWithFirstVerse;
+                        return new RServiceResult<string>(null, "subCats.Where(c => c.MixedModeOrder == 0).Any() || poems.Where(p => p.MixedModeOrder == 0).Any()");
                     }
-                    else
+
+                    int nMixedModeOrder = 1;
+                    while (subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).Any() || poems.Where(p => p.MixedModeOrder == nMixedModeOrder).Any())
                     {
-                        options = GanjoorTOC.TitlesAndFirstVerse;
+                        var subCatWithThisMixedOrder = subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
+                        foreach (var subCat in subCatWithThisMixedOrder)
+                        {
+                            html += $"<div class=\"century\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
+                            html += $"<a href=\"{subCat.FullUrl}\">{subCat.Title}</a>{Environment.NewLine}";
+                            html += $"</div>{Environment.NewLine}";
+                        }
+
+                        var poemsWithThisMixedOrder = poems.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
+                        foreach (var poem in poemsWithThisMixedOrder)
+                        {
+                            html += $"<div class=\"century\" id=\"poem-{poem.Id}\">{Environment.NewLine}";
+                            html += $"<a href=\"{poem.FullUrl}\">{poem.Title}</a>{Environment.NewLine}";
+                            html += $"</div>{Environment.NewLine}";
+                        }
+
+                        nMixedModeOrder++;
+                    }
+
+                    return new RServiceResult<string>(html);
+                }
+
+                foreach (var subCat in subCats)
+                {
+                    html += $"<div class=\"century\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
+                    html += $"<a href=\"{cat.FullUrl}\">{subCat.Title}</a>{Environment.NewLine}";
+                    html += $"</div>{Environment.NewLine}";
+                }
+
+                if (poems.Count > 0)
+                {
+                    if (options == GanjoorTOC.Analyse)
+                    {
+                        if (poems.Where(p => !string.IsNullOrEmpty(p.RhymeLetters)).Count() * 100 / poems.Count > 50)
+                        {
+                            options = GanjoorTOC.AlphabeticWithFirstVerse;
+                        }
+                        else
+                        {
+                            options = GanjoorTOC.TitlesAndFirstVerse;
+                        }
                     }
                 }
-            }
 
-            if
-                (
-                options == GanjoorTOC.AlphabeticWithFirstCouplet
-                ||
-                options == GanjoorTOC.AlphabeticWithFirstVerse
-                ||
-                options == GanjoorTOC.AlphabeticWithSecondVerse
-                )
-            {
-                var taggedPoems = poems.Where(p => !string.IsNullOrEmpty(p.RhymeLetters)).ToArray();
-                if (taggedPoems.Length > 0)
+                if
+                    (
+                    options == GanjoorTOC.AlphabeticWithFirstCouplet
+                    ||
+                    options == GanjoorTOC.AlphabeticWithFirstVerse
+                    ||
+                    options == GanjoorTOC.AlphabeticWithSecondVerse
+                    )
                 {
-                    html += $"<p>فهرست شعرها به ترتیب آخر حرف قافیه گردآوری شده است. برای پیدا کردن یک شعر کافی است حرف آخر قافیهٔ آن را در نظر بگیرید تا بتوانید آن  را پیدا کنید.</p>{Environment.NewLine}";
-                    var randomPoem = taggedPoems[new Random(DateTime.Now.Millisecond).Next(taggedPoems.Length)];
-                    var randomPoemVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == randomPoem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
-                    if (randomPoemVerses.Length > 2)
+                    var taggedPoems = poems.Where(p => !string.IsNullOrEmpty(p.RhymeLetters)).ToArray();
+                    if (taggedPoems.Length > 0)
                     {
-                        html += $"<p>مثلاً برای پیدا کردن شعری که مصرع <em>{randomPoemVerses[1].Text}</em> مصرع دوم یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
-                    }
-
-                    html += $"<h3><a id=\"index\">دسترسی سریع به حروف</a></h3>{Environment.NewLine}";
-                    html += $"<p>{Environment.NewLine}";
-                    string lastChar = "";
-                    List<string> visitedLastChart = new List<string>();
-                    foreach (var poem in taggedPoems)
-                    {
-                        string poemLastChar = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
-                        if (poemLastChar != lastChar)
+                        html += $"<p>فهرست شعرها به ترتیب آخر حرف قافیه گردآوری شده است. برای پیدا کردن یک شعر کافی است حرف آخر قافیهٔ آن را در نظر بگیرید تا بتوانید آن  را پیدا کنید.</p>{Environment.NewLine}";
+                        var randomPoem = taggedPoems[new Random(DateTime.Now.Millisecond).Next(taggedPoems.Length)];
+                        var randomPoemVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == randomPoem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
+                        if (randomPoemVerses.Length > 2)
                         {
-                            if (visitedLastChart.IndexOf(poemLastChar) == -1)
-                            {
-                                if (lastChar != "")
-                                {
-                                    html += " | ";
-                                }
-                                html += $"<a href=\"#{GPersianTextSync.UniquelyFarglisize(poemLastChar)}\">{poemLastChar}</a>";
-                                lastChar = poemLastChar;
+                            html += $"<p>مثلاً برای پیدا کردن شعری که مصرع <em>{randomPoemVerses[1].Text}</em> مصرع دوم یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
+                        }
 
-                                visitedLastChart.Add(poemLastChar);
+                        html += $"<h3><a id=\"index\">دسترسی سریع به حروف</a></h3>{Environment.NewLine}";
+                        html += $"<p>{Environment.NewLine}";
+                        string lastChar = "";
+                        List<string> visitedLastChart = new List<string>();
+                        foreach (var poem in taggedPoems)
+                        {
+                            string poemLastChar = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
+                            if (poemLastChar != lastChar)
+                            {
+                                if (visitedLastChart.IndexOf(poemLastChar) == -1)
+                                {
+                                    if (lastChar != "")
+                                    {
+                                        html += " | ";
+                                    }
+                                    html += $"<a href=\"#{GPersianTextSync.UniquelyFarglisize(poemLastChar)}\">{poemLastChar}</a>";
+                                    lastChar = poemLastChar;
+
+                                    visitedLastChart.Add(poemLastChar);
+                                }
+                            }
+                        }
+                        html += $"</p>{Environment.NewLine}";
+                    }
+                }
+
+                string last = "";
+                List<string> visitedLast = new List<string>();
+                foreach (var poem in poems)
+                {
+                    if
+                    (
+                    options == GanjoorTOC.AlphabeticWithFirstCouplet
+                    ||
+                    options == GanjoorTOC.AlphabeticWithFirstVerse
+                    ||
+                    options == GanjoorTOC.AlphabeticWithSecondVerse
+                    )
+                    {
+
+                        if (!string.IsNullOrEmpty(poem.RhymeLetters))
+                        {
+                            string poemLast = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
+                            if (poemLast != last)
+                            {
+                                if (visitedLast.IndexOf(poemLast) == -1)
+                                {
+                                    html += $"<h3><a href=\"#index\" id=\"{GPersianTextSync.UniquelyFarglisize(poemLast)}\">{poemLast}</a></h3>{Environment.NewLine}";
+                                    last = poemLast;
+                                    visitedLast.Add(poemLast);
+                                }
                             }
                         }
                     }
+
+                    html += $"<p><a href=\"{poem.FullUrl}\">{poem.Title}</a>";
+
+                    var verses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
+
+                    if (verses.Length > 0)
+                    {
+                        if (options == GanjoorTOC.TitlesAndFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerse)
+                        {
+                            html += $": {verses[0].Text}";
+                        }
+                        else
+                        if (options == GanjoorTOC.AlphabeticWithSecondVerse || options == GanjoorTOC.TitlesAndSecondVerse)
+                        {
+                            if (verses.Length > 1)
+                            {
+                                html += $": {verses[1].Text}";
+                            }
+                            else
+                            {
+                                html += $": {verses[0].Text}";
+                            }
+                        }
+                        else
+                        if (options == GanjoorTOC.AlphabeticWithFirstCouplet || options == GanjoorTOC.TitlesAndFirstCouplet)
+                        {
+                            if (verses.Length > 1)
+                            {
+                                html += $": {verses[0].Text} - {verses[1].Text}";
+                            }
+                            else
+                            {
+                                html += $": {verses[0].Text}";
+                            }
+                        }
+                        else
+                        if (options == GanjoorTOC.TitlesAndFirstCenteredVerse)
+                        {
+                            if (verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any())
+                            {
+                                html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text}";
+                            }
+                            else
+                            {
+                                html += $": {verses[0].Text}";
+                            }
+                        }
+                        else
+                        if (options == GanjoorTOC.TitlesAndFirstCenteredCouplet)
+                        {
+                            if (
+                                verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any()
+                                &&
+                                verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).Any()
+                                )
+                            {
+                                html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text} - {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).First().Text}";
+                            }
+                            else
+                            {
+                                html += $": {verses[0].Text}";
+                            }
+                        }
+                    }
+
+
                     html += $"</p>{Environment.NewLine}";
                 }
+                return new RServiceResult<string>(html);
             }
-
-            string last = "";
-            List<string> visitedLast = new List<string>();
-            foreach (var poem in poems)
+            catch (Exception exp)
             {
-                if
-                (
-                options == GanjoorTOC.AlphabeticWithFirstCouplet
-                ||
-                options == GanjoorTOC.AlphabeticWithFirstVerse
-                ||
-                options == GanjoorTOC.AlphabeticWithSecondVerse
-                )
-                {
-
-                    if (!string.IsNullOrEmpty(poem.RhymeLetters))
-                    {
-                        string poemLast = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
-                        if (poemLast != last)
-                        {
-                            if (visitedLast.IndexOf(poemLast) == -1)
-                            {
-                                html += $"<h3><a href=\"#index\" id=\"{GPersianTextSync.UniquelyFarglisize(poemLast)}\">{poemLast}</a></h3>{Environment.NewLine}";
-                                last = poemLast;
-                                visitedLast.Add(poemLast);
-                            }
-                        }
-                    }
-                }
-
-                html += $"<p><a href=\"{poem.FullUrl}\">{poem.Title}</a>";
-
-                var verses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
-
-                if (verses.Length > 0)
-                {
-                    if (options == GanjoorTOC.TitlesAndFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerse)
-                    {
-                        html += $": {verses[0].Text}";
-                    }
-                    else
-                    if (options == GanjoorTOC.AlphabeticWithSecondVerse || options == GanjoorTOC.TitlesAndSecondVerse)
-                    {
-                        if (verses.Length > 1)
-                        {
-                            html += $": {verses[1].Text}";
-                        }
-                        else
-                        {
-                            html += $": {verses[0].Text}";
-                        }
-                    }
-                    else
-                    if (options == GanjoorTOC.AlphabeticWithFirstCouplet || options == GanjoorTOC.TitlesAndFirstCouplet)
-                    {
-                        if (verses.Length > 1)
-                        {
-                            html += $": {verses[0].Text} - {verses[1].Text}";
-                        }
-                        else
-                        {
-                            html += $": {verses[0].Text}";
-                        }
-                    }
-                    else
-                    if (options == GanjoorTOC.TitlesAndFirstCenteredVerse)
-                    {
-                        if (verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any())
-                        {
-                            html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text}";
-                        }
-                        else
-                        {
-                            html += $": {verses[0].Text}";
-                        }
-                    }
-                    else
-                    if (options == GanjoorTOC.TitlesAndFirstCenteredCouplet)
-                    {
-                        if (
-                            verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any()
-                            &&
-                            verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).Any()
-                            )
-                        {
-                            html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text} - {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).First().Text}";
-                        }
-                        else
-                        {
-                            html += $": {verses[0].Text}";
-                        }
-                    }
-                }
-
-
-                html += $"</p>{Environment.NewLine}";
+                return new RServiceResult<string>(null, exp.ToString());
             }
-            return new RServiceResult<string>(html);
         }
-
-
 
         /// <summary>
         /// make plain text
