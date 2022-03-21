@@ -241,8 +241,9 @@ namespace RMuseum.Services.Implementation
                 var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id).ToListAsync();
                 var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.MixedModeOrder).ThenBy(p => p.Id).ToListAsync();
 
-                if (subCats.Where(c => c.MixedModeOrder != 0).Any() || poems.Count == 0 || poems.Where(p => p.MixedModeOrder != 0).Any())//ignore options parameter
+                if (cat.ParentId == null || subCats.Where(c => c.MixedModeOrder != 0).Any() || poems.Count == 0 || poems.Where(p => p.MixedModeOrder != 0).Any())//ignore options parameter
                 {
+
                     int nMixedModeOrder = 1;
                     while (subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).Any() || poems.Where(p => p.MixedModeOrder == nMixedModeOrder).Any())
                     {
@@ -309,6 +310,45 @@ namespace RMuseum.Services.Implementation
                             html += $"</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
+                    }
+
+                    if (cat.ParentId == null)
+                    {
+                        //poet page
+                        var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.ParentId == null && p.PoetId == cat.PoetId && p.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
+                        var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == cat.PoetId).SingleAsync();
+                        html += $"<p>دیگر صفحات مرتبط با {poet.Nickname} در این پایگاه:</p>{Environment.NewLine}";
+                        var statsPage = await context.GanjoorPages.AsNoTracking()
+                                .Where(p => p.FullUrl.Contains(poetPage.FullUrl) && p.GanjoorPageType == GanjoorPageType.ProsodyAndStats).SingleOrDefaultAsync();
+                        string style = "style=\"background-color: rgba(39,0,0,0.5)\"";
+                        if(statsPage != null)
+                        {
+                            html += $"<div class=\"century\" {style} id=\"page-{statsPage.Id}\">{Environment.NewLine}";
+                            html += $"<a href=\"{statsPage.FullUrl}\">اوزان اشعار {poet.Nickname}</a>{Environment.NewLine}";
+                            html += $"</div>{Environment.NewLine}";
+                        }
+                        var thisPoetsSimilars = await context.GanjoorPages.AsNoTracking()
+                               .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id).ToListAsync();
+
+                        foreach (var childPage in thisPoetsSimilars)
+                        {
+                            html += $"<div class=\"century\"  {style} id=\"page-{childPage.Id}\">{Environment.NewLine}";
+                            html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
+                            html += $"</div>{Environment.NewLine}";
+                        }
+
+                        var otherPoetsSimilars = await context.GanjoorPages.AsNoTracking()
+                                .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.SecondPoetId == poet.Id).ToListAsync();
+                        foreach (var childPage in otherPoetsSimilars)
+                        {
+                            html += $"<div class=\"century\"  {style} id=\"page-{childPage.Id}\">{Environment.NewLine}";
+                            html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
+                            html += $"</div>{Environment.NewLine}";
+                        }
+
+                        html += $"<div class=\"century\" {style} id=\"photos-{poet.Id}\">{Environment.NewLine}";
+                        html += $"<a href=\"/photos?p={cat.UrlSlug}\">تصاویر پیشنهادی برای {poet.Nickname}</a>{Environment.NewLine}";
+                        html += $"</div>{Environment.NewLine}";
                     }
 
                     return new RServiceResult<string>(html);
