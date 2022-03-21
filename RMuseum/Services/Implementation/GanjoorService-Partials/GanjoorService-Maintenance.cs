@@ -241,7 +241,7 @@ namespace RMuseum.Services.Implementation
                 var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id).ToListAsync();
                 var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.MixedModeOrder).ThenBy(p => p.Id).ToListAsync();
 
-                if (subCats.Where(c => c.MixedModeOrder != 0).Any() || poems.Where(p => p.MixedModeOrder != 0).Any())//ignore options parameter
+                if (subCats.Where(c => c.MixedModeOrder != 0).Any() || poems.Count == 0 || poems.Where(p => p.MixedModeOrder != 0).Any())//ignore options parameter
                 {
                     int nMixedModeOrder = 1;
                     while (subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).Any() || poems.Where(p => p.MixedModeOrder == nMixedModeOrder).Any())
