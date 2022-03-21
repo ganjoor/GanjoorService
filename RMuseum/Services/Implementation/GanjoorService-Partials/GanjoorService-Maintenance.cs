@@ -60,7 +60,7 @@ namespace RMuseum.Services.Implementation
                                     await context.SaveChangesAsync();
                                 }
 
-                                if(poem.GanjoorMetreId != null && !string.IsNullOrEmpty(poem.RhymeLetters))
+                                if (poem.GanjoorMetreId != null && !string.IsNullOrEmpty(poem.RhymeLetters))
                                 {
                                     await _UpdateRelatedPoems(context, (int)poem.GanjoorMetreId, poem.RhymeLetters);
                                 }
@@ -166,22 +166,83 @@ namespace RMuseum.Services.Implementation
         {
             return await _GenerateTableOfContents(_context, catId, options);
         }
+
+        private async Task<string> _AdditionalTableOfContentsAnchorTitleForPoem(string title, RMuseumDbContext context, GanjoorPoem poem, GanjoorTOC options)
+        {
+            var verses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
+
+            if (verses.Length > 0)
+            {
+                if (options == GanjoorTOC.TitlesAndFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerse)
+                {
+                    title += $": {verses[0].Text}";
+                }
+                else
+                if (options == GanjoorTOC.AlphabeticWithSecondVerse || options == GanjoorTOC.TitlesAndSecondVerse)
+                {
+                    if (verses.Length > 1)
+                    {
+                        title += $": {verses[1].Text}";
+                    }
+                    else
+                    {
+                        title += $": {verses[0].Text}";
+                    }
+                }
+                else
+                if (options == GanjoorTOC.AlphabeticWithFirstCouplet || options == GanjoorTOC.TitlesAndFirstCouplet)
+                {
+                    if (verses.Length > 1)
+                    {
+                        title += $": {verses[0].Text} - {verses[1].Text}";
+                    }
+                    else
+                    {
+                        title += $": {verses[0].Text}";
+                    }
+                }
+                else
+                if (options == GanjoorTOC.TitlesAndFirstCenteredVerse)
+                {
+                    if (verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any())
+                    {
+                        title += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text}";
+                    }
+                    else
+                    {
+                        title += $": {verses[0].Text}";
+                    }
+                }
+                else
+                if (options == GanjoorTOC.TitlesAndFirstCenteredCouplet)
+                {
+                    if (
+                        verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any()
+                        &&
+                        verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).Any()
+                        )
+                    {
+                        title += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text} - {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).First().Text}";
+                    }
+                    else
+                    {
+                        title += $": {verses[0].Text}";
+                    }
+                }
+            }
+            return title;
+        }
         private async Task<RServiceResult<string>> _GenerateTableOfContents(RMuseumDbContext context, int catId, GanjoorTOC options)
         {
             try
             {
                 var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
-                string html = string.IsNullOrEmpty(cat.DescriptionHtml) ? "" :  cat.DescriptionHtml;
-                var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id) .ToListAsync();
+                string html = string.IsNullOrEmpty(cat.DescriptionHtml) ? "" : cat.DescriptionHtml;
+                var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id).ToListAsync();
                 var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.MixedModeOrder).ThenBy(p => p.Id).ToListAsync();
 
                 if (subCats.Where(c => c.MixedModeOrder != 0).Any() || poems.Where(p => p.MixedModeOrder != 0).Any())//ignore options parameter
                 {
-                    if (subCats.Where(c => c.MixedModeOrder == 0).Any() || poems.Where(p => p.MixedModeOrder == 0).Any())
-                    {
-                        return new RServiceResult<string>(null, "subCats.Where(c => c.MixedModeOrder == 0).Any() || poems.Where(p => p.MixedModeOrder == 0).Any()");
-                    }
-
                     int nMixedModeOrder = 1;
                     while (subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).Any() || poems.Where(p => p.MixedModeOrder == nMixedModeOrder).Any())
                     {
@@ -197,11 +258,57 @@ namespace RMuseum.Services.Implementation
                         foreach (var poem in poemsWithThisMixedOrder)
                         {
                             html += $"<div class=\"century\" id=\"poem-{poem.Id}\">{Environment.NewLine}";
-                            html += $"<a href=\"{poem.FullUrl}\">{poem.Title}</a>{Environment.NewLine}";
+                            html += $"<a href=\"{poem.FullUrl}\">{poem.Title}";
+                            if (
+                             options == GanjoorTOC.TitlesAndFirstVerse
+                             ||
+                             options == GanjoorTOC.TitlesAndSecondVerse
+                             ||
+                             options == GanjoorTOC.TitlesAndFirstCouplet
+                             ||
+                             options == GanjoorTOC.TitlesAndFirstCenteredVerse
+                             )
+                            {
+                                html = await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
+                            }
+                            html += $"</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
 
                         nMixedModeOrder++;
+                    }
+
+                    nMixedModeOrder = 0;
+                    if (subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).Any() || poems.Where(p => p.MixedModeOrder == nMixedModeOrder).Any())
+                    {
+                        var subCatWithThisMixedOrder = subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
+                        foreach (var subCat in subCatWithThisMixedOrder)
+                        {
+                            html += $"<div class=\"century\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
+                            html += $"<a href=\"{subCat.FullUrl}\">{subCat.Title}</a>{Environment.NewLine}";
+                            html += $"</div>{Environment.NewLine}";
+                        }
+
+                        var poemsWithThisMixedOrder = poems.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
+                        foreach (var poem in poemsWithThisMixedOrder)
+                        {
+                            html += $"<div class=\"century\" id=\"poem-{poem.Id}\">{Environment.NewLine}";
+                            html += $"<a href=\"{poem.FullUrl}\">{poem.Title}";
+                            if (
+                             options == GanjoorTOC.TitlesAndFirstVerse
+                             ||
+                             options == GanjoorTOC.TitlesAndSecondVerse
+                             ||
+                             options == GanjoorTOC.TitlesAndFirstCouplet
+                             ||
+                             options == GanjoorTOC.TitlesAndFirstCenteredVerse
+                             )
+                            {
+                                html = await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
+                            }
+                            html += $"</a>{Environment.NewLine}";
+                            html += $"</div>{Environment.NewLine}";
+                        }
                     }
 
                     return new RServiceResult<string>(html);
@@ -306,68 +413,7 @@ namespace RMuseum.Services.Implementation
 
                     html += $"<p><a href=\"{poem.FullUrl}\">{poem.Title}</a>";
 
-                    var verses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
-
-                    if (verses.Length > 0)
-                    {
-                        if (options == GanjoorTOC.TitlesAndFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerse)
-                        {
-                            html += $": {verses[0].Text}";
-                        }
-                        else
-                        if (options == GanjoorTOC.AlphabeticWithSecondVerse || options == GanjoorTOC.TitlesAndSecondVerse)
-                        {
-                            if (verses.Length > 1)
-                            {
-                                html += $": {verses[1].Text}";
-                            }
-                            else
-                            {
-                                html += $": {verses[0].Text}";
-                            }
-                        }
-                        else
-                        if (options == GanjoorTOC.AlphabeticWithFirstCouplet || options == GanjoorTOC.TitlesAndFirstCouplet)
-                        {
-                            if (verses.Length > 1)
-                            {
-                                html += $": {verses[0].Text} - {verses[1].Text}";
-                            }
-                            else
-                            {
-                                html += $": {verses[0].Text}";
-                            }
-                        }
-                        else
-                        if (options == GanjoorTOC.TitlesAndFirstCenteredVerse)
-                        {
-                            if (verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any())
-                            {
-                                html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text}";
-                            }
-                            else
-                            {
-                                html += $": {verses[0].Text}";
-                            }
-                        }
-                        else
-                        if (options == GanjoorTOC.TitlesAndFirstCenteredCouplet)
-                        {
-                            if (
-                                verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).Any()
-                                &&
-                                verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).Any()
-                                )
-                            {
-                                html += $": {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse1).First().Text} - {verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).First().Text}";
-                            }
-                            else
-                            {
-                                html += $": {verses[0].Text}";
-                            }
-                        }
-                    }
-
+                    html = await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
 
                     html += $"</p>{Environment.NewLine}";
                 }
@@ -573,15 +619,15 @@ namespace RMuseum.Services.Implementation
                 "strong",
                 "img"
             };
-            if(commentText.IndexOf("<") != -1)
+            if (commentText.IndexOf("<") != -1)
             {
                 int openTagIndex = commentText.IndexOf('<');
-                while(openTagIndex != -1)
+                while (openTagIndex != -1)
                 {
                     int closeOpenningTagIndex = commentText.IndexOf('>', openTagIndex + 1);
-                    if(closeOpenningTagIndex == -1) //an unclosed tag
+                    if (closeOpenningTagIndex == -1) //an unclosed tag
                     {
-                        if(commentText.IndexOf(' ', openTagIndex + 1) != -1)
+                        if (commentText.IndexOf(' ', openTagIndex + 1) != -1)
                         {
                             commentText = commentText.Substring(0, openTagIndex) + commentText.Substring(commentText.IndexOf(' ', openTagIndex + 1));
                         }
@@ -593,7 +639,7 @@ namespace RMuseum.Services.Implementation
                     else
                     {
                         int anotherOpenTagInBetweenIndex = commentText.IndexOf('<', openTagIndex + 1);
-                        if(anotherOpenTagInBetweenIndex != -1 && anotherOpenTagInBetweenIndex < closeOpenningTagIndex)
+                        if (anotherOpenTagInBetweenIndex != -1 && anotherOpenTagInBetweenIndex < closeOpenningTagIndex)
                         {
                             commentText = commentText.Substring(0, openTagIndex) + commentText.Substring(anotherOpenTagInBetweenIndex);
                         }
@@ -616,7 +662,7 @@ namespace RMuseum.Services.Implementation
                             }
                             else
                             {
-                                if(!allowedTags.Contains(tagType))
+                                if (!allowedTags.Contains(tagType))
                                 {
                                     commentText = commentText.Substring(0, openTagIndex) + commentText.Substring(closeOpenningTagIndex + 1);
                                     commentText = commentText.Replace($"</{tagType}>", "");
@@ -625,12 +671,12 @@ namespace RMuseum.Services.Implementation
                         }
                     }
 
-                   
+
                     openTagIndex = commentText.IndexOf("<", openTagIndex + 1);
                 }
             }
 
-            if(commentText.IndexOf("href=") == -1 && commentText.IndexOf("http") != -1)
+            if (commentText.IndexOf("href=") == -1 && commentText.IndexOf("http") != -1)
             {
                 commentText = _Linkify(commentText);
             }
@@ -659,10 +705,10 @@ namespace RMuseum.Services.Implementation
                             {
                                 urlText = urlText.Replace("http://ganjoor.net", "").Replace("https://ganjoor.net", "");
                                 int coupletNumber = -1;
-                                if(urlText.IndexOf("#bn") != -1)
+                                if (urlText.IndexOf("#bn") != -1)
                                 {
                                     int coupletStartIndex = urlText.IndexOf("#bn") + "#bn".Length;
-                                    if(int.TryParse(urlText.Substring(coupletStartIndex), out coupletNumber))
+                                    if (int.TryParse(urlText.Substring(coupletStartIndex), out coupletNumber))
                                     {
                                         urlText = urlText.Substring(0, urlText.IndexOf("#bn"));
                                     }
@@ -672,7 +718,7 @@ namespace RMuseum.Services.Implementation
                                 var page = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl == urlText).FirstOrDefaultAsync();
                                 if (page != null)
                                 {
-                                    if(coupletNumber != -1)
+                                    if (coupletNumber != -1)
                                     {
                                         string coupletSummary = "";
                                         int coupletIndex = coupletNumber - 1;
@@ -714,13 +760,13 @@ namespace RMuseum.Services.Implementation
                                         else
                                             coupletNumber = -1;
                                     }
-                                    if(coupletNumber == -1)
+                                    if (coupletNumber == -1)
                                     {
                                         commentText = commentText.Substring(0, closeIndex) + page.FullTitle + commentText.Substring(commentText.IndexOf("</a>", closeIndex));
                                         textFixed = true;
                                     }
                                 }
-                                
+
                             }
                             if (!textFixed)
                                 commentText = commentText.Substring(0, closeIndex) + "پیوند به وبگاه بیرونی" + commentText.Substring(commentText.IndexOf("</a>", closeIndex));
@@ -816,7 +862,7 @@ namespace RMuseum.Services.Implementation
 
                             string commentText = await _ProcessCommentHtml(comment.HtmlComment, context);
 
-                            if(commentText != comment.HtmlComment)
+                            if (commentText != comment.HtmlComment)
                             {
                                 comment.HtmlComment = commentText;
                                 context.Update(comment);
