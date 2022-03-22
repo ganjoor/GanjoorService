@@ -429,7 +429,7 @@ namespace RMuseum.Services.Implementation
 
                     if(separatorForInlineSearch)
                     {
-                        html += $"<hr />{Environment.NewLine}";
+                        html += $"<br />{Environment.NewLine}";
                     }
                 }
 
