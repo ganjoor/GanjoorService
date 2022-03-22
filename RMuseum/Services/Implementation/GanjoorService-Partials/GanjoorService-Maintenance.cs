@@ -241,7 +241,7 @@ namespace RMuseum.Services.Implementation
                 var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id).ToListAsync();
                 var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.MixedModeOrder).ThenBy(p => p.Id).ToListAsync();
 
-                if (cat.ParentId == null || subCats.Where(c => c.MixedModeOrder != 0).Any() || poems.Count == 0 || poems.Where(p => p.MixedModeOrder != 0).Any())//ignore options parameter
+                if (options == GanjoorTOC.OnlyTitles || cat.ParentId == null || subCats.Where(c => c.MixedModeOrder != 0).Any() || poems.Count == 0 || poems.Where(p => p.MixedModeOrder != 0).Any())//ignore options parameter
                 {
 
                     int nMixedModeOrder = 1;
@@ -319,7 +319,7 @@ namespace RMuseum.Services.Implementation
                         var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == cat.PoetId).SingleAsync();
                         html += $"<p>دیگر صفحات مرتبط با {poet.Nickname} در این پایگاه:</p>{Environment.NewLine}";
                         var statsPage = await context.GanjoorPages.AsNoTracking()
-                                .Where(p => p.FullUrl.Contains(poetPage.FullUrl) && p.GanjoorPageType == GanjoorPageType.ProsodyAndStats).SingleOrDefaultAsync();
+                                .Where(p => p.FullUrl == $"{poetPage.FullUrl}/vazn").SingleOrDefaultAsync();
                         if(statsPage != null)
                         {
                             html += $"<div class=\"century-alt\" id=\"page-{statsPage.Id}\">{Environment.NewLine}";
@@ -375,6 +375,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
+                bool separatorForInlineSearch = true;
                 if
                     (
                     options == GanjoorTOC.AlphabeticWithFirstCouplet
@@ -387,6 +388,7 @@ namespace RMuseum.Services.Implementation
                     var taggedPoems = poems.Where(p => !string.IsNullOrEmpty(p.RhymeLetters)).ToArray();
                     if (taggedPoems.Length > 0)
                     {
+                        separatorForInlineSearch = false;
                         html += $"<div class=\"notice\"><p>فهرست شعرها به ترتیب آخر حرف قافیه گردآوری شده است. برای پیدا کردن یک شعر کافی است حرف آخر قافیهٔ آن را در نظر بگیرید تا بتوانید آن  را پیدا کنید.</p>{Environment.NewLine}";
                         var randomPoem = taggedPoems[new Random(DateTime.Now.Millisecond).Next(taggedPoems.Length)];
                         var randomPoemVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == randomPoem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
@@ -424,6 +426,11 @@ namespace RMuseum.Services.Implementation
                     html += $"<input type=\"text\" id=\"findpoet\" placeholder=\"جستجو در عناوین\" size=\"35\" value=\"\" oninput=\"onInlineSearch(this.value, 'found-items', 'poem-excerpt')\" />{Environment.NewLine}";
                     html += $"<div class=\"spacer\" id=\"found-items\"></div>{Environment.NewLine}";
                     html += $"</div>{Environment.NewLine}";
+
+                    if(separatorForInlineSearch)
+                    {
+                        html += $"<hr />{Environment.NewLine}";
+                    }
                 }
 
                 string last = "";
