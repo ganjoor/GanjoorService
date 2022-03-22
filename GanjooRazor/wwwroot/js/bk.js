@@ -885,12 +885,16 @@ function onInlineSearch(value, resultBlockId, itemsClass) {
     const foundPoetsNode = document.getElementById(resultBlockId);
     foundPoetsNode.innerHTML = '';
     if (value.length > 0) {
+        let replaced = value.replace(/0/gi, "۰").replace(/1/gi, "۱").replace(/2/gi, "۲")
+            .replace(/3/gi, "۳").replace(/4/gi, "۴").replace(/5/gi, "۵")
+            .replace(/6/gi, "۶").replace(/7/gi, "۷").replace(/8/gi, "۸")
+            .replace(/9/gi, "۹");
         var poets = document.getElementsByClassName(itemsClass);
         var foundOnes = [];
         for (var i = 0; i < poets.length; i++) {
             var dataValue = poets[i].getAttribute("data-value");
             if (dataValue != null) {
-                if (dataValue.indexOf(value) != -1) {
+                if (dataValue.indexOf(replaced) != -1) {
                     foundOnes.push(poets[i]);
                 }
             }
