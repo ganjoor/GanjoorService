@@ -881,11 +881,11 @@ function MarkUserUpvotedRecitations(poemId) {
     }, 1);
 }
 
-function onFindPoet(value) {
-    const foundPoetsNode = document.getElementById("found-poets");
+function onInlineSearch(value, resultBlockId, itemsClass) {
+    const foundPoetsNode = document.getElementById(resultBlockId);
     foundPoetsNode.innerHTML = '';
     if (value.length > 0) {
-        var poets = document.getElementsByClassName("poet");
+        var poets = document.getElementsByClassName(itemsClass);
         var foundOnes = [];
         for (var i = 0; i < poets.length; i++) {
             var dataValue = poets[i].getAttribute("data-value");

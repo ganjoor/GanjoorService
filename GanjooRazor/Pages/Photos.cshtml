@@ -11,7 +11,7 @@
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
-    <link href="/css/p8.css?version=36" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=37" rel="stylesheet" type="text/css" />
     <link href="/css/fab.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
@@ -19,7 +19,7 @@
     <script>
         var playerScrollLock = false;
     </script>
-    <script src="/js/bk.js?version=21"></script>
+    <script src="/js/bk.js?version=22"></script>
 
     @if (Model.Poet != null)
     {
@@ -141,7 +141,7 @@
                     @if (Model.Poet == null)
                     {
                         <div class="clear-both">
-                            <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onFindPoet(this.value)" />
+                            <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onInlineSearch(this.value, 'found-poets', 'poet')" />
                             <div class="spacer" id="found-poets"></div>
                         </div>
                         <div class="century">

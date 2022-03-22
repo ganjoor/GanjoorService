@@ -125,9 +125,9 @@ a {
     background: transparent url(/image/bk.gif) top center repeat scroll;
 }
 
-#fa a {
-    color: #c44;
-}
+    #fa a {
+        color: #c44;
+    }
 
 
 h2 {
@@ -273,7 +273,6 @@ select {
 
 #fa .poet .caption a {
     color: white;
-   
 }
 
 #fa .caption a:hover {
@@ -1008,7 +1007,7 @@ ol {
 }
 
 
-.century {
+.century, .century-alt {
     clear: both;
     font-family: Vazir;
     font-weight: 300;
@@ -1025,8 +1024,12 @@ ol {
     border-width: 3px;
 }
 
-#fa .century a {
+#fa .century a, #fa .century-alt a {
     color: white;
+}
+
+.century-alt {
+    background-color: rgba(39,0,0,0.5);
 }
 
 #comments .poem-info p {
@@ -1568,7 +1571,7 @@ audio {
     transform: rotate(180deg);
 }
 
-.collapse_circle_down{
+.collapse_circle_down {
     transform: none;
 }
 

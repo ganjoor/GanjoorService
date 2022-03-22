@@ -237,7 +237,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
-                string html = string.IsNullOrEmpty(cat.DescriptionHtml) ? "" : cat.DescriptionHtml;
+                string html = string.IsNullOrEmpty(cat.DescriptionHtml) ? "" : $"{cat.DescriptionHtml}{Environment.NewLine}";
                 var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id).ToListAsync();
                 var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.MixedModeOrder).ThenBy(p => p.Id).ToListAsync();
 
@@ -320,10 +320,9 @@ namespace RMuseum.Services.Implementation
                         html += $"<p>دیگر صفحات مرتبط با {poet.Nickname} در این پایگاه:</p>{Environment.NewLine}";
                         var statsPage = await context.GanjoorPages.AsNoTracking()
                                 .Where(p => p.FullUrl.Contains(poetPage.FullUrl) && p.GanjoorPageType == GanjoorPageType.ProsodyAndStats).SingleOrDefaultAsync();
-                        string style = "style=\"background-color: rgba(39,0,0,0.5)\"";
                         if(statsPage != null)
                         {
-                            html += $"<div class=\"century\" {style} id=\"page-{statsPage.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"century-alt\" id=\"page-{statsPage.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{statsPage.FullUrl}\">اوزان اشعار {poet.Nickname}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
@@ -332,7 +331,7 @@ namespace RMuseum.Services.Implementation
 
                         foreach (var childPage in thisPoetsSimilars)
                         {
-                            html += $"<div class=\"century\"  {style} id=\"page-{childPage.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"century-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
@@ -341,12 +340,12 @@ namespace RMuseum.Services.Implementation
                                 .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.SecondPoetId == poet.Id).ToListAsync();
                         foreach (var childPage in otherPoetsSimilars)
                         {
-                            html += $"<div class=\"century\"  {style} id=\"page-{childPage.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"century-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
 
-                        html += $"<div class=\"century\" {style} id=\"photos-{poet.Id}\">{Environment.NewLine}";
+                        html += $"<div class=\"century-alt\" id=\"photos-{poet.Id}\">{Environment.NewLine}";
                         html += $"<a href=\"/photos?p={cat.UrlSlug}\">تصاویر پیشنهادی برای {poet.Nickname}</a>{Environment.NewLine}";
                         html += $"</div>{Environment.NewLine}";
                     }
@@ -419,6 +418,14 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
+                if(poems.Count > 0)
+                {
+                    html += $"<div class=\"clear-both\">{Environment.NewLine}";
+                    html += $"<input type=\"text\" id=\"findpoet\" placeholder=\"جستجو در عناوین\" size=\"35\" value=\"\" oninput=\"onInlineSearch(this.value, 'found-items', 'poem-excerpt')\" />{Environment.NewLine}";
+                    html += $"<div class=\"spacer\" id=\"found-items\"></div>{Environment.NewLine}";
+                    html += $"</div>{Environment.NewLine}";
+                }
+
                 string last = "";
                 List<string> visitedLast = new List<string>();
                 foreach (var poem in poems)
@@ -449,7 +456,7 @@ namespace RMuseum.Services.Implementation
                         }
                     }
 
-                    html += $"<p><a href=\"{poem.FullUrl}\">{poem.Title}</a>";
+                    html += $"<p class=\"poem-excerpt\" data-value=\"{@poem.Title} { await _AdditionalTableOfContentsAnchorTitleForPoem("", context, poem, options)}\"><a href=\"{poem.FullUrl}\">{poem.Title}</a>";
 
                     html = await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
 
