@@ -9,6 +9,7 @@ using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -425,6 +426,7 @@ namespace RMuseum.Services.Implementation
                 }
 
                 bool separatorForInlineSearch = true;
+                List<string> foundLastChars = new List<string>();
                 if
                     (
                     options == GanjoorTOC.AlphabeticWithFirstCouplet
@@ -452,7 +454,7 @@ namespace RMuseum.Services.Implementation
 
                         html += $"<h3><a id=\"index\">حرف آخر قافیه</a></h3>{Environment.NewLine}";
                         string lastChar = "";
-                        List<string> visitedLastChart = new List<string>();
+
                         foreach (var poem in taggedPoems)
                         {
                             string poemLastChar = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
@@ -460,15 +462,19 @@ namespace RMuseum.Services.Implementation
                                 continue;
                             if (poemLastChar != lastChar)
                             {
-                                if (visitedLastChart.IndexOf(poemLastChar) == -1)
+                                if (foundLastChars.IndexOf(poemLastChar) == -1)
                                 {
-                                    string rep = poemLastChar == "ا" ? "الف" : poemLastChar;
-                                    html += $"<a href=\"#{GPersianTextSync.UniquelyFarglisize(poemLastChar)}\"><div class=\"circled-number\">{rep}</div></a>";
-                                    lastChar = poemLastChar;
-
-                                    visitedLastChart.Add(poemLastChar);
+                                    foundLastChars.Add(poemLastChar);
                                 }
                             }
+                        }
+                        var fa = new CultureInfo("fa-IR");
+                        foundLastChars.Sort((a, b) => fa.CompareInfo.Compare(a, b));
+                        foreach (var poemLastChar in foundLastChars)
+                        {
+                            string rep = poemLastChar == "ا" ? "الف" : poemLastChar;
+                            html += $"<a href=\"#{GPersianTextSync.UniquelyFarglisize(poemLastChar)}\"><div class=\"circled-number\">{rep}</div></a>";
+                            lastChar = poemLastChar;
                         }
                     }
                 }
@@ -486,8 +492,8 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                string last = "";
-                List<string> visitedLast = new List<string>();
+                string waitingForChar = foundLastChars.Count == 0 ? "!@#" : foundLastChars[0];
+                int nLastIndex = 0;
                 foreach (var poem in poems)
                 {
                     if
@@ -503,15 +509,19 @@ namespace RMuseum.Services.Implementation
                         if (!string.IsNullOrEmpty(poem.RhymeLetters))
                         {
                             string poemLast = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
-                            if (poemLast == "!") continue;
-                            if (poemLast != last)
+                            if (poemLast == waitingForChar)
                             {
-                                if (visitedLast.IndexOf(poemLast) == -1)
+                                string rep = poemLast == "ا" ? "الف" : poemLast;
+                                html += $"<div class=\"century\" id=\"{GPersianTextSync.UniquelyFarglisize(poemLast)}\"><a href=\"#index\">{rep}</a></div>{Environment.NewLine}";
+
+                                nLastIndex++;
+                                if (nLastIndex < foundLastChars.Count)
                                 {
-                                    string rep = poemLast == "ا" ? "الف" : poemLast;
-                                    html += $"<div class=\"century\" id=\"{GPersianTextSync.UniquelyFarglisize(poemLast)}\"><a href=\"#index\">{rep}</a></div>{Environment.NewLine}";
-                                    last = poemLast;
-                                    visitedLast.Add(poemLast);
+                                    waitingForChar = foundLastChars[nLastIndex];
+                                }
+                                else
+                                {
+                                    waitingForChar = "!@#";
                                 }
                             }
                         }
