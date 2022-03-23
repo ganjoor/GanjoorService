@@ -9,6 +9,112 @@
 
 <h1>@ViewData["Title"]</h1>
 
+<script>
+    function startTocGenerationForSubCats(catId) {
+        if (!confirm('آیا از شروع کار تولید مجدد فهرست همهٔ زیربخشها اطمینان دارید؟'))
+            return;
+
+        var url = '?handler=StartGeneratingSubCatsTOC';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                id: catId
+            },
+           error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+            success: function () {
+                alert('کار تولید مجدد فهرست همهٔ زیربخشهای بخش شروع شد.')
+            },
+
+        });
+    }
+
+    function tagCatWithRhymes(catId) {
+        if (!confirm('آیا از شروع کار قافیه‌یابی اطمینان دارید؟'))
+            return;
+
+        var url = '?handler=StartRhymeAnalysis';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                id: catId
+            },
+            error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+            success: function () {
+                alert('کار قافیه‌یابی بخش شروع شد.')
+            },
+
+        });
+    }
+
+    function tagCatWithRhythms(catId) {
+        if (!confirm('آیا از شروع کار وزن‌یابی یا وزن‌گذاری اطمینان دارید؟'))
+            return;
+
+        var url = '?handler=StartRhythmAnalysis';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                id: catId,
+                rhythm: $('#rhythm').val()
+            },
+            error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+            success: function () {
+                alert('کار وزن‌یابی یا وزن‌گذاری بخش شروع شد.')
+            },
+
+        });
+    }
+
+    function tagPoemsWithLanguage(catId) {
+
+        var lang = document.getElementById('cat-poem-language').value;
+        if(lang == '')
+            lang = 'fa-IR';
+        if(confirm(lang)){
+            var url = '?handler=SetCategoryLanguageTag';
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    id: catId,
+                    language: lang
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function () {
+                    alert('انجام شد.')
+                },
+
+            });
+        }
+    }
+</script>
+
 @if (!string.IsNullOrEmpty(Model.LastMessage))
 {
     <p>
@@ -95,6 +201,27 @@
         <tr>
             <td>شناسه:</td>
             <td>@Model.Cat.Cat.Id</td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td>
+                <span class="inputlabel">زبان اشعار بخش</span>
+            </td>
+            <td>
+                <select id="cat-poem-language">
+                    <option value="">فارسی</option>
+                    <option value="azb">ترکی آذری</option>
+                    <option value="ar">عربی</option>
+                    <option value="ckb">کردی</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <p><a role="button" onclick="tagPoemsWithLanguage(@Model.Cat.Cat.Id)" class="actionlink">تعیین زبان</a></p>
+            </td>
         </tr>
     </table>
 }

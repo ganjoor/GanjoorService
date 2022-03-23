@@ -213,7 +213,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if (!response.IsSuccessStatusCode)
                     {
                         var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return BadRequest(res);
+                        return new BadRequestObjectResult(res);
                     }
                     return new OkObjectResult(true);
                 }
@@ -231,7 +231,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if (!response.IsSuccessStatusCode)
                     {
                         var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return BadRequest(res);
+                        return new BadRequestObjectResult(res);
                     }
                     return new OkObjectResult(true);
                 }
@@ -249,7 +249,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if (!response.IsSuccessStatusCode)
                     {
                         var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return BadRequest(res);
+                        return new BadRequestObjectResult(res);
                     }
                     return new OkObjectResult(true);
                 }
@@ -267,7 +267,25 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if (!response.IsSuccessStatusCode)
                     {
                         var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return BadRequest(res);
+                        return new BadRequestObjectResult(res);
+                    }
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
+        public async Task<IActionResult> OnPostSetCategoryLanguageTagAsync(int id, string language)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/language/{id}/{language}", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return new BadRequestObjectResult(res);
                     }
                     return new OkObjectResult(true);
                 }
@@ -286,7 +304,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if (!response.IsSuccessStatusCode)
                     {
                         var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return BadRequest(res);
+                        return new BadRequestObjectResult(res);
                     }
                     return new OkObjectResult(true);
                 }
@@ -304,7 +322,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     if (!response.IsSuccessStatusCode)
                     {
                         var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return BadRequest(res);
+                        return new BadRequestObjectResult(res);
                     }
                     return new OkObjectResult(true);
                 }
