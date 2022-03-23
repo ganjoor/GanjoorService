@@ -567,6 +567,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// directly insert generated TOC
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("cat/toc/{id}/{options}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DirectInsertGeneratedTableOfContents(int id, GanjoorTOC options = GanjoorTOC.Analyse)
+        {
+            Guid userId =
+              new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = await _ganjoorService.DirectInsertGeneratedTableOfContents(id, userId, options);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// start generating sub cats TOC
         /// </summary>
         /// <param name="id"></param>

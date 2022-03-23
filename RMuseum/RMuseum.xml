@@ -1013,6 +1013,14 @@
             <param name="options"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DirectInsertGeneratedTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
+            <summary>
+            directly insert generated TOC
+            </summary>
+            <param name="id"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.StartGeneratingSubCatsTOC(System.Int32)">
             <summary>
             start generating sub cats TOC
@@ -11053,6 +11061,15 @@
             <param name="options"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DirectInsertGeneratedTableOfContents(System.Int32,System.Guid,RMuseum.Models.Ganjoor.GanjoorTOC)">
+            <summary>
+            directly insert generated TOC
+            </summary>
+            <param name="catId"></param>
+            <param name="userId"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.StartGeneratingSubCatsTOC(System.Guid,System.Int32)">
             <summary>
             start generating sub cats TOC
@@ -12679,6 +12696,15 @@
             </summary>
             <param name="userId"></param>
             <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DirectInsertGeneratedTableOfContents(System.Int32,System.Guid,RMuseum.Models.Ganjoor.GanjoorTOC)">
+            <summary>
+            directly insert generated TOC
+            </summary>
+            <param name="catId"></param>
+            <param name="userId"></param>
+            <param name="options"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GenerateTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">

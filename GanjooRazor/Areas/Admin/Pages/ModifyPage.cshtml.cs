@@ -88,7 +88,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         private async Task<bool> PreparePage()
         {
-            
+
             var rhythmResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
             if (!rhythmResponse.IsSuccessStatusCode)
             {
@@ -115,7 +115,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
-            if(PageInformation.Poem != null)
+            if (PageInformation.Poem != null)
             {
                 DefaultHtmlText = _DefHtmlText(PageInformation.Poem.Verses);
             }
@@ -136,7 +136,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 RedirectFromFullUrl = PageInformation.RedirectFromFullUrl,
                 Language = PageInformation.Poem == null ? null : PageInformation.Poem.Language,
                 MixedModeOrder = PageInformation.Poem == null ? (PageInformation.GanjoorPageType == GanjoorPageType.CatPage || PageInformation.GanjoorPageType == GanjoorPageType.PoetPage ? PageInformation.PoetOrCat.Cat.MixedModeOrder : 0) : PageInformation.Poem.MixedModeOrder,
-                Published = PageInformation.Poem == null ? (PageInformation.GanjoorPageType == GanjoorPageType.CatPage || PageInformation.GanjoorPageType == GanjoorPageType.PoetPage  ? PageInformation.PoetOrCat.Cat.Published : true) : PageInformation.Poem.Published,
+                Published = PageInformation.Poem == null ? (PageInformation.GanjoorPageType == GanjoorPageType.CatPage || PageInformation.GanjoorPageType == GanjoorPageType.PoetPage ? PageInformation.PoetOrCat.Cat.Published : true) : PageInformation.Poem.Published,
                 TableOfContentsStyle = PageInformation.GanjoorPageType == GanjoorPageType.CatPage || PageInformation.GanjoorPageType == GanjoorPageType.PoetPage ? PageInformation.PoetOrCat.Cat.TableOfContentsStyle : GanjoorTOC.Analyse,
                 CatType = PageInformation.GanjoorPageType == GanjoorPageType.CatPage || PageInformation.GanjoorPageType == GanjoorPageType.PoetPage ? PageInformation.PoetOrCat.Cat.CatType : GanjoorCatType.Default,
                 Description = PageInformation.GanjoorPageType == GanjoorPageType.CatPage || PageInformation.GanjoorPageType == GanjoorPageType.PoetPage ? PageInformation.PoetOrCat.Cat.Description : "",
@@ -165,7 +165,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnGetComputeRhymeAsync(int id)
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/analysisrhyme/{id}");
-            if(!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
                 return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
             }
@@ -180,13 +180,13 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/page/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(ModifyModel), Encoding.UTF8, "application/json"));
-                    if(!response.IsSuccessStatusCode)
+                    if (!response.IsSuccessStatusCode)
                     {
                         LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                     }
                     else
                     {
-                       return Redirect($"/Admin/ModifyPage?id={Request.Query["id"]}&edit=true");
+                        return Redirect($"/Admin/ModifyPage?id={Request.Query["id"]}&edit=true");
                     }
                 }
                 else
@@ -212,29 +212,55 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             var Cat = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
 
-            using (HttpClient secureClient = new HttpClient())
+            if (Request.Form["directInsert"].Count == 1)
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                using (HttpClient secureClient = new HttpClient())
                 {
-                    var htmlRes = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/toc/{Cat.Cat.Id}/{(int)GanjoorTOC}");
-                    if (!htmlRes.IsSuccessStatusCode)
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await htmlRes.Content.ReadAsStringAsync());
-                        return Page();
+                        var htmlRes = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/toc/{Cat.Cat.Id}/{(int)GanjoorTOC}", null);
+                        if (!htmlRes.IsSuccessStatusCode)
+                        {
+                            LastMessage = JsonConvert.DeserializeObject<string>(await htmlRes.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+
+                        return Redirect($"/Admin/ModifyPage?id={Request.Query["id"]}&edit=true");
+
                     }
-
-                    ModifyModel.HtmlText = await htmlRes.Content.ReadAsStringAsync();
-
-                    LastMessage = $"متن تولیدی دریافت شد. لطفا آن را کپی کنید و سپس <a href=\"/Admin/ModifyPage?id={Request.Query["id"]}\">اینجا</a> کلیک کنید و آن را درج نمایید.";
-
-
+                    else
+                    {
+                        LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    }
                 }
-                else
-                {
-                    LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
-                }
+                return Page();
             }
-            return Page();
+            else
+            {
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    {
+                        var htmlRes = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/toc/{Cat.Cat.Id}/{(int)GanjoorTOC}");
+                        if (!htmlRes.IsSuccessStatusCode)
+                        {
+                            LastMessage = JsonConvert.DeserializeObject<string>(await htmlRes.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+
+                        ModifyModel.HtmlText = await htmlRes.Content.ReadAsStringAsync();
+
+                        LastMessage = $"متن تولیدی دریافت شد. لطفا آن را کپی کنید و سپس <a href=\"/Admin/ModifyPage?id={Request.Query["id"]}\">اینجا</a> کلیک کنید و آن را درج نمایید.";
+
+
+                    }
+                    else
+                    {
+                        LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    }
+                }
+                return Page();
+            }
         }
 
         public async Task<IActionResult> OnPostRebuildSitemapAsync()
@@ -289,6 +315,6 @@ namespace GanjooRazor.Areas.Admin.Pages
         }
 
 
-        
+
     }
 }

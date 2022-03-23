@@ -157,6 +157,49 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// directly insert generated TOC
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="userId"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DirectInsertGeneratedTableOfContents(int catId, Guid userId, GanjoorTOC options)
+        {
+            try
+            {
+                var resGeneration = await _GenerateTableOfContents(_context, catId, options);
+                if (!string.IsNullOrEmpty(resGeneration.ExceptionString))
+                {
+                    return new RServiceResult<bool>(false, resGeneration.ExceptionString);
+                }
+
+                var dbPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleOrDefaultAsync();
+                if(dbPage == null)
+                {
+                    var cat = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
+                    dbPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == cat.PoetId).SingleAsync();
+                }
+
+                await UpdatePageAsync(dbPage.Id, userId,
+                new GanjoorModifyPageViewModel()
+                {
+                    Title = dbPage.Title,
+                    HtmlText = resGeneration.Result,
+                    Note = "تولید فهرست بخش",
+                    UrlSlug = dbPage.UrlSlug,
+                    NoIndex = dbPage.NoIndex,
+                }
+                );
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// generate category TOC
         /// </summary>
         /// <param name="catId"></param>
