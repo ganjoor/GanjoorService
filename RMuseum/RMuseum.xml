@@ -980,12 +980,12 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.FindCategoryPoemsRhymes(System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.SetCategoryLanguageTag(System.Int32,System.String)">
             <summary>
-            starts assigning poem rhymes
+            set category poems language tag
             </summary>
             <param name="id"></param>
-            <param name="retag"></param>
+            <param name="language"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
@@ -11246,6 +11246,14 @@
             <param name="rejectionCause"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SetCategoryLanguageTag(System.Int32,System.String)">
+            <summary>
+            set category poems language tag
+            </summary>
+            <param name="catId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -13440,6 +13448,14 @@
             find poem rhyme
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SetCategoryLanguageTag(System.Int32,System.String)">
+            <summary>
+            set category poems language tag
+            </summary>
+            <param name="catId"></param>
+            <param name="language"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhymes(System.Int32,System.Boolean)">

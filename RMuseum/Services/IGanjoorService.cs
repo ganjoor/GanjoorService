@@ -824,5 +824,13 @@ namespace RMuseum.Services
         /// <param name="rejectionCause"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> RejectPoetSuggestedSpecLinesAsync(int id, Guid deleteUserId, string rejectionCause);
+
+        /// <summary>
+        /// set category poems language tag
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> SetCategoryLanguageTag(int catId, string language);
     }
 }

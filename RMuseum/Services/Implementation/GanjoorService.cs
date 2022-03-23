@@ -3009,6 +3009,31 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// set category poems language tag
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> SetCategoryLanguageTag(int catId, string language)
+        {
+            try
+            {
+                var poemList = await _context.GanjoorPoems.Where(p => p.CatId == catId).ToListAsync();
+                foreach (var poem in poemList)
+                {
+                    poem.Language = language;
+                }
+                _context.UpdateRange(poemList);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// find category poem rhymes
         /// </summary>
         /// <param name="catId"></param>

@@ -481,19 +481,13 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
-        /// <summary>
-        /// starts assigning poem rhymes
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="retag"></param>
-        /// <returns></returns>
 
         [HttpPut]
         [Route("cat/startassigningrhymes/{id}/{retag}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public  IActionResult FindCategoryPoemsRhymes(int id, bool retag)
+        public IActionResult FindCategoryPoemsRhymes(int id, bool retag)
         {
 
             RServiceResult<bool> res =
@@ -501,6 +495,28 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// set category poems language tag
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="language"></param>
+        /// <returns></returns>
+
+        [HttpPut]
+        [Route("cat/language/{id}/{language}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SetCategoryLanguageTag(int id, string language)
+        {
+
+            var res =
+                await _ganjoorService.SetCategoryLanguageTag(id, language);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
         }
 
         /// <summary>
