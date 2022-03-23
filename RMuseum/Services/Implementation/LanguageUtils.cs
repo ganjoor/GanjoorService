@@ -30,7 +30,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="specfics"></param>
         /// <param name="additional"></param>
         /// <returns></returns>
-        public static string GetFirstNotMatchingCharacter(string input, string specfics, string additional= "")
+        public static string GetFirstNotMatchingCharacter(string input, string specfics, string additional = "")
         {
             string all = specfics + additional;
             foreach (char c in input)
@@ -87,7 +87,7 @@ namespace RMuseum.Services.Implementation
                     .Trim();
         }
 
-        
+
         /// <summary>
         /// find rhyme
         /// </summary>
@@ -98,10 +98,10 @@ namespace RMuseum.Services.Implementation
         {
             List<string> verseTextList = verses.Count == 2 ? verses.Select(v => v.Text).ToList()
                                                            : verses.Where(v => v.VersePosition == VersePosition.Left).Select(v => v.Text).ToList();
-            if(verseTextList.Count > 1)
+            if (verseTextList.Count > 1)
             {
                 string rhyme = PrepareTextForFindingRhyme(verseTextList[0]);
-                if(string.IsNullOrEmpty(rhyme))
+                if (string.IsNullOrEmpty(rhyme))
                 {
                     return new GanjooRhymeAnalysisResult()
                     {
@@ -109,11 +109,10 @@ namespace RMuseum.Services.Implementation
                         FailVerse = verseTextList[0]
                     };
                 }
-                if(secondPhase)
+                if (secondPhase)
                 {
-                    if (secondPhase) 
-                        if (rhyme.Length > 0 && rhyme[rhyme.Length - 1] == 'ی') 
-                            rhyme = rhyme.Remove(rhyme.Length - 1);
+                    if (rhyme.Length > 0 && rhyme[rhyme.Length - 1] == 'ی')
+                        rhyme = rhyme.Remove(rhyme.Length - 1);
                 }
 
                 for (int j = 1; j < verseTextList.Count; j++)
@@ -194,6 +193,19 @@ namespace RMuseum.Services.Implementation
                     }
                     if (rhyme.Length == 0)
                     {
+                        if (verseTextList.Count == 2)
+                        {
+                            var secVerse = PrepareTextForFindingRhyme(verseTextList[1]);
+                            if (secVerse.Length > 0)
+                            {
+                                return new GanjooRhymeAnalysisResult()
+                                {
+                                    Rhyme = $"{secVerse[secVerse.Length - 1]}",
+                                    FailVerse = ""
+                                };
+                            }
+
+                        }
                         return new GanjooRhymeAnalysisResult()
                         {
                             Rhyme = "",
@@ -203,30 +215,11 @@ namespace RMuseum.Services.Implementation
 
                 }
 
-                if(!secondPhase)
-                {
-                    if(string.IsNullOrEmpty(rhyme))
-                    {
-                        return FindRhyme(verses, true);
-                    }
-                }
-                else
+                if (!secondPhase)
                 {
                     if (string.IsNullOrEmpty(rhyme))
                     {
-                        if(verseTextList.Count == 2)
-                        {
-                            var secVerse = PrepareTextForFindingRhyme(verseTextList[1]);
-                            if(secVerse.Length > 0)
-                            {
-                                return new GanjooRhymeAnalysisResult()
-                                {
-                                    Rhyme = $"{secVerse[secVerse.Length - 1]}",
-                                    FailVerse = ""
-                                };
-                            }
-                            
-                        }
+                        return FindRhyme(verses, true);
                     }
                 }
 

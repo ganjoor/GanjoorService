@@ -172,11 +172,10 @@ namespace RMuseum.Services.Implementation
                 {
                     return new RServiceResult<bool>(false, resGeneration.ExceptionString);
                 }
-
+                var cat = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
                 var dbPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleOrDefaultAsync();
                 if(dbPage == null)
                 {
-                    var cat = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
                     dbPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == cat.PoetId).SingleAsync();
                 }
 
@@ -188,6 +187,13 @@ namespace RMuseum.Services.Implementation
                     Note = "تولید فهرست بخش",
                     UrlSlug = dbPage.UrlSlug,
                     NoIndex = dbPage.NoIndex,
+                    RedirectFromFullUrl = dbPage.RedirectFromFullUrl,
+                    Published = dbPage.Published,
+                    CatType = cat.CatType,
+                    Description = cat.Description,
+                    DescriptionHtml = cat.DescriptionHtml,
+                    MixedModeOrder = cat.MixedModeOrder,
+                    TableOfContentsStyle = cat.TableOfContentsStyle,
                 }
                 );
 
