@@ -441,12 +441,14 @@ namespace RMuseum.Services.Implementation
                         html += $"<div class=\"notice\"><p>فهرست شعرها به ترتیب آخر حرف قافیه گردآوری شده است. برای پیدا کردن یک شعر کافی است حرف آخر قافیهٔ آن را در نظر بگیرید تا بتوانید آن  را پیدا کنید.</p>{Environment.NewLine}";
                         var randomPoem = taggedPoems[new Random(DateTime.Now.Millisecond).Next(taggedPoems.Length)];
                         var randomPoemVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == randomPoem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
-                        if (randomPoemVerses.Length > 2)
+                        if (randomPoemVerses.Length > 1)
                         {
                             string versePosition = options == GanjoorTOC.AlphabeticWithFirstVerse ? "اول" : "دوم";
                             string sampleVerse = options == GanjoorTOC.AlphabeticWithFirstVerse ? randomPoemVerses[0].Text : randomPoemVerses[1].Text;
-                            html += $"<p>مثلاً برای پیدا کردن شعری که مصرع «<em>{sampleVerse}</em>» مصرع {versePosition} یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p></div>{Environment.NewLine}";
+                            html += $"<p>مثلاً برای پیدا کردن شعری که مصرع «<em>{sampleVerse}</em>» مصرع {versePosition} یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
                         }
+
+                        html += $"</div>{Environment.NewLine}";
 
                         html += $"<h3><a id=\"index\">حرف آخر قافیه</a></h3>{Environment.NewLine}";
                         string lastChar = "";
@@ -454,6 +456,8 @@ namespace RMuseum.Services.Implementation
                         foreach (var poem in taggedPoems)
                         {
                             string poemLastChar = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
+                            if (poemLastChar == "!")
+                                continue;
                             if (poemLastChar != lastChar)
                             {
                                 if (visitedLastChart.IndexOf(poemLastChar) == -1)
@@ -499,6 +503,7 @@ namespace RMuseum.Services.Implementation
                         if (!string.IsNullOrEmpty(poem.RhymeLetters))
                         {
                             string poemLast = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
+                            if (poemLast == "!") continue;
                             if (poemLast != last)
                             {
                                 if (visitedLast.IndexOf(poemLast) == -1)
