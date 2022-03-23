@@ -1028,6 +1028,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartRegeneratingOldAlphabeticTOCs">
+            <summary>
+            convert old alphabetic TOCs to new ones
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPageByUrl(System.String,System.Boolean)">
             <summary>
             page by url
@@ -11254,6 +11260,13 @@
             <param name="language"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartRegeneratingOldAlphabeticTOCs(System.Guid)">
+            <summary>
+            convert old alphabetic TOCs to new ones
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -12607,6 +12620,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -12696,14 +12712,6 @@
             <param name="catId"></param>
             <param name="retag"></param>
             <param name="rhythm"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingSubCatsTOC(System.Guid,System.Int32)">
-            <summary>
-            start generating sub cats TOC
-            </summary>
-            <param name="userId"></param>
-            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DirectInsertGeneratedTableOfContents(System.Int32,System.Guid,RMuseum.Models.Ganjoor.GanjoorTOC)">
@@ -13001,6 +13009,21 @@
             <summary>
             start updating stats page
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingOldAlphabeticTOCs(System.Guid)">
+            <summary>
+            convert old alphabetic TOCs to new ones
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingSubCatsTOC(System.Guid,System.Int32)">
+            <summary>
+            start generating sub cats TOC
+            </summary>
+            <param name="userId"></param>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean,System.Boolean)">

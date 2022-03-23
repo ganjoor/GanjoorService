@@ -626,6 +626,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// convert old alphabetic TOCs to new ones
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("cat/toc/migrate")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartRegeneratingOldAlphabeticTOCs()
+        {
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = _ganjoorService.StartRegeneratingOldAlphabeticTOCs(userId);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok();
+        }
+
+        /// <summary>
         /// page by url
         /// </summary>
         /// <param name="url"></param>
