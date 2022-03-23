@@ -210,6 +210,25 @@ namespace RMuseum.Services.Implementation
                         return FindRhyme(verses, true);
                     }
                 }
+                else
+                {
+                    if (string.IsNullOrEmpty(rhyme))
+                    {
+                        if(verseTextList.Count == 2)
+                        {
+                            var secVerse = PrepareTextForFindingRhyme(verseTextList[1]);
+                            if(secVerse.Length > 0)
+                            {
+                                return new GanjooRhymeAnalysisResult()
+                                {
+                                    Rhyme = $"{secVerse[secVerse.Length - 1]}",
+                                    FailVerse = ""
+                                };
+                            }
+                            
+                        }
+                    }
+                }
 
                 return new GanjooRhymeAnalysisResult()
                 {
