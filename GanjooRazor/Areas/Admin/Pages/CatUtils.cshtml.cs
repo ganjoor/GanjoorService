@@ -160,18 +160,37 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 
-                HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/recaptionpoems/{Cat.Cat.Id}", new StringContent(JsonConvert.SerializeObject(NamingModel), Encoding.UTF8, "application/json"));
-                if (!response.IsSuccessStatusCode)
+                if (Request.Form["renameSubcats"].Count == 1)
                 {
-                    LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    foreach (var subCat in Cat.Cat.Children)
+                    {
+                        HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/recaptionpoems/{subCat.Id}", new StringContent(JsonConvert.SerializeObject(NamingModel), Encoding.UTF8, "application/json"));
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+                        else
+                        {
+                            RenamingOutput = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
+                        }
+                    }
                 }
                 else
                 {
-                    RenamingOutput = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/recaptionpoems/{Cat.Cat.Id}", new StringContent(JsonConvert.SerializeObject(NamingModel), Encoding.UTF8, "application/json"));
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    else
+                    {
+                        RenamingOutput = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
+                    }
+                    NamingModel.Simulate = false;
                 }
                 
-
-                NamingModel.Simulate = false;
             }
 
             return Page();
