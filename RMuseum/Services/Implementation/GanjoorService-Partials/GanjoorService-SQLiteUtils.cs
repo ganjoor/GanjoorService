@@ -637,12 +637,6 @@ namespace RMuseum.Services.Implementation
                                                 await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, "poets count in sqlite db is not equal to 1");
                                             }
 
-                                            var cats = (await sqlite.QueryAsync("SELECT * FROM cat")).ToList();
-                                            if (cats.Count != 1)
-                                            {
-                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, "cats count in sqlite db is not equal to 1");
-                                            }
-
                                             var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
                                             var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == cat.PoetId).SingleAsync();
                                             var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl == cat.FullUrl).SingleAsync();
