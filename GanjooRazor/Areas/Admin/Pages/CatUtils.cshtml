@@ -118,7 +118,7 @@
 @if (!string.IsNullOrEmpty(Model.LastMessage))
 {
     <p>
-        @Model.LastMessage
+        @Html.Raw(Model.LastMessage)
     </p>
 }
 
@@ -435,6 +435,19 @@
         </tr>
     </table>
 </form>
+
+
+<table>
+    <tr>
+        <td>بارگذاری پایگاه داده‌ها شامل یک دسته‌بندی از اشعار:</td>
+        <td>
+            <form method="post" enctype="multipart/form-data" action="/Admin/CatUtils?Handler=UploadDb&url=@Model.Cat.Cat.FullUrl">
+                <input type="file" asp-for="SQLiteDb" />
+                <input type="submit" value="بارگذاری" />
+            </form>
+        </td>
+    </tr>
+</table>
 
 
 

@@ -1964,6 +1964,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// import category data from ganjoor SQLite database (form file)
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("sqlite/import/cat/{catId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ImportCategoryFromSqlite(int catId)
+        {
+            IFormFile file = Request.Form.Files[0];
+
+            RServiceResult<bool> res =
+                await _ganjoorService.ImportCategoryFromSqlite(catId, file);
+            if (res.Result)
+                return Ok();
+            return BadRequest(res.ExceptionString);
+        }
+
+        /// <summary>
         /// Apply corrections from sqlite
         /// </summary>
         /// <param name="poetId"></param>

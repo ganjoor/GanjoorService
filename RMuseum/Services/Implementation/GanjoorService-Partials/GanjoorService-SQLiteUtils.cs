@@ -589,9 +589,97 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
-            
+            return new RServiceResult<bool>(true);
+        }
 
-            
+        /// <summary>
+        /// import a catgory from sqlite
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ImportCategoryFromSqlite(int catId, IFormFile file)
+        {
+            try
+            {
+                string dir = Path.Combine($"{Configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteImports");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                string filePath = Path.Combine(dir, file.FileName);
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+                using (FileStream fsMain = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fsMain);
+                }
+
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                                {
+                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                    var job = (await jobProgressServiceEF.NewJob("ImportFromSqlite", "Query data")).Result;
+
+                                    try
+                                    {
+                                        SqliteConnectionStringBuilder connectionStringBuilder = new SqliteConnectionStringBuilder();
+                                        connectionStringBuilder.DataSource = filePath;
+                                        using (SqliteConnection sqliteConnection = new SqliteConnection(connectionStringBuilder.ToString()))
+                                        {
+                                            await sqliteConnection.OpenAsync();
+                                            IDbConnection sqlite = sqliteConnection;
+                                            var poets = (await sqlite.QueryAsync("SELECT * FROM poet")).ToList();
+                                            if (poets.Count != 1)
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, "poets count in sqlite db is not equal to 1");
+                                            }
+
+                                            var cats = (await sqlite.QueryAsync("SELECT * FROM cat")).ToList();
+                                            if (cats.Count != 1)
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, "cats count in sqlite db is not equal to 1");
+                                            }
+
+                                            var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
+                                            var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == cat.PoetId).SingleAsync();
+                                            var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl == cat.FullUrl).SingleAsync();
+
+                                            await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Importing");
+
+                                            var resImport = await _ImportSQLiteCatChildren(context, sqlite, poet.Id, await sqlite.QuerySingleAsync<int>($"SELECT id FROM cat WHERE parent_id = 0"), cat, poet.Nickname, jobProgressServiceEF, job, catPage.Id);
+
+                                            if (string.IsNullOrEmpty(resImport))
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                            }
+                                            else
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, resImport);
+                                            }
+
+
+                                        }
+                                    }
+                                    catch (Exception exp)
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                    }
+                                }
+
+                                File.Delete(filePath);
+                            }
+                            );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+
+
+
             return new RServiceResult<bool>(true);
         }
         private async Task<string> _ImportSQLiteCatChildren(RMuseumDbContext context, IDbConnection sqlite, int poetId, int sqliteParentCatId, GanjoorCat parentCat, string parentFullTitle, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int parentPagId)
@@ -764,6 +852,10 @@ namespace RMuseum.Services.Implementation
                 var poemId = 1 + maxPoemId;
 
                 int poemNumber = 0;
+                if(await context.GanjoorPoems.AsNoTracking().Where(c => c.CatId == parentCat.Id).AnyAsync())
+                {
+                    poemNumber = await context.GanjoorPoems.AsNoTracking().Where(c => c.CatId == parentCat.Id).CountAsync();
+                }
                 foreach (var poem in await sqlite.QueryAsync($"SELECT * FROM poem WHERE cat_id = {sqliteParentCatId} ORDER BY id"))
                 {
                     poemNumber++;

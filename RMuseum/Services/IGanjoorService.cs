@@ -488,6 +488,14 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> ImportFromSqlite(int poetId, IFormFile file);
 
         /// <summary>
+        /// import a catgory from sqlite
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ImportCategoryFromSqlite(int catId, IFormFile file);
+
+        /// <summary>
         /// Apply corrections from sqlite
         /// </summary>
         /// <param name="poetId"></param>

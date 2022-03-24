@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
@@ -71,6 +72,10 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         [BindProperty]
         public GanjoorNumbering NumberingModel { get; set; }
+
+
+        [BindProperty]
+        public IFormFile SQLiteDb { get; set; }
 
         private async Task<bool> GetInformationAsync()
         {
@@ -347,6 +352,38 @@ namespace GanjooRazor.Areas.Admin.Pages
                 }
             }
             return new OkObjectResult(false);
+        }
+
+        public async Task<IActionResult> OnPostUploadDbAsync(IFormFile SQLiteDb)
+        {
+            await GetInformationAsync();
+
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
+
+                MultipartFormDataContent form = new MultipartFormDataContent();
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    await SQLiteDb.CopyToAsync(stream);
+                    var fileContent = stream.ToArray();
+                    form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), Cat.Poet.Nickname, SQLiteDb.FileName);
+
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqlite/import/cat/{Cat.Cat.Id}", form);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+
+                    LastMessage = $"پایگاه داده‌ها بارگذاری شد. <a role=\"button\" href=\"/Admin/CatUtils?url={Cat.Cat.FullUrl}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش دسته</a>";
+
+                }
+            }
+
+            return Page();
         }
 
     }

@@ -1420,6 +1420,13 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ImportCategoryFromSqlite(System.Int32)">
+            <summary>
+            import category data from ganjoor SQLite database (form file)
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ApplyCorrectionsFromSqlite(System.Int32,System.String)">
             <summary>
             Apply corrections from sqlite
@@ -10920,6 +10927,14 @@
             <param name="file"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ImportCategoryFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            import a catgory from sqlite
+            </summary>
+            <param name="catId"></param>
+            <param name="file"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.ApplyCorrectionsFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile,System.String)">
             <summary>
             Apply corrections from sqlite
@@ -12995,6 +13010,14 @@
             import from sqlite
             </summary>
             <param name="poetId"></param>
+            <param name="file"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportCategoryFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            import a catgory from sqlite
+            </summary>
+            <param name="catId"></param>
             <param name="file"></param>
             <returns></returns>
         </member>
