@@ -1172,6 +1172,13 @@
             <param name="itemsCount">zero or less than it means all</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemAsync(System.Int32)">
+            <summary>
+            delete a poem
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SuggestPoemCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
             <summary>
             send poem corrections
@@ -10531,6 +10538,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePoemAsync(System.Int32)">
+            <summary>
+            delete a poem
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
@@ -13467,7 +13481,14 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePageAsync(System.Int32)">
             <summary>
-            delete page
+            delete a page
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemAsync(System.Int32)">
+            <summary>
+            delete a poem
             </summary>
             <param name="id"></param>
             <returns></returns>

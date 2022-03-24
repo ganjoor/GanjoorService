@@ -2823,7 +2823,7 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// delete page
+        /// delete a page
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -2847,6 +2847,39 @@ namespace RMuseum.Services.Implementation
             _context.GanjoorPages.Remove(page);
             await _context.SaveChangesAsync();
             return new RServiceResult<bool>(true);
+        }
+
+
+        /// <summary>
+        /// delete a poem
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePoemAsync(int id)
+        {
+            try
+            {
+                var comments = await _context.GanjoorComments.Where(c => c.PoemId == id).ToListAsync();
+                _context.RemoveRange(comments);
+
+                var music = await _context.GanjoorPoemMusicTracks.Where(m => m.PoemId == id).ToListAsync();
+                _context.RemoveRange(music);
+
+                var page = await _context.GanjoorPages.Where(p => p.Id == id && p.GanjoorPageType == GanjoorPageType.PoemPage).SingleAsync();
+                _context.Remove(page);
+
+
+                var poem = await _context.GanjoorPoems.Where(p => p.Id == id).SingleAsync();
+                _context.Remove(poem);
+
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
         }
 
         /// <summary>
