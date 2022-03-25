@@ -386,5 +386,23 @@ namespace GanjooRazor.Areas.Admin.Pages
             return Page();
         }
 
+        public async Task<IActionResult> OnDeletePoemAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/poem/{id}");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return new BadRequestObjectResult(res);
+                    }
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
     }
 }

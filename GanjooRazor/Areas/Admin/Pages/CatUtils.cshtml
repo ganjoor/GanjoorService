@@ -124,6 +124,29 @@
 
     function deleteSelectedPoems(){
         if(!confirm('آیا از حذف شعرهای انتخاب شده اطمینان دارید؟')) return;
+        var checkboxes = document.getElementsByClassName('poemSelect');
+        for(var i = 0; i < checkboxes.length; i++){
+            if(checkboxes[i].checked){
+                var dataValue = checkboxes[i].getAttribute("data-value");
+                $.ajax({
+                    type: "DELETE",
+                    url: '?handler=Poem',
+                    data: {
+                        id: dataValue
+                    },
+                    error: function (e) {
+                            if (e.responseText == null)
+                                alert(e);
+                            else
+                                alert(e.responseText);
+                        },
+                    success: function () {
+                        var poemBlockId = '#tr-' + dataValue;
+                        $(poemBlockId).remove();
+                    },
+                });
+            }
+        }
     }
 </script>
 
@@ -176,7 +199,7 @@
         </tr>
         @foreach (var poem in Model.Cat.Cat.Poems)
         {
-            <tr>
+            <tr id="tr-@poem.Id">
                 <td>
                     <a href="/Admin/ModifyPage?id=@poem.Id">@poem.Title</a>
                 </td>
@@ -190,7 +213,7 @@
                     @poem.Rhythm
                 </td>
                 <td>
-                    <input type="checkbox" id="select-@poem.Id" class="poemSelect" />
+                    <input type="checkbox" id="select-@poem.Id" data-value="@poem.Id" class="poemSelect" />
                 </td>
             </tr>
         }
@@ -327,9 +350,12 @@
             data: {
                 id: itemId
             },
-            error: function () {
-                alert('خطا رخ داد.');
-            },
+             error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
             success: function () {
                 location.reload();
                 return false;
@@ -349,9 +375,12 @@
             data: {
                 id: itemId
             },
-            error: function () {
-                alert('خطا رخ داد.');
-            },
+            error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
             success: function () {
                 alert('شمارش مجدد شروع شد.')
             },
@@ -368,9 +397,12 @@
         $.ajax({
             type: "POST",
             url: url,
-            error: function () {
-                alert('خطا رخ داد.');
-            },
+             error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
             success: function () {
                 alert('تولید الگوهای شماره‌گذاری ناموجود شروع شد.')
             },
