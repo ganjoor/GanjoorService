@@ -113,6 +113,18 @@
             });
         }
     }
+
+    function onSwitchPoemsSelections(){
+        var value = document.getElementById('poems-select-switch').checked;
+        var checkboxes = document.getElementsByClassName('poemSelect');
+        for(var i = 0; i < checkboxes.length; i++){
+            checkboxes[i].checked = value;
+        }
+    }
+
+    function deleteSelectedPoems(){
+        if(!confirm('آیا از حذف شعرهای انتخاب شده اطمینان دارید؟')) return;
+    }
 </script>
 
 @if (!string.IsNullOrEmpty(Model.LastMessage))
@@ -158,6 +170,9 @@
             <th>
                 وزن
             </th>
+            <th>
+                <input type="checkbox" id="poems-select-switch" onclick="onSwitchPoemsSelections()" />
+            </th>
         </tr>
         @foreach (var poem in Model.Cat.Cat.Poems)
         {
@@ -174,8 +189,17 @@
                 <td>
                     @poem.Rhythm
                 </td>
+                <td>
+                    <input type="checkbox" id="select-@poem.Id" class="poemSelect" />
+                </td>
             </tr>
         }
+
+        <tr>
+            <td colspan="5">
+                <p><a role="button" onclick="deleteSelectedPoems()" class="actionlink">حذف شعرهای انتخاب شده</a></p>
+            </td>
+        </tr>
     </table>
 
     <p><a href="/Admin/ModifyPage?id=@Model.PageInformation.Id">ویرایش صفحهٔ متناظر</a></p>
