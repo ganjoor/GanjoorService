@@ -2859,17 +2859,24 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                var poem = await _context.GanjoorPoems.Where(p => p.Id == id).SingleAsync();
+
+
                 var comments = await _context.GanjoorComments.Where(c => c.PoemId == id).ToListAsync();
                 _context.RemoveRange(comments);
 
                 var music = await _context.GanjoorPoemMusicTracks.Where(m => m.PoemId == id).ToListAsync();
                 _context.RemoveRange(music);
 
+                var similars = await _context.GanjoorCachedRelatedPoems.Where(s => s.FullUrl == poem.FullUrl).ToListAsync();
+                _context.RemoveRange(similars);
+
+                var corrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Where(c => c.PoemId == id).ToListAsync();
+                _context.RemoveRange(corrections);
+
                 var page = await _context.GanjoorPages.Where(p => p.Id == id && p.GanjoorPageType == GanjoorPageType.PoemPage).SingleAsync();
                 _context.Remove(page);
-
-
-                var poem = await _context.GanjoorPoems.Where(p => p.Id == id).SingleAsync();
+               
                 _context.Remove(poem);
 
                 await _context.SaveChangesAsync();
