@@ -46,7 +46,8 @@ namespace RMuseum.Services.Implementation
                                        {
                                            var page =
                                                     await context.GanjoorPages.AsNoTracking()
-                                                    .Where(p => (p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == cat.PoetId && cat.ParentId == null) || (p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == cat.Id)).SingleAsync();
+                                                    .Where(p => (p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == cat.PoetId && cat.ParentId == null) || (p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == cat.Id)).SingleOrDefaultAsync();
+                                           if (page == null) continue;
                                            await jobProgressServiceEF.UpdateJob(job.Id, 0, page.FullTitle);
                                            if(cat.TableOfContentsStyle == GanjoorTOC.Analyse)
                                            {
@@ -133,7 +134,28 @@ namespace RMuseum.Services.Implementation
             {
                 if (options == GanjoorTOC.TitlesAndFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerse)
                 {
-                    title += $": {verses[0].Text}";
+                    var excerpt = verses[0].Text;
+                    if (
+                        (
+                        verses[0].VersePosition == VersePosition.Paragraph
+                        ||
+                        verses[0].VersePosition == VersePosition.Single
+                        ||
+                        verses[0].VersePosition == VersePosition.Comment
+                        ) && excerpt.Length > 100)
+                    {
+                        excerpt = excerpt.Substring(0, 50);
+                        int n = excerpt.LastIndexOf(' ');
+                        if (n >= 0)
+                        {
+                            excerpt = excerpt.Substring(0, n) + " ...";
+                        }
+                        else
+                        {
+                            excerpt += "...";
+                        }
+                    }
+                    title += $": {excerpt}";
                 }
                 else
                 if (options == GanjoorTOC.AlphabeticWithSecondVerse || options == GanjoorTOC.TitlesAndSecondVerse)
