@@ -315,7 +315,7 @@ namespace RMuseum.Services.Implementation
                 foreach (var subCat in subCats)
                 {
                     html += $"<div class=\"part-title-block\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
-                    html += $"<a href=\"{cat.FullUrl}\">{subCat.Title}</a>{Environment.NewLine}";
+                    html += $"<a href=\"{subCat.FullUrl}\">{subCat.Title}</a>{Environment.NewLine}";
                     html += $"</div>{Environment.NewLine}";
                 }
 
