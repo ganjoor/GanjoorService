@@ -849,10 +849,10 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> SetCategoryLanguageTag(int catId, string language);
 
         /// <summary>
-        /// convert old alphabetic TOCs to new ones
+        /// regenerate TOCs
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartRegeneratingOldAlphabeticTOCs(Guid userId);
+        RServiceResult<bool> StartRegeneratingTOCs(Guid userId);
     }
 }

@@ -21,11 +21,11 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
         /// <summary>
-        /// convert old alphabetic TOCs to new ones
+        /// regenerate TOCs
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartRegeneratingOldAlphabeticTOCs(Guid userId)
+        public RServiceResult<bool> StartRegeneratingTOCs(Guid userId)
         {
             try
             {
@@ -37,32 +37,32 @@ namespace RMuseum.Services.Implementation
                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                {
                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                   var job = (await jobProgressServiceEF.NewJob("RegeneratingOldAlphabeticTOCs", "Query data")).Result;
+                                   var job = (await jobProgressServiceEF.NewJob("StartRegeneratingTOCs", "Query data")).Result;
                                    try
                                    {
+                                       var cats = await context.GanjoorCategories.AsNoTracking().ToListAsync();
 
-                                       var pages = await context.GanjoorPages.AsNoTracking().Where(p => p.CatId != null && p.GanjoorPageType == GanjoorPageType.CatPage && p.HtmlText.Contains("دسترسی سریع به حروف")).ToArrayAsync();
-
-                                       foreach (var page in pages)
+                                       foreach (var cat in cats)
                                        {
-                                           await jobProgressServiceEF.UpdateJob(job.Id, 0, page.FullTitle);
-                                           await _FindCategoryPoemsRhymesInternal((int)page.CatId, false);
-                                           GanjoorTOC options = GanjoorTOC.AlphabeticWithFirstCouplet;
-                                           if (
-                                               new string[]
-                                               {
-                                               "غزلیات", "غزل", "غزل ها", "قصاید", "قصائد", "قصیده", "رباعیات", "رباعی", "رباعی ها"
-                                               }.Contains(page.Title)
-                                              )
-                                           {
-                                               options = GanjoorTOC.AlphabeticWithFirstVerse;
-                                           }
-                                           await _DirectInsertGeneratedTableOfContents(context, (int)page.CatId, userId, options);
+                                           var page =
+                                                    await context.GanjoorPages.AsNoTracking()
+                                                    .Where(p => (p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == cat.PoetId) || (p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == cat.Id)).SingleAsync();
 
-                                           var cat = await context.GanjoorCategories.Where(c => c.Id == (int)page.CatId).SingleAsync();
-                                           cat.TableOfContentsStyle = options;
-                                           cat.CatType = GanjoorCatType.BookPart;
-                                           context.Update(cat);
+                                           await jobProgressServiceEF.UpdateJob(job.Id, 0, page.FullTitle);
+                                           if(cat.TableOfContentsStyle == GanjoorTOC.Analyse)
+                                           {
+                                               var hasChild = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == cat.Id).AnyAsync(); 
+                                               if (cat.ParentId == null || hasChild)
+                                                   cat.TableOfContentsStyle = GanjoorTOC.OnlyTitles;
+                                               else
+                                                   cat.TableOfContentsStyle = GanjoorTOC.TitlesAndFirstVerse;
+                                               var catToUpdate = await context.GanjoorCategories.Where(c => c.Id == cat.Id).SingleAsync();
+                                               catToUpdate.TableOfContentsStyle = cat.TableOfContentsStyle;
+                                               context.Update(catToUpdate);
+                                               await context.SaveChangesAsync();
+                                           }
+                                           await _DirectInsertGeneratedTableOfContents(context,cat.Id, userId, cat.TableOfContentsStyle);
+
                                            await context.SaveChangesAsync();
                                        }
 

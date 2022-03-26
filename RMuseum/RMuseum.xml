@@ -1028,9 +1028,9 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartRegeneratingOldAlphabeticTOCs">
+        <member name="M:RMuseum.Controllers.GanjoorController.StartRegeneratingTOCs">
             <summary>
-            convert old alphabetic TOCs to new ones
+            regenerate TOCs
             </summary>
             <returns></returns>
         </member>
@@ -11289,9 +11289,9 @@
             <param name="language"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartRegeneratingOldAlphabeticTOCs(System.Guid)">
+        <member name="M:RMuseum.Services.IGanjoorService.StartRegeneratingTOCs(System.Guid)">
             <summary>
-            convert old alphabetic TOCs to new ones
+            regenerate TOCs
             </summary>
             <param name="userId"></param>
             <returns></returns>
@@ -13048,9 +13048,9 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingOldAlphabeticTOCs(System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingTOCs(System.Guid)">
             <summary>
-            convert old alphabetic TOCs to new ones
+            regenerate TOCs
             </summary>
             <param name="userId"></param>
             <returns></returns>
