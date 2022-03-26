@@ -1007,7 +1007,7 @@ ol {
 }
 
 
-.century, .century-alt {
+.century, .century-alt, .part-title-block, .part-title-block-alt {
     clear: both;
     font-family: Vazir;
     font-weight: 300;
@@ -1024,11 +1024,15 @@ ol {
     border-width: 3px;
 }
 
-#fa .century a, #fa .century-alt a {
+#fa .century a, #fa .century-alt a, #fa .part-title-block a, #fa .part-title-block-alt a {
     color: white;
 }
 
-.century-alt {
+#fa .century a {
+    display: block;
+}
+
+.century-alt, .part-title-block-alt {
     background-color: rgba(39,0,0,0.5);
 }
 

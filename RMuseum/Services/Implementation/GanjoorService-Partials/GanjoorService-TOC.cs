@@ -209,7 +209,7 @@ namespace RMuseum.Services.Implementation
                         var subCatWithThisMixedOrder = subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
                         foreach (var subCat in subCatWithThisMixedOrder)
                         {
-                            html += $"<div class=\"century\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"part-title-block\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{subCat.FullUrl}\">{subCat.Title}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
@@ -217,7 +217,7 @@ namespace RMuseum.Services.Implementation
                         var poemsWithThisMixedOrder = poems.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
                         foreach (var poem in poemsWithThisMixedOrder)
                         {
-                            html += $"<div class=\"century\" id=\"poem-{poem.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"part-title-block\" id=\"poem-{poem.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{poem.FullUrl}\">{poem.Title}";
                             if (
                              options == GanjoorTOC.TitlesAndFirstVerse
@@ -244,7 +244,7 @@ namespace RMuseum.Services.Implementation
                         var subCatWithThisMixedOrder = subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
                         foreach (var subCat in subCatWithThisMixedOrder)
                         {
-                            html += $"<div class=\"century\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"part-title-block\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{subCat.FullUrl}\">{subCat.Title}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
@@ -252,7 +252,7 @@ namespace RMuseum.Services.Implementation
                         var poemsWithThisMixedOrder = poems.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
                         foreach (var poem in poemsWithThisMixedOrder)
                         {
-                            html += $"<div class=\"century\" id=\"poem-{poem.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"part-title-block\" id=\"poem-{poem.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{poem.FullUrl}\">{poem.Title}";
                             if (
                              options == GanjoorTOC.TitlesAndFirstVerse
@@ -281,7 +281,7 @@ namespace RMuseum.Services.Implementation
                                 .Where(p => p.FullUrl == $"{poetPage.FullUrl}/vazn").SingleOrDefaultAsync();
                         if (statsPage != null)
                         {
-                            html += $"<div class=\"century-alt\" id=\"page-{statsPage.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"part-title-block-alt\" id=\"page-{statsPage.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{statsPage.FullUrl}\">اوزان اشعار {poet.Nickname}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
@@ -290,7 +290,7 @@ namespace RMuseum.Services.Implementation
 
                         foreach (var childPage in thisPoetsSimilars)
                         {
-                            html += $"<div class=\"century-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"part-title-block-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
@@ -299,12 +299,12 @@ namespace RMuseum.Services.Implementation
                                 .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.SecondPoetId == poet.Id).ToListAsync();
                         foreach (var childPage in otherPoetsSimilars)
                         {
-                            html += $"<div class=\"century-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"part-title-block-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
 
-                        html += $"<div class=\"century-alt\" id=\"photos-{poet.Id}\">{Environment.NewLine}";
+                        html += $"<div class=\"part-title-block-alt\" id=\"photos-{poet.Id}\">{Environment.NewLine}";
                         html += $"<a href=\"/photos?p={cat.UrlSlug}\">تصاویر پیشنهادی برای {poet.Nickname}</a>{Environment.NewLine}";
                         html += $"</div>{Environment.NewLine}";
                     }
@@ -314,7 +314,7 @@ namespace RMuseum.Services.Implementation
 
                 foreach (var subCat in subCats)
                 {
-                    html += $"<div class=\"century\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
+                    html += $"<div class=\"part-title-block\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
                     html += $"<a href=\"{cat.FullUrl}\">{subCat.Title}</a>{Environment.NewLine}";
                     html += $"</div>{Environment.NewLine}";
                 }
@@ -429,7 +429,7 @@ namespace RMuseum.Services.Implementation
                             if (poemLast == waitingForChar)
                             {
                                 string rep = poemLast == "ا" ? "الف" : poemLast;
-                                html += $"<div class=\"century\" id=\"{GPersianTextSync.UniquelyFarglisize(poemLast)}\"><a href=\"#index\">{rep}</a></div>{Environment.NewLine}";
+                                html += $"<div class=\"part-title-block\" id=\"{GPersianTextSync.UniquelyFarglisize(poemLast)}\"><a href=\"#index\">{rep}</a></div>{Environment.NewLine}";
 
                                 nLastIndex++;
                                 if (nLastIndex < foundLastChars.Count)
