@@ -2917,7 +2917,12 @@ namespace RMuseum.Services.Implementation
             if (poems.Count == 0)
                 return new RServiceResult<string[]>(new string[] { });
 
-            var catPage = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleAsync();
+            var catPage = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleOrDefaultAsync();
+            if(catPage == null)
+            {
+                var catItSelf = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
+                catPage = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == catItSelf.PoetId).SingleAsync();
+            }
 
             if (model.RemovePreviousPattern)
             {
