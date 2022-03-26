@@ -378,7 +378,15 @@ namespace RMuseum.Services.Implementation
                             }
                         }
                         var fa = new CultureInfo("fa-IR");
-                        foundLastChars.Sort((a, b) => fa.CompareInfo.Compare(a, b));
+                        if (foundLastChars.Contains("و") && foundLastChars.Contains("ی") && foundLastChars.IndexOf("ه") == (foundLastChars.IndexOf("و") - 1))
+                        {
+                            foundLastChars.Sort((a, b) => a == "ه" && b == "و" ? -1 : a == "و" && b == "ه" ? 1 : fa.CompareInfo.Compare(a, b));
+                        }
+                        else
+                        {
+                            foundLastChars.Sort((a, b) => fa.CompareInfo.Compare(a, b));
+                        }
+                        
                         foreach (var poemLastChar in foundLastChars)
                         {
                             string rep = poemLastChar == "ا" ? "الف" : poemLastChar;
