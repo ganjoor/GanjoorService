@@ -46,8 +46,7 @@ namespace RMuseum.Services.Implementation
                                        {
                                            var page =
                                                     await context.GanjoorPages.AsNoTracking()
-                                                    .Where(p => (p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == cat.PoetId) || (p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == cat.Id)).SingleAsync();
-
+                                                    .Where(p => (p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == cat.PoetId && cat.ParentId == null) || (p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == cat.Id)).SingleAsync();
                                            await jobProgressServiceEF.UpdateJob(job.Id, 0, page.FullTitle);
                                            if(cat.TableOfContentsStyle == GanjoorTOC.Analyse)
                                            {
