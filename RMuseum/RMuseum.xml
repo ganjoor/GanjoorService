@@ -5955,6 +5955,41 @@
             reported by user
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorDuplicate">
+            <summary>
+            Temporary Model contianing duplicated poems information
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorDuplicate.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorDuplicate.SrcCatId">
+            <summary>
+            source category id (this category is about to be deleted and redirected)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorDuplicate.SrcPoemId">
+            <summary>
+            source poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorDuplicate.SrcPoem">
+            <summary>
+            source poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorDuplicate.DestPoemId">
+            <summary>
+            destination poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorDuplicate.DestPoem">
+            <summary>
+            destination poem
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorGeoLocation">
             <summary>
             Geo Locations (Cities) referred by Ganjoor Metadata
