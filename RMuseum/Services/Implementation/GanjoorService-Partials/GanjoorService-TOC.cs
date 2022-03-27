@@ -221,16 +221,24 @@ namespace RMuseum.Services.Implementation
                 var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id).ToListAsync();
                 var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.MixedModeOrder).ThenBy(p => p.Id).ToListAsync();
 
-                if (options == GanjoorTOC.OnlyTitles || cat.ParentId == null || subCats.Where(c => c.MixedModeOrder != 0).Any() || poems.Count == 0 || poems.Where(p => p.MixedModeOrder != 0).Any())//ignore options parameter
+                if (options == GanjoorTOC.OnlyTitles || (options == GanjoorTOC.Analyse && (cat.ParentId == null || subCats.Where(c => c.MixedModeOrder != 0).Any() || poems.Count == 0 || poems.Where(p => p.MixedModeOrder != 0).Any())))//ignore options parameter
                 {
+                    if((subCats.Count + poems.Count) > 7)
+                    {
+                        html += $"<div class=\"clear-both\">{Environment.NewLine}";
+                        html += $"<input type=\"text\" id=\"findpoet\" placeholder=\"جستجو در عناوین\" size=\"35\" value=\"\" oninput=\"onInlineSearch(this.value, 'found-items', 'part-title-block')\" />{Environment.NewLine}";
+                        html += $"<div class=\"spacer\" id=\"found-items\"></div>{Environment.NewLine}";
+                        html += $"</div>{Environment.NewLine}";
 
+                        html += $"<br />{Environment.NewLine}";
+                    }
                     int nMixedModeOrder = 1;
                     while (subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).Any() || poems.Where(p => p.MixedModeOrder == nMixedModeOrder).Any())
                     {
                         var subCatWithThisMixedOrder = subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
                         foreach (var subCat in subCatWithThisMixedOrder)
                         {
-                            html += $"<div class=\"part-title-block\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"part-title-block\" data-value=\"{subCat.Title}\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{subCat.FullUrl}\">{subCat.Title}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
@@ -238,7 +246,7 @@ namespace RMuseum.Services.Implementation
                         var poemsWithThisMixedOrder = poems.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
                         foreach (var poem in poemsWithThisMixedOrder)
                         {
-                            html += $"<div class=\"part-title-block\" id=\"poem-{poem.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"part-title-block\" data-value=\"{await _AdditionalTableOfContentsAnchorTitleForPoem("", context, poem, options)}\" id=\"poem-{poem.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{poem.FullUrl}\">{poem.Title}";
                             if (
                              options == GanjoorTOC.TitlesAndFirstVerse
@@ -265,7 +273,7 @@ namespace RMuseum.Services.Implementation
                         var subCatWithThisMixedOrder = subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
                         foreach (var subCat in subCatWithThisMixedOrder)
                         {
-                            html += $"<div class=\"part-title-block\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"part-title-block\"  data-value=\"{subCat.Title}\" id=\"cat-{subCat.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{subCat.FullUrl}\">{subCat.Title}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
@@ -273,7 +281,7 @@ namespace RMuseum.Services.Implementation
                         var poemsWithThisMixedOrder = poems.Where(c => c.MixedModeOrder == nMixedModeOrder).ToArray();
                         foreach (var poem in poemsWithThisMixedOrder)
                         {
-                            html += $"<div class=\"part-title-block\" id=\"poem-{poem.Id}\">{Environment.NewLine}";
+                            html += $"<div class=\"part-title-block\" data-value=\"{await _AdditionalTableOfContentsAnchorTitleForPoem("", context, poem, options)}\" id=\"poem-{poem.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{poem.FullUrl}\">{poem.Title}";
                             if (
                              options == GanjoorTOC.TitlesAndFirstVerse
