@@ -452,5 +452,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<FAQItem> FAQItems { get; set; }
 
+        /// <summary>
+        /// Temporary Model contianing duplicated poems information
+        /// </summary>
+        public DbSet<GanjoorDuplicate> GanjoorDuplicates { get; set; }
+
     }
 }

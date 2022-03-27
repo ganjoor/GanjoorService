@@ -1633,6 +1633,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartFindingCategoryPoemsDuplicates(System.Int32,System.Int32)">
+            <summary>
+            Finding Category Poems Duplicates
+            </summary>
+            <param name="srcCatId"></param>
+            <param name="destCatId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -2797,6 +2805,11 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.FAQItems">
             <summary>
             faq items
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorDuplicates">
+            <summary>
+            Temporary Model contianing duplicated poems information
             </summary>
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -11331,6 +11344,14 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartFindingCategoryPoemsDuplicates(System.Int32,System.Int32)">
+            <summary>
+            Finding Category Poems Duplicates
+            </summary>
+            <param name="srcCatId"></param>
+            <param name="destCatId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -12770,6 +12791,14 @@
             <summary>
             regenerate half centuries
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingCategoryPoemsDuplicates(System.Int32,System.Int32)">
+            <summary>
+            Finding Category Poems Duplicates
+            </summary>
+            <param name="srcCatId"></param>
+            <param name="destCatId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">

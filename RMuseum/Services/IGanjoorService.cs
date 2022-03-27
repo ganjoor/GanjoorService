@@ -854,5 +854,13 @@ namespace RMuseum.Services
         /// <param name="userId"></param>
         /// <returns></returns>
         RServiceResult<bool> StartRegeneratingTOCs(Guid userId);
+
+        /// <summary>
+        /// Finding Category Poems Duplicates
+        /// </summary>
+        /// <param name="srcCatId"></param>
+        /// <param name="destCatId"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartFindingCategoryPoemsDuplicates(int srcCatId, int destCatId);
     }
 }

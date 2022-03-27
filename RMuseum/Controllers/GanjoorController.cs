@@ -2636,6 +2636,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Finding Category Poems Duplicates
+        /// </summary>
+        /// <param name="srcCatId"></param>
+        /// <param name="destCatId"></param>
+        /// <returns></returns>
+        [HttpPost("duplicates/{srcCatId}/{destCatId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartFindingCategoryPoemsDuplicates(int srcCatId, int destCatId)
+        {
+            var res = _ganjoorService.StartFindingCategoryPoemsDuplicates(srcCatId, destCatId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode
