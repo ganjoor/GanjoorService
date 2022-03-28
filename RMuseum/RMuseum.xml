@@ -1641,6 +1641,13 @@
             <param name="destCatId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCategoryDuplicates(System.Int32)">
+            <summary>
+            list of category saved duplicated poems
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -7789,6 +7796,51 @@
             total paragraphs
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorDuplicateViewModel">
+            <summary>
+            Ganjoor Duplicate View Model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorDuplicateViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorDuplicateViewModel.SrcPoemId">
+            <summary>
+            Source Poem Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorDuplicateViewModel.SrcPoemFullTitle">
+            <summary>
+            Source Poem cat + parent cats title + title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorDuplicateViewModel.SrcPoemFullUrl">
+            <summary>
+            Source Poem sample: /hafez/ghazal/sh1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorDuplicateViewModel.FirstVerse">
+            <summary>
+            Source Poem First Verse
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorDuplicateViewModel.DestPoemId">
+            <summary>
+            destination poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorDuplicateViewModel.DestPoemFullTitle">
+            <summary>
+            destination Poem cat + parent cats title + title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorDuplicateViewModel.DestPoemFullUrl">
+            <summary>
+            destination Poem sample: /hafez/ghazal/sh1
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjooRhymeAnalysisResult">
             <summary>
             Rhyme Analysis Result
@@ -11352,6 +11404,13 @@
             <param name="destCatId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCategoryDuplicates(System.Int32)">
+            <summary>
+            list of category saved duplicated poems
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -13605,6 +13664,13 @@
             find poem rhythm
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryDuplicates(System.Int32)">
+            <summary>
+            list of category saved duplicated poems
+            </summary>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">

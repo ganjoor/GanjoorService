@@ -862,5 +862,12 @@ namespace RMuseum.Services
         /// <param name="destCatId"></param>
         /// <returns></returns>
         RServiceResult<bool> StartFindingCategoryPoemsDuplicates(int srcCatId, int destCatId);
+
+        /// <summary>
+        /// list of category saved duplicated poems
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorDuplicateViewModel[]>> GetCategoryDuplicates(int catId);
     }
 }

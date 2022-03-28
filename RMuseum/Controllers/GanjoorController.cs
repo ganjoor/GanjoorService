@@ -2654,6 +2654,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// list of category saved duplicated poems
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("duplicates/{catId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorDuplicateViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetCategoryDuplicates(int catId)
+        {
+            var res =
+                await _ganjoorService.GetCategoryDuplicates(catId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode

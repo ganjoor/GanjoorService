@@ -3223,6 +3223,48 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// list of category saved duplicated poems
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorDuplicateViewModel[]>> GetCategoryDuplicates(int catId)
+        {
+            try
+            {
+                List<GanjoorDuplicateViewModel> dups = new List<GanjoorDuplicateViewModel>();
+
+                var poems = await _context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.Id).ToListAsync();
+                foreach (var poem in poems)
+                {
+                    var firstVerse = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).FirstAsync();
+                    var dupPoem = await _context.GanjoorDuplicates.AsNoTracking().Where(d => d.SrcCatId == catId && d.SrcPoemId == poem.Id).FirstOrDefaultAsync();
+                    GanjoorPoem destPoem = dupPoem == null || dupPoem.DestPoemId == null ? null :
+                                    await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == dupPoem.DestPoemId).SingleAsync();
+                    dups.Add
+                        (
+                        new GanjoorDuplicateViewModel()
+                        {
+                            Id = dupPoem == null ? 0 : dupPoem.Id,
+                            SrcPoemId = poem.Id,
+                            SrcPoemFullTitle = poem.FullTitle,
+                            SrcPoemFullUrl = poem.FullUrl,
+                            FirstVerse = firstVerse.Text,
+                            DestPoemId = dupPoem == null ? null :  dupPoem.DestPoemId,
+                            DestPoemFullTitle = dupPoem == null ? "" : destPoem.FullTitle,
+                            DestPoemFullUrl = dupPoem == null ? "" : destPoem.FullUrl
+                        }
+                        );
+                }
+
+                return new RServiceResult<GanjoorDuplicateViewModel[]>(dups.ToArray());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorDuplicateViewModel[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// aggressive cache
         /// </summary>
         public bool AggressiveCacheEnabled
