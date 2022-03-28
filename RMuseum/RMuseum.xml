@@ -1648,6 +1648,14 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartRemovingCategoryDuplicates(System.Int32,System.Int32)">
+            <summary>
+            start removing category duplicates
+            </summary>
+            <param name="srcCatId"></param>
+            <param name="destCatId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -11411,6 +11419,14 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartRemovingCategoryDuplicates(System.Int32,System.Int32)">
+            <summary>
+            start removing category duplicates
+            </summary>
+            <param name="catId"></param>
+            <param name="destCatId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -12857,6 +12873,14 @@
             Finding Category Poems Duplicates
             </summary>
             <param name="srcCatId"></param>
+            <param name="destCatId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRemovingCategoryDuplicates(System.Int32,System.Int32)">
+            <summary>
+            start removing category duplicates
+            </summary>
+            <param name="catId"></param>
             <param name="destCatId"></param>
             <returns></returns>
         </member>

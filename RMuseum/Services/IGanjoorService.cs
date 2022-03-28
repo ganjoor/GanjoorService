@@ -869,5 +869,13 @@ namespace RMuseum.Services
         /// <param name="catId"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorDuplicateViewModel[]>> GetCategoryDuplicates(int catId);
+
+        /// <summary>
+        /// start removing category duplicates
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="destCatId"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartRemovingCategoryDuplicates(int catId, int destCatId);
     }
 }

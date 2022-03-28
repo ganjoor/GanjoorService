@@ -53,6 +53,108 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
+
+        /// <summary>
+        /// start removing category duplicates
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="destCatId"></param>
+        /// <returns></returns>
+        public RServiceResult<bool> StartRemovingCategoryDuplicates(int catId, int destCatId)
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                   var job = (await jobProgressServiceEF.NewJob($"RemoveCategoryDuplicates {catId}", "Query data")).Result;
+                                   try
+                                   {
+                                       var dups = await context.GanjoorDuplicates.Where(p => p.SrcCatId == catId && p.DestPoemId != null).OrderBy(p => p.SrcPoemId).ToListAsync();
+                                       var poems = await context.GanjoorPoems.Where(p => p.CatId == catId).OrderBy(p => p.Id).ToListAsync();
+                                       if (poems.Count != dups.Count)
+                                       {
+                                           await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, "poems.Count != dups.Count");
+                                           return;
+                                       }
+
+                                       foreach (var poem in poems)
+                                       {
+                                           if (!dups.Where(d => d.SrcPoemId == poem.Id).Any())
+                                           {
+                                               await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, $"poem ID = {poem.Id}, missing destination");
+                                               return;
+                                           }
+                                       }
+
+                                       foreach (var dup in dups)
+                                       {
+                                           var srcPoem = poems.Where(p => p.Id == dup.SrcPoemId).Single();
+                                          
+                                           var destPage = await context.GanjoorPages.Where(p => p.Id == dup.DestPoemId).SingleAsync();
+                                           destPage.RedirectFromFullUrl = srcPoem.FullUrl;
+                                           context.Update(destPage);
+
+                                           var comments = await context.GanjoorComments.Where(c => c.PoemId == dup.SrcPoemId).ToListAsync();
+                                           foreach (var comment in comments)
+                                           {
+                                               comment.PoemId = (int)dup.DestPoemId;
+                                           }
+                                           context.UpdateRange(comments);
+
+                                           var songs = await context.GanjoorPoemMusicTracks.Where(m => m.PoemId == dup.SrcPoemId).ToListAsync();
+                                           foreach (var song in songs)
+                                           {
+                                               var alreadyAdded = await context.GanjoorPoemMusicTracks.Where(m => m.PoemId == dup.DestPoemId && m.TrackUrl == song.TrackUrl).FirstOrDefaultAsync();
+                                               if(alreadyAdded != null)
+                                               {
+                                                   song.PoemId = (int)dup.DestPoemId;
+                                               }
+                                           }
+                                           context.UpdateRange(songs);
+
+                                           var similars = await context.GanjoorCachedRelatedPoems.Where(s => s.FullUrl == srcPoem.FullUrl).ToListAsync();
+                                           context.RemoveRange(similars);
+
+                                           var corrections = await context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Where(c => c.PoemId == srcPoem.Id).ToListAsync();
+                                           context.RemoveRange(corrections);
+
+                                           var page = await context.GanjoorPages.Where(p => p.Id == srcPoem.Id && p.GanjoorPageType == GanjoorPageType.PoemPage).SingleAsync();
+                                           context.Remove(page);
+
+                                           await jobProgressServiceEF.UpdateJob(job.Id, 0, srcPoem.FullTitle);
+                                       }
+                                       context.RemoveRange(dups);
+                                       context.RemoveRange(poems);
+
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 1,  "Removing Category and poems");
+
+                                       var catPage = await context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleAsync();
+                                       var destCatPage = await context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == destCatId).SingleAsync();
+                                       destCatPage.RedirectFromFullUrl = catPage.FullUrl;
+                                       context.Update(destCatPage);
+                                       context.Remove(catPage);
+
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                   }
+                                   catch (Exception exp)
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                   }
+
+                               }
+                           });
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
         private async Task<RServiceResult<bool>> _FindCategoryPoemsDuplicates(RMuseumDbContext context, int srcCatId, int destCatId)
         {
             try

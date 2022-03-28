@@ -2674,6 +2674,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// start removing category duplicates
+        /// </summary>
+        /// <param name="srcCatId"></param>
+        /// <param name="destCatId"></param>
+        /// <returns></returns>
+        [HttpPut("duplicates/finish/{srcCatId}/{destCatId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartRemovingCategoryDuplicates(int srcCatId, int destCatId)
+        {
+            var res = _ganjoorService.StartRemovingCategoryDuplicates(srcCatId, destCatId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode
