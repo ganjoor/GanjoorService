@@ -16,7 +16,16 @@
 else
 {
 
-    @if(Model.Corrections.Count == 0)
+    if (@Model.CanEdit)
+    {
+        <div class="clear-both">
+            <p>
+                <a role="button" href="/User/Edits?AllUsers=1" class="pagebutton">ویرایش‌های همه</a>
+            </p>
+        </div>
+    }
+
+    @if (Model.Corrections.Count == 0)
     {
         <p>
             شما هنوز هیچ ویرایشی در گنجور انجام نداده‌اید. برای آشنایی با نحوهٔ ویرایش اشعار <a href="https://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/" target="_blank">اینجا</a> را ببینید.
@@ -51,11 +60,11 @@ else
                     <td colspan="3"><a href="/?p=@correction.PoemId" target="_blank">مشاهدهٔ متن شعر یا بخش</a></td>
                 </tr>
 
-                @if(Model.AllUsersEdits)
+                @if (Model.AllUsersEdits)
                 {
                     <tr>
-                    <td colspan="3"><a href="/hashieha/?userid=@correction.UserId" target="_blank">@correction.UserNickname</a></td>
-                </tr>
+                        <td colspan="3"><a href="/hashieha/?userid=@correction.UserId" target="_blank">@correction.UserNickname</a></td>
+                    </tr>
                 }
 
                 <tr>
@@ -213,14 +222,7 @@ else
     </p>
 
 
-    if (@Model.CanEdit)
-    {
-        <div class="clear-both">
-            <p>
-                <a role="button" href="/User/Edits?AllUsers=1" class="pagebutton">همهٔ ویرایش‌ها</a>
-            </p>
-        </div>
-    }
+
 
 
 }
