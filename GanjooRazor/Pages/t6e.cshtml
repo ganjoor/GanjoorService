@@ -1,0 +1,166 @@
+﻿@page
+@model GanjooRazor.Pages.t6eModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="robots" content="noindex, nofollow" />
+    @if (Model.Poem != null)
+    {
+        <title>@Model.Poem.FullTitle</title>
+    }
+    <style>
+        code {
+            white-space: pre-wrap;
+        }
+
+        span.smallcaps {
+            font-variant: small-caps;
+        }
+
+        span.underline {
+            text-decoration: underline;
+        }
+
+        div.column {
+            display: inline-block;
+            vertical-align: top;
+            width: 50%;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Scheherazade&display=swap" rel="stylesheet" />
+    <link href="~/css/t6e.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    @if (!string.IsNullOrEmpty(Model.LastError))
+    {
+        @Html.Raw(Model.LastError)
+    }
+    else
+    {
+        <header id="title-block-header">
+            <h1 class="title"><a href="@Model.Poem.FullUrl">@Model.Poem.FullTitle</a></h1>
+        </header>
+
+        @Html.Raw(Model.Poem.HtmlText)
+        
+        <script>
+            function fixup() {
+              //
+              // LINE NUMBER & SEPARATOR DIVS
+              //
+
+              // Select all first hemistichs
+              const firstHems = document.querySelectorAll("div.m1");
+
+              for (let i = 0; i < firstHems.length; i++) {
+                // Add a div for line number before each first hemistich
+                firstHems[i].insertAdjacentHTML(
+                  "beforebegin",
+                  '<div class="line-number"></div>'
+                );
+
+                // Add a div for separator after each first hemistich
+                firstHems[i].insertAdjacentHTML(
+                  "afterend",
+                  '<div class="separator"></div>'
+                );
+              }
+
+              //
+              // FINAL LINE
+              //
+
+              // Select all whole lines
+              const lines = document.querySelectorAll("div.b");
+
+              // Select final line
+              const finalLine = lines[lines.length - 1];
+
+              // Apply special class to final line
+              finalLine.classList.remove("b");
+              finalLine.classList.add("final-line");
+
+              //
+              // ADD LINE NUMBERS
+              //
+
+              // Select all line number divs
+              const lineNumbers = document.querySelectorAll("div.line-number");
+
+              // Final line should never be numbered, so we stop iteration early
+              for (let i = 0; i < lineNumbers.length - 1; i++) {
+                // The actual line number, 1-indexed
+                const count = i + 1;
+
+                // If divisible by three, insert number
+                if (count % 3 === 0) {
+                  // Number is also localized for Persian
+                  lineNumbers[i].innerHTML = `<p>${count.toLocaleString("fa-IR")}</p>`;
+                }
+              }
+
+              //
+              // HEMISTICH WIDTH
+              //
+
+              // I picked up this function from SO. It's supposed to use a canvas to
+              // calculate the width of some text. We provide a string of text and the
+              // desired font properties.
+              function getTextWidth(text, font) {
+                const canvas =
+                  getTextWidth.canvas ||
+                  (getTextWidth.canvas = document.createElement("canvas"));
+                const context = canvas.getContext("2d");
+                context.font = font;
+                const metrics = context.measureText(text);
+                return metrics.width;
+              }
+
+              // Select all p tags. This is an easy way of getting all hemistichs.
+              const allHems = document.querySelectorAll("p");
+
+              // Set up variable to hold max computed text width
+              let maxWidth = 0;
+
+              // Iterate over hemistichs, calculating width of each
+              for (let i = 0; i < allHems.length; i++) {
+                const testText = allHems[i].innerText;
+                const hemWidth = getTextWidth(testText, "x-large Scheherazade");
+
+                // If this hemistich's width is a new maximum, update
+                if (hemWidth > maxWidth) {
+                  maxWidth = hemWidth;
+                }
+              }
+
+              // Make sure we got an actual max width before doing anything else
+              if (maxWidth !== 0) {
+                // Round up maxWidth, and make it into a string with a px value for CSS
+                const pixelWidth = Math.ceil(maxWidth) + "px";
+
+                // Finally, update CSS custom property
+                document.documentElement.style.setProperty(
+                  "--hemistich-width",
+                  pixelWidth
+                );
+              }
+            }
+
+            window.onload = (event) => {
+              fixup();
+            };
+        </script>
+
+        <div id="t6e-footer">
+            به همت <a href="https://www.theobeers.com/about">Theo Beers</a> | <a href="@Model.Poem.FullUrl">برگشت به @Model.Poem.FullTitle</a>
+        </div>
+    }
+</body>
+</html>

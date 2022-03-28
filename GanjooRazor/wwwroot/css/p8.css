@@ -1603,6 +1603,10 @@ audio {
     content: 'delete'
 }
 
+.menu-book::after {
+    content: 'menu_book'
+}
+
 
 .visible-notification-badge {
     position: absolute;
