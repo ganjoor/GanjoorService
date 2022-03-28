@@ -997,6 +997,13 @@
             <param name="rhythm"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeleteCategoryAsync(System.Int32)">
+            <summary>
+            delete a category
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.StartFindingMissingRhythms(System.Boolean,System.Int32)">
             <summary>
             Start Finding Missing Rhythms
@@ -11389,6 +11396,13 @@
             <param name="rejectionCause"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeleteCategoryAsync(System.Int32)">
+            <summary>
+            delete a category
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.SetCategoryLanguageTag(System.Int32,System.String)">
             <summary>
             set category poems language tag
@@ -13639,6 +13653,13 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemAsync(System.Int32)">
             <summary>
             delete a poem
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteCategoryAsync(System.Int32)">
+            <summary>
+            delete a category
             </summary>
             <param name="id"></param>
             <returns></returns>

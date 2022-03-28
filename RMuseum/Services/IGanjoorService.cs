@@ -841,6 +841,13 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> RejectPoetSuggestedSpecLinesAsync(int id, Guid deleteUserId, string rejectionCause);
 
         /// <summary>
+        /// delete a category
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteCategoryAsync(int id);
+
+        /// <summary>
         /// set category poems language tag
         /// </summary>
         /// <param name="catId"></param>

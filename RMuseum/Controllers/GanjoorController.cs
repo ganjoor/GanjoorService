@@ -542,6 +542,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// delete a category
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpDelete]
+        [Route("cat/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> DeleteCategoryAsync(int id)
+        {
+            var res = await _ganjoorService.DeleteCategoryAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// Start Finding Missing Rhythms
         /// </summary>
         /// <param name="onlyPoemsWithRhymes"></param>

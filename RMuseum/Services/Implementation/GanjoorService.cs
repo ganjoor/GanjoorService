@@ -2890,6 +2890,36 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// delete a category
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteCategoryAsync(int id)
+        {
+            try
+            {
+                if(true == await _context.GanjoorPoems.Where(p => p.CatId == id).AnyAsync())
+                {
+                    return new RServiceResult<bool>(false, "cat has poems!");
+                }
+                
+                var page = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == id).SingleAsync();
+                _context.Remove(page);
+                await _context.SaveChangesAsync();
+
+                var cat = await _context.GanjoorCategories.Where(c => c.Id == id).SingleAsync();
+                _context.Remove(cat);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// chaneg poet image
         /// </summary>
         /// <param name="poetId"></param>
