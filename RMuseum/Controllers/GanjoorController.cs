@@ -2660,14 +2660,15 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="srcCatId"></param>
         /// <param name="destCatId"></param>
+        /// <param name="hardTry"></param>
         /// <returns></returns>
         [HttpPost("duplicates/{srcCatId}/{destCatId}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartFindingCategoryPoemsDuplicates(int srcCatId, int destCatId)
+        public IActionResult StartFindingCategoryPoemsDuplicates(int srcCatId, int destCatId, bool hardTry = false)
         {
-            var res = _ganjoorService.StartFindingCategoryPoemsDuplicates(srcCatId, destCatId);
+            var res = _ganjoorService.StartFindingCategoryPoemsDuplicates(srcCatId, destCatId, hardTry);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();

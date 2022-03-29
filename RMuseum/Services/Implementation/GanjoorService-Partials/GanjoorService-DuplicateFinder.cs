@@ -20,8 +20,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="srcCatId"></param>
         /// <param name="destCatId"></param>
+        /// <param name="hardTry"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartFindingCategoryPoemsDuplicates(int srcCatId, int destCatId)
+        public RServiceResult<bool> StartFindingCategoryPoemsDuplicates(int srcCatId, int destCatId, bool hardTry)
         {
             try
             {
@@ -36,7 +37,7 @@ namespace RMuseum.Services.Implementation
                                    var job = (await jobProgressServiceEF.NewJob("StartFindingCategoryPoemsDuplicates", "Query data")).Result;
                                    try
                                    {
-                                       await _FindCategoryPoemsDuplicates(context, srcCatId, destCatId);
+                                       await _FindCategoryPoemsDuplicates(context, srcCatId, destCatId, hardTry);
                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                    }
                                    catch (Exception exp)
@@ -188,7 +189,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
-        private async Task<RServiceResult<bool>> _FindCategoryPoemsDuplicates(RMuseumDbContext context, int srcCatId, int destCatId)
+        private async Task<RServiceResult<bool>> _FindCategoryPoemsDuplicates(RMuseumDbContext context, int srcCatId, int destCatId, bool hardTry)
         {
             try
             {
@@ -257,6 +258,7 @@ namespace RMuseum.Services.Implementation
                                 }
                             }
                             if (found) break;
+                            if (!hardTry) break;
                         }
                         if (found) break;
                     }

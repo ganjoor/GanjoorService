@@ -3317,6 +3317,7 @@ namespace RMuseum.Services.Implementation
                     DestPoemId = destPoemId
                 };
                 _context.GanjoorDuplicates.Add(dup);
+                await _context.SaveChangesAsync();
 
                 return new RServiceResult<bool>(true);
             }

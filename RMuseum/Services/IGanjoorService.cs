@@ -867,8 +867,9 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="srcCatId"></param>
         /// <param name="destCatId"></param>
+        /// <param name="hardTry"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartFindingCategoryPoemsDuplicates(int srcCatId, int destCatId);
+        RServiceResult<bool> StartFindingCategoryPoemsDuplicates(int srcCatId, int destCatId, bool hardTry);
 
         /// <summary>
         /// list of category saved duplicated poems
