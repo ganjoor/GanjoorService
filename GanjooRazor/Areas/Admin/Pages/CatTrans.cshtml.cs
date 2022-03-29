@@ -27,6 +27,18 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public GanjoorDuplicateViewModel[] Poems { get; set; }
 
+
+        /// <summary>
+        /// cat id
+        /// </summary>
+        public int CatId { get; set; }
+
+        /// <summary>
+        /// dest cat Id
+        /// </summary>
+        [BindProperty]
+        public int DestCatId { get; set; }
+
         private async Task<bool> _GetCatDuplicatesAsync()
         {
             if (string.IsNullOrEmpty(Request.Query["id"]))
@@ -34,12 +46,12 @@ namespace GanjooRazor.Areas.Admin.Pages
                 LastMessage = "شناسهٔ بخش مشخص نیست.";
                 return false;
             }
-            var id = Request.Query["id"];
+            CatId = int.Parse(Request.Query["id"]);
             using (HttpClient secureClient = new HttpClient())
             {
-                if(await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/duplicates/{id}");
+                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/duplicates/{CatId}");
                     if (!response.IsSuccessStatusCode)
                     {
                         LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
@@ -67,5 +79,33 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             return Page();
         }
+
+        public async Task<IActionResult> OnPostFindDuplicatesAsync()
+        {
+            CatId = int.Parse(Request.Query["id"]);
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/duplicates/{CatId}/{DestCatId}", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    else
+                    {
+                        LastMessage = "فرایند شروع شد.";
+                        return Page();
+                    }
+                }
+                else
+                {
+                    LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    return Page();
+                }
+            }
+        }
     }
+        
 }

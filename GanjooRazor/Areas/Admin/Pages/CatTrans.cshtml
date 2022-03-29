@@ -21,19 +21,31 @@ else
         </tr>
 
         @foreach (var poem in Model.Poems)
-       {
-           <tr>
-               <td>
-                   <a href="@poem.SrcPoemFullUrl">@poem.SrcPoemFullTitle</a>
-               </td>
-               <td>
-                   @if(!string.IsNullOrEmpty(poem.DestPoemFullUrl))
+        {
+            <tr>
+                <td>
+                    <a href="@poem.SrcPoemFullUrl">@poem.SrcPoemFullTitle</a>
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(poem.DestPoemFullUrl))
                     {
                         <a href="@poem.DestPoemFullUrl">@poem.DestPoemFullTitle</a>
                     }
                 </td>
-           </tr>
-       }
+            </tr>
+        }
+    </table>
+
+    <table>
+        <tr>
+            <td>مشابه‌یابی در بخش:</td>
+            <td>
+                <form method="post" action="/Admin/CatTrans?Handler=FindDuplicates&id=@Model.CatId">
+                    <input asp-for="DestCatId" />
+                    <input type="submit" value="شروع مشابه‌یابی" />
+                </form>
+            </td>
+        </tr>
     </table>
 }
 

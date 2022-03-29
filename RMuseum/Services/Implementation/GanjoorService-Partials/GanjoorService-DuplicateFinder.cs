@@ -197,21 +197,26 @@ namespace RMuseum.Services.Implementation
                     if (found) continue;
                     foreach (var probable in targetPoems)
                     {
-                        var meVerse = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == probable.Id).OrderBy(v => v.VOrder).FirstAsync();
-                        if (_AreSimilar(firstVerse.Text, meVerse.Text, false))
+                        var targetVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == probable.Id).OrderBy(v => v.VOrder).ToListAsync();
+                        foreach (var targetVerse in targetVerses)
                         {
-                            context.GanjoorDuplicates.Add
-                                (
-                                new GanjoorDuplicate()
-                                {
-                                    SrcCatId = srcCatId,
-                                    SrcPoemId = poem.Id,
-                                    DestPoemId = probable.Id
-                                }
-                                );
-                            await context.SaveChangesAsync();
-                            break;
+                            if (_AreSimilar(firstVerse.Text, targetVerse.Text, false))
+                            {
+                                context.GanjoorDuplicates.Add
+                                    (
+                                    new GanjoorDuplicate()
+                                    {
+                                        SrcCatId = srcCatId,
+                                        SrcPoemId = poem.Id,
+                                        DestPoemId = probable.Id
+                                    }
+                                    );
+                                await context.SaveChangesAsync();
+                                found = true;
+                                break;
+                            }
                         }
+                        if (found) break;
                     }
                 }
                 return new RServiceResult<bool>(true);
