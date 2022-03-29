@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,6 +61,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                     else
                     {
                         Poems = JsonConvert.DeserializeObject<GanjoorDuplicateViewModel[]>(await response.Content.ReadAsStringAsync());
+
+                        if(!string.IsNullOrEmpty(Request.Query["empty"]))
+                        {
+                            Poems = Poems.Where(p => p.DestPoemId == null).ToArray();
+                        }
                     }
                 }
                 else
@@ -76,6 +82,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 return Redirect("/");
 
             await _GetCatDuplicatesAsync();
+
 
             return Page();
         }
