@@ -139,6 +139,9 @@ namespace RMuseum.Services.Implementation
                                        context.Update(destCatPage);
                                        context.Remove(catPage);
 
+                                       var cat = await context.GanjoorCategories.Where(c => c.Id == catId).SingleAsync();
+                                       context.Remove(cat);
+
                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                    }
                                    catch (Exception exp)

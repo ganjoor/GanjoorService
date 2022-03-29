@@ -106,6 +106,33 @@ namespace GanjooRazor.Areas.Admin.Pages
                 }
             }
         }
+
+        public async Task<IActionResult> OnPostFinalizeAsync()
+        {
+            CatId = int.Parse(Request.Query["id"]);
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/duplicates/finish/{CatId}/{DestCatId}", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    else
+                    {
+                        LastMessage = "فرایند شروع شد.";
+                        return Page();
+                    }
+                }
+                else
+                {
+                    LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    return Page();
+                }
+            }
+        }
     }
         
 }

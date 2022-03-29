@@ -47,5 +47,17 @@ else
             </td>
         </tr>
     </table>
+
+    <table>
+        <tr>
+            <td>نهایی سازی انتقال به بخش:</td>
+            <td>
+                <form method="post" action="/Admin/CatTrans?Handler=Finalize&id=@Model.CatId">
+                    <input asp-for="DestCatId" />
+                    <input type="submit" value="نهایی سازی" />
+                </form>
+            </td>
+        </tr>
+    </table>
 }
 
