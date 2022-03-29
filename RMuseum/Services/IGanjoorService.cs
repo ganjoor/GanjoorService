@@ -878,6 +878,22 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorDuplicateViewModel[]>> GetCategoryDuplicates(int catId);
 
         /// <summary>
+        /// manually add a duplicate for a poems
+        /// </summary>
+        /// <param name="srcCatId"></param>
+        /// <param name="srcPoemId"></param>
+        /// <param name="destPoemId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> AdDuplicateAsync(int srcCatId, int srcPoemId, int destPoemId);
+
+        /// <summary>
+        /// delete duplicate
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteDuplicateAsync(int id);
+
+        /// <summary>
         /// start removing category duplicates
         /// </summary>
         /// <param name="catId"></param>

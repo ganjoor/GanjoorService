@@ -3295,6 +3295,58 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// manually add a duplicate for a poems
+        /// </summary>
+        /// <param name="srcCatId"></param>
+        /// <param name="srcPoemId"></param>
+        /// <param name="destPoemId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> AdDuplicateAsync(int srcCatId, int srcPoemId, int destPoemId)
+        {
+            try
+            {
+                var alreadyDup = await _context.GanjoorDuplicates.AsNoTracking().Where(p => p.SrcPoemId == srcPoemId).FirstOrDefaultAsync();
+                if(alreadyDup != null)
+                {
+                    return new RServiceResult<bool>(false, $"already dupped : {alreadyDup.DestPoemId}");
+                }
+                var dup = new GanjoorDuplicate()
+                {
+                    SrcCatId = srcCatId,
+                    SrcPoemId = srcPoemId,
+                    DestPoemId = destPoemId
+                };
+                _context.GanjoorDuplicates.Add(dup);
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete duplicate
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteDuplicateAsync(int id)
+        {
+            try
+            {
+                var dup = await _context.GanjoorDuplicates.Where(d => d.Id == id).SingleAsync();
+                _context.Remove(dup);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(false);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// aggressive cache
         /// </summary>
         public bool AggressiveCacheEnabled

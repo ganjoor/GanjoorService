@@ -2674,6 +2674,42 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// manually add a duplicate for a poems
+        /// </summary>
+        /// <param name="srcCatId"></param>
+        /// <param name="srcPoemId"></param>
+        /// <param name="destPoemId"></param>
+        /// <returns></returns>
+        [HttpPost("duplicates/manual/{srcCatId}/{srcPoemId}/{destPoemId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> AdDuplicateAsync(int srcCatId, int srcPoemId, int destPoemId)
+        {
+            var res = await _ganjoorService.AdDuplicateAsync(srcCatId, srcPoemId, destPoemId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// delete a duplicate
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("duplicates/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteDuplicateAsync(int id)
+        {
+            var res = await _ganjoorService.DeleteDuplicateAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// list of category saved duplicated poems
         /// </summary>
         /// <param name="catId"></param>

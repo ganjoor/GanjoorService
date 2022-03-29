@@ -1648,6 +1648,22 @@
             <param name="destCatId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.AdDuplicateAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            manually add a duplicate for a poems
+            </summary>
+            <param name="srcCatId"></param>
+            <param name="srcPoemId"></param>
+            <param name="destPoemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeleteDuplicateAsync(System.Int32)">
+            <summary>
+            delete a duplicate
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetCategoryDuplicates(System.Int32)">
             <summary>
             list of category saved duplicated poems
@@ -11433,6 +11449,22 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.AdDuplicateAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            manually add a duplicate for a poems
+            </summary>
+            <param name="srcCatId"></param>
+            <param name="srcPoemId"></param>
+            <param name="destPoemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeleteDuplicateAsync(System.Int32)">
+            <summary>
+            delete duplicate
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.StartRemovingCategoryDuplicates(System.Int32,System.Int32)">
             <summary>
             start removing category duplicates
@@ -13716,6 +13748,22 @@
             list of category saved duplicated poems
             </summary>
             <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.AdDuplicateAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            manually add a duplicate for a poems
+            </summary>
+            <param name="srcCatId"></param>
+            <param name="srcPoemId"></param>
+            <param name="destPoemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteDuplicateAsync(System.Int32)">
+            <summary>
+            delete duplicate
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">
