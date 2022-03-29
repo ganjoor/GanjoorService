@@ -28,6 +28,12 @@ else
                 data: {
                     id: commentId
                 },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
                 success: function () {
                     var commentBlockId = '#comment-' + commentId;
                     $(commentBlockId).remove();
@@ -60,6 +66,12 @@ else
                         id: commentId,
                         comment: $("textarea#editCommentText").val()
                     },
+                    error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
                     success: function () {
                         document.getElementById('id02').style.display = 'none';
 

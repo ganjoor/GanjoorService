@@ -14,15 +14,42 @@
 }
 else
 {
+    <script>
+        function deleteThisOne(id) {
+            if (!confirm('آیا از حذف این مورد اطمینان دارید؟'))
+                return;
+
+
+            $.ajax({
+                type: "DELETE",
+                url: '',
+                data: {
+                    id: id
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function () {
+                    var trBlockId = '#tr-' + id;
+                    $(trBlockId).remove();
+                },
+            });
+
+        }
+    </script>
     <table>
         <tr>
             <th>مبدأ</th>
             <th>مقصد</th>
+            <th>#</th>
         </tr>
 
         @foreach (var poem in Model.Poems)
         {
-            <tr>
+            <tr id="tr-@poem.Id">
                 <td>
                     <a href="@poem.SrcPoemFullUrl">@poem.SrcPoemFullTitle</a>
                 </td>
@@ -32,11 +59,14 @@ else
                         <a href="@poem.DestPoemFullUrl">@poem.DestPoemFullTitle</a>
                     }
                 </td>
+                <td>
+                   <a role="button" onclick="deleteThisOne(@poem.Id)" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
+                </td>
             </tr>
         }
 
         <tr>
-            <td colspan="2">
+            <td colspan="3">
                 <a href="/Admin/CatTrans?id=@Model.CatId&empty=1">فقط بدون مقصد</a>
             </td>
         </tr>
