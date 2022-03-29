@@ -1,0 +1,39 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.CatTransModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "انتقال بخش";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    @Html.Raw(Model.LastMessage)
+}
+else
+{
+    <table>
+        <tr>
+            <th>مبدأ</th>
+            <th>مقصد</th>
+        </tr>
+
+        @foreach (var poem in Model.Poems)
+       {
+           <tr>
+               <td>
+                   <a href="@poem.SrcPoemFullUrl">@poem.SrcPoemFullTitle</a>
+               </td>
+               <td>
+                   @if(!string.IsNullOrEmpty(poem.DestPoemFullUrl))
+                    {
+                        <a href="@poem.DestPoemFullUrl">@poem.DestPoemFullTitle</a>
+                    }
+                </td>
+           </tr>
+       }
+    </table>
+}
+
