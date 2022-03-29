@@ -199,7 +199,7 @@ namespace RMuseum.Services.Implementation
                 var alreayFoundOnes = await context.GanjoorDuplicates.AsNoTracking().Where(p => p.SrcCatId == srcCatId).ToListAsync();
                 foreach (var poem in poems)
                 {
-                    var firstVerse = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poem.Id).OrderBy(v => v.VOrder).FirstAsync();
+                    var sourceVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
                     if (alreayFoundOnes.Any(p => p.SrcPoemId == poem.Id))
                         continue;
                     var probablyTheOnes = targetPoems.Where(p => p.GanjoorMetreId == poem.GanjoorMetreId && p.RhymeLetters == poem.RhymeLetters).ToList();
@@ -207,47 +207,56 @@ namespace RMuseum.Services.Implementation
                     foreach (var probable in probablyTheOnes)
                     {
                         var targetVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == probable.Id).OrderBy(v => v.VOrder).ToListAsync();
-                        foreach (var targetVerse in targetVerses)
+                        foreach (var firstVerse in sourceVerses)
                         {
-                            if (_AreSimilar(firstVerse.Text, targetVerse.Text, false))
+                            foreach (var targetVerse in targetVerses)
                             {
-                                context.GanjoorDuplicates.Add
-                                    (
-                                    new GanjoorDuplicate()
-                                    {
-                                        SrcCatId = srcCatId,
-                                        SrcPoemId = poem.Id,
-                                        DestPoemId = probable.Id
-                                    }
-                                    );
-                                await context.SaveChangesAsync();
-                                found = true;
-                                break;
+                                if (_AreSimilar(firstVerse.Text, targetVerse.Text, false))
+                                {
+                                    context.GanjoorDuplicates.Add
+                                        (
+                                        new GanjoorDuplicate()
+                                        {
+                                            SrcCatId = srcCatId,
+                                            SrcPoemId = poem.Id,
+                                            DestPoemId = probable.Id
+                                        }
+                                        );
+                                    await context.SaveChangesAsync();
+                                    found = true;
+                                    break;
+                                }
                             }
+                            if (found) break;
                         }
+                        
                         if (found) break;
                     }
                     if (found) continue;
                     foreach (var probable in targetPoems)
                     {
                         var targetVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == probable.Id).OrderBy(v => v.VOrder).ToListAsync();
-                        foreach (var targetVerse in targetVerses)
+                        foreach (var firstVerse in sourceVerses)
                         {
-                            if (_AreSimilar(firstVerse.Text, targetVerse.Text, false))
+                            foreach (var targetVerse in targetVerses)
                             {
-                                context.GanjoorDuplicates.Add
-                                    (
-                                    new GanjoorDuplicate()
-                                    {
-                                        SrcCatId = srcCatId,
-                                        SrcPoemId = poem.Id,
-                                        DestPoemId = probable.Id
-                                    }
-                                    );
-                                await context.SaveChangesAsync();
-                                found = true;
-                                break;
+                                if (_AreSimilar(firstVerse.Text, targetVerse.Text, false))
+                                {
+                                    context.GanjoorDuplicates.Add
+                                        (
+                                        new GanjoorDuplicate()
+                                        {
+                                            SrcCatId = srcCatId,
+                                            SrcPoemId = poem.Id,
+                                            DestPoemId = probable.Id
+                                        }
+                                        );
+                                    await context.SaveChangesAsync();
+                                    found = true;
+                                    break;
+                                }
                             }
+                            if (found) break;
                         }
                         if (found) break;
                     }
