@@ -106,6 +106,13 @@ namespace RMuseum.Services.Implementation
                                            }
                                            context.UpdateRange(comments);
 
+                                           var bookmarks = await context.GanjoorUserBookmarks.Where(b => b.PoemId == dup.SrcPoemId).ToListAsync();
+                                           foreach (var bookmark in bookmarks)
+                                           {
+                                               bookmark.PoemId = (int)dup.DestPoemId;
+                                           }
+                                           context.UpdateRange(bookmarks);
+
                                            var songs = await context.GanjoorPoemMusicTracks.Where(m => m.PoemId == dup.SrcPoemId).ToListAsync();
                                            foreach (var song in songs)
                                            {
@@ -117,11 +124,34 @@ namespace RMuseum.Services.Implementation
                                            }
                                            context.UpdateRange(songs);
 
+                                           var recitaions = await context.Recitations.Where(r => r.GanjoorPostId == dup.SrcPoemId).ToListAsync();
+                                           foreach (var recitation in recitaions)
+                                           {
+                                               recitation.GanjoorPostId = (int)dup.DestPoemId;
+                                           }
+                                           context.UpdateRange(recitaions);
+
+                                           var links = await context.GanjoorLinks.Where(l => l.GanjoorPostId == dup.SrcPoemId).ToListAsync();
+                                           foreach (var link in links)
+                                           {
+                                               link.GanjoorPostId = (int)dup.DestPoemId;
+                                           }
+                                           context.UpdateRange(links);
+
+                                           var pins = await context.PinterestLinks.Where(l => l.GanjoorPostId == dup.SrcPoemId).ToListAsync();
+                                           foreach (var pin in pins)
+                                           {
+                                               pin.GanjoorPostId = (int)dup.DestPoemId;
+                                           }
+                                           context.UpdateRange(pins);
+
                                            var similars = await context.GanjoorCachedRelatedPoems.Where(s => s.FullUrl == srcPoem.FullUrl).ToListAsync();
                                            context.RemoveRange(similars);
 
                                            var corrections = await context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Where(c => c.PoemId == srcPoem.Id).ToListAsync();
                                            context.RemoveRange(corrections);
+
+                                          
 
                                            var page = await context.GanjoorPages.Where(p => p.Id == srcPoem.Id && p.GanjoorPageType == GanjoorPageType.PoemPage).SingleAsync();
                                            context.Remove(page);
