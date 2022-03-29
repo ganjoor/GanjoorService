@@ -94,7 +94,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/duplicates/{CatId}/{DestCatId}", null);
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/duplicates/{CatId}/{DestCatId}?hardTry=true", null);
                     if (!response.IsSuccessStatusCode)
                     {
                         LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
