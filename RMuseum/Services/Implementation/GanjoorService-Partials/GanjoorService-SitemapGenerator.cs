@@ -83,6 +83,7 @@ namespace RMuseum.Services.Implementation
                                        urls.Remove("/amar");
                                        urls.Remove("/tools");
                                        urls.Remove("/embed");
+                                       urls.Remove("/hashieha");
 
                                        WriteSitemap(firstSitemap,
                                               urls
