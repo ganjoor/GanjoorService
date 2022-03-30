@@ -13,6 +13,7 @@ using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -497,6 +498,14 @@ namespace GanjooRazor.Pages
                             NextTitle = GanjoorPage.Poem.Next.Title + ": " + GanjoorPage.Poem.Next.Excerpt;
                         }
                         else
+                        if(GanjoorPage.Poem.MixedModeOrder > 0 
+                            && GanjoorPage.Poem.Category.Cat.Children.Where(c => c.MixedModeOrder == 0 || c.MixedModeOrder > GanjoorPage.Poem.MixedModeOrder).Any())
+                        {
+                            var nextCat = GanjoorPage.Poem.Category.Cat.Children.Where(c => c.MixedModeOrder == 0 || c.MixedModeOrder > GanjoorPage.Poem.MixedModeOrder).OrderBy(c => c.MixedModeOrder).First();
+                            NextUrl = nextCat.FullUrl;
+                            NextTitle = nextCat.Title;
+                        }
+                        else
                         if(GanjoorPage.Poem.Category.Cat.Next != null)
                         {
                             NextUrl = GanjoorPage.Poem.Category.Cat.Next.FullUrl;
@@ -507,6 +516,14 @@ namespace GanjooRazor.Pages
                         {
                             PreviousUrl = GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + GanjoorPage.Poem.Previous.UrlSlug;
                             PreviousTitle = GanjoorPage.Poem.Previous.Title + ": " + GanjoorPage.Poem.Previous.Excerpt;
+                        }
+                        else
+                        if (GanjoorPage.Poem.MixedModeOrder > 0
+                            && GanjoorPage.Poem.Category.Cat.Children.Where(c => c.MixedModeOrder != 0 && c.MixedModeOrder < GanjoorPage.Poem.MixedModeOrder).Any())
+                        {
+                            var prevCat = GanjoorPage.Poem.Category.Cat.Children.Where(c => c.MixedModeOrder != 0 && c.MixedModeOrder < GanjoorPage.Poem.MixedModeOrder).OrderByDescending(c => c.MixedModeOrder).First();
+                            PreviousUrl = prevCat.FullUrl;
+                            PreviousTitle = prevCat.Title;
                         }
                         else
                         if (GanjoorPage.Poem.Category.Cat.Previous != null)
