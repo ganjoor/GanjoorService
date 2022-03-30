@@ -207,19 +207,17 @@
                             <div class="spacer">&nbsp;</div>
                             <div class="navigation">
                                 <div class="navleft">
-                                    @if (Model.GanjoorPage.PoetOrCat.Cat.Next != null)
+                                    @if (!string.IsNullOrEmpty(Model.NextUrl))
                                     {
-                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Next.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Next.Title)</a>
-
+                                        <a href="@Html.Raw(Model.NextUrl)">@Model.NextTitle</a>
                                         <span> &raquo;</span>
                                     }
                                 </div>
                                 <div class="navright">
-                                    @if (Model.GanjoorPage.PoetOrCat.Cat.Previous != null)
+                                    @if (!string.IsNullOrEmpty(Model.PreviousUrl))
                                     {
                                         <span>&laquo; </span>
-
-                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Previous.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Previous.Title)</a>
+                                        <a href="@Html.Raw(Model.PreviousUrl)">@Model.PreviousTitle</a>
                                     }
                                 </div>
                             </div>
@@ -242,33 +240,17 @@
                             <div class="spacer">&nbsp;</div>
                             <div class="navigation">
                                 <div class="navleft">
-                                    @if (Model.GanjoorPage.Poem.Next != null)
+                                    @if (!string.IsNullOrEmpty(Model.NextUrl))
                                     {
-                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + Model.GanjoorPage.Poem.Next.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Next.Title): @Html.Raw(Model.GanjoorPage.Poem.Next.Excerpt)</a>
-
-                                        <span> &raquo;</span>
-                                    }
-                                    else
-                               if (Model.GanjoorPage.Poem.Category.Cat.Next != null)
-                                    {
-                                        <a href="@Model.GanjoorPage.Poem.Category.Cat.Next.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Next.Title</a>
-
+                                        <a href="@Html.Raw(Model.NextUrl)">@Model.NextTitle</a>
                                         <span> &raquo;</span>
                                     }
                                 </div>
                                 <div class="navright">
-                                    @if (Model.GanjoorPage.Poem.Previous != null)
+                                     @if (!string.IsNullOrEmpty(Model.PreviousUrl))
                                     {
                                         <span>&laquo; </span>
-
-                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl + "/" +Model.GanjoorPage.Poem.Previous.UrlSlug)">@Html.Raw(Model.GanjoorPage.Poem.Previous.Title) :@Html.Raw(Model.GanjoorPage.Poem.Previous.Excerpt)</a>
-                                    }
-                                    else
-                               if (Model.GanjoorPage.Poem.Category.Cat.Previous != null)
-                                    {
-                                        <span>&laquo; </span>
-
-                                        <a href="@Model.GanjoorPage.Poem.Category.Cat.Previous.FullUrl">@Model.GanjoorPage.Poem.Category.Cat.Previous.Title</a>
+                                        <a href="@Html.Raw(Model.PreviousUrl)">@Model.PreviousTitle</a>
                                     }
                                 </div>
                             </div>

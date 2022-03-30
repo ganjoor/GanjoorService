@@ -477,6 +477,62 @@ namespace GanjooRazor.Pages
         /// </summary>
         public string HtmlLanguage { get; set; } = "fa-IR";
 
+        public string NextUrl { get; set; }
+
+        public string NextTitle { get; set; }
+
+        public string PreviousUrl { get; set; }
+
+        public string PreviousTitle { get; set; }
+
+        private void _prepareNextPre()
+        {
+            switch(GanjoorPage.GanjoorPageType)
+            {
+                case GanjoorPageType.PoemPage:
+                    {
+                        if(GanjoorPage.Poem.Next != null)
+                        {
+                            NextUrl = GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + GanjoorPage.Poem.Next.UrlSlug;
+                            NextTitle = GanjoorPage.Poem.Next.Title + ": " + GanjoorPage.Poem.Next.Excerpt;
+                        }
+                        else
+                        if(GanjoorPage.Poem.Category.Cat.Next != null)
+                        {
+                            NextUrl = GanjoorPage.Poem.Category.Cat.Next.FullUrl;
+                            NextTitle = GanjoorPage.Poem.Category.Cat.Next.Title;
+                        }
+
+                        if (GanjoorPage.Poem.Previous != null)
+                        {
+                            PreviousUrl = GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + GanjoorPage.Poem.Previous.UrlSlug;
+                            PreviousTitle = GanjoorPage.Poem.Previous.Title + ": " + GanjoorPage.Poem.Previous.Excerpt;
+                        }
+                        else
+                        if (GanjoorPage.Poem.Category.Cat.Previous != null)
+                        {
+                            PreviousUrl = GanjoorPage.Poem.Category.Cat.Previous.FullUrl;
+                            PreviousTitle = GanjoorPage.Poem.Category.Cat.Previous.Title;
+                        }
+                    }
+                    break;
+                case GanjoorPageType.CatPage:
+                    {
+                        if(GanjoorPage.PoetOrCat.Cat.Next != null)
+                        {
+                            NextUrl = GanjoorPage.PoetOrCat.Cat.Next.FullUrl;
+                            NextTitle = GanjoorPage.PoetOrCat.Cat.Next.Title;
+                        }
+                        if(GanjoorPage.PoetOrCat.Cat.Previous != null)
+                        {
+                            PreviousUrl = GanjoorPage.PoetOrCat.Cat.Previous.FullUrl;
+                            PreviousTitle = GanjoorPage.PoetOrCat.Cat.Previous.Title;
+                        }
+                    }
+                    break;
+            }
+        }
+
         /// <summary>
         /// Get
         /// </summary>
@@ -554,12 +610,15 @@ namespace GanjooRazor.Pages
                         _preparePoemExcerpt(GanjoorPage.Poem.Next);
                         _preparePoemExcerpt(GanjoorPage.Poem.Previous);
                         GanjoorPage.PoetOrCat = GanjoorPage.Poem.Category;
+                        _prepareNextPre();
                         IsPoemPage = true;
+                        
                         break;
                     case GanjoorPageType.PoetPage:
                         IsPoetPage = true;
                         break;
                     case GanjoorPageType.CatPage:
+                        _prepareNextPre();
                         IsCatPage = true;
                         break;
                 }
