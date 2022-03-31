@@ -48,7 +48,7 @@ else
             </td>
         </tr>
 
-          <tr>
+        <tr>
             <td>
                 زمان:
             </td>
@@ -75,6 +75,21 @@ else
         <tr>
             <td colspan="2"><p id="saving">&nbsp;</p></td>
         </tr>
+        @if (Model.TextSourceImage != null)
+        {
+            <tr>
+                <td colspan="2">
+                    <div class="related-images">
+                        <div class="related-image-container">
+                            <a target="_blank" href="@Html.Raw(Model.TextSourceImage.TargetPageUrl)">
+                                <img src="@Html.Raw(Model.TextSourceImage.ThumbnailImageUrl)" alt="@Model.TextSourceImage.AltText" loading="lazy" width="200" class="related-image">
+                            </a>
+
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
         @if (Model.Correction.Title != null)
         {
             <tr>

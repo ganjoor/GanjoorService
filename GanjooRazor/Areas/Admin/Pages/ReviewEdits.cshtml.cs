@@ -36,6 +36,8 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public int TotalCount { get; set; }
 
+        public PoemRelatedImage TextSourceImage { get; set; }
+
         /// <summary>
         /// page
         /// </summary>
@@ -83,6 +85,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                             return Page();
                         }
                         PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+                        if (PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).Any())
+                        {
+                            TextSourceImage = PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).First();
+                        }
 
                         if (Correction.Title != null)
                         {
