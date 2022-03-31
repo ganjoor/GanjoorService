@@ -5280,6 +5280,11 @@
             link to original source
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorLink.IsTextOriginalSource">
+            <summary>
+            is text original source
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.LinkType">
             <summary>
             Link Type
@@ -5488,6 +5493,11 @@
         <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.SuggestedBy">
             <summary>
             suggested by
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.IsTextOriginalSource">
+            <summary>
+            is text original source
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion">
