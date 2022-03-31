@@ -247,7 +247,7 @@
                                     }
                                 </div>
                                 <div class="navright">
-                                     @if (!string.IsNullOrEmpty(Model.PreviousUrl))
+                                    @if (!string.IsNullOrEmpty(Model.PreviousUrl))
                                     {
                                         <span>&laquo; </span>
                                         <a href="@Html.Raw(Model.PreviousUrl)">@Model.PreviousTitle</a>
@@ -481,7 +481,7 @@
                                                     {
                                                         <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img class="spotify-track-icon" src="/image/sp16.png" alt="اسپاتیفای" height="16" /></a>
                                                     }
-                                                    @if(Model.CanEdit)
+                                                    @if (Model.CanEdit)
                                                     {
                                                         <a role="button" class="cursor-pointer" href="/User/ReviewSongs?id=@song.Id"><i class="info-buttons edit-poem-button"></i></a>
                                                     }
@@ -506,9 +506,15 @@
                                             <div class="related-images">
                                                 @foreach (var image in Model.GanjoorPage.Poem.Images)
                                                 {
-                                                    <a target="_blank" href="@Html.Raw(image.TargetPageUrl)">
-                                                        <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" width="200" class="related-image">
-                                                    </a>
+                                                    <div class="related-image-container">
+                                                        <a target="_blank" href="@Html.Raw(image.TargetPageUrl)">
+                                                            <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" width="200" class="related-image">
+                                                        </a>
+                                                        @if(image.IsTextOriginalSource)
+                                                        {
+                                                            <div class="related-image-is-text-source"><a target="_blank" href="@Html.Raw(image.TargetPageUrl)">منبع کاغذی گنجور</a></div>
+                                                        }
+                                                    </div>
                                                 }
                                             </div>
                                             <div id="suggest-images">

@@ -1092,11 +1092,24 @@ ol {
         margin: auto
     }
 
+.related-image-container {
+    text-align: center;
+    margin: auto;
+}
+
 .related-image {
     width: 200px;
     float: right;
     padding: 5px;
 }
+
+.related-image-is-text-source {
+    background-color: black;
+    border-radius: 5px;
+    color: white;
+    font-size: small;
+}
+
 
 .comment-author, inlinesimi-poem-more {
     background: rgba(255, 255, 255, 0.5);
