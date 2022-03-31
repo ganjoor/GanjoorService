@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -85,6 +86,9 @@ namespace GanjooRazor.Areas.User.Pages
             return -1;
         }
 
+
+        public PoemRelatedImage TextSourceImage { get; set; }
+
         /// <summary>
         /// can edit
         /// </summary>
@@ -148,6 +152,11 @@ namespace GanjooRazor.Areas.User.Pages
                         return Page();
                     }
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+                    if(PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).Any())
+                    {
+                        TextSourceImage = PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).First();
+                    }
                 }
                 else
                 {
