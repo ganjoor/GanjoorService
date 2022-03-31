@@ -103,5 +103,10 @@ namespace RMuseum.Models.GanjoorIntegration
         /// link to original source
         /// </summary>
         public bool LinkToOriginalSource { get; set; }
+
+        /// <summary>
+        /// is text original source
+        /// </summary>
+        public bool IsTextOriginalSource { get; set; }
     }
 }

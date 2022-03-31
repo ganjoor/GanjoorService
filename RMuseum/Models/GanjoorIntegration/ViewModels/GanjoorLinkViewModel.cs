@@ -57,5 +57,10 @@ namespace RMuseum.Models.GanjoorIntegration.ViewModels
         /// suggested by
         /// </summary>
         public PublicRAppUser SuggestedBy { get; set; }
+
+        /// <summary>
+        /// is text original source
+        /// </summary>
+        public bool IsTextOriginalSource { get; set; }
     }
 }

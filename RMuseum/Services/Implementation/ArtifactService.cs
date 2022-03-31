@@ -2535,7 +2535,8 @@ namespace RMuseum.Services.Implementation
                         Website = user.Website,
                         Bio = user.Bio,
                         EmailConfirmed = user.EmailConfirmed
-                    }
+                    },
+                    IsTextOriginalSource = suggestion.IsTextOriginalSource
                 };
             return new RServiceResult<GanjoorLinkViewModel>(viewModel);
         }
@@ -2603,7 +2604,8 @@ namespace RMuseum.Services.Implementation
                              Website = link.SuggestedBy.Website,
                              Bio = link.SuggestedBy.Bio,
                              EmailConfirmed = link.SuggestedBy.EmailConfirmed
-                         }
+                         },
+                         IsTextOriginalSource = link.IsTextOriginalSource
                      }
                      );
             GanjoorLink preLink =
@@ -2643,7 +2645,8 @@ namespace RMuseum.Services.Implementation
                              Website = preLink.SuggestedBy.Website,
                              Bio = preLink.SuggestedBy.Bio,
                              EmailConfirmed = preLink.SuggestedBy.EmailConfirmed
-                         }
+                         },
+                         IsTextOriginalSource = preLink.IsTextOriginalSource
                      }
                      );
             }
@@ -2697,7 +2700,8 @@ namespace RMuseum.Services.Implementation
                             Website = link.SuggestedBy.Website,
                             Bio = link.SuggestedBy.Bio,
                             EmailConfirmed = link.SuggestedBy.EmailConfirmed
-                        }
+                        },
+                        IsTextOriginalSource = link.IsTextOriginalSource
                     }
                     );
             }
