@@ -44,6 +44,9 @@
         /// </summary>
         public string AltText { get; set; }
 
-
+        /// <summary>
+        /// is text original source
+        /// </summary>
+        public bool IsTextOriginalSource { get; set; }
     }
 }

@@ -1371,13 +1371,14 @@ namespace RMuseum.Services.Implementation
                  link.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
                  &&
                  poem.Id == id
-                 orderby link.ReviewDate
+                 orderby link.IsTextOriginalSource descending, link.ReviewDate
                  select new PoemRelatedImage()
                  {
                      PoemRelatedImageType = PoemRelatedImageType.MuseumLink,
                      ThumbnailImageUrl = $"{WebServiceUrl.Url}/api/images/thumb/{link.Item.Images.First().Id}.jpg",
                      TargetPageUrl = link.LinkToOriginalSource ? link.OriginalSourceUrl : $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
                      AltText = $"{link.Artifact.Name} » {link.Item.Name}",
+                     IsTextOriginalSource = link.IsTextOriginalSource
                  };
             List<PoemRelatedImage> museumImages = await museumSrc.ToListAsync();
 
@@ -1396,6 +1397,7 @@ namespace RMuseum.Services.Implementation
                      ThumbnailImageUrl = $"{WebServiceUrl.Url}/api/images/thumb/{link.Item.Images.First().Id}.jpg",
                      TargetPageUrl = link.PinterestUrl,
                      AltText = link.AltText,
+                     IsTextOriginalSource = false
                  };
 
             museumImages.AddRange(await externalSrc.AsNoTracking().ToListAsync());
