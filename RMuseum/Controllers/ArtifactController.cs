@@ -2049,6 +2049,33 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// start setting an artifact items as a category poems text original source
+        /// </summary>
+        /// <param name="ganjoorCatId"></param>
+        /// <param name="artifactId"></param>
+        /// <returns></returns>
+
+        [HttpPut("ganjoorlink/settextorigin/{ganjoorCatId}/{artifactId}")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult StartSettingArtifactAsTextOriginalSource(int ganjoorCatId, Guid artifactId)
+        {
+            try
+            {
+                var res = _artifactService.StartSettingArtifactAsTextOriginalSource(ganjoorCatId, artifactId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode

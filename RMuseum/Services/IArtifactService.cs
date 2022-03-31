@@ -579,5 +579,13 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecordViewModel[] Items)>> SearchArtifactItems(PagingParameterModel paging, string term);
 
+        /// <summary>
+        /// start setting an artifact items as text original source
+        /// </summary>
+        /// <param name="ganjoorCatId"></param>
+        /// <param name="artifactId"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartSettingArtifactAsTextOriginalSource(int ganjoorCatId, Guid artifactId);
+
     }
 }

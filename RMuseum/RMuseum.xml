@@ -618,6 +618,14 @@
             <param name="term"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.StartSettingArtifactAsTextOriginalSource(System.Int32,System.Guid)">
+            <summary>
+            start setting an artifact items as a category poems text original source
+            </summary>
+            <param name="ganjoorCatId"></param>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.ArtifactController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -10346,6 +10354,14 @@
             <param name="term"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartSettingArtifactAsTextOriginalSource(System.Int32,System.Guid)">
+            <summary>
+            start setting an artifact items as text original source
+            </summary>
+            <param name="ganjoorCatId"></param>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>
             donation service
@@ -11633,6 +11649,9 @@
             <summary>
             IArtifactService implementation
             </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartFillingGanjoorLinkOriginalSources">
             <summary>
@@ -11738,6 +11757,14 @@
             </summary>
             <param name="resourceNumber">W619</param>
             <param name="friendlyUrl">golestan-walters-01</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartSettingArtifactAsTextOriginalSource(System.Int32,System.Guid)">
+            <summary>
+            start setting an artifact items as text original source
+            </summary>
+            <param name="ganjoorCatId"></param>
+            <param name="artifactId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartRemovingOriginalImages">
