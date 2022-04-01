@@ -6550,7 +6550,7 @@
             </summary>
             <remarks>
             in fact this should be a many-to-many relationship, but our current dataset lacks such a relationship instance and
-            because in fact it is actuallay this relationship should exists between a non-existant entity called block of poem
+            because in fact it is actually this relationship should exists between a non-existant entity called block of poem <see cref="T:RMuseum.Models.Ganjoor.GanjoorPoemSection"/>
             I ignored this relationship to take care of it whenever the block entity would be added to the data structure
             </remarks>
         </member>
@@ -6732,6 +6732,69 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre.Metre">
             <summary>
             metre
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PoemSectionTypes">
+            <summary>
+            poem section type
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionTypes.Default">
+            <summary>
+            sections like paragraphs or poems within paragraphs of text
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionTypes.Band">
+            <summary>
+            bands of a multi-band poem
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionTypes.Virtual">
+            <summary>
+            some are virtual because they contain verse from different parts of poems (like verses from all band couplets)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemSection">
+            <summary>
+            Ganjoor Poem Section
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Index">
+            <summary>
+            use this field instead of Id for referencing to ease record deletion for verses, Index starts at 0, each poem should have at least one non-virtual part ordered by Index without break
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Number">
+            <summary>
+            for lots of poems Number = Index + 1, but for rare ones such as a paragraph containing multi-band poem this could be different, 0 means no visible numbers
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.SectionType">
+            <summary>
+            section type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.GanjoorMetreId">
+            <summary>
+            prosody information
+            </summary>
+            <remarks>
+            in fact this should be a many-to-many relationship, but our current dataset lacks such a relationship instance
+            </remarks>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.GanjoorMetre">
+            <summary>
+            metre
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.RhymeLetters">
+            <summary>
+            rhyme letters
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
@@ -8967,6 +9030,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImage.AltText">
             <summary>
             alternate text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImage.IsTextOriginalSource">
+            <summary>
+            is text original source
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemVerseOrder">

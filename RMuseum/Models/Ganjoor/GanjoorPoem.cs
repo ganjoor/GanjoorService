@@ -59,7 +59,7 @@ namespace RMuseum.Models.Ganjoor
         /// </summary>
         /// <remarks>
         /// in fact this should be a many-to-many relationship, but our current dataset lacks such a relationship instance and
-        /// because in fact it is actuallay this relationship should exists between a non-existant entity called block of poem
+        /// because in fact it is actually this relationship should exists between a non-existant entity called block of poem <see cref="RMuseum.Models.Ganjoor.GanjoorPoemSection"/>
         /// I ignored this relationship to take care of it whenever the block entity would be added to the data structure
         /// </remarks>
         public int? GanjoorMetreId { get; set; }
