@@ -2153,6 +2153,7 @@ namespace RMuseum.Services.Implementationa
                             {
                                 LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                                 var job = (await jobProgressServiceEF.NewJob($"CheckingRecitationsHealthCheck", "Query data")).Result;
+                                int currentRecitationId = -1;
                                 try
                                 {
                                     var recitations = await context.Recitations.Where(s => s.ReviewStatus == AudioReviewStatus.Approved).AsNoTracking().ToArrayAsync();
@@ -2160,6 +2161,7 @@ namespace RMuseum.Services.Implementationa
                                     for (int i = 0; i < recitations.Length; i++)
                                     {
                                         var recitation = recitations[i];
+                                        currentRecitationId = recitation.Id;
                                         if (!File.Exists(recitation.LocalMp3FilePath) || !File.Exists(recitation.LocalXmlFilePath))
                                         {
 
@@ -2169,11 +2171,30 @@ namespace RMuseum.Services.Implementationa
                                                 CoupletIndex = -1,
                                                 NumberOfLinesAffected = 0,
                                                 ReporterId = userId,
-                                                ReasonText = File.Exists(recitation.LocalMp3FilePath) == false ? "MP3 file missing" : "XML file misssing",
+                                                ReasonText = File.Exists(recitation.LocalMp3FilePath) == false ? "سلامت‌سنجی فایل‌ها: MP3 file missing" : "سلامت‌سنجی فایل‌ها: XML file misssing",
                                                 DateTime = DateTime.Now
                                             };
 
                                             context.RecitationErrorReports.Add(error);
+                                        }
+                                        else
+                                        {
+                                            var mp3CheckSum = PoemAudio.ComputeCheckSum(recitation.LocalMp3FilePath);
+                                            PoemAudio audio = PoemAudioListProcessor.Load(recitation.LocalXmlFilePath).First();
+                                            if (audio.FileCheckSum != mp3CheckSum)
+                                            {
+                                                RecitationErrorReport error = new RecitationErrorReport()
+                                                {
+                                                    RecitationId = recitation.Id,
+                                                    CoupletIndex = -1,
+                                                    NumberOfLinesAffected = 0,
+                                                    ReporterId = userId,
+                                                    ReasonText = "سلامت‌سنجی فایل‌ها: امضای فایل mp3 با امضای ثبت شده در xml متفاوت است. شاید فایل خراب شده باشد.",
+                                                    DateTime = DateTime.Now
+                                                };
+
+                                                context.RecitationErrorReports.Add(error);
+                                            }
                                         }
 
                                         if (progress < (i * 100 / recitations.Length))
@@ -2186,7 +2207,7 @@ namespace RMuseum.Services.Implementationa
                                 }
                                 catch (Exception exp)
                                 {
-                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, $"recitation Id : {currentRecitationId}, exp : {exp}");
                                 }
 
                             }
