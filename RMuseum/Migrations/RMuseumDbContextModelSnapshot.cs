@@ -1236,6 +1236,9 @@ namespace RMuseum.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
+                    b.Property<int>("PoemId")
+                        .HasColumnType("int");
+
                     b.Property<string>("RhymeLetters")
                         .HasColumnType("nvarchar(max)");
 
@@ -1245,6 +1248,8 @@ namespace RMuseum.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GanjoorMetreId");
+
+                    b.HasIndex("PoemId");
 
                     b.ToTable("GanjoorPoemSections");
                 });
@@ -3361,7 +3366,15 @@ namespace RMuseum.Migrations
                         .WithMany()
                         .HasForeignKey("GanjoorMetreId");
 
+                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                        .WithMany()
+                        .HasForeignKey("PoemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("GanjoorMetre");
+
+                    b.Navigation("Poem");
                 });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemTranslation", b =>

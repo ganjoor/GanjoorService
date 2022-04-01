@@ -4,7 +4,7 @@
 
 namespace RMuseum.Migrations
 {
-    public partial class PoemSection : Migration
+    public partial class Sections : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -26,6 +26,7 @@ namespace RMuseum.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    PoemId = table.Column<int>(type: "int", nullable: false),
                     Index = table.Column<int>(type: "int", nullable: false),
                     Number = table.Column<int>(type: "int", nullable: false),
                     SectionType = table.Column<int>(type: "int", nullable: false),
@@ -40,12 +41,23 @@ namespace RMuseum.Migrations
                         column: x => x.GanjoorMetreId,
                         principalTable: "GanjoorMetres",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_GanjoorPoemSections_GanjoorPoems_PoemId",
+                        column: x => x.PoemId,
+                        principalTable: "GanjoorPoems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_GanjoorPoemSections_GanjoorMetreId",
                 table: "GanjoorPoemSections",
                 column: "GanjoorMetreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GanjoorPoemSections_PoemId",
+                table: "GanjoorPoemSections",
+                column: "PoemId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -31,6 +31,16 @@
         public int Id { get; set; }
 
         /// <summary>
+        /// Poem Id
+        /// </summary>
+        public int PoemId { get; set; }
+
+        /// <summary>
+        /// Poem
+        /// </summary>
+        public GanjoorPoem Poem { get; set; }
+
+        /// <summary>
         /// use this field instead of Id for referencing to ease record deletion for verses, Index starts at 0, each poem should have at least one non-virtual part ordered by Index without break
         /// </summary>
         public int Index { get; set; }
