@@ -6771,7 +6771,7 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Number">
             <summary>
-            for lots of poems Number = Index + 1, but for rare ones such as a paragraph containing multi-band poem this could be different, 0 means no visible numbers
+            for lots of poems Number equals to Index + 1, but for rare ones such as a paragraph containing multi-band poem this could be different, 0 means no visible numbers
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.SectionType">
@@ -7222,6 +7222,21 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.CoupletIndex">
             <summary>
             couplet index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.PoemSectionIndex">
+            <summary>
+            GanjoorPoemSection index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SecondPoemSectionIndex">
+            <summary>
+            second GanjoorPoemSection index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.RhymeLetters">
+            <summary>
+            rhyme letters (for masnavi)
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Id">

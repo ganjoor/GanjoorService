@@ -40,6 +40,16 @@
         /// </summary>
         public int? CoupletIndex { get; set; }
 
+        /// <summary>
+        /// GanjoorPoemSection index
+        /// </summary>
+        public int? PoemSectionIndex { get; set; }
+
+        /// <summary>
+        /// second GanjoorPoemSection index
+        /// </summary>
+        public int? SecondPoemSectionIndex { get; set; }
+
         public override string ToString()
         {
             return Text;
