@@ -2859,6 +2859,11 @@
             Temporary Model contianing duplicated poems information
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoemSections">
+            <summary>
+            poem sections
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -7232,11 +7237,6 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SecondPoemSectionIndex">
             <summary>
             second GanjoorPoemSection index
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.RhymeLetters">
-            <summary>
-            rhyme letters (for masnavi)
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Id">

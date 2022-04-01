@@ -457,5 +457,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorDuplicate> GanjoorDuplicates { get; set; }
 
+        /// <summary>
+        /// poem sections
+        /// </summary>
+        public DbSet<GanjoorPoemSection> GanjoorPoemSections { get; set; }
+
     }
 }
