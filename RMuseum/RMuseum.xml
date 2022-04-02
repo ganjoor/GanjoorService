@@ -6739,24 +6739,29 @@
             metre
             </summary>
         </member>
-        <member name="T:RMuseum.Models.Ganjoor.PoemSectionTypes">
+        <member name="T:RMuseum.Models.Ganjoor.PoemSectionType">
             <summary>
             poem section type
             </summary>
         </member>
-        <member name="F:RMuseum.Models.Ganjoor.PoemSectionTypes.Default">
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.Default">
             <summary>
             sections like paragraphs or poems within paragraphs of text
             </summary>
         </member>
-        <member name="F:RMuseum.Models.Ganjoor.PoemSectionTypes.Band">
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.Band">
             <summary>
             bands of a multi-band poem
             </summary>
         </member>
-        <member name="F:RMuseum.Models.Ganjoor.PoemSectionTypes.Virtual">
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.BandCouplets">
             <summary>
-            some are virtual because they contain verse from different parts of poems (like verses from all band couplets)
+            band couplets (virtual) some are virtual because they contain verse from different parts of poems (like verses from all band couplets)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.Couplet">
+            <summary>
+            couplets (virtual) for Masnavi
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemSection">
@@ -12913,6 +12918,9 @@
             <param name="backgroundTaskQueue"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorService">
+            <summary>
+            IGanjoorService implementation
+            </summary>
             <summary>
             IGanjoorService implementation
             </summary>

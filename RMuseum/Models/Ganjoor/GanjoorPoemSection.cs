@@ -4,7 +4,7 @@
     /// <summary>
     /// poem section type
     /// </summary>
-    public enum PoemSectionTypes
+    public enum PoemSectionType
     {
         /// <summary>
         /// sections like paragraphs or poems within paragraphs of text
@@ -15,9 +15,13 @@
         /// </summary>
         Band = 1,
         /// <summary>
-        /// some are virtual because they contain verse from different parts of poems (like verses from all band couplets)
+        /// band couplets (virtual) some are virtual because they contain verse from different parts of poems (like verses from all band couplets)
         /// </summary>
-        Virtual = 2,
+        BandCouplets = 2,
+        /// <summary>
+        /// couplets (virtual) for Masnavi
+        /// </summary>
+        Couplet = 3,
     }
 
     /// <summary>
@@ -53,7 +57,7 @@
         /// <summary>
         /// section type
         /// </summary>
-        public PoemSectionTypes SectionType { get; set; }
+        public PoemSectionType SectionType { get; set; }
 
         /// <summary>
         /// prosody information
