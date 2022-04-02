@@ -6744,7 +6744,7 @@
             poem section type
             </summary>
         </member>
-        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.Default">
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.WholePoem">
             <summary>
             sections like paragraphs or poems within paragraphs of text
             </summary>
@@ -6762,6 +6762,11 @@
         <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.Couplet">
             <summary>
             couplets (virtual) for Masnavi
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.VersePoemSectionType">
+            <summary>
+            how GanjoorPoemSection is linked to GanjoorVerse
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemSection">
@@ -6784,6 +6789,16 @@
             Poem
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.PoetId">
+            <summary>
+            poet id might be different from GanjoorPoem.PoetId
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Poet">
+            <summary>
+            poet might be different from GanjoorPoem.PoetId
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Index">
             <summary>
             use this field instead of Id for referencing to ease record deletion for verses, Index starts at 0, each poem should have at least one non-virtual part ordered by Index without break
@@ -6797,6 +6812,11 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.SectionType">
             <summary>
             section type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.VerseType">
+            <summary>
+            how GanjoorPoemSection is linked to GanjoorVerse
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.GanjoorMetreId">
@@ -7244,14 +7264,19 @@
             couplet index
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.PoemSectionIndex">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SectionIndex">
             <summary>
             GanjoorPoemSection index
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SecondPoemSectionIndex">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SecondSectionIndex">
             <summary>
             second GanjoorPoemSection index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.ThirdSectionIndex">
+            <summary>
+            third GanjoorPoemSection index
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Id">

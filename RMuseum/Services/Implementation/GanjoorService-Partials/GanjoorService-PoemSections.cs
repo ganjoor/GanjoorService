@@ -16,7 +16,7 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
-        public RServiceResult<bool> StartSectionizingPoems()
+        public RServiceResult<bool> StartSectionizingPoems(bool clearOldSections = false)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace RMuseum.Services.Implementation
                                    var job = (await jobProgressServiceEF.NewJob("SectionizingPoems", "Query data")).Result;
                                    try
                                    {
-                                       var poems = await context.GanjoorPoems.AsNoTracking().ToListAsync();
+                                       var poems = await context.GanjoorPoems.Include(p  => p.Cat).AsNoTracking().ToListAsync();
                                        int count = poems.Count;
                                        int progress = 0;
                                        for (int i = 0; i < count; i++)
@@ -40,6 +40,7 @@ namespace RMuseum.Services.Implementation
                                            var oldSections = await context.GanjoorPoemSections.Where(s => s.PoemId == poem.Id).ToListAsync();
                                            if (oldSections.Count > 0)
                                            {
+                                               if (!clearOldSections) continue;
                                                context.RemoveRange(oldSections);
                                                await context.SaveChangesAsync();
                                            }
@@ -50,7 +51,9 @@ namespace RMuseum.Services.Implementation
                                                GanjoorPoemSection mainSection = new GanjoorPoemSection()
                                                {
                                                    PoemId = poem.Id,
+                                                   PoetId = poem.Cat.PoetId,
                                                    SectionType = PoemSectionType.WholePoem,
+                                                   VerseType = VersePoemSectionType.First,
                                                    Index = 0,
                                                    Number = 1,
                                                    GanjoorMetreId = poem.GanjoorMetreId,
@@ -68,21 +71,23 @@ namespace RMuseum.Services.Implementation
                                                context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
                                                foreach (var verse in verses)
                                                {
-                                                   verse.PoemSectionIndex = mainSection.Index;
-                                                   verse.SecondPoemSectionIndex = null;//clear previous indices
+                                                   verse.SectionIndex = mainSection.Index;
+                                                   verse.SecondSectionIndex = null;//clear previous indices
+                                                   verse.ThirdSectionIndex = null;//clear previous indices
                                                }
 
                                                int index = 0;
                                                //checking for مثنوی phase 2
-                                               if (verses.Count > 2 && string.IsNullOrEmpty(mainSection.RhymeLetters))
+                                               var nonCommentVerses = verses.Where(v => v.VersePosition != VersePosition.Comment).ToList();
+                                               if (nonCommentVerses.Count > 2 && string.IsNullOrEmpty(mainSection.RhymeLetters))
                                                {
-                                                   if(_IsMasnavi(verses))
+                                                   if(_IsMasnavi(verses.Where(v => v.VersePosition != VersePosition.Comment).ToList()))
                                                    {
-                                                       for (int v = 0; v < verses.Count; v += 2)
+                                                       for (int v = 0; v < nonCommentVerses.Count; v += 2)
                                                        {
                                                            index++;
-                                                           var rightVerse = verses[v];
-                                                           var leftVerse = verses[v + 1];
+                                                           var rightVerse = nonCommentVerses[v];
+                                                           var leftVerse = nonCommentVerses[v + 1];
                                                            List<GanjoorVerse> coupletVerses = new List<GanjoorVerse>();
                                                            coupletVerses.Add(rightVerse);
                                                            coupletVerses.Add(leftVerse);
@@ -91,15 +96,17 @@ namespace RMuseum.Services.Implementation
                                                            GanjoorPoemSection verseSection = new GanjoorPoemSection()
                                                            {
                                                                PoemId = poem.Id,
+                                                               PoetId = poem.Cat.PoetId,
                                                                SectionType = PoemSectionType.Couplet,
+                                                               VerseType = VersePoemSectionType.Second,
                                                                Index = index,
                                                                Number = index,//couplet number
                                                                GanjoorMetreId = poem.GanjoorMetreId,
                                                                RhymeLetters = res.Rhyme
                                                            };
 
-                                                           rightVerse.SecondPoemSectionIndex = verseSection.Index;
-                                                           leftVerse.SecondPoemSectionIndex = verseSection.Index;
+                                                           rightVerse.SecondSectionIndex = verseSection.Index;
+                                                           leftVerse.SecondSectionIndex = verseSection.Index;
 
                                                            context.Add(verseSection);
                                                        }
