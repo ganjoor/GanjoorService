@@ -69,6 +69,7 @@ namespace RMuseum.Services.Implementation
                                                foreach (var verse in verses)
                                                {
                                                    verse.PoemSectionIndex = mainSection.Index;
+                                                   verse.SecondPoemSectionIndex = null;//clear previous indices
                                                }
 
                                                int index = 0;
@@ -92,15 +93,20 @@ namespace RMuseum.Services.Implementation
                                                                PoemId = poem.Id,
                                                                SectionType = PoemSectionType.Couplet,
                                                                Index = index,
-                                                               Number = index + 1,
+                                                               Number = index,//couplet number
                                                                GanjoorMetreId = poem.GanjoorMetreId,
                                                                RhymeLetters = res.Rhyme
                                                            };
+
+                                                           rightVerse.SecondPoemSectionIndex = verseSection.Index;
+                                                           leftVerse.SecondPoemSectionIndex = verseSection.Index;
 
                                                            context.Add(verseSection);
                                                        }
                                                    }
                                                }
+
+                                               context.UpdateRange(verses);
                                            }
                                            else
                                            {
