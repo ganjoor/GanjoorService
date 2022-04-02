@@ -9,7 +9,7 @@
         /// <summary>
         /// sections like paragraphs or poems within paragraphs of text
         /// </summary>
-        Default = 0,
+        WholePoem = 0,
         /// <summary>
         /// bands of a multi-band poem
         /// </summary>

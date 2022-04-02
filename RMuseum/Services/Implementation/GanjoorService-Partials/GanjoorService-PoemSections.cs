@@ -50,7 +50,7 @@ namespace RMuseum.Services.Implementation
                                                GanjoorPoemSection mainSection = new GanjoorPoemSection()
                                                {
                                                    PoemId = poem.Id,
-                                                   SectionType = PoemSectionType.Default,
+                                                   SectionType = PoemSectionType.WholePoem,
                                                    Index = 0,
                                                    Number = 1,
                                                    GanjoorMetreId = poem.GanjoorMetreId,
@@ -65,7 +65,7 @@ namespace RMuseum.Services.Implementation
                                                        mainSection.RhymeLetters = analysisRes.Result.Rhyme;
                                                    }
                                                }
-                                               context.Add(mainSection);
+                                               context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
                                                foreach (var verse in verses)
                                                {
                                                    verse.PoemSectionIndex = mainSection.Index;
