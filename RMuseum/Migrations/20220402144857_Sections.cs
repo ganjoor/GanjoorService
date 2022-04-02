@@ -9,13 +9,19 @@ namespace RMuseum.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "PoemSectionIndex",
+                name: "SecondSectionIndex",
                 table: "GanjoorVerses",
                 type: "int",
                 nullable: true);
 
             migrationBuilder.AddColumn<int>(
-                name: "SecondPoemSectionIndex",
+                name: "SectionIndex",
+                table: "GanjoorVerses",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "ThirdSectionIndex",
                 table: "GanjoorVerses",
                 type: "int",
                 nullable: true);
@@ -27,9 +33,11 @@ namespace RMuseum.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PoemId = table.Column<int>(type: "int", nullable: false),
+                    PoetId = table.Column<int>(type: "int", nullable: true),
                     Index = table.Column<int>(type: "int", nullable: false),
                     Number = table.Column<int>(type: "int", nullable: false),
                     SectionType = table.Column<int>(type: "int", nullable: false),
+                    VerseType = table.Column<int>(type: "int", nullable: false),
                     GanjoorMetreId = table.Column<int>(type: "int", nullable: true),
                     RhymeLetters = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -47,6 +55,11 @@ namespace RMuseum.Migrations
                         principalTable: "GanjoorPoems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GanjoorPoemSections_GanjoorPoets_PoetId",
+                        column: x => x.PoetId,
+                        principalTable: "GanjoorPoets",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -58,6 +71,11 @@ namespace RMuseum.Migrations
                 name: "IX_GanjoorPoemSections_PoemId",
                 table: "GanjoorPoemSections",
                 column: "PoemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GanjoorPoemSections_PoetId",
+                table: "GanjoorPoemSections",
+                column: "PoetId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -66,11 +84,15 @@ namespace RMuseum.Migrations
                 name: "GanjoorPoemSections");
 
             migrationBuilder.DropColumn(
-                name: "PoemSectionIndex",
+                name: "SecondSectionIndex",
                 table: "GanjoorVerses");
 
             migrationBuilder.DropColumn(
-                name: "SecondPoemSectionIndex",
+                name: "SectionIndex",
+                table: "GanjoorVerses");
+
+            migrationBuilder.DropColumn(
+                name: "ThirdSectionIndex",
                 table: "GanjoorVerses");
         }
     }

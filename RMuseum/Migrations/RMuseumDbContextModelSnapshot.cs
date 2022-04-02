@@ -1239,10 +1239,16 @@ namespace RMuseum.Migrations
                     b.Property<int>("PoemId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PoetId")
+                        .HasColumnType("int");
+
                     b.Property<string>("RhymeLetters")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SectionType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VerseType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1250,6 +1256,8 @@ namespace RMuseum.Migrations
                     b.HasIndex("GanjoorMetreId");
 
                     b.HasIndex("PoemId");
+
+                    b.HasIndex("PoetId");
 
                     b.ToTable("GanjoorPoemSections");
                 });
@@ -1522,14 +1530,17 @@ namespace RMuseum.Migrations
                     b.Property<int>("PoemId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PoemSectionIndex")
+                    b.Property<int?>("SecondSectionIndex")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SecondPoemSectionIndex")
+                    b.Property<int?>("SectionIndex")
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ThirdSectionIndex")
+                        .HasColumnType("int");
 
                     b.Property<int>("VOrder")
                         .HasColumnType("int");
@@ -3372,9 +3383,15 @@ namespace RMuseum.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
+                        .WithMany()
+                        .HasForeignKey("PoetId");
+
                     b.Navigation("GanjoorMetre");
 
                     b.Navigation("Poem");
+
+                    b.Navigation("Poet");
                 });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemTranslation", b =>

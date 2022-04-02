@@ -57,12 +57,12 @@
         /// <summary>
         /// poet id might be different from GanjoorPoem.PoetId
         /// </summary>
-        public int PoetId { get; set; }
+        public int? PoetId { get; set; }
 
         /// <summary>
         /// poet might be different from GanjoorPoem.PoetId
         /// </summary>
-        public GanjoorPoet Poet { get; set; }
+        public virtual GanjoorPoet Poet { get; set; }
 
         /// <summary>
         /// use this field instead of Id for referencing to ease record deletion for verses, Index starts at 0, each poem should have at least one non-virtual part ordered by Index without break
