@@ -116,6 +116,112 @@ namespace RMuseum.Services.Implementation
                                                context.UpdateRange(verses);
                                            }
                                            else
+                                           if(!verses.Where(v => 
+                                                    v.VersePosition != VersePosition.CenteredVerse1
+                                                    &&
+                                                    v.VersePosition != VersePosition.CenteredVerse2
+                                                    &&
+                                                    v.VersePosition != VersePosition.Right
+                                                    &&
+                                                    v.VersePosition != VersePosition.Left
+                                                    &&
+                                                    v.VersePosition != VersePosition.Comment
+                                                    ).Any())
+                                           {
+                                               //multi-band poem
+                                               GanjoorPoemSection mainSection = new GanjoorPoemSection()
+                                               {
+                                                   PoemId = poem.Id,
+                                                   PoetId = poem.Cat.PoetId,
+                                                   SectionType = PoemSectionType.WholePoem,
+                                                   VerseType = VersePoemSectionType.First,
+                                                   Index = 0,
+                                                   Number = 1,
+                                                   GanjoorMetreId = poem.GanjoorMetreId,
+                                                   RhymeLetters = poem.RhymeLetters
+                                               };
+                                               context.Add(mainSection);
+                                               int index = 1;
+                                               List<GanjoorVerse> currentBandVerses = new List<GanjoorVerse>();
+                                               GanjoorPoemSection currentBandSection = new GanjoorPoemSection()
+                                               {
+                                                   PoemId = poem.Id,
+                                                   PoetId = poem.Cat.PoetId,
+                                                   SectionType = PoemSectionType.Band,
+                                                   VerseType = VersePoemSectionType.Second,
+                                                   Index = index,
+                                                   Number = index + 1,
+                                                   GanjoorMetreId = poem.GanjoorMetreId,
+                                               };
+                                               List<GanjoorVerse> bandVerses = new List<GanjoorVerse>();
+                                               foreach (var verse in verses)
+                                               {
+                                                   verse.SectionIndex = mainSection.Index;
+                                                   verse.SecondSectionIndex = null;//clear previous indices
+                                                   verse.ThirdSectionIndex = null;//clear previous indices
+                                                   if (verse.VersePosition == VersePosition.Comment) continue;
+                                                   if (verse.VersePosition == VersePosition.Right || verse.VersePosition == VersePosition.Left)
+                                                   {
+                                                       currentBandVerses.Add(verse);
+                                                   }
+                                                   if(verse.VersePosition == VersePosition.CenteredVerse1 || verse.VersePosition == VersePosition.CenteredVerse2)
+                                                   {
+                                                       bandVerses.Add(verse);
+
+                                                       if(currentBandVerses.Count > 0)
+                                                       {
+                                                           foreach (var currentBandVerse in currentBandVerses)
+                                                           {
+                                                               currentBandVerse.SecondSectionIndex = currentBandSection.Index;
+                                                           }
+                                                           currentBandSection.RhymeLetters = LanguageUtils.FindRhyme(currentBandVerses).Rhyme;
+                                                           context.Add(currentBandSection);
+
+                                                           index++;
+                                                           currentBandVerses = new List<GanjoorVerse>();
+                                                           currentBandSection = new GanjoorPoemSection()
+                                                           {
+                                                               PoemId = poem.Id,
+                                                               PoetId = poem.Cat.PoetId,
+                                                               SectionType = PoemSectionType.Band,
+                                                               VerseType = VersePoemSectionType.Second,
+                                                               Index = index,
+                                                               Number = index + 1,
+                                                               GanjoorMetreId = poem.GanjoorMetreId,
+                                                           };
+                                                       }
+                                                   }
+                                               }
+
+                                               if (currentBandVerses.Count > 0)
+                                               {
+                                                   foreach (var currentBandVerse in currentBandVerses)
+                                                   {
+                                                       currentBandVerse.SecondSectionIndex = currentBandSection.Index;
+                                                   }
+                                                   currentBandSection.RhymeLetters = LanguageUtils.FindRhyme(currentBandVerses).Rhyme;
+                                                   context.Add(currentBandSection);
+                                               }
+                                               index++;
+                                               GanjoorPoemSection bandSection = new GanjoorPoemSection()
+                                               {
+                                                   PoemId = poem.Id,
+                                                   PoetId = poem.Cat.PoetId,
+                                                   SectionType = PoemSectionType.BandCouplets,
+                                                   VerseType = VersePoemSectionType.Second,
+                                                   Index = index,
+                                                   Number = index + 1,
+                                                   GanjoorMetreId = poem.GanjoorMetreId,
+                                               };
+                                               foreach (var bandVerse in bandVerses)
+                                               {
+                                                   bandVerse.SecondSectionIndex = bandSection.Index;
+                                               }
+                                               bandSection.RhymeLetters = LanguageUtils.FindRhyme(bandVerses).Rhyme;
+                                               context.Add(bandSection);
+                                               context.UpdateRange(verses);
+                                           }
+                                           else
                                            {
                                                //poems with different types of verses
                                            }
