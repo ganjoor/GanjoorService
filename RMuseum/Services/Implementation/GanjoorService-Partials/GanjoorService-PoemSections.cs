@@ -44,8 +44,8 @@ namespace RMuseum.Services.Implementation
                                                context.RemoveRange(oldSections);
                                                await context.SaveChangesAsync();
                                            }
-                                           var verses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
-                                           if (!verses.Where(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left && v.VersePosition != VersePosition.Comment).Any())
+                                           var nonCommentVerses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
+                                           if (!nonCommentVerses.Where(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left).Any())
                                            {
                                                //normal poem
                                                GanjoorPoemSection mainSection = new GanjoorPoemSection()
@@ -69,7 +69,7 @@ namespace RMuseum.Services.Implementation
                                                    }
                                                }
                                                context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
-                                               foreach (var verse in verses)
+                                               foreach (var verse in nonCommentVerses)
                                                {
                                                    verse.SectionIndex = mainSection.Index;
                                                    verse.SecondSectionIndex = null;//clear previous indices
@@ -78,10 +78,9 @@ namespace RMuseum.Services.Implementation
 
                                                int index = 0;
                                                //checking for مثنوی phase 2
-                                               var nonCommentVerses = verses.Where(v => v.VersePosition != VersePosition.Comment).ToList();
                                                if (nonCommentVerses.Count > 2 && string.IsNullOrEmpty(mainSection.RhymeLetters))
                                                {
-                                                   if(_IsMasnavi(verses.Where(v => v.VersePosition != VersePosition.Comment).ToList()))
+                                                   if(_IsMasnavi(nonCommentVerses))
                                                    {
                                                        for (int v = 0; v < nonCommentVerses.Count; v += 2)
                                                        {
@@ -113,10 +112,10 @@ namespace RMuseum.Services.Implementation
                                                    }
                                                }
 
-                                               context.UpdateRange(verses);
+                                               context.UpdateRange(nonCommentVerses);
                                            }
                                            else
-                                           if(!verses.Where(v => 
+                                           if(!nonCommentVerses.Where(v => 
                                                     v.VersePosition != VersePosition.CenteredVerse1
                                                     &&
                                                     v.VersePosition != VersePosition.CenteredVerse2
@@ -154,12 +153,11 @@ namespace RMuseum.Services.Implementation
                                                    GanjoorMetreId = poem.GanjoorMetreId,
                                                };
                                                List<GanjoorVerse> bandVerses = new List<GanjoorVerse>();
-                                               foreach (var verse in verses)
+                                               foreach (var verse in nonCommentVerses)
                                                {
                                                    verse.SectionIndex = mainSection.Index;
                                                    verse.SecondSectionIndex = null;//clear previous indices
                                                    verse.ThirdSectionIndex = null;//clear previous indices
-                                                   if (verse.VersePosition == VersePosition.Comment) continue;
                                                    if (verse.VersePosition == VersePosition.Right || verse.VersePosition == VersePosition.Left)
                                                    {
                                                        currentBandVerses.Add(verse);
@@ -219,7 +217,7 @@ namespace RMuseum.Services.Implementation
                                                }
                                                bandSection.RhymeLetters = LanguageUtils.FindRhyme(bandVerses).Rhyme;
                                                context.Add(bandSection);
-                                               context.UpdateRange(verses);
+                                               context.UpdateRange(nonCommentVerses);
                                            }
                                            else
                                            {
@@ -253,7 +251,7 @@ namespace RMuseum.Services.Implementation
         {
             if (verses.Count % 2 != 0)
                 return false;
-            if (verses.Where(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left && v.VersePosition != VersePosition.Comment).Any())
+            if (verses.Where(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left).Any())
                 return false;
             int rhymingCouplets = 0;
             for (int i = 0; i < verses.Count; i += 2)
