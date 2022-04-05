@@ -2158,6 +2158,7 @@ namespace RMuseum.Services.Implementationa
                                 {
                                     var recitations = await context.Recitations.Where(s => s.ReviewStatus == AudioReviewStatus.Approved).AsNoTracking().ToArrayAsync();
                                     int progress = 0;
+                                    List<string> replacedFiles = new List<string>();
                                     for (int i = 0; i < recitations.Length; i++)
                                     {
                                         var recitation = recitations[i];
@@ -2183,17 +2184,26 @@ namespace RMuseum.Services.Implementationa
                                             PoemAudio audio = PoemAudioListProcessor.Load(recitation.LocalXmlFilePath).First();
                                             if (audio.FileCheckSum != mp3CheckSum)
                                             {
-                                                RecitationErrorReport error = new RecitationErrorReport()
+                                                string backupFile = recitation.LocalMp3FilePath.Replace("C:\\inetpub\\iganjoor", "C:\\audiobackups-restored");
+                                                if(File.Exists(backupFile))
                                                 {
-                                                    RecitationId = recitation.Id,
-                                                    CoupletIndex = -1,
-                                                    NumberOfLinesAffected = 0,
-                                                    ReporterId = userId,
-                                                    ReasonText = "سلامت‌سنجی فایل‌ها: امضای فایل mp3 با امضای ثبت شده در xml متفاوت است. شاید فایل خراب شده باشد.",
-                                                    DateTime = DateTime.Now
-                                                };
+                                                    File.Copy(backupFile, recitation.LocalMp3FilePath, true);
+                                                    replacedFiles.Add(recitation.LocalMp3FilePath);
+                                                }
+                                                else
+                                                {
+                                                    RecitationErrorReport error = new RecitationErrorReport()
+                                                    {
+                                                        RecitationId = recitation.Id,
+                                                        CoupletIndex = -1,
+                                                        NumberOfLinesAffected = 0,
+                                                        ReporterId = userId,
+                                                        ReasonText = "سلامت‌سنجی فایل‌ها: امضای فایل mp3 با امضای ثبت شده در xml متفاوت است. شاید فایل خراب شده باشد.",
+                                                        DateTime = DateTime.Now
+                                                    };
 
-                                                context.RecitationErrorReports.Add(error);
+                                                    context.RecitationErrorReports.Add(error);
+                                                }
                                             }
                                         }
 
@@ -2202,6 +2212,10 @@ namespace RMuseum.Services.Implementationa
                                             progress++;
                                             await jobProgressServiceEF.UpdateJob(job.Id, progress);
                                         }
+                                    }
+                                    if(replacedFiles.Count > 0)
+                                    {
+                                        File.WriteAllLines("C:\\audiobackups-restored\\list.txt", replacedFiles.ToArray());
                                     }
                                     await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                 }
