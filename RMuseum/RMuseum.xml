@@ -1688,6 +1688,13 @@
             <param name="destCatId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartSectionizingPoems(System.Boolean)">
+            <summary>
+            sectionizing poems
+            </summary>
+            <param name="clearOldSections"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -11624,6 +11631,13 @@
             <param name="destCatId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartSectionizingPoems(System.Boolean)">
+            <summary>
+            sectionizing poems
+            </summary>
+            <param name="clearOldSections"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -13208,6 +13222,13 @@
             <param name="id"></param>
             <param name="deleteUserId"></param>
             <param name="rejectionCause"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartSectionizingPoems(System.Boolean)">
+            <summary>
+            sectionizing poems
+            </summary>
+            <param name="clearOldSections"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">

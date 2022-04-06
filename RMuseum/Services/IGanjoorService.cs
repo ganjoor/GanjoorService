@@ -901,5 +901,13 @@ namespace RMuseum.Services
         /// <param name="destCatId"></param>
         /// <returns></returns>
         RServiceResult<bool> StartRemovingCategoryDuplicates(int catId, int destCatId);
+
+
+        /// <summary>
+        /// sectionizing poems
+        /// </summary>
+        /// <param name="clearOldSections"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartSectionizingPoems(bool clearOldSections = false);
     }
 }

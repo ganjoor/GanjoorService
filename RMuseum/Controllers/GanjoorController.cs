@@ -2749,6 +2749,23 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// sectionizing poems
+        /// </summary>
+        /// <param name="clearOldSections"></param>
+        /// <returns></returns>
+        [HttpPost("sections/onetime/startextracting")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartSectionizingPoems(bool clearOldSections = false)
+        {
+            var res = _ganjoorService.StartSectionizingPoems(clearOldSections);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode

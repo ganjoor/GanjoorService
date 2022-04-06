@@ -16,6 +16,11 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// sectionizing poems
+        /// </summary>
+        /// <param name="clearOldSections"></param>
+        /// <returns></returns>
         public RServiceResult<bool> StartSectionizingPoems(bool clearOldSections = false)
         {
             try
