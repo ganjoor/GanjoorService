@@ -110,8 +110,9 @@ namespace RMuseum.Services
         /// <param name="verseDetails"></param>
         /// <param name="navigation"></param>
         /// <param name="relatedpoems"></param>
+        /// <param name="sections"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true);
+        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true, bool sections = true);
 
         /// <summary>
         /// Get Poem By Url
@@ -135,6 +136,13 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemRecitations(int id);
+
+        /// <summary>
+        /// get poem sections
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemSection[]>> GetPoemSections(int id);
 
         /// <summary>
         /// get user up votes for the recitations of a poem

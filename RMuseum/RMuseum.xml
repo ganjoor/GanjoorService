@@ -6746,36 +6746,6 @@
             metre
             </summary>
         </member>
-        <member name="T:RMuseum.Models.Ganjoor.PoemSectionType">
-            <summary>
-            poem section type
-            </summary>
-        </member>
-        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.WholePoem">
-            <summary>
-            sections like paragraphs or poems within paragraphs of text
-            </summary>
-        </member>
-        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.Band">
-            <summary>
-            bands of a multi-band poem
-            </summary>
-        </member>
-        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.BandCouplets">
-            <summary>
-            band couplets (virtual) some are virtual because they contain verse from different parts of poems (like verses from all band couplets)
-            </summary>
-        </member>
-        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.Couplet">
-            <summary>
-            couplets (virtual) for Masnavi
-            </summary>
-        </member>
-        <member name="T:RMuseum.Models.Ganjoor.VersePoemSectionType">
-            <summary>
-            how GanjoorPoemSection is linked to GanjoorVerse
-            </summary>
-        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemSection">
             <summary>
             Ganjoor Poem Section
@@ -7552,6 +7522,36 @@
         <member name="F:RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify">
             <summary>
             https://open.spotify.com/
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PoemSectionType">
+            <summary>
+            poem section type
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.WholePoem">
+            <summary>
+            sections like paragraphs or poems within paragraphs of text
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.Band">
+            <summary>
+            bands of a multi-band poem
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.BandCouplets">
+            <summary>
+            band couplets (virtual) some are virtual because they contain verse from different parts of poems (like verses from all band couplets)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.Couplet">
+            <summary>
+            couplets (virtual) for Masnavi
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.VersePoemSectionType">
+            <summary>
+            how GanjoorPoemSection is linked to GanjoorVerse
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.VersePosition">
@@ -8374,6 +8374,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Top6RelatedPoems">
             <summary>
             top 6 related poems
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Sections">
+            <summary>
+            poem sections
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel">
@@ -10833,7 +10838,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
             </summary>
@@ -10848,6 +10853,7 @@
             <param name="verseDetails"></param>
             <param name="navigation"></param>
             <param name="relatedpoems"></param>
+            <param name="sections"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemByUrl(System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
@@ -10869,6 +10875,13 @@
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemRecitations(System.Int32)">
             <summary>
             get poem recitations (PlainText/HtmlText are intentionally empty)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemSections(System.Int32)">
+            <summary>
+            get poem sections
             </summary>
             <param name="id"></param>
             <returns></returns>
@@ -13542,6 +13555,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemSections(System.Int32)">
+            <summary>
+            get poem sections
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserPoemRecitationsUpVotes(System.Int32,System.Guid)">
             <summary>
             get user up votes for the recitations of a poem
@@ -13674,7 +13694,7 @@
             <param name="navigation"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
             </summary>
@@ -13689,6 +13709,7 @@
             <param name="verseDetails"></param>
             <param name="navigation"></param>
             <param name="relatedpoems"></param>
+            <param name="sections">sections</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemCorrections(System.Guid,System.Int32)">

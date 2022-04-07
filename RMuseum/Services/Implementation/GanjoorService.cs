@@ -633,6 +633,20 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<PublicRecitationViewModel[]>(recitations);
         }
 
+
+        /// <summary>
+        /// get poem sections
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemSection[]>> GetPoemSections(int id)
+        {
+            return new RServiceResult<GanjoorPoemSection[]>(
+                await _context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == id).ToArrayAsync()
+                );
+        }
+
+
         /// <summary>
         /// get user up votes for the recitations of a poem
         /// </summary>
@@ -1452,8 +1466,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="verseDetails"></param>
         /// <param name="navigation"></param>
         /// <param name="relatedpoems"></param>
+        /// <param name="sections">sections</param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true)
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true, bool sections = true)
         {
             var cachKey = $"GetPoemById({id}, {catInfo}, {catPoems}, {rhymes}, {recitations}, {images}, {songs}, {comments}, {verseDetails}, {navigation})";
             if (!_memoryCache.TryGetValue(cachKey, out GanjoorPoemCompleteViewModel poemViewModel))
@@ -1600,6 +1615,15 @@ namespace RMuseum.Services.Implementation
                     top6relatedPoems = relatedPoemsRes.Result;
                 }
 
+                GanjoorPoemSection[] poemSections = null;
+                if(sections)
+                {
+                    var poemSectionsRes = await GetPoemSections(id);
+                    if (!string.IsNullOrEmpty(poemSectionsRes.ExceptionString))
+                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, poemSectionsRes.ExceptionString);
+                    poemSections = poemSectionsRes.Result;
+                }
+
 
                 poemViewModel = new GanjoorPoemCompleteViewModel()
                 {
@@ -1627,7 +1651,8 @@ namespace RMuseum.Services.Implementation
                     Verses = verses,
                     Songs = tracks,
                     Comments = poemComments,
-                    Top6RelatedPoems = top6relatedPoems
+                    Top6RelatedPoems = top6relatedPoems,
+                    Sections = poemSections
                 };
 
                 if (AggressiveCacheEnabled)
