@@ -61,6 +61,7 @@ namespace GanjooRazor.Pages
                     return Page();
                 }
                 Question = JsonConvert.DeserializeObject<FAQItem>(await response.Content.ReadAsStringAsync());
+                ViewData["Title"] += $" » {Question.Question}";
             }
             else
             {
