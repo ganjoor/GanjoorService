@@ -238,6 +238,15 @@ namespace RMuseum.Services.Implementation
                     context.GanjoorPoems.Update(dbPoem);
 
 
+                    var mainSection = await context.GanjoorPoemSections.Where(s => s.PoemId == dbPoem.Id && s.SectionType == PoemSectionType.WholePoem).FirstOrDefaultAsync();
+                    if(mainSection != null)
+                    {
+                        mainSection.RhymeLetters = dbPoem.RhymeLetters;
+                        mainSection.GanjoorMetreId = dbPoem.GanjoorMetreId;
+                        context.Update(mainSection);
+                    }
+
+
                     var oldVerses = await context.GanjoorVerses.Where(v => v.PoemId == id).ToListAsync();
 
                     if (oldVerses.Count <= verses.Count)
