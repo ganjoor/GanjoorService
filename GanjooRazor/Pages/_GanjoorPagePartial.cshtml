@@ -299,17 +299,17 @@
                                             <small><i class="pageicons mouse-icon"></i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
                                         </p>
 
-                                        @if (Model.GanjoorPage.Poem.GanjoorMetre != null || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag) || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
+                                        @if (Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.GanjoorMetre != null ).Any() || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag) || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
                                         {
                                             <table>
-                                                @if (Model.GanjoorPage.Poem.GanjoorMetre != null)
+                                                @foreach (var s in Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.GanjoorMetre != null ).ToList())
                                                 {
                                                     <tr>
                                                         <td>
                                                             وزن:
                                                         </td>
                                                         <td>
-                                                            <a href="@Html.Raw($"/vazn/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm</a>
+                                                            <a href="@Html.Raw($"/vazn/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@s.GanjoorMetre.Rhythm</a>
                                                         </td>
                                                     </tr>
                                                 }
