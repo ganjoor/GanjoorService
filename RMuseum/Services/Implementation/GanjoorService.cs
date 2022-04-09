@@ -642,7 +642,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<GanjoorPoemSection[]>> GetPoemSections(int id)
         {
             return new RServiceResult<GanjoorPoemSection[]>(
-                await _context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == id).ToArrayAsync()
+                await _context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.PoemId == id).ToArrayAsync()
                 );
         }
 
