@@ -2225,37 +2225,37 @@ namespace RMuseum.Services.Implementation
             if (string.IsNullOrEmpty(rhyme))
                 rhyme = "";
             var source =
-                _context.GanjoorPoems.Include(p => p.Cat).ThenInclude(c => c.Poet).Include(p => p.GanjoorMetre)
-                .Where(p =>
-                        (poetId == null || p.Cat.PoetId == poetId)
+                _context.GanjoorPoemSections.Include(s => s.Poem).ThenInclude(p => p.Cat).Include(s => s.Poet).Include(s => s.GanjoorMetre)
+                .Where(s =>
+                        (poetId == null || s.PoetId == poetId)
                         &&
-                        (p.GanjoorMetre.Rhythm == metre)
+                        (s.GanjoorMetre.Rhythm == metre)
                         &&
-                        (rhyme == "" || p.RhymeLetters == rhyme)
+                        (rhyme == "" || s.RhymeLetters == rhyme)
                         )
-                .OrderBy(p => p.CatId).ThenBy(p => p.Id)
+                .OrderBy(p => p.Poem.CatId).ThenBy(p => p.Poem.Id)
                 .Select
                 (
-                    poem =>
+                    section =>
                     new GanjoorPoemCompleteViewModel()
                     {
-                        Id = poem.Id,
-                        Title = poem.Title,
-                        FullTitle = poem.FullTitle,
-                        FullUrl = poem.FullUrl,
-                        UrlSlug = poem.UrlSlug,
-                        HtmlText = poem.HtmlText,
-                        PlainText = poem.PlainText,
-                        GanjoorMetre = poem.GanjoorMetre,
-                        RhymeLetters = poem.RhymeLetters,
-                        MixedModeOrder = poem.MixedModeOrder,
-                        Published = poem.Published,
-                        Language = poem.Language,
+                        Id = section.Poem.Id,
+                        Title = section.Poem.Title,
+                        FullTitle = section.Poem.FullTitle,
+                        FullUrl = section.Poem.FullUrl,
+                        UrlSlug = section.Poem.UrlSlug,
+                        HtmlText = section.Poem.HtmlText,
+                        PlainText = section.Poem.PlainText,
+                        GanjoorMetre = section.GanjoorMetre,
+                        RhymeLetters = section.RhymeLetters,
+                        MixedModeOrder = section.Poem.MixedModeOrder,
+                        Published = section.Poem.Published,
+                        Language = section.Poem.Language,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()
                             {
-                                Id = poem.Cat.Poet.Id,
+                                Id = section.Poet.Id,
                             }
                         },
 
