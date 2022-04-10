@@ -9,6 +9,12 @@ namespace RMuseum.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
+                name: "ForthSectionIndex",
+                table: "GanjoorVerses",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
                 name: "SecondSectionIndex",
                 table: "GanjoorVerses",
                 type: "int",
@@ -39,7 +45,9 @@ namespace RMuseum.Migrations
                     SectionType = table.Column<int>(type: "int", nullable: false),
                     VerseType = table.Column<int>(type: "int", nullable: false),
                     GanjoorMetreId = table.Column<int>(type: "int", nullable: true),
-                    RhymeLetters = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    RhymeLetters = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PlainText = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HtmlText = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -82,6 +90,10 @@ namespace RMuseum.Migrations
         {
             migrationBuilder.DropTable(
                 name: "GanjoorPoemSections");
+
+            migrationBuilder.DropColumn(
+                name: "ForthSectionIndex",
+                table: "GanjoorVerses");
 
             migrationBuilder.DropColumn(
                 name: "SecondSectionIndex",

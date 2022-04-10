@@ -12,7 +12,7 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20220402144857_Sections")]
+    [Migration("20220410162939_Sections")]
     partial class Sections
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1232,11 +1232,17 @@ namespace RMuseum.Migrations
                     b.Property<int?>("GanjoorMetreId")
                         .HasColumnType("int");
 
+                    b.Property<string>("HtmlText")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Index")
                         .HasColumnType("int");
 
                     b.Property<int>("Number")
                         .HasColumnType("int");
+
+                    b.Property<string>("PlainText")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PoemId")
                         .HasColumnType("int");
@@ -1527,6 +1533,9 @@ namespace RMuseum.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int?>("CoupletIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ForthSectionIndex")
                         .HasColumnType("int");
 
                     b.Property<int>("PoemId")
