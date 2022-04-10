@@ -6,7 +6,6 @@ using RSecurityBackend.Services.Implementation;
 using System;
 using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace RMuseum.Services.Implementation
@@ -92,7 +91,9 @@ namespace RMuseum.Services.Implementation
                                                            Index = sectionIndex,
                                                            Number = sectionIndex + 1,
                                                            GanjoorMetreId = poem.GanjoorMetreId,
-                                                           RhymeLetters = poem.RhymeLetters
+                                                           RhymeLetters = poem.RhymeLetters,
+                                                           HtmlText = PrepareHtmlText(singleVerses),
+                                                           PlainText = PreparePlainText(singleVerses)
                                                        };
                                                        context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
                                                        foreach (var verse in singleVerses)
@@ -156,7 +157,9 @@ namespace RMuseum.Services.Implementation
                                                        Index = sectionIndex,
                                                        Number = sectionIndex + 1,
                                                        GanjoorMetreId = poem.GanjoorMetreId,
-                                                       RhymeLetters = poem.RhymeLetters
+                                                       RhymeLetters = poem.RhymeLetters,
+                                                       HtmlText = PrepareHtmlText(singleVerses),
+                                                       PlainText = PreparePlainText(singleVerses)
                                                    };
                                                    context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
                                                    foreach (var verse in singleVerses)
@@ -250,7 +253,9 @@ namespace RMuseum.Services.Implementation
                 Index = index,
                 Number = index + 1,
                 GanjoorMetreId = poem.GanjoorMetreId,
-                RhymeLetters = poem.RhymeLetters
+                RhymeLetters = poem.RhymeLetters,
+                HtmlText = PrepareHtmlText(nonCommentVerses),
+                PlainText = PreparePlainText(nonCommentVerses)
             };
             context.Add(mainSection);
             index++;
@@ -286,6 +291,8 @@ namespace RMuseum.Services.Implementation
                             currentBandVerse.SecondSectionIndex = currentBandSection.Index;
                         }
                         currentBandSection.RhymeLetters = LanguageUtils.FindRhyme(currentBandVerses).Rhyme;
+                        currentBandSection.HtmlText = PrepareHtmlText(currentBandVerses);
+                        currentBandSection.PlainText = PreparePlainText(currentBandVerses);
                         context.Add(currentBandSection);
 
                         index++;
@@ -311,6 +318,8 @@ namespace RMuseum.Services.Implementation
                     currentBandVerse.SecondSectionIndex = currentBandSection.Index;
                 }
                 currentBandSection.RhymeLetters = LanguageUtils.FindRhyme(currentBandVerses).Rhyme;
+                currentBandSection.HtmlText = PrepareHtmlText(currentBandVerses);
+                currentBandSection.PlainText = PreparePlainText(currentBandVerses);
                 context.Add(currentBandSection);
             }
             index++;
@@ -329,6 +338,8 @@ namespace RMuseum.Services.Implementation
                 bandVerse.SecondSectionIndex = bandSection.Index;
             }
             bandSection.RhymeLetters = LanguageUtils.FindRhyme(bandVerses).Rhyme;
+            bandSection.HtmlText = PrepareHtmlText(bandVerses);
+            bandSection.PlainText = PreparePlainText(bandVerses);
             context.Add(bandSection);
             context.UpdateRange(nonCommentVerses);
         }
@@ -345,7 +356,9 @@ namespace RMuseum.Services.Implementation
                 Index = index,
                 Number = index + 1,
                 GanjoorMetreId = poem.GanjoorMetreId,
-                RhymeLetters = poem.RhymeLetters
+                RhymeLetters = poem.RhymeLetters,
+                HtmlText = PrepareHtmlText(nonCommentVerses),
+                PlainText = PreparePlainText(nonCommentVerses)
             };
             //checking for مثنوی phase 1
             if (string.IsNullOrEmpty(poem.RhymeLetters))
@@ -390,6 +403,10 @@ namespace RMuseum.Services.Implementation
 
                         rightVerse.SecondSectionIndex = verseSection.Index;
                         leftVerse.SecondSectionIndex = verseSection.Index;
+
+                        var rl = new List<GanjoorVerse>();rl.Add(rightVerse);rl.Add(leftVerse);
+                        verseSection.HtmlText = PrepareHtmlText(rl);
+                        verseSection.PlainText = PreparePlainText(rl);
 
                         context.Add(verseSection);
                     }

@@ -55,6 +55,11 @@
         /// </summary>
         public int? ThirdSectionIndex { get; set; }
 
+        /// <summary>
+        /// forth GanjoorPoemSection index
+        /// </summary>
+        public int? ForthSectionIndex { get; set; }
+
         public override string ToString()
         {
             return Text;

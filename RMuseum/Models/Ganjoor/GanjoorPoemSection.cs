@@ -67,5 +67,15 @@
         /// rhyme letters
         /// </summary>
         public string RhymeLetters { get; set; }
+
+        /// <summary>
+        /// verses text
+        /// </summary>
+        public string PlainText { get; set; }
+
+        /// <summary>
+        /// verses text as html (ganjoor.net format)
+        /// </summary>
+        public string HtmlText { get; set; }
     }
 }

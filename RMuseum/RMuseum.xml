@@ -6814,6 +6814,16 @@
             rhyme letters
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.PlainText">
+            <summary>
+            verses text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.HtmlText">
+            <summary>
+            verses text as html (ganjoor.net format)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
             <summary>
             poem translation
@@ -7254,6 +7264,11 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.ThirdSectionIndex">
             <summary>
             third GanjoorPoemSection index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.ForthSectionIndex">
+            <summary>
+            forth GanjoorPoemSection index
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Id">

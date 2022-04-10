@@ -2244,8 +2244,8 @@ namespace RMuseum.Services.Implementation
                         FullTitle = section.Poem.FullTitle,
                         FullUrl = section.Poem.FullUrl,
                         UrlSlug = section.Poem.UrlSlug,
-                        HtmlText = section.Poem.HtmlText,
-                        PlainText = section.Poem.PlainText,
+                        HtmlText = section.HtmlText,
+                        PlainText = section.PlainText,
                         GanjoorMetre = section.GanjoorMetre,
                         RhymeLetters = section.RhymeLetters,
                         MixedModeOrder = section.Poem.MixedModeOrder,
@@ -2283,7 +2283,6 @@ namespace RMuseum.Services.Implementation
 
                     item.Category = poet;
                 }
-
             }
 
             return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
