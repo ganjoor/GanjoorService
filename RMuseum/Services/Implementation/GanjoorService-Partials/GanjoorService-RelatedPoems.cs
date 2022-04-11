@@ -50,7 +50,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var poemIds = await context.GanjoorPoems.AsNoTracking().Where(p => p.GanjoorMetreId == metreId && p.RhymeLetters == rhyme).Select(p => p.Id).ToListAsync();
+                var poemIds = await context.GanjoorPoemSections.AsNoTracking().Where(section => section.GanjoorMetreId == metreId && section.RhymeLetters == rhyme).Select(p => p.PoemId).ToListAsync();
                 foreach (var id in poemIds)
                 {
                     await _UpdatePoemRelatedPoemsInfoNoSaveChanges(context, id);
@@ -71,47 +71,54 @@ namespace RMuseum.Services.Implementation
             var oldRelations = await context.GanjoorCachedRelatedPoems.Where(r => r.PoemId == poemId).ToListAsync();
             context.GanjoorCachedRelatedPoems.RemoveRange(oldRelations);
 
-            if (poem.GanjoorMetreId == null || string.IsNullOrEmpty(poem.RhymeLetters))
+            var section = await context.GanjoorPoemSections.AsNoTracking().Where(
+                section => section.PoemId == poemId 
+                && section.SectionType != PoemSectionType.Couplet && section.SectionType != PoemSectionType.Band
+                && section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters)
+                ).OrderBy(section => section.VerseType).FirstOrDefaultAsync();
+
+            if (section == null)
                 return;
 
-            int metreId = (int)poem.GanjoorMetreId;
-            string rhyme = poem.RhymeLetters;
+            int metreId = (int)section.GanjoorMetreId;
+            string rhyme = section.RhymeLetters;
 
-            var relatedPoems = await context.GanjoorPoems.AsNoTracking().Include(p => p.Cat).ThenInclude(c => c.Poet)
-                .Where(p =>
-                        p.GanjoorMetreId == metreId
+
+            var relatedSections = await context.GanjoorPoemSections.AsNoTracking().Include(section => section.Poem).Include(section => section.Poet)
+                .Where(section =>
+                        section.GanjoorMetreId == metreId
                         &&
-                        p.RhymeLetters == rhyme
+                        section.RhymeLetters == rhyme
                         &&
-                        p.Id != poemId
+                        section.PoemId != poemId
                         )
-                .OrderBy(p => p.Cat.Poet.BirthYearInLHijri).ThenBy(p => p.Cat.PoetId).ToListAsync();
+                .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.PoetId).ToListAsync();
 
             List<GanjoorCachedRelatedPoem> ganjoorCachedRelatedPoems = new List<GanjoorCachedRelatedPoem>();
             int r = 0;
             int prePoetId = -1;
-            foreach (var relatedPoem in relatedPoems)
+            foreach (var relatedSection in relatedSections)
             {
-                if(prePoetId != relatedPoem.Cat.PoetId)
+                if(prePoetId != relatedSection.PoetId)
                 {
                     r++;
 
                     GanjoorCachedRelatedPoem newRelatedPoem = new GanjoorCachedRelatedPoem()
                     {
                         PoemId = poemId,
-                        PoetId = relatedPoem.Cat.PoetId,
+                        PoetId = (int)relatedSection.PoetId,
                         RelationOrder = r,
-                        PoetName = relatedPoem.Cat.Poet.Nickname,
-                        PoetImageUrl = $"/api/ganjoor/poet/image{(await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == relatedPoem.Cat.PoetId).AsNoTracking().SingleAsync()).FullUrl}.gif",
-                        FullTitle = relatedPoem.FullTitle,
-                        FullUrl = relatedPoem.FullUrl,
+                        PoetName = relatedSection.Poet.Nickname,
+                        PoetImageUrl = $"/api/ganjoor/poet/image{(await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == relatedSection.PoetId).AsNoTracking().SingleAsync()).FullUrl}.gif",
+                        FullTitle = relatedSection.Poem.FullTitle,
+                        FullUrl = relatedSection.Poem.FullUrl,
                         PoetMorePoemsLikeThisCount = 0,
-                        HtmlExcerpt = GetPoemHtmlExcerpt(relatedPoem.HtmlText)
+                        HtmlExcerpt = GetPoemHtmlExcerpt(relatedSection.HtmlText)
                     };
 
                     ganjoorCachedRelatedPoems.Add(newRelatedPoem);
 
-                    prePoetId = relatedPoem.Cat.PoetId;
+                    prePoetId = (int)relatedSection.PoetId;
                 }
                 else
                 {
@@ -174,7 +181,7 @@ namespace RMuseum.Services.Implementation
                                 {
                                     LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                                     var job = (await jobProgressServiceEF.NewJob("GeneratingRelatedPoemsInfo", "Query")).Result;
-
+                                    int percent = 0;
                                     try
                                     {
 
@@ -183,7 +190,7 @@ namespace RMuseum.Services.Implementation
                                         var poemIds = await context.GanjoorPoems.AsNoTracking().Where(p => !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).Select(p => p.Id).ToListAsync();
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating Related Poems");
-                                        int percent = 0;
+                                        
                                         for (int i = 0; i < poemIds.Count; i++)
                                         {
                                             if(!regenerate)
@@ -205,7 +212,7 @@ namespace RMuseum.Services.Implementation
                                     }
                                     catch (Exception exp)
                                     {
-                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                        await jobProgressServiceEF.UpdateJob(job.Id, percent, "", false, exp.ToString());
                                     }
                                 }
 
