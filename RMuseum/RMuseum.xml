@@ -8071,6 +8071,16 @@
             Poem Rhythm
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.Rhythm2">
+            <summary>
+            Second Poem Rhythm
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.Rhythm3">
+            <summary>
+            Third Poem Rhythm
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel.RhymeLetters">
             <summary>
             rhyme letters

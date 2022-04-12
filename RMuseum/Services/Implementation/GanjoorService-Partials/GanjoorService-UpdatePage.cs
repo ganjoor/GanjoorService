@@ -196,28 +196,11 @@ namespace RMuseum.Services.Implementation
                 {
                     dbPoem.SourceName = pageData.SourceName;
                     dbPoem.SourceUrlSlug = pageData.SourceUrlSlug;
-                    int? oldMetreId = dbPoem.GanjoorMetreId;
-                    string oldRhymeLetters = dbPoem.RhymeLetters;
-                    if (string.IsNullOrEmpty(pageData.Rhythm))
-                    {
-                        dbPoem.GanjoorMetreId = null;
-                    }
-                    else
-                    {
-                        var metre = await context.GanjoorMetres.Where(m => m.Rhythm == pageData.Rhythm).SingleOrDefaultAsync();
-                        if (metre == null)
-                        {
-                            metre = new GanjoorMetre()
-                            {
-                                Rhythm = pageData.Rhythm,
-                                VerseCount = 0
-                            };
-                            context.GanjoorMetres.Add(metre);
-                            await context.SaveChangesAsync();
-                        }
-                        dbPoem.GanjoorMetreId = metre.Id;
-                    }
-                    dbPoem.RhymeLetters = pageData.RhymeLetters;
+
+                   
+
+
+                   
                     dbPoem.OldTag = pageData.OldTag;
                     dbPoem.OldTagPageUrl = pageData.OldTagPageUrl;
                     dbPoem.MixedModeOrder = pageData.MixedModeOrder;
@@ -238,13 +221,7 @@ namespace RMuseum.Services.Implementation
                     context.GanjoorPoems.Update(dbPoem);
 
 
-                    var mainSection = await context.GanjoorPoemSections.Where(s => s.PoemId == dbPoem.Id && s.SectionType == PoemSectionType.WholePoem).FirstOrDefaultAsync();
-                    if(mainSection != null)
-                    {
-                        mainSection.RhymeLetters = dbPoem.RhymeLetters;
-                        mainSection.GanjoorMetreId = dbPoem.GanjoorMetreId;
-                        context.Update(mainSection);
-                    }
+                    
 
 
                     var oldVerses = await context.GanjoorVerses.Where(v => v.PoemId == id).ToListAsync();
@@ -294,30 +271,167 @@ namespace RMuseum.Services.Implementation
                         context.GanjoorCachedRelatedPoems.UpdateRange(excerptsInRelatedCaches);
                     }
 
-                    if (oldMetreId != dbPoem.GanjoorMetreId || oldRhymeLetters != dbPoem.RhymeLetters)
+                    var sections = await context.GanjoorPoemSections.Where(s => s.PoemId == dbPoem.Id && s.SectionType == PoemSectionType.WholePoem).OrderBy(s => s.VerseType).ToListAsync();
+
+                    GanjoorPoemSection mainSection = sections.Count > 0 ? sections[0] : null;
+                    if (mainSection != null)
                     {
-                        await context.SaveChangesAsync();
-
-                        _backgroundTaskQueue.QueueBackgroundWorkItem
-                            (
-                            async token =>
+                        int? oldMetreId = mainSection.GanjoorMetreId;
+                        string oldRhymeLetters = mainSection.RhymeLetters;
+                        if (string.IsNullOrEmpty(pageData.Rhythm))
+                        {
+                            mainSection.GanjoorMetreId = null;
+                        }
+                        else
+                        {
+                            var metre = await context.GanjoorMetres.Where(m => m.Rhythm == pageData.Rhythm).SingleOrDefaultAsync();
+                            if (metre == null)
                             {
-                                using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
+                                metre = new GanjoorMetre()
                                 {
-                                    if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
-                                    {
-                                        await _UpdateRelatedPoems(inlineContext, (int)oldMetreId, oldRhymeLetters);
-                                        await inlineContext.SaveChangesAsync();
-                                    }
+                                    Rhythm = pageData.Rhythm,
+                                    VerseCount = 0
+                                };
+                                context.GanjoorMetres.Add(metre);
+                                await context.SaveChangesAsync();
+                            }
+                            mainSection.GanjoorMetreId = metre.Id;
+                        }
+                        mainSection.RhymeLetters = pageData.RhymeLetters;
 
-                                    if (dbPoem.GanjoorMetreId != null && !string.IsNullOrEmpty(dbPoem.RhymeLetters))
-                                    {
-                                        await _UpdateRelatedPoems(inlineContext, (int)dbPoem.GanjoorMetreId, dbPoem.RhymeLetters);
-                                        await inlineContext.SaveChangesAsync();
+                        if (oldMetreId != mainSection.GanjoorMetreId || oldRhymeLetters != mainSection.RhymeLetters)
+                        {
+                            context.Update(mainSection);
+                            await context.SaveChangesAsync();
+
+                            _backgroundTaskQueue.QueueBackgroundWorkItem
+                                (
+                                async token =>
+                                {
+                                    using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
+                                {
+                                        if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
+                                        {
+                                            await _UpdateRelatedPoems(inlineContext, (int)oldMetreId, oldRhymeLetters);
+                                            await inlineContext.SaveChangesAsync();
+                                        }
+
+                                        if (mainSection.GanjoorMetreId != null && !string.IsNullOrEmpty(mainSection.RhymeLetters))
+                                        {
+                                            await _UpdateRelatedPoems(inlineContext, (int)mainSection.GanjoorMetreId, mainSection.RhymeLetters);
+                                            await inlineContext.SaveChangesAsync();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                        }
                     }
+
+                    GanjoorPoemSection secondSection = sections.Count > 1 ? sections[1] : null;
+                    if (secondSection != null)
+                    {
+                        int? oldMetreId = secondSection.GanjoorMetreId;
+                        string oldRhymeLetters = secondSection.RhymeLetters;
+                        if (string.IsNullOrEmpty(pageData.Rhythm2))
+                        {
+                            secondSection.GanjoorMetreId = null;
+                        }
+                        else
+                        {
+                            var metre = await context.GanjoorMetres.Where(m => m.Rhythm == pageData.Rhythm2).SingleOrDefaultAsync();
+                            if (metre == null)
+                            {
+                                metre = new GanjoorMetre()
+                                {
+                                    Rhythm = pageData.Rhythm2,
+                                    VerseCount = 0
+                                };
+                                context.GanjoorMetres.Add(metre);
+                                await context.SaveChangesAsync();
+                            }
+                            secondSection.GanjoorMetreId = metre.Id;
+                        }
+                        secondSection.RhymeLetters = pageData.RhymeLetters;
+
+                        if (oldMetreId != secondSection.GanjoorMetreId || oldRhymeLetters != secondSection.RhymeLetters)
+                        {
+                            context.Update(secondSection);
+                            await context.SaveChangesAsync();
+
+                            _backgroundTaskQueue.QueueBackgroundWorkItem
+                                (
+                                async token =>
+                                {
+                                    using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
+                                    {
+                                        if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
+                                        {
+                                            await _UpdateRelatedPoems(inlineContext, (int)oldMetreId, oldRhymeLetters);
+                                            await inlineContext.SaveChangesAsync();
+                                        }
+
+                                        if (secondSection.GanjoorMetreId != null && !string.IsNullOrEmpty(secondSection.RhymeLetters))
+                                        {
+                                            await _UpdateRelatedPoems(inlineContext, (int)secondSection.GanjoorMetreId, secondSection.RhymeLetters);
+                                            await inlineContext.SaveChangesAsync();
+                                        }
+                                    }
+                                });
+                        }
+                    }
+
+                    GanjoorPoemSection thirdSection = sections.Count > 2 ? sections[2] : null;
+                    if (thirdSection != null)
+                    {
+                        int? oldMetreId = thirdSection.GanjoorMetreId;
+                        string oldRhymeLetters = thirdSection.RhymeLetters;
+                        if (string.IsNullOrEmpty(pageData.Rhythm3))
+                        {
+                            thirdSection.GanjoorMetreId = null;
+                        }
+                        else
+                        {
+                            var metre = await context.GanjoorMetres.Where(m => m.Rhythm == pageData.Rhythm3).SingleOrDefaultAsync();
+                            if (metre == null)
+                            {
+                                metre = new GanjoorMetre()
+                                {
+                                    Rhythm = pageData.Rhythm3,
+                                    VerseCount = 0
+                                };
+                                context.GanjoorMetres.Add(metre);
+                                await context.SaveChangesAsync();
+                            }
+                            thirdSection.GanjoorMetreId = metre.Id;
+                        }
+                        thirdSection.RhymeLetters = pageData.RhymeLetters;
+
+                        if (oldMetreId != thirdSection.GanjoorMetreId || oldRhymeLetters != thirdSection.RhymeLetters)
+                        {
+                            context.Update(thirdSection);
+                            await context.SaveChangesAsync();
+
+                            _backgroundTaskQueue.QueueBackgroundWorkItem
+                                (
+                                async token =>
+                                {
+                                    using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
+                                    {
+                                        if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
+                                        {
+                                            await _UpdateRelatedPoems(inlineContext, (int)oldMetreId, oldRhymeLetters);
+                                            await inlineContext.SaveChangesAsync();
+                                        }
+
+                                        if (thirdSection.GanjoorMetreId != null && !string.IsNullOrEmpty(thirdSection.RhymeLetters))
+                                        {
+                                            await _UpdateRelatedPoems(inlineContext, (int)thirdSection.GanjoorMetreId, thirdSection.RhymeLetters);
+                                            await inlineContext.SaveChangesAsync();
+                                        }
+                                    }
+                                });
+                        }
+                    }
+
                 }
                 await context.SaveChangesAsync();
                 CacheCleanForPageByUrl(dbPage.FullUrl);

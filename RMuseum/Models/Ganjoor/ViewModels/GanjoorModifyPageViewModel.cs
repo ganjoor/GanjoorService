@@ -26,6 +26,16 @@
         public string Rhythm { get; set; }
 
         /// <summary>
+        /// Second Poem Rhythm
+        /// </summary>
+        public string Rhythm2 { get; set; }
+
+        /// <summary>
+        /// Third Poem Rhythm
+        /// </summary>
+        public string Rhythm3 { get; set; }
+
+        /// <summary>
         /// rhyme letters
         /// </summary>
         public string RhymeLetters { get; set; }
