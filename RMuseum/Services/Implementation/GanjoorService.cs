@@ -432,6 +432,10 @@ namespace RMuseum.Services.Implementation
                 target = dbPage.FullUrl + url.Substring(dbPage.RedirectFromFullUrl.Length);
             }
 
+            var dbPageRedirected = await _context.GanjoorPages.Where(p => p.FullUrl == target).AsNoTracking().SingleOrDefaultAsync();
+            if(dbPageRedirected == null)
+                return new RServiceResult<string>(null); //not found
+
             return new RServiceResult<string>(target);
         }
 
