@@ -101,6 +101,7 @@ namespace RMuseum.Services.Implementation
                                                            verse.SectionIndex = mainSection.Index;
                                                            verse.SecondSectionIndex = null;//clear previous indices
                                                            verse.ThirdSectionIndex = null;//clear previous indices
+                                                           verse.ForthSectionIndex = null;//clear previous indices
                                                        }
                                                        context.UpdateRange(singleVerses);
 
@@ -167,6 +168,7 @@ namespace RMuseum.Services.Implementation
                                                        verse.SectionIndex = mainSection.Index;
                                                        verse.SecondSectionIndex = null;//clear previous indices
                                                        verse.ThirdSectionIndex = null;//clear previous indices
+                                                       verse.ForthSectionIndex = null;//clear previous indices
                                                    }
                                                    context.UpdateRange(singleVerses);
                                                }
@@ -276,6 +278,7 @@ namespace RMuseum.Services.Implementation
                 verse.SectionIndex = mainSection.Index;
                 verse.SecondSectionIndex = null;//clear previous indices
                 verse.ThirdSectionIndex = null;//clear previous indices
+                verse.ForthSectionIndex = null;//clear previous indices
                 if (verse.VersePosition == VersePosition.Right || verse.VersePosition == VersePosition.Left)
                 {
                     currentBandVerses.Add(verse);
@@ -371,6 +374,7 @@ namespace RMuseum.Services.Implementation
                 verse.SectionIndex = mainSection.Index;
                 verse.SecondSectionIndex = null;//clear previous indices
                 verse.ThirdSectionIndex = null;//clear previous indices
+                verse.ForthSectionIndex = null;//clear previous indices
             }
 
             index++;

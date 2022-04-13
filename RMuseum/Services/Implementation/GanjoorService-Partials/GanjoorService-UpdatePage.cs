@@ -274,6 +274,7 @@ namespace RMuseum.Services.Implementation
                     var sections = await context.GanjoorPoemSections.Where(s => s.PoemId == dbPoem.Id && s.SectionType == PoemSectionType.WholePoem).OrderBy(s => s.VerseType).ToListAsync();
 
                     GanjoorPoemSection mainSection = sections.Count > 0 ? sections[0] : null;
+                    bool prosodyRhymeDataChanged = false;
                     if (mainSection != null)
                     {
                         int? oldMetreId = mainSection.GanjoorMetreId;
@@ -301,6 +302,7 @@ namespace RMuseum.Services.Implementation
 
                         if (oldMetreId != mainSection.GanjoorMetreId || oldRhymeLetters != mainSection.RhymeLetters)
                         {
+                            prosodyRhymeDataChanged = true;
                             context.Update(mainSection);
                             await context.SaveChangesAsync();
 
@@ -327,7 +329,7 @@ namespace RMuseum.Services.Implementation
                     }
 
                     GanjoorPoemSection secondSection = sections.Count > 1 ? sections[1] : null;
-                    if(!string.IsNullOrEmpty(pageData.Rhythm2) && secondSection == null)
+                    if(!string.IsNullOrEmpty(pageData.RhymeLetters) && !string.IsNullOrEmpty(pageData.Rhythm2) && secondSection == null)
                     {
                         var allSections = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == id).ToListAsync();
                         var maxIndex = allSections.Max(s => s.Index);
@@ -394,7 +396,15 @@ namespace RMuseum.Services.Implementation
 
                         if (oldMetreId != secondSection.GanjoorMetreId || oldRhymeLetters != secondSection.RhymeLetters)
                         {
-                            context.Update(secondSection);
+
+                            if(string.IsNullOrEmpty(secondSection.RhymeLetters))
+                            {
+                                context.Remove(secondSection);
+                            }
+                            else
+                            {
+                                context.Update(secondSection);
+                            }
                             await context.SaveChangesAsync();
 
                             _backgroundTaskQueue.QueueBackgroundWorkItem
@@ -420,7 +430,7 @@ namespace RMuseum.Services.Implementation
                     }
 
                     GanjoorPoemSection thirdSection = sections.Count > 2 ? sections[2] : null;
-                    if (!string.IsNullOrEmpty(pageData.Rhythm3) && thirdSection == null)
+                    if (!string.IsNullOrEmpty(pageData.RhymeLetters) && !string.IsNullOrEmpty(pageData.Rhythm3) && thirdSection == null)
                     {
                         var allSections = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == id).ToListAsync();
                         var maxIndex = allSections.Max(s => s.Index);
@@ -487,7 +497,14 @@ namespace RMuseum.Services.Implementation
 
                         if (oldMetreId != thirdSection.GanjoorMetreId || oldRhymeLetters != thirdSection.RhymeLetters)
                         {
-                            context.Update(thirdSection);
+                            if (string.IsNullOrEmpty(thirdSection.RhymeLetters))
+                            {
+                                context.Remove(thirdSection);
+                            }
+                            else
+                            {
+                                context.Update(thirdSection);
+                            }
                             await context.SaveChangesAsync();
 
                             _backgroundTaskQueue.QueueBackgroundWorkItem
@@ -511,6 +528,13 @@ namespace RMuseum.Services.Implementation
                                 });
                         }
                     }
+
+                    if(prosodyRhymeDataChanged)
+                    {
+                        //update non whole sections
+                    }
+                    
+                       
 
                 }
                 await context.SaveChangesAsync();
