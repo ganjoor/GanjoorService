@@ -2,6 +2,7 @@
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -81,7 +82,7 @@ namespace RMuseum.Services.Implementation
                         &&
                         ((s.PoemId == section.PoemId && s.Index !=  section.Index ) || (s.PoemId != section.PoemId))
                         )
-                .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.PoetId).ToListAsync();
+                .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.PoetId).ThenBy(p => p.SectionType).ToListAsync();
 
             List<GanjoorCachedRelatedSection> GanjoorCachedRelatedSections = new List<GanjoorCachedRelatedSection>();
             int r = 0;
@@ -118,6 +119,70 @@ namespace RMuseum.Services.Implementation
             if (GanjoorCachedRelatedSections.Count > 0)
             {
                 context.GanjoorCachedRelatedSections.AddRange(GanjoorCachedRelatedSections);
+            }
+        }
+
+        /// <summary>
+        /// start generating related sections info
+        /// </summary>
+        /// <param name="regenerate"></param>
+        /// <returns></returns>
+        public RServiceResult<bool> StartGeneratingRelatedSectionsInfo(bool regenerate)
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                                {
+                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                    var job = (await jobProgressServiceEF.NewJob("GeneratingRelatedSectionsInfo", "Query")).Result;
+                                    int percent = 0;
+                                    try
+                                    {
+
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Query");
+
+                                        var sectionIds = await context.GanjoorPoemSections.AsNoTracking().Where(p => !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).Select(p => p.Id).ToListAsync();
+
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating Related Sections");
+
+                                        for (int i = 0; i < sectionIds.Count; i++)
+                                        {
+                                            if (!regenerate)
+                                            {
+                                                if (await context.GanjoorCachedRelatedSections.AnyAsync(r => r.PoemId == sectionIds[i]))
+                                                    continue;
+                                            }
+                                            if (i * 100 / sectionIds.Count > percent)
+                                            {
+                                                percent++;
+                                                await jobProgressServiceEF.UpdateJob(job.Id, percent);
+                                            }
+
+                                            await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, sectionIds[i]);
+
+                                        }
+
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                    }
+                                    catch (Exception exp)
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, percent, "", false, exp.ToString());
+                                    }
+                                }
+
+                            }
+                            );
+
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
     }

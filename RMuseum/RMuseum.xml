@@ -13417,6 +13417,13 @@
             <param name="rhyme"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingRelatedSectionsInfo(System.Boolean)">
+            <summary>
+            start generating related sections info
+            </summary>
+            <param name="regenerate"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBuildingSitemap">
             <summary>
             build sitemap
