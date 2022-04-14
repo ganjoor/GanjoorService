@@ -622,6 +622,9 @@ namespace RMuseum.Services.Implementation
                                             PlainText = verseSection.PlainText
                                         };
                                         context.Add(secondVerseSection);
+
+                                        rightVerse.ThirdSectionIndex = secondVerseSection.Index;
+                                        leftVerse.ThirdSectionIndex = secondVerseSection.Index;
                                     }
 
                                     if (!string.IsNullOrEmpty(pageData.Rhythm3))
@@ -654,10 +657,13 @@ namespace RMuseum.Services.Implementation
                                             PlainText = verseSection.PlainText
                                         };
                                         context.Add(thirdVerseSection);
+
+                                        rightVerse.ForthSectionIndex = thirdVerseSection.Index;
+                                        leftVerse.ForthSectionIndex = thirdVerseSection.Index;
                                     }
                                 }
+                                context.UpdateRange(nonCommentVerses);
                                 await context.SaveChangesAsync();
-
 
                                 var newCoupletSections = await context.GanjoorPoemSections.Where(s => s.PoemId == id && s.SectionType == PoemSectionType.Couplet).ToListAsync();
 
@@ -681,10 +687,6 @@ namespace RMuseum.Services.Implementation
                             }
                         }
                     }
-
-                    
-                    
-                       
 
                 }
                 await context.SaveChangesAsync();
