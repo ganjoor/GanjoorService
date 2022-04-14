@@ -2871,6 +2871,11 @@
             poem sections
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorCachedRelatedSections">
+            <summary>
+            related sections to each section (having same rhyme letters and prosody metre)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -5746,6 +5751,66 @@
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedPoem.PoetMorePoemsLikeThisCount">
+            <summary>
+            other poems
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.Poem">
+            <summary>
+            poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.SectionIndex">
+            <summary>
+            section index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.PoetId">
+            <summary>
+            poet id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.RelationOrder">
+            <summary>
+            order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.PoetName">
+            <summary>
+            poet name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.PoetImageUrl">
+            <summary>
+            poet image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.FullUrl">
+            <summary>
+            poem full url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.FullTitle">
+            <summary>
+            poem full title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.HtmlExcerpt">
+            <summary>
+            excerpt
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.PoetMorePoemsLikeThisCount">
             <summary>
             other poems
             </summary>
@@ -10904,7 +10969,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoemSections(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemWholeSections(System.Int32)">
             <summary>
             get poem sections
             </summary>
@@ -13049,6 +13114,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -13330,6 +13398,25 @@
             <param name="regenerate"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRelatedSections(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            get a section related sections
+            </summary>
+            <param name="poemId">poem id</param>
+            <param name="sectionIndex">section index</param>
+            <param name="skip"></param>
+            <param name="itemsCount">if sent 0 or less returns all items</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._UpdateRelatedSections(RMuseum.DbContext.RMuseumDbContext,System.Int32,System.String)">
+            <summary>
+            update related sections info (after metreId or rhyme for one of these sections changes)
+            </summary>
+            <param name="context"></param>
+            <param name="metreId"></param>
+            <param name="rhyme"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBuildingSitemap">
             <summary>
             build sitemap
@@ -13580,9 +13667,9 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemSections(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemWholeSections(System.Int32)">
             <summary>
-            get poem sections
+            get poem whole sections
             </summary>
             <param name="id"></param>
             <returns></returns>

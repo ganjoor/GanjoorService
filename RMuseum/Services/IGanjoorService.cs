@@ -142,7 +142,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemSection[]>> GetPoemSections(int id);
+        Task<RServiceResult<GanjoorPoemSection[]>> GetPoemWholeSections(int id);
 
         /// <summary>
         /// get user up votes for the recitations of a poem

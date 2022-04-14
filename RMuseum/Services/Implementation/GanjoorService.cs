@@ -639,14 +639,14 @@ namespace RMuseum.Services.Implementation
 
 
         /// <summary>
-        /// get poem sections
+        /// get poem whole sections
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemSection[]>> GetPoemSections(int id)
+        public async Task<RServiceResult<GanjoorPoemSection[]>> GetPoemWholeSections(int id)
         {
             return new RServiceResult<GanjoorPoemSection[]>(
-                await _context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.PoemId == id).ToArrayAsync()
+                await _context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.PoemId == id && s.SectionType == PoemSectionType.WholePoem).ToArrayAsync()
                 );
         }
 
@@ -1622,7 +1622,7 @@ namespace RMuseum.Services.Implementation
                 GanjoorPoemSection[] poemSections = null;
                 if(sections)
                 {
-                    var poemSectionsRes = await GetPoemSections(id);
+                    var poemSectionsRes = await GetPoemWholeSections(id);
                     if (!string.IsNullOrEmpty(poemSectionsRes.ExceptionString))
                         return new RServiceResult<GanjoorPoemCompleteViewModel>(null, poemSectionsRes.ExceptionString);
                     poemSections = poemSectionsRes.Result;

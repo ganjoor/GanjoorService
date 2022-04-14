@@ -462,5 +462,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorPoemSection> GanjoorPoemSections { get; set; }
 
+        /// <summary>
+        /// related sections to each section (having same rhyme letters and prosody metre)
+        /// </summary>
+        public DbSet<GanjoorCachedRelatedSection> GanjoorCachedRelatedSections { get; set; }
+
     }
 }
