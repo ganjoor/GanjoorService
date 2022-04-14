@@ -1187,6 +1187,16 @@
             <param name="itemsCount">zero or less than it means all</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetRelatedSections(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Get Section Related ones
+            </summary>
+            <param name="poemId"></param>
+            <param name="sectionIndex"></param>
+            <param name="skip"></param>
+            <param name="itemsCount">zero or less than it means all</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemAsync(System.Int32)">
             <summary>
             delete a poem
@@ -1613,9 +1623,9 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartGeneratingRelatedPoemsInfo(System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.StartGeneratingRelatedSectionsInfo(System.Boolean)">
             <summary>
-            start generating related poems info
+            start generating related sections info
             </summary>
             <param name="regenerate"></param>
             <returns></returns>
@@ -11019,6 +11029,16 @@
             <param name="itemsCount">if sent 0 or less returns all items</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetRelatedSections(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            get a section related sections
+            </summary>
+            <param name="poemId">poem id</param>
+            <param name="sectionIndex">section index</param>
+            <param name="skip"></param>
+            <param name="itemsCount">if sent 0 or less returns all items</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestPoemCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
             <summary>
             send poem corrections
@@ -11594,9 +11614,9 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartGeneratingRelatedPoemsInfo(System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.StartGeneratingRelatedSectionsInfo(System.Boolean)">
             <summary>
-            start generating related poems info
+            start generating related sections info
             </summary>
             <param name="regenerate"></param>
             <returns></returns>

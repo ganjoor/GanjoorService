@@ -188,6 +188,16 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorCachedRelatedPoem[]>> GetRelatedPoems(int id, int skip, int itemsCount);
 
         /// <summary>
+        /// get a section related sections
+        /// </summary>
+        /// <param name="poemId">poem id</param>
+        /// <param name="sectionIndex">section index</param>
+        /// <param name="skip"></param>
+        /// <param name="itemsCount">if sent 0 or less returns all items</param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCachedRelatedSection[]>> GetRelatedSections(int poemId, int sectionIndex, int skip, int itemsCount);
+
+        /// <summary>
         /// send poem corrections
         /// </summary>
         /// <param name="correction"></param>
@@ -769,11 +779,11 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorCenturyViewModel[]>> GetCenturiesAsync();
 
         /// <summary>
-        /// start generating related poems info
+        /// start generating related sections info
         /// </summary>
         /// <param name="regenerate"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartGeneratingRelatedPoemsInfo(bool regenerate);
+        RServiceResult<bool> StartGeneratingRelatedSectionsInfo(bool regenerate);
 
 
         /// <summary>

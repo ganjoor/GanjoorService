@@ -1022,6 +1022,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Get Section Related ones
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="sectionIndex"></param>
+        /// <param name="skip"></param>
+        /// <param name="itemsCount">zero or less than it means all</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("section/{poemId}/{sectionIndex}/related")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCachedRelatedSection[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetRelatedSections(int poemId, int sectionIndex, int skip = 0, int itemsCount = 0)
+        {
+            RServiceResult<GanjoorCachedRelatedSection[]> res =
+                await _ganjoorService.GetRelatedSections(poemId, sectionIndex, skip, itemsCount);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// delete a poem
         /// </summary>
         /// <param name="id"></param>
@@ -2551,19 +2573,19 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// start generating related poems info
+        /// start generating related sections info
         /// </summary>
         /// <param name="regenerate"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("generaterelatedpoemsinfo")]
+        [Route("generaterelatedsectionsinfo")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartGeneratingRelatedPoemsInfo(bool regenerate = true)
+        public IActionResult StartGeneratingRelatedSectionsInfo(bool regenerate = true)
         {
             RServiceResult<bool> res =
-                 _ganjoorService.StartGeneratingRelatedPoemsInfo(regenerate);
+                 _ganjoorService.StartGeneratingRelatedSectionsInfo(regenerate);
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);
