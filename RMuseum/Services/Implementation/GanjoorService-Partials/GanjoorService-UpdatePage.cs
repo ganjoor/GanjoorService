@@ -278,7 +278,6 @@ namespace RMuseum.Services.Implementation
                     }
 
                    
-                    bool prosodyRhymeDataChanged = false;
                     if (mainSection != null)
                     {
                         int? oldMetreId = mainSection.GanjoorMetreId;
@@ -306,7 +305,6 @@ namespace RMuseum.Services.Implementation
 
                         if (oldMetreId != mainSection.GanjoorMetreId || oldRhymeLetters != mainSection.RhymeLetters)
                         {
-                            prosodyRhymeDataChanged = true;
                             context.Update(mainSection);
                             await context.SaveChangesAsync();
 
@@ -336,42 +334,40 @@ namespace RMuseum.Services.Implementation
                     if(!string.IsNullOrEmpty(pageData.RhymeLetters) && !string.IsNullOrEmpty(pageData.Rhythm2) && secondSection == null)
                     {
                         var allSections = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == id).ToListAsync();
+                        var tempVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == id).ToListAsync();
                         var maxIndex = allSections.Max(s => s.Index);
-                        if(maxIndex < 3)
+                        secondSection = new GanjoorPoemSection()
                         {
-                            secondSection = new GanjoorPoemSection()
+                            PoemId = mainSection.PoemId,
+                            PoetId = mainSection.PoetId,
+                            SectionType = PoemSectionType.WholePoem,
+                            VerseType = tempVerses.Where(v => v.SectionIndex != null).Any() == false ? VersePoemSectionType.Second : tempVerses.Where(v => v.ThirdSectionIndex != null).Any() == false ? VersePoemSectionType.Third : VersePoemSectionType.Forth,
+                            Index = maxIndex + 1,
+                            Number = maxIndex + 2,
+                            GanjoorMetreId = null,
+                            RhymeLetters = null,
+                            HtmlText = mainSection.HtmlText,
+                            PlainText = mainSection.PlainText
+                        };
+                        context.Add(secondSection);
+                        var mainSectionVerses = await context.GanjoorVerses.Where(v => v.PoemId == mainSection.PoemId && v.SectionIndex == mainSection.Index).ToListAsync();
+                        foreach (var verse in mainSectionVerses)
+                        {
+                            switch (secondSection.VerseType)
                             {
-                                PoemId = mainSection.PoemId,
-                                PoetId = mainSection.PoetId,
-                                SectionType = PoemSectionType.WholePoem,
-                                VerseType = maxIndex == 0 ? VersePoemSectionType.Second : maxIndex == 1 ? VersePoemSectionType.Third : VersePoemSectionType.Forth,
-                                Index = maxIndex + 1,
-                                Number = maxIndex + 2,
-                                GanjoorMetreId = null,
-                                RhymeLetters = null,
-                                HtmlText = mainSection.HtmlText,
-                                PlainText = mainSection.PlainText
-                            };
-                            context.Add(secondSection);
-                            var mainSectionVerses = await context.GanjoorVerses.Where(v => v.PoemId == mainSection.PoemId && v.SectionIndex == mainSection.Index).ToListAsync();
-                            foreach (var verse in mainSectionVerses)
-                            {
-                                switch (secondSection.VerseType)
-                                {
-                                    case VersePoemSectionType.Second:
-                                        verse.SecondSectionIndex = secondSection.Index;
-                                        break;
-                                    case VersePoemSectionType.Third:
-                                        verse.ThirdSectionIndex = secondSection.Index;
-                                        break;
-                                    case VersePoemSectionType.Forth:
-                                        verse.ForthSectionIndex = secondSection.Index;
-                                        break;
-                                }
+                                case VersePoemSectionType.Second:
+                                    verse.SecondSectionIndex = secondSection.Index;
+                                    break;
+                                case VersePoemSectionType.Third:
+                                    verse.ThirdSectionIndex = secondSection.Index;
+                                    break;
+                                case VersePoemSectionType.Forth:
+                                    verse.ForthSectionIndex = secondSection.Index;
+                                    break;
                             }
-                            context.UpdateRange(mainSectionVerses);
-                            await _context.SaveChangesAsync();
                         }
+                        context.UpdateRange(mainSectionVerses);
+                        await _context.SaveChangesAsync();
                     }
                     if (secondSection != null)
                     {
@@ -437,42 +433,40 @@ namespace RMuseum.Services.Implementation
                     if (!string.IsNullOrEmpty(pageData.RhymeLetters) && !string.IsNullOrEmpty(pageData.Rhythm3) && thirdSection == null)
                     {
                         var allSections = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == id).ToListAsync();
+                        var tempVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == id).ToListAsync();
                         var maxIndex = allSections.Max(s => s.Index);
-                        if (maxIndex < 3)
+                        thirdSection = new GanjoorPoemSection()
                         {
-                            thirdSection = new GanjoorPoemSection()
+                            PoemId = mainSection.PoemId,
+                            PoetId = mainSection.PoetId,
+                            SectionType = PoemSectionType.WholePoem,
+                            VerseType = tempVerses.Where(v => v.SectionIndex != null).Any() == false ? VersePoemSectionType.Second : tempVerses.Where(v => v.ThirdSectionIndex != null).Any() == false ? VersePoemSectionType.Third : VersePoemSectionType.Forth,
+                            Index = maxIndex + 1,
+                            Number = maxIndex + 2,
+                            GanjoorMetreId = null,
+                            RhymeLetters = null,
+                            HtmlText = mainSection.HtmlText,
+                            PlainText = mainSection.PlainText
+                        };
+                        context.Add(thirdSection);
+                        var mainSectionVerses = await context.GanjoorVerses.Where(v => v.PoemId == mainSection.PoemId && v.SectionIndex == mainSection.Index).ToListAsync();
+                        foreach (var verse in mainSectionVerses)
+                        {
+                            switch (secondSection.VerseType)
                             {
-                                PoemId = mainSection.PoemId,
-                                PoetId = mainSection.PoetId,
-                                SectionType = PoemSectionType.WholePoem,
-                                VerseType = maxIndex == 0 ? VersePoemSectionType.Second : maxIndex == 1 ? VersePoemSectionType.Third : VersePoemSectionType.Forth,
-                                Index = maxIndex + 1,
-                                Number = maxIndex + 2,
-                                GanjoorMetreId = null,
-                                RhymeLetters = null,
-                                HtmlText = mainSection.HtmlText,
-                                PlainText = mainSection.PlainText
-                            };
-                            context.Add(thirdSection);
-                            var mainSectionVerses = await context.GanjoorVerses.Where(v => v.PoemId == mainSection.PoemId && v.SectionIndex == mainSection.Index).ToListAsync();
-                            foreach (var verse in mainSectionVerses)
-                            {
-                                switch (secondSection.VerseType)
-                                {
-                                    case VersePoemSectionType.Second:
-                                        verse.SecondSectionIndex = thirdSection.Index;
-                                        break;
-                                    case VersePoemSectionType.Third:
-                                        verse.ThirdSectionIndex = thirdSection.Index;
-                                        break;
-                                    case VersePoemSectionType.Forth:
-                                        verse.ForthSectionIndex = thirdSection.Index;
-                                        break;
-                                }
+                                case VersePoemSectionType.Second:
+                                    verse.SecondSectionIndex = thirdSection.Index;
+                                    break;
+                                case VersePoemSectionType.Third:
+                                    verse.ThirdSectionIndex = thirdSection.Index;
+                                    break;
+                                case VersePoemSectionType.Forth:
+                                    verse.ForthSectionIndex = thirdSection.Index;
+                                    break;
                             }
-                            context.UpdateRange(mainSectionVerses);
-                            await _context.SaveChangesAsync();
                         }
+                        context.UpdateRange(mainSectionVerses);
+                        await _context.SaveChangesAsync();
                     }
                     if (thirdSection != null)
                     {
