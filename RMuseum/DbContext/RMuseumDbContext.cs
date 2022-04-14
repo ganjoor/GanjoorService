@@ -175,6 +175,18 @@ namespace RMuseum.DbContext
 
             builder.Entity<GanjoorUserPoemVisit>()
                 .HasIndex(v => new { v.UserId, v.PoemId });
+
+            builder.Entity<GanjoorPoemSection>()
+                .HasIndex(v => new { v.PoemId, v.Index });
+
+            builder.Entity<GanjoorPoemSection>()
+                .HasIndex(v => new { v.RhymeLetters });
+
+            builder.Entity<GanjoorPoemSection>()
+                .HasIndex(v => new { v.GanjoorMetreId, v.RhymeLetters });
+
+            builder.Entity<GanjoorCachedRelatedSection>()
+                .HasIndex(v => new { v.PoemId, v.SectionIndex });
         }
 
 
