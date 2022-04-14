@@ -221,7 +221,8 @@ namespace RMuseum.Services.Implementation
                     context.GanjoorPoems.Update(dbPoem);
 
 
-                    
+                    var sections = await context.GanjoorPoemSections.Where(s => s.PoemId == dbPoem.Id && s.SectionType == PoemSectionType.WholePoem).OrderBy(s => s.VerseType).ToListAsync();
+                    GanjoorPoemSection mainSection = sections.Count > 0 ? sections[0] : null;
 
 
                     var oldVerses = await context.GanjoorVerses.Where(v => v.PoemId == id).ToListAsync();
@@ -238,6 +239,11 @@ namespace RMuseum.Services.Implementation
 
                         for (int v = oldVerses.Count; v < verses.Count; v++)
                         {
+                            if(mainSection != null)
+                            {
+                                if (verses[v].VersePosition != VersePosition.Comment && verses[v].VersePosition != VersePosition.Paragraph)
+                                    verses[v].SectionIndex = mainSection.Index;
+                            }
                             context.GanjoorVerses.Add(verses[v]);
                         }
                     }
@@ -271,9 +277,7 @@ namespace RMuseum.Services.Implementation
                         context.GanjoorCachedRelatedPoems.UpdateRange(excerptsInRelatedCaches);
                     }
 
-                    var sections = await context.GanjoorPoemSections.Where(s => s.PoemId == dbPoem.Id && s.SectionType == PoemSectionType.WholePoem).OrderBy(s => s.VerseType).ToListAsync();
-
-                    GanjoorPoemSection mainSection = sections.Count > 0 ? sections[0] : null;
+                   
                     bool prosodyRhymeDataChanged = false;
                     if (mainSection != null)
                     {
@@ -529,10 +533,156 @@ namespace RMuseum.Services.Implementation
                         }
                     }
 
-                    if(prosodyRhymeDataChanged)
+                    if(mainSection != null)
                     {
-                        //update non whole sections
+                        if(string.IsNullOrEmpty(mainSection.RhymeLetters))
+                        {
+                            var nonCommentVerses = await context.GanjoorVerses.Where(v => v.PoemId == id && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
+                            if (_IsMasnavi(nonCommentVerses))
+                            {
+                                var oldCoupletSections = await context.GanjoorPoemSections.Where(s => s.PoemId == id && s.SectionType == PoemSectionType.Couplet).ToListAsync();
+                                context.RemoveRange(oldCoupletSections);
+                                await context.SaveChangesAsync();
+                                _backgroundTaskQueue.QueueBackgroundWorkItem
+                                (
+                                async token =>
+                                {
+                                    using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
+                                    {
+                                        foreach (var oldCoupletSection in oldCoupletSections)
+                                        {
+                                            if (oldCoupletSection.GanjoorMetreId != null && !string.IsNullOrEmpty(oldCoupletSection.RhymeLetters))
+                                            {
+                                                await _UpdateRelatedPoems(inlineContext, (int)oldCoupletSection.GanjoorMetreId, oldCoupletSection.RhymeLetters);
+                                                await inlineContext.SaveChangesAsync();
+                                            }
+                                        }
+                                    }
+                                });
+                                var allSections = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == id).ToListAsync();
+                                var index = allSections.Max(s => s.Index);
+                                for (int v = 0; v < nonCommentVerses.Count; v += 2)
+                                {
+                                    index++;
+                                    var rightVerse = nonCommentVerses[v];
+                                    var leftVerse = nonCommentVerses[v + 1];
+                                    List<GanjoorVerse> coupletVerses = new List<GanjoorVerse>();
+                                    coupletVerses.Add(rightVerse);
+                                    coupletVerses.Add(leftVerse);
+                                    var res = LanguageUtils.FindRhyme(coupletVerses);
+
+                                    GanjoorPoemSection verseSection = new GanjoorPoemSection()
+                                    {
+                                        PoemId = id,
+                                        PoetId = mainSection.PoetId,
+                                        SectionType = PoemSectionType.Couplet,
+                                        VerseType = VersePoemSectionType.Second,
+                                        Index = index,
+                                        Number = index + 1,//couplet number
+                                        GanjoorMetreId = mainSection.GanjoorMetreId,
+                                        RhymeLetters = res.Rhyme
+                                    };
+
+                                    rightVerse.SecondSectionIndex = verseSection.Index;
+                                    leftVerse.SecondSectionIndex = verseSection.Index;
+
+                                    var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
+                                    verseSection.HtmlText = PrepareHtmlText(rl);
+                                    verseSection.PlainText = PreparePlainText(rl);
+
+                                    context.Add(verseSection);
+
+                                    if(!string.IsNullOrEmpty(pageData.Rhythm2))
+                                    {
+                                        index++;
+                                        var metre = await context.GanjoorMetres.Where(m => m.Rhythm == pageData.Rhythm2).SingleOrDefaultAsync();
+                                        if (metre == null)
+                                        {
+                                            metre = new GanjoorMetre()
+                                            {
+                                                Rhythm = pageData.Rhythm2,
+                                                VerseCount = 0
+                                            };
+                                            context.GanjoorMetres.Add(metre);
+                                            await context.SaveChangesAsync();
+                                        }
+                                        var secondMeterId = metre.Id;
+
+                                        GanjoorPoemSection secondVerseSection = new GanjoorPoemSection()
+                                        {
+                                            PoemId = id,
+                                            PoetId = mainSection.PoetId,
+                                            SectionType = PoemSectionType.Couplet,
+                                            VerseType = VersePoemSectionType.Third,
+                                            Index = index,
+                                            Number = index + 1,//couplet number
+                                            GanjoorMetreId = secondMeterId,
+                                            RhymeLetters = res.Rhyme,
+                                            HtmlText = verseSection.HtmlText,
+                                            PlainText = verseSection.PlainText
+                                        };
+                                        context.Add(secondVerseSection);
+                                    }
+
+                                    if (!string.IsNullOrEmpty(pageData.Rhythm3))
+                                    {
+                                        index++;
+                                        var metre = await context.GanjoorMetres.Where(m => m.Rhythm == pageData.Rhythm3).SingleOrDefaultAsync();
+                                        if (metre == null)
+                                        {
+                                            metre = new GanjoorMetre()
+                                            {
+                                                Rhythm = pageData.Rhythm2,
+                                                VerseCount = 0
+                                            };
+                                            context.GanjoorMetres.Add(metre);
+                                            await context.SaveChangesAsync();
+                                        }
+                                        var thirdMeterId = metre.Id;
+
+                                        GanjoorPoemSection thirdVerseSection = new GanjoorPoemSection()
+                                        {
+                                            PoemId = id,
+                                            PoetId = mainSection.PoetId,
+                                            SectionType = PoemSectionType.Couplet,
+                                            VerseType = VersePoemSectionType.Forth,
+                                            Index = index,
+                                            Number = index + 1,//couplet number
+                                            GanjoorMetreId = thirdMeterId,
+                                            RhymeLetters = res.Rhyme,
+                                            HtmlText = verseSection.HtmlText,
+                                            PlainText = verseSection.PlainText
+                                        };
+                                        context.Add(thirdVerseSection);
+                                    }
+                                }
+                                await context.SaveChangesAsync();
+
+
+                                var newCoupletSections = await context.GanjoorPoemSections.Where(s => s.PoemId == id && s.SectionType == PoemSectionType.Couplet).ToListAsync();
+
+                                _backgroundTaskQueue.QueueBackgroundWorkItem
+                                (
+                                async token =>
+                                {
+                                    using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
+                                    {
+                                        foreach (var newCoupletSection in newCoupletSections)
+                                        {
+                                            if (newCoupletSection.GanjoorMetreId != null && !string.IsNullOrEmpty(newCoupletSection.RhymeLetters))
+                                            {
+                                                await _UpdateRelatedPoems(inlineContext, (int)newCoupletSection.GanjoorMetreId, newCoupletSection.RhymeLetters);
+                                                await inlineContext.SaveChangesAsync();
+                                            }
+                                        }
+                                    }
+                                });
+
+                            }
+                        }
                     }
+
+                    
                     
                        
 
