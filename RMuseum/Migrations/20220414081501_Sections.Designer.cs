@@ -12,7 +12,7 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    [Migration("20220410162939_Sections")]
+    [Migration("20220414081501_Sections")]
     partial class Sections
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -562,6 +562,51 @@ namespace RMuseum.Migrations
                     b.HasIndex("PoemId");
 
                     b.ToTable("GanjoorCachedRelatedPoems");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("FullTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HtmlExcerpt")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PoemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PoetId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PoetImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PoetMorePoemsLikeThisCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PoetName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RelationOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SectionIndex")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PoemId", "SectionIndex");
+
+                    b.ToTable("GanjoorCachedRelatedSections");
                 });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCat", b =>
@@ -1251,7 +1296,7 @@ namespace RMuseum.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("RhymeLetters")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("SectionType")
                         .HasColumnType("int");
@@ -1261,11 +1306,13 @@ namespace RMuseum.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GanjoorMetreId");
-
-                    b.HasIndex("PoemId");
-
                     b.HasIndex("PoetId");
+
+                    b.HasIndex("RhymeLetters");
+
+                    b.HasIndex("GanjoorMetreId", "RhymeLetters");
+
+                    b.HasIndex("PoemId", "Index");
 
                     b.ToTable("GanjoorPoemSections");
                 });
@@ -3151,6 +3198,17 @@ namespace RMuseum.Migrations
                 });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCachedRelatedPoem", b =>
+                {
+                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                        .WithMany()
+                        .HasForeignKey("PoemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Poem");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection", b =>
                 {
                     b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
                         .WithMany()
