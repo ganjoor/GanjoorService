@@ -1,4 +1,6 @@
-﻿namespace RMuseum.Models.Ganjoor
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RMuseum.Models.Ganjoor
 {
     /// <summary>
     /// Ganjoor Poem Section
@@ -77,5 +79,11 @@
         /// verses text as html (ganjoor.net format)
         /// </summary>
         public string HtmlText { get; set; }
+
+        /// <summary>
+        /// top 6 related sections
+        /// </summary>
+        [NotMapped]
+        public GanjoorCachedRelatedSection[] Top6RelatedSections { get; set; }
     }
 }

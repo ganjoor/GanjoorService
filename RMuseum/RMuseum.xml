@@ -6899,6 +6899,11 @@
             verses text as html (ganjoor.net format)
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Top6RelatedSections">
+            <summary>
+            top 6 related sections
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
             <summary>
             poem translation
