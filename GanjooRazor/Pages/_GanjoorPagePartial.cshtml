@@ -370,7 +370,7 @@
                                                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.RhymeLetters))
                                                 {
                                                     <text>
-                                                        <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.GanjoorPage.Poem.RhymeLetters)}")">شعرهای هم آهنگ<i class="info-buttons rhyming-poems"></i></a>
+                                                        <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.GanjoorPage.Poem.RhymeLetters)}")">موارد هم آهنگ<i class="info-buttons rhyming-poems"></i></a>
                                                     </text>
                                                 }
                                             }
@@ -434,7 +434,17 @@
 
                                                     @if (Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount > 0)
                                                     {
-                                                        <a role="button" class="pagebutton" id="@($"load-more-button-{Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId}")" onclick="loadMoreRelatedFromPoet(@Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl', '@Model.GanjoorPage.Poem.Top6RelatedPoems[i].FullUrl')">مشاهدهٔ @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() شعر هم آهنگ دیگر از @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetName<i class="info-buttons autorenew"></i></a>
+
+                                                        @if (Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount > 20)
+                                                        {
+                                                            <a role="button" class="pagebutton" id="@($"load-more-button-{Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId}")" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.GanjoorPage.Poem.RhymeLetters)}&amp;a={Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId}")" target="_blank">مشاهدهٔ بیش از @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetName<i class="info-buttons autorenew"></i></a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a role="button" class="pagebutton" id="@($"load-more-button-{Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId}")" onclick="loadMoreRelatedFromPoet(@Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetId, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl', '@Model.GanjoorPage.Poem.Top6RelatedPoems[i].FullUrl')">مشاهدهٔ @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @Model.GanjoorPage.Poem.Top6RelatedPoems[i].PoetName<i class="info-buttons autorenew"></i></a>
+                                                        }
+
+                                                        
                                                     }
                                                 </div>
 

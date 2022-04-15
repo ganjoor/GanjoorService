@@ -19,7 +19,15 @@
 
         @if (Model.RelatedPoems[i].PoetMorePoemsLikeThisCount > 0)
         {
-            <a role="button" class="pagebutton" id="@($"load-more-button-{Model.RelatedPoems[i].PoetId}")" onclick="loadMoreRelatedFromPoet(@Model.RelatedPoems[i].PoetId, '@Model.Rhythm', '@Model.RhymeLetters', '@Model.PoemFullUrl', '@Model.RelatedPoems[i].FullUrl')">مشاهدهٔ @Model.RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() شعر هم آهنگ دیگر از @Model.RelatedPoems[i].PoetName<i class="info-buttons">autorenew</i></a>
+            @if (Model.RelatedPoems[i].PoetMorePoemsLikeThisCount > 20)
+            {
+                <a role="button" class="pagebutton" id="@($"load-more-button-{Model.RelatedPoems[i].PoetId}")" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.Rhythm)}&amp;g={Uri.EscapeDataString(Model.RhymeLetters)}&amp;a={Model.RelatedPoems[i].PoetId}")" target="_blank">مشاهدهٔ بیش از @Model.RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @Model.RelatedPoems[i].PoetName<i class="info-buttons autorenew"></i></a>
+            }
+            else
+            {
+                <a role="button" class="pagebutton" id="@($"load-more-button-{Model.RelatedPoems[i].PoetId}")" onclick="loadMoreRelatedFromPoet(@Model.RelatedPoems[i].PoetId, '@Model.Rhythm', '@Model.RhymeLetters', '@Model.PoemFullUrl', '@Model.RelatedPoems[i].FullUrl')">مشاهدهٔ @Model.RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @Model.RelatedPoems[i].PoetName<i class="info-buttons">autorenew</i></a>
+            }
+
         }
     </div>
     @if (Model.RelatedPoems[i].PoetMorePoemsLikeThisCount > 0)

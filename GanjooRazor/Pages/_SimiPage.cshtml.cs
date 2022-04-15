@@ -27,7 +27,7 @@ namespace GanjooRazor.Pages
         {
             if (string.IsNullOrEmpty(Request.Query["v"]) || string.IsNullOrEmpty(Request.Query["g"]))
             {
-                GanjoorPage.HtmlText = "<p>شعری با مشخصات انتخاب شده یافت نشد.</p>";
+                GanjoorPage.HtmlText = "<p>موردی با مشخصات انتخاب شده یافت نشد.</p>";
                 return;
             }
 
@@ -53,7 +53,7 @@ namespace GanjooRazor.Pages
 
             var poems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
 
-            GanjoorPage.Title = "شعرهای ";
+            GanjoorPage.Title = "شعرها یا ابیات ";
 
             if (auther != "0")
             {
@@ -166,7 +166,7 @@ namespace GanjooRazor.Pages
             List<int> poetMorePoemsLikeThisCount = new List<int>();
             var poems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
             if (poems.Any(p => p.FullUrl == skipPoemFullUrl1))
-                poems.Remove(poems.Single(p => p.FullUrl == skipPoemFullUrl1));
+                poems.Remove(poems.Single(p => p.FullUrl == skipPoemFullUrl1)); //TODO: fix errors here
             if (poems.Any(p => p.FullUrl == skipPoemFullUrl2))
                 poems.Remove(poems.Single(p => p.FullUrl == skipPoemFullUrl2));
 

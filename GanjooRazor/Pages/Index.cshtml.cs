@@ -550,6 +550,11 @@ namespace GanjooRazor.Pages
             }
         }
 
+        private void _preparePrododyAndRelatedSecions()
+        {
+
+        }
+
         /// <summary>
         /// Get
         /// </summary>
@@ -628,6 +633,7 @@ namespace GanjooRazor.Pages
                         _preparePoemExcerpt(GanjoorPage.Poem.Previous);
                         GanjoorPage.PoetOrCat = GanjoorPage.Poem.Category;
                         _prepareNextPre();
+                        _preparePrododyAndRelatedSecions();
                         IsPoemPage = true;
                         
                         break;
