@@ -50,10 +50,10 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var sectionIds = await context.GanjoorPoemSections.AsNoTracking().Where(section => section.GanjoorMetreId == metreId && section.RhymeLetters == rhyme).Select(p => p.Id).ToListAsync();
-                foreach (var id in sectionIds)
+                var sections = await context.GanjoorPoemSections.AsNoTracking().Where(section => section.GanjoorMetreId == metreId && section.RhymeLetters == rhyme).ToListAsync();
+                foreach (var section in sections)
                 {
-                    await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, id);
+                    await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section);
                 }
                 await context.SaveChangesAsync();
                 return new RServiceResult<bool>(true);
@@ -64,9 +64,8 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task _UpdateSectionRelatedSectionsInfoNoSaveChanges(RMuseumDbContext context, int sectionId)
+        private async Task _UpdateSectionRelatedSectionsInfoNoSaveChanges(RMuseumDbContext context, GanjoorPoemSection section)
         {
-            var section = await context.GanjoorPoemSections.AsNoTracking().Where(p => p.Id == sectionId).SingleAsync();
             var oldRelations = await context.GanjoorCachedRelatedSections.Where(r => r.PoemId == section.PoemId && r.SectionIndex == section.Index).ToListAsync();
             context.GanjoorCachedRelatedSections.RemoveRange(oldRelations);
 
@@ -80,7 +79,7 @@ namespace RMuseum.Services.Implementation
                         &&
                         s.RhymeLetters == rhyme
                         &&
-                        ((s.PoemId == section.PoemId && s.Index !=  section.Index ) || (s.PoemId != section.PoemId))
+                        s.Id != section.Id
                         )
                 .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.PoetId).ThenBy(p => p.SectionType).ToListAsync();
 
@@ -95,8 +94,8 @@ namespace RMuseum.Services.Implementation
 
                     GanjoorCachedRelatedSection newRelatedPoem = new GanjoorCachedRelatedSection()
                     {
-                        PoemId = relatedSection.PoemId,
-                        SectionIndex = relatedSection.Index,
+                        PoemId = section.PoemId,
+                        SectionIndex = section.Index,
                         PoetId = (int)relatedSection.PoetId,
                         RelationOrder = r,
                         PoetName = relatedSection.Poet.Nickname,
@@ -145,24 +144,24 @@ namespace RMuseum.Services.Implementation
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Query");
 
-                                        var sectionIds = await context.GanjoorPoemSections.AsNoTracking().Where(p => !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).Select(p => p.Id).ToListAsync();
+                                        var sections = await context.GanjoorPoemSections.AsNoTracking().Where(p => !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).ToListAsync();
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating Related Sections");
 
-                                        for (int i = 0; i < sectionIds.Count; i++)
+                                        for (int i = 0; i < sections.Count; i++)
                                         {
                                             if (!regenerate)
                                             {
-                                                if (await context.GanjoorCachedRelatedSections.AnyAsync(r => r.PoemId == sectionIds[i]))
+                                                if (await context.GanjoorCachedRelatedSections.AnyAsync(r => r.PoemId == sections[i].PoemId && r.SectionIndex == sections[i].Index))
                                                     continue;
                                             }
-                                            if (i * 100 / sectionIds.Count > percent)
+                                            if (i * 100 / sections.Count > percent)
                                             {
                                                 percent++;
                                                 await jobProgressServiceEF.UpdateJob(job.Id, percent);
                                             }
 
-                                            await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, sectionIds[i]);
+                                            await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, sections[i]);
 
                                         }
 
