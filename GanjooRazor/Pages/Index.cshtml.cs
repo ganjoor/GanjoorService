@@ -550,9 +550,17 @@ namespace GanjooRazor.Pages
             }
         }
 
-        private void _preparePrododyAndRelatedSecions()
+        public List<GanjoorPoemSection> SectionsWithRelated { get; set; }
+        private void _prepareRelatedSecions()
         {
-
+            SectionsWithRelated = new List<GanjoorPoemSection>();
+            foreach (var section in GanjoorPage.Poem.Sections)
+            {
+                if(section.Top6RelatedSections.Length > 0)
+                {
+                    SectionsWithRelated.Add(section);
+                }
+            }
         }
 
         /// <summary>
@@ -633,7 +641,7 @@ namespace GanjooRazor.Pages
                         _preparePoemExcerpt(GanjoorPage.Poem.Previous);
                         GanjoorPage.PoetOrCat = GanjoorPage.Poem.Category;
                         _prepareNextPre();
-                        _preparePrododyAndRelatedSecions();
+                        _prepareRelatedSecions();
                         IsPoemPage = true;
                         
                         break;
