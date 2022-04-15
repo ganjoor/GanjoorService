@@ -438,26 +438,26 @@
                                                         {
                                                             @if (s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount > 20)
                                                             {
-                                                                <a role="button" class="pagebutton" id="@($"load-more-button-{s.Top6RelatedSections[i].PoetId}")" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.GanjoorPage.Poem.RhymeLetters)}&amp;a={s.Top6RelatedSections[i].PoetId}")" target="_blank">مشاهدهٔ بیش از @s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @s.Top6RelatedSections[i].PoetName<i class="info-buttons autorenew"></i></a>
+                                                                <a role="button" class="pagebutton" id="@($"load-more-button-{s.Top6RelatedSections[i].PoetId}-{s.Index}")" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.GanjoorPage.Poem.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.GanjoorPage.Poem.RhymeLetters)}&amp;a={s.Top6RelatedSections[i].PoetId}")" target="_blank">مشاهدهٔ بیش از @s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @s.Top6RelatedSections[i].PoetName<i class="info-buttons autorenew"></i></a>
                                                             }
                                                             else
                                                             {
-                                                                <a role="button" class="pagebutton" id="@($"load-more-button-{s.Top6RelatedSections[i].PoetId}")" onclick="loadMoreRelatedFromPoet(@s.Top6RelatedSections[i].PoetId, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl', '@s.Top6RelatedSections[i].FullUrl')">مشاهدهٔ @s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @s.Top6RelatedSections[i].PoetName<i class="info-buttons autorenew"></i></a>
+                                                                <a role="button" class="pagebutton" id="@($"load-more-button-{s.Top6RelatedSections[i].PoetId}-{s.Index}")" onclick="loadMoreRelatedFromPoet(@s.Top6RelatedSections[i].PoetId, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl', '@s.Top6RelatedSections[i].FullUrl', @s.Index)">مشاهدهٔ @s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @s.Top6RelatedSections[i].PoetName<i class="info-buttons autorenew"></i></a>
                                                             }
                                                         }
                                                     </div>
 
                                                     @if (s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount > 0)
                                                     {
-                                                        <div id=@($"more-related-placeholder-{s.Top6RelatedSections[i].PoetId}")></div>
+                                                        <div id=@($"more-related-placeholder-{s.Top6RelatedSections[i].PoetId}-{s.Index}")></div>
                                                     }
                                                 }
 
                                                 @if (s.Top6RelatedSections.Length == 6)
                                                 {
-                                                    <div id="more-related-placeholder"></div>
-                                                    <div id="load-more-related">
-                                                        <a role="button" class="pagebutton" id="load-more-button" onclick="loadMoreRelatedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl')">بیشتر<i class="info-buttons autorenew"></i></a>
+                                                    <div id="more-related-placeholder-@s.Index"></div>
+                                                    <div id="load-more-related-@s.Index">
+                                                        <a role="button" class="pagebutton" id="load-more-button-@s.Index" onclick="loadMoreRelatedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.Poem.GanjoorMetre.Rhythm', '@Model.GanjoorPage.Poem.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl', @s.Index)">بیشتر<i class="info-buttons autorenew"></i></a>
                                                     </div>
                                                 }
                                             }

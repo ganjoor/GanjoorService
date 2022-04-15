@@ -4,39 +4,39 @@
     Layout = null;
 }
 
-@for (int i = 0; i < Math.Min(20, Model.RelatedPoems.Length); i++)
+@for (int i = 0; i < Math.Min(20, Model.RelatedSections.Length); i++)
 {
     <div class="inlinesimi">
         <div class="poet-pic-wrap">
-            <a href="@Html.Raw(Model.RelatedPoems[i].FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.RelatedPoems[i].PoetImageUrl)" alt="@Model.RelatedPoems[i].PoetName" /></a>
+            <a href="@Html.Raw(Model.RelatedSections[i].FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.RelatedSections[i].PoetImageUrl)" alt="@Model.RelatedSections[i].PoetName" /></a>
         </div>
         <div class="inlinesimi-poem-title">
-            <a href="@Html.Raw(Model.RelatedPoems[i].FullUrl)">@Model.RelatedPoems[i].FullTitle</a><span></span>
+            <a href="@Html.Raw(Model.RelatedSections[i].FullUrl)">@Model.RelatedSections[i].FullTitle</a><span></span>
         </div>
         <div class="simitext">
-            @Html.Raw(Model.RelatedPoems[i].HtmlExcerpt)
+            @Html.Raw(Model.RelatedSections[i].HtmlExcerpt)
         </div>
 
-        @if (Model.RelatedPoems[i].PoetMorePoemsLikeThisCount > 0)
+        @if (Model.RelatedSections[i].PoetMorePoemsLikeThisCount > 0)
         {
-            @if (Model.RelatedPoems[i].PoetMorePoemsLikeThisCount > 20)
+            @if (Model.RelatedSections[i].PoetMorePoemsLikeThisCount > 20)
             {
-                <a role="button" class="pagebutton" id="@($"load-more-button-{Model.RelatedPoems[i].PoetId}")" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.Rhythm)}&amp;g={Uri.EscapeDataString(Model.RhymeLetters)}&amp;a={Model.RelatedPoems[i].PoetId}")" target="_blank">مشاهدهٔ بیش از @Model.RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @Model.RelatedPoems[i].PoetName<i class="info-buttons autorenew"></i></a>
+                <a role="button" class="pagebutton" id="@($"load-more-button-{Model.RelatedSections[i].PoetId}")" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.Rhythm)}&amp;g={Uri.EscapeDataString(Model.RhymeLetters)}&amp;a={Model.RelatedSections[i].PoetId}")" target="_blank">مشاهدهٔ بیش از @Model.RelatedSections[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @Model.RelatedSections[i].PoetName<i class="info-buttons autorenew"></i></a>
             }
             else
             {
-                <a role="button" class="pagebutton" id="@($"load-more-button-{Model.RelatedPoems[i].PoetId}")" onclick="loadMoreRelatedFromPoet(@Model.RelatedPoems[i].PoetId, '@Model.Rhythm', '@Model.RhymeLetters', '@Model.PoemFullUrl', '@Model.RelatedPoems[i].FullUrl')">مشاهدهٔ @Model.RelatedPoems[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @Model.RelatedPoems[i].PoetName<i class="info-buttons">autorenew</i></a>
+                <a role="button" class="pagebutton" id="@($"load-more-button-{Model.RelatedSections[i].PoetId}")" onclick="loadMoreRelatedFromPoet(@Model.RelatedSections[i].PoetId, '@Model.Rhythm', '@Model.RhymeLetters', '@Model.PoemFullUrl', '@Model.RelatedSections[i].FullUrl')">مشاهدهٔ @Model.RelatedSections[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @Model.RelatedSections[i].PoetName<i class="info-buttons">autorenew</i></a>
             }
 
         }
     </div>
-    @if (Model.RelatedPoems[i].PoetMorePoemsLikeThisCount > 0)
+    @if (Model.RelatedSections[i].PoetMorePoemsLikeThisCount > 0)
     {
-        <div id=@($"more-related-placeholder-{Model.RelatedPoems[i].PoetId}")></div>
+        <div id=@($"more-related-placeholder-{Model.RelatedSections[i].PoetId}")></div>
     }
 }
 
-@if (Model.RelatedPoems.Length == 21)
+@if (Model.RelatedSections.Length == 21)
 {
     <div id="load-more-related">
         <a role="button" class="pagebutton" id="load-more-button" onclick="loadMoreRelatedPoems(@Model.PoemId, @(Model.Skip + 20), '@Model.Rhythm', '@Model.RhymeLetters', '@Model.PoemFullUrl')">بیشتر<i class="info-buttons">autorenew</i></a>

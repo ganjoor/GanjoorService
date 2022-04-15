@@ -130,13 +130,13 @@ namespace GanjooRazor.Pages
             GanjoorPage.HtmlText = htmlText;
         }
 
-        public async Task<ActionResult> OnGetSimilarPoemsPartialAsync(int poemId, int skip, string prosodyMetre, string rhymeLetters, string poemFullUrl)
+        public async Task<ActionResult> OnGetSimilarPoemsPartialAsync(int poemId, int skip, string prosodyMetre, string rhymeLetters, string poemFullUrl, int sectionIndex)
         {
-            string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/related?id={poemId}&skip={skip}&itemsCount=21";
+            string url = $"{APIRoot.Url}/api/ganjoor/section//{poemId}/{sectionIndex}/related?skip={skip}&itemsCount=21";
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
                 return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-            var relatedPoems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCachedRelatedPoem>>();
+            var relatedSections = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCachedRelatedSection>>();
 
             return new PartialViewResult()
             {
@@ -145,12 +145,13 @@ namespace GanjooRazor.Pages
                 {
                     Model = new _SimiPartialViewModel()
                     {
-                        RelatedPoems = relatedPoems.ToArray(),
+                        RelatedSections = relatedSections.ToArray(),
                         Rhythm = prosodyMetre,
                         RhymeLetters = rhymeLetters,
                         Skip = skip,
                         PoemId = poemId,
-                        PoemFullUrl = poemFullUrl
+                        PoemFullUrl = poemFullUrl,
+                        SectionIndex = sectionIndex
                     }
                 }
             };
@@ -166,9 +167,9 @@ namespace GanjooRazor.Pages
             List<int> poetMorePoemsLikeThisCount = new List<int>();
             var poems = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
             if (poems.Any(p => p.FullUrl == skipPoemFullUrl1))
-                poems.Remove(poems.Single(p => p.FullUrl == skipPoemFullUrl1)); //TODO: fix errors here
+                poems.RemoveAll(p => p.FullUrl == skipPoemFullUrl1); //TODO: fix errors here
             if (poems.Any(p => p.FullUrl == skipPoemFullUrl2))
-                poems.Remove(poems.Single(p => p.FullUrl == skipPoemFullUrl2));
+                poems.RemoveAll(p => p.FullUrl == skipPoemFullUrl2);
 
             foreach (var poem in poems)
             {
@@ -182,7 +183,7 @@ namespace GanjooRazor.Pages
                 {
                     Model = new _SimiPartialFromPoetViewModel()
                     {
-                        Poems = poems
+                        Poems = poems,
                     }
                 }
             };

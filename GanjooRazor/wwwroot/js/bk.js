@@ -773,36 +773,37 @@ function onSelectedPoetChanged() {
 }
 
 
-function loadMoreRelatedPoems(poemId, skip, rhythm, rhymeLetters, poemFullUrl) {
-    var loadButton = document.getElementById('load-more-button');
+function loadMoreRelatedPoems(poemId, skip, rhythm, rhymeLetters, poemFullUrl, sectionInd) {
+    var loadButton = document.getElementById('load-more-button-' + String(sectionInd));
     if (loadButton != null) {
         loadButton.remove();
     }
-    var divParent = document.getElementById('load-more-related');
-    divParent.innerHTML = divParent.innerHTML + '<img id="load-more-related-loadingimg" src="/image/loading.gif" alt="بارگذاری  "/>';
+    var divParent = document.getElementById('load-more-related-' + String(sectionInd));
+    var imgeId = 'load-more-related-loadingimg-' + String(sectionInd);
+    divParent.innerHTML = divParent.innerHTML + '<img id="' + imgeId + '" src="/image/loading.gif" alt="بارگذاری  "/>';
     
     $.ajax({
         type: "GET",
-        url: '?Handler=SimilarPoemsPartial&poemId=' + String(poemId) + '&skip=' + String(skip) + '&prosodyMetre=' + rhythm + '&rhymeLetters=' + rhymeLetters + '&poemFullUrl=' + poemFullUrl,
+        url: '?Handler=SimilarPoemsPartial&poemId=' + String(poemId) + '&skip=' + String(skip) + '&prosodyMetre=' + rhythm + '&rhymeLetters=' + rhymeLetters + '&poemFullUrl=' + poemFullUrl + '&sectionId=' + String(sectionInd),
         success: function (data) {
 
-            var imgElement = document.getElementById('load-more-related-loadingimg');
+            var imgElement = document.getElementById(imgeId);
             imgElement.remove();
 
-            $(data).appendTo(document.getElementById('more-related-placeholder'));
+            $(data).appendTo(document.getElementById('more-related-placeholder-' + String(sectionInd) ));
         },
     });
 }
 
-function loadMoreRelatedFromPoet(poetId, rhythm, rhymeLetters, skipPoemFullUrl1, skipPoemFullUrl2) {
-    var buttonId = 'load-more-button-' + String(poetId);
+function loadMoreRelatedFromPoet(poetId, rhythm, rhymeLetters, skipPoemFullUrl1, skipPoemFullUrl2, sectionIndex) {
+    var buttonId = 'load-more-button-' + String(poetId) + '-' + String(sectionIndex);
     var loadButton = document.getElementById(buttonId);
     if (loadButton != null) {
         loadButton.remove();
     }
-    var divId = 'more-related-placeholder-' + String(poetId);
+    var divId = 'more-related-placeholder-' + String(poetId) + '-' + String(sectionIndex);
     var divParent = document.getElementById(divId);
-    var imgeId = 'load-more-related-loadingimg' + String(poetId);
+    var imgeId = 'load-more-related-loadingimg-' + String(poetId) + '-' + String(sectionIndex);
     divParent.innerHTML = divParent.innerHTML + '<img id="' + imgeId + '" src="/image/loading.gif" alt="بارگذاری  "/>';
 
     $.ajax({

@@ -5,7 +5,7 @@ namespace GanjooRazor.Pages
 {
     public class _SimiPartialViewModel : PageModel
     {
-        public GanjoorCachedRelatedPoem[] RelatedPoems { get; set; }
+        public GanjoorCachedRelatedSection[] RelatedSections { get; set; }
 
         public string Rhythm { get; set; }
 
@@ -15,5 +15,7 @@ namespace GanjooRazor.Pages
 
         public int PoemId { get; set; }
         public string PoemFullUrl { get; set; }
+
+        public int SectionIndex { get; set; }
     }
 }
