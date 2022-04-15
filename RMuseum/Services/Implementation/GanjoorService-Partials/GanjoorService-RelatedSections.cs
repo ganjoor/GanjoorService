@@ -155,7 +155,7 @@ namespace RMuseum.Services.Implementation
                                                 if (await context.GanjoorCachedRelatedSections.AnyAsync(r => r.PoemId == sections[i].PoemId && r.SectionIndex == sections[i].Index))
                                                     continue;
                                             }
-                                            if (i * 100 / sections.Count > percent)
+                                            if (i * 10000 / sections.Count > percent)
                                             {
                                                 percent++;
                                                 await jobProgressServiceEF.UpdateJob(job.Id, percent);
