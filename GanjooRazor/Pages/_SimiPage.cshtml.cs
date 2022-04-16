@@ -75,7 +75,7 @@ namespace GanjooRazor.Pages
 
             foreach (var poem in poems)
             {
-                htmlText += $"<div class=\"sitem\" id=\"post-{poem.Id}\">{Environment.NewLine}<h2><a href=\"{poem.FullUrl}\" rel=\"bookmark\">{poem.FullTitle}</a>{Environment.NewLine}</h2>{Environment.NewLine}" +
+                htmlText += $"<div class=\"sitem\">{Environment.NewLine}<h2><a href=\"{poem.FullUrl}\" rel=\"bookmark\">{poem.FullTitle}</a>{Environment.NewLine}</h2>{Environment.NewLine}" +
                     $"<div class=\"spacer\">&nbsp;</div>{Environment.NewLine}"
                     +
                     $"<div class=\"sit\">{Environment.NewLine} {_GetPoemTextExcerpt(poem.HtmlText)}" +
