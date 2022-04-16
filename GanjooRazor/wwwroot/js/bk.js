@@ -773,24 +773,24 @@ function onSelectedPoetChanged() {
 }
 
 
-function loadMoreRelatedPoems(poemId, skip, rhythm, rhymeLetters, poemFullUrl, sectionInd) {
-    var loadButton = document.getElementById('load-more-button-' + String(sectionInd));
+function loadMoreRelatedPoems(poemId, skip, rhythm, rhymeLetters, poemFullUrl, sectionIndex) {
+    var loadButton = document.getElementById('load-more-button-' + String(sectionIndex));
     if (loadButton != null) {
         loadButton.remove();
     }
-    var divParent = document.getElementById('load-more-related-' + String(sectionInd));
-    var imgeId = 'load-more-related-loadingimg-' + String(sectionInd);
+    var divParent = document.getElementById('load-more-related-' + String(sectionIndex));
+    var imgeId = 'load-more-related-loadingimg-' + String(sectionIndex);
     divParent.innerHTML = divParent.innerHTML + '<img id="' + imgeId + '" src="/image/loading.gif" alt="بارگذاری  "/>';
     
     $.ajax({
         type: "GET",
-        url: '?Handler=SimilarPoemsPartial&poemId=' + String(poemId) + '&skip=' + String(skip) + '&prosodyMetre=' + rhythm + '&rhymeLetters=' + rhymeLetters + '&poemFullUrl=' + poemFullUrl + '&sectionId=' + String(sectionInd),
+        url: '?Handler=SimilarPoemsPartial&poemId=' + String(poemId) + '&skip=' + String(skip) + '&prosodyMetre=' + rhythm + '&rhymeLetters=' + rhymeLetters + '&poemFullUrl=' + poemFullUrl + '&sectionId=' + String(sectionIndex),
         success: function (data) {
 
             var imgElement = document.getElementById(imgeId);
             imgElement.remove();
 
-            $(data).appendTo(document.getElementById('more-related-placeholder-' + String(sectionInd) ));
+            $(data).appendTo(document.getElementById('more-related-placeholder-' + String(sectionIndex) ));
         },
     });
 }
