@@ -2576,16 +2576,17 @@ namespace RMuseum.Controllers
         /// start generating related sections info
         /// </summary>
         /// <param name="regenerate"></param>
+        /// <param name="wholepoems"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("generaterelatedsectionsinfo")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartGeneratingRelatedSectionsInfo(bool regenerate = true)
+        public IActionResult StartGeneratingRelatedSectionsInfo(bool regenerate, bool wholepoems)
         {
             RServiceResult<bool> res =
-                 _ganjoorService.StartGeneratingRelatedSectionsInfo(regenerate);
+                 _ganjoorService.StartGeneratingRelatedSectionsInfo(regenerate, wholepoems);
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);

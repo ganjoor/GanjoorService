@@ -125,8 +125,9 @@ namespace RMuseum.Services.Implementation
         /// start generating related sections info
         /// </summary>
         /// <param name="regenerate"></param>
+        /// <param name="wholepoems"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartGeneratingRelatedSectionsInfo(bool regenerate)
+        public RServiceResult<bool> StartGeneratingRelatedSectionsInfo(bool regenerate, bool wholepoems)
         {
             try
             {
@@ -137,14 +138,18 @@ namespace RMuseum.Services.Implementation
                                 using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                 {
                                     LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                    var job = (await jobProgressServiceEF.NewJob("GeneratingRelatedSectionsInfo", "Query")).Result;
+                                    var job = (await jobProgressServiceEF.NewJob($"GeneratingRelatedSectionsInfo - {wholepoems}", "Query")).Result;
                                     int percent = 0;
+                                    int percentMul = wholepoems ? 100 : 10000;
                                     try
                                     {
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Query");
 
-                                        var sections = await context.GanjoorPoemSections.AsNoTracking().Where(p => !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).ToListAsync();
+                                        var sections = 
+                                            await context.GanjoorPoemSections.AsNoTracking()
+                                            .Where(p => ((wholepoems && p.SectionType == PoemSectionType.WholePoem) || (!wholepoems && p.SectionType != PoemSectionType.WholePoem)) 
+                                            && !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).ToListAsync();
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating Related Sections");
 
@@ -155,7 +160,7 @@ namespace RMuseum.Services.Implementation
                                                 if (await context.GanjoorCachedRelatedSections.AnyAsync(r => r.PoemId == sections[i].PoemId && r.SectionIndex == sections[i].Index))
                                                     continue;
                                             }
-                                            if (i * 10000 / sections.Count > percent)
+                                            if (i * percentMul / sections.Count > percent)
                                             {
                                                 percent++;
                                                 await jobProgressServiceEF.UpdateJob(job.Id, percent);
