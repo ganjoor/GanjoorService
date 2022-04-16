@@ -1623,11 +1623,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartGeneratingRelatedSectionsInfo(System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.StartGeneratingRelatedSectionsInfo(System.Boolean,System.Boolean)">
             <summary>
             start generating related sections info
             </summary>
             <param name="regenerate"></param>
+            <param name="wholepoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetNextGanjoorPoemProbableMetre">
@@ -11619,11 +11620,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartGeneratingRelatedSectionsInfo(System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.StartGeneratingRelatedSectionsInfo(System.Boolean,System.Boolean)">
             <summary>
             start generating related sections info
             </summary>
             <param name="regenerate"></param>
+            <param name="wholepoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetNextGanjoorPoemProbableMetre">
@@ -13442,11 +13444,12 @@
             <param name="rhyme"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingRelatedSectionsInfo(System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingRelatedSectionsInfo(System.Boolean,System.Boolean)">
             <summary>
             start generating related sections info
             </summary>
             <param name="regenerate"></param>
+            <param name="wholepoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBuildingSitemap">

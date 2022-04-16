@@ -92,6 +92,30 @@ namespace RMuseum.Services.Implementation
                 {
                     r++;
 
+                    var fullUrl = relatedSection.Poem.FullUrl;
+                    if(section.SectionType == PoemSectionType.Couplet)
+                    {
+                        var firstSectionVerse = await context.GanjoorVerses.AsNoTracking()
+                                                    .Where
+                                                    (v =>
+                                                        v.PoemId == section.PoemId
+                                                        &&
+                                                        (
+                                                        (section.VerseType == VersePoemSectionType.Second && v.SecondSectionIndex == section.Index)
+                                                        ||
+                                                        (section.VerseType == VersePoemSectionType.Third && v.ThirdSectionIndex == section.Index)
+                                                         ||
+                                                        (section.VerseType == VersePoemSectionType.Forth && v.ForthSectionIndex == section.Index)
+                                                        )
+                                                    )
+                                                    .OrderBy(v => v.VOrder)
+                                                    .FirstOrDefaultAsync();
+                        if(firstSectionVerse != null)
+                        {
+                            fullUrl += $"#bn{firstSectionVerse.CoupletIndex + 1}";
+                        }
+                    }
+
                     GanjoorCachedRelatedSection newRelatedPoem = new GanjoorCachedRelatedSection()
                     {
                         PoemId = section.PoemId,
@@ -101,7 +125,7 @@ namespace RMuseum.Services.Implementation
                         PoetName = relatedSection.Poet.Nickname,
                         PoetImageUrl = $"/api/ganjoor/poet/image{(await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == relatedSection.PoetId).AsNoTracking().SingleAsync()).FullUrl}.gif",
                         FullTitle = relatedSection.Poem.FullTitle,
-                        FullUrl = relatedSection.Poem.FullUrl,
+                        FullUrl = fullUrl,
                         PoetMorePoemsLikeThisCount = 0,
                         HtmlExcerpt = GetPoemHtmlExcerpt(relatedSection.HtmlText)
                     };
