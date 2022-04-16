@@ -40,9 +40,9 @@ namespace GanjooRazor.Pages
             string metre = Request.Query["v"];
             string rhyme = Request.Query["g"];
            
-            string auther = string.IsNullOrEmpty(Request.Query["a"]) ? "0" : Request.Query["a"];
+            string author = string.IsNullOrEmpty(Request.Query["a"]) ? "0" : Request.Query["a"];
 
-            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={metre}&rhyme={rhyme}&poetId={auther}";
+            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={metre}&rhyme={rhyme}&poetId={author}";
             var response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
@@ -55,9 +55,9 @@ namespace GanjooRazor.Pages
 
             GanjoorPage.Title = "شعرها یا ابیات ";
 
-            if (auther != "0")
+            if (author != "0")
             {
-                var poetInfo = Poets.Where(p => p.Id == int.Parse(auther)).SingleOrDefault();
+                var poetInfo = Poets.Where(p => p.Id == int.Parse(author)).SingleOrDefault();
                 if(poetInfo != null)
                 {
                     GanjoorPage.Title += $"{poetInfo.Nickname} ";
@@ -96,10 +96,11 @@ namespace GanjooRazor.Pages
 
             if (paginationMetadata.totalPages > 1)
             {
+                string authorParam = author != "0" ? $"&amp;a={author}" : "";
                 GanjoorPage.Title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
                 if (paginationMetadata.currentPage > 3)
                 {
-                    htmlText += $"[<a href=\"/simi/?v={Uri.EscapeDataString(metre)}&g={Uri.EscapeDataString(rhyme)}&page=1\">صفحهٔ اول</a>] …";
+                    htmlText += $"[<a href=\"/simi/?v={Uri.EscapeDataString(metre)}&amp;g={Uri.EscapeDataString(rhyme)}&amp;page=1{authorParam}\">صفحهٔ اول</a>] …";
                 }
                 for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
                 {
@@ -112,14 +113,14 @@ namespace GanjooRazor.Pages
                         }
                         else
                         {
-                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(metre)}&g={Uri.EscapeDataString(rhyme)}&page={i}\">{i.ToPersianNumbers()}</a>";
+                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(metre)}&amp;g={Uri.EscapeDataString(rhyme)}&amp;page={i}{authorParam}\">{i.ToPersianNumbers()}</a>";
                         }
                         htmlText += "] ";
                     }
                 }
                 if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
                 {
-                    htmlText += $"… [<a href=\"/simi/?v={Uri.EscapeDataString(metre)}&g={Uri.EscapeDataString(rhyme)}&page={paginationMetadata.totalPages}\">صفحهٔ آخر</a>]";
+                    htmlText += $"… [<a href=\"/simi/?v={Uri.EscapeDataString(metre)}&amp;g={Uri.EscapeDataString(rhyme)}&amp;page={paginationMetadata.totalPages}{authorParam}\">صفحهٔ آخر</a>]";
                 }
             }
 
