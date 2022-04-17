@@ -5821,6 +5821,16 @@
             excerpt
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.TargetPoemId">
+            <summary>
+            target poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.TargetSectionIndex">
+            <summary>
+            target section index
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection.PoetMorePoemsLikeThisCount">
             <summary>
             other poems

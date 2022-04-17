@@ -127,7 +127,9 @@ namespace RMuseum.Services.Implementation
                         FullTitle = relatedSection.Poem.FullTitle,
                         FullUrl = fullUrl,
                         PoetMorePoemsLikeThisCount = 0,
-                        HtmlExcerpt = GetPoemHtmlExcerpt(relatedSection.HtmlText)
+                        HtmlExcerpt = GetPoemHtmlExcerpt(relatedSection.HtmlText),
+                        TargetPoemId = relatedSection.PoemId,
+                        TargetSectionIndex = relatedSection.Index,
                     };
 
                     GanjoorCachedRelatedSections.Add(newRelatedPoem);

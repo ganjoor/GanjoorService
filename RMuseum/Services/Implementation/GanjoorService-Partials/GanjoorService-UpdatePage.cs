@@ -198,9 +198,6 @@ namespace RMuseum.Services.Implementation
                     dbPoem.SourceUrlSlug = pageData.SourceUrlSlug;
 
                    
-
-
-                   
                     dbPoem.OldTag = pageData.OldTag;
                     dbPoem.OldTagPageUrl = pageData.OldTagPageUrl;
                     dbPoem.MixedModeOrder = pageData.MixedModeOrder;
@@ -219,11 +216,9 @@ namespace RMuseum.Services.Implementation
                     dbPoem.PlainText = PreparePlainText(verses);
 
                     context.GanjoorPoems.Update(dbPoem);
-
-
+                    
                     var sections = await context.GanjoorPoemSections.Where(s => s.PoemId == dbPoem.Id && s.SectionType == PoemSectionType.WholePoem).OrderBy(s => s.VerseType).ToListAsync();
                     GanjoorPoemSection mainSection = sections.Count > 0 ? sections[0] : null;
-
 
                     var oldVerses = await context.GanjoorVerses.Where(v => v.PoemId == id).ToListAsync();
 
@@ -265,18 +260,6 @@ namespace RMuseum.Services.Implementation
                     await context.SaveChangesAsync();
 
                     await _FillPoemCoupletIndices(context, id);
-
-                    var excerptsInRelatedCaches = await context.GanjoorCachedRelatedPoems.Where(p => p.FullUrl == dbPoem.FullUrl).ToListAsync();
-                    if (excerptsInRelatedCaches.Count > 0)
-                    {
-                        var newExcerpt = GetPoemHtmlExcerpt(dbPoem.HtmlText);
-                        foreach (var excerptsInRelatedCache in excerptsInRelatedCaches)
-                        {
-                            excerptsInRelatedCache.HtmlExcerpt = newExcerpt;
-                        }
-                        context.GanjoorCachedRelatedPoems.UpdateRange(excerptsInRelatedCaches);
-                    }
-
                    
                     if (mainSection != null)
                     {
@@ -316,13 +299,13 @@ namespace RMuseum.Services.Implementation
                                 {
                                         if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
                                         {
-                                            await _UpdateRelatedPoems(inlineContext, (int)oldMetreId, oldRhymeLetters);
+                                            await _UpdateRelatedSections(inlineContext, (int)oldMetreId, oldRhymeLetters);
                                             await inlineContext.SaveChangesAsync();
                                         }
 
                                         if (mainSection.GanjoorMetreId != null && !string.IsNullOrEmpty(mainSection.RhymeLetters))
                                         {
-                                            await _UpdateRelatedPoems(inlineContext, (int)mainSection.GanjoorMetreId, mainSection.RhymeLetters);
+                                            await _UpdateRelatedSections(inlineContext, (int)mainSection.GanjoorMetreId, mainSection.RhymeLetters);
                                             await inlineContext.SaveChangesAsync();
                                         }
                                     }
@@ -415,13 +398,13 @@ namespace RMuseum.Services.Implementation
                                     {
                                         if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
                                         {
-                                            await _UpdateRelatedPoems(inlineContext, (int)oldMetreId, oldRhymeLetters);
+                                            await _UpdateRelatedSections(inlineContext, (int)oldMetreId, oldRhymeLetters);
                                             await inlineContext.SaveChangesAsync();
                                         }
 
                                         if (secondSection.GanjoorMetreId != null && !string.IsNullOrEmpty(secondSection.RhymeLetters))
                                         {
-                                            await _UpdateRelatedPoems(inlineContext, (int)secondSection.GanjoorMetreId, secondSection.RhymeLetters);
+                                            await _UpdateRelatedSections(inlineContext, (int)secondSection.GanjoorMetreId, secondSection.RhymeLetters);
                                             await inlineContext.SaveChangesAsync();
                                         }
                                     }
@@ -513,13 +496,13 @@ namespace RMuseum.Services.Implementation
                                     {
                                         if (oldMetreId != null && !string.IsNullOrEmpty(oldRhymeLetters))
                                         {
-                                            await _UpdateRelatedPoems(inlineContext, (int)oldMetreId, oldRhymeLetters);
+                                            await _UpdateRelatedSections(inlineContext, (int)oldMetreId, oldRhymeLetters);
                                             await inlineContext.SaveChangesAsync();
                                         }
 
                                         if (thirdSection.GanjoorMetreId != null && !string.IsNullOrEmpty(thirdSection.RhymeLetters))
                                         {
-                                            await _UpdateRelatedPoems(inlineContext, (int)thirdSection.GanjoorMetreId, thirdSection.RhymeLetters);
+                                            await _UpdateRelatedSections(inlineContext, (int)thirdSection.GanjoorMetreId, thirdSection.RhymeLetters);
                                             await inlineContext.SaveChangesAsync();
                                         }
                                     }
@@ -559,7 +542,7 @@ namespace RMuseum.Services.Implementation
                                             {
                                                 if (oldCoupletSection.GanjoorMetreId != null && !string.IsNullOrEmpty(oldCoupletSection.RhymeLetters))
                                                 {
-                                                    await _UpdateRelatedPoems(inlineContext, (int)oldCoupletSection.GanjoorMetreId, oldCoupletSection.RhymeLetters);
+                                                    await _UpdateRelatedSections(inlineContext, (int)oldCoupletSection.GanjoorMetreId, oldCoupletSection.RhymeLetters);
                                                     await inlineContext.SaveChangesAsync();
                                                 }
                                             }
@@ -683,7 +666,7 @@ namespace RMuseum.Services.Implementation
                                             {
                                                 if (newCoupletSection.GanjoorMetreId != null && !string.IsNullOrEmpty(newCoupletSection.RhymeLetters))
                                                 {
-                                                    await _UpdateRelatedPoems(inlineContext, (int)newCoupletSection.GanjoorMetreId, newCoupletSection.RhymeLetters);
+                                                    await _UpdateRelatedSections(inlineContext, (int)newCoupletSection.GanjoorMetreId, newCoupletSection.RhymeLetters);
                                                     await inlineContext.SaveChangesAsync();
                                                 }
                                             }
@@ -694,6 +677,43 @@ namespace RMuseum.Services.Implementation
                             }
                         }
                         
+                    }
+
+                    var mySections = await context.GanjoorPoemSections.Where(s => s.PoemId == id).ToListAsync();
+                    foreach (var section in mySections)
+                    {
+                        var verseSections = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == id
+                            && 
+                            (
+                            (section.VerseType == VersePoemSectionType.First && v.SectionIndex == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Second && v.SecondSectionIndex == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Third && v.ThirdSectionIndex == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Forth && v.ForthSectionIndex == section.Index)
+                            )
+                        ).OrderBy(v => v.VOrder).ToListAsync();
+                        section.HtmlText = PrepareHtmlText(verseSections);
+                        section.PlainText = PreparePlainText(verseSections);
+                    }
+                    context.UpdateRange(mySections);
+                    await context.SaveChangesAsync();
+
+                    
+
+                    var excerptsInRelatedCaches = await context.GanjoorCachedRelatedSections.Where(p => p.TargetPoemId == id).ToListAsync();
+                    if (excerptsInRelatedCaches.Count > 0)
+                    {
+                        foreach (var excerptsInRelatedCache in excerptsInRelatedCaches)
+                        {
+                            var targetSection = mySections.Where(s => s.Index == excerptsInRelatedCache.TargetSectionIndex).SingleOrDefault();
+                            if(targetSection != null)
+                            {
+                                excerptsInRelatedCache.HtmlExcerpt = GetPoemHtmlExcerpt(targetSection.HtmlText);
+                            }
+                        }
+                        context.GanjoorCachedRelatedSections.UpdateRange(excerptsInRelatedCaches);
                     }
 
                 }

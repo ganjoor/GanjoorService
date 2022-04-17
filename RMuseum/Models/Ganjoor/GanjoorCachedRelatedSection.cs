@@ -58,6 +58,16 @@
         public string HtmlExcerpt { get; set; }
 
         /// <summary>
+        /// target poem id
+        /// </summary>
+        public int TargetPoemId { get; set; }
+
+        /// <summary>
+        /// target section index
+        /// </summary>
+        public int TargetSectionIndex { get; set; }
+
+        /// <summary>
         /// other poems
         /// </summary>
         public int PoetMorePoemsLikeThisCount { get; set; }
