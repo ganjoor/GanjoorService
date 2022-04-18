@@ -6807,6 +6807,131 @@
             had any effect on poem after moderation? effective in history
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemFormat">
+            <summary>
+            poem format
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Unknown">
+            <summary>
+            unknown
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Ghazal">
+            <summary>
+            غزل
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Ghaside">
+            <summary>
+            قصیده
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Masnavi">
+            <summary>
+            مثنوی
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Ghete">
+            <summary>
+            قطعه
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Robaee">
+            <summary>
+            رباعی
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Dobeyti">
+            <summary>
+            دوبیتی
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Generic">
+            <summary>
+            غزل/قصیده/قطعه
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.TarkibBand">
+            <summary>
+            ترکیب بند
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Takbeyt">
+            <summary>
+            تک بیت
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Nimaee">
+            <summary>
+            نیمایی
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.TarjeeBand">
+            <summary>
+            ترکیب بند
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Mosammat3">
+            <summary>
+            مسمط مثلث
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Mostazad">
+            <summary>
+            مستزاد
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.RobaeeMostazad">
+            <summary>
+            رباعی مستزاد
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Mosammat4">
+            <summary>
+            مسمط مربع
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Mosammat5">
+            <summary>
+            مسمط مخمس
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Sepeed">
+            <summary>
+            سپید
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Now">
+            <summary>
+            نیمایی یا سپید
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Mosammat6">
+            <summary>
+            مسمط مسدس
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Mosammat8">
+            <summary>
+            مسمط مثمن
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Mosammat">
+            <summary>
+            مسمط
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.ChaharPare">
+            <summary>
+            چهارپاره
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.MultiBand">
+            <summary>
+            چند بندی
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre">
             <summary>
             Probable Prosody Information for a poem
