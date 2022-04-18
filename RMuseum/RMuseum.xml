@@ -13154,6 +13154,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -13309,6 +13312,14 @@
             <summary>
             start filling poems couplet indices
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ModeratePoemCorrection(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
+            <summary>
+            moderate poem correction
+            </summary>
+            <param name="userId"></param>
+            <param name="moderation"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartUpdatingMundexPage(System.Guid)">
@@ -13926,14 +13937,6 @@
             <summary>
             unreview correction count
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ModeratePoemCorrection(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
-            <summary>
-            moderate poem correction
-            </summary>
-            <param name="userId"></param>
-            <param name="moderation"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._GetRandomPoemId(System.Int32,System.Int32)">
