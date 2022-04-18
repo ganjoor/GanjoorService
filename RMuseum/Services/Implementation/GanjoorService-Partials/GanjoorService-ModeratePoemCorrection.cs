@@ -140,7 +140,7 @@ namespace RMuseum.Services.Implementation
                             (section.VerseType == VersePoemSectionType.Third && v.ThirdSectionIndex == section.Index)
                             ||
                             (section.VerseType == VersePoemSectionType.Forth && v.ForthSectionIndex == section.Index)
-                            ).ToList();
+                            ).OrderBy(v => v.VOrder).ToList();
                     if(sectionVerses.Any(v => modifiedVerses.Contains(v)))
                     {
                         section.HtmlText = PrepareHtmlText(sectionVerses);
