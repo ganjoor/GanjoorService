@@ -95,5 +95,17 @@ namespace RMuseum.Models.Ganjoor
         /// </summary>
         [NotMapped]
         public GanjoorCachedRelatedSection[] Top6RelatedSections { get; set; }
+
+        /// <summary>
+        /// old metre id to see it needs refreshing related sections
+        /// </summary>
+        [NotMapped]
+        public int? OldGanjoorMetreId { get; set; }
+
+        /// <summary>
+        /// old rhyme letters to see it needs refreshing related sections
+        /// </summary>
+        [NotMapped]
+        public string OldRhymeLetters { get; set; }
     }
 }

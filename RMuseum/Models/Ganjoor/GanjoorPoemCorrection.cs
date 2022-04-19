@@ -113,6 +113,51 @@ namespace RMuseum.Models.Ganjoor
         /// had any effect on poem after moderation? effective in history
         /// </summary>
         public bool AffectedThePoem { get; set; }
+
+        /// <summary>
+        /// rhythm 2
+        /// </summary>
+        public string Rhythm2 { get; set; }
+
+        /// <summary>
+        /// original rhythm 2
+        /// </summary>
+        public string OriginalRhythm2 { get; set; }
+
+        /// <summary>
+        /// review result for rhythm 2
+        /// </summary>
+        public CorrectionReviewResult Rhythm2Result { get; set; }
+
+        /// <summary>
+        /// rhythm 3
+        /// </summary>
+        public string Rhythm3 { get; set; }
+
+        /// <summary>
+        /// original rhythm 3
+        /// </summary>
+        public string OriginalRhythm3 { get; set; }
+
+        /// <summary>
+        /// review result for rhythm 3
+        /// </summary>
+        public CorrectionReviewResult Rhythm3Result { get; set; }
+
+        /// <summary>
+        /// rhythm 4
+        /// </summary>
+        public string Rhythm4 { get; set; }
+
+        /// <summary>
+        /// original rhythm 4
+        /// </summary>
+        public string OriginalRhythm4 { get; set; }
+
+        /// <summary>
+        /// review result for rhythm 4
+        /// </summary>
+        public CorrectionReviewResult Rhythm4Result { get; set; }
     }
 
     

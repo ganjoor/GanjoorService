@@ -6807,6 +6807,51 @@
             had any effect on poem after moderation? effective in history
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Rhythm2">
+            <summary>
+            rhythm 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.OriginalRhythm2">
+            <summary>
+            original rhythm 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Rhythm2Result">
+            <summary>
+            review result for rhythm 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Rhythm3">
+            <summary>
+            rhythm 3
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.OriginalRhythm3">
+            <summary>
+            original rhythm 3
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Rhythm3Result">
+            <summary>
+            review result for rhythm 3
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Rhythm4">
+            <summary>
+            rhythm 4
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.OriginalRhythm4">
+            <summary>
+            original rhythm 4
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Rhythm4Result">
+            <summary>
+            review result for rhythm 4
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemFormat">
             <summary>
             poem format
@@ -7048,6 +7093,16 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Top6RelatedSections">
             <summary>
             top 6 related sections
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.OldGanjoorMetreId">
+            <summary>
+            old metre id to see it needs refreshing related sections
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.OldRhymeLetters">
+            <summary>
+            old rhyme letters to see it needs refreshing related sections
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
@@ -8715,6 +8770,51 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.RhythmResult">
             <summary>
             review result for rhythm
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Rhythm2">
+            <summary>
+            rhythm 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.OriginalRhythm2">
+            <summary>
+            original rhythm 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Rhythm2Result">
+            <summary>
+            review result for rhythm 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Rhythm3">
+            <summary>
+            rhythm 3
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.OriginalRhythm3">
+            <summary>
+            original rhythm 3
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Rhythm3Result">
+            <summary>
+            review result for rhythm 3
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Rhythm4">
+            <summary>
+            rhythm 4
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.OriginalRhythm4">
+            <summary>
+            original rhythm 4
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Rhythm4Result">
+            <summary>
+            review result for rhythm 4
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel">

@@ -34,6 +34,7 @@ namespace RMuseum.Services.Implementation
             dbCorrection.ApplicationOrder = await _context.GanjoorPoemCorrections.Where(c => c.Reviewed).AnyAsync() ? 1 + await _context.GanjoorPoemCorrections.Where(c => c.Reviewed).MaxAsync(c => c.ApplicationOrder) : 1;
             dbCorrection.Reviewed = true;
             dbCorrection.AffectedThePoem = false;
+            dbCorrection.ReviewNote = moderation.ReviewNote;
 
             if (dbCorrection == null)
                 return new RServiceResult<GanjoorPoemCorrectionViewModel>(null);
@@ -47,7 +48,7 @@ namespace RMuseum.Services.Implementation
                 if (moderation.Result == CorrectionReviewResult.NotReviewed)
                     return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات عنوان بررسی نشده است.");
                 dbCorrection.Result = moderation.Result;
-                dbCorrection.ReviewNote = moderation.ReviewNote;
+                
                 if (dbCorrection.Result == CorrectionReviewResult.Approved)
                 {
                     dbCorrection.AffectedThePoem = true;
@@ -57,36 +58,89 @@ namespace RMuseum.Services.Implementation
             }
 
             var sections = await _context.GanjoorPoemSections.Where(s => s.PoemId == moderation.PoemId).OrderBy(s => s.SectionType).ThenBy(s => s.Index).ToListAsync();
-            
-
-            bool metreChanged = false;
+            var mainSection = sections.First(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
+            if (mainSection == null)
+            {
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "شعر فاقد بخش اصلی برای ذخیرهٔ وزن است.");
+            }
             if (dbCorrection.Rhythm != null)
             {
                 if (moderation.RhythmResult == CorrectionReviewResult.NotReviewed)
                     return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات وزن بررسی نشده است.");
                 dbCorrection.RhythmResult = moderation.RhythmResult;
-                dbCorrection.ReviewNote = moderation.ReviewNote;
                 if (dbCorrection.RhythmResult == CorrectionReviewResult.Approved)
                 {
                     dbCorrection.AffectedThePoem = true;
-                    var mainSection = sections.First(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
-                    if (mainSection == null)
+                    mainSection.OldGanjoorMetreId = mainSection.GanjoorMetreId;
+                    if (moderation.Rhythm == "")
                     {
-                        return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "شعر فاقد بخش اصلی برای ذخیرهٔ وزن است.");
+                        mainSection.GanjoorMetreId = null;
                     }
-                    var metre = await _context.GanjoorMetres.AsNoTracking().Where(m => m.Rhythm == moderation.Rhythm).SingleOrDefaultAsync();
-                    if (metre == null)
+                    else
                     {
-                        metre = new GanjoorMetre()
+                        var metre = await _context.GanjoorMetres.AsNoTracking().Where(m => m.Rhythm == moderation.Rhythm).SingleOrDefaultAsync();
+                        if (metre == null)
                         {
-                            Rhythm = moderation.Rhythm,
-                            VerseCount = 0
-                        };
-                        _context.GanjoorMetres.Add(metre);
-                        await _context.SaveChangesAsync();
+                            metre = new GanjoorMetre()
+                            {
+                                Rhythm = moderation.Rhythm,
+                                VerseCount = 0
+                            };
+                            _context.GanjoorMetres.Add(metre);
+                            await _context.SaveChangesAsync();
+                        }
+                        mainSection.GanjoorMetreId = metre.Id;
                     }
-                    metreChanged = mainSection.GanjoorMetreId != metre.Id;
-                    mainSection.GanjoorMetreId = metre.Id;
+                }
+            }
+
+            if (dbCorrection.Rhythm2 != null)
+            {
+                if (moderation.Rhythm2Result == CorrectionReviewResult.NotReviewed)
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات وزن دوم بررسی نشده است.");
+                dbCorrection.Rhythm2Result = moderation.RhythmResult;
+                if (dbCorrection.Rhythm2Result == CorrectionReviewResult.Approved)
+                {
+                    dbCorrection.AffectedThePoem = true;
+                    var secondMetreSection = sections.First(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.Second);
+                    if (secondMetreSection == null)
+                    {
+                        secondMetreSection = new GanjoorPoemSection()
+                        {
+                            PoemId = dbPoem.Id,
+                            PoetId = mainSection.PoetId,
+                            SectionType = PoemSectionType.WholePoem,
+                            VerseType = VersePoemSectionType.Second,
+                            Index = sections.Max(s => s.Index) + 1,
+                            Number = sections.Max(s => s.Index) + 1 + 1,
+                            GanjoorMetreId = null,
+                            RhymeLetters = mainSection.RhymeLetters,
+                            HtmlText = mainSection.HtmlText,
+                            PlainText = mainSection.PlainText,
+                            PoemFormat = mainSection.PoemFormat,
+                        };
+                        _context.Add(secondMetreSection);
+                    }
+                    secondMetreSection.OldGanjoorMetreId = secondMetreSection.GanjoorMetreId;
+                    if (moderation.Rhythm == "")
+                    {
+                        secondMetreSection.GanjoorMetreId = null;
+                    }
+                    else
+                    {
+                        var metre = await _context.GanjoorMetres.AsNoTracking().Where(m => m.Rhythm == moderation.Rhythm).SingleOrDefaultAsync();
+                        if (metre == null)
+                        {
+                            metre = new GanjoorMetre()
+                            {
+                                Rhythm = moderation.Rhythm,
+                                VerseCount = 0
+                            };
+                            _context.GanjoorMetres.Add(metre);
+                            await _context.SaveChangesAsync();
+                        }
+                        secondMetreSection.GanjoorMetreId = metre.Id;
+                    }
                 }
             }
 
@@ -128,7 +182,7 @@ namespace RMuseum.Services.Implementation
 
             await _context.SaveChangesAsync();
 
-            if (metreChanged || modifiedVerses.Count > 0)
+            if (modifiedVerses.Count > 0)
             {
                 foreach (var section in sections)
                 {
