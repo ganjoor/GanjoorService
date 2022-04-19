@@ -6902,7 +6902,7 @@
             سپید
             </summary>
         </member>
-        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.Now">
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.New">
             <summary>
             نیمایی یا سپید
             </summary>
@@ -7020,6 +7020,11 @@
             metre
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.GanjoorMetreRefSectionIndex">
+            <summary>
+            for non WholePoem sections, there must be a reference section for meters in order to make them updatable
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.RhymeLetters">
             <summary>
             rhyme letters
@@ -7033,6 +7038,11 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.HtmlText">
             <summary>
             verses text as html (ganjoor.net format)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.PoemFormat">
+            <summary>
+            valid for whole poem sections
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Top6RelatedSections">

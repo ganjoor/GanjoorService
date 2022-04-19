@@ -66,6 +66,11 @@ namespace RMuseum.Models.Ganjoor
         public virtual GanjoorMetre GanjoorMetre { get; set; }
 
         /// <summary>
+        /// for non WholePoem sections, there must be a reference section for meters in order to make them updatable
+        /// </summary>
+        public int? GanjoorMetreRefSectionIndex { get; set; }
+
+        /// <summary>
         /// rhyme letters
         /// </summary>
         public string RhymeLetters { get; set; }
@@ -79,6 +84,11 @@ namespace RMuseum.Models.Ganjoor
         /// verses text as html (ganjoor.net format)
         /// </summary>
         public string HtmlText { get; set; }
+
+        /// <summary>
+        /// valid for whole poem sections
+        /// </summary>
+        public GanjoorPoemFormat? PoemFormat { get; set; }
 
         /// <summary>
         /// top 6 related sections
