@@ -107,5 +107,11 @@ namespace RMuseum.Models.Ganjoor
         /// </summary>
         [NotMapped]
         public string OldRhymeLetters { get; set; }
+
+        /// <summary>
+        /// modified
+        /// </summary>
+        [NotMapped]
+        public bool Modified { get; set; }
     }
 }

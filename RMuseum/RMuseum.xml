@@ -7105,6 +7105,11 @@
             old rhyme letters to see it needs refreshing related sections
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Modified">
+            <summary>
+            modified
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
             <summary>
             poem translation
