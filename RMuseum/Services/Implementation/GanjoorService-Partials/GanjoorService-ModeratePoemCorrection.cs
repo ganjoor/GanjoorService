@@ -142,38 +142,82 @@ namespace RMuseum.Services.Implementation
 
                     dbCorrection.AffectedThePoem = true;
                     var secondMetreSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.Second);
-                    if (secondMetreSection == null)
-                    {
-                        maxSections++;
-                        secondMetreSection = new GanjoorPoemSection()
-                        {
-                            PoemId = dbPoem.Id,
-                            PoetId = mainSection.PoetId,
-                            SectionType = PoemSectionType.WholePoem,
-                            VerseType = VersePoemSectionType.Second,
-                            Index = maxSections,
-                            Number = maxSections + 1,
-                            GanjoorMetreId = null,
-                            RhymeLetters = mainSection.RhymeLetters,
-                            HtmlText = mainSection.HtmlText,
-                            PlainText = mainSection.PlainText,
-                            PoemFormat = mainSection.PoemFormat,
-                        };
-                        _context.Add(secondMetreSection);
-
-                        foreach (var secondLevelSections in sections.Where(s => s.SectionType != PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.Second).OrderBy(s => s.Index))
-                        {
-                            maxSections++;
-
-                        }
-                    }
-                    secondMetreSection.OldGanjoorMetreId = secondMetreSection.GanjoorMetreId;
+                    
                     if (moderation.Rhythm == "")
                     {
-                        secondMetreSection.GanjoorMetreId = null;
+                        if(secondMetreSection != null)
+                        {
+                            foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == secondMetreSection.Index))
+                            {
+                                _context.Remove(section);
+                            }
+                            _context.Remove(secondMetreSection);
+
+                            foreach (var verse in poemVerses)
+                            {
+                                verse.SecondSectionIndex = null;
+                                verse.ThirdSectionIndex = null;
+                                _context.Update(verse);
+                            }
+                        }
                     }
                     else
                     {
+                        if (secondMetreSection == null)
+                        {
+                            maxSections++;
+                            secondMetreSection = new GanjoorPoemSection()
+                            {
+                                PoemId = dbPoem.Id,
+                                PoetId = mainSection.PoetId,
+                                SectionType = PoemSectionType.WholePoem,
+                                VerseType = VersePoemSectionType.Second,
+                                Index = maxSections,
+                                Number = maxSections + 1,
+                                GanjoorMetreId = null,
+                                RhymeLetters = mainSection.RhymeLetters,
+                                HtmlText = mainSection.HtmlText,
+                                PlainText = mainSection.PlainText,
+                                PoemFormat = mainSection.PoemFormat,
+                            };
+                            _context.Add(secondMetreSection);
+                            sections.Add(secondMetreSection);
+
+                            foreach (var verse in poemVerses)
+                            {
+                                verse.SecondSectionIndex = secondMetreSection.Index;
+                            }
+
+                            foreach (var secondLevelSections in sections.Where(s => s.SectionType != PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.Second).OrderBy(s => s.Index))
+                            {
+                                maxSections++;
+                                var newSection = new GanjoorPoemSection()
+                                {
+                                    PoemId = secondLevelSections.PoemId,
+                                    PoetId = secondLevelSections.PoetId,
+                                    SectionType = secondLevelSections.SectionType,
+                                    VerseType = VersePoemSectionType.Third,
+                                    Index = maxSections,
+                                    Number = maxSections + 1,
+                                    GanjoorMetreId = null,
+                                    RhymeLetters = secondLevelSections.RhymeLetters,
+                                    HtmlText = secondLevelSections.HtmlText,
+                                    PlainText = secondLevelSections.PlainText,
+                                    PoemFormat = secondLevelSections.PoemFormat,
+                                    GanjoorMetreRefSectionIndex = secondMetreSection.Index,
+                                };
+                                _context.Add(newSection);
+                                sections.Add(newSection);
+
+                                foreach (var verse in poemVerses)
+                                {
+                                    verse.ThirdSectionIndex = newSection.Index;
+                                }
+                            }
+                            _context.UpdateRange(poemVerses);
+                        }
+                        secondMetreSection.OldGanjoorMetreId = secondMetreSection.GanjoorMetreId;
+
                         var metre = await _context.GanjoorMetres.AsNoTracking().Where(m => m.Rhythm == moderation.Rhythm).SingleOrDefaultAsync();
                         if (metre == null)
                         {
@@ -186,14 +230,19 @@ namespace RMuseum.Services.Implementation
                             await _context.SaveChangesAsync();
                         }
                         secondMetreSection.GanjoorMetreId = metre.Id;
+                        secondMetreSection.Modified = secondMetreSection.GanjoorMetreId != secondMetreSection.OldGanjoorMetreId;
+
+                        foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == secondMetreSection.Index))
+                        {
+                            section.GanjoorMetreId = secondMetreSection.GanjoorMetreId;
+                            section.Modified = secondMetreSection.Modified;
+                        }
                     }
                 }
             }
 
             if (moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count)
                 return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count");
-
-            
             
             var modifiedVerses = new List<GanjoorVerse>();
 
