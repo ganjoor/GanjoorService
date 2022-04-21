@@ -7537,22 +7537,22 @@
             couplet index
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SectionIndex">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SectionIndex1">
             <summary>
             GanjoorPoemSection index
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SecondSectionIndex">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SectionIndex2">
             <summary>
             second GanjoorPoemSection index
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.ThirdSectionIndex">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SectionIndex3">
             <summary>
             third GanjoorPoemSection index
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.ForthSectionIndex">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SectionIndex4">
             <summary>
             forth GanjoorPoemSection index
             </summary>
