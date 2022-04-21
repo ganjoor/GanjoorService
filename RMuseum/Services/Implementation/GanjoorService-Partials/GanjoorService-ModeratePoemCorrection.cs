@@ -29,15 +29,18 @@ namespace RMuseum.Services.Implementation
                 .Where(c => c.Id == moderation.Id)
                 .FirstOrDefaultAsync();
 
+            if (dbCorrection == null)
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null);
+
+            if (!string.IsNullOrEmpty(dbCorrection.Rhythm3) || !string.IsNullOrEmpty(dbCorrection.Rhythm4))
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "انتساب وزن سوم و چهارم هنوز پیاده‌سازی نشده است.");
+
             dbCorrection.ReviewerUserId = userId;
             dbCorrection.ReviewDate = DateTime.Now;
             dbCorrection.ApplicationOrder = await _context.GanjoorPoemCorrections.Where(c => c.Reviewed).AnyAsync() ? 1 + await _context.GanjoorPoemCorrections.Where(c => c.Reviewed).MaxAsync(c => c.ApplicationOrder) : 1;
             dbCorrection.Reviewed = true;
             dbCorrection.AffectedThePoem = false;
             dbCorrection.ReviewNote = moderation.ReviewNote;
-
-            if (dbCorrection == null)
-                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null);
 
             var dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
             var dbPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
@@ -59,10 +62,87 @@ namespace RMuseum.Services.Implementation
 
             var sections = await _context.GanjoorPoemSections.Where(s => s.PoemId == moderation.PoemId).OrderBy(s => s.SectionType).ThenBy(s => s.Index).ToListAsync();
             int maxSections = sections.Count == 0 ? 0 : sections.Max(s => s.Index);
-            //beware: items consisting only of paragraphs have no main setion (mainSection in the following line can legitimately become null)
-            var mainSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
 
             var poemVerses = await _context.GanjoorVerses.Where(p => p.PoemId == dbCorrection.PoemId).OrderBy(v => v.VOrder).ToListAsync();
+
+            if (moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count)
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count");
+            
+            var modifiedVerses = new List<GanjoorVerse>();
+
+            foreach (var moderatedVerse in moderation.VerseOrderText)
+            {
+                if (moderatedVerse.Result == CorrectionReviewResult.NotReviewed)
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"تغییرات مصرع {moderatedVerse.VORder} بررسی نشده است.");
+                var dbVerse = dbCorrection.VerseOrderText.Where(c => c.VORder == moderatedVerse.VORder).Single();
+                dbVerse.Result = moderatedVerse.Result;
+                dbVerse.ReviewNote = moderatedVerse.ReviewNote;
+                if (dbVerse.Result == CorrectionReviewResult.Approved)
+                {
+                    dbCorrection.AffectedThePoem = true;
+                    var poemVerse = poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).Single();
+                    poemVerse.Text = moderatedVerse.Text.Replace("ۀ", "هٔ").Replace("ك", "ک");
+                    modifiedVerses.Add(poemVerse);
+                }
+            }
+
+            if(modifiedVerses.Count > 0)
+            {
+                _context.UpdateRange(modifiedVerses);
+                dbPoem.HtmlText = PrepareHtmlText(poemVerses);
+                dbPoem.PlainText = PreparePlainText(poemVerses);
+                updatePoem = true;
+            }
+
+            if(updatePoem)
+            {
+                _context.Update(dbPoem);
+            }
+
+            if (modifiedVerses.Count > 0)
+            {
+                foreach (var section in sections)
+                {
+                    var sectionVerses = poemVerses.Where(v =>
+                            (section.VerseType == VersePoemSectionType.First && v.SectionIndex == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Second && v.SecondSectionIndex == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Third && v.ThirdSectionIndex == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Forth && v.ForthSectionIndex == section.Index)
+                            ).OrderBy(v => v.VOrder).ToList();
+                    if (sectionVerses.Any(v => modifiedVerses.Contains(v)))
+                    {
+                        section.HtmlText = PrepareHtmlText(sectionVerses);
+                        section.PlainText = PreparePlainText(sectionVerses);
+                        section.Modified = true;
+                        section.OldRhymeLetters = section.RhymeLetters ?? "";
+                        try
+                        {
+                            var newRhyme = LanguageUtils.FindRhyme(sectionVerses);
+                            if (!string.IsNullOrEmpty(newRhyme.Rhyme) &&
+                                (string.IsNullOrEmpty(section.RhymeLetters) || (!string.IsNullOrEmpty(section.RhymeLetters) && newRhyme.Rhyme.Length > section.RhymeLetters.Length))
+                                )
+                            {
+                                
+                                if (section.OldRhymeLetters != newRhyme.Rhyme)
+                                {
+                                    section.RhymeLetters = newRhyme.Rhyme;
+                                }
+                            }
+                        }
+                        catch
+                        {
+
+                        }
+                        _context.Update(section);
+                    }
+                }
+            }
+
+            //beware: items consisting only of paragraphs have no main setion (mainSection in the following line can legitimately become null)
+            var mainSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
 
             if (dbCorrection.Rhythm != null)
             {
@@ -89,6 +169,11 @@ namespace RMuseum.Services.Implementation
                     if (moderation.Rhythm == "")
                     {
                         mainSection.GanjoorMetreId = null;
+
+                        if(sections.Any(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType != VersePoemSectionType.First && s.GanjoorMetreId != null))
+                        {
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "حذف وزن اصلی در حالی که وزنهای دیگری منتسب شده امکان ندارد.");
+                        }
                     }
                     else
                     {
@@ -142,11 +227,16 @@ namespace RMuseum.Services.Implementation
 
                     dbCorrection.AffectedThePoem = true;
                     var secondMetreSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.Second);
-                    
+
                     if (moderation.Rhythm == "")
                     {
-                        if(secondMetreSection != null)
+                        if (secondMetreSection != null)
                         {
+                            if (sections.Any(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType != VersePoemSectionType.First && s.VerseType != VersePoemSectionType.Second && s.GanjoorMetreId != null))
+                            {
+                                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "حذف وزن دوم در حالی که وزنهای سوم یا چهارم منتسب شده امکان ندارد.");
+                            }
+
                             foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == secondMetreSection.Index))
                             {
                                 _context.Remove(section);
@@ -215,6 +305,7 @@ namespace RMuseum.Services.Implementation
                                 }
                             }
                             _context.UpdateRange(poemVerses);
+                            await _context.SaveChangesAsync();
                         }
                         secondMetreSection.OldGanjoorMetreId = secondMetreSection.GanjoorMetreId;
 
@@ -231,102 +322,19 @@ namespace RMuseum.Services.Implementation
                         }
                         secondMetreSection.GanjoorMetreId = metre.Id;
                         secondMetreSection.Modified = secondMetreSection.GanjoorMetreId != secondMetreSection.OldGanjoorMetreId;
+                        _context.Update(secondMetreSection);
 
                         foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == secondMetreSection.Index))
                         {
                             section.GanjoorMetreId = secondMetreSection.GanjoorMetreId;
                             section.Modified = secondMetreSection.Modified;
+                            _context.Update(section);
                         }
                     }
                 }
-            }
-
-            if (moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count)
-                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count");
-            
-            var modifiedVerses = new List<GanjoorVerse>();
-
-            foreach (var moderatedVerse in moderation.VerseOrderText)
-            {
-                if (moderatedVerse.Result == CorrectionReviewResult.NotReviewed)
-                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"تغییرات مصرع {moderatedVerse.VORder} بررسی نشده است.");
-                var dbVerse = dbCorrection.VerseOrderText.Where(c => c.VORder == moderatedVerse.VORder).Single();
-                dbVerse.Result = moderatedVerse.Result;
-                dbVerse.ReviewNote = moderatedVerse.ReviewNote;
-                if (dbVerse.Result == CorrectionReviewResult.Approved)
-                {
-                    dbCorrection.AffectedThePoem = true;
-                    var poemVerse = poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).Single();
-                    poemVerse.Text = moderatedVerse.Text.Replace("ۀ", "هٔ").Replace("ك", "ک");
-                    modifiedVerses.Add(poemVerse);
-                }
-            }
-
-            if(modifiedVerses.Count > 0)
-            {
-                _context.UpdateRange(modifiedVerses);
-                dbPoem.HtmlText = PrepareHtmlText(poemVerses);
-                dbPoem.PlainText = PreparePlainText(poemVerses);
-                updatePoem = true;
-            }
-
-            if(updatePoem)
-            {
-                _context.Update(dbPoem);
             }
 
             await _context.SaveChangesAsync();
-
-            if (modifiedVerses.Count > 0)
-            {
-                foreach (var section in sections)
-                {
-                    var sectionVerses = poemVerses.Where(v =>
-                            (section.VerseType == VersePoemSectionType.First && v.SectionIndex == section.Index)
-                            ||
-                            (section.VerseType == VersePoemSectionType.Second && v.SecondSectionIndex == section.Index)
-                            ||
-                            (section.VerseType == VersePoemSectionType.Third && v.ThirdSectionIndex == section.Index)
-                            ||
-                            (section.VerseType == VersePoemSectionType.Forth && v.ForthSectionIndex == section.Index)
-                            ).OrderBy(v => v.VOrder).ToList();
-                    if(sectionVerses.Any(v => modifiedVerses.Contains(v)))
-                    {
-                        section.HtmlText = PrepareHtmlText(sectionVerses);
-                        section.PlainText = PreparePlainText(sectionVerses);
-                    }
-                }
-            }
-
-
-            /*
-            string originalRhyme = "";
-            if(mainSection != null)
-            {
-                try
-                {
-                    var newRhyme = LanguageUtils.FindRhyme(poemVerses);
-                    if (!string.IsNullOrEmpty(newRhyme.Rhyme) &&
-                        (string.IsNullOrEmpty(mainSection.RhymeLetters) || (!string.IsNullOrEmpty(mainSection.RhymeLetters) && newRhyme.Rhyme.Length > mainSection.RhymeLetters.Length))
-                        )
-                    {
-                        originalRhyme = mainSection.RhymeLetters ?? "";
-                        if(originalRhyme != newRhyme.Rhyme)
-                        {
-                            mainSection.RhymeLetters = newRhyme.Rhyme;
-                            _context.Update(mainSection);
-                        }
-                        
-                    }
-                }
-                catch
-                {
-
-                }
-            }
-            */
-            
-
 
             _context.GanjoorPoemCorrections.Update(dbCorrection);
             await _context.SaveChangesAsync();
