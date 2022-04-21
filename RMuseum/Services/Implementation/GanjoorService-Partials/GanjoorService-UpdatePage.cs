@@ -26,6 +26,10 @@ namespace RMuseum.Services.Implementation
                 if (dbPage == null)
                     return new RServiceResult<GanjoorPageCompleteViewModel>(null);//not found
 
+                if (dbPage.GanjoorPageType == GanjoorPageType.PoemPage)
+                {
+                    return new RServiceResult<GanjoorPageCompleteViewModel>(null, "به‌روزرسانی متن شعر از طریق _UpdatePageAsync غیرفعال شده است.");
+                }
 
 
                 GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()

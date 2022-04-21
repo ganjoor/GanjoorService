@@ -46,6 +46,25 @@ namespace RMuseum.Services.Implementation
             var dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
             var dbPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
 
+            GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
+            {
+                GanjoorPageId = dbPage.Id,
+                MadeObsoleteByUserId = userId,
+                RecordDate = DateTime.Now,
+                Note = $"بررسی پیشنهاد ویرایش با شناسهٔ {dbCorrection.Id}",
+                Title = dbPoem.Title,
+                UrlSlug = dbPoem.UrlSlug,
+                HtmlText = dbPoem.HtmlText,
+                SourceName = dbPoem.SourceName,
+                SourceUrlSlug = dbPoem.SourceUrlSlug,
+                Rhythm = dbPoem.GanjoorMetre == null ? null : dbPoem.GanjoorMetre.Rhythm,
+                RhymeLetters = dbPoem.RhymeLetters,
+                OldTag = dbPoem.OldTag,
+                OldTagPageUrl = dbPoem.OldTagPageUrl
+            };
+            _context.GanjoorPageSnapshots.Add(snapshot);
+            await _context.SaveChangesAsync();
+
             bool updatePoem = false;
             if (dbCorrection.Title != null)
             {
@@ -57,6 +76,7 @@ namespace RMuseum.Services.Implementation
                 {
                     dbCorrection.AffectedThePoem = true;
                     dbPoem.Title = moderation.Title.Replace("ۀ", "هٔ").Replace("ك", "ک");
+                    dbPage.Title = dbPoem.Title;
                     updatePoem = true;
                 }
             }
@@ -92,12 +112,14 @@ namespace RMuseum.Services.Implementation
                 _context.UpdateRange(modifiedVerses);
                 dbPoem.HtmlText = PrepareHtmlText(poemVerses);
                 dbPoem.PlainText = PreparePlainText(poemVerses);
+                dbPage.HtmlText = dbPoem.HtmlText;
                 updatePoem = true;
             }
 
             if(updatePoem)
             {
                 _context.Update(dbPoem);
+                _context.Update(dbPage);
             }
 
             if (modifiedVerses.Count > 0)
