@@ -33,21 +33,25 @@ namespace RMuseum.Services.Implementation
                                {
                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                                    var job = (await jobProgressServiceEF.NewJob("SectionizingPoems", "Query data")).Result;
+                                   int progress = 0;
                                    try
                                    {
                                        var poems = await context.GanjoorPoems.Include(p => p.Cat).AsNoTracking().ToListAsync();
                                        int count = poems.Count;
-                                       int progress = 0;
+                                       
                                        for (int i = 0; i < count; i++)
                                        {
                                            var poem = poems[i];
-                                           var oldSections = await context.GanjoorPoemSections.Where(s => s.PoemId == poem.Id).ToListAsync();
-                                           if (oldSections.Count > 0)
+                                           if(clearOldSections)
                                            {
-                                               if (!clearOldSections) continue;
-                                               context.RemoveRange(oldSections);
-                                               await context.SaveChangesAsync();
+                                               var oldSections = await context.GanjoorPoemSections.Where(s => s.PoemId == poem.Id).ToListAsync();
+                                               if (oldSections.Count > 0)
+                                               {
+                                                   context.RemoveRange(oldSections);
+                                                   await context.SaveChangesAsync();
+                                               }
                                            }
+                                           
                                            var nonCommentVerses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
                                            if (!nonCommentVerses.Where(v => v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single).Any())
                                            {
@@ -206,7 +210,7 @@ namespace RMuseum.Services.Implementation
                                    }
                                    catch (Exception exp)
                                    {
-                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                       await jobProgressServiceEF.UpdateJob(job.Id, progress, "", false, exp.ToString());
                                    }
 
                                }
