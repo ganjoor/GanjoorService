@@ -51,6 +51,11 @@ namespace RMuseum.Services.Implementation
                                                    await context.SaveChangesAsync();
                                                }
                                            }
+                                           else
+                                           {
+                                               if (true == await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == poem.Id).AnyAsync())
+                                                   continue;
+                                           }
                                            
                                            var nonCommentVerses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
                                            if (!nonCommentVerses.Where(v => v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single).Any())
