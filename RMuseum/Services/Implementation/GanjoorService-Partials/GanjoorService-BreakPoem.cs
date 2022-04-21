@@ -18,6 +18,9 @@ namespace RMuseum.Services.Implementation
     {
         public async Task<RServiceResult<int>> _BreakPoemAsync(RMuseumDbContext context, int poemId, int vOrder, Guid userId, GanjoorPoemCompleteViewModel poem, GanjoorPage parentPage, string poemTitleStaticPart)
         {
+            await context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();//waring killer
+            return new RServiceResult<int>(0, "_BreakPoemAsync is disabled for now because of dependence to _UpdatePageAsync");
+            /*
             try
             {
                 if (poem.Next == null)
@@ -357,7 +360,7 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<int>(0, exp.ToString());
             }
-           
+            */
         }
 
 
