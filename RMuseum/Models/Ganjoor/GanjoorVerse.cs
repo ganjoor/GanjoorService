@@ -43,22 +43,22 @@
         /// <summary>
         /// GanjoorPoemSection index
         /// </summary>
-        public int? SectionIndex { get; set; }
+        public int? SectionIndex1 { get; set; }
 
         /// <summary>
         /// second GanjoorPoemSection index
         /// </summary>
-        public int? SecondSectionIndex { get; set; }
+        public int? SectionIndex2 { get; set; }
 
         /// <summary>
         /// third GanjoorPoemSection index
         /// </summary>
-        public int? ThirdSectionIndex { get; set; }
+        public int? SectionIndex3 { get; set; }
 
         /// <summary>
         /// forth GanjoorPoemSection index
         /// </summary>
-        public int? ForthSectionIndex { get; set; }
+        public int? SectionIndex4 { get; set; }
 
         public override string ToString()
         {

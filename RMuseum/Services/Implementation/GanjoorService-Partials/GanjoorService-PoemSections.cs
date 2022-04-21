@@ -99,10 +99,10 @@ namespace RMuseum.Services.Implementation
                                                        context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
                                                        foreach (var verse in singleVerses)
                                                        {
-                                                           verse.SectionIndex = mainSection.Index;
-                                                           verse.SecondSectionIndex = null;//clear previous indices
-                                                           verse.ThirdSectionIndex = null;//clear previous indices
-                                                           verse.ForthSectionIndex = null;//clear previous indices
+                                                           verse.SectionIndex1 = mainSection.Index;
+                                                           verse.SectionIndex2 = null;//clear previous indices
+                                                           verse.SectionIndex3 = null;//clear previous indices
+                                                           verse.SectionIndex4 = null;//clear previous indices
                                                        }
                                                        context.UpdateRange(singleVerses);
 
@@ -167,10 +167,10 @@ namespace RMuseum.Services.Implementation
                                                    context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
                                                    foreach (var verse in singleVerses)
                                                    {
-                                                       verse.SectionIndex = mainSection.Index;
-                                                       verse.SecondSectionIndex = null;//clear previous indices
-                                                       verse.ThirdSectionIndex = null;//clear previous indices
-                                                       verse.ForthSectionIndex = null;//clear previous indices
+                                                       verse.SectionIndex1 = mainSection.Index;
+                                                       verse.SectionIndex2 = null;//clear previous indices
+                                                       verse.SectionIndex3 = null;//clear previous indices
+                                                       verse.SectionIndex4 = null;//clear previous indices
                                                    }
                                                    context.UpdateRange(singleVerses);
                                                }
@@ -279,10 +279,10 @@ namespace RMuseum.Services.Implementation
             List<GanjoorVerse> bandVerses = new List<GanjoorVerse>();
             foreach (var verse in nonCommentVerses)
             {
-                verse.SectionIndex = mainSection.Index;
-                verse.SecondSectionIndex = null;//clear previous indices
-                verse.ThirdSectionIndex = null;//clear previous indices
-                verse.ForthSectionIndex = null;//clear previous indices
+                verse.SectionIndex1 = mainSection.Index;
+                verse.SectionIndex2 = null;//clear previous indices
+                verse.SectionIndex3 = null;//clear previous indices
+                verse.SectionIndex4 = null;//clear previous indices
                 if (verse.VersePosition == VersePosition.Right || verse.VersePosition == VersePosition.Left)
                 {
                     currentBandVerses.Add(verse);
@@ -295,7 +295,7 @@ namespace RMuseum.Services.Implementation
                     {
                         foreach (var currentBandVerse in currentBandVerses)
                         {
-                            currentBandVerse.SecondSectionIndex = currentBandSection.Index;
+                            currentBandVerse.SectionIndex2 = currentBandSection.Index;
                         }
                         currentBandSection.RhymeLetters = LanguageUtils.FindRhyme(currentBandVerses).Rhyme;
                         currentBandSection.HtmlText = PrepareHtmlText(currentBandVerses);
@@ -323,7 +323,7 @@ namespace RMuseum.Services.Implementation
             {
                 foreach (var currentBandVerse in currentBandVerses)
                 {
-                    currentBandVerse.SecondSectionIndex = currentBandSection.Index;
+                    currentBandVerse.SectionIndex2 = currentBandSection.Index;
                 }
                 currentBandSection.RhymeLetters = LanguageUtils.FindRhyme(currentBandVerses).Rhyme;
                 currentBandSection.HtmlText = PrepareHtmlText(currentBandVerses);
@@ -344,7 +344,7 @@ namespace RMuseum.Services.Implementation
             };
             foreach (var bandVerse in bandVerses)
             {
-                bandVerse.SecondSectionIndex = bandSection.Index;
+                bandVerse.SectionIndex2 = bandSection.Index;
             }
             bandSection.RhymeLetters = LanguageUtils.FindRhyme(bandVerses).Rhyme;
             bandSection.HtmlText = PrepareHtmlText(bandVerses);
@@ -379,10 +379,10 @@ namespace RMuseum.Services.Implementation
             context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
             foreach (var verse in nonCommentVerses)
             {
-                verse.SectionIndex = mainSection.Index;
-                verse.SecondSectionIndex = null;//clear previous indices
-                verse.ThirdSectionIndex = null;//clear previous indices
-                verse.ForthSectionIndex = null;//clear previous indices
+                verse.SectionIndex1 = mainSection.Index;
+                verse.SectionIndex2 = null;//clear previous indices
+                verse.SectionIndex3 = null;//clear previous indices
+                verse.SectionIndex4 = null;//clear previous indices
             }
 
             index++;
@@ -415,8 +415,8 @@ namespace RMuseum.Services.Implementation
                             GanjoorMetreRefSectionIndex = mainSection.Index,
                         };
 
-                        rightVerse.SecondSectionIndex = verseSection.Index;
-                        leftVerse.SecondSectionIndex = verseSection.Index;
+                        rightVerse.SectionIndex2 = verseSection.Index;
+                        leftVerse.SectionIndex2 = verseSection.Index;
 
                         var rl = new List<GanjoorVerse>();rl.Add(rightVerse);rl.Add(leftVerse);
                         verseSection.HtmlText = PrepareHtmlText(rl);

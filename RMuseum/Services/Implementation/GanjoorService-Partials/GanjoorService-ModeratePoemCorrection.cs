@@ -130,13 +130,13 @@ namespace RMuseum.Services.Implementation
                 foreach (var section in sections)
                 {
                     var sectionVerses = poemVerses.Where(v =>
-                            (section.VerseType == VersePoemSectionType.First && v.SectionIndex == section.Index)
+                            (section.VerseType == VersePoemSectionType.First && v.SectionIndex1 == section.Index)
                             ||
-                            (section.VerseType == VersePoemSectionType.Second && v.SecondSectionIndex == section.Index)
+                            (section.VerseType == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
                             ||
-                            (section.VerseType == VersePoemSectionType.Third && v.ThirdSectionIndex == section.Index)
+                            (section.VerseType == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
                             ||
-                            (section.VerseType == VersePoemSectionType.Forth && v.ForthSectionIndex == section.Index)
+                            (section.VerseType == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
                             ).OrderBy(v => v.VOrder).ToList();
                     if (sectionVerses.Any(v => modifiedVerses.Contains(v)))
                     {
@@ -282,8 +282,8 @@ namespace RMuseum.Services.Implementation
 
                             foreach (var verse in poemVerses)
                             {
-                                verse.SecondSectionIndex = null;
-                                verse.ThirdSectionIndex = null;
+                                verse.SectionIndex2 = null;
+                                verse.SectionIndex3 = null;
                                 _context.Update(verse);
                             }
                         }
@@ -312,7 +312,7 @@ namespace RMuseum.Services.Implementation
 
                             foreach (var verse in poemVerses)
                             {
-                                verse.SecondSectionIndex = secondMetreSection.Index;
+                                verse.SectionIndex2 = secondMetreSection.Index;
                             }
 
                             foreach (var secondLevelSections in sections.Where(s => s.SectionType != PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.Second).OrderBy(s => s.Index))
@@ -338,7 +338,7 @@ namespace RMuseum.Services.Implementation
 
                                 foreach (var verse in poemVerses)
                                 {
-                                    verse.ThirdSectionIndex = newSection.Index;
+                                    verse.SectionIndex3 = newSection.Index;
                                 }
                             }
                             _context.UpdateRange(poemVerses);

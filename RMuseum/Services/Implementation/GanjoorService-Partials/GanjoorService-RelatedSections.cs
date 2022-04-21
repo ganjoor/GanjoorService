@@ -101,11 +101,11 @@ namespace RMuseum.Services.Implementation
                                                         v.PoemId == section.PoemId
                                                         &&
                                                         (
-                                                        (section.VerseType == VersePoemSectionType.Second && v.SecondSectionIndex == section.Index)
+                                                        (section.VerseType == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
                                                         ||
-                                                        (section.VerseType == VersePoemSectionType.Third && v.ThirdSectionIndex == section.Index)
+                                                        (section.VerseType == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
                                                          ||
-                                                        (section.VerseType == VersePoemSectionType.Forth && v.ForthSectionIndex == section.Index)
+                                                        (section.VerseType == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
                                                         )
                                                     )
                                                     .OrderBy(v => v.VOrder)
