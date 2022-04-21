@@ -44,7 +44,10 @@ namespace RMuseum.Services.Implementation
             dbCorrection.ReviewNote = moderation.ReviewNote;
 
             var dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
-            var dbPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
+            var dbPage = await _context.GanjoorPages.Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
+            var sections = await _context.GanjoorPoemSections.Include(s => s.GanjoorMetre).Where(s => s.PoemId == moderation.PoemId).OrderBy(s => s.SectionType).ThenBy(s => s.Index).ToListAsync();
+            //beware: items consisting only of paragraphs have no main setion (mainSection in the following line can legitimately become null)
+            var mainSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
 
             GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
             {
@@ -57,8 +60,8 @@ namespace RMuseum.Services.Implementation
                 HtmlText = dbPoem.HtmlText,
                 SourceName = dbPoem.SourceName,
                 SourceUrlSlug = dbPoem.SourceUrlSlug,
-                Rhythm = dbPoem.GanjoorMetre == null ? null : dbPoem.GanjoorMetre.Rhythm,
-                RhymeLetters = dbPoem.RhymeLetters,
+                Rhythm = mainSection == null || mainSection.GanjoorMetre == null ? null : mainSection.GanjoorMetre.Rhythm,
+                RhymeLetters = mainSection == null ? null : mainSection.RhymeLetters,
                 OldTag = dbPoem.OldTag,
                 OldTagPageUrl = dbPoem.OldTagPageUrl
             };
@@ -81,7 +84,7 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-            var sections = await _context.GanjoorPoemSections.Where(s => s.PoemId == moderation.PoemId).OrderBy(s => s.SectionType).ThenBy(s => s.Index).ToListAsync();
+            
             int maxSections = sections.Count == 0 ? 0 : sections.Max(s => s.Index);
 
             var poemVerses = await _context.GanjoorVerses.Where(p => p.PoemId == dbCorrection.PoemId).OrderBy(v => v.VOrder).ToListAsync();
@@ -164,8 +167,7 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-            //beware: items consisting only of paragraphs have no main setion (mainSection in the following line can legitimately become null)
-            var mainSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
+            
 
             if (dbCorrection.Rhythm != null)
             {
