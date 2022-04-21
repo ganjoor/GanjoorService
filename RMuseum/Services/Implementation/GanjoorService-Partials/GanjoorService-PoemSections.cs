@@ -262,6 +262,19 @@ namespace RMuseum.Services.Implementation
                 PlainText = PreparePlainText(nonCommentVerses),
                 PoemFormat = GanjoorPoemFormat.MultiBand,
             };
+            if (poem.FullTitle.Contains("ترجیع"))
+                mainSection.PoemFormat = GanjoorPoemFormat.TarjeeBand;
+            if (poem.FullTitle.Contains("ترکیب"))
+                mainSection.PoemFormat = GanjoorPoemFormat.TarkibBand;
+            if (poem.FullTitle.Contains("مسمط"))
+                mainSection.PoemFormat = GanjoorPoemFormat.Mosammat;
+            if (poem.FullTitle.Contains("مخمس"))
+                mainSection.PoemFormat = GanjoorPoemFormat.Mosammat5;
+            if (poem.FullTitle.Contains("مسدس"))
+                mainSection.PoemFormat = GanjoorPoemFormat.Mosammat6;
+            if (poem.FullTitle.Contains("چهارپاره"))
+                mainSection.PoemFormat = GanjoorPoemFormat.ChaharPare;
+
             context.Add(mainSection);
             index++;
             List<GanjoorVerse> currentBandVerses = new List<GanjoorVerse>();
@@ -375,6 +388,14 @@ namespace RMuseum.Services.Implementation
             {
                 mainSection.RhymeLetters = LanguageUtils.FindRhyme(nonCommentVerses).Rhyme;
                 mainSection.PoemFormat = GanjoorPoemFormat.Generic;
+                if (poem.FullTitle.Contains("رباعی"))
+                    mainSection.PoemFormat = GanjoorPoemFormat.Robaee;
+                if (poem.FullTitle.Contains("غزل"))
+                    mainSection.PoemFormat = GanjoorPoemFormat.Ghazal;
+                if (poem.FullTitle.Contains("قص"))
+                    mainSection.PoemFormat = GanjoorPoemFormat.Ghaside;
+                if (poem.FullTitle.Contains("قطع"))
+                    mainSection.PoemFormat = GanjoorPoemFormat.Ghete;
             }
             context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
             foreach (var verse in nonCommentVerses)
