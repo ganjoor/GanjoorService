@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -237,9 +238,21 @@ namespace RMuseum.Services.Implementation
                                 return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "حذف وزن دوم در حالی که وزنهای سوم یا چهارم منتسب شده امکان ندارد.");
                             }
 
+                            //the following block enusres updating related sections near the end of the method to work correctly (_UpdateRelatedSections):
+                            secondMetreSection.OldGanjoorMetreId = secondMetreSection.GanjoorMetreId;
+                            secondMetreSection.OldRhymeLetters = secondMetreSection.RhymeLetters;
+                            secondMetreSection.GanjoorMetreId = null;
+                            secondMetreSection.RhymeLetters = null;
+                            secondMetreSection.Modified = true;
+
                             foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == secondMetreSection.Index))
                             {
                                 _context.Remove(section);
+                                section.OldGanjoorMetreId = section.GanjoorMetreId;
+                                section.OldRhymeLetters = section.RhymeLetters;
+                                section.GanjoorMetreId = null;
+                                section.RhymeLetters = null;
+                                section.Modified = true;
                             }
                             _context.Remove(secondMetreSection);
 
@@ -344,6 +357,35 @@ namespace RMuseum.Services.Implementation
                                $"با سپاس از زحمت و همت شما ویرایش پیشنهادیتان برای <a href=\"{dbPoem.FullUrl}\" target=\"_blank\">{dbPoem.FullTitle}</a> بررسی شد.{Environment.NewLine}" +
                                $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «ویرایش‌های من» را مشاهده بفرمایید.{Environment.NewLine}"
                                );
+
+            foreach (var section in sections)
+            {
+                if(section.Modified)
+                {
+                    if(section.OldGanjoorMetreId != section.GanjoorMetreId || section.OldRhymeLetters != section.RhymeLetters)
+                    {
+                        _backgroundTaskQueue.QueueBackgroundWorkItem
+                                (
+                                async token =>
+                                {
+                                    using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
+                                    {
+                                        if (section.OldGanjoorMetreId != null && !string.IsNullOrEmpty(section.OldRhymeLetters))
+                                        {
+                                            await _UpdateRelatedSections(inlineContext, (int)section.OldGanjoorMetreId, section.OldRhymeLetters);
+                                            await inlineContext.SaveChangesAsync();
+                                        }
+
+                                        if (section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
+                                        {
+                                            await _UpdateRelatedSections(inlineContext, (int)section.GanjoorMetreId, section.RhymeLetters);
+                                            await inlineContext.SaveChangesAsync();
+                                        }
+                                    }
+                                });
+                    }
+                }
+            }
 
             return new RServiceResult<GanjoorPoemCorrectionViewModel>(moderation);
         }
