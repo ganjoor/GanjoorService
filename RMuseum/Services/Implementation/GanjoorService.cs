@@ -1706,6 +1706,33 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> SuggestPoemCorrection(GanjoorPoemCorrectionViewModel correction)
         {
+            if (!string.IsNullOrEmpty(correction.Rhythm3) || !string.IsNullOrEmpty(correction.Rhythm4))
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "انتساب وزن سوم و چهارم هنوز پیاده‌سازی نشده است.");
+
+            var sections = await _context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre)
+                .Where(s => s.PoemId == correction.PoemId).OrderBy(s => s.SectionType).ThenBy(s => s.Index).ToListAsync();
+            //beware: items consisting only of paragraphs have no main setion (mainSection in the following line can legitimately become null)
+            var mainSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
+
+            if (correction.Rhythm != null || correction.Rhythm2 != null)
+            {
+                if(correction.Rhythm == null)
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "امکان حذف وزن اول با وجود وزن دوم وجود ندارد.");
+                
+                if(mainSection == null)
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "امکان تعیین وزن برای این مورد وجود ندارد.");
+                var poemVerses = await _context.GanjoorVerses.AsNoTracking().
+                    Where(p => p.PoemId == correction.PoemId).OrderBy(v => v.VOrder).ToListAsync();
+                if (poemVerses.Where(v => v.VersePosition == VersePosition.Paragraph).Any())
+                {
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "امکان انتساب وزن به متون مخلوط از طریق ویرایشگر کاربر وجود ندارد.");
+                }
+                if (sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).Count() > 1)
+                {
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "امکان انتساب وزن به متون حاوی بیش از یک شعر از طریق ویرایشگر کاربر وجود ندارد.");
+                }
+            }
+
             var preCorrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText)
                 .Where(c => c.UserId == correction.UserId && c.PoemId == correction.PoemId && c.Reviewed == false)
                 .ToListAsync();
@@ -1723,7 +1750,7 @@ namespace RMuseum.Services.Implementation
                 Title = correction.Title,
                 OriginalTitle = poem.Title,
                 Rhythm = correction.Rhythm,
-                OriginalRhythm = poem.GanjoorMetre == null ? null : poem.GanjoorMetre.Rhythm,
+                OriginalRhythm = (mainSection == null || mainSection.GanjoorMetre == null) ? null : mainSection.GanjoorMetre.Rhythm,
                 Note = correction.Note,
                 Date = DateTime.Now,
                 Result = CorrectionReviewResult.NotReviewed,
