@@ -18,40 +18,38 @@ namespace RMuseum.Services.Implementation
     {
         public async Task<RServiceResult<int>> _BreakPoemAsync(RMuseumDbContext context, int poemId, int vOrder, Guid userId, GanjoorPoemCompleteViewModel poem, GanjoorPage parentPage, string poemTitleStaticPart)
         {
-            await context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();//waring killer
-            return new RServiceResult<int>(0, "_BreakPoemAsync is disabled for now because of dependence to _UpdatePageAsync");
-            /*
             try
             {
                 if (poem.Next == null)
                 {
                     return await _BreakLastPoemInItsCategoryAsync(context, poemId, vOrder, userId, poem, parentPage, poemTitleStaticPart);
                 }
-                var dbMainPoem = await context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();
+                var dbMainPoem = await context.GanjoorPoems.AsNoTracking().Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();
                 var dbPage = await context.GanjoorPages.AsNoTracking().Where(p => p.Id == poemId).SingleOrDefaultAsync();
 
-                GanjoorModifyPageViewModel pageViewModel = new GanjoorModifyPageViewModel()
+                var mainPoemSections = await context.GanjoorPoemSections.Include(s => s.GanjoorMetre).Where(s => s.PoemId == poemId).OrderBy(s => s.SectionType).ThenBy(s => s.Index).ToListAsync();
+                //beware: items consisting only of paragraphs have no main setion (mainSection in the following line can legitimately become null)
+                var mainPoemMainSection = mainPoemSections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
+
+                GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
                 {
+                    GanjoorPageId = dbPage.Id,
+                    MadeObsoleteByUserId = userId,
+                    RecordDate = DateTime.Now,
+                    Note = "گام اول شکستن شعر به اشعار مجزا",
                     Title = dbMainPoem.Title,
                     UrlSlug = dbMainPoem.UrlSlug,
-                    OldTag = dbMainPoem.OldTag,
-                    OldTagPageUrl = dbMainPoem.OldTagPageUrl,
-                    RhymeLetters = dbMainPoem.RhymeLetters,
-                    Rhythm = dbMainPoem.GanjoorMetre == null ? null : dbMainPoem.GanjoorMetre.Rhythm,
                     HtmlText = dbMainPoem.HtmlText,
                     SourceName = dbMainPoem.SourceName,
                     SourceUrlSlug = dbMainPoem.SourceUrlSlug,
-                    RedirectFromFullUrl = dbPage.RedirectFromFullUrl,
-                    NoIndex = dbPage.NoIndex,
-                    Language = dbMainPoem.Language,
-                    MixedModeOrder = dbMainPoem.MixedModeOrder,
-                    Published = dbMainPoem.Published,
-                    Note = "گام اول شکستن شعر به اشعار مجزا"
+                    Rhythm = mainPoemMainSection == null || mainPoemMainSection.GanjoorMetre == null ? null : mainPoemMainSection.GanjoorMetre.Rhythm,
+                    RhymeLetters = mainPoemMainSection == null ? null : mainPoemMainSection.RhymeLetters,
+                    OldTag = dbMainPoem.OldTag,
+                    OldTagPageUrl = dbMainPoem.OldTagPageUrl
                 };
+                _context.GanjoorPageSnapshots.Add(snapshot);
+                await _context.SaveChangesAsync();
 
-                var res = await _UpdatePageAsync(context, poemId, userId, pageViewModel, false);
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return new RServiceResult<int>(0, res.ExceptionString);
 
                 var poemList = await context.GanjoorPoems.AsNoTracking()
                                                           .Where(p => p.CatId == dbMainPoem.CatId && p.Id > dbMainPoem.Id).OrderBy(p => p.Id).ToListAsync();
@@ -114,7 +112,6 @@ namespace RMuseum.Services.Implementation
 
                     var sourcePoem = poemList[nPoemIndex];
 
-
                     var targetPoem = await context.GanjoorPoems.Where(p => p.Id == targetPoemId).SingleAsync();
                     //copy everything but url and title:
                     targetPoem.HtmlText = sourcePoem.HtmlText;
@@ -151,7 +148,12 @@ namespace RMuseum.Services.Implementation
                         poemVerses[i].PoemId = targetPoemId;
                     }
                     context.GanjoorVerses.UpdateRange(poemVerses);
-                    
+
+                    var poemSections = await context.GanjoorPoemSections.Include(s => s.GanjoorMetre).Where(s => s.PoemId == poemId).OrderBy(s => s.SectionType).ThenBy(s => s.Index).ToListAsync();
+                    for (int i = 0; i < poemSections.Count; i++)
+                    {
+                        poemSections[i].PoemId = targetPoemId;
+                    }
 
                     var recitaions = await context.Recitations.Where(r => r.GanjoorPostId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < recitaions.Count; i++)
@@ -207,15 +209,21 @@ namespace RMuseum.Services.Implementation
                         verseNumberings[i].PoemId = targetPoemId;
                     }
                     context.UpdateRange(verseNumberings);
-                    
 
-                    var relatedPoems = await context.GanjoorCachedRelatedPoems.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
-                    for (int i = 0; i < relatedPoems.Count; i++)
+                    var relatedSections = await context.GanjoorCachedRelatedSections.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
+                    for (int i = 0; i < relatedSections.Count; i++)
                     {
-                        relatedPoems[i].PoemId = targetPoemId;
+                        relatedSections[i].PoemId = targetPoemId;
                     }
-                    context.UpdateRange(relatedPoems);
-                    
+                    context.UpdateRange(relatedSections);
+
+                    var inRelactedSections = await context.GanjoorCachedRelatedSections.Where(c => c.FullUrl.StartsWith(sourcePoem.FullUrl)).ToListAsync();
+                    for(int i=0; i < inRelactedSections.Count; i++)
+                    {
+                        inRelactedSections[i].FullUrl.Replace(sourcePoem.FullUrl, targetPoem.FullUrl);
+                        inRelactedSections[i].FullTitle.Replace(sourcePoem.FullTitle, targetPoem.FullTitle);
+                    }
+                    context.Update(inRelactedSections);
 
                     var probables = await context.GanjoorPoemProbableMetres.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < probables.Count; i++)
@@ -251,16 +259,13 @@ namespace RMuseum.Services.Implementation
                         pinterests[i].GanjoorTitle = targetPoem.FullTitle;
                     }
                     context.UpdateRange(pinterests);
-                    
-
-
 
                     targetPoemId = sourcePoem.Id;
                 }
 
                 await context.SaveChangesAsync();
 
-
+                //TODO: review from this line forward
 
                 var dbLastTargetPoem = await context.GanjoorPoems.Where(p => p.Id == targetPoemId).SingleAsync();
 
@@ -360,7 +365,6 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<int>(0, exp.ToString());
             }
-            */
         }
 
 
