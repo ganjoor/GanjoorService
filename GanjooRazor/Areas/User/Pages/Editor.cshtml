@@ -320,7 +320,7 @@ else
         </tr>
         <tr>
             <td>
-                <p id="rhythm-old">@(Model.PageInformation.Poem.GanjoorMetre == null ? "" : Model.PageInformation.Poem.GanjoorMetre.Rhythm)</p>
+                <p id="rhythm-old">@(Model.GanjoorMetre1 == null ? "" : Model.GanjoorMetre1.Rhythm)</p>
             </td>
         </tr>
         <tr>
@@ -353,7 +353,7 @@ else
                         }
                         else
                         {
-                            if (Model.PageInformation.Poem.GanjoorMetre != null && Model.PageInformation.Poem.GanjoorMetre.Rhythm == rhythm.Rhythm)
+                            if (Model.GanjoorMetre1 != null && Model.GanjoorMetre1.Rhythm == rhythm.Rhythm)
                             {
                                 <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
                             }
@@ -369,6 +369,8 @@ else
                 <a role="button" onclick="resetRhythm()" class="pagebutton">پاک کردن وزن</a>
             </td>
         </tr>
+
+
         <tr>
             <td>
                 توضیح این ویرایش:

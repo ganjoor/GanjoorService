@@ -89,6 +89,10 @@ namespace GanjooRazor.Areas.User.Pages
 
         public PoemRelatedImage TextSourceImage { get; set; }
 
+        public GanjoorMetre GanjoorMetre1 { get; set; }
+
+        public GanjoorMetre GanjoorMetre2 { get; set; }
+
         /// <summary>
         /// can edit
         /// </summary>
@@ -153,7 +157,16 @@ namespace GanjooRazor.Areas.User.Pages
                     }
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
-                    if(PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).Any())
+                    if(PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).Any())
+                    {
+                        GanjoorMetre1 = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).OrderBy(s => s.VerseType) .First().GanjoorMetre;
+                        if(PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).Count() > 1)
+                        {
+                            GanjoorMetre2 = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).OrderBy(s => s.VerseType).ToList()[1].GanjoorMetre;
+                        }
+                    }
+
+                    if (PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).Any())
                     {
                         TextSourceImage = PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).First();
                     }
