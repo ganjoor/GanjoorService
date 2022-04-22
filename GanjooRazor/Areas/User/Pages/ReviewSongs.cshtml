@@ -23,6 +23,46 @@ else if (@Model.Poem == null)
 else
 {
 
+    <script>
+        function rebuildMundex() {
+            if (!confirm('آیا از بازسازی صفحات نمایهٔ موسیقی اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=RebuildMundex';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('فرایند بازسازی صفحات نمایهٔ موسیقی شروع شد.')
+                },
+
+            });
+        }
+
+        function cleanMundexCache() {
+            if (!confirm('آیا از حذف کش صفحات موسیقی اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=CleanMundexCache';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('کش صفخات پاک شد.')
+                },
+
+            });
+        }
+    </script>
+
     <form method="post">
         <table style="width:100%" class="noborder">
             <tr>

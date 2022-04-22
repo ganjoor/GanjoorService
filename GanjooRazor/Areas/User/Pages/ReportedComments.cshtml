@@ -14,6 +14,43 @@
 }
 else
 {
+
+    <script>
+        function moderateReportedComment(reportId) {
+            if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
+                return;
+
+
+            $.ajax({
+                type: "POST",
+                url: '?handler=ModerateComment',
+                data: {
+                    id: reportId,
+                },
+                success: function () {
+                    var commentBlockId = '#report-' + reportId;
+                    $(commentBlockId).remove();
+                },
+            });
+
+        }
+
+        function deleteReport(reportId) {
+            $.ajax({
+                type: "DELETE",
+                url: '?handler=Report',
+                data: {
+                    id: reportId
+                },
+                success: function () {
+                    var commentBlockId = '#report-' + reportId;
+                    $(commentBlockId).remove();
+                },
+            });
+
+        }
+    </script>
+
     <p style="text-align:center">
         @foreach (var paginationLink in Model.PaginationLinks)
         {

@@ -197,7 +197,7 @@ namespace GanjooRazor.Areas.User.Pages
             return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
-        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, string rhythm, string note)
+        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, string rhythm, string rhythm2, string note)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -224,8 +224,14 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                     }
 
-                    if (title == null && vOrderTexts.Count == 0 && rhythm == null)
+                    if (title == null && vOrderTexts.Count == 0 && rhythm == null && rhythm2 == null)
                         return new BadRequestObjectResult("شما هیچ تغییری در متن نداده‌اید!");
+
+                    if (rhythm != null || rhythm2 != null)
+                    {
+                        if (rhythm == rhythm2)
+                            return new BadRequestObjectResult("وزن اول و دوم یکسانند!");
+                    }
 
                     GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel()
                     {
@@ -233,6 +239,7 @@ namespace GanjooRazor.Areas.User.Pages
                         Title = title,
                         VerseOrderText = vOrderTexts.ToArray(),
                         Rhythm = rhythm,
+                        Rhythm2 = rhythm2,
                         Note = note
                     };
 

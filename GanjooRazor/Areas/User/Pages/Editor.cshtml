@@ -13,21 +13,138 @@
     });
 </script>
 <script>
-    function doSearchInRhythmsCombo(){
-        var value = document.getElementById('select-search').value;
-        var options = document.getElementById('rhythm-new').options
+    function doSearchInRhythmsCombo(selectSearchId, rhythmnewId){
+        var value = document.getElementById(selectSearchId).value;
+        var options = document.getElementById(rhythmnewId).options
         for(var i=0; i < options.length; i++){
             if(options[i].value.indexOf(value) != -1){
-                document.getElementById('rhythm-new').value = options[i].value;
+                document.getElementById(rhythmnewId).value = options[i].value;
                 break;
             }
         }
     }
 
-    function resetRhythm() {
+    function resetRhythm(rhythmnewId) {
         document.getElementById('rhythm-new').value = '';
     }
 
+    function savePoemCorrections(id, verseCount) {
+            var verseOrderText = [];
+            for (var i = 0; i <= verseCount; i++) {
+                var oldElementName = '#original-' + i.toString();
+                var newElementName = '#id-' + i.toString();
+                if ($(newElementName).text() != $(oldElementName).text()) {
+                    verseOrderText.push(i.toString() + 'TextSeparator' + $(newElementName).text());
+                }
+            }
+
+            if (verseOrderText.length == 0) {
+                if ($('#rhythm-old').text() == $('#rhythm-new').val() && $('#rhythm-old2').text() == $('#rhythm-new2').val()) {
+                    alert('شما هیچ تغییری در متن نداده‌اید!');
+                    return;
+                }
+            }
+
+            $('#savecorrections').hide();
+            $('#saving').text('در حال ذخیره ...');
+
+            var rhythm_new = $('#rhythm-new').val();
+            if (rhythm_new == $('#rhythm-old').text()) {
+                rhythm_new = null;
+            }
+
+            var rhythm_new2 = $('#rhythm-new2').val();
+            if (rhythm_new2 == $('#rhythm-old2').text()) {
+                rhythm_new2 = null;
+            }
+
+            var url = '?handler=SendPoemCorrections';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    poemid: id,
+                    verseOrderText: verseOrderText,
+                    rhythm: rhythm_new,
+                    rhythm2: rhythm_new2,
+                    note: $('#note').val()
+
+                },
+                success: function () {
+                    location.reload(true);
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                    $('#savecorrections').show();
+                    $('#saving').text('');
+                }
+
+            });
+
+        }
+
+        function deletePoemCorrections(id) {
+            if (!confirm('آیا از حذف تغییرات پیشنهادی اطمینان دارید؟'))
+                return;
+
+            $('#deletecorrections').hide();
+            $('#saving').text('در حال ذخیره ...');
+
+            var url = '?handler=DeletePoemCorrections';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    poemid: id,
+                },
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    location.reload(true);
+                },
+
+            });
+        }
+
+        function editorcompare(id) {
+            var a = document.getElementById('original-' + id.toString());
+            var b = document.getElementById('id-' + id.toString());
+            var result = document.getElementById('compare-' + id.toString());
+            var diff = JsDiff.diffChars(a.textContent, b.textContent);
+            var fragment = document.createDocumentFragment();
+            for (var i = 0; i < diff.length; i++) {
+
+                if (diff[i].added && diff[i + 1] && diff[i + 1].removed) {
+                    var swap = diff[i];
+                    diff[i] = diff[i + 1];
+                    diff[i + 1] = swap;
+                }
+
+                var node;
+                if (diff[i].removed) {
+                    node = document.createElement('del');
+                    node.style.color = 'red';
+                    node.appendChild(document.createTextNode(diff[i].value));
+                } else if (diff[i].added) {
+                    node = document.createElement('span');
+                    node.style.color = 'white';
+                    node.style.backgroundColor = 'green';
+                    node.appendChild(document.createTextNode(diff[i].value));
+                } else {
+                    node = document.createTextNode(diff[i].value);
+                }
+                fragment.appendChild(node);
+            }
+
+            result.textContent = '';
+            result.appendChild(fragment);
+        }
 
     function breakPoem(poemId, vOrder, vText) {
         if (!confirm(vText))
@@ -331,7 +448,7 @@ else
         <tr>
             <td>
                 <label for="select-search">جستجوی وزن:</label><br />
-                <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo()" list="inputRhythms" autocomplete="off" size="50" />
+                <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" size="50" />
                 <datalist id="inputRhythms">
                     @if (Model.RhythmsByVerseCount != null)
                         @foreach (var rhythm in Model.RhythmsByVerseCount)
@@ -366,7 +483,64 @@ else
 
                     }
                 </select>
-                <a role="button" onclick="resetRhythm()" class="pagebutton">پاک کردن وزن</a>
+                <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                وزن دوم (شعرهای چندوزنی):
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p id="rhythm-old2">@(Model.GanjoorMetre2 == null ? "" : Model.GanjoorMetre2.Rhythm)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                وزن ویراستهٔ من (دوم):
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="select-search2">جستجوی وزن (دوم):</label><br />
+                <input type="text" id="select-search2" value="" oninput="doSearchInRhythmsCombo('select-search2', 'rhythm-new2')" list="inputRhythms" autocomplete="off" size="50" />
+                <datalist id="inputRhythms2">
+                    @if (Model.RhythmsByVerseCount != null)
+                        @foreach (var rhythm in Model.RhythmsByVerseCount)
+                        {
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
+                </datalist>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="rhythm-new2">وزن (دوم) انتخاب شده:</label><br /><select id="rhythm-new2" name="rhythm-new2">
+                    @foreach (var rhythm in Model.RhythmsAlphabetically)
+                    {
+                        if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm2 == rhythm.Rhythm)
+                        {
+                            <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
+                        }
+                        else
+                        {
+                            if (Model.GanjoorMetre2 != null && Model.GanjoorMetre2.Rhythm == rhythm.Rhythm)
+                            {
+                                <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
+                            }
+                            else
+                            {
+                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                            }
+
+                        }
+
+                    }
+                </select>
+                <a role="button" onclick="resetRhythm('rhythm-new2')" class="pagebutton">پاک کردن وزن</a>
             </td>
         </tr>
 
