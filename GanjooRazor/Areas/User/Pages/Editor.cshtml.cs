@@ -227,7 +227,7 @@ namespace GanjooRazor.Areas.User.Pages
                     if (title == null && vOrderTexts.Count == 0 && rhythm == null && rhythm2 == null)
                         return new BadRequestObjectResult("شما هیچ تغییری در متن نداده‌اید!");
 
-                    if (rhythm != null || rhythm2 != null)
+                    if (rhythm2 != null)
                     {
                         if (rhythm == rhythm2)
                             return new BadRequestObjectResult("وزن اول و دوم یکسانند!");

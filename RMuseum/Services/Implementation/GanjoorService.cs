@@ -1716,7 +1716,7 @@ namespace RMuseum.Services.Implementation
 
             if (correction.Rhythm != null || correction.Rhythm2 != null)
             {
-                if(correction.Rhythm == null)
+                if(correction.Rhythm == "")
                     return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "امکان حذف وزن اول با وجود وزن دوم وجود ندارد.");
                 
                 if(mainSection == null)
@@ -1802,11 +1802,13 @@ namespace RMuseum.Services.Implementation
                     OriginalTitle = dbCorrection.OriginalTitle,
                     Rhythm = dbCorrection.Rhythm,
                     OriginalRhythm = dbCorrection.OriginalRhythm,
+                    RhythmResult = dbCorrection.RhythmResult,
+                    Rhythm2 = dbCorrection.Rhythm2,
+                    OriginalRhythm2 = dbCorrection.OriginalRhythm2,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
-                    RhythmResult = dbCorrection.RhythmResult,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
@@ -1847,11 +1849,14 @@ namespace RMuseum.Services.Implementation
                     OriginalTitle = dbCorrection.OriginalTitle,
                     Rhythm = dbCorrection.Rhythm,
                     OriginalRhythm = dbCorrection.OriginalRhythm,
+                    RhythmResult = dbCorrection.RhythmResult,
+                    Rhythm2 = dbCorrection.Rhythm2,
+                    OriginalRhythm2 = dbCorrection.OriginalRhythm2,
+                    Rhythm2Result = dbCorrection.Rhythm2Result,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
-                    RhythmResult = dbCorrection.RhythmResult,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
@@ -1879,7 +1884,7 @@ namespace RMuseum.Services.Implementation
                          dbCorrection.Reviewed == true
                          &&
                          (
-                         dbCorrection.Result == CorrectionReviewResult.Approved || dbCorrection.RhythmResult == CorrectionReviewResult.Approved
+                         dbCorrection.Result == CorrectionReviewResult.Approved || dbCorrection.RhythmResult == CorrectionReviewResult.Approved || dbCorrection.Rhythm2Result == CorrectionReviewResult.Approved
                          ||
                          dbCorrection.VerseOrderText.Any(v => v.Result == CorrectionReviewResult.Approved)
                          )
@@ -1905,11 +1910,14 @@ namespace RMuseum.Services.Implementation
                     OriginalTitle = dbCorrection.OriginalTitle,
                     Rhythm = dbCorrection.Rhythm,
                     OriginalRhythm = dbCorrection.OriginalRhythm,
+                    RhythmResult = dbCorrection.RhythmResult,
+                    Rhythm2 = dbCorrection.Rhythm2,
+                    OriginalRhythm2 = dbCorrection.OriginalRhythm2,
+                    Rhythm2Result = dbCorrection.Rhythm2Result,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
-                    RhythmResult = dbCorrection.RhythmResult,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
                 }
@@ -1946,11 +1954,14 @@ namespace RMuseum.Services.Implementation
                     OriginalTitle = dbCorrection.OriginalTitle,
                     Rhythm = dbCorrection.Rhythm,
                     OriginalRhythm = dbCorrection.OriginalRhythm,
+                    RhythmResult = dbCorrection.RhythmResult,
+                    Rhythm2 = dbCorrection.Rhythm2,
+                    OriginalRhythm2 = dbCorrection.OriginalRhythm2,
+                    Rhythm2Result = dbCorrection.Rhythm2Result,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
-                    RhythmResult = dbCorrection.RhythmResult,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
@@ -1986,11 +1997,14 @@ namespace RMuseum.Services.Implementation
                     OriginalTitle = dbCorrection.OriginalTitle,
                     Rhythm = dbCorrection.Rhythm,
                     OriginalRhythm = dbCorrection.OriginalRhythm,
+                    RhythmResult = dbCorrection.RhythmResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
-                    RhythmResult = dbCorrection.RhythmResult,
+                    Rhythm2 = dbCorrection.Rhythm2,
+                    OriginalRhythm2 = dbCorrection.OriginalRhythm2,
+                    Rhythm2Result = dbCorrection.Rhythm2Result,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName

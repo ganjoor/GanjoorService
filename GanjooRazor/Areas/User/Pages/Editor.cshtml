@@ -239,6 +239,17 @@ else
                     </td>
                 </tr>
             }
+            @if (Model.MyLastEdit.Rhythm2 != null)
+            {
+                <tr>
+                    <td>
+                        <p style="color:red">@Model.MyLastEdit.OriginalRhythm2</p>
+                    </td>
+                    <td>
+                        <p style="color:green">@Model.MyLastEdit.Rhythm2</p>
+                    </td>
+                </tr>
+            }
             @if (Model.MyLastEdit.VerseOrderText != null)
                 @foreach (var verse in Model.MyLastEdit.VerseOrderText)
                 {
