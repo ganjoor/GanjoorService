@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DNTPersianUtils.Core;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.DbContext;
+using System.Collections.Generic;
 
 namespace RMuseum.Services.Implementation
 {
@@ -31,7 +32,7 @@ namespace RMuseum.Services.Implementation
                 //beware: items consisting only of paragraphs have no main setion (mainSection in the following line can legitimately become null)
                 var mainPoemMainSection = mainPoemSections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
 
-                GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
+                GanjoorPageSnapshot firstSnapshot = new GanjoorPageSnapshot()
                 {
                     GanjoorPageId = dbPage.Id,
                     MadeObsoleteByUserId = userId,
@@ -47,7 +48,7 @@ namespace RMuseum.Services.Implementation
                     OldTag = dbMainPoem.OldTag,
                     OldTagPageUrl = dbMainPoem.OldTagPageUrl
                 };
-                _context.GanjoorPageSnapshots.Add(snapshot);
+                _context.GanjoorPageSnapshots.Add(firstSnapshot);
                 await _context.SaveChangesAsync();
 
 
@@ -265,20 +266,91 @@ namespace RMuseum.Services.Implementation
 
                 await context.SaveChangesAsync();
 
-                //TODO: review from this line forward
-
                 var dbLastTargetPoem = await context.GanjoorPoems.Where(p => p.Id == targetPoemId).SingleAsync();
 
                 var mainPoemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poemId && v.VOrder >= vOrder).OrderBy(v => v.VOrder).ToListAsync();
+                var firstCoupletIndex = mainPoemVerses.Any() ? mainPoemVerses.First().CoupletIndex : 0;
                 for (int i = 0; i < mainPoemVerses.Count; i++)
                 {
                     mainPoemVerses[i].VOrder = i + 1;
                     mainPoemVerses[i].PoemId = targetPoemId;
+                    mainPoemVerses[i].CoupletIndex -= firstCoupletIndex;
                 }
+
+                List<GanjoorPoemSection> targetPoemSections = new List<GanjoorPoemSection>();
+                foreach (var section in mainPoemSections)
+                {
+                    bool needsToBeDuplicated = false;
+                    switch(section.VerseType)
+                    {
+                        case VersePoemSectionType.First:
+                            if(mainPoemVerses.Any(v => v.SectionIndex1 == section.Index))
+                            {
+                                needsToBeDuplicated = true;
+                            }
+                            break;
+                        case VersePoemSectionType.Second:
+                            if (mainPoemVerses.Any(v => v.SectionIndex2 == section.Index))
+                            {
+                                needsToBeDuplicated = true;
+                            }
+                            break;
+                        case VersePoemSectionType.Third:
+                            if (mainPoemVerses.Any(v => v.SectionIndex3 == section.Index))
+                            {
+                                needsToBeDuplicated = true;
+                            }
+                            break;
+                        default:
+                            if (mainPoemVerses.Any(v => v.SectionIndex4 == section.Index))
+                            {
+                                needsToBeDuplicated = true;
+                            }
+                            break;
+                    }
+                    if (needsToBeDuplicated)
+                    {
+                        var sectionCopy = new GanjoorPoemSection()
+                        {
+                            PoemId = dbLastTargetPoem.Id,
+                            PoetId = section.PoetId,
+                            SectionType = section.SectionType,
+                            VerseType = section.VerseType,
+                            Index = section.Index,
+                            Number = section.Number,
+                            GanjoorMetreId = section.GanjoorMetreId,
+                            RhymeLetters = section.RhymeLetters,
+                            PoemFormat = section.PoemFormat,
+                        };
+                        var sectionVerses = _GetSectionVerses(sectionCopy, mainPoemVerses);
+                        sectionCopy.HtmlText = PrepareHtmlText(sectionVerses);
+                        sectionCopy.PlainText = PreparePlainText(sectionVerses);
+                        try
+                        {
+                            var sectionRhymeLettersRes = LanguageUtils.FindRhyme(sectionVerses);
+                            if (!string.IsNullOrEmpty(sectionRhymeLettersRes.Rhyme))
+                            {
+                                sectionCopy.RhymeLetters = sectionRhymeLettersRes.Rhyme;
+                            }
+                        }
+                        catch
+                        {
+
+                        }
+                        targetPoemSections.Add(sectionCopy);
+                    }
+                }
+                
+                if(targetPoemSections.Count > 0)
+                {
+                    context.AddRange(targetPoemSections);
+                }
+
+
                 dbLastTargetPoem.PlainText = PreparePlainText(mainPoemVerses);
                 dbLastTargetPoem.HtmlText = PrepareHtmlText(mainPoemVerses);
-                dbLastTargetPoem.GanjoorMetreId = dbMainPoem.GanjoorMetreId;
-                dbLastTargetPoem.RhymeLetters = dbMainPoem.RhymeLetters;
+                //dbLastTargetPoem.GanjoorMetreId = dbMainPoem.GanjoorMetreId;
+                //dbLastTargetPoem.RhymeLetters = dbMainPoem.RhymeLetters;
                 dbLastTargetPoem.SourceName = dbMainPoem.SourceName;
                 dbLastTargetPoem.SourceUrlSlug = dbMainPoem.SourceUrlSlug;
                 dbLastTargetPoem.OldTag = dbMainPoem.OldTag;
@@ -286,19 +358,7 @@ namespace RMuseum.Services.Implementation
                 dbLastTargetPoem.MixedModeOrder = dbMainPoem.MixedModeOrder;
                 dbLastTargetPoem.Published = dbMainPoem.Published;
                 dbLastTargetPoem.Language = dbMainPoem.Language;
-
-                try
-                {
-                    var poemRhymeLettersRes = LanguageUtils.FindRhyme(mainPoemVerses);
-                    if (!string.IsNullOrEmpty(poemRhymeLettersRes.Rhyme))
-                    {
-                        dbLastTargetPoem.RhymeLetters = poemRhymeLettersRes.Rhyme;
-                    }
-                }
-                catch
-                {
-
-                }
+                
 
                 var dbLastTargetPage = await context.GanjoorPages.Where(p => p.Id == targetPoemId).SingleAsync();
                 dbLastTargetPage.Published = dbPage.Published;
@@ -319,46 +379,25 @@ namespace RMuseum.Services.Implementation
 
                 await context.SaveChangesAsync();
 
-
-                GanjoorModifyPageViewModel afterUpdatePageViewModel = new GanjoorModifyPageViewModel()
+                GanjoorPageSnapshot lastSnapshot = new GanjoorPageSnapshot()
                 {
+                    GanjoorPageId = dbMainPoem.Id,
+                    MadeObsoleteByUserId = userId,
+                    RecordDate = DateTime.Now,
+                    Note = "گام نهایی شکستن شعر به اشعار مجزا",
                     Title = dbMainPoem.Title,
                     UrlSlug = dbMainPoem.UrlSlug,
-                    OldTag = dbMainPoem.OldTag,
-                    OldTagPageUrl = dbMainPoem.OldTagPageUrl,
-                    RhymeLetters = dbMainPoem.RhymeLetters,
-                    Rhythm = dbMainPoem.GanjoorMetre == null ? null : dbMainPoem.GanjoorMetre.Rhythm,
                     HtmlText = dbMainPoem.HtmlText,
                     SourceName = dbMainPoem.SourceName,
                     SourceUrlSlug = dbMainPoem.SourceUrlSlug,
-                    RedirectFromFullUrl = dbPage.RedirectFromFullUrl,
-                    NoIndex = dbPage.NoIndex,
-                    Language = dbMainPoem.Language,
-                    MixedModeOrder = dbMainPoem.MixedModeOrder,
-                    Published = dbMainPoem.Published,
-                    Note = "گام نهایی شکستن شعر به اشعار مجزا"
+                    Rhythm = mainPoemMainSection == null || mainPoemMainSection.GanjoorMetre == null ? null : mainPoemMainSection.GanjoorMetre.Rhythm,
+                    RhymeLetters = mainPoemMainSection == null ? null : mainPoemMainSection.RhymeLetters,
+                    OldTag = dbMainPoem.OldTag,
+                    OldTagPageUrl = dbMainPoem.OldTagPageUrl
                 };
+                _context.GanjoorPageSnapshots.Add(firstSnapshot);
+                await _context.SaveChangesAsync();
 
-                var afterUpdatePoemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
-                afterUpdatePageViewModel.HtmlText = PrepareHtmlText(afterUpdatePoemVerses);
-                try
-                {
-                    var newRhyme = LanguageUtils.FindRhyme(afterUpdatePoemVerses);
-                    if (!string.IsNullOrEmpty(newRhyme.Rhyme) &&
-                        (string.IsNullOrEmpty(dbMainPoem.RhymeLetters) || (!string.IsNullOrEmpty(dbMainPoem.RhymeLetters) && newRhyme.Rhyme.Length > dbMainPoem.RhymeLetters.Length))
-                        )
-                    {
-                        afterUpdatePageViewModel.RhymeLetters = newRhyme.Rhyme;
-                    }
-                }
-                catch
-                {
-
-                }
-
-                var res2 = await _UpdatePageAsync(context, poemId, userId, afterUpdatePageViewModel, false);
-                if (!string.IsNullOrEmpty(res2.ExceptionString))
-                    return new RServiceResult<int>(0, res2.ExceptionString);
                 return new RServiceResult<int>(targetPoemId);
             }
             catch (Exception exp)

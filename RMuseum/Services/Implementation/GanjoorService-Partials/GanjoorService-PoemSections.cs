@@ -458,5 +458,33 @@ namespace RMuseum.Services.Implementation
 
             context.UpdateRange(nonCommentVerses);
         }
+
+        private List<GanjoorVerse> _GetSectionVerses(GanjoorPoemSection section, List<GanjoorVerse> verses)
+        {
+            List<GanjoorVerse> sectionVerses = new List<GanjoorVerse>();
+            foreach (GanjoorVerse verse in verses)
+            {
+                switch(section.VerseType)
+                {
+                    case VersePoemSectionType.First:
+                        if (verse.SectionIndex1 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                    case VersePoemSectionType.Second:
+                        if (verse.SectionIndex2 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                    case VersePoemSectionType.Third:
+                        if (verse.SectionIndex3 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                    default:
+                        if (verse.SectionIndex4 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                }
+            }
+            return sectionVerses;
+        }
     }
 }
