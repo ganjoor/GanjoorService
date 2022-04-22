@@ -1713,6 +1713,7 @@ namespace RMuseum.Services.Implementation
                 .Where(s => s.PoemId == correction.PoemId).OrderBy(s => s.SectionType).ThenBy(s => s.Index).ToListAsync();
             //beware: items consisting only of paragraphs have no main setion (mainSection in the following line can legitimately become null)
             var mainSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
+            var secondSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.Second);
 
             if (correction.Rhythm != null || correction.Rhythm2 != null)
             {
@@ -1751,6 +1752,8 @@ namespace RMuseum.Services.Implementation
                 OriginalTitle = poem.Title,
                 Rhythm = correction.Rhythm,
                 OriginalRhythm = (mainSection == null || mainSection.GanjoorMetre == null) ? null : mainSection.GanjoorMetre.Rhythm,
+                Rhythm2 = correction.Rhythm2,
+                OriginalRhythm2 = (secondSection == null || secondSection.GanjoorMetre == null) ? null : secondSection.GanjoorMetre.Rhythm,
                 Note = correction.Note,
                 Date = DateTime.Now,
                 Result = CorrectionReviewResult.NotReviewed,
