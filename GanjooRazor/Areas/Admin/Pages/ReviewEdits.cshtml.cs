@@ -111,13 +111,25 @@ namespace GanjooRazor.Areas.Admin.Pages
                         if (Correction.Rhythm != null)
                         {
                             GanjoorMetre originalMetre = null;
-                            if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).Any())
+                            if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null && s.VerseType == VersePoemSectionType.First).Any())
                             {
-                                originalMetre = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).OrderBy(s => s.VerseType).First().GanjoorMetre;
+                                originalMetre = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First && s.GanjoorMetre != null).OrderBy(s => s.VerseType).First().GanjoorMetre;
                             }
                             Correction.OriginalRhythm = originalMetre == null ? null : originalMetre.Rhythm;
                             if (Correction.OriginalRhythm == Correction.Rhythm)
                                 Correction.RhythmResult = CorrectionReviewResult.NotChanged;
+                        }
+
+                        if (Correction.Rhythm2 != null)
+                        {
+                            GanjoorMetre originalMetre2 = null;
+                            if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null && s.VerseType == VersePoemSectionType.Second).Any())
+                            {
+                                originalMetre2 = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null &&  s.VerseType == VersePoemSectionType.Second).OrderBy(s => s.VerseType).First().GanjoorMetre;
+                            }
+                            Correction.OriginalRhythm2 = originalMetre2 == null ? null : originalMetre2.Rhythm;
+                            if (Correction.OriginalRhythm2 == Correction.Rhythm2)
+                                Correction.Rhythm2Result = CorrectionReviewResult.NotChanged;
                         }
                     }
                     
@@ -141,7 +153,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         }
 
         public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId, 
-            string titleReviewResult, string rhythmReviewResult,
+            string titleReviewResult, string rhythmReviewResult, string rhythm2ReviewResult,
             string titleReviewNote, string[] verseReviewResult,
             string[] verseReviewNotes)
         {
@@ -184,7 +196,20 @@ namespace GanjooRazor.Areas.Admin.Pages
                         }
                     }
 
-                    if(verseReviewResult.Length != Correction.VerseOrderText.Length)
+                    if (Correction.Rhythm2 != null)
+                    {
+                        if (rhythm2ReviewResult == null)
+                        {
+                            return new BadRequestObjectResult("لطفا تغییر وزن دوم را بازبینی کنید.");
+                        }
+                        else
+                        {
+                            Correction.Rhythm2Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), rhythm2ReviewResult);
+                            Correction.ReviewNote = titleReviewNote;
+                        }
+                    }
+
+                    if (verseReviewResult.Length != Correction.VerseOrderText.Length)
                     {
                         return new BadRequestObjectResult("لطفا تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
                     }

@@ -254,7 +254,7 @@ namespace RMuseum.Services.Implementation
                     dbCorrection.AffectedThePoem = true;
                     var secondMetreSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.Second);
 
-                    if (moderation.Rhythm == "")
+                    if (moderation.Rhythm2 == "")
                     {
                         if (secondMetreSection != null)
                         {
@@ -347,12 +347,12 @@ namespace RMuseum.Services.Implementation
                         }
                         secondMetreSection.OldGanjoorMetreId = secondMetreSection.GanjoorMetreId;
 
-                        var metre = await _context.GanjoorMetres.AsNoTracking().Where(m => m.Rhythm == moderation.Rhythm).SingleOrDefaultAsync();
+                        var metre = await _context.GanjoorMetres.AsNoTracking().Where(m => m.Rhythm == moderation.Rhythm2).SingleOrDefaultAsync();
                         if (metre == null)
                         {
                             metre = new GanjoorMetre()
                             {
-                                Rhythm = moderation.Rhythm,
+                                Rhythm = moderation.Rhythm2,
                                 VerseCount = 0
                             };
                             _context.GanjoorMetres.Add(metre);

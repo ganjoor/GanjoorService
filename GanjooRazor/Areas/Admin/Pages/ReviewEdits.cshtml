@@ -222,6 +222,80 @@ else
                 </td>
             </tr>
         }
+
+
+        @if (Model.Correction.Rhythm2 != null)
+        {
+            <tr>
+                <td colspan="2">
+                    وزن دوم
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @if (Model.PageInformation.Poem.Verses.Length > 0)
+                    {
+                        @Model.PageInformation.Poem.Verses[0].Text
+                    }
+                </td>
+                <td>
+                    @if (Model.PageInformation.Poem.Verses.Length > 1)
+                    {
+                        @Model.PageInformation.Poem.Verses[1].Text
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>متن اولیه</td>
+                <td>پیشنهاد</td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="color:red">@Model.Correction.OriginalRhythm2</p>
+                </td>
+                <td>
+                    <p style="color:green">@Model.Correction.Rhythm2</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+
+                    @if (Model.Correction.Rhythm2Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                    {
+                        <input type="radio" id="rhythm2_review_result_Approved" name="rhythm2_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                        <label for="rhythm2_review_result_Approved">تأیید می‌شود</label>
+
+                        <br>
+                        <input type="radio" id="rhythm2_review_result_NotChanged" name="rhythm2_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
+                    }
+                    else
+                    {
+                        <input type="radio" id="rhythm2_review_result_Approved" name="rhythm2_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                        <label for="rhythm2_review_result_Approved">تأیید می‌شود</label>
+
+                        <br>
+                        <input type="radio" id="rhythm2_review_result_NotChanged" name="rhythm2_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
+                    }
+                    <label for="rhythm2_review_result_NotChanged">تغییری نکرده</label><br>
+                    <input type="radio" id="rhythm2_review_result_RejectedBecauseWrong" name="rhythm2_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
+                    <label for="rhythm2_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <input type="radio" id="rhythm2_review_result_RejectedBecauseVariant" name="rhythm2_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
+                    <label for="rhythm2_review_result_RejectedBecauseVariant">مربوط به نسخهٔ دیگری است</label><br>
+                    <input type="radio" id="rhythm_2review_result_RejectedBecauseUnnecessaryChange" name="rhythm2_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
+                    <label for="rhythm2_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
+                    <input type="radio" id="rhythm2_review_result_Rejected" name="rhythm2_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
+                    <label for="rhythm2_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                    @if (Model.Correction.Title != null)
+                    {
+                        <p>در صورت نیاز به درج یادداشت برای تغییر وزن آن را در قسمت عنوان وارد فرمایید.</p>
+                    }
+                    else
+                    {
+                        <input type="text" id="title_review_note" name="title_review_note" value="" size="50" />
+                    }
+                </td>
+            </tr>
+        }
         @if (Model.Correction.VerseOrderText != null)
             @foreach (var verse in Model.Correction.VerseOrderText)
             {

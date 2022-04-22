@@ -308,6 +308,11 @@
                 rhythmReviewResult = $('input[name=rhythm_review_result]:checked').val()
             }
 
+            var rhythm2ReviewResult = 'DontCare';
+            if ($('#rhythm2_review_result_Approved').length > 0) { 
+                rhythm2ReviewResult = $('input[name=rhythm2_review_result]:checked').val()
+            }
+
 
             var verseReviewResult = [];
             var verseReviewNotes = [];
@@ -331,6 +336,7 @@
                     correctionId: correctionId,
                     titleReviewResult: titleReviewResult,
                     rhythmReviewResult: rhythmReviewResult,
+                    rhythm2ReviewResult: rhythm2ReviewResult,
                     titleReviewNote: $('#title_review_note') == null? null : $('#title_review_note').val(),
                     verseReviewResult: verseReviewResult,
                     verseReviewNotes: verseReviewNotes,
