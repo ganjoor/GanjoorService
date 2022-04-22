@@ -3,6 +3,7 @@ using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -396,14 +397,37 @@ namespace RMuseum.Services.Implementation
                                     {
                                         if (section.OldGanjoorMetreId != null && !string.IsNullOrEmpty(section.OldRhymeLetters))
                                         {
-                                            await _UpdateRelatedSections(inlineContext, (int)section.OldGanjoorMetreId, section.OldRhymeLetters);
-                                            await inlineContext.SaveChangesAsync();
+                                            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(inlineContext);
+                                            var job = (await jobProgressServiceEF.NewJob($"بازسازی فهرست بخش‌های مرتبط", $"M: {section.OldGanjoorMetreId}, G: {section.OldRhymeLetters}")).Result;
+
+                                            try
+                                            {
+                                                await _UpdateRelatedSections(inlineContext, (int)section.OldGanjoorMetreId, section.OldRhymeLetters);
+                                                await inlineContext.SaveChangesAsync();
+
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                            }
+                                            catch (Exception exp)
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                            }
                                         }
 
                                         if (section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
                                         {
-                                            await _UpdateRelatedSections(inlineContext, (int)section.GanjoorMetreId, section.RhymeLetters);
-                                            await inlineContext.SaveChangesAsync();
+                                            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(inlineContext);
+                                            var job = (await jobProgressServiceEF.NewJob($"بازسازی فهرست بخش‌های مرتبط", $"M: {section.GanjoorMetreId}, G: {section.RhymeLetters}")).Result;
+
+                                            try
+                                            {
+                                                await _UpdateRelatedSections(inlineContext, (int)section.GanjoorMetreId, section.RhymeLetters);
+                                                await inlineContext.SaveChangesAsync();
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                            }
+                                            catch (Exception exp)
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                            }
                                         }
                                     }
                                 });
