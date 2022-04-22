@@ -551,14 +551,21 @@ namespace GanjooRazor.Pages
         }
 
         public List<GanjoorPoemSection> SectionsWithRelated { get; set; }
+
+        public List<GanjoorPoemSection> SectionsWithMetreAndRhymes { get; set; }
         private void _prepareRelatedSecions()
         {
             SectionsWithRelated = new List<GanjoorPoemSection>();
+            SectionsWithMetreAndRhymes = new List<GanjoorPoemSection>();
             foreach (var section in GanjoorPage.Poem.Sections)
             {
                 if(section.Top6RelatedSections.Length > 0)
                 {
                     SectionsWithRelated.Add(section);
+                }
+                if(section.SectionType == PoemSectionType.WholePoem && section.GanjoorMetre != null && !string.IsNullOrEmpty(section.RhymeLetters))
+                {
+                    SectionsWithMetreAndRhymes.Add(section);
                 }
             }
         }
