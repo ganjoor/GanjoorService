@@ -110,7 +110,12 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                         if (Correction.Rhythm != null)
                         {
-                            Correction.OriginalRhythm = PageInformation.Poem.GanjoorMetre == null ? null : PageInformation.Poem.GanjoorMetre.Rhythm;
+                            GanjoorMetre originalMetre = null;
+                            if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).Any())
+                            {
+                                originalMetre = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).OrderBy(s => s.VerseType).First().GanjoorMetre;
+                            }
+                            Correction.OriginalRhythm = originalMetre == null ? null : originalMetre.Rhythm;
                             if (Correction.OriginalRhythm == Correction.Rhythm)
                                 Correction.RhythmResult = CorrectionReviewResult.NotChanged;
                         }
