@@ -18,9 +18,8 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// sectionizing poems
         /// </summary>
-        /// <param name="clearOldSections"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartSectionizingPoems(bool clearOldSections = false)
+        public RServiceResult<bool> StartSectionizingPoems()
         {
             try
             {
@@ -42,21 +41,9 @@ namespace RMuseum.Services.Implementation
                                        for (int i = 0; i < count; i++)
                                        {
                                            var poem = poems[i];
-                                           if(clearOldSections)
-                                           {
-                                               var oldSections = await context.GanjoorPoemSections.Where(s => s.PoemId == poem.Id).ToListAsync();
-                                               if (oldSections.Count > 0)
-                                               {
-                                                   context.RemoveRange(oldSections);
-                                                   await context.SaveChangesAsync();
-                                               }
-                                           }
-                                           else
-                                           {
-                                               if (true == await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == poem.Id).AnyAsync())
-                                                   continue;
-                                           }
-                                           
+                                           if (true == await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == poem.Id).AnyAsync())
+                                               continue;
+
                                            var nonCommentVerses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
                                            if (!nonCommentVerses.Where(v => v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single).Any())
                                            {

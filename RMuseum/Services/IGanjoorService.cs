@@ -925,8 +925,7 @@ namespace RMuseum.Services
         /// <summary>
         /// sectionizing poems
         /// </summary>
-        /// <param name="clearOldSections"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartSectionizingPoems(bool clearOldSections = false);
+        RServiceResult<bool> StartSectionizingPoems();
     }
 }
