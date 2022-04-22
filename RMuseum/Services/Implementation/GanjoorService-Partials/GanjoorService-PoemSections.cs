@@ -7,6 +7,8 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using RSecurityBackend.Models.Generic.Db;
 
 namespace RMuseum.Services.Implementation
 {
@@ -41,156 +43,11 @@ namespace RMuseum.Services.Implementation
                                        for (int i = 0; i < count; i++)
                                        {
                                            var poem = poems[i];
-                                           if (true == await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == poem.Id).AnyAsync())
-                                               continue;
 
-                                           var nonCommentVerses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
-                                           if (!nonCommentVerses.Where(v => v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single).Any())
+                                           if(false == await _SectionizePoem(context, poem, jobProgressServiceEF, job))
                                            {
-                                               if (nonCommentVerses.Where(v =>
-                                                  v.VersePosition == VersePosition.CenteredVerse1
-                                                  ||
-                                                  v.VersePosition == VersePosition.CenteredVerse2
-                                                 ).Any())
-                                               {
-                                                   //multi-band poem
-                                                   _SectionizeMultibandVerses(context, nonCommentVerses, poem, 0);
-                                               }
-                                               else
-                                               if (!nonCommentVerses.Where(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left).Any())
-                                               {
-                                                   _SectionizeNormalVerses(context, nonCommentVerses, poem, 0);
-                                               }
+                                               return;
                                            }
-                                           else
-                                           {
-                                               int sectionIndex = 0;
-                                               int vIndex = 0;
-                                               List<GanjoorVerse> singleVerses = new List<GanjoorVerse>();
-                                               List<GanjoorVerse> normalVerses = new List<GanjoorVerse>();
-                                               while (vIndex < nonCommentVerses.Count)
-                                               {
-                                                   if (nonCommentVerses[vIndex].VersePosition == VersePosition.Single)
-                                                   {
-                                                       singleVerses.Add(nonCommentVerses[vIndex]);
-                                                       vIndex++;
-                                                       continue;
-                                                   }
-                                                   if(singleVerses.Count > 0)
-                                                   {
-                                                       GanjoorPoemSection mainSection = new GanjoorPoemSection()
-                                                       {
-                                                           PoemId = poem.Id,
-                                                           PoetId = poem.Cat.PoetId,
-                                                           SectionType = PoemSectionType.WholePoem,
-                                                           VerseType = VersePoemSectionType.First,
-                                                           Index = sectionIndex,
-                                                           Number = sectionIndex + 1,
-                                                           GanjoorMetreId = poem.GanjoorMetreId,
-                                                           RhymeLetters = poem.RhymeLetters,
-                                                           HtmlText = PrepareHtmlText(singleVerses),
-                                                           PlainText = PreparePlainText(singleVerses),
-                                                           PoemFormat = GanjoorPoemFormat.New,
-                                                       };
-                                                       context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
-                                                       foreach (var verse in singleVerses)
-                                                       {
-                                                           verse.SectionIndex1 = mainSection.Index;
-                                                           verse.SectionIndex2 = null;//clear previous indices
-                                                           verse.SectionIndex3 = null;//clear previous indices
-                                                           verse.SectionIndex4 = null;//clear previous indices
-                                                       }
-                                                       context.UpdateRange(singleVerses);
-
-                                                       sectionIndex++;
-
-                                                       singleVerses = new List<GanjoorVerse>();
-                                                   }
-
-                                                   if (nonCommentVerses[vIndex].VersePosition == VersePosition.Left || nonCommentVerses[vIndex].VersePosition == VersePosition.Right
-                                                   ||
-                                                   nonCommentVerses[vIndex].VersePosition == VersePosition.CenteredVerse1 || nonCommentVerses[vIndex].VersePosition == VersePosition.CenteredVerse2
-                                                        )
-                                                   {
-                                                       normalVerses.Add(nonCommentVerses[vIndex]);
-                                                       vIndex++;
-                                                       continue;
-                                                   }
-
-                                                   if(normalVerses.Count > 0)
-                                                   {
-                                                       if (normalVerses.Where(v =>
-                                                          v.VersePosition == VersePosition.CenteredVerse1
-                                                          ||
-                                                          v.VersePosition == VersePosition.CenteredVerse2
-                                                         ).Any())
-                                                       {
-                                                           //multi-band poem
-                                                           _SectionizeMultibandVerses(context, normalVerses, poem, sectionIndex);
-                                                       }
-                                                       else
-                                                       {
-                                                           _SectionizeNormalVerses(context, normalVerses, poem, sectionIndex);
-                                                       }
-                                                       sectionIndex++;
-                                                       normalVerses = new List<GanjoorVerse>();
-                                                   }
-
-                                                   if (nonCommentVerses[vIndex].VersePosition != VersePosition.Paragraph)
-                                                   {
-                                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, $"Poem: {poem.Id}, nonCommentVerses[{vIndex}].VersePosition != VersePosition.Paragraph");
-                                                       return;
-                                                   }
-                                                   vIndex++;
-                                               }
-
-                                               if (singleVerses.Count > 0)
-                                               {
-                                                   GanjoorPoemSection mainSection = new GanjoorPoemSection()
-                                                   {
-                                                       PoemId = poem.Id,
-                                                       PoetId = poem.Cat.PoetId,
-                                                       SectionType = PoemSectionType.WholePoem,
-                                                       VerseType = VersePoemSectionType.First,
-                                                       Index = sectionIndex,
-                                                       Number = sectionIndex + 1,
-                                                       GanjoorMetreId = poem.GanjoorMetreId,
-                                                       RhymeLetters = poem.RhymeLetters,
-                                                       HtmlText = PrepareHtmlText(singleVerses),
-                                                       PlainText = PreparePlainText(singleVerses), 
-                                                       PoemFormat = GanjoorPoemFormat.New,
-                                                   };
-                                                   context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
-                                                   foreach (var verse in singleVerses)
-                                                   {
-                                                       verse.SectionIndex1 = mainSection.Index;
-                                                       verse.SectionIndex2 = null;//clear previous indices
-                                                       verse.SectionIndex3 = null;//clear previous indices
-                                                       verse.SectionIndex4 = null;//clear previous indices
-                                                   }
-                                                   context.UpdateRange(singleVerses);
-                                               }
-
-                                               if (normalVerses.Count > 0)
-                                               {
-                                                   if (normalVerses.Where(v =>
-                                                      v.VersePosition == VersePosition.CenteredVerse1
-                                                      ||
-                                                      v.VersePosition == VersePosition.CenteredVerse2
-                                                     ).Any())
-                                                   {
-                                                       //multi-band poem
-                                                       _SectionizeMultibandVerses(context, normalVerses, poem, sectionIndex);
-                                                   }
-                                                   else
-                                                   {
-                                                       _SectionizeNormalVerses(context, normalVerses, poem, sectionIndex);
-                                                   }
-                                               }
-                                           }
-
-
-
 
                                            if ((i * 100 / count) > progress)
                                            {
@@ -242,6 +99,161 @@ namespace RMuseum.Services.Implementation
             return false;
         }
 
+
+        private async Task<bool> _SectionizePoem(RMuseumDbContext context, GanjoorPoem poem, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        {
+            if (true == await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == poem.Id).AnyAsync())
+                return true;
+
+            var nonCommentVerses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
+            if (!nonCommentVerses.Where(v => v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single).Any())
+            {
+                if (nonCommentVerses.Where(v =>
+                   v.VersePosition == VersePosition.CenteredVerse1
+                   ||
+                   v.VersePosition == VersePosition.CenteredVerse2
+                  ).Any())
+                {
+                    //multi-band poem
+                    _SectionizeMultibandVerses(context, nonCommentVerses, poem, 0);
+                }
+                else
+                if (!nonCommentVerses.Where(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left).Any())
+                {
+                    _SectionizeNormalVerses(context, nonCommentVerses, poem, 0);
+                }
+            }
+            else
+            {
+                int sectionIndex = 0;
+                int vIndex = 0;
+                List<GanjoorVerse> singleVerses = new List<GanjoorVerse>();
+                List<GanjoorVerse> normalVerses = new List<GanjoorVerse>();
+                while (vIndex < nonCommentVerses.Count)
+                {
+                    if (nonCommentVerses[vIndex].VersePosition == VersePosition.Single)
+                    {
+                        singleVerses.Add(nonCommentVerses[vIndex]);
+                        vIndex++;
+                        continue;
+                    }
+                    if (singleVerses.Count > 0)
+                    {
+                        GanjoorPoemSection mainSection = new GanjoorPoemSection()
+                        {
+                            PoemId = poem.Id,
+                            PoetId = poem.Cat.PoetId,
+                            SectionType = PoemSectionType.WholePoem,
+                            VerseType = VersePoemSectionType.First,
+                            Index = sectionIndex,
+                            Number = sectionIndex + 1,
+                            GanjoorMetreId = poem.GanjoorMetreId,
+                            RhymeLetters = poem.RhymeLetters,
+                            HtmlText = PrepareHtmlText(singleVerses),
+                            PlainText = PreparePlainText(singleVerses),
+                            PoemFormat = GanjoorPoemFormat.New,
+                        };
+                        context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
+                        foreach (var verse in singleVerses)
+                        {
+                            verse.SectionIndex1 = mainSection.Index;
+                            verse.SectionIndex2 = null;//clear previous indices
+                            verse.SectionIndex3 = null;//clear previous indices
+                            verse.SectionIndex4 = null;//clear previous indices
+                        }
+                        context.UpdateRange(singleVerses);
+
+                        sectionIndex++;
+
+                        singleVerses = new List<GanjoorVerse>();
+                    }
+
+                    if (nonCommentVerses[vIndex].VersePosition == VersePosition.Left || nonCommentVerses[vIndex].VersePosition == VersePosition.Right
+                    ||
+                    nonCommentVerses[vIndex].VersePosition == VersePosition.CenteredVerse1 || nonCommentVerses[vIndex].VersePosition == VersePosition.CenteredVerse2
+                         )
+                    {
+                        normalVerses.Add(nonCommentVerses[vIndex]);
+                        vIndex++;
+                        continue;
+                    }
+
+                    if (normalVerses.Count > 0)
+                    {
+                        if (normalVerses.Where(v =>
+                           v.VersePosition == VersePosition.CenteredVerse1
+                           ||
+                           v.VersePosition == VersePosition.CenteredVerse2
+                          ).Any())
+                        {
+                            //multi-band poem
+                            _SectionizeMultibandVerses(context, normalVerses, poem, sectionIndex);
+                        }
+                        else
+                        {
+                            _SectionizeNormalVerses(context, normalVerses, poem, sectionIndex);
+                        }
+                        sectionIndex++;
+                        normalVerses = new List<GanjoorVerse>();
+                    }
+
+                    if (nonCommentVerses[vIndex].VersePosition != VersePosition.Paragraph)
+                    {
+                        if(jobProgressServiceEF != null)
+                        {
+                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, $"Poem: {poem.Id}, nonCommentVerses[{vIndex}].VersePosition != VersePosition.Paragraph");
+                        }
+                        return false;
+                    }
+                    vIndex++;
+                }
+
+                if (singleVerses.Count > 0)
+                {
+                    GanjoorPoemSection mainSection = new GanjoorPoemSection()
+                    {
+                        PoemId = poem.Id,
+                        PoetId = poem.Cat.PoetId,
+                        SectionType = PoemSectionType.WholePoem,
+                        VerseType = VersePoemSectionType.First,
+                        Index = sectionIndex,
+                        Number = sectionIndex + 1,
+                        GanjoorMetreId = poem.GanjoorMetreId,
+                        RhymeLetters = poem.RhymeLetters,
+                        HtmlText = PrepareHtmlText(singleVerses),
+                        PlainText = PreparePlainText(singleVerses),
+                        PoemFormat = GanjoorPoemFormat.New,
+                    };
+                    context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
+                    foreach (var verse in singleVerses)
+                    {
+                        verse.SectionIndex1 = mainSection.Index;
+                        verse.SectionIndex2 = null;//clear previous indices
+                        verse.SectionIndex3 = null;//clear previous indices
+                        verse.SectionIndex4 = null;//clear previous indices
+                    }
+                    context.UpdateRange(singleVerses);
+                }
+
+                if (normalVerses.Count > 0)
+                {
+                    if (normalVerses.Where(v =>
+                       v.VersePosition == VersePosition.CenteredVerse1
+                       ||
+                       v.VersePosition == VersePosition.CenteredVerse2
+                      ).Any())
+                    {
+                        //multi-band poem
+                        _SectionizeMultibandVerses(context, normalVerses, poem, sectionIndex);
+                    }
+                    else
+                    {
+                        _SectionizeNormalVerses(context, normalVerses, poem, sectionIndex);
+                    }
+                }
+            }
+            return true;
+        }
         private void _SectionizeMultibandVerses(RMuseumDbContext context, List<GanjoorVerse> nonCommentVerses, GanjoorPoem poem, int index)
         {
             GanjoorPoemSection mainSection = new GanjoorPoemSection()
