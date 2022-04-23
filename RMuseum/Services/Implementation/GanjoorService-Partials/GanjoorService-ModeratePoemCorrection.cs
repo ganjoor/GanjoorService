@@ -47,6 +47,11 @@ namespace RMuseum.Services.Implementation
             var dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
             var dbPage = await _context.GanjoorPages.Where(p => p.Id == moderation.PoemId).SingleOrDefaultAsync();
             var sections = await _context.GanjoorPoemSections.Include(s => s.GanjoorMetre).Where(s => s.PoemId == moderation.PoemId).OrderBy(s => s.SectionType).ThenBy(s => s.Index).ToListAsync();
+            foreach (var section in sections)
+            {
+                section.OldGanjoorMetreId = section.GanjoorMetreId;
+                section.OldRhymeLetters = section.RhymeLetters;
+            }
             //beware: items consisting only of paragraphs have no main setion (mainSection in the following line can legitimately become null)
             var mainSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
 
