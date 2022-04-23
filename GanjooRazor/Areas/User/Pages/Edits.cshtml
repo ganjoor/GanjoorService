@@ -141,6 +141,40 @@ else
                         </tr>
                     }
                 }
+                @if (correction.Rhythm2 != null)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">@correction.OriginalRhythm2</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.Rhythm2</p>
+                        </td>
+                        <td>
+                            @if (correction.Rhythm2Result == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.Rhythm2Result)</p>
+                            }
+                            else
+                     @if (correction.Rhythm2Result == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.Rhythm2Result)</p>
+                            }
+                            else
+                            {
+                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.Rhythm2Result)</p>
+                            }
+                        </td>
+                    </tr>
+                    @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                    {
+                        <tr>
+                            <td colspan="3">
+                                <p>@correction.ReviewNote</p>
+                            </td>
+                        </tr>
+                    }
+                }
                 @if (correction.VerseOrderText != null)
                     @foreach (var verse in correction.VerseOrderText)
                     {
