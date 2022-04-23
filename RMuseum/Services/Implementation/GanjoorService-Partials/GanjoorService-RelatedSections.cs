@@ -51,9 +51,14 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var sections = await context.GanjoorPoemSections.AsNoTracking().Where(section => section.GanjoorMetreId == metreId && section.RhymeLetters == rhyme).ToListAsync();
-                foreach (var section in sections)
+                var sectionIds = await context.GanjoorPoemSections.AsNoTracking()
+                    .Where(section => section.GanjoorMetreId == metreId && section.RhymeLetters == rhyme)
+                    .OrderBy(section => section.SectionType)
+                    .Select(section => section.Id)
+                    .ToListAsync();
+                foreach (var sectionId in sectionIds)
                 {
+                    var section = await context.GanjoorPoemSections.AsNoTracking().SingleAsync(s => s.Id == sectionId);
                     await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section);
                 }
                 await context.SaveChangesAsync();
@@ -99,14 +104,14 @@ namespace RMuseum.Services.Implementation
                         var firstSectionVerse = await context.GanjoorVerses.AsNoTracking()
                                                     .Where
                                                     (v =>
-                                                        v.PoemId == section.PoemId
+                                                        v.PoemId == relatedSection.PoemId
                                                         &&
                                                         (
-                                                        (section.VerseType == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
+                                                        (relatedSection.VerseType == VersePoemSectionType.Second && v.SectionIndex2 == relatedSection.Index)
                                                         ||
-                                                        (section.VerseType == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
+                                                        (relatedSection.VerseType == VersePoemSectionType.Third && v.SectionIndex3 == relatedSection.Index)
                                                          ||
-                                                        (section.VerseType == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
+                                                        (relatedSection.VerseType == VersePoemSectionType.Forth && v.SectionIndex4 == relatedSection.Index)
                                                         )
                                                     )
                                                     .OrderBy(v => v.VOrder)
@@ -166,42 +171,39 @@ namespace RMuseum.Services.Implementation
                                 {
                                     LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                                     var job = (await jobProgressServiceEF.NewJob($"GeneratingRelatedSectionsInfo - {wholepoems}", "Query")).Result;
-                                    int percent = 0;
-                                    int percentMul = wholepoems ? 100 : 10000;
+                                    int number = 0;
                                     try
                                     {
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Query");
 
-                                        var sections = 
+                                        var sectionIds = 
                                             await context.GanjoorPoemSections.AsNoTracking()
                                             .Where(p => ((wholepoems && p.SectionType == PoemSectionType.WholePoem) || (!wholepoems && p.SectionType != PoemSectionType.WholePoem)) 
-                                            && !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).ToListAsync();
+                                            && !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).Select(s => s.Id).ToListAsync();
 
-                                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating Related Sections");
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating Related Sections for {sectionIds.Count} sections");
 
-                                        for (int i = 0; i < sections.Count; i++)
+                                        for (int i = 0; i < sectionIds.Count; i++)
                                         {
+                                            var section = await context.GanjoorPoemSections.AsNoTracking().SingleAsync(s => s.Id == sectionIds[i]);
                                             if (!regenerate)
                                             {
-                                                if (await context.GanjoorCachedRelatedSections.AnyAsync(r => r.PoemId == sections[i].PoemId && r.SectionIndex == sections[i].Index))
+                                                if (await context.GanjoorCachedRelatedSections.AnyAsync(r => r.PoemId == section.PoemId && r.SectionIndex == section.Index))
                                                     continue;
                                             }
-                                            if (i * percentMul / sections.Count > percent)
-                                            {
-                                                percent++;
-                                                await jobProgressServiceEF.UpdateJob(job.Id, percent);
-                                            }
 
-                                            await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, sections[i]);
+                                            await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section);
 
+                                            number++;
+                                            await jobProgressServiceEF.UpdateJob(job.Id, number);
                                         }
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                     }
                                     catch (Exception exp)
                                     {
-                                        await jobProgressServiceEF.UpdateJob(job.Id, percent, "", false, exp.ToString());
+                                        await jobProgressServiceEF.UpdateJob(job.Id, number, "", false, exp.ToString());
                                     }
                                 }
 
