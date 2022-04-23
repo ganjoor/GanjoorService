@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Utils;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -127,7 +128,7 @@ namespace RMuseum.Services.Implementation
                         FullTitle = relatedSection.Poem.FullTitle,
                         FullUrl = fullUrl,
                         PoetMorePoemsLikeThisCount = 0,
-                        HtmlExcerpt = GetPoemHtmlExcerpt(relatedSection.HtmlText),
+                        HtmlExcerpt = GanjoorPoemTools.GetPoemHtmlExcerpt(relatedSection.HtmlText),
                         TargetPoemId = relatedSection.PoemId,
                         TargetSectionIndex = relatedSection.Index,
                     };

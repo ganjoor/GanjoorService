@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Utils;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Collections.Generic;
@@ -74,7 +75,7 @@ namespace GanjooRazor.Pages
                 htmlText += $"<div class=\"sitem\" id=\"post-{poem.Id}\">{Environment.NewLine}<h2><a href=\"{poem.FullUrl}\" rel=\"bookmark\">{poem.FullTitle}</a>{Environment.NewLine}</h2>{Environment.NewLine}" +
                     $"<div class=\"spacer\">&nbsp;</div>{Environment.NewLine}"
                     +
-                    $"<div class=\"sit\">{Environment.NewLine} {_GetPoemTextExcerpt(poem.HtmlText)}" +
+                    $"<div class=\"sit\">{Environment.NewLine} {GanjoorPoemTools.GetPoemHtmlExcerpt(poem.HtmlText)}" +
                     $"<p><br /><a href=\"{poem.FullUrl}\">متن کامل شعر را ببینید ...</a></p>" +
                     $"</div>{Environment.NewLine}" +
                     $"<img src=\"{APIRoot.InternetUrl}{poem.Category.Poet.ImageUrl}\" alt=\"{poem.Category.Poet.Name}\" />"
@@ -127,34 +128,6 @@ namespace GanjooRazor.Pages
             ViewData["Title"] = $"گنجور » {GanjoorPage.Title}";
 
             GanjoorPage.HtmlText = htmlText;
-        }
-
-        private string _GetPoemTextExcerpt(string poemText)
-        {
-            while (poemText.IndexOf("id=\"bn") != -1)
-            {
-                int idxbn1 = poemText.IndexOf(" id=\"bn");
-                int idxbn2 = poemText.IndexOf("\"", idxbn1 + " id=\"bn".Length);
-                poemText = poemText.Substring(0, idxbn1) + poemText.Substring(idxbn2 + 1);
-            }
-
-            poemText = poemText.Replace("<div class=\"b\">", "").Replace("<div class=\"b2\">", "").Replace("<div class=\"m1\">", "").Replace("<div class=\"m2\">", "").Replace("</div>", "");
-
-            int index = poemText.IndexOf("<p>");
-            int count = 0;
-            while(index != -1 && count < 5 )
-            {
-                index = poemText.IndexOf("<p>", index + 1);
-                count++;
-            }
-
-            if(index != -1)
-            {
-                poemText = poemText.Substring(0, index);
-                poemText += "<p>[...]</p>";
-            }
-
-            return poemText;
         }
     }
 }

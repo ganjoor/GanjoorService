@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Utils;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -113,7 +114,7 @@ namespace RMuseum.Services.Implementation
                         FullTitle = relatedSection.Poem.FullTitle,
                         FullUrl = relatedSection.Poem.FullUrl,
                         PoetMorePoemsLikeThisCount = 0,
-                        HtmlExcerpt = GetPoemHtmlExcerpt(relatedSection.HtmlText)
+                        HtmlExcerpt = GanjoorPoemTools.GetPoemHtmlExcerpt(relatedSection.HtmlText)
                     };
 
                     ganjoorCachedRelatedPoems.Add(newRelatedPoem);
@@ -129,39 +130,6 @@ namespace RMuseum.Services.Implementation
             {
                 context.GanjoorCachedRelatedPoems.AddRange(ganjoorCachedRelatedPoems);
             }
-        }
-
-        /// <summary>
-        /// get an excerpt for the poem
-        /// </summary>
-        /// <param name="poemHtml"></param>
-        /// <returns></returns>
-        public static string GetPoemHtmlExcerpt(string poemHtml)
-        {
-            while (poemHtml.IndexOf("id=\"bn") != -1)
-            {
-                int idxbn1 = poemHtml.IndexOf(" id=\"bn");
-                int idxbn2 = poemHtml.IndexOf("\"", idxbn1 + " id=\"bn".Length);
-                poemHtml = poemHtml.Substring(0, idxbn1) + poemHtml.Substring(idxbn2 + 1);
-            }
-
-            poemHtml = poemHtml.Replace("<div class=\"b\">", "").Replace("<div class=\"b2\">", "").Replace("<div class=\"m1\">", "").Replace("<div class=\"m2\">", "").Replace("</div>", "");
-
-            int index = poemHtml.IndexOf("<p>");
-            int count = 0;
-            while (index != -1 && count < 5)
-            {
-                index = poemHtml.IndexOf("<p>", index + 1);
-                count++;
-            }
-
-            if (index != -1)
-            {
-                poemHtml = poemHtml.Substring(0, index);
-                poemHtml += "<p>[...]</p>";
-            }
-
-            return poemHtml;
         }
 
         /// <summary>

@@ -13669,13 +13669,6 @@
             <param name="rhyme"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemHtmlExcerpt(System.String)">
-            <summary>
-            get an excerpt for the poem
-            </summary>
-            <param name="poemHtml"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingRelatedPoemsInfo(System.Boolean)">
             <summary>
             start generating related poems info
@@ -15895,6 +15888,18 @@
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RMuseum.Utils.GanjoorPoemTools">
+            <summary>
+            ganjoor poem tools
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.GanjoorPoemTools.GetPoemHtmlExcerpt(System.String)">
+            <summary>
+            get an excerpt for the poem
+            </summary>
+            <param name="poemHtml"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.WebServiceUrl.Url">

@@ -752,9 +752,6 @@ namespace GanjooRazor.Pages
                         case "vazn":
                             await _GenerateVaznHtmlText();
                             break;
-                        case "simi":
-                            await _GenerateSimiHtmlText();
-                            break;
                     }
                 }
                 breadCrumbList.AddItem(GanjoorPage.Title, GanjoorPage.FullUrl, "https://i.ganjoor.net/cat.png");
