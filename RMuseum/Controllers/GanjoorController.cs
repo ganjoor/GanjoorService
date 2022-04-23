@@ -1001,27 +1001,6 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// Get Poem Related ones
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="skip"></param>
-        /// <param name="itemsCount">zero or less than it means all</param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("poem/{id}/related")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCachedRelatedPoem[]))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetRelatedPoems(int id, int skip = 0, int itemsCount = 0)
-        {
-            RServiceResult<GanjoorCachedRelatedPoem[]> res =
-                await _ganjoorService.GetRelatedPoems(id, skip, itemsCount);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
-        }
-
-        /// <summary>
         /// Get Section Related ones
         /// </summary>
         /// <param name="poemId"></param>

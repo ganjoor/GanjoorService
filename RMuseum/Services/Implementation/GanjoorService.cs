@@ -1616,15 +1616,6 @@ namespace RMuseum.Services.Implementation
                     poemComments = commentsRes.Result;
                 }
 
-                GanjoorCachedRelatedPoem[] top6relatedPoems = null;
-                if (relatedpoems)
-                {
-                    var relatedPoemsRes = await GetRelatedPoems(id, 0, 6);
-                    if (!string.IsNullOrEmpty(relatedPoemsRes.ExceptionString))
-                        return new RServiceResult<GanjoorPoemCompleteViewModel>(null, relatedPoemsRes.ExceptionString);
-                    top6relatedPoems = relatedPoemsRes.Result;
-                }
-
                 GanjoorPoemSection[] poemSections = null;
                 if(sections)
                 {
@@ -1661,7 +1652,6 @@ namespace RMuseum.Services.Implementation
                     Verses = verses,
                     Songs = tracks,
                     Comments = poemComments,
-                    Top6RelatedPoems = top6relatedPoems,
                     Sections = poemSections
                 };
 

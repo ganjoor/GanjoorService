@@ -18,29 +18,6 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
         /// <summary>
-        /// get a poem related poems
-        /// </summary>
-        /// <param name="id">poem id</param>
-        /// <param name="skip"></param>
-        /// <param name="itemsCount">if sent 0 or less returns all items</param>
-        /// <returns></returns>
-        public async Task<RServiceResult<GanjoorCachedRelatedPoem[]>> GetRelatedPoems(int id, int skip, int itemsCount)
-        {
-            var source =
-                 _context.GanjoorCachedRelatedPoems
-                         .Where(r => r.PoemId == id)
-                         .OrderBy(r => r.RelationOrder);
-
-            if (itemsCount <= 0)
-                return new RServiceResult<GanjoorCachedRelatedPoem[]>(await source.ToArrayAsync());
-            return new RServiceResult<GanjoorCachedRelatedPoem[]>
-                (
-                await source.Skip(skip).Take(itemsCount).ToArrayAsync()
-                );
-        }
-
-
-        /// <summary>
         /// update related poems info (after metreId or rhyme for one of these poems changes)
         /// </summary>
         /// <param name="context"></param>

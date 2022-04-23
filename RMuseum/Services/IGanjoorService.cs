@@ -179,15 +179,6 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex);
 
         /// <summary>
-        /// get a poem related poems
-        /// </summary>
-        /// <param name="id">poem id</param>
-        /// <param name="skip"></param>
-        /// <param name="itemsCount">if sent 0 or less returns all items</param>
-        /// <returns></returns>
-        Task<RServiceResult<GanjoorCachedRelatedPoem[]>> GetRelatedPoems(int id, int skip, int itemsCount);
-
-        /// <summary>
         /// get a section related sections
         /// </summary>
         /// <param name="poemId">poem id</param>
