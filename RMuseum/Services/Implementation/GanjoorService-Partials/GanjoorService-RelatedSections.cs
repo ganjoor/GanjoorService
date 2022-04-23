@@ -99,7 +99,7 @@ namespace RMuseum.Services.Implementation
                     r++;
 
                     var fullUrl = relatedSection.Poem.FullUrl;
-                    if(section.SectionType == PoemSectionType.Couplet)
+                    if(relatedSection.SectionType == PoemSectionType.Couplet)
                     {
                         var firstSectionVerse = await context.GanjoorVerses.AsNoTracking()
                                                     .Where
