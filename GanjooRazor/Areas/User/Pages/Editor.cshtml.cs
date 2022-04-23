@@ -36,6 +36,8 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public GanjoorMetre[] RhythmsByVerseCount { get; set; }
 
+        public bool CanAssignRhythms { get; set; }
+
         /// <summary>
         /// fatal error
         /// </summary>
@@ -43,7 +45,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public string GetVersePosition(GanjoorVerseViewModel verse)
         {
-            switch(verse.VersePosition)
+            switch (verse.VersePosition)
             {
                 case VersePosition.Right:
                     return "مصرع اول";
@@ -75,7 +77,7 @@ namespace GanjooRazor.Areas.User.Pages
                         n++;
                     return n;
                 }
-                if (v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse2 
+                if (v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse2
                     || v.VersePosition == VersePosition.Single || v.VersePosition == VersePosition.Paragraph)
                     n++;
                 else
@@ -157,10 +159,10 @@ namespace GanjooRazor.Areas.User.Pages
                     }
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
-                    if(PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).Any())
+                    if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).Any())
                     {
-                        GanjoorMetre1 = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).OrderBy(s => s.VerseType) .First().GanjoorMetre;
-                        if(PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).Count() > 1)
+                        GanjoorMetre1 = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).OrderBy(s => s.VerseType).First().GanjoorMetre;
+                        if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).Count() > 1)
                         {
                             GanjoorMetre2 = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).OrderBy(s => s.VerseType).ToList()[1].GanjoorMetre;
                         }
@@ -169,6 +171,22 @@ namespace GanjooRazor.Areas.User.Pages
                     if (PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).Any())
                     {
                         TextSourceImage = PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).First();
+                    }
+
+                    CanAssignRhythms = true;
+                    if (PageInformation.Poem.Verses.Any(v => v.VersePosition == VersePosition.Paragraph))
+                    {
+                        CanAssignRhythms = false;
+                    }
+                    else
+                        if (PageInformation.Poem.Sections.Count(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First) > 1)
+                    {
+                        CanAssignRhythms = false;
+                    }
+                    else
+                        if (PageInformation.Poem.Sections.Length == 0)
+                    {
+                        CanAssignRhythms = false;
                     }
                 }
                 else
@@ -189,7 +207,7 @@ namespace GanjooRazor.Areas.User.Pages
                         $"{APIRoot.Url}/api/ganjoor/poem/correction/{poemid}");
                     if (!response.IsSuccessStatusCode)
                     {
-                        return  BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                     return new OkObjectResult(true);
                 }
@@ -205,7 +223,7 @@ namespace GanjooRazor.Areas.User.Pages
                 {
                     string title = null;
                     List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
-                    foreach(string v in verseOrderText)
+                    foreach (string v in verseOrderText)
                     {
                         var vParts = v.Split("TextSeparator", System.StringSplitOptions.RemoveEmptyEntries);
                         int vOrder = int.Parse(vParts[0]);

@@ -441,6 +441,14 @@ else
 
         }
 
+        @if (!Model.CanAssignRhythms)
+        {
+            <tr>
+                <td>
+                    <p class="red-color">این مورد شامل بیش از یک قطعه شعر یا دارای پاراگراف نثر است و امکان انتساب وزن به آن وجود ندارد.</p>
+                </td>
+            </tr>
+        }
         <tr>
             <td>
                 وزن فعلی:
@@ -472,7 +480,9 @@ else
         </tr>
         <tr>
             <td>
-                <label for="rhythm-new">وزن انتخاب شده:</label><br /><select id="rhythm-new" name="rhythm-new">
+                <label for="rhythm-new">وزن انتخاب شده:</label>
+                <br />
+                <select id="rhythm-new" name="rhythm-new">
                     @foreach (var rhythm in Model.RhythmsAlphabetically)
                     {
                         if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm == rhythm.Rhythm)
