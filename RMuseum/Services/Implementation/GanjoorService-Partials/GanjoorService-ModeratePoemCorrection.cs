@@ -231,7 +231,7 @@ namespace RMuseum.Services.Implementation
             {
                 if (moderation.Rhythm2Result == CorrectionReviewResult.NotReviewed)
                     return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات وزن دوم بررسی نشده است.");
-                dbCorrection.Rhythm2Result = moderation.RhythmResult;
+                dbCorrection.Rhythm2Result = moderation.Rhythm2Result;
                 if (dbCorrection.Rhythm2Result == CorrectionReviewResult.Approved)
                 {
                     if (mainSection == null)
