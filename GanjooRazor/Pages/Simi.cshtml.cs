@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DNTPersianUtils.Core;
 using Microsoft.AspNetCore.Mvc;
@@ -11,8 +9,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
-using RMuseum.Services.Implementation;
 using RMuseum.Utils;
 using RSecurityBackend.Models.Generic;
 
@@ -117,6 +115,37 @@ namespace GanjooRazor.Pages
             return true;
         }
 
+        /// <summary>
+        /// rhythms alphabetically
+        /// </summary>
+        public GanjoorMetre[] RhythmsAlphabetically { get; set; }
+
+        /// <summary>
+        /// rhythms by frequency
+        /// </summary>
+        public GanjoorMetre[] RhythmsByVerseCount { get; set; }
+
+        public async Task<IActionResult> OnGetPoetInformationAsync(int id)
+        {
+            if (id == 0)
+                return new OkObjectResult(null);
+            var cacheKey = $"/api/ganjoor/poet/{id}";
+            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
+            {
+                var poetResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{id}");
+                if (!poetResponse.IsSuccessStatusCode)
+                {
+                    return BadRequest(JsonConvert.DeserializeObject<string>(await poetResponse.Content.ReadAsStringAsync()));
+                }
+                poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
+                if (AggressiveCacheEnabled)
+                {
+                    _memoryCache.Set(cacheKey, poet);
+                }
+            }
+            return new OkObjectResult(poet);
+        }
+
         public async Task<IActionResult> OnGetAsync()
         {
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
@@ -144,6 +173,25 @@ namespace GanjooRazor.Pages
                 return Page();
             }
 
+            var rhythmResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms?sortOnVerseCount=true");
+            if (!rhythmResponse.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await rhythmResponse.Content.ReadAsStringAsync());
+                return Page();
+            }
+
+            RhythmsByVerseCount = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
+
+            List<GanjoorMetre> rhythmsByVerseCount = new List<GanjoorMetre>(RhythmsByVerseCount);
+            rhythmsByVerseCount.Sort((a, b) => a.Rhythm.CompareTo(b.Rhythm));
+            rhythmsByVerseCount.Insert(0, new GanjoorMetre()
+            {
+                Rhythm = ""
+            }
+            );
+
+            RhythmsAlphabetically = rhythmsByVerseCount.ToArray();
+
             int pageNumber = 1;
             if (!string.IsNullOrEmpty(Request.Query["page"]))
             {
@@ -152,6 +200,11 @@ namespace GanjooRazor.Pages
 
             Metre = Request.Query["v"];
             Rhyme = Request.Query["g"];
+
+            if(!string.IsNullOrEmpty(Rhyme))
+            {
+                Rhyme = Rhyme.Replace(" ", "");
+            }
 
             string title = "شعرها یا ابیات ";
 

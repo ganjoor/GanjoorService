@@ -23,7 +23,7 @@
 
     @if (!string.IsNullOrEmpty(Model.LastError))
     {
-        @Model.LastError
+        @Html.Raw(Model.LastError)
     }
     else
     {
@@ -90,16 +90,77 @@
 
         <div id="fa">
 
-
-
             <div id="maincnt">
 
-                <div class="spacer">&nbsp;</div>
+                <div class="sitem actionbox">
+                    <div class="related-images-frame">
+                        <form method="get" id="simiform">
 
-                @if (Model.Poems == null)
+                            <select name="a" id="a" class="width-100per">
+                                @{
+                                    if (Model.PoetId != 0)
+                                    {
+                                        <option value="0">در آثار همهٔ سخنوران</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="0" selected>در آثار همهٔ سخنوران</option>
+                                    }
+
+                                    if (Model.Poets != null)
+                                    {
+                                        foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
+                                        {
+                                            if (poet.Id == Model.PoetId)
+                                            {
+                                                <option value="@poet.Id" selected>@poet.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@poet.Id">@poet.Name</option>
+                                            }
+                                        }
+                                    }
+                                }
+                            </select>
+
+                            <label for="v" class="width-100per">وزن:</label>
+                            <input class="width-100per" type="text" id="select-search" placeholder="@Model.Metre" oninput="doSearchInRhythmsCombo('select-search', 'v')" list="inputRhythms" autocomplete="off" size="50" />
+                            <datalist id="inputRhythms">
+                                @if (Model.RhythmsByVerseCount != null)
+                                    @foreach (var rhythm in Model.RhythmsByVerseCount)
+                                    {
+                                        <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                                    }
+                            </datalist>
+                            <select id="v" name="v" class="width-100per">
+                                @foreach (var rhythm in Model.RhythmsAlphabetically)
+                                {
+                                    if (Model.Metre == rhythm.Rhythm)
+                                    {
+                                        <option value="@rhythm.Rhythm" selected>@(rhythm.Rhythm == "" ? "هیچکدام" : rhythm.Rhythm)</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@rhythm.Rhythm">@(rhythm.Rhythm == "" ? "هیچکدام" : rhythm.Rhythm)</option>
+                                    }
+
+                                }
+                            </select>
+
+                            <label for="g" class="width-100per">قافیه:</label>
+                            <input type="text" name="g" id="g" class="width-100per" value="@Model.Rhyme" placeholder="حروف قافیه" />
+
+                            <input type="submit" class="width-100per" value="اعمال ورودی‌ها" />
+
+
+                        </form>
+                    </div><!-- related-images-frame -->
+            </div> <!-- comments-like-div -->
+                @if (Model.Poems == null || Model.Poems.Count == 0)
                 {
-                    <div class="poem">
-                        <h2>شعری با مشخصات مورد نظر شما پیدا نشد.</h2>
+                    <div class="sitem">
+                        <p>شعری با مشخصات مورد نظر شما پیدا نشد.</p>
                     </div>
                 }
                 else
@@ -140,7 +201,7 @@
         </div>
 
         <script src="/lib/jquery/dist/jquery.min.js"></script>
-        <script src="/js/bk.js?version=24"></script>
+        <script src="/js/bk.js?version=25"></script>
         <script src="/js/vaabd.js"></script>
 
         @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
