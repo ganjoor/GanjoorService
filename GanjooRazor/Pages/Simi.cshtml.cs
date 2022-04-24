@@ -65,16 +65,12 @@ namespace GanjooRazor.Pages
         }
 
         public List<GanjoorPoetViewModel> Poets { get; set; }
-
-        public string Query { get; set; }
         public int PoetId { get; set; }
         public string Metre { get; set; }
         public string Rhyme { get; set; }
-        public int CatId { get; set; }
         public GanjoorPoetCompleteViewModel Poet { get; set; }
         public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
         public string PagingToolsHtml { get; set; }
-
         public string LastError { get; set; }
 
         private async Task<bool> preparePoets()
@@ -125,11 +121,6 @@ namespace GanjooRazor.Pages
         {
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
-            Query = Request.Query["s"].ApplyCorrectYeKe().Trim();
-            bool quotes = Query.IndexOf("\"") != -1;
-            Query = LanguageUtils.MakeTextSearchable(Query); //replace zwnj with space
-            if (quotes)
-                Query = $"\"{Query}\"";
             PoetId = string.IsNullOrEmpty(Request.Query["a"]) ? 0 : int.Parse(Request.Query["a"]);
 
             ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
@@ -138,24 +129,6 @@ namespace GanjooRazor.Pages
             // 1. poets 
             if (false == (await preparePoets()))
                 return Page();
-
-            var poetName = Poets.SingleOrDefault(p => p.Id == PoetId);
-            if (poetName != null)
-            {
-                ViewData["Title"] = $"گنجور » نتایج جستجو برای {Query} در آثار {poetName?.Name}";
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(Query))
-                {
-                    ViewData["Title"] = $"گنجور » نتایج جستجو برای {Query}";
-                }
-                else
-                {
-                    ViewData["Title"] = $"گنجور » جستجو";
-                }
-
-            }
 
             if (PoetId != 0)
             {
