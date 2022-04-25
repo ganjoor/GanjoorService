@@ -167,7 +167,7 @@ namespace GanjooRazor.Pages
 
             // 2. search verses
 
-            if (string.IsNullOrEmpty(Request.Query["v"]) || string.IsNullOrEmpty(Request.Query["g"]))
+            if (string.IsNullOrEmpty(Request.Query["v"]) && string.IsNullOrEmpty(Request.Query["g"]))
             {
                 LastError = "<p>موردی با مشخصات انتخاب شده یافت نشد.</p>";
                 return Page();
@@ -216,8 +216,24 @@ namespace GanjooRazor.Pages
                     title += $"{poetInfo.Nickname} ";
                 }
             }
-            title += $"با وزن «{Metre}»";
-            title += $" و حروف قافیهٔ «{Rhyme}»";
+            if(!string.IsNullOrEmpty(Metre))
+            {
+                title += $"با وزن «{Metre}»";
+            }
+
+            if(!string.IsNullOrEmpty(Rhyme))
+            {
+                if(!string.IsNullOrEmpty(Metre))
+                {
+                    title += $" و";
+                }
+                else
+                {
+                    title += $"با";
+                }
+                title += $" حروف قافیهٔ «{Rhyme}»";
+            }
+            
 
             ViewData["Title"] = $"گنجور » {title}";
 
