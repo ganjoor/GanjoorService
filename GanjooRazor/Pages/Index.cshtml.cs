@@ -580,6 +580,16 @@ namespace GanjooRazor.Pages
             {
                 return StatusCode(503);
             }
+            if (Request.Path.ToString().IndexOf("index.php") != -1)
+            {
+                return Redirect($"{Request.Path.ToString().Replace("index.php", "search")}{Request.QueryString}");
+            }
+
+            if (Request.Path.ToString().IndexOf("vazn") != -1 && Request.QueryString.ToString().IndexOf("v") != -1)
+            {
+                return Redirect($"{Request.Path.ToString().Replace("vazn", "simi")}{Request.QueryString}");
+            }
+
             LastError = "";
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
             CanEdit = Request.Cookies["CanEdit"] == "True";
@@ -605,11 +615,6 @@ namespace GanjooRazor.Pages
                 }
                 var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
                 return Redirect(pageUrl);
-            }
-
-            if (Request.Path.ToString().IndexOf("index.php") != -1)
-            {
-                return Redirect($"{Request.Path.ToString().Replace("index.php", "search")}{Request.QueryString}");
             }
 
             await preparePoets();

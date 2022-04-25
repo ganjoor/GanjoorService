@@ -201,6 +201,10 @@ namespace GanjooRazor.Pages
             Metre = Request.Query["v"];
             Rhyme = Request.Query["g"];
 
+            Metre ??= "";
+            Rhyme ??= "";
+
+
             if(!string.IsNullOrEmpty(Rhyme))
             {
                 Rhyme = Rhyme.Replace(" ", "");
