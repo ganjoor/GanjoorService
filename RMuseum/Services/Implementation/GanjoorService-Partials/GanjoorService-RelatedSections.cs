@@ -99,27 +99,9 @@ namespace RMuseum.Services.Implementation
                     r++;
 
                     var fullUrl = relatedSection.Poem.FullUrl;
-                    if(relatedSection.SectionType == PoemSectionType.Couplet)
+                    if(relatedSection.CachedFirstCoupletIndex > 0)
                     {
-                        var firstSectionVerse = await context.GanjoorVerses.AsNoTracking()
-                                                    .Where
-                                                    (v =>
-                                                        v.PoemId == relatedSection.PoemId
-                                                        &&
-                                                        (
-                                                        (relatedSection.VerseType == VersePoemSectionType.Second && v.SectionIndex2 == relatedSection.Index)
-                                                        ||
-                                                        (relatedSection.VerseType == VersePoemSectionType.Third && v.SectionIndex3 == relatedSection.Index)
-                                                         ||
-                                                        (relatedSection.VerseType == VersePoemSectionType.Forth && v.SectionIndex4 == relatedSection.Index)
-                                                        )
-                                                    )
-                                                    .OrderBy(v => v.VOrder)
-                                                    .FirstOrDefaultAsync();
-                        if(firstSectionVerse != null)
-                        {
-                            fullUrl += $"#bn{firstSectionVerse.CoupletIndex + 1}";
-                        }
+                        fullUrl += $"#bn{relatedSection.CachedFirstCoupletIndex + 1}";
                     }
 
                     GanjoorCachedRelatedSection newRelatedPoem = new GanjoorCachedRelatedSection()

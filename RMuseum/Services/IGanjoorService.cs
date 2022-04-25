@@ -917,6 +917,6 @@ namespace RMuseum.Services
         /// sectionizing poems
         /// </summary>
         /// <returns></returns>
-        RServiceResult<bool> StartSectionizingPoems();
+        RServiceResult<bool> StartFillingPoemSectionsCoupletIndex();
     }
 }

@@ -21,7 +21,7 @@ namespace RMuseum.Services.Implementation
         /// sectionizing poems
         /// </summary>
         /// <returns></returns>
-        public RServiceResult<bool> StartSectionizingPoems()
+        public RServiceResult<bool> StartFillingPoemSectionsCoupletIndex()
         {
             try
             {
@@ -33,20 +33,36 @@ namespace RMuseum.Services.Implementation
                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                {
                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                   var job = (await jobProgressServiceEF.NewJob("SectionizingPoems", "Query data")).Result;
+                                   var job = (await jobProgressServiceEF.NewJob("StartFillingPoemSectionsCoupletIndex", "Query data")).Result;
                                    int progress = 0;
                                    try
                                    {
-                                       var poems = await context.GanjoorPoems.Include(p => p.Cat).AsNoTracking().ToListAsync();
-                                       int count = poems.Count;
+                                       var sections = await context.GanjoorPoemSections.OrderBy(s => s.SectionType).ToListAsync();
+                                       int count = sections.Count;
                                        
                                        for (int i = 0; i < count; i++)
                                        {
-                                           var poem = poems[i];
+                                           var section = sections[i];
 
-                                           if(false == await _SectionizePoem(context, poem, jobProgressServiceEF, job))
+                                           var firstSectionVerse = await context.GanjoorVerses.AsNoTracking()
+                                                     .Where
+                                                     (v =>
+                                                         v.PoemId == section.PoemId
+                                                         &&
+                                                         (
+                                                         (section.VerseType == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
+                                                         ||
+                                                         (section.VerseType == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
+                                                          ||
+                                                         (section.VerseType == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
+                                                         )
+                                                     )
+                                                     .OrderBy(v => v.VOrder)
+                                                     .FirstOrDefaultAsync();
+                                           if (firstSectionVerse != null && firstSectionVerse.CoupletIndex != null)
                                            {
-                                               return;
+                                               section.CachedFirstCoupletIndex = (int)firstSectionVerse.CoupletIndex;
+                                               context.Update(section);
                                            }
 
                                            if ((i * 100 / count) > progress)

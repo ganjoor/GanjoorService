@@ -1690,7 +1690,7 @@
             <param name="destCatId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartSectionizingPoems">
+        <member name="M:RMuseum.Controllers.GanjoorController.StartFillingPoemSectionsCoupletIndex">
             <summary>
             sectionizing poems
             </summary>
@@ -11992,7 +11992,7 @@
             <param name="destCatId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartSectionizingPoems">
+        <member name="M:RMuseum.Services.IGanjoorService.StartFillingPoemSectionsCoupletIndex">
             <summary>
             sectionizing poems
             </summary>
@@ -13598,7 +13598,7 @@
             <param name="rejectionCause"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartSectionizingPoems">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFillingPoemSectionsCoupletIndex">
             <summary>
             sectionizing poems
             </summary>

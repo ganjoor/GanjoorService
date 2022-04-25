@@ -2754,13 +2754,13 @@ namespace RMuseum.Controllers
         /// sectionizing poems
         /// </summary>
         /// <returns></returns>
-        [HttpPost("sections/onetime/startextracting")]
+        [HttpPost("sections/onetime/fillcouplets")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartSectionizingPoems()
+        public IActionResult StartFillingPoemSectionsCoupletIndex()
         {
-            var res = _ganjoorService.StartSectionizingPoems();
+            var res = _ganjoorService.StartFillingPoemSectionsCoupletIndex();
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();

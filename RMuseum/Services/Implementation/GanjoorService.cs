@@ -2161,7 +2161,7 @@ namespace RMuseum.Services.Implementation
                         Id = section.Poem.Id,
                         Title = section.Poem.Title,
                         FullTitle = section.Poem.FullTitle,
-                        FullUrl = section.Poem.FullUrl,
+                        FullUrl = section.CachedFirstCoupletIndex == 0 ? section.Poem.FullUrl : section.Poem.FullUrl + "#bn" + (section.CachedFirstCoupletIndex + 1).ToString(),
                         UrlSlug = section.Poem.UrlSlug,
                         HtmlText = section.HtmlText,
                         PlainText = section.PlainText,
