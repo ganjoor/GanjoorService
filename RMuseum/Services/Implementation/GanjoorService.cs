@@ -2289,8 +2289,8 @@ namespace RMuseum.Services.Implementation
                         &&
                        EF.Functions.Contains(p.PlainText, searchConditions)
                         )
-                .Include(p => p.Cat)
-                .OrderBy(p => p.CatId).ThenBy(p => p.Id)
+                .Include(p => p.Cat).ThenInclude(c => c.Poet)
+                .OrderBy(p => p.Cat.Poet.BirthYearInLHijri).ThenBy(p => p.Cat.Poet.Nickname).ThenBy(p => p.Id)
                 .Select
                 (
                     poem =>
