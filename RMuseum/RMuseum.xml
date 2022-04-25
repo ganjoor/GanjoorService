@@ -7080,6 +7080,11 @@
             valid for whole poem sections
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.CachedFirstCoupletIndex">
+            <summary>
+            first couplet index
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Top6RelatedSections">
             <summary>
             top 6 related sections

@@ -91,6 +91,11 @@ namespace RMuseum.Models.Ganjoor
         public GanjoorPoemFormat? PoemFormat { get; set; }
 
         /// <summary>
+        /// first couplet index
+        /// </summary>
+        public int CachedFirstCoupletIndex { get; set; }
+
+        /// <summary>
         /// top 6 related sections
         /// </summary>
         [NotMapped]
