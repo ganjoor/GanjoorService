@@ -2143,18 +2143,16 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId)
         {
-            if (string.IsNullOrEmpty(rhyme))
-                rhyme = "";
             var source =
-                _context.GanjoorPoemSections.Include(s => s.Poem).ThenInclude(p => p.Cat).Include(s => s.Poet).Include(s => s.GanjoorMetre)
+                _context.GanjoorPoemSections.Include(s => s.Poem).Include(s => s.Poet).Include(s => s.GanjoorMetre)
                 .Where(s =>
                         (poetId == null || s.PoetId == poetId)
                         &&
-                        (s.GanjoorMetre.Rhythm == metre)
+                        (string.IsNullOrEmpty(metre) || (!string.IsNullOrEmpty(metre) && s.GanjoorMetre.Rhythm == metre) )
                         &&
-                        (rhyme == "" || s.RhymeLetters == rhyme)
+                        ((string.IsNullOrEmpty(rhyme) && s.SectionType == PoemSectionType.WholePoem) || (!string.IsNullOrEmpty(rhyme) && s.RhymeLetters == rhyme))
                         )
-                .OrderBy(p => p.Poem.CatId).ThenBy(p => p.Poem.Id)
+                .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.Poet.Nickname).ThenBy(p => p.SectionType).ThenBy(p => p.Poem.Id)
                 .Select
                 (
                     section =>
