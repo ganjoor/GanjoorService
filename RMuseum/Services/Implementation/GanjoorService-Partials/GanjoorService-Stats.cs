@@ -69,7 +69,7 @@ namespace RMuseum.Services.Implementation
 
                 htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
                 string rhythm = rhythmsCoupletCounts[i].GanjoorMetreId == null ? "وزنیابی نشده" :
-                                $"<a href=\"/vazn/?v={Uri.EscapeDataString(rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm)}&amp;a={poet.Id}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
+                                $"<a href=\"/simi/?v={Uri.EscapeDataString(rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm)}&amp;a={poet.Id}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
                 htmlText += $"<td class=\"c2\">{rhythm}</td>{Environment.NewLine}";
                 htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(rhythmsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
                 htmlText += $"<td class=\"c4\">{(rhythmsCoupletCounts[i].Count * 100.0 / sumRhythmsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
@@ -164,7 +164,7 @@ namespace RMuseum.Services.Implementation
                                         var poets = await context.GanjoorPoets.ToListAsync();
 
                                         string htmlText = $"<p>تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} مجموعاً {LanguageUtils.FormatMoney(sumPoetsCouplets)} بیت شعر از طریق سایت گنجور در دسترس قرار گرفته است. در جدول زیر که شاعران در آنها بر اساس تعداد ابیات اشعارشان به صورت نزولی مرتب شده‌اند با کلیک بر روی نام هر شاعر می‌توانید آمار اوزان اشعار او را مشاهده کنید.</p>{Environment.NewLine}";
-                                        htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در سایت (مثل آثار خیام) و همینطور یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمسها تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
+                                        htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در گنجور (مثل آثار خیام)، یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمس‌ها و همینطور این که اشعار نقل شده از شاعران دیگر در تذکره‌ها و کتابهایی مانند آن به نام مؤلف نقل‌کنندهٔ شعر ثبت شده تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
 
                                         htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
@@ -219,7 +219,7 @@ namespace RMuseum.Services.Implementation
                                                 context.Update(rhythm);
                                             }
                                             string rhythmName = rhythmsCoupletCounts[i].GanjoorMetreId == null ? "وزنیابی نشده" :
-                                                         $"<a href=\"/vazn/?v={Uri.EscapeDataString(rhythm.Rhythm)}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
+                                                         $"<a href=\"/simi/?v={Uri.EscapeDataString(rhythm.Rhythm)}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
                                             htmlText += $"<td class=\"c2\">{rhythmName}</td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(rhythmsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c4\">{(rhythmsCoupletCounts[i].Count * 100.0 / sumRhythmsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
