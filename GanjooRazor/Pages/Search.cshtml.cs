@@ -316,13 +316,13 @@ namespace GanjooRazor.Pages
                 {
                     htmlText += $"<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page=1\"><div class=\"circled-number\">۱</div></a>{Environment.NewLine} …";
                 }
-                for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
+                for (int i = paginationMetadata.currentPage - 2; i <= (paginationMetadata.currentPage + 2); i++)
                 {
                     if (i >= 1 && i <= paginationMetadata.totalPages)
                     {
                         if (i == paginationMetadata.currentPage)
                         {
-                            htmlText += $"<div class=\"circled-number-diff\">{i.ToPersianNumbers()}</div>" ;
+                            htmlText += $"<div class=\"circled-number-diff\">{i.ToPersianNumbers()}</div>";
                         }
                         else
                         {

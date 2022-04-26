@@ -237,10 +237,6 @@ namespace GanjooRazor.Pages
                 }
                 title += $" حروف قافیهٔ «{Rhyme}»";
             }
-            
-
-            ViewData["Title"] = $"گنجور » {title}";
-
 
             string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}";
             var response = await _httpClient.GetAsync(url);
@@ -264,33 +260,35 @@ namespace GanjooRazor.Pages
             string htmlText = "";
             if (paginationMetadata.totalPages > 1)
             {
+                htmlText = $"<div>{Environment.NewLine}";
                 string authorParam = PoetId != 0 ? $"&amp;a={PoetId}" : "";
                 title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
                 if (paginationMetadata.currentPage > 3)
                 {
-                    htmlText += $"[<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page=1{authorParam}\">صفحهٔ اول</a>] …";
+                    htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page=1{authorParam}\"><div class=\"circled-number\">۱</div></a> …";
                 }
-                for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
+                for (int i = paginationMetadata.currentPage - 2; i <= (paginationMetadata.currentPage + 2); i++)
                 {
                     if (i >= 1 && i <= paginationMetadata.totalPages)
                     {
-                        htmlText += " [";
                         if (i == paginationMetadata.currentPage)
                         {
-                            htmlText += i.ToPersianNumbers();
+                            htmlText += $"<div class=\"circled-number-diff\">{i.ToPersianNumbers()}</div>{Environment.NewLine}";
                         }
                         else
                         {
-                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={i}{authorParam}\">{i.ToPersianNumbers()}</a>";
+                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={i}{authorParam}\"><div class=\"circled-number\">{i.ToPersianNumbers()}</div></a>{Environment.NewLine}";
                         }
-                        htmlText += "] ";
                     }
                 }
                 if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
                 {
-                    htmlText += $"… [<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={paginationMetadata.totalPages}{authorParam}\">صفحهٔ آخر</a>]";
+                    htmlText += $"… <a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={paginationMetadata.totalPages}{authorParam}\"><div class=\"circled-number\">{paginationMetadata.totalPages.ToPersianNumbers()}</div></a>{Environment.NewLine}";
                 }
+                htmlText += $"</div>{Environment.NewLine}";
             }
+
+            ViewData["Title"] = $"گنجور » {title}";
             PagingToolsHtml = htmlText;
 
             return Page();

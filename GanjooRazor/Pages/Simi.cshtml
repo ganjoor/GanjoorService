@@ -125,7 +125,7 @@
                             </select>
 
                             <label for="v" class="width-100per">وزن:</label>
-                            <input class="width-100per" type="text" id="select-search" placeholder="@Model.Metre" oninput="doSearchInRhythmsCombo('select-search', 'v')" list="inputRhythms" autocomplete="off" size="50" />
+                            <input class="width-100per" type="text" id="select-search" placeholder="جستجوی وزن" oninput="doSearchInRhythmsCombo('select-search', 'v')" list="inputRhythms" autocomplete="off" size="50" />
                             <datalist id="inputRhythms">
                                 @if (Model.RhythmsByVerseCount != null)
                                     @foreach (var rhythm in Model.RhythmsByVerseCount)
@@ -173,16 +173,14 @@
                             </h2>
                             <div class="spacer">&nbsp;</div>
                             <div class="sit">
-
                                 @Html.Raw(poem.HtmlText)
-
-                                <p>
-                                    <br>
-                                    <a href="@poem.FullUrl">متن کامل شعر را ببینید ...</a>
-                                </p>
                             </div>
 
                             <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{poem.Category.Poet.ImageUrl}")" alt="@($"{poem.Category.Poet.Name}")" />
+
+                             <div class="part-title-block">
+                                <a href="@poem.FullUrl">متن کامل را ببینید ...</a>
+                            </div>
 
                             <div class="spacer">&nbsp;</div>
                         </div>
