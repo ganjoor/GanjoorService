@@ -1557,7 +1557,7 @@ audio {
     direction: ltr;
 }
 
-.circled-number {
+.circled-number, .circled-number-diff {
     border-radius: 50%;
     width: 34px;
     height: 34px;
@@ -1568,6 +1568,10 @@ audio {
     text-align: center;
     display: inline-table;
     margin: 2px;
+}
+
+.circled-number-diff {
+    background-color: rgba(255, 0, 0, 0.5);
 }
 
 .map-icon::after {

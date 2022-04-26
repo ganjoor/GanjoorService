@@ -173,8 +173,8 @@ namespace GanjooRazor.Pages
                 {
                     ViewData["Title"] = $"گنجور » جستجو";
                 }
-
             }
+
 
             if (PoetId != 0)
             {
@@ -187,6 +187,11 @@ namespace GanjooRazor.Pages
             if (!string.IsNullOrEmpty(Request.Query["page"]))
             {
                 pageNumber = int.Parse(Request.Query["page"]);
+            }
+
+            if(pageNumber > 1)
+            {
+                ViewData["Title"] += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
             }
 
             HttpResponseMessage searchQueryResponse = null;
@@ -302,38 +307,36 @@ namespace GanjooRazor.Pages
 
         private string GeneratePagingBarHtml(PaginationMetadata paginationMetadata, string routeStartWithQueryStrings)
         {
-            string htmlText = "<p style=\"text-align: center;\">";
+            string htmlText = $"<div>{Environment.NewLine}";
 
 
             if (paginationMetadata != null && paginationMetadata.totalPages > 1)
             {
                 if (paginationMetadata.currentPage > 3)
                 {
-                    htmlText += $"[<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page=1\">صفحهٔ اول</a>] …";
+                    htmlText += $"<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page=1\"><div class=\"circled-number\">۱</div></a>{Environment.NewLine} …";
                 }
                 for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
                 {
                     if (i >= 1 && i <= paginationMetadata.totalPages)
                     {
-                        htmlText += " [";
                         if (i == paginationMetadata.currentPage)
                         {
-                            htmlText += i.ToPersianNumbers();
+                            htmlText += $"<div class=\"circled-number-diff\">{i.ToPersianNumbers()}</div>" ;
                         }
                         else
                         {
-                            htmlText += $"<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page={i}\">{i.ToPersianNumbers()}</a>";
+                            htmlText += $"<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page={i}\"><div class=\"circled-number\">{i.ToPersianNumbers()}</div></a>{Environment.NewLine}";
                         }
-                        htmlText += "] ";
                     }
                 }
                 if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
                 {
-                    htmlText += $"… [<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page={paginationMetadata.totalPages}\">صفحهٔ آخر</a>]";
+                    htmlText += $"… <a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page={paginationMetadata.totalPages}\"><div class=\"circled-number\">{paginationMetadata.totalPages.ToPersianNumbers()}</div></a>{Environment.NewLine}";
                 }
             }
 
-            htmlText += $"</p>{Environment.NewLine}";
+            htmlText += $"</div>{Environment.NewLine}";
             return htmlText;
         }
 
