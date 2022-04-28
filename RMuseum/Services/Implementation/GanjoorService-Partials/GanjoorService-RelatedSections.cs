@@ -178,7 +178,8 @@ namespace RMuseum.Services.Implementation
                                             await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section);
 
                                             number++;
-                                            await jobProgressServiceEF.UpdateJob(job.Id, number);
+                                            if(number % 100 == 0)
+                                                await jobProgressServiceEF.UpdateJob(job.Id, number);
                                         }
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
