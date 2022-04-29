@@ -41,6 +41,7 @@ namespace RMuseum.Services.Implementation
         {
             var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
                                                 .Where(s => s.PoetId == poet.Id && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
+                                                .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId })
                                                 .ToListAsync();
 
             Dictionary<int?, int> metreCounts = new Dictionary<int?, int>();
@@ -54,7 +55,8 @@ namespace RMuseum.Services.Implementation
                         &&
                         v.SectionIndex1 == section.Index
                         ).CountAsync();
-                if (metreCounts.TryGetValue(section.GanjoorMetreId, out int sectionCoupletCount))
+                var metreId = section.GanjoorMetreId == null ? 0 : (int)section.GanjoorMetreId;
+                if (metreCounts.TryGetValue(metreId, out int sectionCoupletCount))
                 {
                     sectionCoupletCount += coupletCount;
                 }
@@ -62,13 +64,14 @@ namespace RMuseum.Services.Implementation
                 {
                     sectionCoupletCount = coupletCount;
                 }
-                metreCounts[section.GanjoorMetreId] = sectionCoupletCount;
+                metreCounts[metreId] = sectionCoupletCount;
             }
 
             List<dynamic> rhythmsCoupletCounts = new List<dynamic>();
             foreach (var metreCount in metreCounts)
             {
-                rhythmsCoupletCounts.Add(new { GanjoorMetreId = metreCount.Key, Count = metreCount.Value });
+                int? metreId = metreCount.Key == 0 ? null : metreCount.Key;
+                rhythmsCoupletCounts.Add(new { GanjoorMetreId = metreId, Count = metreCount.Value });
             }
             rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
 
@@ -187,9 +190,10 @@ namespace RMuseum.Services.Implementation
 
                                         var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
                                                 .Where(s => s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
+                                                .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId })
                                                 .ToListAsync();
 
-                                        Dictionary<int?, int> metreCounts = new Dictionary<int?, int>();
+                                        Dictionary<int, int> metreCounts = new Dictionary<int, int>();
                                         foreach (var section in wholePoemSections)
                                         {
                                             int coupletCount = await context.GanjoorVerses.AsNoTracking()
@@ -200,7 +204,8 @@ namespace RMuseum.Services.Implementation
                                                     &&
                                                     v.SectionIndex1 == section.Index
                                                     ).CountAsync();
-                                            if (metreCounts.TryGetValue(section.GanjoorMetreId, out int sectionCoupletCount))
+                                            var metreId = section.GanjoorMetreId == null ? 0 : (int)section.GanjoorMetreId;
+                                            if (metreCounts.TryGetValue(metreId, out int sectionCoupletCount))
                                             {
                                                 sectionCoupletCount += coupletCount;
                                             }
@@ -208,13 +213,14 @@ namespace RMuseum.Services.Implementation
                                             {
                                                 sectionCoupletCount = coupletCount;
                                             }
-                                            metreCounts[section.GanjoorMetreId] = sectionCoupletCount;
+                                            metreCounts[metreId] = sectionCoupletCount;
                                         }
 
                                         List<dynamic> rhythmsCoupletCounts = new List<dynamic>();
                                         foreach (var metreCount in metreCounts)
                                         {
-                                            rhythmsCoupletCounts.Add(new { GanjoorMetreId = metreCount.Key, Count = metreCount.Value });
+                                            int? metreId = metreCount.Key == 0 ? null : metreCount.Key;
+                                            rhythmsCoupletCounts.Add(new { GanjoorMetreId = metreId, Count = metreCount.Value });
                                         }
                                         rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
 
