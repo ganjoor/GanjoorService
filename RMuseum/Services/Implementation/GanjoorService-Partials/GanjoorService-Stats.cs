@@ -39,6 +39,40 @@ namespace RMuseum.Services.Implementation
 
         private async Task _UpdatePoetStatsPage(Guid editingUserId, GanjoorPoet poet, List<GanjoorMetre> rhythms, RMuseumDbContext context)
         {
+            var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
+                                                .Where(s => s.PoetId == poet.Id && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
+                                                .ToListAsync();
+
+            Dictionary<int?, int> metreCounts = new Dictionary<int?, int>();
+            foreach (var section in wholePoemSections)
+            {
+                int coupletCount = await context.GanjoorVerses.AsNoTracking()
+                    .Where(v =>
+                        v.PoemId == section.PoemId
+                        &&
+                        (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                        &&
+                        v.SectionIndex1 == section.Index
+                        ).CountAsync();
+                if (metreCounts.TryGetValue(section.GanjoorMetreId, out int sectionCoupletCount))
+                {
+                    sectionCoupletCount += coupletCount;
+                }
+                else
+                {
+                    sectionCoupletCount = coupletCount;
+                }
+                metreCounts[section.GanjoorMetreId] = sectionCoupletCount;
+            }
+
+            List<dynamic> rhythmsCoupletCounts = new List<dynamic>();
+            foreach (var metreCount in metreCounts)
+            {
+                rhythmsCoupletCounts.Add(new { GanjoorMetreId = metreCount.Key, Count = metreCount.Value });
+            }
+            rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
+
+            /*
             var rhythmsCoupletCounts =
                             await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).AsNoTracking()
                             .Where(v => v.Poem.Cat.PoetId == poet.Id && (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1))
@@ -46,6 +80,8 @@ namespace RMuseum.Services.Implementation
                             .Select(g => new { GanjoorMetreId = g.Key.GanjoorMetreId, Count = g.Count() })
                             .ToListAsync();
             rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
+            */
+
             var sumRhythmsCouplets = rhythmsCoupletCounts.Sum(c => c.Count);
 
             string htmlText = $"<p>این آمار از میان {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر موجود در گنجور از {poet.Name} استخراج شده است.</p>{Environment.NewLine}";
@@ -147,6 +183,45 @@ namespace RMuseum.Services.Implementation
                                         poetsCoupletCounts.Sort((a, b) => b.Count - a.Count);
                                         var sumPoetsCouplets = poetsCoupletCounts.Sum(c => c.Count);
 
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 1, "Counting whole sections");
+
+                                        var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
+                                                .Where(s => s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
+                                                .ToListAsync();
+
+                                        Dictionary<int?, int> metreCounts = new Dictionary<int?, int>();
+                                        foreach (var section in wholePoemSections)
+                                        {
+                                            int coupletCount = await context.GanjoorVerses.AsNoTracking()
+                                                .Where(v =>
+                                                    v.PoemId == section.PoemId
+                                                    &&
+                                                    (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                                                    &&
+                                                    v.SectionIndex1 == section.Index
+                                                    ).CountAsync();
+                                            if (metreCounts.TryGetValue(section.GanjoorMetreId, out int sectionCoupletCount))
+                                            {
+                                                sectionCoupletCount += coupletCount;
+                                            }
+                                            else
+                                            {
+                                                sectionCoupletCount = coupletCount;
+                                            }
+                                            metreCounts[section.GanjoorMetreId] = sectionCoupletCount;
+                                        }
+
+                                        List<dynamic> rhythmsCoupletCounts = new List<dynamic>();
+                                        foreach (var metreCount in metreCounts)
+                                        {
+                                            rhythmsCoupletCounts.Add(new { GanjoorMetreId = metreCount.Key, Count = metreCount.Value });
+                                        }
+                                        rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
+
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 2, "Counting whole sections done!");
+
+
+                                        /*
                                         var rhythmsCoupletCounts =
                                                    await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
                                                    .Where(v =>
@@ -156,12 +231,12 @@ namespace RMuseum.Services.Implementation
                                                    .GroupBy(v => new { v.Poem.GanjoorMetreId })
                                                    .Select(g => new { GanjoorMetreId = g.Key.GanjoorMetreId, Count = g.Count() })
                                                    .ToListAsync();
-                                        rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
+                                        rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);*/
                                         var sumRhythmsCouplets = rhythmsCoupletCounts.Sum(c => c.Count);
 
                                         var dbPage = await context.GanjoorPages.Where(p => p.FullUrl == "/vazn").SingleAsync();
 
-                                        var poets = await context.GanjoorPoets.ToListAsync();
+                                        var poets = await context.GanjoorPoets.AsNoTracking().ToListAsync();
 
                                         string htmlText = $"<p>تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} مجموعاً {LanguageUtils.FormatMoney(sumPoetsCouplets)} بیت شعر از طریق سایت گنجور در دسترس قرار گرفته است. در جدول زیر که شاعران در آنها بر اساس تعداد ابیات اشعارشان به صورت نزولی مرتب شده‌اند با کلیک بر روی نام هر شاعر می‌توانید آمار اوزان اشعار او را مشاهده کنید.</p>{Environment.NewLine}";
                                         htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در گنجور (مثل آثار خیام)، یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمس‌ها و همینطور این که اشعار نقل شده از شاعران دیگر در تذکره‌ها و کتابهایی مانند آن به نام مؤلف نقل‌کنندهٔ شعر ثبت شده تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
