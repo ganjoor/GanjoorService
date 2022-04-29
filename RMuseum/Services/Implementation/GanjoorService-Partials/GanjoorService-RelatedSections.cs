@@ -56,10 +56,11 @@ namespace RMuseum.Services.Implementation
                     .OrderBy(section => section.SectionType)
                     .Select(section => section.Id)
                     .ToListAsync();
+                Dictionary<int, string> poetsImagesUrls = new Dictionary<int, string>();
                 foreach (var sectionId in sectionIds)
                 {
                     var section = await context.GanjoorPoemSections.AsNoTracking().SingleAsync(s => s.Id == sectionId);
-                    await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section);
+                    await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section, poetsImagesUrls);
                 }
                 await context.SaveChangesAsync();
                 return new RServiceResult<bool>(true);
@@ -70,7 +71,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task _UpdateSectionRelatedSectionsInfoNoSaveChanges(RMuseumDbContext context, GanjoorPoemSection section)
+        private async Task _UpdateSectionRelatedSectionsInfoNoSaveChanges(RMuseumDbContext context, GanjoorPoemSection section, Dictionary<int, string> poetsImagesUrls)
         {
             var oldRelations = await context.GanjoorCachedRelatedSections.Where(r => r.PoemId == section.PoemId && r.SectionIndex == section.Index).ToListAsync();
             context.GanjoorCachedRelatedSections.RemoveRange(oldRelations);
@@ -104,6 +105,12 @@ namespace RMuseum.Services.Implementation
                         fullUrl += $"#bn{relatedSection.CachedFirstCoupletIndex + 1}";
                     }
 
+                    if(!poetsImagesUrls.TryGetValue((int)relatedSection.PoetId, out string imgUrl))
+                    {
+                        imgUrl = $"/api/ganjoor/poet/image{(await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == relatedSection.PoetId).AsNoTracking().SingleAsync()).FullUrl}.gif";
+                        poetsImagesUrls[(int)relatedSection.PoetId] = imgUrl;
+                    }
+
                     GanjoorCachedRelatedSection newRelatedPoem = new GanjoorCachedRelatedSection()
                     {
                         PoemId = section.PoemId,
@@ -111,7 +118,7 @@ namespace RMuseum.Services.Implementation
                         PoetId = (int)relatedSection.PoetId,
                         RelationOrder = r,
                         PoetName = relatedSection.Poet.Nickname,
-                        PoetImageUrl = $"/api/ganjoor/poet/image{(await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == relatedSection.PoetId).AsNoTracking().SingleAsync()).FullUrl}.gif",
+                        PoetImageUrl = imgUrl,
                         FullTitle = relatedSection.Poem.FullTitle,
                         FullUrl = fullUrl,
                         PoetMorePoemsLikeThisCount = 0,
@@ -165,7 +172,7 @@ namespace RMuseum.Services.Implementation
                                             && !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).Select(s => s.Id).ToListAsync();
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating Related Sections for {sectionIds.Count} sections");
-
+                                        Dictionary<int, string> poetsImagesUrls = new Dictionary<int, string>();
                                         for (int i = 0; i < sectionIds.Count; i++)
                                         {
                                             var section = await context.GanjoorPoemSections.AsNoTracking().SingleAsync(s => s.Id == sectionIds[i]);
@@ -175,7 +182,7 @@ namespace RMuseum.Services.Implementation
                                                     continue;
                                             }
 
-                                            await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section);
+                                            await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section, poetsImagesUrls);
 
                                             number++;
                                             if(number % 100 == 0)
