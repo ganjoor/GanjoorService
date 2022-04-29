@@ -145,16 +145,28 @@ namespace RMuseum.Services.Implementation
                                                     .GroupBy(v => new { v.Poem.Language })
                                                     .Select(g => new LanguageCoupletCount() { Language = g.Key.Language, Count = g.Count() })
                                                     .ToListAsync();
+                var fa = langaugesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").SingleOrDefault();
+                if(fa == null)
+                {
+                    fa = new LanguageCoupletCount()
+                    {
+                        Language = "fa-IR",
+                        Count = 0
+                    };
+                    langaugesCoupletsCountsUnprocessed.Add
+                        (
+                        fa
+                        );
+                }
                 foreach (var langaugesCoupletsCount in langaugesCoupletsCountsUnprocessed)
                 {
                     if (string.IsNullOrEmpty(langaugesCoupletsCount.Language))
                     {
-                        langaugesCoupletsCount.Language = "fa-IR";
+                        fa.Count += langaugesCoupletsCount.Count;
                     }
                 }
                 var langaugesCoupletsCounts = langaugesCoupletsCountsUnprocessed
-                            .GroupBy(l => l.Language)
-                            .Select(g => new { Language = g.Key, Count = g.Count() })
+                            .Where(l => !string.IsNullOrEmpty(l.Language) )
                             .ToList();
                 langaugesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
 
@@ -280,16 +292,28 @@ namespace RMuseum.Services.Implementation
                                                     .GroupBy(v => new { v.Poem.Language })
                                                     .Select(g => new LanguageCoupletCount() { Language = g.Key.Language, Count = g.Count() })
                                                     .ToListAsync();
+                                        var fa = langaugesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").SingleOrDefault();
+                                        if (fa == null)
+                                        {
+                                            fa = new LanguageCoupletCount()
+                                            {
+                                                Language = "fa-IR",
+                                                Count = 0
+                                            };
+                                            langaugesCoupletsCountsUnprocessed.Add
+                                                (
+                                                fa
+                                                );
+                                        }
                                         foreach (var langaugesCoupletsCount in langaugesCoupletsCountsUnprocessed)
                                         {
-                                            if(string.IsNullOrEmpty(langaugesCoupletsCount.Language))
+                                            if (string.IsNullOrEmpty(langaugesCoupletsCount.Language))
                                             {
-                                                langaugesCoupletsCount.Language = "fa-IR";
+                                                fa.Count += langaugesCoupletsCount.Count;
                                             }
                                         }
                                         var langaugesCoupletsCounts = langaugesCoupletsCountsUnprocessed
-                                                    .GroupBy(l => l.Language)
-                                                    .Select(g => new { Language = g.Key, Count = g.Count() })
+                                                    .Where(l => !string.IsNullOrEmpty(l.Language))
                                                     .ToList();
                                         langaugesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
 
