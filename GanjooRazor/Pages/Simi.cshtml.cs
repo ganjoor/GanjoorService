@@ -169,7 +169,7 @@ namespace GanjooRazor.Pages
 
             if (string.IsNullOrEmpty(Request.Query["v"]) && string.IsNullOrEmpty(Request.Query["g"]))
             {
-                LastError = "<p>موردی با مشخصات انتخاب شده یافت نشد.</p>";
+                LastError = "<p>لطفاً دست کم یکی از ورودی‌های وزن یا قافیه را مشخص نمایید.</p>";
                 return Page();
             }
 
