@@ -86,7 +86,7 @@ namespace RMuseum.Services.Implementation
             string stats = "";
             if(sumRhythmsCouplets != wholeCoupletsCount)
             {
-                stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر فارسی از کل ${wholeCoupletsCount} بیت شعر موجود";
+                stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر فارسی از کل {LanguageUtils.FormatMoney(wholeCoupletsCount)} بیت شعر موجود";
             }
             else
             {
@@ -269,7 +269,7 @@ namespace RMuseum.Services.Implementation
 
                                         var rhythms = await context.GanjoorMetres.ToListAsync();
 
-                                        htmlText += $"<p>فهرست زیر نیز آمار ${LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر فارسی گنجور را از لحاظ اوزان عروضی نشان می‌دهد:</p>{Environment.NewLine}";
+                                        htmlText += $"<p>فهرست زیر نیز آمار {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر فارسی گنجور را از لحاظ اوزان عروضی نشان می‌دهد:</p>{Environment.NewLine}";
 
                                         htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
