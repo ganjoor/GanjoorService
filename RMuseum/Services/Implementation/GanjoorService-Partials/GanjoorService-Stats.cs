@@ -43,10 +43,10 @@ namespace RMuseum.Services.Implementation
             await context.SaveChangesAsync();
         }
 
-        private async Task _UpdatePoetStatsPage(Guid editingUserId, GanjoorPoet poet, List<GanjoorMetre> rhythms, RMuseumDbContext context)
+        private async Task _UpdatePoetStatsPage(Guid editingUserId, GanjoorPoet poet, List<GanjoorMetre> rhythms, RMuseumDbContext context, int wholeCoupletsCount)
         {
             var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
-                                                .Where(s => s.PoetId == poet.Id && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
+                                                .Where(s => s.PoetId == poet.Id && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR") && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
                                                 .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId })
                                                 .ToListAsync();
 
@@ -81,9 +81,19 @@ namespace RMuseum.Services.Implementation
             }
             rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
 
-            var sumRhythmsCouplets = rhythmsCoupletCounts.Sum(c => c.Count);
+            int sumRhythmsCouplets = rhythmsCoupletCounts.Sum(c => c.Count);
 
-            string htmlText = $"<p>این آمار از میان {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر موجود در گنجور از {poet.Name} استخراج شده است.</p>{Environment.NewLine}";
+            string stats = "";
+            if(sumRhythmsCouplets != wholeCoupletsCount)
+            {
+                stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر فارسی از کل ${wholeCoupletsCount} بیت شعر موجود";
+            }
+            else
+            {
+                stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر موجود";
+            }
+
+            string htmlText = $"<p>این آمار از میان {stats} در گنجور از {poet.Name} استخراج شده است.</p>{Environment.NewLine}";
             htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در سایت (مثل آثار خیام) و همینطور یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمسها تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
             htmlText += $"<p>آمار همهٔ شعرهای گنجور را <a href=\"/vazn\">اینجا</a> ببینید.</p>{Environment.NewLine}";
             htmlText += $"<p>وزنیابی دستی در بیشتر موارد با ملاحظهٔ تنها یک مصرع از شعر صورت گرفته و امکان وجود اشکال در آن (مخصوصاً اشتباه در تشخیص وزنهای قابل تبدیل از قبیل وزن مثنوی مولوی به جای وزن عروضی سریع مطوی مکشوف) وجود دارد. وزنیابی ماشینی نیز که جدیداً با استفاده از امکانات <a href=\"http://www.sorud.info/\">تارنمای سرود</a> اضافه شده بعضاً خطا دارد. برخی از بخشها شامل اشعاری با بیش از یک وزن هستند که در این صورت عمدتاً وزن ابیات آغازین و برای بعضی منظومه‌ها وزن غالب منظومه به عنوان وزن آن بخش منظور شده است.</p>{Environment.NewLine}";
@@ -185,7 +195,7 @@ namespace RMuseum.Services.Implementation
                                         await jobProgressServiceEF.UpdateJob(job.Id, 1, "Counting whole sections");
 
                                         var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
-                                                .Where(s => s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
+                                                .Where(s => s.Poem.Cat.Poet.Published && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR")  && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
                                                 .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId })
                                                 .ToListAsync();
 
@@ -259,7 +269,7 @@ namespace RMuseum.Services.Implementation
 
                                         var rhythms = await context.GanjoorMetres.ToListAsync();
 
-                                        htmlText += $"<p>فهرست زیر نیز آمار اشعار گنجور را از لحاظ اوزان عروضی نشان می‌دهد:</p>{Environment.NewLine}";
+                                        htmlText += $"<p>فهرست زیر نیز آمار ${LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر فارسی گنجور را از لحاظ اوزان عروضی نشان می‌دهد:</p>{Environment.NewLine}";
 
                                         htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
@@ -301,7 +311,7 @@ namespace RMuseum.Services.Implementation
                                         {
                                             var poet = poets.Where(p => p.Id == poetInfo.PoetId).Single();
                                             await jobProgressServiceEF.UpdateJob(job.Id, poetInfo.PoetId, poet.Nickname);
-                                            await _UpdatePoetStatsPage(editingUserId, poet, rhythms, context);
+                                            await _UpdatePoetStatsPage(editingUserId, poet, rhythms, context, poetInfo.Count);
                                         }
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
