@@ -81,16 +81,6 @@ namespace RMuseum.Services.Implementation
             }
             rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
 
-            /*
-            var rhythmsCoupletCounts =
-                            await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).AsNoTracking()
-                            .Where(v => v.Poem.Cat.PoetId == poet.Id && (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1))
-                            .GroupBy(v => new { v.Poem.GanjoorMetreId })
-                            .Select(g => new { GanjoorMetreId = g.Key.GanjoorMetreId, Count = g.Count() })
-                            .ToListAsync();
-            rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
-            */
-
             var sumRhythmsCouplets = rhythmsCoupletCounts.Sum(c => c.Count);
 
             string htmlText = $"<p>این آمار از میان {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر موجود در گنجور از {poet.Name} استخراج شده است.</p>{Environment.NewLine}";
@@ -232,18 +222,6 @@ namespace RMuseum.Services.Implementation
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 2, "Counting whole sections done!");
 
-
-                                        /*
-                                        var rhythmsCoupletCounts =
-                                                   await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
-                                                   .Where(v =>
-                                                    v.Poem.Cat.Poet.Published
-                                                    &&
-                                                    (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1))
-                                                   .GroupBy(v => new { v.Poem.GanjoorMetreId })
-                                                   .Select(g => new { GanjoorMetreId = g.Key.GanjoorMetreId, Count = g.Count() })
-                                                   .ToListAsync();
-                                        rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);*/
                                         var sumRhythmsCouplets = rhythmsCoupletCounts.Sum(c => c.Count);
 
                                         var dbPage = await context.GanjoorPages.Where(p => p.FullUrl == "/vazn").SingleAsync();
