@@ -172,7 +172,7 @@ namespace RMuseum.Services.Implementation
 
                 if(langaugesCoupletsCounts.Count > 1)
                 {
-                    htmlText += $"<p>آمار ابیات آمارگذاری شدهٔ {poet.Name} با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
+                    htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ {poet.Name} با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
                     htmlText += $"<table>{Environment.NewLine}" +
                         $"<tr class=\"h\">{Environment.NewLine}" +
@@ -392,7 +392,7 @@ namespace RMuseum.Services.Implementation
                                         }
                                         htmlText += $"</table>{Environment.NewLine}";
 
-                                        htmlText += $"<p>آمار ابیات آمارگذاری شده با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
+                                        htmlText += $"<p>آمار ابیات برچسب‌گذاری شده با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
                                         htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
