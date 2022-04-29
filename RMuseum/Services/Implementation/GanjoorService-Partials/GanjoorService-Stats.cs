@@ -19,6 +19,13 @@ namespace RMuseum.Services.Implementation
         public int Count { get; set; }
     }
 
+    internal class LanguageCoupletCount
+    {
+        public string Language { get; set; }
+
+        public int Count { get; set; }
+    }
+
     /// <summary>
     /// IGanjoorService implementation
     /// </summary>
@@ -73,6 +80,7 @@ namespace RMuseum.Services.Implementation
                 metreCounts[metreId] = sectionCoupletCount;
             }
 
+
             List<RhythmCoupletCount> rhythmsCoupletCounts = new List<RhythmCoupletCount>();
             foreach (var metreCount in metreCounts)
             {
@@ -122,6 +130,76 @@ namespace RMuseum.Services.Implementation
                 htmlText += $"</tr>{Environment.NewLine}";
             }
             htmlText += $"</table>{Environment.NewLine}";
+
+            if(sumRhythmsCouplets != wholeCoupletsCount)
+            {
+                var langaugesCoupletsCountsUnprocessed =
+                                                    await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
+                                                    .Where(v =>
+                                                    v.Poem.Cat.Poet.Published
+                                                    &&
+                                                    (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                                                    &&
+                                                    v.Poem.Cat.PoetId == poet.Id
+                                                    )
+                                                    .GroupBy(v => new { v.Poem.Language })
+                                                    .Select(g => new LanguageCoupletCount() { Language = g.Key.Language, Count = g.Count() })
+                                                    .ToListAsync();
+                foreach (var langaugesCoupletsCount in langaugesCoupletsCountsUnprocessed)
+                {
+                    if (string.IsNullOrEmpty(langaugesCoupletsCount.Language))
+                    {
+                        langaugesCoupletsCount.Language = "fa-IR";
+                    }
+                }
+                var langaugesCoupletsCounts = langaugesCoupletsCountsUnprocessed
+                            .GroupBy(l => l.Language)
+                            .Select(g => new { Language = g.Key, Count = g.Count() })
+                            .ToList();
+                langaugesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
+
+                if(langaugesCoupletsCounts.Count > 1)
+                {
+                    htmlText += $"<p>آمار ابیات آمارگذاری شدهٔ {poet.Name} با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
+
+                    htmlText += $"<table>{Environment.NewLine}" +
+                        $"<tr class=\"h\">{Environment.NewLine}" +
+                        $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                        $"<td class=\"c2\">زبان</td>{Environment.NewLine}" +
+                        $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
+                        $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                        $"</tr>{Environment.NewLine}";
+
+                    for (int i = 0; i < langaugesCoupletsCounts.Count; i++)
+                    {
+                        if (i % 2 == 0)
+                            htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                        else
+                            htmlText += $"<tr>{Environment.NewLine}";
+
+                        htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                        string langauge = "فارسی";
+                        switch (langaugesCoupletsCounts[i].Language)
+                        {
+                            case "azb":
+                                langauge = "ترکی";
+                                break;
+                            case "ar":
+                                langauge = "عربی";
+                                break;
+                            case "ckb":
+                                langauge = "کردی";
+                                break;
+                        }
+                        htmlText += $"<td class=\"c2\">{langauge}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(langaugesCoupletsCounts[i].Count)}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"c4\">{(langaugesCoupletsCounts[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                        htmlText += $"</tr>{Environment.NewLine}";
+                    }
+                    htmlText += $"</table>{Environment.NewLine}";
+                }
+            }
 
             var poetUrl = (await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == poet.Id).SingleAsync()).FullUrl;
 
@@ -191,6 +269,31 @@ namespace RMuseum.Services.Implementation
                                                     .ToListAsync();
                                         poetsCoupletCounts.Sort((a, b) => b.Count - a.Count);
                                         var sumPoetsCouplets = poetsCoupletCounts.Sum(c => c.Count);
+
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 1, "Counting Languages");
+                                        var langaugesCoupletsCountsUnprocessed =
+                                                    await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
+                                                    .Where(v =>
+                                                    v.Poem.Cat.Poet.Published
+                                                    &&
+                                                    (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1))
+                                                    .GroupBy(v => new { v.Poem.Language })
+                                                    .Select(g => new LanguageCoupletCount() { Language = g.Key.Language, Count = g.Count() })
+                                                    .ToListAsync();
+                                        foreach (var langaugesCoupletsCount in langaugesCoupletsCountsUnprocessed)
+                                        {
+                                            if(string.IsNullOrEmpty(langaugesCoupletsCount.Language))
+                                            {
+                                                langaugesCoupletsCount.Language = "fa-IR";
+                                            }
+                                        }
+                                        var langaugesCoupletsCounts = langaugesCoupletsCountsUnprocessed
+                                                    .GroupBy(l => l.Language)
+                                                    .Select(g => new { Language = g.Key, Count = g.Count() })
+                                                    .ToList();
+                                        langaugesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
+
+
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 1, "Counting whole sections");
 
@@ -265,7 +368,46 @@ namespace RMuseum.Services.Implementation
                                         }
                                         htmlText += $"</table>{Environment.NewLine}";
 
-                                       
+                                        htmlText += $"<p>آمار ابیات آمارگذاری شده با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
+
+                                        htmlText += $"<table>{Environment.NewLine}" +
+                                            $"<tr class=\"h\">{Environment.NewLine}" +
+                                            $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                                            $"<td class=\"c2\">زبان</td>{Environment.NewLine}" +
+                                            $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
+                                            $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                                            $"</tr>{Environment.NewLine}";
+
+                                        for (int i = 0; i < langaugesCoupletsCounts.Count; i++)
+                                        {
+                                            if (i % 2 == 0)
+                                                htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                                            else
+                                                htmlText += $"<tr>{Environment.NewLine}";
+
+                                            htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                                            string langauge = "فارسی";
+                                            switch (langaugesCoupletsCounts[i].Language)
+                                            {
+                                                case "azb":
+                                                    langauge = "ترکی";
+                                                    break;
+                                                case "ar":
+                                                    langauge = "عربی";
+                                                    break;
+                                                case "ckb":
+                                                    langauge = "کردی";
+                                                    break;
+                                            }
+                                            htmlText += $"<td class=\"c2\">{langauge}</td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(langaugesCoupletsCounts[i].Count)}</td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c4\">{(langaugesCoupletsCounts[i].Count * 100.0 / sumPoetsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                                            htmlText += $"</tr>{Environment.NewLine}";
+                                        }
+                                        htmlText += $"</table>{Environment.NewLine}";
+
+
 
                                         var rhythms = await context.GanjoorMetres.ToListAsync();
 
