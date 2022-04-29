@@ -13,6 +13,12 @@ using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
 {
+    internal class RhythmCoupletCount
+    {
+        public int? GanjoorMetreId { get; set; }
+        public int Count { get; set; }
+    }
+
     /// <summary>
     /// IGanjoorService implementation
     /// </summary>
@@ -67,11 +73,11 @@ namespace RMuseum.Services.Implementation
                 metreCounts[metreId] = sectionCoupletCount;
             }
 
-            List<dynamic> rhythmsCoupletCounts = new List<dynamic>();
+            List<RhythmCoupletCount> rhythmsCoupletCounts = new List<RhythmCoupletCount>();
             foreach (var metreCount in metreCounts)
             {
                 int? metreId = metreCount.Key == 0 ? null : metreCount.Key;
-                rhythmsCoupletCounts.Add(new { GanjoorMetreId = metreId, Count = metreCount.Value });
+                rhythmsCoupletCounts.Add(new RhythmCoupletCount (){ GanjoorMetreId = metreId, Count = metreCount.Value });
             }
             rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
 
@@ -216,11 +222,11 @@ namespace RMuseum.Services.Implementation
                                             metreCounts[metreId] = sectionCoupletCount;
                                         }
 
-                                        List<dynamic> rhythmsCoupletCounts = new List<dynamic>();
+                                        List<RhythmCoupletCount> rhythmsCoupletCounts = new List<RhythmCoupletCount>();
                                         foreach (var metreCount in metreCounts)
                                         {
                                             int? metreId = metreCount.Key == 0 ? null : metreCount.Key;
-                                            rhythmsCoupletCounts.Add(new { GanjoorMetreId = metreId, Count = metreCount.Value });
+                                            rhythmsCoupletCounts.Add(new RhythmCoupletCount (){ GanjoorMetreId = metreId, Count = metreCount.Value });
                                         }
                                         rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
 
