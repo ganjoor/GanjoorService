@@ -51,15 +51,12 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var sectionIds = await context.GanjoorPoemSections.AsNoTracking()
+                var sections = await context.GanjoorPoemSections.AsNoTracking()
                     .Where(section => section.GanjoorMetreId == metreId && section.RhymeLetters == rhyme)
-                    .OrderBy(section => section.SectionType)
-                    .Select(section => section.Id)
                     .ToListAsync();
                 Dictionary<int, string> poetsImagesUrls = new Dictionary<int, string>();
-                foreach (var sectionId in sectionIds)
+                foreach (var section in sections)
                 {
-                    var section = await context.GanjoorPoemSections.AsNoTracking().SingleAsync(s => s.Id == sectionId);
                     await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section, poetsImagesUrls, true);
                 }
                 await context.SaveChangesAsync();
@@ -88,20 +85,20 @@ namespace RMuseum.Services.Implementation
                         s.GanjoorMetreId == metreId
                         &&
                         s.RhymeLetters == rhyme
-                        &&
-                        s.Id != section.Id
                         ).ToListAsync();
 
             relatedSections = relatedSections.OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.PoetId).ThenBy(p => p.SectionType).ToList();
 
             List<GanjoorCachedRelatedSection> GanjoorCachedRelatedSections = new List<GanjoorCachedRelatedSection>();
-            int r = 0;
+            int relationOrder = 0;
             int prePoetId = -1;
             foreach (var relatedSection in relatedSections)
             {
+                if (relatedSection.Id == section.Id)
+                    continue;
                 if (prePoetId != relatedSection.PoetId)
                 {
-                    r++;
+                    relationOrder++;
 
                     var fullUrl = relatedSection.Poem.FullUrl;
                     if(relatedSection.CachedFirstCoupletIndex > 0)
@@ -120,7 +117,7 @@ namespace RMuseum.Services.Implementation
                         PoemId = section.PoemId,
                         SectionIndex = section.Index,
                         PoetId = (int)relatedSection.PoetId,
-                        RelationOrder = r,
+                        RelationOrder = relationOrder,
                         PoetName = relatedSection.Poet.Nickname,
                         PoetImageUrl = imgUrl,
                         FullTitle = relatedSection.Poem.FullTitle,
