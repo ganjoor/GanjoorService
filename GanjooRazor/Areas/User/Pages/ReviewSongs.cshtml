@@ -8,6 +8,7 @@
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
 <h1>@ViewData["Title"]</h1>
+
 @if (Model.LastError != "")
 {
     <h2>@Model.LastError</h2>
@@ -23,45 +24,7 @@ else if (@Model.Poem == null)
 else
 {
 
-    <script>
-        function rebuildMundex() {
-            if (!confirm('آیا از بازسازی صفحات نمایهٔ موسیقی اطمینان دارید؟'))
-                return;
 
-            var url = '?handler=RebuildMundex';
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                error: function () {
-                    alert('خطا رخ داد.')
-                },
-                success: function () {
-                    alert('فرایند بازسازی صفحات نمایهٔ موسیقی شروع شد.')
-                },
-
-            });
-        }
-
-        function cleanMundexCache() {
-            if (!confirm('آیا از حذف کش صفحات موسیقی اطمینان دارید؟'))
-                return;
-
-            var url = '?handler=CleanMundexCache';
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                error: function () {
-                    alert('خطا رخ داد.')
-                },
-                success: function () {
-                    alert('کش صفخات پاک شد.')
-                },
-
-            });
-        }
-    </script>
 
     <form method="post">
         <table style="width:100%" class="noborder">
@@ -260,6 +223,46 @@ else
 {
     <a class="nav-link text-dark" asp-area="User" asp-page="/AddSong">اضافه کردن آهنگ از منبع دلخواه</a>
 }
+
+<script>
+    function rebuildMundex() {
+        if (!confirm('آیا از بازسازی صفحات نمایهٔ موسیقی اطمینان دارید؟'))
+            return;
+
+        var url = '?handler=RebuildMundex';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            error: function () {
+                alert('خطا رخ داد.')
+            },
+            success: function () {
+                alert('فرایند بازسازی صفحات نمایهٔ موسیقی شروع شد.')
+            },
+
+        });
+    }
+
+    function cleanMundexCache() {
+        if (!confirm('آیا از حذف کش صفحات موسیقی اطمینان دارید؟'))
+            return;
+
+        var url = '?handler=CleanMundexCache';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            error: function () {
+                alert('خطا رخ داد.')
+            },
+            success: function () {
+                alert('کش صفخات پاک شد.')
+            },
+
+        });
+    }
+</script>
 
 <p><a role="button" onclick="rebuildMundex()" class="actionlink" title="بازسازی صفحات نمایهٔ موسیقی">بازسازی صفحات نمایهٔ موسیقی</a></p>
 
