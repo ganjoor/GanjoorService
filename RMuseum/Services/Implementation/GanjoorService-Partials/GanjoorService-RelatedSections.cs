@@ -60,7 +60,7 @@ namespace RMuseum.Services.Implementation
                 foreach (var sectionId in sectionIds)
                 {
                     var section = await context.GanjoorPoemSections.AsNoTracking().SingleAsync(s => s.Id == sectionId);
-                    await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section, poetsImagesUrls);
+                    await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section, poetsImagesUrls, true);
                 }
                 await context.SaveChangesAsync();
                 return new RServiceResult<bool>(true);
@@ -71,10 +71,13 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task _UpdateSectionRelatedSectionsInfoNoSaveChanges(RMuseumDbContext context, GanjoorPoemSection section, Dictionary<int, string> poetsImagesUrls)
+        private async Task _UpdateSectionRelatedSectionsInfoNoSaveChanges(RMuseumDbContext context, GanjoorPoemSection section, Dictionary<int, string> poetsImagesUrls, bool needsClearance)
         {
-            var oldRelations = await context.GanjoorCachedRelatedSections.Where(r => r.PoemId == section.PoemId && r.SectionIndex == section.Index).ToListAsync();
-            context.GanjoorCachedRelatedSections.RemoveRange(oldRelations);
+            if(needsClearance)
+            {
+                var oldRelations = await context.GanjoorCachedRelatedSections.Where(r => r.PoemId == section.PoemId && r.SectionIndex == section.Index).ToListAsync();
+                context.GanjoorCachedRelatedSections.RemoveRange(oldRelations);
+            }
 
             int metreId = (int)section.GanjoorMetreId;
             string rhyme = section.RhymeLetters;
@@ -87,8 +90,9 @@ namespace RMuseum.Services.Implementation
                         s.RhymeLetters == rhyme
                         &&
                         s.Id != section.Id
-                        )
-                .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.PoetId).ThenBy(p => p.SectionType).ToListAsync();
+                        ).ToListAsync();
+
+            relatedSections = relatedSections.OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.PoetId).ThenBy(p => p.SectionType).ToList();
 
             List<GanjoorCachedRelatedSection> GanjoorCachedRelatedSections = new List<GanjoorCachedRelatedSection>();
             int r = 0;
@@ -166,25 +170,26 @@ namespace RMuseum.Services.Implementation
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Query");
 
-                                        var sectionIds = 
+                                        var sectionsInfo = 
                                             await context.GanjoorPoemSections.AsNoTracking()
                                             .Where(p => ((wholepoems && p.SectionType == PoemSectionType.WholePoem) || (!wholepoems && p.SectionType != PoemSectionType.WholePoem)) 
-                                            && !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).Select(s => s.Id).ToListAsync();
+                                            && !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).Select(s => new { s.Id, s.PoemId, s.Index }).ToListAsync();
 
-                                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating Related Sections for {sectionIds.Count} sections");
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating Related Sections for {sectionsInfo.Count} sections");
                                         Dictionary<int, string> poetsImagesUrls = new Dictionary<int, string>();
-                                        for (int i = 0; i < sectionIds.Count; i++)
+                                        for (int i = 0; i < sectionsInfo.Count; i++)
                                         {
-                                            var section = await context.GanjoorPoemSections.AsNoTracking().SingleAsync(s => s.Id == sectionIds[i]);
+                                            number++;
+                                            
                                             if (!regenerate)
                                             {
-                                                if (await context.GanjoorCachedRelatedSections.AnyAsync(r => r.PoemId == section.PoemId && r.SectionIndex == section.Index))
+                                                if (await context.GanjoorCachedRelatedSections.AnyAsync(r => r.PoemId == sectionsInfo[i].PoemId && r.SectionIndex == sectionsInfo[i].Index))
                                                     continue;
                                             }
+                                            var section = await context.GanjoorPoemSections.AsNoTracking().SingleAsync(s => s.Id == sectionsInfo[i].Id);
+                                            await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section, poetsImagesUrls, !regenerate);
 
-                                            await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section, poetsImagesUrls);
-
-                                            number++;
+                                           
                                             if(number % 100 == 0)
                                                 await jobProgressServiceEF.UpdateJob(job.Id, number);
                                         }
