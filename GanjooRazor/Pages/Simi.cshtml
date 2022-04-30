@@ -157,7 +157,14 @@
                         </form>
                     </div><!-- related-images-frame -->
             </div> <!-- comments-like-div -->
-                @if (Model.Poems == null || Model.Poems.Count == 0)
+                @if (Model.Poems == null)
+                {
+                    <div class="sitem">
+                        <p>لطفاً وزن یا قافیهٔ ابیات مد نظر را وارد کنید.</p>
+                    </div>
+                }
+                else
+                if (Model.Poems.Count == 0)
                 {
                     <div class="sitem">
                         <p>شعری با مشخصات مورد نظر شما پیدا نشد.</p>

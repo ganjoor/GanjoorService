@@ -167,11 +167,7 @@ namespace GanjooRazor.Pages
 
             // 2. search verses
 
-            if (string.IsNullOrEmpty(Request.Query["v"]) && string.IsNullOrEmpty(Request.Query["g"]))
-            {
-                LastError = "<p>لطفاً دست کم یکی از ورودی‌های وزن یا قافیه را مشخص نمایید.</p>";
-                return Page();
-            }
+            
 
             var rhythmResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms?sortOnVerseCount=true");
             if (!rhythmResponse.IsSuccessStatusCode)
@@ -205,7 +201,15 @@ namespace GanjooRazor.Pages
             Rhyme ??= "";
 
 
-            if(!string.IsNullOrEmpty(Rhyme))
+            if (string.IsNullOrEmpty(Metre) && string.IsNullOrEmpty(Rhyme))
+            {
+                ViewData["Title"] = $"گنجور » شعر‌ها یا ابیات مشابه";
+                return Page();
+            }
+
+
+
+            if (!string.IsNullOrEmpty(Rhyme))
             {
                 Rhyme = Rhyme.Replace(" ", "");
             }
