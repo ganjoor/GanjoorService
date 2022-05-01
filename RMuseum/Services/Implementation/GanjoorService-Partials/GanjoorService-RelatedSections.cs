@@ -52,7 +52,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var sections = await context.GanjoorPoemSections.AsNoTracking()
-                    .Where(section => section.GanjoorMetreId == metreId && section.RhymeLetters == rhyme)
+                    .Where(section => section.GanjoorMetreId == metreId && section.RhymeLetters == rhyme && section.SectionType == PoemSectionType.WholePoem)
                     .ToListAsync();
                 Dictionary<int, string> poetsImagesUrls = new Dictionary<int, string>();
                 foreach (var section in sections)
@@ -147,9 +147,8 @@ namespace RMuseum.Services.Implementation
         /// start generating related sections info
         /// </summary>
         /// <param name="regenerate"></param>
-        /// <param name="wholepoems"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartGeneratingRelatedSectionsInfo(bool regenerate, bool wholepoems)
+        public RServiceResult<bool> StartGeneratingRelatedSectionsInfo(bool regenerate)
         {
             try
             {
@@ -160,7 +159,7 @@ namespace RMuseum.Services.Implementation
                                 using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                 {
                                     LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                    var job = (await jobProgressServiceEF.NewJob($"GeneratingRelatedSectionsInfo - {wholepoems}", "Query")).Result;
+                                    var job = (await jobProgressServiceEF.NewJob($"GeneratingRelatedSectionsInfo - Whole Poems", "Query")).Result;
                                     int number = 0;
                                     try
                                     {
@@ -169,8 +168,10 @@ namespace RMuseum.Services.Implementation
 
                                         var sectionsInfo = 
                                             await context.GanjoorPoemSections.AsNoTracking()
-                                            .Where(p => ((wholepoems && p.SectionType == PoemSectionType.WholePoem) || (!wholepoems && p.SectionType != PoemSectionType.WholePoem)) 
-                                            && !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null).Select(s => new { s.Id, s.PoemId, s.Index }).ToListAsync();
+                                            .Where(p => p.SectionType == PoemSectionType.WholePoem 
+                                            && !string.IsNullOrEmpty(p.RhymeLetters) && p.GanjoorMetreId != null)
+                                            .Select(s => new { s.Id, s.PoemId, s.Index })
+                                            .ToListAsync();
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Updating Related Sections for {sectionsInfo.Count} sections");
                                         Dictionary<int, string> poetsImagesUrls = new Dictionary<int, string>();

@@ -773,9 +773,8 @@ namespace RMuseum.Services
         /// start generating related sections info
         /// </summary>
         /// <param name="regenerate"></param>
-        /// <param name="wholepoems"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartGeneratingRelatedSectionsInfo(bool regenerate, bool wholepoems);
+        RServiceResult<bool> StartGeneratingRelatedSectionsInfo(bool regenerate);
 
 
         /// <summary>
