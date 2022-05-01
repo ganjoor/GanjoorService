@@ -2148,7 +2148,7 @@ namespace RMuseum.Services.Implementation
                 .Where(s =>
                         (poetId == null || s.PoetId == poetId)
                         &&
-                        (string.IsNullOrEmpty(metre) || (!string.IsNullOrEmpty(metre) && s.GanjoorMetre.Rhythm == metre) )
+                        (string.IsNullOrEmpty(metre) || (metre == "null" && s.GanjoorMetreId == null) ||  (!string.IsNullOrEmpty(metre) && s.GanjoorMetre.Rhythm == metre) )
                         &&
                         ((string.IsNullOrEmpty(rhyme) && s.SectionType == PoemSectionType.WholePoem) || (!string.IsNullOrEmpty(rhyme) && s.RhymeLetters == rhyme))
                         )
