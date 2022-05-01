@@ -917,5 +917,13 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         RServiceResult<bool> StartFillingPoemSectionsCoupletIndex();
+
+        /// <summary>
+        /// get couplet sections
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemSection[]>> GetCoupletSectionsAsync(int poemId, int coupletIndex);
     }
 }

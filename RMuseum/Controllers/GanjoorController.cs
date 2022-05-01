@@ -2750,20 +2750,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// sectionizing poems
+        /// get couplet sections
         /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
         /// <returns></returns>
-        [HttpPost("sections/onetime/fillcouplets")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [HttpGet]
+        [Route("couplet/{poemId}/{coupletIndex}/sections")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemSection[]>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartFillingPoemSectionsCoupletIndex()
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetCoupletSectionsAsync(int poemId, int coupletIndex)
         {
-            var res = _ganjoorService.StartFillingPoemSectionsCoupletIndex();
+            var res =
+                await _ganjoorService.GetCoupletSectionsAsync(poemId, coupletIndex);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
-            return Ok();
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
         }
+
 
         /// <summary>
         /// readonly mode

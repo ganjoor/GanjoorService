@@ -39,7 +39,7 @@ namespace RMuseum.Services.Implementation
                                    {
                                        var sections = await context.GanjoorPoemSections.OrderBy(s => s.SectionType).ToListAsync();
                                        int count = sections.Count;
-                                       
+
                                        for (int i = 0; i < count; i++)
                                        {
                                            var section = sections[i];
@@ -215,7 +215,7 @@ namespace RMuseum.Services.Implementation
 
                     if (nonCommentVerses[vIndex].VersePosition != VersePosition.Paragraph)
                     {
-                        if(jobProgressServiceEF != null)
+                        if (jobProgressServiceEF != null)
                         {
                             await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, $"Poem: {poem.Id}, nonCommentVerses[{vIndex}].VersePosition != VersePosition.Paragraph");
                         }
@@ -463,7 +463,7 @@ namespace RMuseum.Services.Implementation
                         rightVerse.SectionIndex2 = verseSection.Index;
                         leftVerse.SectionIndex2 = verseSection.Index;
 
-                        var rl = new List<GanjoorVerse>();rl.Add(rightVerse);rl.Add(leftVerse);
+                        var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
                         verseSection.HtmlText = PrepareHtmlText(rl);
                         verseSection.PlainText = PreparePlainText(rl);
 
@@ -480,7 +480,7 @@ namespace RMuseum.Services.Implementation
             List<GanjoorVerse> sectionVerses = new List<GanjoorVerse>();
             foreach (GanjoorVerse verse in verses)
             {
-                switch(section.VerseType)
+                switch (section.VerseType)
                 {
                     case VersePoemSectionType.First:
                         if (verse.SectionIndex1 == section.Index)
@@ -501,6 +501,45 @@ namespace RMuseum.Services.Implementation
                 }
             }
             return sectionVerses;
+        }
+
+        /// <summary>
+        /// get couplet sections
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemSection[]>> GetCoupletSectionsAsync(int poemId, int coupletIndex)
+        {
+            var firstVerse = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poemId && v.CoupletIndex == coupletIndex).OrderBy(v => v.VOrder).SingleOrDefaultAsync();
+            if (firstVerse == null)
+                return new RServiceResult<GanjoorPoemSection[]>(null);//not found
+            try
+            {
+                return new RServiceResult<GanjoorPoemSection[]>
+                (
+                await _context.GanjoorPoemSections
+                .Where(s =>
+                        s.PoemId == poemId
+                        &&
+                        (
+                        s.Index == firstVerse.SectionIndex1
+                        ||
+                        s.Index == firstVerse.SectionIndex2
+                        ||
+                        s.Index == firstVerse.SectionIndex3
+                        ||
+                        s.Index == firstVerse.SectionIndex4
+                        )
+                        )
+                .OrderBy(s => s.SectionType)
+                .ToArrayAsync()
+                );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoemSection[]>(null, exp.ToString());
+            }
         }
     }
 }

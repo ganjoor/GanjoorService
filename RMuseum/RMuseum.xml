@@ -13602,6 +13602,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCoupletSectionsAsync(System.Int32,System.Int32)">
+            <summary>
+            get couplet sections
+            </summary>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">
             <summary>
             Start finding missing rhthms
