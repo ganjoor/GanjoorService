@@ -1689,10 +1689,12 @@
             <param name="destCatId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartFillingPoemSectionsCoupletIndex">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCoupletSectionsAsync(System.Int32,System.Int32)">
             <summary>
-            sectionizing poems
+            get couplet sections
             </summary>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
@@ -11994,6 +11996,14 @@
             <summary>
             sectionizing poems
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCoupletSectionsAsync(System.Int32,System.Int32)">
+            <summary>
+            get couplet sections
+            </summary>
+            <param name="poemId"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">

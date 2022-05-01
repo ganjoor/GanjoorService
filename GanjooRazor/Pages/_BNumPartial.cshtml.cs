@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
 
@@ -57,6 +58,17 @@ namespace GanjooRazor.Pages
         /// comments
         /// </summary>
         public List<GanjoorCommentSummaryViewModel> Comments { get; set; }
+
+        /// <summary>
+        /// sections
+        /// </summary>
+        public List<GanjoorPoemSection> Sections { get; set; }
+
+
+        /// <summary>
+        /// a subset of sections
+        /// </summary>
+        public List<GanjoorPoemSection> SectionsWithMetreAndRhymes { get; set; }
 
         public _CommentPartialModel GetCommentModel(GanjoorCommentSummaryViewModel comment)
         {

@@ -511,7 +511,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemSection[]>> GetCoupletSectionsAsync(int poemId, int coupletIndex)
         {
-            var firstVerse = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poemId && v.CoupletIndex == coupletIndex).OrderBy(v => v.VOrder).SingleOrDefaultAsync();
+            var firstVerse = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poemId && v.CoupletIndex == coupletIndex).OrderBy(v => v.VOrder).FirstOrDefaultAsync();
             if (firstVerse == null)
                 return new RServiceResult<GanjoorPoemSection[]>(null);//not found
             try

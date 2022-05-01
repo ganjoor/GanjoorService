@@ -786,6 +786,13 @@ namespace GanjooRazor.Pages
             }
             var numbers = JArray.Parse(await responseCoupletNumbers.Content.ReadAsStringAsync()).ToObject<List<GanjoorCoupletNumberViewModel>>();
 
+            var responseCoupletSections = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/couplet/{poemId}/{coupletIndex}/sections");
+            if(!responseCoupletSections.IsSuccessStatusCode)
+            {
+                return BadRequest(JsonConvert.DeserializeObject<string>(await responseCoupletSections.Content.ReadAsStringAsync()));
+            }
+            var sections = JArray.Parse(await responseCoupletSections.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemSection>>();
+
             bool isBookmarked = false;
 
             if (!string.IsNullOrEmpty(Request.Cookies["UserId"]))
@@ -827,7 +834,9 @@ namespace GanjooRazor.Pages
                         LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
                         Comments = comments,
                         IsBookmarked = isBookmarked,
-                        Numbers = numbers
+                        Numbers = numbers,
+                        Sections = sections,
+                        SectionsWithMetreAndRhymes = sections.Where(s => s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters) && s.SectionType != RMuseum.Models.Ganjoor.PoemSectionType.WholePoem).ToList(),
                     }
                 }
             };

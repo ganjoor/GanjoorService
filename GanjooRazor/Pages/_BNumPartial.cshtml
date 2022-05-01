@@ -52,6 +52,20 @@
         <a role="button" id="bookmark-@Model.CoupletIndex" class="cursor-pointer" onclick="switchBookmark(@Model.PoemId, @Model.CoupletIndex)" title="@Model.BookmarkingText"><i class="material-icons color-white" id="bookmark-icon-@Model.CoupletIndex">@Model.BookmarkingIcon</i></a>
         <a role="button" id="listen-@Model.CoupletIndex" class="cursor-pointer" onclick="editCouplet(@Model.PoemId, @Model.CoupletIndex)" title="ویرایش از اینجا"><i class="material-icons color-white">edit</i></a>
     }
+    @if (Model.SectionsWithMetreAndRhymes.Any())
+    {
+        <text>
+            <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")">موارد هم آهنگ<i class="info-buttons rhyming-poems"></i></a>
+        </text>
+
+        @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
+        {
+            <text>
+                <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")">موارد هم آهنگ (وزن @((nSectionIndex + 1).ToPersianNumbers()))<i class="info-buttons rhyming-poems"></i></a>
+            </text>
+        }
+    }
+
 </div>
 
 
