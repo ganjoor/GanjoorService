@@ -182,6 +182,11 @@ namespace GanjooRazor.Pages
             rhythmsByVerseCount.Sort((a, b) => a.Rhythm.CompareTo(b.Rhythm));
             rhythmsByVerseCount.Insert(0, new GanjoorMetre()
             {
+                Rhythm = "null"
+            }
+            );
+            rhythmsByVerseCount.Insert(0, new GanjoorMetre()
+            {
                 Rhythm = ""
             }
             );

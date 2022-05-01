@@ -85,14 +85,14 @@ namespace RMuseum.Services.Implementation
             foreach (var metreCount in metreCounts)
             {
                 int? metreId = metreCount.Key == 0 ? null : metreCount.Key;
-                rhythmsCoupletCounts.Add(new RhythmCoupletCount (){ GanjoorMetreId = metreId, Count = metreCount.Value });
+                rhythmsCoupletCounts.Add(new RhythmCoupletCount() { GanjoorMetreId = metreId, Count = metreCount.Value });
             }
             rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
 
             int sumRhythmsCouplets = rhythmsCoupletCounts.Sum(c => c.Count);
 
             string stats = "";
-            if(sumRhythmsCouplets != wholeCoupletsCount)
+            if (sumRhythmsCouplets != wholeCoupletsCount)
             {
                 stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر فارسی از کل {LanguageUtils.FormatMoney(wholeCoupletsCount)} بیت شعر موجود";
             }
@@ -121,7 +121,9 @@ namespace RMuseum.Services.Implementation
                     htmlText += $"<tr>{Environment.NewLine}";
 
                 htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                string rhythm = rhythmsCoupletCounts[i].GanjoorMetreId == null ? "وزنیابی نشده" :
+                string rhythm = rhythmsCoupletCounts[i].GanjoorMetreId == null
+                    ?
+                    $"<a href=\"/simi/?v=null&amp;a={poet.Id}\">وزنیابی نشده</a>" :
                                 $"<a href=\"/simi/?v={Uri.EscapeDataString(rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm)}&amp;a={poet.Id}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
                 htmlText += $"<td class=\"c2\">{rhythm}</td>{Environment.NewLine}";
                 htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(rhythmsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
@@ -131,7 +133,7 @@ namespace RMuseum.Services.Implementation
             }
             htmlText += $"</table>{Environment.NewLine}";
 
-            if(sumRhythmsCouplets != wholeCoupletsCount)
+            if (sumRhythmsCouplets != wholeCoupletsCount)
             {
                 var langaugesCoupletsCountsUnprocessed =
                                                     await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
@@ -146,7 +148,7 @@ namespace RMuseum.Services.Implementation
                                                     .Select(g => new LanguageCoupletCount() { Language = g.Key.Language, Count = g.Count() })
                                                     .ToListAsync();
                 var fa = langaugesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").SingleOrDefault();
-                if(fa == null)
+                if (fa == null)
                 {
                     fa = new LanguageCoupletCount()
                     {
@@ -166,11 +168,11 @@ namespace RMuseum.Services.Implementation
                     }
                 }
                 var langaugesCoupletsCounts = langaugesCoupletsCountsUnprocessed
-                            .Where(l => !string.IsNullOrEmpty(l.Language) )
+                            .Where(l => !string.IsNullOrEmpty(l.Language))
                             .ToList();
                 langaugesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
 
-                if(langaugesCoupletsCounts.Count > 1)
+                if (langaugesCoupletsCounts.Count > 1)
                 {
                     htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ {poet.Name} با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
@@ -219,7 +221,7 @@ namespace RMuseum.Services.Implementation
 
             var dbPage = await context.GanjoorPages.Where(p => p.FullUrl == pageUrl).SingleOrDefaultAsync();
 
-            if(dbPage != null)
+            if (dbPage != null)
             {
                 await _UpdatePageHtmlText(context, editingUserId, dbPage, "به روزرسانی خودکار صفحهٔ آمار وزنها", htmlText);
             }
@@ -272,7 +274,7 @@ namespace RMuseum.Services.Implementation
                                     {
                                         var poetsCoupletCounts =
                                                     await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
-                                                    .Where(v => 
+                                                    .Where(v =>
                                                     v.Poem.Cat.Poet.Published
                                                     &&
                                                     (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1))
@@ -322,7 +324,7 @@ namespace RMuseum.Services.Implementation
                                         await jobProgressServiceEF.UpdateJob(job.Id, 1, "Counting whole sections");
 
                                         var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
-                                                .Where(s => s.Poem.Cat.Poet.Published && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR")  && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
+                                                .Where(s => s.Poem.Cat.Poet.Published && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR") && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
                                                 .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId })
                                                 .ToListAsync();
 
@@ -353,7 +355,7 @@ namespace RMuseum.Services.Implementation
                                         foreach (var metreCount in metreCounts)
                                         {
                                             int? metreId = metreCount.Key == 0 ? null : metreCount.Key;
-                                            rhythmsCoupletCounts.Add(new RhythmCoupletCount (){ GanjoorMetreId = metreId, Count = metreCount.Value });
+                                            rhythmsCoupletCounts.Add(new RhythmCoupletCount() { GanjoorMetreId = metreId, Count = metreCount.Value });
                                         }
                                         rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
 
@@ -454,13 +456,15 @@ namespace RMuseum.Services.Implementation
 
                                             htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
                                             var rhythm = rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).SingleOrDefault();
-                                            if(rhythm != null)
+                                            if (rhythm != null)
                                             {
                                                 rhythm.VerseCount = rhythmsCoupletCounts[i].Count;
                                                 context.Update(rhythm);
                                             }
-                                            string rhythmName = rhythmsCoupletCounts[i].GanjoorMetreId == null ? "وزنیابی نشده" :
-                                                         $"<a href=\"/simi/?v={Uri.EscapeDataString(rhythm.Rhythm)}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
+                                            string rhythmName = rhythmsCoupletCounts[i].GanjoorMetreId == null ?
+                                            $"<a href=\"/simi/?v=null\">وزنیابی نشده</a>"
+                                            :
+                                            $"<a href=\"/simi/?v={Uri.EscapeDataString(rhythm.Rhythm)}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
                                             htmlText += $"<td class=\"c2\">{rhythmName}</td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(rhythmsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c4\">{(rhythmsCoupletCounts[i].Count * 100.0 / sumRhythmsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
@@ -491,7 +495,7 @@ namespace RMuseum.Services.Implementation
                             }
                             );
 
-                
+
                 return new RServiceResult<bool>(true);
             }
             catch (Exception exp)
