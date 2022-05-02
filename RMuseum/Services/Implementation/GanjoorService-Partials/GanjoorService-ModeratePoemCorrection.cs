@@ -299,12 +299,13 @@ namespace RMuseum.Services.Implementation
                         if (secondMetreSection == null)
                         {
                             maxSections++;
+                            VersePoemSectionType newSectionType = sections.Where(s => s.VerseType == VersePoemSectionType.Second).Any() ? VersePoemSectionType.Third : VersePoemSectionType.Second;
                             secondMetreSection = new GanjoorPoemSection()
                             {
                                 PoemId = dbPoem.Id,
                                 PoetId = mainSection.PoetId,
                                 SectionType = PoemSectionType.WholePoem,
-                                VerseType = VersePoemSectionType.Second,
+                                VerseType = newSectionType,
                                 Index = maxSections,
                                 Number = maxSections + 1,
                                 GanjoorMetreId = null,
@@ -318,7 +319,10 @@ namespace RMuseum.Services.Implementation
 
                             foreach (var verse in poemVerses)
                             {
-                                verse.SectionIndex2 = secondMetreSection.Index;
+                                if(newSectionType == VersePoemSectionType.Second)
+                                    verse.SectionIndex2 = secondMetreSection.Index;
+                                else
+                                    verse.SectionIndex3 = secondMetreSection.Index;
                             }
 
                             foreach (var secondLevelSections in sections.Where(s => s.SectionType != PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.Second).OrderBy(s => s.Index))
@@ -329,7 +333,7 @@ namespace RMuseum.Services.Implementation
                                     PoemId = secondLevelSections.PoemId,
                                     PoetId = secondLevelSections.PoetId,
                                     SectionType = secondLevelSections.SectionType,
-                                    VerseType = VersePoemSectionType.Third,
+                                    VerseType =  VersePoemSectionType.Forth,
                                     Index = maxSections,
                                     Number = maxSections + 1,
                                     GanjoorMetreId = null,
@@ -344,7 +348,7 @@ namespace RMuseum.Services.Implementation
 
                                 foreach (var verse in poemVerses)
                                 {
-                                    verse.SectionIndex3 = newSection.Index;
+                                    verse.SectionIndex4 = newSection.Index;
                                 }
                             }
                             _context.UpdateRange(poemVerses);
