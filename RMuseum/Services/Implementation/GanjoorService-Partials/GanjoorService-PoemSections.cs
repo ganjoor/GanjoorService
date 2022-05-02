@@ -518,7 +518,7 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<GanjoorPoemSection[]>
                 (
-                await _context.GanjoorPoemSections
+                await _context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre)
                 .Where(s =>
                         s.PoemId == poemId
                         &&
