@@ -532,7 +532,7 @@ namespace RMuseum.Services.Implementation
                         s.Index == firstVerse.SectionIndex4
                         )
                         )
-                .OrderBy(s => s.SectionType)
+                .OrderBy(s => new { s.SectionType, s.VerseType })
                 .ToArrayAsync()
                 );
             }

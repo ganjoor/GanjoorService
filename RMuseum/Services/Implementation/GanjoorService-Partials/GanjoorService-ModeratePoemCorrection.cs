@@ -348,7 +348,10 @@ namespace RMuseum.Services.Implementation
 
                                 foreach (var verse in poemVerses)
                                 {
-                                    verse.SectionIndex4 = newSection.Index;
+                                    if(verse.SectionIndex2 == secondLevelSections.Index)
+                                    {
+                                        verse.SectionIndex4 = newSection.Index;
+                                    }
                                 }
                             }
                             _context.UpdateRange(poemVerses);
