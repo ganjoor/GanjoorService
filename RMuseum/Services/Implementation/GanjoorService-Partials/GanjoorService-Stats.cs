@@ -54,10 +54,11 @@ namespace RMuseum.Services.Implementation
         {
             var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
                                                 .Where(s => s.PoetId == poet.Id && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR") && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
-                                                .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId })
+                                                .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId, Versetype = s.VerseType })
                                                 .ToListAsync();
 
             Dictionary<int?, int> metreCounts = new Dictionary<int?, int>();
+            int secondMetreCoupletCount = 0;
             foreach (var section in wholePoemSections)
             {
                 int coupletCount = await context.GanjoorVerses.AsNoTracking()
@@ -78,6 +79,10 @@ namespace RMuseum.Services.Implementation
                     sectionCoupletCount = coupletCount;
                 }
                 metreCounts[metreId] = sectionCoupletCount;
+                if (metreId != 0 && section.Versetype != VersePoemSectionType.First)
+                {
+                    secondMetreCoupletCount += coupletCount;
+                }
             }
 
 
@@ -105,6 +110,10 @@ namespace RMuseum.Services.Implementation
             htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در سایت (مثل آثار خیام) و همینطور یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمسها تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
             htmlText += $"<p>آمار همهٔ شعرهای گنجور را <a href=\"/vazn\">اینجا</a> ببینید.</p>{Environment.NewLine}";
             htmlText += $"<p>وزنیابی دستی در بیشتر موارد با ملاحظهٔ تنها یک مصرع از شعر صورت گرفته و امکان وجود اشکال در آن (مخصوصاً اشتباه در تشخیص وزنهای قابل تبدیل از قبیل وزن مثنوی مولوی به جای وزن عروضی سریع مطوی مکشوف) وجود دارد. وزنیابی ماشینی نیز که جدیداً با استفاده از امکانات <a href=\"http://www.sorud.info/\">تارنمای سرود</a> اضافه شده بعضاً خطا دارد. برخی از بخشها شامل اشعاری با بیش از یک وزن هستند که در این صورت عمدتاً وزن ابیات آغازین و برای بعضی منظومه‌ها وزن غالب منظومه به عنوان وزن آن بخش منظور شده است.</p>{Environment.NewLine}";
+            if(secondMetreCoupletCount > 0)
+            {
+                htmlText += $"<p>تعداد {LanguageUtils.FormatMoney(secondMetreCoupletCount)} بیت به لحاظ چند وزنی بودن بیش از یک بار محاسبه شده‌اند و آمار خالص ابیات در فهرست اوزان برابر {LanguageUtils.FormatMoney(sumRhythmsCouplets - secondMetreCoupletCount)} بیت است):</p>";
+            }
             htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
@@ -325,10 +334,11 @@ namespace RMuseum.Services.Implementation
 
                                         var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
                                                 .Where(s => s.Poem.Cat.Poet.Published && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR") && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
-                                                .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId })
+                                                .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId, Versetype = s.VerseType })
                                                 .ToListAsync();
 
                                         Dictionary<int, int> metreCounts = new Dictionary<int, int>();
+                                        int secondMetreCoupletCount = 0;
                                         foreach (var section in wholePoemSections)
                                         {
                                             int coupletCount = await context.GanjoorVerses.AsNoTracking()
@@ -349,6 +359,10 @@ namespace RMuseum.Services.Implementation
                                                 sectionCoupletCount = coupletCount;
                                             }
                                             metreCounts[metreId] = sectionCoupletCount;
+                                            if(metreId != 0 && section.Versetype != VersePoemSectionType.First)
+                                            {
+                                                secondMetreCoupletCount += coupletCount;
+                                            }
                                         }
 
                                         List<RhythmCoupletCount> rhythmsCoupletCounts = new List<RhythmCoupletCount>();
@@ -416,13 +430,13 @@ namespace RMuseum.Services.Implementation
                                             switch (langaugesCoupletsCounts[i].Language)
                                             {
                                                 case "azb":
-                                                    langauge = "ترکی";
+                                                    langauge = "ترکی (گزیده‌ای از اشعار استاد شهریار و ...)";
                                                     break;
                                                 case "ar":
-                                                    langauge = "عربی";
+                                                    langauge = "عربی (اشعار عربی سعدی، خاقانی و ...)";
                                                     break;
                                                 case "ckb":
-                                                    langauge = "کردی";
+                                                    langauge = "کردی (مولانا خالد نقشبندی)";
                                                     break;
                                             }
                                             htmlText += $"<td class=\"c2\">{langauge}</td>{Environment.NewLine}";
@@ -437,7 +451,7 @@ namespace RMuseum.Services.Implementation
 
                                         var rhythms = await context.GanjoorMetres.ToListAsync();
 
-                                        htmlText += $"<p>فهرست زیر نیز آمار {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر فارسی گنجور را از لحاظ اوزان عروضی نشان می‌دهد:</p>{Environment.NewLine}";
+                                        htmlText += $"<p>فهرست زیر نیز آمار {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر فارسی گنجور را از لحاظ اوزان عروضی نشان می‌دهد (از این تعداد {LanguageUtils.FormatMoney(secondMetreCoupletCount)} بیت به لحاظ چند وزنی بودن بیش از یک بار محاسبه شده‌اند و آمار خالص ابیات در فهرست اوزان برابر {LanguageUtils.FormatMoney(sumRhythmsCouplets - secondMetreCoupletCount)} بیت است):</p>{Environment.NewLine}";
 
                                         htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
