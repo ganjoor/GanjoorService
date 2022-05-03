@@ -53,7 +53,7 @@ namespace RMuseum.Services.Implementation
         private async Task _UpdatePoetStatsPage(Guid editingUserId, GanjoorPoet poet, List<GanjoorMetre> rhythms, RMuseumDbContext context, int wholeCoupletsCount)
         {
             var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
-                                                .Where(s => s.PoetId == poet.Id && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR") && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
+                                                .Where(s => s.PoetId == poet.Id && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR") && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem)
                                                 .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId, Versetype = s.VerseType })
                                                 .ToListAsync();
 
@@ -333,7 +333,7 @@ namespace RMuseum.Services.Implementation
                                         await jobProgressServiceEF.UpdateJob(job.Id, 1, "Counting whole sections");
 
                                         var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
-                                                .Where(s => s.Poem.Cat.Poet.Published && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR") && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First)
+                                                .Where(s => s.Poem.Cat.Poet.Published && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR") && s.SectionType == PoemSectionType.WholePoem)
                                                 .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId, Versetype = s.VerseType })
                                                 .ToListAsync();
 
