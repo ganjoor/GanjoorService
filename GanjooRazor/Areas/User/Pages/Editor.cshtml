@@ -492,6 +492,34 @@ else
                     }
                 </select>
                 <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
+                <br />
+                <script>
+                    function newRhythm(){
+                        var rhythm = prompt("پیشنهاد وزن جدید", "");
+                        if(rhythm != null){
+                            var select = document.getElementById('rhythm-new');
+                            var options = select.options;
+                            for (let i = 0; i < options. length; i++){
+                                if(options[i].value == rhythm){
+                                    alert('وزن پیشنهادی تکراری است.');
+                                    return;
+                                }
+                            }
+                            var opt = document.createElement('option');
+                            opt.value = rhythm;
+                            opt.innerHTML = rhythm;
+                            select.appendChild(opt);
+
+                            var opt2 = document.createElement('option');
+                            opt2.value = rhythm;
+                            opt2.innerHTML = rhythm;
+                            document.getElementById('rhythm-new2').appendChild(opt2);
+
+                            alert('وزن پیشنهادی به انتهای لیست وزن‌ها اضافه شده. لطفاً از لیست آن را انتخاب کنید.');
+                        }
+                    }
+                </script>
+                <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
             </td>
         </tr>
 
