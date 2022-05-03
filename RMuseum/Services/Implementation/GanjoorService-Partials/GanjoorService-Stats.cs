@@ -68,13 +68,13 @@ namespace RMuseum.Services.Implementation
                         (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
                         &&
                          (
-                            v.SectionIndex1 == section.Index
+                            ( section.Versetype == VersePoemSectionType.First &&  v.SectionIndex1 == section.Index )
                             ||
-                            v.SectionIndex2 == section.Index
+                            ( section.Versetype == VersePoemSectionType.Second && v.SectionIndex2 == section.Index )
                             ||
-                            v.SectionIndex3 == section.Index
+                            ( section.Versetype == VersePoemSectionType.Third && v.SectionIndex3 == section.Index )
                             ||
-                            v.SectionIndex4 == section.Index
+                            ( section.Versetype == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index )
                          )
                         ).CountAsync();
                 var metreId = section.GanjoorMetreId == null ? 0 : (int)section.GanjoorMetreId;
@@ -105,22 +105,22 @@ namespace RMuseum.Services.Implementation
             int sumRhythmsCouplets = rhythmsCoupletCounts.Sum(c => c.Count);
 
             string stats = "";
-            if (sumRhythmsCouplets != wholeCoupletsCount)
+            if ((sumRhythmsCouplets - secondMetreCoupletCount) != wholeCoupletsCount)
             {
-                stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر فارسی از کل {LanguageUtils.FormatMoney(wholeCoupletsCount)} بیت شعر موجود";
+                stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets - secondMetreCoupletCount)} بیت شعر فارسی از کل {LanguageUtils.FormatMoney(wholeCoupletsCount)} بیت شعر موجود";
             }
             else
             {
-                stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر موجود";
+                stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets - secondMetreCoupletCount)} بیت شعر موجود";
             }
 
-            string htmlText = $"<p>این آمار از میان {stats} در گنجور از {poet.Name} استخراج شده است.</p>{Environment.NewLine}";
+            string htmlText = $"<p>این آمار از میان {stats} در گنجور از {poet.Nickname} استخراج شده است.</p>{Environment.NewLine}";
             htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در سایت (مثل آثار خیام) و همینطور یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمسها تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
             htmlText += $"<p>آمار همهٔ شعرهای گنجور را <a href=\"/vazn\">اینجا</a> ببینید.</p>{Environment.NewLine}";
             htmlText += $"<p>وزنیابی دستی در بیشتر موارد با ملاحظهٔ تنها یک مصرع از شعر صورت گرفته و امکان وجود اشکال در آن (مخصوصاً اشتباه در تشخیص وزنهای قابل تبدیل از قبیل وزن مثنوی مولوی به جای وزن عروضی سریع مطوی مکشوف) وجود دارد. وزنیابی ماشینی نیز که جدیداً با استفاده از امکانات <a href=\"http://www.sorud.info/\">تارنمای سرود</a> اضافه شده بعضاً خطا دارد. برخی از بخشها شامل اشعاری با بیش از یک وزن هستند که در این صورت عمدتاً وزن ابیات آغازین و برای بعضی منظومه‌ها وزن غالب منظومه به عنوان وزن آن بخش منظور شده است.</p>{Environment.NewLine}";
             if (secondMetreCoupletCount > 0)
             {
-                htmlText += $"<p>تعداد {LanguageUtils.FormatMoney(secondMetreCoupletCount)} بیت به لحاظ چند وزنی بودن بیش از یک بار محاسبه شده‌اند و آمار خالص ابیات در فهرست اوزان برابر {LanguageUtils.FormatMoney(sumRhythmsCouplets - secondMetreCoupletCount)} بیت است):</p>";
+                htmlText += $"<p>تعداد {LanguageUtils.FormatMoney(secondMetreCoupletCount)} بیت به لحاظ چند وزنی بودن در جدول اوزان بیش از یک بار محاسبه شده‌اند و جمع آمار ناخالص ابیات با احتساب چندبارهٔ ابیات چندوزنی در جمع فهرست اوزان برابر {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت است که در محاسبهٔ درصد از کل استفاده شده است):</p>";
             }
             htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
@@ -356,13 +356,13 @@ namespace RMuseum.Services.Implementation
                                                     (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
                                                     &&
                                                     (
-                                                    v.SectionIndex1 == section.Index
+                                                    (section.Versetype == VersePoemSectionType.First && v.SectionIndex1 == section.Index)
                                                     ||
-                                                    v.SectionIndex2 == section.Index
+                                                    (section.Versetype == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
                                                     ||
-                                                    v.SectionIndex3 == section.Index
+                                                    (section.Versetype == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
                                                     ||
-                                                    v.SectionIndex4 == section.Index
+                                                    (section.Versetype == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
                                                     )
                                                     ).CountAsync();
                                             var metreId = section.GanjoorMetreId == null ? 0 : (int)section.GanjoorMetreId;
