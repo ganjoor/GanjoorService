@@ -2392,7 +2392,7 @@ namespace RMuseum.Controllers
         /// switch bookmark
         /// </summary>
         /// <param name="poemId"></param>
-        /// <param name="coupletIndex"></param>
+        /// <param name="coupletIndex">if you send a negative number it means you are trying to bookmark a comment</param>
         /// <returns></returns>
         [HttpPost]
         [Route("bookmark/switch/{poemId}/{coupletIndex}")]

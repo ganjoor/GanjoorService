@@ -32,14 +32,23 @@ namespace RMuseum.Services.Implementation
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return new RServiceResult<GanjoorUserBookmark>(null, res.ExceptionString);
                 bookmark = null;
-
             }
             else
             {
-                var res = await BookmarkVerse(poemId, coupletIndex, userId);
-                if(!string.IsNullOrEmpty(res.ExceptionString))
-                    return res;
-                bookmark = res.Result;
+                if(coupletIndex < 0)//bookmark a comment
+                {
+                    var res = await BookmarkComment(poemId, coupletIndex, userId);
+                    if (!string.IsNullOrEmpty(res.ExceptionString))
+                        return res;
+                    bookmark = res.Result;
+                }
+                else
+                {
+                    var res = await BookmarkVerse(poemId, coupletIndex, userId);
+                    if (!string.IsNullOrEmpty(res.ExceptionString))
+                        return res;
+                    bookmark = res.Result;
+                }
             }
             return new RServiceResult<GanjoorUserBookmark>(bookmark);
         }
@@ -86,6 +95,43 @@ namespace RMuseum.Services.Implementation
                     PoemId = poemId,
                     DateTime = DateTime.Now,
                     CoupletIndex = coupletIndex
+                };
+
+            _context.GanjoorUserBookmarks.Add(bookmark);
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<GanjoorUserBookmark>(bookmark);
+        }
+
+        /// <summary>
+        /// bookmark comment
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="negativeCommentId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorUserBookmark>> BookmarkComment(int poemId, int negativeCommentId, Guid userId)
+        {
+            if ((await _context.GanjoorUserBookmarks.Where(b => b.UserId == userId && b.PoemId == poemId && b.CoupletIndex == negativeCommentId).SingleOrDefaultAsync()) != null)
+            {
+                return new RServiceResult<GanjoorUserBookmark>(null, "The comment is already bookmarkeded.");
+            }
+
+            int commentId = -negativeCommentId;
+            var comment = await _context.GanjoorComments.AsNoTracking().Where(c => c.Id == commentId).SingleOrDefaultAsync();
+            if(comment == null)
+            {
+                return new RServiceResult<GanjoorUserBookmark>(null, "The comment is deleted.");
+            }
+
+            GanjoorUserBookmark bookmark =
+                new GanjoorUserBookmark()
+                {
+                    UserId = userId,
+                    PoemId = poemId,
+                    DateTime = DateTime.Now,
+                    CoupletIndex = negativeCommentId,
+                    PrivateNote = comment.HtmlComment,
                 };
 
             _context.GanjoorUserBookmarks.Add(bookmark);

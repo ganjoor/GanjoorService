@@ -1567,7 +1567,7 @@
             switch bookmark
             </summary>
             <param name="poemId"></param>
-            <param name="coupletIndex"></param>
+            <param name="coupletIndex">if you send a negative number it means you are trying to bookmark a comment</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.BookmarkCoupletIfNotBookmarked(System.Int32,System.Int32)">
@@ -13410,6 +13410,15 @@
             </summary>
             <param name="poemId"></param>
             <param name="coupletIndex"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BookmarkComment(System.Int32,System.Int32,System.Guid)">
+            <summary>
+            bookmark comment
+            </summary>
+            <param name="poemId"></param>
+            <param name="negativeCommentId"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>
