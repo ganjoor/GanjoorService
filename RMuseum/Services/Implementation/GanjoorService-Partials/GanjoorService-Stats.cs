@@ -67,7 +67,15 @@ namespace RMuseum.Services.Implementation
                         &&
                         (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
                         &&
-                        v.SectionIndex1 == section.Index
+                         (
+                            v.SectionIndex1 == section.Index
+                            ||
+                            v.SectionIndex2 == section.Index
+                            ||
+                            v.SectionIndex3 == section.Index
+                            ||
+                            v.SectionIndex4 == section.Index
+                         )
                         ).CountAsync();
                 var metreId = section.GanjoorMetreId == null ? 0 : (int)section.GanjoorMetreId;
                 if (metreCounts.TryGetValue(metreId, out int sectionCoupletCount))
@@ -110,7 +118,7 @@ namespace RMuseum.Services.Implementation
             htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در سایت (مثل آثار خیام) و همینطور یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمسها تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
             htmlText += $"<p>آمار همهٔ شعرهای گنجور را <a href=\"/vazn\">اینجا</a> ببینید.</p>{Environment.NewLine}";
             htmlText += $"<p>وزنیابی دستی در بیشتر موارد با ملاحظهٔ تنها یک مصرع از شعر صورت گرفته و امکان وجود اشکال در آن (مخصوصاً اشتباه در تشخیص وزنهای قابل تبدیل از قبیل وزن مثنوی مولوی به جای وزن عروضی سریع مطوی مکشوف) وجود دارد. وزنیابی ماشینی نیز که جدیداً با استفاده از امکانات <a href=\"http://www.sorud.info/\">تارنمای سرود</a> اضافه شده بعضاً خطا دارد. برخی از بخشها شامل اشعاری با بیش از یک وزن هستند که در این صورت عمدتاً وزن ابیات آغازین و برای بعضی منظومه‌ها وزن غالب منظومه به عنوان وزن آن بخش منظور شده است.</p>{Environment.NewLine}";
-            if(secondMetreCoupletCount > 0)
+            if (secondMetreCoupletCount > 0)
             {
                 htmlText += $"<p>تعداد {LanguageUtils.FormatMoney(secondMetreCoupletCount)} بیت به لحاظ چند وزنی بودن بیش از یک بار محاسبه شده‌اند و آمار خالص ابیات در فهرست اوزان برابر {LanguageUtils.FormatMoney(sumRhythmsCouplets - secondMetreCoupletCount)} بیت است):</p>";
             }
@@ -347,7 +355,15 @@ namespace RMuseum.Services.Implementation
                                                     &&
                                                     (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
                                                     &&
+                                                    (
                                                     v.SectionIndex1 == section.Index
+                                                    ||
+                                                    v.SectionIndex2 == section.Index
+                                                    ||
+                                                    v.SectionIndex3 == section.Index
+                                                    ||
+                                                    v.SectionIndex4 == section.Index
+                                                    )
                                                     ).CountAsync();
                                             var metreId = section.GanjoorMetreId == null ? 0 : (int)section.GanjoorMetreId;
                                             if (metreCounts.TryGetValue(metreId, out int sectionCoupletCount))
@@ -359,7 +375,7 @@ namespace RMuseum.Services.Implementation
                                                 sectionCoupletCount = coupletCount;
                                             }
                                             metreCounts[metreId] = sectionCoupletCount;
-                                            if(metreId != 0 && section.Versetype != VersePoemSectionType.First)
+                                            if (metreId != 0 && section.Versetype != VersePoemSectionType.First)
                                             {
                                                 secondMetreCoupletCount += coupletCount;
                                             }
