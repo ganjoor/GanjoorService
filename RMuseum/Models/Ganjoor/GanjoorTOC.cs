@@ -15,5 +15,8 @@
         TitlesAndFirstCouplet = 7,
         TitlesAndFirstCenteredVerse = 8,
         TitlesAndFirstCenteredCouplet = 9,
+        AlphabeticWithFirstVerseNotSorted = 10,
+        AlphabeticWithSecondVerseNotSorted = 11,
+        AlphabeticWithFirstCoupletNotSorted = 12,
     }
 }

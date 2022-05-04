@@ -132,7 +132,7 @@ namespace RMuseum.Services.Implementation
 
             if (verses.Length > 0)
             {
-                if (options == GanjoorTOC.TitlesAndFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerse)
+                if (options == GanjoorTOC.TitlesAndFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerseNotSorted)
                 {
                     var excerpt = verses[0].Text;
                     if (
@@ -158,7 +158,7 @@ namespace RMuseum.Services.Implementation
                     title += $": {excerpt}";
                 }
                 else
-                if (options == GanjoorTOC.AlphabeticWithSecondVerse || options == GanjoorTOC.TitlesAndSecondVerse)
+                if (options == GanjoorTOC.AlphabeticWithSecondVerse || options == GanjoorTOC.AlphabeticWithSecondVerseNotSorted || options == GanjoorTOC.TitlesAndSecondVerse)
                 {
                     if (verses.Length > 1)
                     {
@@ -170,7 +170,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
                 else
-                if (options == GanjoorTOC.AlphabeticWithFirstCouplet || options == GanjoorTOC.TitlesAndFirstCouplet)
+                if (options == GanjoorTOC.AlphabeticWithFirstCouplet || options == GanjoorTOC.AlphabeticWithFirstCoupletNotSorted || options == GanjoorTOC.TitlesAndFirstCouplet)
                 {
                     if (verses.Length > 1)
                     {
@@ -372,6 +372,12 @@ namespace RMuseum.Services.Implementation
                     options == GanjoorTOC.AlphabeticWithFirstVerse
                     ||
                     options == GanjoorTOC.AlphabeticWithSecondVerse
+                    ||
+                    options == GanjoorTOC.AlphabeticWithFirstCoupletNotSorted
+                    ||
+                    options == GanjoorTOC.AlphabeticWithFirstVerseNotSorted
+                    ||
+                    options == GanjoorTOC.AlphabeticWithSecondVerseNotSorted
                     )
                 {
                     var taggedPoems = poems.Where(p => !string.IsNullOrEmpty(p.RhymeLetters)).ToArray();
@@ -383,8 +389,8 @@ namespace RMuseum.Services.Implementation
                         var randomPoemVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == randomPoem.Id).OrderBy(v => v.VOrder).ToArrayAsync();
                         if (randomPoemVerses.Length > 1)
                         {
-                            string versePosition = options == GanjoorTOC.AlphabeticWithFirstVerse ? "اول" : "دوم";
-                            string sampleVerse = options == GanjoorTOC.AlphabeticWithFirstVerse ? randomPoemVerses[0].Text : randomPoemVerses[1].Text;
+                            string versePosition = options == GanjoorTOC.AlphabeticWithFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerseNotSorted ? "اول" : "دوم";
+                            string sampleVerse = options == GanjoorTOC.AlphabeticWithFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerseNotSorted ? randomPoemVerses[0].Text : randomPoemVerses[1].Text;
                             html += $"<p>مثلاً برای پیدا کردن شعری که مصرع «<em>{sampleVerse}</em>» مصرع {versePosition} یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
                         }
 
@@ -406,15 +412,25 @@ namespace RMuseum.Services.Implementation
                                 }
                             }
                         }
-                        var fa = new CultureInfo("fa-IR");
-                        if (foundLastChars.Contains("و") && foundLastChars.Contains("ی") && foundLastChars.IndexOf("ه") == (foundLastChars.IndexOf("و") - 1))
+                        if(
+                            options == GanjoorTOC.AlphabeticWithFirstCouplet
+                            ||
+                            options == GanjoorTOC.AlphabeticWithFirstVerse
+                            ||
+                            options == GanjoorTOC.AlphabeticWithSecondVerse
+                          )
                         {
-                            foundLastChars.Sort((a, b) => a == "ه" && b == "و" ? -1 : a == "و" && b == "ه" ? 1 : fa.CompareInfo.Compare(a, b));
+                            var fa = new CultureInfo("fa-IR");
+                            if (foundLastChars.Contains("و") && foundLastChars.Contains("ی") && foundLastChars.IndexOf("ه") == (foundLastChars.IndexOf("و") - 1))
+                            {
+                                foundLastChars.Sort((a, b) => a == "ه" && b == "و" ? -1 : a == "و" && b == "ه" ? 1 : fa.CompareInfo.Compare(a, b));
+                            }
+                            else
+                            {
+                                foundLastChars.Sort((a, b) => fa.CompareInfo.Compare(a, b));
+                            }
                         }
-                        else
-                        {
-                            foundLastChars.Sort((a, b) => fa.CompareInfo.Compare(a, b));
-                        }
+                        
                         
                         foreach (var poemLastChar in foundLastChars)
                         {
@@ -449,9 +465,14 @@ namespace RMuseum.Services.Implementation
                     options == GanjoorTOC.AlphabeticWithFirstVerse
                     ||
                     options == GanjoorTOC.AlphabeticWithSecondVerse
+                     ||
+                    options == GanjoorTOC.AlphabeticWithFirstCoupletNotSorted
+                    ||
+                    options == GanjoorTOC.AlphabeticWithFirstVerseNotSorted
+                    ||
+                    options == GanjoorTOC.AlphabeticWithSecondVerseNotSorted
                     )
                     {
-
                         if (!string.IsNullOrEmpty(poem.RhymeLetters))
                         {
                             string poemLast = poem.RhymeLetters.Substring(poem.RhymeLetters.Length - 1);
