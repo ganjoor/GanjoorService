@@ -84,7 +84,7 @@ else
         }
     </p>
 
-    @if(Model.Bookmarks.Count == 0)
+    @if (Model.Bookmarks.Count == 0)
     {
         <p>
             شما هنوز هیچ بیتی را نشان نکرده‌اید. برای آشنایی با نحوهٔ نشان کردن اشعار <a href="https://blog.ganjoor.net/1400/07/08/ganjoor-bookmarking/" target="_blank">اینجا</a> را ببینید.
@@ -119,17 +119,22 @@ else
                     }
 
                 </div>
-                @if(!string.IsNullOrEmpty(bookmark.PrivateNote))
+                @if (!string.IsNullOrEmpty(bookmark.PrivateNote))
                 {
                     <div id="comment-text-@bookmark.Id" class="ganjoor-comment">
-                    @Html.Raw(bookmark.PrivateNote)
-                </div>
+                        @Html.Raw(bookmark.PrivateNote)
+                    </div>
+                }
+                else
+                {
+                    <div id="comment-text-@bookmark.Id">
+                    </div>
                 }
             </blockquote>
             <p>
                 <a role="button" onclick="deleteBookmark('@bookmark.Id')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
             </p>
-             <p>
+            <p>
                 <a role="button" onclick="editPrivateNote('@bookmark.Id')" class="actionlink" title="یادداشت شخصی"><i class="noindent-info-button edit-poem-button"></i></a>
             </p>
         </div>
