@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Auth.ViewModel;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Services.Implementation;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Generic;
 
@@ -146,6 +147,7 @@ namespace GanjooRazor.Pages
 
         public bool CanAdministerUsers { get; set; }
 
+        public string Query { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -173,6 +175,8 @@ namespace GanjooRazor.Pages
             {
                 pageNumber = int.Parse(Request.Query["page"]);
             }
+
+            Query = Request.Query["w"];
 
             var filterUserId = Request.Query["userid"];
             string url = $"{APIRoot.Url}/api/ganjoor/comments?PageNumber={pageNumber}&PageSize=20";
@@ -217,11 +221,20 @@ namespace GanjooRazor.Pages
                     }
                 }
 
-      
-
                 url += $"&filterUserId={filterUserId}";
 
             }
+
+            if(!string.IsNullOrEmpty(Query))
+            {
+                Query = Query.ApplyCorrectYeKe().Trim();
+                bool quotes = Query.IndexOf("\"") != -1;
+                Query = LanguageUtils.MakeTextSearchable(Query); //replace zwnj with space
+                if (quotes)
+                    Query = $"\"{Query}\"";
+                url += $"&term={Query}";
+            }
+
 
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
