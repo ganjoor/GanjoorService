@@ -764,9 +764,9 @@ namespace GanjooRazor.Pages
 
                     switch (GanjoorPage.UrlSlug)
                     {
-                        case "hashieha":
-                            await _GenerateHashiehaHtmlText();
-                            break;
+                        //case "hashieha":
+                         //   await _GenerateHashiehaHtmlText();
+                         //   break;
                         case "vazn":
                             await _GenerateVaznHtmlText();
                             break;

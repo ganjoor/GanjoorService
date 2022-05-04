@@ -1,0 +1,220 @@
+﻿@page
+@using DNTPersianUtils.Core;
+@model GanjooRazor.Pages.HashiehaModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        @ViewData["Title"]
+    </title>
+
+    <link href="/css/p8.css?version=41" rel="stylesheet" type="text/css" />
+    <link href="/css/fab.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+
+</head>
+<body>
+
+    @if (!string.IsNullOrEmpty(Model.LastError))
+    {
+        @Html.Raw(Model.LastError)
+    }
+    else
+    {
+        <div id="hdr2" class="clearfix">
+            <h1><a href="/" title="گنجور"><img src="/image/gmgk.png" alt="گنجور" /></a></h1>
+            <div class="actionbox">
+                <form action="/search" method="get" id="searchform">
+                    <input type="text" name="s" id="s" class="inputText" value="" placeholder="جستجو" />
+                    <select name="author" id="author" onchange="onSelectedPoetChanged()">
+
+                        @{
+                            if (Model.PoetId != 0)
+                            {
+                                <option value="0">در آثار همهٔ سخنوران</option>
+                            }
+                            else
+                            {
+                                <option value="0" selected>در آثار همهٔ سخنوران</option>
+                            }
+
+                            if (Model.Poets != null)
+                            {
+                                foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
+                                {
+                                    if (poet.Id == Model.PoetId)
+                                    {
+                                        <option value="@poet.Id" selected>@poet.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@poet.Id">@poet.Name</option>
+                                    }
+
+                                }
+                            }
+                        }
+                    </select>
+                    @{
+                        if (Model.Poet != null)
+                        {
+                            <select name="cat" id="cat" style="width:150px">
+                                <option value="0" selected>در همهٔ بخشها</option>
+                                @{
+                                    foreach (var gran in Model.Poet.Cat.Ancestors)
+                                    {
+                                        <option value="@gran.Id">@gran.Title</option>
+                                    }
+                                    <option value="@Model.Poet.Cat.Id">@Model.Poet.Cat.Title</option>
+                                    foreach (var child in Model.Poet.Cat.Children)
+                                    {
+                                        <option value="@child.Id">@child.Title</option>
+                                    }
+                                }
+                            </select>
+                        }
+                    }
+
+                    <input type="submit" value="بیاب" />
+                </form>
+            </div><!-- .actionbox -->
+    </div>
+
+        <!-- #hdr2 -->
+
+        <div id="fa">
+
+            <div id="maincnt">
+
+                <h2>
+                    @Model.Title
+                </h2>
+                @if (Model.Profile != null)
+                {
+                    <div id="profile">
+                        <p>
+                            @Model.Profile.NickName
+
+                            @if (!string.IsNullOrEmpty(Model.Profile.Website))
+                            {
+                                <a href="@Model.Profile.Website">🌐</a>
+                            }
+
+                            @if (Model.CanAdministerUsers)
+                            {
+                                <a href="/Admin/ExamineUser?id=@Model.Profile.Id">#</a>
+                            }
+                        </p>
+
+                        @if (!string.IsNullOrEmpty(Model.Profile.Bio))
+                        {
+                            <p>
+                                @Html.Raw(Model.Profile.Bio)
+                            </p>
+                        }
+                    </div>
+                    <hr />
+                }
+
+
+                <div class="sitem actionbox">
+                    <div class="related-images-frame">
+                        <form method="get" id="searchcommentsform">
+
+                            <input type="text" name="s" id="s" class="inputText" value="" placeholder="جستجو" />
+
+                            <input type="submit" class="width-100per" value="جستجو در حاشیه‌ها" />
+
+
+                        </form>
+                    </div><!-- related-images-frame -->
+            </div> <!-- comments-like-div -->
+            <div class="poem">
+                    @if (Model.Comments.Count == 0)
+                    {
+                        <p>حاشیه‌ای با مشخصات مورد نظر شما پیدا نشد.</p>
+                    }
+                    else
+                        foreach (var comment in Model.Comments)
+                        {
+                            <article>
+                                <p>
+                                    @if (comment.UserId == null)
+                                    {
+                                        @comment.AuthorName
+                                    }
+                                    else
+                                    {
+                                        <a href="/hashieha/?userid=@comment.UserId">@comment.AuthorName</a>
+                                    }
+                                    <small>
+                                        در @comment.CommentDate.ToFriendlyPersianDateTextify()
+                                        @if (comment.InReplyTo != null)
+                                        {
+                                            <text>
+                                                @(" ")در پاسخ به @comment.InReplyTo.AuthorName
+                                            </text>
+                                        }
+                                    </small>
+                                    @(" ")دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>:
+                                </p>
+                                @if (comment.CoupletIndex != -1)
+                                {
+                                    <div class="commentquote">
+                                        @comment.CoupletSummary
+                                    </div>
+                                }
+                                <blockquote>
+                                    @Html.Raw(comment.HtmlComment)
+                                </blockquote>
+                                <div class="spacer">&nbsp;</div>
+                                <hr />
+                            </article>
+                        }
+                </div>
+
+
+
+                @Html.Raw(Model.PagingToolsHtml)
+
+            </div>
+
+            <partial name="_InlineLoginPartial" model="Model" />
+
+            <partial name="_FooterPartial" model="null" />
+
+        </div>
+
+        <script src="/lib/jquery/dist/jquery.min.js"></script>
+        <script src="/js/bk.js?version=26"></script>
+        <script src="/js/vaabd.js"></script>
+
+        @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
+        {
+            <script>
+                (function (i, s, o, g, r, a, m) {
+                    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                        (i[r].q = i[r].q || []).push(arguments)
+                    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+                })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+                ga('create', '@ViewData["GoogleAnalyticsCode"]', 'auto');
+                ga('send', 'pageview');
+
+            </script>
+        }
+    }
+
+
+
+</body>
+</html>
+
