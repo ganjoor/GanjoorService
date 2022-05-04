@@ -101,9 +101,9 @@ else
         <div style="background-color:@color" id="bookmark-@bookmark.Id">
             <blockquote>
                 <p>
-                    از <a href="@($"{bookmark.PoemFullUrl}#bn{bookmark.CoupletIndex + 1}")">@bookmark.PoemFullTitle</a> <small>در @bookmark.DateTime.ToFriendlyPersianDateTextify()</small>
+                    از <a href="@($"{bookmark.PoemFullUrl}{(bookmark.CoupletIndex < 0 ? $"#comment-{-bookmark.CoupletIndex}" :$"#bn{bookmark.CoupletIndex + 1}")}")">@bookmark.PoemFullTitle</a> <small>در @bookmark.DateTime.ToFriendlyPersianDateTextify()</small>
                 </p>
-                <a href="@($"{bookmark.PoemFullUrl}#bn{bookmark.CoupletIndex + 1}")">
+                <a href="@($"{bookmark.PoemFullUrl}{(bookmark.CoupletIndex < 0 ? $"#comment-{-bookmark.CoupletIndex}" :$"#bn{bookmark.CoupletIndex + 1}")}")">
                     <img src="@bookmark.PoetImageUrl" style="width:unset;display:unset;border:unset" alt="@bookmark.PoetName" />
                 </a>
                 <div id="bookmark-text-@bookmark.Id">
@@ -119,9 +119,12 @@ else
                     }
 
                 </div>
-                <div id="comment-text-@bookmark.Id" class="red-color">
+                @if(!string.IsNullOrEmpty(bookmark.PrivateNote))
+                {
+                    <div id="comment-text-@bookmark.Id" class="ganjoor-comment">
                     @Html.Raw(bookmark.PrivateNote)
                 </div>
+                }
             </blockquote>
             <p>
                 <a role="button" onclick="deleteBookmark('@bookmark.Id')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>

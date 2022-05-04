@@ -81,7 +81,7 @@ namespace GanjooRazor.Pages
 
         
 
-        public _CommentPartialModel GetCommentModel(GanjoorCommentSummaryViewModel comment)
+        public _CommentPartialModel GetCommentModel(GanjoorCommentSummaryViewModel comment, int poemId)
         {
             return new _CommentPartialModel()
             {
@@ -89,7 +89,8 @@ namespace GanjooRazor.Pages
                 Error = "",
                 InReplyTo = null,
                 LoggedIn = LoggedIn,
-                DivSuffix = ""
+                DivSuffix = "",
+                PoemId = poemId,
             };
         }
 
@@ -153,7 +154,8 @@ namespace GanjooRazor.Pages
                                     Comment = resComment,
                                     Error = "",
                                     InReplyTo = inReplytoId == 0 ? null : new GanjoorCommentSummaryViewModel(),
-                                    LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"])
+                                    LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
+                                    PoemId = poemId,
                                 }
                             }
                         };
@@ -170,7 +172,8 @@ namespace GanjooRazor.Pages
                                     Comment = null,
                                     Error = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()),
                                     InReplyTo = null,
-                                    LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"])
+                                    LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
+                                    PoemId = poemId,
                                 }
                             }
                         };
@@ -886,6 +889,24 @@ namespace GanjooRazor.Pages
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                     var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                    return new OkObjectResult(res);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
+        public async Task<IActionResult> OnGetPoemBookmarksAsync(int poemId)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    var res = JsonConvert.DeserializeObject<GanjoorUserBookmarkViewModel[]>(await response.Content.ReadAsStringAsync());
                     return new OkObjectResult(res);
                 }
             }

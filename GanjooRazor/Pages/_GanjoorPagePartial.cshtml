@@ -590,7 +590,7 @@
                                     <div id="comments-block">
                                         @foreach (var comment in Model.GanjoorPage.Poem.Comments)
                                         {
-                                            <partial name="_CommentPartial" model=Model.GetCommentModel(comment) />
+                                            <partial name="_CommentPartial" model=@Model.GetCommentModel(comment, Model.GanjoorPage.Id) />
                                         }
                                     </div>
 

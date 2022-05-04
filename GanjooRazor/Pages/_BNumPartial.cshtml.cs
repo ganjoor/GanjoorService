@@ -78,7 +78,8 @@ namespace GanjooRazor.Pages
                 Error = "",
                 InReplyTo = null,
                 LoggedIn = LoggedIn,
-                DivSuffix = $"-{comment.CoupletIndex}"
+                DivSuffix = $"-{comment.CoupletIndex}",
+                PoemId = PoemId,
             };
         }
 

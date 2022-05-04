@@ -287,6 +287,11 @@ function hilightverse(vnum, clr, sc, forceScroll) {
 }
 
 function fillnarrations(coupletIndex) {
+    if (typeof(narrators) == "undefined") {
+        var blockid = '#play-block-' + coupletIndex;
+        $(blockid).hide();
+        return;
+    }
     if (narrators.length == 0) {
         var blockid = '#play-block-' + coupletIndex;
         $(blockid).hide();
@@ -386,7 +391,7 @@ function editCouplet(poemId, coupletIndex) {
 }
 
 function switchBookmark(poemId, coupletIndex) {
-    var iconElementId = 'bookmark-icon-' + String(coupletIndex);
+    var iconElementId = coupletIndex < 0 ? 'bookmark-icon-comment-' + String(-coupletIndex) : 'bookmark-icon-' + String(coupletIndex);
     if (document.getElementById(iconElementId) != null) {
         document.getElementById(iconElementId).innerHTML = 'star_half';
     }
@@ -434,11 +439,24 @@ function checkIfBookmarked(poemId) {
     setTimeout(function () {
         $.ajax({
             type: "GET",
-            url: '?Handler=IsCoupletBookmarked&poemId=' + String(poemId) + '&coupletIndex=0',
+            url: '?Handler=PoemBookmarks&poemId=' + String(poemId),
             error: function (err) {
                 console.log(err);
             },
-            success: function (isBookmarked) {
+            success: function (bookmarks) {
+                var isBookmarked = false;
+                for (var i = 0; i < bookmarks.length; i++) {
+                    var bookmark = bookmarks[i];
+                    if (bookmark.coupletIndex == 0) {
+                        isBookmarked = true;
+                    }
+                    else if (bookmark.coupletIndex < 0) {
+                        var commentBookmark = document.getElementById('bookmark-comment-' + (-bookmark.coupletIndex).toString());
+                        if (commentBookmark != null) {
+                            commentBookmark.innerHTML = '<i class="pageicons" id="bookmark-icon-comment-' + (-bookmark.coupletIndex).toString()+'">star</i><span class="w3tooltiptext">نشان کردن / حذف نشان</span>';
+                        }
+                    }
+                }
                 if (isBookmarked) {
                     document.getElementById('bookmark').innerHTML = 'نشان شده<i class="info-buttons" id="bookmark-icon">star</i>';
                 }

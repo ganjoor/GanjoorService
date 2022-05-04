@@ -14,6 +14,7 @@ namespace GanjooRazor.Pages
         public bool LoggedIn { get; set; }
 
         public string DivSuffix { get; set; }
+        public int PoemId { get; set; }
 
         public string Wrote
         {
@@ -31,7 +32,8 @@ namespace GanjooRazor.Pages
                 Error = "",
                 InReplyTo = Comment,
                 LoggedIn = LoggedIn,
-                DivSuffix = DivSuffix
+                DivSuffix = DivSuffix,
+                PoemId = PoemId,
             };
         }
        
