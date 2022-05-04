@@ -49,7 +49,7 @@
     <a role="button" id="share-@Model.CoupletIndex" class="cursor-pointer" onclick="webShareCouplet(@Model.CoupletIndex)" title="همرسانی"><i class="material-icons color-white">share</i></a>
     @if (Model.LoggedIn)
     {
-        <a role="button" id="bookmark-@Model.CoupletIndex" class="cursor-pointer" onclick="switchBookmark(@Model.PoemId, @Model.CoupletIndex)" title="@Model.BookmarkingText"><i class="material-icons color-white" id="bookmark-icon-@Model.CoupletIndex">@Model.BookmarkingIcon</i></a>
+        <a role="button" id="bookmark-@Model.CoupletIndex" class="cursor-pointer" onclick="switchBookmark(@Model.PoemId, @Model.CoupletIndex, '-@Model.CoupletIndex')" title="@Model.BookmarkingText"><i class="material-icons color-white" id="bookmark-icon-@Model.CoupletIndex">@Model.BookmarkingIcon</i></a>
         <a role="button" id="listen-@Model.CoupletIndex" class="cursor-pointer" onclick="editCouplet(@Model.PoemId, @Model.CoupletIndex)" title="ویرایش از اینجا"><i class="material-icons color-white">edit</i></a>
     }
     @if (Model.SectionsWithMetreAndRhymes.Any())

@@ -80,6 +80,7 @@ namespace GanjooRazor.Pages
                 LoggedIn = LoggedIn,
                 DivSuffix = $"-{comment.CoupletIndex}",
                 PoemId = PoemId,
+                Bookmarked = comment.IsBookmarked,
             };
         }
 

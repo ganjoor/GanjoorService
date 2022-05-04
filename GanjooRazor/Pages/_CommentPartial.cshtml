@@ -49,7 +49,7 @@ else
             <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="pageicons">apps</i><span class="w3tooltiptext">منو</span></a>
             @if (Model.LoggedIn)
             {
-                <a role="button" id="bookmark-comment-@Model.Comment.Id" class="w3tooltip cursor-pointer" onclick="switchBookmark(@Model.PoemId, -@Model.Comment.Id)"><i class="pageicons" id="bookmark-icon-comment-@Model.Comment.Id">star_border</i><span class="w3tooltiptext">نشان کردن / حذف نشان</span></a>
+                <a role="button" id="bookmark-comment-@Model.Comment.Id@Model.DivSuffix" class="w3tooltip cursor-pointer" onclick="switchBookmark(@Model.PoemId, -@Model.Comment.Id, '@Model.DivSuffix')"><i class="pageicons" id="bookmark-icon-comment-@Model.Comment.Id@Model.DivSuffix">@(@Model.Comment.IsBookmarked ? "star" : "star_border")</i><span class="w3tooltiptext">نشان کردن / حذف نشان</span></a>
             }
         </p>
         <div class='spacer'>&nbsp;</div>

@@ -69,6 +69,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// </summary>
         public string CoupletSummary { get; set; }
 
+        /// <summary>
+        /// for client
+        /// </summary>
+        public bool IsBookmarked { get; set; }
+
     }
  
 }

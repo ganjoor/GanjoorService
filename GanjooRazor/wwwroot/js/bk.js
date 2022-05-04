@@ -390,10 +390,14 @@ function editCouplet(poemId, coupletIndex) {
     location.href = '/User/Editor?id=' + poemId + '#id-' + String(vIndex + 1);
 }
 
-function switchBookmark(poemId, coupletIndex) {
-    var iconElementId = coupletIndex < 0 ? 'bookmark-icon-comment-' + String(-coupletIndex) : 'bookmark-icon-' + String(coupletIndex);
+function switchBookmark(poemId, coupletIndex, divSuffix) {
+    var iconElementId = coupletIndex < 0 ? 'bookmark-icon-comment-' + String(-coupletIndex) + divSuffix : 'bookmark-icon-' + String(coupletIndex);
+    var secondIconElementId = divSuffix != '' && coupletIndex < 0 ? 'bookmark-icon-comment-' + String(-coupletIndex) : null;
     if (document.getElementById(iconElementId) != null) {
         document.getElementById(iconElementId).innerHTML = 'star_half';
+    }
+    if (document.getElementById(secondIconElementId) != null) {
+        document.getElementById(secondIconElementId).innerHTML = 'star_half';
     }
     if (coupletIndex == 0) {
         document.getElementById('bookmark-icon').innerHTML = 'star_half';
@@ -415,6 +419,9 @@ function switchBookmark(poemId, coupletIndex) {
                 if (document.getElementById(iconElementId) != null) {
                     document.getElementById(iconElementId).innerHTML = 'star';
                 }
+                if (document.getElementById(secondIconElementId) != null) {
+                    document.getElementById(secondIconElementId).innerHTML = 'star';
+                }
 
                 if (coupletIndex == 0) {
                     document.getElementById('bookmark').innerHTML = 'نشان شده<i class="info-buttons" id="bookmark-icon">star</i>';
@@ -423,6 +430,10 @@ function switchBookmark(poemId, coupletIndex) {
             else {
                 if (document.getElementById(iconElementId) != null) {
                     document.getElementById(iconElementId).innerHTML = 'star_border';
+                }
+
+                if (document.getElementById(secondIconElementId) != null) {
+                    document.getElementById(secondIconElementId).innerHTML = 'star_border';
                 }
 
                 if (coupletIndex == 0) {

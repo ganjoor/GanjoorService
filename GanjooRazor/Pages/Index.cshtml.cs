@@ -363,16 +363,18 @@ namespace GanjooRazor.Pages
             foreach (GanjoorCommentSummaryViewModel comment in GanjoorPage.Poem.Comments)
             {
                 comment.MyComment = comment.UserId == userId;
-                _markMyReplies(comment, userId);
+                _markMyReplies(comment, userId, null);
             }
         }
 
-        private void _markMyReplies(GanjoorCommentSummaryViewModel parent, Guid userId)
+        private void _markMyReplies(GanjoorCommentSummaryViewModel parent, Guid userId, GanjoorUserBookmarkViewModel[] bookmarks)
         {
             foreach (var reply in parent.Replies)
             {
                 reply.MyComment = reply.UserId == userId;
-                _markMyReplies(reply, userId);
+                if (bookmarks != null)
+                    reply.IsBookmarked = bookmarks.Where(b => b.CoupletIndex == -reply.Id).Any();
+                _markMyReplies(reply, userId, bookmarks);
             }
         }
 
@@ -813,23 +815,25 @@ namespace GanjooRazor.Pages
                 if (Guid.TryParse(Request.Cookies["UserId"], out Guid userId))
                     if (userId != Guid.Empty)
                     {
-                        foreach (GanjoorCommentSummaryViewModel comment in comments)
-                        {
-                            comment.MyComment = comment.UserId == userId;
-                            _markMyReplies(comment, userId);
-                        }
-
                         using (HttpClient secureClient = new HttpClient())
                         {
                             if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                             {
-                                HttpResponseMessage responseIsBookmarked = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}/{coupletIndex}");
+                                HttpResponseMessage responseIsBookmarked = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}");
                                 if (!responseIsBookmarked.IsSuccessStatusCode)
                                 {
                                     return BadRequest(JsonConvert.DeserializeObject<string>(await responseIsBookmarked.Content.ReadAsStringAsync()));
                                 }
 
-                                isBookmarked = JsonConvert.DeserializeObject<bool>(await responseIsBookmarked.Content.ReadAsStringAsync());
+                                var bookmarks = JsonConvert.DeserializeObject<GanjoorUserBookmarkViewModel[]>(await responseIsBookmarked.Content.ReadAsStringAsync());
+                                if (bookmarks.Where(b => b.CoupletIndex == coupletIndex).Any())
+                                    isBookmarked = true;
+                                foreach (GanjoorCommentSummaryViewModel comment in comments)
+                                {
+                                    comment.MyComment = comment.UserId == userId;
+                                    comment.IsBookmarked = bookmarks.Where(b => b.CoupletIndex == -comment.Id).Any();
+                                    _markMyReplies(comment, userId, bookmarks);
+                                }
                             }
                         }
                     }
