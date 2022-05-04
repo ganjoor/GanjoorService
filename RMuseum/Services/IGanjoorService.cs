@@ -404,8 +404,9 @@ namespace RMuseum.Services
         /// <param name="filterUserId">Guid.Empty</param>
         /// <param name="onlyPublished"></param>
         /// <param name="onlyAwaiting"></param>
+        /// <param name="term"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging, Guid filterUserId, bool onlyPublished, bool onlyAwaiting = false);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging, Guid filterUserId, bool onlyPublished, bool onlyAwaiting = false, string term = null);
 
         /// <summary>
         /// report a comment

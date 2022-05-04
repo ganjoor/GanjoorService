@@ -1190,9 +1190,43 @@ namespace RMuseum.Services.Implementation
         /// <param name="filterUserId"></param>
         /// <param name="onlyPublished"></param>
         /// <param name="onlyAwaiting"></param>
+        /// <param name="term"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging, Guid filterUserId, bool onlyPublished, bool onlyAwaiting = false)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items)>> GetRecentComments(PagingParameterModel paging, Guid filterUserId, bool onlyPublished, bool onlyAwaiting = false, string term = null)
         {
+            string searchConditions = null;
+            if (!string.IsNullOrEmpty(term))
+            {
+                /// You need to run this scripts manually on the database before using this method:
+                /// 
+                /// CREATE FULLTEXT CATALOG [GanjoorHtmlCommentTextCatalog] WITH ACCENT_SENSITIVITY = OFF AS DEFAULT
+                /// 
+                /// CREATE FULLTEXT INDEX ON [dbo].[GanjoorComments](
+                /// [HtmlComment] LANGUAGE 'English')
+                /// KEY INDEX [PK_GanjoorComments]ON ([GanjoorHtmlCommentTextCatalog], FILEGROUP [PRIMARY])
+                /// WITH (CHANGE_TRACKING = AUTO, STOPLIST = SYSTEM)
+                /// 
+                term = term.Replace("‌", " ");//replace zwnj with space
+                
+                if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
+                {
+                    searchConditions = term.Replace("\"", "").Replace("'", "");
+                    searchConditions = $"\"{searchConditions}\"";
+                }
+                else
+                {
+                    string[] words = term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                    searchConditions = "";
+                    string emptyOrAnd = "";
+                    foreach (string word in words)
+                    {
+                        searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
+                        emptyOrAnd = " AND ";
+                    }
+                }
+            }
+
             var source =
                  from comment in _context.GanjoorComments.Include(c => c.Poem).Include(c => c.User).Include(c => c.InReplyTo).ThenInclude(r => r.User)
                  where
@@ -1201,6 +1235,8 @@ namespace RMuseum.Services.Implementation
                   ((comment.Status == PublishStatus.Awaiting) || !onlyAwaiting)
                  &&
                  ((filterUserId == Guid.Empty) || (filterUserId != Guid.Empty && comment.UserId == filterUserId))
+                 &&
+                 (string.IsNullOrEmpty(searchConditions) || (!string.IsNullOrEmpty(searchConditions) && EF.Functions.Contains(comment.HtmlComment, searchConditions)) )
                  orderby comment.CommentDate descending
                  select new GanjoorCommentFullViewModel()
                  {

@@ -1342,12 +1342,13 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid},System.String)">
             <summary>
             get recent comments
             </summary>
             <param name="paging"></param>
             <param name="filterUserId"></param>
+            <param name="term"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetMyRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel)">
@@ -11490,7 +11491,7 @@
             <param name="commentId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,System.Boolean,System.Boolean,System.String)">
             <summary>
             get recent comments
             </summary>
@@ -11498,6 +11499,7 @@
             <param name="filterUserId">Guid.Empty</param>
             <param name="onlyPublished"></param>
             <param name="onlyAwaiting"></param>
+            <param name="term"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.ReportComment(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPostReportCommentViewModel)">
@@ -14038,7 +14040,7 @@
             <param name="commentId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,System.Boolean,System.Boolean,System.String)">
             <summary>
             get recent comments
             </summary>
@@ -14046,6 +14048,7 @@
             <param name="filterUserId"></param>
             <param name="onlyPublished"></param>
             <param name="onlyAwaiting"></param>
+            <param name="term"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ReportComment(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPostReportCommentViewModel)">
