@@ -93,11 +93,25 @@
 
             <div id="maincnt">
 
+                <div class="sitem actionbox">
+                    <div class="related-images-frame">
+                        <form method="get" id="searchcommentsform">
+                            <input type="text" name="w" id="w" class="width-100per" value="" placeholder="جستجو در @Model.Title" />
+                            <input type="submit" class="width-100per" value="جستجو در @Model.Title" />
+                        </form>
+                    </div><!-- related-images-frame -->
+            </div> <!-- sitem actionbo -->
+            <div class="poem">
                 <h2>
-                    @Model.Title
+                    <a href="@Model.HomeLink">
+                        @Model.Title
+                    </a>
                 </h2>
                 @if (Model.Profile != null)
                 {
+                    <div class="text-align-center">
+                        <small><a href="/hashieha">همهٔ حاشیه‌ها</a></small>
+                    </div>
                     <div id="profile">
                         <p>
                             @Model.Profile.NickName
@@ -115,28 +129,11 @@
 
                         @if (!string.IsNullOrEmpty(Model.Profile.Bio))
                         {
-                            <p>
                                 @Html.Raw(Model.Profile.Bio)
-                            </p>
                         }
                     </div>
                     <hr />
                 }
-
-
-                <div class="sitem actionbox">
-                    <div class="related-images-frame">
-                        <form method="get" id="searchcommentsform">
-
-                            <input type="text" name="s" id="s" class="inputText" value="" placeholder="جستجو" />
-
-                            <input type="submit" class="width-100per" value="جستجو در حاشیه‌ها" />
-
-
-                        </form>
-                    </div><!-- related-images-frame -->
-            </div> <!-- comments-like-div -->
-            <div class="poem">
                     @if (Model.Comments.Count == 0)
                     {
                         <p>حاشیه‌ای با مشخصات مورد نظر شما پیدا نشد.</p>
@@ -144,7 +141,6 @@
                     else
                         foreach (var comment in Model.Comments)
                         {
-                            <article>
                                 <p>
                                     @if (comment.UserId == null)
                                     {
@@ -176,7 +172,6 @@
                                 </blockquote>
                                 <div class="spacer">&nbsp;</div>
                                 <hr />
-                            </article>
                         }
                 </div>
 

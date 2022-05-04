@@ -142,6 +142,8 @@ namespace GanjooRazor.Pages
 
         public string Title { get; set; }
 
+        public string HomeLink { get; set; }
+
         public bool CanAdministerUsers { get; set; }
 
 
@@ -175,6 +177,7 @@ namespace GanjooRazor.Pages
             var filterUserId = Request.Query["userid"];
             string url = $"{APIRoot.Url}/api/ganjoor/comments?PageNumber={pageNumber}&PageSize=20";
             Title = "حاشیه‌ها";
+            HomeLink = "/hashieha";
             if (!string.IsNullOrEmpty(filterUserId))
             {
                 var responseUserProfile = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/user/profile/{filterUserId}");
@@ -184,15 +187,14 @@ namespace GanjooRazor.Pages
                     return Page();
                 }
 
-                GanjoorUserPublicProfile profile = JsonConvert.DeserializeObject<GanjoorUserPublicProfile>(await responseUserProfile.Content.ReadAsStringAsync());
+                Profile = JsonConvert.DeserializeObject<GanjoorUserPublicProfile>(await responseUserProfile.Content.ReadAsStringAsync());
 
 
-                ViewData["Title"] = $"گنجور » حاشیه‌های {profile.NickName}";
+                ViewData["Title"] = $"گنجور » حاشیه‌های {Profile.NickName}";
 
-                Title = $"حاشیه‌های {profile.NickName}";
+                Title = $"حاشیه‌های {Profile.NickName}";
+                HomeLink = $"/hashieha?userid={filterUserId}";
 
-
-                
                 if (!string.IsNullOrEmpty(Request.Cookies["Token"]))
                 {
                     using (HttpClient secureClient = new HttpClient())
@@ -238,8 +240,8 @@ namespace GanjooRazor.Pages
             
             if (paginationMetadata.totalPages > 1)
             {
-                Title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
-                ViewData["Title"] += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
+                if(pageNumber > 1)
+                    ViewData["Title"] += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
 
 
                 htmlText = $"<div>{Environment.NewLine}";
