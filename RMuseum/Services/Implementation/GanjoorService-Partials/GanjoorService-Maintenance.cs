@@ -30,36 +30,63 @@ namespace RMuseum.Services.Implementation
 
                     GanjoorMetre preDeterminedMetre = string.IsNullOrEmpty(rhythm) ? null : metres.Where(m => m.Rhythm == rhythm).Single();
 
-                    var poems = await context.GanjoorPoems.Where(p => p.CatId == catId).ToListAsync();
+                    var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).ToListAsync();
 
                     int i = 0;
                     using (HttpClient httpClient = new HttpClient())
                     {
                         foreach (var poem in poems)
                         {
-                            if (retag || poem.GanjoorMetreId == null)
+                            var sections = await context.GanjoorPoemSections.Where(p => p.PoemId == poem.Id).ToListAsync();
+                            foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == null).ToList())
                             {
-                                await jobProgressServiceEF.UpdateJob(job.Id, i++);
-                                if (preDeterminedMetre == null)
+                                if (retag || section.GanjoorMetreId == null)
                                 {
-                                    var res = await _FindPoemRhythm(poem.Id, context, httpClient, rhythms);
-                                    if (!string.IsNullOrEmpty(res.Result))
+                                    await jobProgressServiceEF.UpdateJob(job.Id, i++);
+                                    if (preDeterminedMetre == null)
                                     {
-                                        poem.GanjoorMetreId = metres.Where(m => m.Rhythm == res.Result).Single().Id;
-                                        context.GanjoorPoems.Update(poem);
+                                        var res = await _FindSectionRhythm(section, context, httpClient, rhythms);
+                                        if (!string.IsNullOrEmpty(res.Result))
+                                        {
+                                            section.GanjoorMetreId = metres.Where(m => m.Rhythm == res.Result).Single().Id;
+                                            context.GanjoorPoemSections.Update(section);
+                                            await context.SaveChangesAsync();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        section.GanjoorMetreId = preDeterminedMetre.Id;
+                                        context.GanjoorPoemSections.Update(section);
                                         await context.SaveChangesAsync();
                                     }
-                                }
-                                else
-                                {
-                                    poem.GanjoorMetreId = preDeterminedMetre.Id;
-                                    context.GanjoorPoems.Update(poem);
-                                    await context.SaveChangesAsync();
-                                }
 
-                                if (poem.GanjoorMetreId != null && !string.IsNullOrEmpty(poem.RhymeLetters))
-                                {
-                                    await _UpdateRelatedPoems(context, (int)poem.GanjoorMetreId, poem.RhymeLetters);
+                                    if(section.GanjoorMetreId != null)
+                                    {
+                                        var dependentSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == section.Id).ToList();
+                                        foreach (var dsection in dependentSections)
+                                        {
+                                            dsection.GanjoorMetreId = section.GanjoorMetreId;
+                                            context.GanjoorPoemSections.Update(dsection);
+                                            await context.SaveChangesAsync();
+                                        }
+                                    }
+
+                                    if (section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
+                                    {
+                                        await _UpdateRelatedSections(context, (int)section.GanjoorMetreId, section.RhymeLetters);
+                                    }
+
+                                    if (section.GanjoorMetreId != null)
+                                    {
+                                        var dependentSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == section.Id).ToList();
+                                        foreach (var dsection in dependentSections)
+                                        {
+                                            if(dsection.GanjoorMetreId != null && !string.IsNullOrEmpty(dsection.RhymeLetters))
+                                            {
+                                                await _UpdateRelatedSections(context, (int)dsection.GanjoorMetreId, dsection.RhymeLetters);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

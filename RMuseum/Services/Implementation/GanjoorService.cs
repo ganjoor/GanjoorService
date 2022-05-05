@@ -3149,11 +3149,18 @@ namespace RMuseum.Services.Implementation
             var metres = (await GetGanjoorMetres()).Result.Select(m => m.Rhythm).ToArray();
             return await _FindPoemRhythm(id, _context, _httpClient, metres);
         }
+
         private async Task<RServiceResult<string>> _FindPoemRhythm(int id, RMuseumDbContext context, HttpClient httpClient, string[] metres, bool alwaysReturnaAResult = false)
+        {
+            var section = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == id && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).OrderBy(s => s.Index).FirstOrDefaultAsync();
+            return await _FindSectionRhythm(section, context, httpClient, metres, alwaysReturnaAResult);
+        }
+        private async Task<RServiceResult<string>> _FindSectionRhythm(GanjoorPoemSection section, RMuseumDbContext context, HttpClient httpClient, string[] metres, bool alwaysReturnaAResult = false)
         {
             try
             {
-                var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync();
+                var poemVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).ToListAsync();
+                var verses = FilterSectionVerses(section, poemVerses);
 
                 Dictionary<string, int> rhytmCounter = new Dictionary<string, int>();
 

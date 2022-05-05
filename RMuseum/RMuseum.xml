@@ -13631,6 +13631,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FilterSectionVerses(RMuseum.Models.Ganjoor.GanjoorPoemSection,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
+            <summary>
+            filter secion verses
+            </summary>
+            <param name="section"></param>
+            <param name="verses"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCoupletSectionsAsync(System.Int32,System.Int32)">
             <summary>
             get couplet sections
