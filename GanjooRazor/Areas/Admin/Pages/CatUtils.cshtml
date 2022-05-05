@@ -188,7 +188,10 @@
                 ابتدا
             </th>
             <th>
-                بخش‌ها
+                وزن اول
+            </th>
+            <th>
+                قافیه
             </th>
             <th>
                 <input type="checkbox" id="poems-select-switch" onclick="onSwitchPoemsSelections()" />
@@ -203,39 +206,58 @@
                 <td>
                     @poem.Excerpt
                 </td>
-                <td>
-                   <table>
-                      <tr>
-                          <th>
-                              ابتدا
-                          </th>
-                          <th>
-                              وزن اصلی
-                          </th>
-                          <th>
-                              قافیه
-                          </th>
-                      </tr>
-                      
-                      @foreach (var s in poem.MainSections)
-                      {
-                          <tr>
-                              <td>
-                                  @s.Excerpt
-                              </td>
-                              <td>
-                                  @if(s.GanjoorMetre != null)
-                                  {
-                                      @s.GanjoorMetre.Rhythm
-                                  }
-                              </td>
-                              <td>
-                                  @s.RhymeLetters
-                            </td>
-                          </tr>
-                      }
-                   </table>
-                </td>
+                @if (poem.MainSections.Length <= 1)
+                {
+                    <td>
+                        @if(poem.MainSections.Length == 1 && @poem.MainSections[0].GanjoorMetre != null)
+                        {
+                            @poem.MainSections[0].GanjoorMetre.Rhythm
+                        }
+                    </td>
+                    <td>
+                        @if(poem.MainSections.Length == 1)
+                        {
+                            @poem.MainSections[0].RhymeLetters
+                        }
+                    </td>
+                }
+                else
+                {
+                    <td colspan="2">
+                        <table>
+                            <tr>
+                                <th>
+                                    ابتدای بخش
+                                </th>
+                                <th>
+                                    وزن اول
+                                </th>
+                                <th>
+                                    قافیه
+                                </th>
+                            </tr>
+
+                            @foreach (var s in poem.MainSections)
+                            {
+                                <tr>
+                                    <td>
+                                        @s.Excerpt
+                                    </td>
+                                    <td>
+                                        @if (s.GanjoorMetre != null)
+                                        {
+                                            @s.GanjoorMetre.Rhythm
+                                        }
+                                    </td>
+                                    <td>
+                                        @s.RhymeLetters
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                }
+
                 <td>
                     <input type="checkbox" id="select-@poem.Id" data-value="@poem.Id" class="poemSelect" />
                 </td>

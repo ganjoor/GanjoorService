@@ -79,7 +79,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         private async Task<bool> GetInformationAsync()
         {
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat?url={Request.Query["url"]}&poems=true");
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat?url={Request.Query["url"]}&poems=true&mainSections=true");
             if(!response.IsSuccessStatusCode)
             {
                 LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
