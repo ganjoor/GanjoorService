@@ -13685,13 +13685,6 @@
             <param name="rhyme"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingRelatedPoemsInfo(System.Boolean)">
-            <summary>
-            start generating related poems info
-            </summary>
-            <param name="regenerate"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRelatedSections(System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             get a section related sections
