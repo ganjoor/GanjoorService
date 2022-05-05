@@ -11708,7 +11708,7 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.FindPoemRhyme(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.FindPoemMainSectionRhyme(System.Int32)">
             <summary>
             find poem rhyme
             </summary>
@@ -11731,7 +11731,7 @@
             <param name="poemsNum"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.FindPoemRhythm(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.FindPoemMainSectionRhythm(System.Int32)">
             <summary>
             find poem rhythm
             </summary>
@@ -14322,7 +14322,7 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindPoemRhyme(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindPoemMainSectionRhyme(System.Int32)">
             <summary>
             find poem rhyme
             </summary>
@@ -14345,7 +14345,7 @@
             <param name="retag"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindPoemRhythm(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindPoemMainSectionRhythm(System.Int32)">
             <summary>
             find poem rhythm
             </summary>

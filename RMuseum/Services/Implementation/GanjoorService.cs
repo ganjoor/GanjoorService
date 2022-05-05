@@ -3032,21 +3032,19 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<string[]>(poems.Select(p => p.Title).ToArray());
         }
 
-        private async Task<RServiceResult<GanjooRhymeAnalysisResult>> _FindPoemRhyme(int id, RMuseumDbContext context)
-        {
-            return new RServiceResult<GanjooRhymeAnalysisResult>(
-                LanguageUtils.FindRhyme(await context.GanjoorVerses.Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync())
-                );
-        }
 
         /// <summary>
         /// find poem rhyme
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjooRhymeAnalysisResult>> FindPoemRhyme(int id)
+        public async Task<RServiceResult<GanjooRhymeAnalysisResult>> FindPoemMainSectionRhyme(int id)
         {
-            return await _FindPoemRhyme(id, _context);
+            var section = await _context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == id && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).OrderBy(s => s.Index).FirstOrDefaultAsync();
+            if (section == null)
+                return new RServiceResult<GanjooRhymeAnalysisResult>(null, "no sections");
+            var verses = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync();
+            return new RServiceResult<GanjooRhymeAnalysisResult>(LanguageUtils.FindRhyme(FilterSectionVerses(section, verses)));
         }
 
         private async Task _FindCategoryPoemsRhymesInternal(int catId, bool retag)
@@ -3144,15 +3142,17 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<string>> FindPoemRhythm(int id)
+        public async Task<RServiceResult<string>> FindPoemMainSectionRhythm(int id)
         {
             var metres = (await GetGanjoorMetres()).Result.Select(m => m.Rhythm).ToArray();
-            return await _FindPoemRhythm(id, _context, _httpClient, metres);
+            return await _FindPoemMainSectionRhythm(id, _context, _httpClient, metres);
         }
 
-        private async Task<RServiceResult<string>> _FindPoemRhythm(int id, RMuseumDbContext context, HttpClient httpClient, string[] metres, bool alwaysReturnaAResult = false)
+        private async Task<RServiceResult<string>> _FindPoemMainSectionRhythm(int id, RMuseumDbContext context, HttpClient httpClient, string[] metres, bool alwaysReturnaAResult = false)
         {
             var section = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == id && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).OrderBy(s => s.Index).FirstOrDefaultAsync();
+            if (section == null)
+                return new RServiceResult<string>(null, "no main sections");
             return await _FindSectionRhythm(section, context, httpClient, metres, alwaysReturnaAResult);
         }
         private async Task<RServiceResult<string>> _FindSectionRhythm(GanjoorPoemSection section, RMuseumDbContext context, HttpClient httpClient, string[] metres, bool alwaysReturnaAResult = false)

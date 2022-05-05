@@ -57,7 +57,7 @@ namespace RMuseum.Services.Implementation
                                         for (int i = 0; i < poemIds.Length; i++)
                                         {
                                             var id = poemIds[i];
-                                            var res = await _FindPoemRhythm(id, context, httpClient, metres, true);
+                                            var res = await _FindPoemMainSectionRhythm(id, context, httpClient, metres, true);
                                             if (res.Result == null)
                                                 res.Result = "";
 

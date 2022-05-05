@@ -2214,7 +2214,7 @@ namespace RMuseum.Controllers
 
         public async Task<IActionResult> FindPoemRhyme(int id)
         {
-            var res = await _ganjoorService.FindPoemRhyme(id);
+            var res = await _ganjoorService.FindPoemMainSectionRhyme(id);
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -2235,7 +2235,7 @@ namespace RMuseum.Controllers
 
         public async Task<IActionResult> FindPoemRhythm(int id)
         {
-            var res = await _ganjoorService.FindPoemRhythm(id);
+            var res = await _ganjoorService.FindPoemMainSectionRhythm(id);
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);

@@ -620,7 +620,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjooRhymeAnalysisResult>> FindPoemRhyme(int id);
+        Task<RServiceResult<GanjooRhymeAnalysisResult>> FindPoemMainSectionRhyme(int id);
 
         /// <summary>
         /// find category poem rhymes
@@ -643,7 +643,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RServiceResult<string>> FindPoemRhythm(int id);
+        Task<RServiceResult<string>> FindPoemMainSectionRhythm(int id);
 
         /// <summary>
         /// find category poem rhymes
