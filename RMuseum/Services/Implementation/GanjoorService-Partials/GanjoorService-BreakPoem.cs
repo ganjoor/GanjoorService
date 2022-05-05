@@ -322,7 +322,7 @@ namespace RMuseum.Services.Implementation
                             RhymeLetters = section.RhymeLetters,
                             PoemFormat = section.PoemFormat,
                         };
-                        var sectionVerses = _GetSectionVerses(sectionCopy, targetPoemVerses);
+                        var sectionVerses = FilterSectionVerses(sectionCopy, targetPoemVerses);
                         sectionCopy.HtmlText = PrepareHtmlText(sectionVerses);
                         sectionCopy.PlainText = PreparePlainText(sectionVerses);
                         try
@@ -539,7 +539,7 @@ namespace RMuseum.Services.Implementation
                             RhymeLetters = section.RhymeLetters,
                             PoemFormat = section.PoemFormat,
                         };
-                        var sectionVerses = _GetSectionVerses(sectionCopy, targetPoemVerses);
+                        var sectionVerses = FilterSectionVerses(sectionCopy, targetPoemVerses);
                         sectionCopy.HtmlText = PrepareHtmlText(sectionVerses);
                         sectionCopy.PlainText = PreparePlainText(sectionVerses);
                         try

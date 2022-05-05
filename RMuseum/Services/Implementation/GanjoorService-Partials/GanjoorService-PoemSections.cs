@@ -475,7 +475,13 @@ namespace RMuseum.Services.Implementation
             context.UpdateRange(nonCommentVerses);
         }
 
-        private List<GanjoorVerse> _GetSectionVerses(GanjoorPoemSection section, List<GanjoorVerse> verses)
+        /// <summary>
+        /// filter secion verses
+        /// </summary>
+        /// <param name="section"></param>
+        /// <param name="verses"></param>
+        /// <returns></returns>
+        public List<GanjoorVerse> FilterSectionVerses(GanjoorPoemSection section, List<GanjoorVerse> verses)
         {
             List<GanjoorVerse> sectionVerses = new List<GanjoorVerse>();
             foreach (GanjoorVerse verse in verses)

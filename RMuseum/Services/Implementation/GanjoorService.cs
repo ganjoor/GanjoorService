@@ -3057,21 +3057,32 @@ namespace RMuseum.Services.Implementation
                 var job = (await jobProgressServiceEF.NewJob($"FindCategoryPoemsRhymes Cat {catId}", "Query data")).Result;
                 try
                 {
-                    var poems = await context.GanjoorPoems.Where(p => p.CatId == catId).ToListAsync();
+                    var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).ToListAsync();
 
                     int i = 0;
                     foreach (var poem in poems)
                     {
-                        if (retag || string.IsNullOrEmpty(poem.RhymeLetters))
+                        var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
+                        var sections = await context.GanjoorPoemSections.Where(s => s.PoemId == poem.Id).ToListAsync();
+                        foreach (var section in sections)
                         {
-                            await jobProgressServiceEF.UpdateJob(job.Id, i++);
-                            var res = await _FindPoemRhyme(poem.Id, context);
-                            if (res.Result != null && !string.IsNullOrEmpty(res.Result.Rhyme))
+                            if (retag || string.IsNullOrEmpty(section.RhymeLetters))
                             {
-                                poem.RhymeLetters = res.Result.Rhyme;
-                                context.GanjoorPoems.Update(poem);
+                                await jobProgressServiceEF.UpdateJob(job.Id, i++);
+                                var sectionVerses = FilterSectionVerses(section, verses);
+                                try
+                                {
+                                    var res = LanguageUtils.FindRhyme(sectionVerses);
+                                    if(!string.IsNullOrEmpty(res.Rhyme))
+                                    {
+                                        section.RhymeLetters = res.Rhyme;
+                                        context.GanjoorPoemSections.Update(section);
+                                    }
+                                }
+                                catch
+                                {
+                                }
                             }
-
                         }
                     }
                     await jobProgressServiceEF.UpdateJob(job.Id, 99);
