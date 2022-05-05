@@ -61,7 +61,7 @@
         @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
         {
             <text>
-                <a role="button" class="cursor-pointer w3tooltip" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")"><i class="material-icons color-white">search</i><span class="w3tooltiptext">موارد هم آهنگ (وزن @((nSectionIndex + 1).ToPersianNumbers()))</span></a>
+                <a role="button" class="cursor-pointer w3tooltip" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")"><i class="material-icons color-white">search</i><span class="w3tooltiptext">موارد هم آهنگ (وزن یا قافیهٔ @((nSectionIndex + 1).ToPersianNumbers()))</span></a>
             </text>
         }
     }

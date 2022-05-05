@@ -842,7 +842,7 @@ namespace GanjooRazor.Pages
                         IsBookmarked = isBookmarked,
                         Numbers = numbers,
                         Sections = sections,
-                        SectionsWithMetreAndRhymes = sections.Where(s => s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters) && s.SectionType != RMuseum.Models.Ganjoor.PoemSectionType.WholePoem).ToList(),
+                        SectionsWithMetreAndRhymes = sections.Where(s => s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters)).ToList(),
                     }
                 }
             };
