@@ -964,20 +964,22 @@
             <param name="id">poet image</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetCatById(System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCatById(System.Int32,System.Boolean,System.Boolean)">
             <summary>
             cat by id
             </summary>
             <param name="id"></param>
             <param name="poems"></param>
+            <param name="mainSections"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetCatByUrl(System.String,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCatByUrl(System.String,System.Boolean,System.Boolean)">
             <summary>
             cat by full url
             </summary>
             <param name="url"></param>
             <param name="poems"></param>
+            <param name="mainSections"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.BatchRenameCatPoemTitles(System.Int32,RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel)">
@@ -7107,6 +7109,11 @@
             modified
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSection.Excerpt">
+            <summary>
+            excerpt
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
             <summary>
             poem translation
@@ -8844,15 +8851,9 @@
             excerpt text
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.Rhythm">
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.MainSections">
             <summary>
-            Rythm
-            </summary>
-            <example>مفاعیلن مفاعیلن فعولن</example>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.RhymeLetters">
-            <summary>
-            rhyme letters
+            whole poem sections
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemTranslationViewModel">
@@ -11139,20 +11140,22 @@
             <param name="url"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetCatById(System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatById(System.Int32,System.Boolean,System.Boolean)">
             <summary>
             get cat by id
             </summary>
             <param name="id"></param>
             <param name="poems"></param>
+            <param name="mainSections"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetCatByUrl(System.String,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatByUrl(System.String,System.Boolean,System.Boolean)">
             <summary>
             get cat by url
             </summary>
             <param name="url"></param>
             <param name="poems"></param>
+            <param name="mainSections"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPageByUrl(System.String,System.Boolean)">
@@ -13892,20 +13895,22 @@
             <param name="url"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatByUrl(System.String,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatByUrl(System.String,System.Boolean,System.Boolean)">
             <summary>
             get cat by url
             </summary>
             <param name="url"></param>
             <param name="poems"></param>
+            <param name="mainSections"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatById(System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatById(System.Int32,System.Boolean,System.Boolean)">
             <summary>
             get cat by id
             </summary>
             <param name="id"></param>
             <param name="poems"></param>
+            <param name="mainSections"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPageUrlById(System.Int32)">

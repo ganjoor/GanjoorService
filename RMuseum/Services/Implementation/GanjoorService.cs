@@ -154,8 +154,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="url"></param>
         /// <param name="poems"></param>
+        /// <param name="mainSections"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = false)
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = false, bool mainSections = false)
         {
             // /hafez/ => /hafez :
             if (url.LastIndexOf('/') == url.Length - 1)
@@ -165,7 +166,7 @@ namespace RMuseum.Services.Implementation
             var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
             if (cat == null)
                 return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
-            return await GetCatById(cat.Id, poems);
+            return await GetCatById(cat.Id, poems, mainSections);
         }
 
         /// <summary>
@@ -173,8 +174,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <param name="poems"></param>
+        /// <param name="mainSections"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = false)
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = false, bool mainSections = false)
         {
             var cat = await _context.GanjoorCategories.Include(c => c.Poet).Include(c => c.Parent).Where(c => c.Id == id).AsNoTracking().FirstOrDefaultAsync();
             if (cat == null)
@@ -293,13 +295,33 @@ namespace RMuseum.Services.Implementation
                          Title = p.Title,
                          UrlSlug = p.UrlSlug,
                          Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text,
-                         Rhythm = p.GanjoorMetre.Rhythm,
-                         RhymeLetters = p.RhymeLetters
                      }
                  ).AsNoTracking().ToListAsync()
                  :
                  null
             };
+
+            if(poems && mainSections)
+            {
+                foreach (var poem in catViewModel.Poems)
+                {
+                    poem.MainSections = await _context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.PoemId == poem.Id && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).OrderBy(s => s.Index).ToArrayAsync();
+                    foreach (var section in poem.MainSections)
+                    {
+                        section.Excerpt = (await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId &&
+                            (
+                            (section.VerseType == VersePoemSectionType.First && v.SectionIndex1 == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
+                            )
+                        ).OrderBy(v => v.VOrder).FirstOrDefaultAsync()).Text;
+                    }
+                }
+            }
 
             return new RServiceResult<GanjoorPoetCompleteViewModel>
                (
@@ -1197,15 +1219,14 @@ namespace RMuseum.Services.Implementation
             string searchConditions = null;
             if (!string.IsNullOrEmpty(term))
             {
-                /// You need to run this scripts manually on the database before using this method:
-                /// 
-                /// CREATE FULLTEXT CATALOG [GanjoorHtmlCommentTextCatalog] WITH ACCENT_SENSITIVITY = OFF AS DEFAULT
-                /// 
-                /// CREATE FULLTEXT INDEX ON [dbo].[GanjoorComments](
-                /// [HtmlComment] LANGUAGE 'English')
-                /// KEY INDEX [PK_GanjoorComments]ON ([GanjoorHtmlCommentTextCatalog], FILEGROUP [PRIMARY])
-                /// WITH (CHANGE_TRACKING = AUTO, STOPLIST = SYSTEM)
-                /// 
+                /* You need to run this scripts manually on the database before using this method:
+                 CREATE FULLTEXT CATALOG [GanjoorHtmlCommentTextCatalog] WITH ACCENT_SENSITIVITY = OFF AS DEFAULT
+                 
+                 CREATE FULLTEXT INDEX ON [dbo].[GanjoorComments](
+                 [HtmlComment] LANGUAGE 'English')
+                 KEY INDEX [PK_GanjoorComments]ON ([GanjoorHtmlCommentTextCatalog], FILEGROUP [PRIMARY])
+                 WITH (CHANGE_TRACKING = AUTO, STOPLIST = SYSTEM)
+                */ 
                 term = term.Replace("‌", " ");//replace zwnj with space
                 
                 if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))

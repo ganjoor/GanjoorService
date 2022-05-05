@@ -26,16 +26,9 @@
         public string Excerpt { get; set; }
 
         /// <summary>
-        /// Rythm
+        /// whole poem sections
         /// </summary>
-        /// <example>مفاعیلن مفاعیلن فعولن</example>
-        public string Rhythm { get; set; }
-
-        /// <summary>
-        /// rhyme letters
-        /// </summary>
-        public string RhymeLetters { get; set; }
-
+        public GanjoorPoemSection[] MainSections { get; set; }
 
     }
 }

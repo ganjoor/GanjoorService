@@ -398,6 +398,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="poems"></param>
+        /// <param name="mainSections"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("cat/{id}")]
@@ -405,13 +406,13 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetCatById(int id, bool poems = true)
+        public async Task<IActionResult> GetCatById(int id, bool poems = true, bool mainSections = false)
         {
             var cacheKey = $"cat/byid/{id}/{poems}";
             if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel cat))
             {
                 RServiceResult<GanjoorPoetCompleteViewModel> res =
-               await _ganjoorService.GetCatById(id, poems);
+               await _ganjoorService.GetCatById(id, poems, mainSections);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 if (res.Result == null)
@@ -430,6 +431,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="url"></param>
         /// <param name="poems"></param>
+        /// <param name="mainSections"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("cat")]
@@ -437,13 +439,13 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoetCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetCatByUrl(string url, bool poems = true)
+        public async Task<IActionResult> GetCatByUrl(string url, bool poems = true, bool mainSections = false)
         {
             var cacheKey = $"cat/byurl/{url}/{poems}";
             if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel cat))
             {
                 RServiceResult<GanjoorPoetCompleteViewModel> res =
-                 await _ganjoorService.GetCatByUrl(url, poems);
+                 await _ganjoorService.GetCatByUrl(url, poems, mainSections);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 if (res.Result == null)

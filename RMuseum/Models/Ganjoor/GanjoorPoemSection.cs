@@ -118,5 +118,11 @@ namespace RMuseum.Models.Ganjoor
         /// </summary>
         [NotMapped]
         public bool Modified { get; set; }
+
+        /// <summary>
+        /// excerpt
+        /// </summary>
+        [NotMapped]
+        public string Excerpt { get; set; }
     }
 }
