@@ -97,6 +97,10 @@
                     <div class="related-images-frame">
                         <form method="get" id="searchcommentsform">
                             <input type="text" name="w" id="w" class="width-100per" value="@Model.Query" placeholder="جستجو در @Model.Title" />
+                            @if(Model.Profile != null)
+                            {
+                                <input type="hidden" id="userid" name="userid" value="@Model.Profile.Id" />
+                            }
                             <input type="submit" class="width-100per" value="جستجو در @Model.Title" />
                         </form>
                     </div><!-- related-images-frame -->

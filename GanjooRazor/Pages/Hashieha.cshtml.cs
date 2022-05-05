@@ -250,15 +250,19 @@ namespace GanjooRazor.Pages
             PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata);
 
             string htmlText = "";
-            
+
             if (paginationMetadata.totalPages > 1)
             {
-                if(pageNumber > 1)
+                if (pageNumber > 1)
                     ViewData["Title"] += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
 
 
                 htmlText = $"<div>{Environment.NewLine}";
                 string queryFilterUserId = string.IsNullOrEmpty(filterUserId) ? "" : $"&amp;userid={filterUserId}";
+                if (!string.IsNullOrEmpty(Query))
+                {
+                    queryFilterUserId += $"&amp;w={Query}";
+                }
                 if (paginationMetadata.currentPage > 3)
                 {
                     htmlText += $"<a href=\"/hashieha/?page=1{queryFilterUserId}\"><div class=\"circled-number\">۱</div></a> …";
