@@ -88,20 +88,33 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private bool _IsMasnavi(List<GanjoorVerse> verses)
+        private bool _IsMasnavi(List<GanjoorVerse> verses, bool bandCouplet = false)
         {
             if (verses.Count % 2 != 0)
                 return false;
-            if (verses.Where(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left).Any())
-                return false;
+            if(bandCouplet)
+            {
+                if (verses.Where(v => v.VersePosition != VersePosition.CenteredVerse1 && v.VersePosition != VersePosition.CenteredVerse2).Any())
+                    return false;
+            }
+            else
+            {
+                if (verses.Where(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left).Any())
+                    return false;
+            }
+           
             int rhymingCouplets = 0;
             for (int i = 0; i < verses.Count; i += 2)
             {
                 var rightVerse = verses[i];
-                if (rightVerse.VersePosition != VersePosition.Right)
+                if (!bandCouplet && rightVerse.VersePosition != VersePosition.Right)
+                    return false;
+                if (bandCouplet && rightVerse.VersePosition != VersePosition.CenteredVerse1)
                     return false;
                 var leftVerse = verses[i + 1];
-                if (leftVerse.VersePosition != VersePosition.Left)
+                if (!bandCouplet && leftVerse.VersePosition != VersePosition.Left)
+                    return false;
+                if (bandCouplet && leftVerse.VersePosition != VersePosition.CenteredVerse2)
                     return false;
                 List<GanjoorVerse> coupletVerses = new List<GanjoorVerse>();
                 coupletVerses.Add(rightVerse);
@@ -670,6 +683,7 @@ namespace RMuseum.Services.Implementation
                                                        GanjoorMetreId = mainSection.GanjoorMetreId,
                                                        RhymeLetters = res.Rhyme,
                                                        GanjoorMetreRefSectionIndex = mainSection.Index,
+                                                       CachedFirstCoupletIndex = (int)rightVerse.CoupletIndex,
                                                    };
 
                                                    if(verseType == VersePoemSectionType.Third)
