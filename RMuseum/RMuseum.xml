@@ -14632,12 +14632,14 @@
             <param name="text"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.LanguageUtils.FindRhyme(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse},System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.LanguageUtils.FindRhyme(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse},System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             find rhyme
             </summary>
             <param name="verses"></param>
             <param name="secondPhase"></param>
+            <param name="bandCouplets"></param>
+            <param name="tryWholeVerses"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.LanguageUtils.FormatMoney(System.Decimal)">

@@ -94,12 +94,12 @@ namespace RMuseum.Services.Implementation
                 return false;
             if(bandCouplet)
             {
-                if (verses.Where(v => v.VersePosition != VersePosition.CenteredVerse1 && v.VersePosition != VersePosition.CenteredVerse2).Any())
+                if (verses.Any(v => v.VersePosition != VersePosition.CenteredVerse1 && v.VersePosition != VersePosition.CenteredVerse2))
                     return false;
             }
             else
             {
-                if (verses.Where(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left).Any())
+                if (verses.Any(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left))
                     return false;
             }
            
@@ -134,7 +134,7 @@ namespace RMuseum.Services.Implementation
                 List<GanjoorVerse> coupletVerses = new List<GanjoorVerse>();
                 coupletVerses.Add(rightVerse);
                 coupletVerses.Add(leftVerse);
-                var res = LanguageUtils.FindRhyme(coupletVerses);
+                var res = LanguageUtils.FindRhyme(coupletVerses, false, bandCouplet);
                 if (!string.IsNullOrEmpty(res.Rhyme))
                     rhymingCouplets++;
                 if (rhymingCouplets * 200 / verses.Count > 50)
@@ -411,7 +411,7 @@ namespace RMuseum.Services.Implementation
             {
                 bandVerse.SectionIndex2 = bandSection.Index;
             }
-            if(_IsMasnavi(bandVerses))
+            if(_IsMasnavi(bandVerses, true))
             {
                 if(mainSection.PoemFormat == GanjoorPoemFormat.MultiBand)
                 {
@@ -427,7 +427,12 @@ namespace RMuseum.Services.Implementation
                     List<GanjoorVerse> coupletVerses = new List<GanjoorVerse>();
                     coupletVerses.Add(rightVerse);
                     coupletVerses.Add(leftVerse);
-                    var res = LanguageUtils.FindRhyme(coupletVerses);
+                    var res = LanguageUtils.FindRhyme(coupletVerses, false, true, true);
+                    if(string.IsNullOrEmpty(res.Rhyme))
+                    {
+                        res = LanguageUtils.FindRhyme(coupletVerses, false, true, false);
+                    }
+
 
                     GanjoorPoemSection verseSection = new GanjoorPoemSection()
                     {
@@ -444,6 +449,9 @@ namespace RMuseum.Services.Implementation
 
                     rightVerse.SectionIndex3 = verseSection.Index;
                     leftVerse.SectionIndex3 = verseSection.Index;
+
+                    context.Update(rightVerse);
+                    context.Update(leftVerse);
 
                     var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
                     verseSection.HtmlText = PrepareHtmlText(rl);
@@ -641,28 +649,35 @@ namespace RMuseum.Services.Implementation
                                    int progress = 0;
                                    try
                                    {
-                                       var sections = await context.GanjoorPoemSections.Where(s => s.SectionType == PoemSectionType.BandCouplets && string.IsNullOrEmpty(s.RhymeLetters)).ToListAsync();
+                                       var sections = await context.GanjoorPoemSections.Where(s => s.SectionType == PoemSectionType.BandCouplets).ToListAsync();
                                        int count = sections.Count;
 
                                        for (int i = 0; i < count; i++)
                                        {
                                            progress++;
                                            var section = sections[i];
+                                           section.OldRhymeLetters = section.RhymeLetters;
                                            var verses = await context.GanjoorVerses.Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).ToListAsync();
                                            var bandVerses = FilterSectionVerses(section, verses);
-                                           var resRetry = LanguageUtils.FindRhyme(bandVerses, false, true);
-                                           if(!string.IsNullOrEmpty(resRetry.Rhyme))
+                                           var resRetry = LanguageUtils.FindRhyme(bandVerses, false, true, true);
+                                           if(string.IsNullOrEmpty(resRetry.Rhyme))
+                                               resRetry = LanguageUtils.FindRhyme(bandVerses, false, true, false);
+                                           if (!string.IsNullOrEmpty(resRetry.Rhyme) && section.OldRhymeLetters != resRetry.Rhyme)
                                            {
                                                section.RhymeLetters = resRetry.Rhyme;
                                                context.Update(section);
                                                await jobProgressServiceEF.UpdateJob(job.Id, progress);
-                                               if (section.GanjoorMetreId != null)
+                                               if (section.GanjoorMetreId != null && section.OldRhymeLetters != resRetry.Rhyme)
                                                {
+                                                   if(!string.IsNullOrEmpty(section.OldRhymeLetters))
+                                                   {
+                                                       await _UpdateRelatedSections(context, (int)section.GanjoorMetreId, section.OldRhymeLetters);
+                                                   }
                                                    await _UpdateRelatedSections(context, (int)section.GanjoorMetreId, section.RhymeLetters);
                                                }
                                                continue;
                                            }
-                                           if (_IsMasnavi(bandVerses))
+                                           if (_IsMasnavi(bandVerses, true))
                                            {
                                                var poemSections = await context.GanjoorPoemSections.Where(s => s.PoemId == section.PoemId).ToListAsync();
                                                if (poemSections.Any(s => s.VerseType == VersePoemSectionType.Forth))
