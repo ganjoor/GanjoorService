@@ -451,7 +451,7 @@ namespace RMuseum.Services.Implementation
                     leftVerse.SectionIndex3 = verseSection.Index;
 
                     context.Update(rightVerse);
-                    context.Update(leftVerse);
+                                                   context.Update(leftVerse);
 
                     var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
                     verseSection.HtmlText = PrepareHtmlText(rl);
@@ -716,7 +716,7 @@ namespace RMuseum.Services.Implementation
 
                                                    GanjoorPoemSection verseSection = new GanjoorPoemSection()
                                                    {
-                                                       PoemId = section.Poem.Id,
+                                                       PoemId = section.PoemId,
                                                        PoetId = section.PoetId,
                                                        SectionType = PoemSectionType.Couplet,
                                                        VerseType = verseType,
