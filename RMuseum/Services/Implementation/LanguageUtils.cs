@@ -93,12 +93,15 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="verses"></param>
         /// <param name="secondPhase"></param>
+        /// <param name="bandCouplets"></param>
         /// <returns></returns>
-        public static GanjooRhymeAnalysisResult FindRhyme(List<GanjoorVerse> verses, bool secondPhase = false)
+        public static GanjooRhymeAnalysisResult FindRhyme(List<GanjoorVerse> verses, bool secondPhase = false, bool bandCouplets = false)
         {
             try
             {
                 List<string> verseTextList = verses.Count == 2 ? verses.Select(v => v.Text).ToList()
+                                                           : bandCouplets ?
+                                                           verses.Where(v => v.VersePosition == VersePosition.CenteredVerse2).Select(v => v.Text).ToList()
                                                            : verses.Where(v => v.VersePosition == VersePosition.Left).Select(v => v.Text).ToList();
                 if (verseTextList.Count > 1)
                 {

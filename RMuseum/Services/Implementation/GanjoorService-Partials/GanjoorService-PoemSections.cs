@@ -650,6 +650,18 @@ namespace RMuseum.Services.Implementation
                                            var section = sections[i];
                                            var verses = await context.GanjoorVerses.Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).ToListAsync();
                                            var bandVerses = FilterSectionVerses(section, verses);
+                                           var resRetry = LanguageUtils.FindRhyme(bandVerses, false, true);
+                                           if(!string.IsNullOrEmpty(resRetry.Rhyme))
+                                           {
+                                               section.RhymeLetters = resRetry.Rhyme;
+                                               context.Update(section);
+                                               await jobProgressServiceEF.UpdateJob(job.Id, progress);
+                                               if (section.GanjoorMetreId != null)
+                                               {
+                                                   await _UpdateRelatedSections(context, (int)section.GanjoorMetreId, section.RhymeLetters);
+                                               }
+                                               continue;
+                                           }
                                            if (_IsMasnavi(bandVerses))
                                            {
                                                var poemSections = await context.GanjoorPoemSections.Where(s => s.PoemId == section.PoemId).ToListAsync();
@@ -711,6 +723,9 @@ namespace RMuseum.Services.Implementation
                                                        rightVerse.SectionIndex4 = verseSection.Index;
                                                        leftVerse.SectionIndex4 = verseSection.Index;
                                                    }
+
+                                                   context.Update(rightVerse);
+                                                   context.Update(leftVerse);
                                                    
 
                                                    var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
