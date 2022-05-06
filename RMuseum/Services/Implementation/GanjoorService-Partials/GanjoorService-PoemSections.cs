@@ -107,15 +107,30 @@ namespace RMuseum.Services.Implementation
             for (int i = 0; i < verses.Count; i += 2)
             {
                 var rightVerse = verses[i];
-                if (!bandCouplet && rightVerse.VersePosition != VersePosition.Right)
-                    return false;
-                if (bandCouplet && rightVerse.VersePosition != VersePosition.CenteredVerse1)
-                    return false;
+                if(bandCouplet)
+                {
+                    if (rightVerse.VersePosition != VersePosition.CenteredVerse1)
+                        return false;
+                }
+                else
+                {
+                    if (rightVerse.VersePosition != VersePosition.Right)
+                        return false;
+                }
+               
+                
                 var leftVerse = verses[i + 1];
-                if (!bandCouplet && leftVerse.VersePosition != VersePosition.Left)
-                    return false;
-                if (bandCouplet && leftVerse.VersePosition != VersePosition.CenteredVerse2)
-                    return false;
+                if(bandCouplet)
+                {
+                    if (leftVerse.VersePosition != VersePosition.CenteredVerse2)
+                        return false;
+                }
+                else
+                {
+                    if (leftVerse.VersePosition != VersePosition.Left)
+                        return false;
+                }
+                
                 List<GanjoorVerse> coupletVerses = new List<GanjoorVerse>();
                 coupletVerses.Add(rightVerse);
                 coupletVerses.Add(leftVerse);
