@@ -299,7 +299,7 @@ namespace RMuseum.Services.Implementation
             if (poem.FullTitle.Contains("چهارپاره"))
                 mainSection.PoemFormat = GanjoorPoemFormat.ChaharPare;
 
-            context.Add(mainSection);
+            
             index++;
             List<GanjoorVerse> currentBandVerses = new List<GanjoorVerse>();
             GanjoorPoemSection currentBandSection = new GanjoorPoemSection()
@@ -383,9 +383,52 @@ namespace RMuseum.Services.Implementation
             {
                 bandVerse.SectionIndex2 = bandSection.Index;
             }
-            bandSection.RhymeLetters = LanguageUtils.FindRhyme(bandVerses).Rhyme;
+            if(_IsMasnavi(bandVerses))
+            {
+                if(mainSection.PoemFormat == GanjoorPoemFormat.MultiBand)
+                {
+                    mainSection.PoemFormat = GanjoorPoemFormat.TarkibBand;
+                }
+                for (int v = 0; v < bandVerses.Count; v += 2)
+                {
+                    index++;
+                    var rightVerse = bandVerses[v];
+                    var leftVerse = bandVerses[v + 1];
+                    List<GanjoorVerse> coupletVerses = new List<GanjoorVerse>();
+                    coupletVerses.Add(rightVerse);
+                    coupletVerses.Add(leftVerse);
+                    var res = LanguageUtils.FindRhyme(coupletVerses);
+
+                    GanjoorPoemSection verseSection = new GanjoorPoemSection()
+                    {
+                        PoemId = poem.Id,
+                        PoetId = poem.Cat.PoetId,
+                        SectionType = PoemSectionType.Couplet,
+                        VerseType = VersePoemSectionType.Third,
+                        Index = index,
+                        Number = index,//couplet number
+                        GanjoorMetreId = poem.GanjoorMetreId,
+                        RhymeLetters = res.Rhyme,
+                        GanjoorMetreRefSectionIndex = mainSection.Index,
+                    };
+
+                    rightVerse.SectionIndex3 = verseSection.Index;
+                    leftVerse.SectionIndex3 = verseSection.Index;
+
+                    var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
+                    verseSection.HtmlText = PrepareHtmlText(rl);
+                    verseSection.PlainText = PreparePlainText(rl);
+
+                    context.Add(verseSection);
+                }
+            }
+            else
+            {
+                bandSection.RhymeLetters = LanguageUtils.FindRhyme(bandVerses).Rhyme;
+            }
             bandSection.HtmlText = PrepareHtmlText(bandVerses);
             bandSection.PlainText = PreparePlainText(bandVerses);
+            context.Add(mainSection);
             context.Add(bandSection);
             context.UpdateRange(nonCommentVerses);
         }
