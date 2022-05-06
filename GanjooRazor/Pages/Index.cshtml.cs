@@ -796,6 +796,17 @@ namespace GanjooRazor.Pages
                 return BadRequest(JsonConvert.DeserializeObject<string>(await responseCoupletSections.Content.ReadAsStringAsync()));
             }
             var sections = JArray.Parse(await responseCoupletSections.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemSection>>();
+            var sectionsWithMetreAndRhymes = new List<GanjoorPoemSection>();
+            foreach (var section in sections)
+            {
+                if(section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
+                {
+                    if(!sectionsWithMetreAndRhymes.Any(s => s.GanjoorMetreId == section.GanjoorMetreId && s.RhymeLetters == section.RhymeLetters))
+                    {
+                        sectionsWithMetreAndRhymes.Add(section);
+                    }
+                }
+            }
 
             bool isBookmarked = false;
 
@@ -842,7 +853,7 @@ namespace GanjooRazor.Pages
                         IsBookmarked = isBookmarked,
                         Numbers = numbers,
                         Sections = sections,
-                        SectionsWithMetreAndRhymes = sections.Where(s => s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters)).ToList(),
+                        SectionsWithMetreAndRhymes = sectionsWithMetreAndRhymes,
                     }
                 }
             };
