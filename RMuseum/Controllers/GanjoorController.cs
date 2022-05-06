@@ -2775,6 +2775,23 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// start band couplets fix
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpPost("ontime/fixbandcouplets")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartOnTimeBandCoupletsFix()
+        {
+            var res = _ganjoorService.StartOnTimeBandCoupletsFix();
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
 
         /// <summary>
         /// readonly mode

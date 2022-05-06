@@ -1700,6 +1700,12 @@
             <param name="coupletIndex"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartOnTimeBandCoupletsFix">
+            <summary>
+            start band couplets fix
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12008,6 +12014,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartOnTimeBandCoupletsFix">
+            <summary>
+            start band couplets fix
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetCoupletSectionsAsync(System.Int32,System.Int32)">
             <summary>
             get couplet sections
@@ -13645,6 +13657,12 @@
             </summary>
             <param name="poemId"></param>
             <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartOnTimeBandCoupletsFix">
+            <summary>
+            start band couplets fix
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">

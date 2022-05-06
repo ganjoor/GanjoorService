@@ -922,6 +922,12 @@ namespace RMuseum.Services
         RServiceResult<bool> StartFillingPoemSectionsCoupletIndex();
 
         /// <summary>
+        /// start band couplets fix
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartOnTimeBandCoupletsFix();
+
+        /// <summary>
         /// get couplet sections
         /// </summary>
         /// <param name="poemId"></param>

@@ -391,6 +391,8 @@ namespace RMuseum.Services.Implementation
                 }
                 for (int v = 0; v < bandVerses.Count; v += 2)
                 {
+                    if (bandVerses[v].VersePosition != VersePosition.CenteredVerse1 || bandVerses[v + 1].VersePosition != VersePosition.CenteredVerse2)
+                        continue;
                     index++;
                     var rightVerse = bandVerses[v];
                     var leftVerse = bandVerses[v + 1];
@@ -406,7 +408,7 @@ namespace RMuseum.Services.Implementation
                         SectionType = PoemSectionType.Couplet,
                         VerseType = VersePoemSectionType.Third,
                         Index = index,
-                        Number = index,//couplet number
+                        Number = index + 1,
                         GanjoorMetreId = poem.GanjoorMetreId,
                         RhymeLetters = res.Rhyme,
                         GanjoorMetreRefSectionIndex = mainSection.Index,
@@ -588,6 +590,132 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorPoemSection[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// start band couplets fix
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> StartOnTimeBandCoupletsFix()
+        {
+            try
+            {
+
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                   var job = (await jobProgressServiceEF.NewJob("StartBandCoupletsFix", "Query data")).Result;
+                                   int progress = 0;
+                                   try
+                                   {
+                                       var sections = await context.GanjoorPoemSections.Where(s => s.SectionType == PoemSectionType.BandCouplets && string.IsNullOrEmpty(s.RhymeLetters)).ToListAsync();
+                                       int count = sections.Count;
+
+                                       for (int i = 0; i < count; i++)
+                                       {
+                                           progress++;
+                                           var section = sections[i];
+                                           var verses = await context.GanjoorVerses.Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).ToListAsync();
+                                           var bandVerses = FilterSectionVerses(section, verses);
+                                           if (_IsMasnavi(bandVerses))
+                                           {
+                                               var poemSections = await context.GanjoorPoemSections.Where(s => s.PoemId == section.PoemId).ToListAsync();
+                                               if (poemSections.Any(s => s.VerseType == VersePoemSectionType.Forth))
+                                                   continue;
+                                               var mainSections = poemSections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).ToList();
+                                               GanjoorPoemSection mainSection = null;
+                                               if (mainSections.Count == 1)
+                                               {
+                                                   mainSection = mainSections.First();
+                                                   if (mainSection.PoemFormat == GanjoorPoemFormat.MultiBand)
+                                                   {
+                                                       mainSection.PoemFormat = GanjoorPoemFormat.TarkibBand;
+                                                       context.Update(mainSection);
+                                                   }
+                                               }
+                                               else
+                                                   continue;
+
+                                               int index = poemSections.Max(s => s.Index);
+                                               VersePoemSectionType verseType =
+                                                    poemSections.Any(s => s.VerseType == VersePoemSectionType.Third) ? VersePoemSectionType.Forth : VersePoemSectionType.Third;
+
+                                               string preRhymeLetters = "";
+                                               for (int v = 0; v < bandVerses.Count; v += 2)
+                                               {
+                                                   if (bandVerses[v].VersePosition != VersePosition.CenteredVerse1 || bandVerses[v + 1].VersePosition != VersePosition.CenteredVerse2)
+                                                       continue;
+
+                                                   index++;
+                                                   var rightVerse = bandVerses[v];
+                                                   var leftVerse = bandVerses[v + 1];
+                                                   List<GanjoorVerse> coupletVerses = new List<GanjoorVerse>();
+                                                   coupletVerses.Add(rightVerse);
+                                                   coupletVerses.Add(leftVerse);
+                                                   var res = LanguageUtils.FindRhyme(coupletVerses);
+
+                                                   GanjoorPoemSection verseSection = new GanjoorPoemSection()
+                                                   {
+                                                       PoemId = section.Poem.Id,
+                                                       PoetId = section.PoetId,
+                                                       SectionType = PoemSectionType.Couplet,
+                                                       VerseType = verseType,
+                                                       Index = index,
+                                                       Number = index + 1,
+                                                       GanjoorMetreId = mainSection.GanjoorMetreId,
+                                                       RhymeLetters = res.Rhyme,
+                                                       GanjoorMetreRefSectionIndex = mainSection.Index,
+                                                   };
+
+                                                   if(verseType == VersePoemSectionType.Third)
+                                                   {
+                                                       rightVerse.SectionIndex3 = verseSection.Index;
+                                                       leftVerse.SectionIndex3 = verseSection.Index;
+                                                   }
+                                                   else
+                                                   {
+                                                       rightVerse.SectionIndex4 = verseSection.Index;
+                                                       leftVerse.SectionIndex4 = verseSection.Index;
+                                                   }
+                                                   
+
+                                                   var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
+                                                   verseSection.HtmlText = PrepareHtmlText(rl);
+                                                   verseSection.PlainText = PreparePlainText(rl);
+
+                                                   context.Add(verseSection);
+
+                                                   await jobProgressServiceEF.UpdateJob(job.Id, progress);
+
+                                                   if(verseSection.GanjoorMetreId != null && !string.IsNullOrEmpty(verseSection.RhymeLetters) && preRhymeLetters != verseSection.RhymeLetters)
+                                                   {
+                                                       preRhymeLetters = verseSection.RhymeLetters;
+                                                       await _UpdateRelatedSections(context, (int)verseSection.GanjoorMetreId, verseSection.RhymeLetters);
+                                                   }
+                                               }
+                                           }
+
+                                          
+                                       }
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                   }
+                                   catch (Exception exp)
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, progress, "", false, exp.ToString());
+                                   }
+
+                               }
+                           });
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
     }
