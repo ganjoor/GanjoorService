@@ -7120,6 +7120,151 @@
             excerpt
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection">
+            <summary>
+            poem section correction
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.Id">
+            <summary>
+            Correction Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.SectionId">
+            <summary>
+            section id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.Section">
+            <summary>
+            section
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.Rhythm">
+            <summary>
+            rhythm
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.OriginalRhythm">
+            <summary>
+            original rhythm
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.RhythmResult">
+            <summary>
+            review result for rhythm
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.Rhythm2">
+            <summary>
+            rhythm 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.OriginalRhythm2">
+            <summary>
+            original rhythm 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.RhythmResult2">
+            <summary>
+            review result for rhythm2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse1VOrder">
+            <summary>
+            break from verse1 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse1VOrderResult">
+            <summary>
+            review result for break from verse1 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse2VOrder">
+            <summary>
+            break from verse2 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse2VOrderResult">
+            <summary>
+            review result for break from verse2 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse3VOrder">
+            <summary>
+            break from verse3 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse3VOrderResult">
+            <summary>
+            review result for break from verse3 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse4VOrder">
+            <summary>
+            break from verse4 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse4VOrderResult">
+            <summary>
+            review result for break from verse3 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.Note">
+            <summary>
+            note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.Date">
+            <summary>
+            date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.UserId">
+            <summary>
+            user Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.User">
+            <summary>
+            user
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.Reviewed">
+            <summary>
+            reviewed
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.ReviewDate">
+            <summary>
+            reviewdate
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.ReviewNote">
+            <summary>
+            review note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.ReviewerUserId">
+            <summary>
+            reviewer id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.ReviewerUser">
+            <summary>
+            reviwer user id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.ApplicationOrder">
+            <summary>
+            application order for poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.AffectedThePoem">
+            <summary>
+            had any effect on poem after moderation? effective in history
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
             <summary>
             poem translation
