@@ -1,27 +1,21 @@
-﻿using RSecurityBackend.Models.Auth.Db;
-using System;
+﻿using System;
 
-namespace RMuseum.Models.Ganjoor
+namespace RMuseum.Models.Ganjoor.ViewModels
 {
     /// <summary>
-    /// poem section correction
+    /// poem section correction view model
     /// </summary>
-    public class GanjoorPoemSectionCorrection
+    public class GanjoorPoemSectionCorrectionViewModel
     {
-        /// <summary>
+        // <summary>
         /// Correction Id
         /// </summary>
         public int Id { get; set; }
-        
+
         /// <summary>
         /// section id
         /// </summary>
         public int SectionId { get; set; }
-
-        /// <summary>
-        /// section
-        /// </summary>
-        public GanjoorPoemSection Section { get; set; }
 
         /// <summary>
         /// rhythm
@@ -109,9 +103,9 @@ namespace RMuseum.Models.Ganjoor
         public Guid UserId { get; set; }
 
         /// <summary>
-        /// user
+        /// nickname
         /// </summary>
-        public RAppUser User { get; set; }
+        public string UserNickname { get; set; }
 
         /// <summary>
         /// reviewed
@@ -127,25 +121,5 @@ namespace RMuseum.Models.Ganjoor
         /// review note
         /// </summary>
         public string ReviewNote { get; set; }
-
-        /// <summary>
-        /// reviewer id
-        /// </summary>
-        public Guid? ReviewerUserId { get; set; }
-
-        /// <summary>
-        /// reviwer user id
-        /// </summary>
-        public virtual RAppUser ReviewerUser { get; set; }
-
-        /// <summary>
-        /// application order for poem
-        /// </summary>
-        public int ApplicationOrder { get; set; }
-
-        /// <summary>
-        /// had any effect on poem after moderation? effective in history
-        /// </summary>
-        public bool AffectedThePoem { get; set; }
     }
 }
