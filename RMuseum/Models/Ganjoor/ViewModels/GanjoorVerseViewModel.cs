@@ -10,7 +10,6 @@
         /// </summary>
         public int Id { get; set; }
 
-
         /// <summary>
         /// vorder
         /// </summary>
@@ -25,6 +24,26 @@
         /// position
         /// </summary>
         public VersePosition VersePosition { get; set; }
+
+        /// <summary>
+        /// GanjoorPoemSection index
+        /// </summary>
+        public int? SectionIndex1 { get; set; }
+
+        /// <summary>
+        /// second GanjoorPoemSection index
+        /// </summary>
+        public int? SectionIndex2 { get; set; }
+
+        /// <summary>
+        /// third GanjoorPoemSection index
+        /// </summary>
+        public int? SectionIndex3 { get; set; }
+
+        /// <summary>
+        /// forth GanjoorPoemSection index
+        /// </summary>
+        public int? SectionIndex4 { get; set; }
 
         /// <summary>
         /// text

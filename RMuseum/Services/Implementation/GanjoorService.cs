@@ -1649,6 +1649,10 @@ namespace RMuseum.Services.Implementation
                                                             CoupletIndex = v.CoupletIndex,
                                                             VersePosition = v.VersePosition,
                                                             Text = v.Text,
+                                                            SectionIndex1 = v.SectionIndex1,
+                                                            SectionIndex2 = v.SectionIndex2,
+                                                            SectionIndex3 = v.SectionIndex3,
+                                                            SectionIndex4 = v.SectionIndex4,
                                                         }
                                                     ).AsNoTracking().ToArrayAsync();
                 };

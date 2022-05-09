@@ -8989,7 +8989,11 @@
             poem section correction view model
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.Id" -->
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.Id">
+            <summary>
+            Correction Id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.SectionId">
             <summary>
             section id
@@ -9579,6 +9583,26 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.VersePosition">
             <summary>
             position
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.SectionIndex1">
+            <summary>
+            GanjoorPoemSection index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.SectionIndex2">
+            <summary>
+            second GanjoorPoemSection index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.SectionIndex3">
+            <summary>
+            third GanjoorPoemSection index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.SectionIndex4">
+            <summary>
+            forth GanjoorPoemSection index
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.Text">

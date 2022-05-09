@@ -248,6 +248,10 @@ namespace RMuseum.Services.Implementation
                                             CoupletIndex = pv.CoupletIndex,
                                             VOrder = pv.VOrder,
                                             Text = pv.Text,
+                                            SectionIndex1 = pv.SectionIndex1,
+                                            SectionIndex2 = pv.SectionIndex2,
+                                            SectionIndex3 = pv.SectionIndex3,
+                                            SectionIndex4 = pv.SectionIndex4,
                                         }
                                         ).Single(),
                                     TText = v.TText
