@@ -7,7 +7,7 @@ namespace RMuseum.Models.Ganjoor.ViewModels
     /// </summary>
     public class GanjoorPoemSectionCorrectionViewModel
     {
-        // <summary>
+        /// <summary>
         /// Correction Id
         /// </summary>
         public int Id { get; set; }

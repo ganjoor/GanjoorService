@@ -934,5 +934,12 @@ namespace RMuseum.Services
         /// <param name="coupletIndex"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPoemSection[]>> GetCoupletSectionsAsync(int poemId, int coupletIndex);
+
+        /// <summary>
+        /// get all poem sections
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemSection[]>> GetPoemSectionsAsync(int id);
     }
 }

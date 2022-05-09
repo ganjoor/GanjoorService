@@ -630,6 +630,19 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get all poem sections
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemSection[]>> GetPoemSectionsAsync(int id)
+        {
+            var sections =
+                await _context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.PoemId == id).OrderBy(s => s.SectionType).ThenBy(s => s.VerseType).ToArrayAsync();
+
+            return new RServiceResult<GanjoorPoemSection[]>(sections);
+        }
+
+        /// <summary>
         /// start band couplets fix
         /// </summary>
         /// <returns></returns>
