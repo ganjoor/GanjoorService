@@ -13,7 +13,7 @@
     });
 </script>
 <script>
-    
+
 
     function savePoemCorrections(id, verseCount) {
             var verseOrderText = [];
@@ -609,6 +609,31 @@ else
         <tr>
             <td><p id="saving">&nbsp;</p></td>
         </tr>
+
+        @if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) > 1)
+        {
+            <tr>
+                <td>
+                    قطعات:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        @foreach (var poemSetion in Model.PageInformation.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First).ToList())
+                        {
+                            <tr>
+                                <td>
+                                    <a href="/User/Section?id=@poemSetion.Id">
+                                        قطعهٔ @(poemSetion.Number.ToPersianNumbers())
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+            </tr>
+        }
 
         @if (Model.PageInformation.Poem.Previous != null)
         {
