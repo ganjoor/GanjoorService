@@ -625,8 +625,13 @@ else
                             <tr>
                                 <td>
                                     <a href="/User/Section?id=@poemSetion.Id">
-                                        قطعهٔ @(poemSetion.Number.ToPersianNumbers())
+                                        قطعهٔ @(poemSetion.Number.ToPersianNumbers()):
                                     </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.Raw(poemSetion.HtmlText)
                                 </td>
                             </tr>
                         }
