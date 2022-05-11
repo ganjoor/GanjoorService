@@ -1,0 +1,110 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.SectionModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_UserPanelLayout";
+    ViewData["Title"] = "ویرایشگر قطعه";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+<h1>@ViewData["Title"]</h1>
+
+@if (!string.IsNullOrEmpty(Model.FatalError))
+{
+    @Html.Raw(Model.FatalError)
+}
+else
+{
+    <table>
+        <tr>
+            <td>
+                @Html.Raw(Model.PoemSection.HtmlText)
+            </td>
+        </tr>
+           <tr>
+            <td>
+                وزن فعلی:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p id="rhythm-old">@(Model.PoemSection.GanjoorMetre == null ? "" : Model.PoemSection.GanjoorMetre.Rhythm)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                وزن ویراستهٔ من:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="select-search">جستجوی وزن:</label><br />
+                <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" size="50" />
+                <datalist id="inputRhythms">
+                    @if (Model.RhythmsByVerseCount != null)
+                        @foreach (var rhythm in Model.RhythmsByVerseCount)
+                        {
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
+                </datalist>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="rhythm-new">وزن انتخاب شده:</label>
+                <br />
+                <select id="rhythm-new" name="rhythm-new">
+                    @foreach (var rhythm in Model.RhythmsAlphabetically)
+                    {
+                        if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm == rhythm.Rhythm)
+                        {
+                            <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
+                        }
+                        else
+                        {
+                            if (Model.PoemSection.GanjoorMetre != null && Model.PoemSection.GanjoorMetre.Rhythm == rhythm.Rhythm)
+                            {
+                                <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
+                            }
+                            else
+                            {
+                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                            }
+
+                        }
+
+                    }
+                </select>
+                <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
+                <br />
+                <script>
+                    function newRhythm(){
+                        var rhythm = prompt("پیشنهاد وزن جدید", "");
+                        if(rhythm != null){
+                            var select = document.getElementById('rhythm-new');
+                            var options = select.options;
+                            for (let i = 0; i < options. length; i++){
+                                if(options[i].value == rhythm){
+                                    alert('وزن پیشنهادی تکراری است.');
+                                    return;
+                                }
+                            }
+                            var opt = document.createElement('option');
+                            opt.value = rhythm;
+                            opt.innerHTML = rhythm;
+                            select.appendChild(opt);
+
+                            var opt2 = document.createElement('option');
+                            opt2.value = rhythm;
+                            opt2.innerHTML = rhythm;
+                            document.getElementById('rhythm-new2').appendChild(opt2);
+
+                            alert('وزن پیشنهادی به انتهای لیست وزن‌ها اضافه شده. لطفاً از لیست آن را انتخاب کنید.');
+                        }
+                    }
+                </script>
+                <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
+            </td>
+        </tr>
+    </table>
+}
