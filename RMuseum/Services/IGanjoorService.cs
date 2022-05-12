@@ -949,5 +949,12 @@ namespace RMuseum.Services
         /// <param name="sectionId"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPoemSectionCorrectionViewModel>> GetLastUnreviewedUserCorrectionForSection(Guid userId, int sectionId);
+
+        /// <summary>
+        /// send a correction for a section
+        /// </summary>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemSectionCorrectionViewModel>> SuggestPoemSectionCorrection(GanjoorPoemSectionCorrectionViewModel correction);
     }
 }

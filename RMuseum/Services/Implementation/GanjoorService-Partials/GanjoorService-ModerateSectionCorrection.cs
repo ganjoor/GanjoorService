@@ -63,5 +63,56 @@ namespace RMuseum.Services.Implementation
                 }
                 );
         }
+
+        /// <summary>
+        /// send a correction for a section
+        /// </summary>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemSectionCorrectionViewModel>> SuggestPoemSectionCorrection(GanjoorPoemSectionCorrectionViewModel correction)
+        {
+            try
+            {
+                var preCorrections = await _context.GanjoorPoemSectionCorrections
+                .Where(c => c.UserId == correction.UserId && c.SectionId == correction.SectionId && c.Reviewed == false)
+                .ToListAsync();
+
+
+                GanjoorPoemSectionCorrection dbCorrection = new GanjoorPoemSectionCorrection()
+                {
+                    SectionId = correction.SectionId,
+                    UserId = correction.UserId,
+                    Rhythm = correction.Rhythm,
+                    RhythmResult = CorrectionReviewResult.NotReviewed,
+                    BreakFromVerse1VOrder = correction.BreakFromVerse1VOrder,
+                    BreakFromVerse1VOrderResult = CorrectionReviewResult.NotReviewed,
+                    BreakFromVerse2VOrder = correction.BreakFromVerse2VOrder,
+                    BreakFromVerse2VOrderResult = CorrectionReviewResult.NotReviewed,
+                    BreakFromVerse3VOrder = correction.BreakFromVerse3VOrder,
+                    BreakFromVerse3VOrderResult = CorrectionReviewResult.NotReviewed,
+                    BreakFromVerse4VOrder = correction.BreakFromVerse4VOrder,
+                    BreakFromVerse4VOrderResult = CorrectionReviewResult.NotReviewed,
+                    Note = correction.Note,
+                    Date = DateTime.Now,
+                    Reviewed = false,
+                    AffectedThePoem = false,
+                };
+                _context.GanjoorPoemSectionCorrections.Add(dbCorrection);
+                await _context.SaveChangesAsync();
+                correction.Id = dbCorrection.Id;
+
+                if (preCorrections.Count > 0)
+                {
+                    _context.GanjoorPoemSectionCorrections.RemoveRange(preCorrections);
+                    await _context.SaveChangesAsync();
+                }
+
+                return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(correction);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null, exp.ToString());
+            }
+        }
     }
 }

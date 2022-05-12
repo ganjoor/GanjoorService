@@ -1720,6 +1720,13 @@
             <param name="id">section id</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SuggestPoemSectionCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel)">
+            <summary>
+            send a correction for a section
+            </summary>
+            <param name="correction"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12347,6 +12354,13 @@
             <param name="sectionId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SuggestPoemSectionCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel)">
+            <summary>
+            send a correction for a section
+            </summary>
+            <param name="correction"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -13909,6 +13923,13 @@
             </summary>
             <param name="userId"></param>
             <param name="sectionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestPoemSectionCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel)">
+            <summary>
+            send a correction for a section
+            </summary>
+            <param name="correction"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartUpdatingMundexPage(System.Guid)">
