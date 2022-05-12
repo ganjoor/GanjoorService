@@ -1727,6 +1727,13 @@
             <param name="correction"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ModeratePoemSectionCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel)">
+            <summary>
+            moderate poem section correction
+            </summary>
+            <param name="correction"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12361,6 +12368,14 @@
             <param name="correction"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ModeratePoemSectionCorrection(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel)">
+            <summary>
+            moderate poem section correction
+            </summary>
+            <param name="userId"></param>
+            <param name="moderation"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -13912,6 +13927,14 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ModeratePoemCorrection(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
             <summary>
             moderate poem correction
+            </summary>
+            <param name="userId"></param>
+            <param name="moderation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ModeratePoemSectionCorrection(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel)">
+            <summary>
+            moderate poem section correction
             </summary>
             <param name="userId"></param>
             <param name="moderation"></param>

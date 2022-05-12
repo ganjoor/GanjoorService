@@ -2863,6 +2863,34 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// moderate poem section correction
+        /// </summary>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("section/moderate")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemSectionCorrectionViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> ModeratePoemSectionCorrection([FromBody] GanjoorPoemSectionCorrectionViewModel correction)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<GanjoorPoemSectionCorrectionViewModel> res =
+                await _ganjoorService.ModeratePoemSectionCorrection(userId, correction);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
 
         /// <summary>
         /// readonly mode

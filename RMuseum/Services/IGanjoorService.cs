@@ -956,5 +956,14 @@ namespace RMuseum.Services
         /// <param name="correction"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPoemSectionCorrectionViewModel>> SuggestPoemSectionCorrection(GanjoorPoemSectionCorrectionViewModel correction);
+
+        /// <summary>
+        /// moderate poem section correction
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="moderation"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemSectionCorrectionViewModel>> ModeratePoemSectionCorrection(Guid userId,
+            GanjoorPoemSectionCorrectionViewModel moderation);
     }
 }

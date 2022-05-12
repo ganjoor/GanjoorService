@@ -5,7 +5,6 @@ using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +16,144 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// moderate poem section correction
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="moderation"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemSectionCorrectionViewModel>> ModeratePoemSectionCorrection(Guid userId,
+            GanjoorPoemSectionCorrectionViewModel moderation)
+        {
+            var dbCorrection = await _context.GanjoorPoemSectionCorrections.Include(c => c.User)
+                .Where(c => c.Id == moderation.Id)
+                .FirstOrDefaultAsync();
+
+            if (dbCorrection == null)
+                return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null);
+
+            dbCorrection.ReviewerUserId = userId;
+            dbCorrection.ReviewDate = DateTime.Now;
+            dbCorrection.ApplicationOrder = await _context.GanjoorPoemSectionCorrections.Where(c => c.Reviewed).AnyAsync() ? 1 + await _context.GanjoorPoemSectionCorrections.Where(c => c.Reviewed).MaxAsync(c => c.ApplicationOrder) : 1;
+            dbCorrection.Reviewed = true;
+            dbCorrection.AffectedThePoem = false;
+            dbCorrection.ReviewNote = moderation.ReviewNote;
+
+            var editingSectionNotTracked = await _context.GanjoorPoemSections.AsNoTracking().Include(p => p.GanjoorMetre).Where(p => p.Id == moderation.SectionId).SingleOrDefaultAsync();
+
+            editingSectionNotTracked.OldGanjoorMetreId = editingSectionNotTracked.GanjoorMetreId;
+            editingSectionNotTracked.OldRhymeLetters = editingSectionNotTracked.RhymeLetters;
+
+            var sections = await _context.GanjoorPoemSections.Where(p => p.PoemId == editingSectionNotTracked.PoemId).ToListAsync();
+
+
+            if (dbCorrection.Rhythm != null)
+            {
+                if (moderation.RhythmResult == CorrectionReviewResult.NotReviewed)
+                    return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null, "تغییرات وزن بررسی نشده است.");
+                dbCorrection.RhythmResult = moderation.RhythmResult;
+                if (dbCorrection.RhythmResult == CorrectionReviewResult.Approved)
+                {
+                    dbCorrection.AffectedThePoem = true;
+                    if (moderation.Rhythm == "")
+                    {
+                        editingSectionNotTracked.GanjoorMetreId = null;
+                    }
+                    else
+                    {
+                        var metre = await _context.GanjoorMetres.AsNoTracking().Where(m => m.Rhythm == moderation.Rhythm).SingleOrDefaultAsync();
+                        if (metre == null)
+                        {
+                            metre = new GanjoorMetre()
+                            {
+                                Rhythm = moderation.Rhythm,
+                                VerseCount = 0
+                            };
+                            _context.GanjoorMetres.Add(metre);
+                            await _context.SaveChangesAsync();
+                        }
+                        editingSectionNotTracked.GanjoorMetreId = metre.Id;
+                    }
+
+                    editingSectionNotTracked.Modified = editingSectionNotTracked.OldGanjoorMetreId != editingSectionNotTracked.GanjoorMetreId;
+
+                    foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index || s.Id == editingSectionNotTracked.Id))
+                    {
+                        section.GanjoorMetreId = editingSectionNotTracked.GanjoorMetreId;
+                        section.Modified = editingSectionNotTracked.Modified;
+                        _context.Update(section);
+                    }
+                }
+            }
+
+
+            _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+            await _context.SaveChangesAsync();
+
+            var dbPoem = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == editingSectionNotTracked.PoemId).SingleAsync();
+
+            await _notificationService.PushNotification(dbCorrection.UserId,
+                               "بررسی ویرایش پیشنهادی شما",
+                               $"با سپاس از زحمت و همت شما ویرایش پیشنهادیتان برای <a href=\"{dbPoem.FullUrl}\" target=\"_blank\">{dbPoem.FullTitle}</a> بررسی شد.{Environment.NewLine}" +
+                               $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «ویرایش‌های من» را مشاهده بفرمایید.{Environment.NewLine}"
+                               );
+
+            foreach (var section in sections)
+            {
+                if (section.Modified)
+                {
+                    if (section.OldGanjoorMetreId != section.GanjoorMetreId || section.OldRhymeLetters != section.RhymeLetters)
+                    {
+                        _backgroundTaskQueue.QueueBackgroundWorkItem
+                                (
+                                async token =>
+                                {
+                                    using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
+                                    {
+                                        if (section.OldGanjoorMetreId != null && !string.IsNullOrEmpty(section.OldRhymeLetters))
+                                        {
+                                            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(inlineContext);
+                                            var job = (await jobProgressServiceEF.NewJob($"بازسازی فهرست بخش‌های مرتبط", $"M: {section.OldGanjoorMetreId}, G: {section.OldRhymeLetters}")).Result;
+
+                                            try
+                                            {
+                                                await _UpdateRelatedSections(inlineContext, (int)section.OldGanjoorMetreId, section.OldRhymeLetters);
+                                                await inlineContext.SaveChangesAsync();
+
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                            }
+                                            catch (Exception exp)
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                            }
+                                        }
+
+                                        if (section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
+                                        {
+                                            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(inlineContext);
+                                            var job = (await jobProgressServiceEF.NewJob($"بازسازی فهرست بخش‌های مرتبط", $"M: {section.GanjoorMetreId}, G: {section.RhymeLetters}")).Result;
+
+                                            try
+                                            {
+                                                await _UpdateRelatedSections(inlineContext, (int)section.GanjoorMetreId, section.RhymeLetters);
+                                                await inlineContext.SaveChangesAsync();
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                            }
+                                            catch (Exception exp)
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                            }
+                                        }
+                                    }
+                                });
+                    }
+                }
+            }
+
+            return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(moderation);
+        }
+
+
         /// <summary>
         /// last unreviewed user correction for a section
         /// </summary>
