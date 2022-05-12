@@ -973,5 +973,18 @@ namespace RMuseum.Services
         /// <param name="sectionId"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> DeletePoemSectionCorrections(Guid userId, int sectionId);
+
+        /// <summary>
+        /// get next unreviewed correction for a poem section
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemSectionCorrectionViewModel>> GetNextUnreviewedPoemSectionCorrection(int skip);
+
+        /// <summary>
+        /// unreviewed poem section correction count
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<int>> GetUnreviewedPoemSectionCorrectionCount();
     }
 }

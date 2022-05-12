@@ -1741,6 +1741,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnreviewedPoemSectionCorrection(System.Int32)">
+            <summary>
+            get next unreviewed correction for poem sections
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12391,6 +12398,19 @@
             <param name="sectionId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedPoemSectionCorrection(System.Int32)">
+            <summary>
+            get next unreviewed correction for a poem section
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUnreviewedPoemSectionCorrectionCount">
+            <summary>
+            unreviewed poem section correction count
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -13976,6 +13996,19 @@
             </summary>
             <param name="userId"></param>
             <param name="sectionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedPoemSectionCorrection(System.Int32)">
+            <summary>
+            get next unreviewed correction for a poem section
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedPoemSectionCorrectionCount">
+            <summary>
+            unreview poem section correction count
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartUpdatingMundexPage(System.Guid)">
