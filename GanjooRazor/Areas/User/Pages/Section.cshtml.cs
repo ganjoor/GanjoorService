@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Services.Implementation;
 
 namespace GanjooRazor.Areas.User.Pages
 {
@@ -45,6 +46,39 @@ namespace GanjooRazor.Areas.User.Pages
         /// my last edit
         /// </summary>
         public GanjoorPoemCorrectionViewModel MyLastEdit { get; set; }
+
+        /// <summary>
+        /// verses
+        /// </summary>
+        public List<GanjoorVerseViewModel> Verses { get; set; }
+
+        private List<GanjoorVerseViewModel> _FilterSectionVerses(GanjoorPoemSection section, GanjoorVerseViewModel[] verses)
+        {
+            List<GanjoorVerseViewModel> sectionVerses = new List<GanjoorVerseViewModel>();
+            foreach (GanjoorVerseViewModel verse in verses)
+            {
+                switch (section.VerseType)
+                {
+                    case VersePoemSectionType.First:
+                        if (verse.SectionIndex1 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                    case VersePoemSectionType.Second:
+                        if (verse.SectionIndex2 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                    case VersePoemSectionType.Third:
+                        if (verse.SectionIndex3 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                    default:
+                        if (verse.SectionIndex4 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                }
+            }
+            return sectionVerses;
+        }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -93,6 +127,8 @@ namespace GanjooRazor.Areas.User.Pages
                     RhythmsAlphabetically = rhythmsByVerseCount.ToArray();
 
                     PoemSection = PageInformation.Poem.Sections.Where(s => s.Index == int.Parse(Request.Query["index"])).Single();
+
+                    Verses = _FilterSectionVerses(PoemSection, PageInformation.Poem.Verses);
                 }
                 else
                 {
