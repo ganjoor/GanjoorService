@@ -220,42 +220,7 @@
             });
         }
 
-        function cleanUpJobs() {
 
-            if (!confirm('آیا از حذف همهٔ کارهای موفق و ناموفق تکمیل شده اطمینان دارید؟'))
-                return;
-
-
-            $.ajax({
-                type: "POST",
-                url: '?handler=CleanupJobs',
-                error: function () {
-                    alert('خطا رخ داد.')
-                },
-                success: function () {
-                    alert('انجام شد.')
-                },
-            });
-        }
-
-        function deleteLongRunningJob(id) {
-
-            if (!confirm('آیا از حذف این کار اطمینان دارید؟'))
-                return;
-
-
-            $.ajax({
-                type: "DELETE",
-                url: '',
-                data: {
-                    id: id
-                },
-                success: function () {
-                    var jobIdBlockId = '#tr-' + id;
-                    $(jobIdBlockId).remove();
-                },
-            });
-        }
 
         function compareCorrectionBlocks(originalElemenyId, editedElementId, resultElementId) {
             var a = document.getElementById(originalElemenyId);
