@@ -1734,6 +1734,13 @@
             <param name="correction"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemSectionCorrections(System.Int32)">
+            <summary>
+            delete unreviewed user corrections for a poem section
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12376,6 +12383,14 @@
             <param name="moderation"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePoemSectionCorrections(System.Guid,System.Int32)">
+            <summary>
+            delete unreviewed user corrections for a poem section
+            </summary>
+            <param name="userId"></param>
+            <param name="sectionId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -13953,6 +13968,14 @@
             send a correction for a section
             </summary>
             <param name="correction"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemSectionCorrections(System.Guid,System.Int32)">
+            <summary>
+            delete unreviewed user corrections for a poem section
+            </summary>
+            <param name="userId"></param>
+            <param name="sectionId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartUpdatingMundexPage(System.Guid)">

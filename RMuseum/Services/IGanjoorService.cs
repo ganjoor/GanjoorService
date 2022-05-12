@@ -965,5 +965,13 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<GanjoorPoemSectionCorrectionViewModel>> ModeratePoemSectionCorrection(Guid userId,
             GanjoorPoemSectionCorrectionViewModel moderation);
+
+        /// <summary>
+        /// delete unreviewed user corrections for a poem section
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sectionId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePoemSectionCorrections(Guid userId, int sectionId);
     }
 }

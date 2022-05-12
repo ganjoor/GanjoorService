@@ -251,5 +251,24 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null, exp.ToString());
             }
         }
+
+        /// <summary>
+        /// delete unreviewed user corrections for a poem section
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sectionId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePoemSectionCorrections(Guid userId, int sectionId)
+        {
+            var preCorrections = await _context.GanjoorPoemSectionCorrections
+                .Where(c => c.UserId == userId && c.SectionId == sectionId && c.Reviewed == false)
+                .ToListAsync();
+            if (preCorrections.Count > 0)
+            {
+                _context.GanjoorPoemSectionCorrections.RemoveRange(preCorrections);
+                await _context.SaveChangesAsync();
+            }
+            return new RServiceResult<bool>(true);
+        }
     }
 }
