@@ -45,7 +45,7 @@ namespace GanjooRazor.Areas.User.Pages
         /// <summary>
         /// my last edit
         /// </summary>
-        public GanjoorPoemCorrectionViewModel MyLastEdit { get; set; }
+        public GanjoorPoemSectionCorrectionViewModel MyLastEdit { get; set; }
 
         /// <summary>
         /// verses
@@ -127,6 +127,14 @@ namespace GanjooRazor.Areas.User.Pages
                     RhythmsAlphabetically = rhythmsByVerseCount.ToArray();
 
                     PoemSection = PageInformation.Poem.Sections.Where(s => s.Index == int.Parse(Request.Query["index"])).Single();
+
+                    var editResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/section/correction/last/{PoemSection.Id}");
+                    if (!editResponse.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await editResponse.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    MyLastEdit = JsonConvert.DeserializeObject<GanjoorPoemSectionCorrectionViewModel>(await editResponse.Content.ReadAsStringAsync());
 
                     Verses = _FilterSectionVerses(PoemSection, PageInformation.Poem.Verses);
                 }

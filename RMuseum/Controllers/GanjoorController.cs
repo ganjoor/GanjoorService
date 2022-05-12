@@ -2812,6 +2812,29 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// returns last unreviewed correction from the user for a section
+        /// </summary>
+        /// <param name="id">section id</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("section/correction/last/{id}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemSectionCorrectionViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetLastUnreviewedUserCorrectionForSection(int id)
+        {
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<GanjoorPoemSectionCorrectionViewModel> res =
+                await _ganjoorService.GetLastUnreviewedUserCorrectionForSection(userId, id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);//might be null
+        }
+
 
         /// <summary>
         /// readonly mode

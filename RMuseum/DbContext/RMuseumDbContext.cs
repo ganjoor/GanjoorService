@@ -482,5 +482,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorCachedRelatedSection> GanjoorCachedRelatedSections { get; set; }
 
+        /// <summary>
+        /// section correctons
+        /// </summary>
+        public DbSet<GanjoorPoemSectionCorrection> GanjoorPoemSectionCorrections { get; set; }
+
     }
 }

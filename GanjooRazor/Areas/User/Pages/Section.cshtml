@@ -106,27 +106,5 @@ else
                 <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
             </td>
         </tr>
-
-        <tr>
-            <td>
-                شکستن به اشعار مجزا
-            </td>
-        </tr>
-
-        @foreach (var verse in Model.Verses)
-        {
-            <tr>
-                <td>
-                    <p id="original-@($"{verse.VOrder}")">@verse.Text</p>
-                </td>
-            </tr>
-
-            <tr>
-                <td>
-                    <a role="button" id="breakpoem-@verse.VOrder" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" onclick="#">از اینجا به بعد شعر جداگانه‌ایست</a>
-                </td>
-            </tr>
-
-        }
     </table>
 }
