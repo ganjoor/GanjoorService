@@ -993,5 +993,12 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<int>> GetUnreviewedPoemSectionCorrectionCount();
+
+        /// <summary>
+        /// get section correction by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemSectionCorrectionViewModel>> GetSectionCorrectionById(int id);
     }
 }

@@ -121,5 +121,64 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             return Page();
         }
+
+        public IActionResult OnPost()
+        {
+            Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
+            if (Request.Form["next"].Count == 1)
+            {
+                return Redirect($"/Admin/ReviewPartEdits/?skip={Skip + 1}");
+            }
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId,
+            string rhythmReviewResult,
+            string titleReviewNote)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var correctionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/section/correction/{correctionId}");
+                    if (!correctionResponse.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await correctionResponse.Content.ReadAsStringAsync()));
+                    }
+
+                    Correction = JsonConvert.DeserializeObject<GanjoorPoemSectionCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync());
+
+
+                    if (Correction.Rhythm != null)
+                    {
+                        if (rhythmReviewResult == null)
+                        {
+                            return new BadRequestObjectResult("لطفا تغییر وزن را بازبینی کنید.");
+                        }
+                        else
+                        {
+                            Correction.RhythmResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), rhythmReviewResult);
+                            Correction.ReviewNote = titleReviewNote;
+                        }
+                    }
+
+
+                    var moderationResponse = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/section/moderate",
+                        new StringContent(JsonConvert.SerializeObject(Correction), Encoding.UTF8, "application/json"
+                        ));
+
+                    if (!moderationResponse.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await moderationResponse.Content.ReadAsStringAsync()));
+                    }
+
+                    return new OkObjectResult(true);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
     }
 }

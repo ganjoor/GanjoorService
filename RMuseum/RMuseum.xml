@@ -1748,6 +1748,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetSectionCorrectionById(System.Int32)">
+            <summary>
+            get section correction by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnreviewedPoemSectionCorrection(System.Int32)">
             <summary>
             get next unreviewed correction for poem sections
@@ -12425,6 +12432,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetSectionCorrectionById(System.Int32)">
+            <summary>
+            get section correction by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -14017,6 +14031,13 @@
             get next unreviewed correction for a poem section
             </summary>
             <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSectionCorrectionById(System.Int32)">
+            <summary>
+            get section correction by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedPoemSectionCorrectionCount">
