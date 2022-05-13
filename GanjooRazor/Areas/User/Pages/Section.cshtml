@@ -14,6 +14,50 @@
 }
 else
 {
+    <script>
+        function saveSectionCorrection(id) {
+
+            if ($('#rhythm-old').text() == $('#rhythm-new').val()) {
+                    alert('شما هیچ تغییری در متن نداده‌اید!');
+                    return;
+                }
+
+            $('#savecorrections').hide();
+            $('#saving').text('در حال ذخیره ...');
+
+            var rhythm_new = $('#rhythm-new').val();
+            if (rhythm_new == $('#rhythm-old').text()) {
+                rhythm_new = null;
+            }
+
+
+            var url = '?handler=SendSectionCorrections';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    sectionId: id,
+                    rhythm: rhythm_new,
+                    note: $('#note').val()
+
+                },
+                success: function () {
+                    location.reload(true);
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                    $('#savecorrections').show();
+                    $('#saving').text('');
+                }
+
+            });
+
+        }
+    </script>
     <table>
         <tr>
             <td>
@@ -105,6 +149,35 @@ else
                 </script>
                 <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
             </td>
+        </tr>
+
+        <tr>
+            <td>
+                توضیح این ویرایش:
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.Note))
+                {
+                    <input type="text" id="note" name="note" value="@Model.MyLastEdit.Note" size="50" />
+                }
+                else
+                {
+                    <input type="text" id="note" name="note" value="" size="50" />
+                }
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="saveSectionCorrection(@Model.PoemSection.Id)">ذخیره</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td><p id="saving">&nbsp;</p></td>
         </tr>
     </table>
 }

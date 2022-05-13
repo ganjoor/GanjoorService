@@ -145,5 +145,37 @@ namespace GanjooRazor.Areas.User.Pages
             }
             return Page();
         }
+
+        public async Task<IActionResult> OnPostSendSectionCorrectionsAsync(int sectionId, string rhythm, string note)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+
+                    GanjoorPoemSectionCorrectionViewModel correction = new GanjoorPoemSectionCorrectionViewModel()
+                    {
+                        SectionId = sectionId,
+                        Rhythm = rhythm,
+                        Note = note
+                    };
+
+                    HttpResponseMessage response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/section/correction",
+                        new StringContent(JsonConvert.SerializeObject(correction),
+                        Encoding.UTF8,
+                        "application/json"));
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkObjectResult(true);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
     }
 }
