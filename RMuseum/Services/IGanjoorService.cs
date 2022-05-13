@@ -943,6 +943,13 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoemSection[]>> GetPoemSectionsAsync(int id);
 
         /// <summary>
+        /// get a specific poem section
+        /// </summary>
+        /// <param name="sectionId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemSection>> GetPoemSectionByIdAsync(int sectionId);
+
+        /// <summary>
         /// last unreviewed user correction for a section
         /// </summary>
         /// <param name="userId"></param>

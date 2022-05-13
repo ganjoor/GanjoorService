@@ -1707,6 +1707,13 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemSectionByIdAsync(System.Int32)">
+            <summary>
+            get a specific poem section
+            </summary>
+            <param name="sectionId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.StartOnTimeBandCoupletsFix">
             <summary>
             start band couplets fix
@@ -12367,6 +12374,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemSectionByIdAsync(System.Int32)">
+            <summary>
+            get a specific poem section
+            </summary>
+            <param name="sectionId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetLastUnreviewedUserCorrectionForSection(System.Guid,System.Int32)">
             <summary>
             last unreviewed user correction for a section
@@ -14094,6 +14108,13 @@
             get all poem sections
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemSectionByIdAsync(System.Int32)">
+            <summary>
+            get a specific poem sections
+            </summary>
+            <param name="sectionId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartOnTimeBandCoupletsFix">

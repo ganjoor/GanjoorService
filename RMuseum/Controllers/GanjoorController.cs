@@ -2796,6 +2796,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get a specific poem section
+        /// </summary>
+        /// <param name="sectionId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("section/{sectionId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemSection>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPoemSectionByIdAsync(int sectionId)
+        {
+            var res =
+                await _ganjoorService.GetPoemSectionByIdAsync(sectionId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// start band couplets fix
         /// </summary>
         /// <returns></returns>

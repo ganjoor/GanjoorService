@@ -643,6 +643,19 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get a specific poem sections
+        /// </summary>
+        /// <param name="sectionId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemSection>> GetPoemSectionByIdAsync(int sectionId)
+        {
+            return new RServiceResult<GanjoorPoemSection>
+                (
+                await _context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.Id == sectionId).SingleOrDefaultAsync()
+                );
+        }
+
+        /// <summary>
         /// start band couplets fix
         /// </summary>
         /// <returns></returns>
