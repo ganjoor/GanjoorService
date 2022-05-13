@@ -15,7 +15,7 @@ using RSecurityBackend.Models.Generic;
 namespace GanjooRazor.Areas.Admin.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public class ReviewSectionsModel : PageModel
+    public class ReviewPartEditsModel : PageModel
     {
         /// <summary>
         /// correction
@@ -47,6 +47,8 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// poem section
         /// </summary>
         public GanjoorPoemSection PoemSection { get; set; }
+
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))

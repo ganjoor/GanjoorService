@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Areas\Admin\Pages\ReviewSections.cshtml" />
+    <Content Remove="Areas\Admin\Pages\ReviewPartEdits.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,15 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <UpToDateCheckInput Remove="Areas\Admin\Pages\ReviewSections.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Areas\Admin\Pages\ReviewSections.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Areas\Admin\Pages\ReviewSections.cshtml" />
+    <None Include="Areas\Admin\Pages\ReviewPartEdits.cshtml" />
   </ItemGroup>
 
 </Project>
