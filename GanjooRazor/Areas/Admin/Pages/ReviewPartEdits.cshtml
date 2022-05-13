@@ -92,17 +92,8 @@ else
                 </td>
             </tr>
             <tr>
-                <td>
-                    @if (Model.PageInformation.Poem.Verses.Length > 0)
-                    {
-                        @Model.PageInformation.Poem.Verses[0].Text
-                    }
-                </td>
-                <td>
-                    @if (Model.PageInformation.Poem.Verses.Length > 1)
-                    {
-                        @Model.PageInformation.Poem.Verses[1].Text
-                    }
+                <td colspan="2">
+                   @Html.Raw(Model.PoemSection.HtmlText)
                 </td>
             </tr>
             <tr>

@@ -61,7 +61,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var nextResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/correction/next?skip={Skip}");
+                    var nextResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/section/correction/next?skip={Skip}");
                     if (!nextResponse.IsSuccessStatusCode)
                     {
                         FatalError = JsonConvert.DeserializeObject<string>(await nextResponse.Content.ReadAsStringAsync());
@@ -107,12 +107,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                         if (Correction.Rhythm != null)
                         {
-                            GanjoorMetre originalMetre = null;
-                            if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null && s.VerseType == VersePoemSectionType.First).Any())
-                            {
-                                originalMetre = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First && s.GanjoorMetre != null).OrderBy(s => s.VerseType).First().GanjoorMetre;
-                            }
-                            Correction.OriginalRhythm = originalMetre == null ? null : originalMetre.Rhythm;
+                            Correction.OriginalRhythm = PoemSection.GanjoorMetre == null ? null : PoemSection.GanjoorMetre.Rhythm;
                             if (Correction.OriginalRhythm == Correction.Rhythm)
                                 Correction.RhythmResult = CorrectionReviewResult.NotChanged;
                         }

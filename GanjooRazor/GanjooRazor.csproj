@@ -1,14 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UserSecretsId>fd532270-83bc-47f7-ba3d-b26139f2d5a5</UserSecretsId>
     <StartupObject>GanjooRazor.Program</StartupObject>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Remove="Areas\Admin\Pages\ReviewPartEdits.cshtml" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RMuseum\RMuseum.csproj" />
@@ -24,10 +20,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Areas\Admin\Pages\ReviewPartEdits.cshtml" />
   </ItemGroup>
 
 </Project>
