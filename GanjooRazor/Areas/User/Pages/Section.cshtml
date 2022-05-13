@@ -18,9 +18,9 @@ else
         function saveSectionCorrection(id) {
 
             if ($('#rhythm-old').text() == $('#rhythm-new').val()) {
-                    alert('شما هیچ تغییری در متن نداده‌اید!');
-                    return;
-                }
+                alert('شما هیچ تغییری در متن نداده‌اید!');
+                return;
+            }
 
             $('#savecorrections').hide();
             $('#saving').text('در حال ذخیره ...');
@@ -42,10 +42,10 @@ else
                     note: $('#note').val()
 
                 },
-                success: function () {
+                success: function() {
                     location.reload(true);
                 },
-                error: function (e) {
+                error: function(e) {
                     if (e.responseText == null)
                         alert(e);
                     else
@@ -122,13 +122,13 @@ else
                 <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
                 <br />
                 <script>
-                    function newRhythm(){
+                    function newRhythm() {
                         var rhythm = prompt("پیشنهاد وزن جدید", "");
-                        if(rhythm != null){
+                        if (rhythm != null) {
                             var select = document.getElementById('rhythm-new');
                             var options = select.options;
-                            for (let i = 0; i < options. length; i++){
-                                if(options[i].value == rhythm){
+                            for (let i = 0; i < options.length; i++) {
+                                if (options[i].value == rhythm) {
                                     alert('وزن پیشنهادی تکراری است.');
                                     return;
                                 }
@@ -150,6 +150,37 @@ else
                 <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
             </td>
         </tr>
+
+        <tr>
+            <td>
+                <p>
+                    <span class="red-color">شکستن قطعه: </span>اگر قطعه شامل بیش از یک قطعه شعر است و می‌بایست شکسته شود محل شکستن قطعه را علامت بزنید.
+                </p>
+
+            </td>
+        </tr>
+
+        @for (int v = 0; v < Model.Verses.Count; v++)
+        {
+
+            if (v > 1 && Model.Verses[v].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="break-from-@Model.Verses[v].CoupletIndex" id="break-from-@Model.Verses[v].CoupletIndex" />
+                        @Model.Verses[v].Text 
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>
+                        @Model.Verses[v].Text
+                    </td>
+                </tr>
+            }
+        }
 
         <tr>
             <td>
