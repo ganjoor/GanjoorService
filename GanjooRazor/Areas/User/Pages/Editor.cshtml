@@ -8,130 +8,130 @@
 }
 <h1>@ViewData["Title"]</h1>
 <script>
-    $(document).ready(function () {
-        $('[contenteditable]').keypress(function (e) { return e.which != 13; });
+    $(document).ready(function() {
+        $('[contenteditable]').keypress(function(e) { return e.which != 13; });
     });
 </script>
 <script>
 
 
     function savePoemCorrections(id, verseCount) {
-            var verseOrderText = [];
-            for (var i = 0; i <= verseCount; i++) {
-                var oldElementName = '#original-' + i.toString();
-                var newElementName = '#id-' + i.toString();
-                if ($(newElementName).text() != $(oldElementName).text()) {
-                    verseOrderText.push(i.toString() + 'TextSeparator' + $(newElementName).text());
-                }
+        var verseOrderText = [];
+        for (var i = 0; i <= verseCount; i++) {
+            var oldElementName = '#original-' + i.toString();
+            var newElementName = '#id-' + i.toString();
+            if ($(newElementName).text() != $(oldElementName).text()) {
+                verseOrderText.push(i.toString() + 'TextSeparator' + $(newElementName).text());
             }
-
-            if (verseOrderText.length == 0) {
-                if ($('#rhythm-old').text() == $('#rhythm-new').val() && $('#rhythm-old2').text() == $('#rhythm-new2').val()) {
-                    alert('شما هیچ تغییری در متن نداده‌اید!');
-                    return;
-                }
-            }
-
-            $('#savecorrections').hide();
-            $('#saving').text('در حال ذخیره ...');
-
-            var rhythm_new = $('#rhythm-new').val();
-            if (rhythm_new == $('#rhythm-old').text()) {
-                rhythm_new = null;
-            }
-
-            var rhythm_new2 = $('#rhythm-new2').val();
-            if (rhythm_new2 == $('#rhythm-old2').text()) {
-                rhythm_new2 = null;
-            }
-
-            var url = '?handler=SendPoemCorrections';
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: {
-                    poemid: id,
-                    verseOrderText: verseOrderText,
-                    rhythm: rhythm_new,
-                    rhythm2: rhythm_new2,
-                    note: $('#note').val()
-
-                },
-                success: function () {
-                    location.reload(true);
-                },
-                error: function (e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
-                    $('#savecorrections').show();
-                    $('#saving').text('');
-                }
-
-            });
-
         }
 
-        function deletePoemCorrections(id) {
-            if (!confirm('آیا از حذف تغییرات پیشنهادی اطمینان دارید؟'))
+        if (verseOrderText.length == 0) {
+            if ($('#rhythm-old').text() == $('#rhythm-new').val() && $('#rhythm-old2').text() == $('#rhythm-new2').val()) {
+                alert('شما هیچ تغییری در متن نداده‌اید!');
                 return;
-
-            $('#deletecorrections').hide();
-            $('#saving').text('در حال ذخیره ...');
-
-            var url = '?handler=DeletePoemCorrections';
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: {
-                    poemid: id,
-                },
-                error: function () {
-                    alert('خطا رخ داد.')
-                },
-                success: function () {
-                    location.reload(true);
-                },
-
-            });
+            }
         }
 
-        function editorcompare(id) {
-            var a = document.getElementById('original-' + id.toString());
-            var b = document.getElementById('id-' + id.toString());
-            var result = document.getElementById('compare-' + id.toString());
-            var diff = JsDiff.diffChars(a.textContent, b.textContent);
-            var fragment = document.createDocumentFragment();
-            for (var i = 0; i < diff.length; i++) {
+        $('#savecorrections').hide();
+        $('#saving').text('در حال ذخیره ...');
 
-                if (diff[i].added && diff[i + 1] && diff[i + 1].removed) {
-                    var swap = diff[i];
-                    diff[i] = diff[i + 1];
-                    diff[i + 1] = swap;
-                }
+        var rhythm_new = $('#rhythm-new').val();
+        if (rhythm_new == $('#rhythm-old').text()) {
+            rhythm_new = null;
+        }
 
-                var node;
-                if (diff[i].removed) {
-                    node = document.createElement('del');
-                    node.style.color = 'red';
-                    node.appendChild(document.createTextNode(diff[i].value));
-                } else if (diff[i].added) {
-                    node = document.createElement('span');
-                    node.style.color = 'white';
-                    node.style.backgroundColor = 'green';
-                    node.appendChild(document.createTextNode(diff[i].value));
-                } else {
-                    node = document.createTextNode(diff[i].value);
-                }
-                fragment.appendChild(node);
+        var rhythm_new2 = $('#rhythm-new2').val();
+        if (rhythm_new2 == $('#rhythm-old2').text()) {
+            rhythm_new2 = null;
+        }
+
+        var url = '?handler=SendPoemCorrections';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                poemid: id,
+                verseOrderText: verseOrderText,
+                rhythm: rhythm_new,
+                rhythm2: rhythm_new2,
+                note: $('#note').val()
+
+            },
+            success: function() {
+                location.reload(true);
+            },
+            error: function(e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+                $('#savecorrections').show();
+                $('#saving').text('');
             }
 
-            result.textContent = '';
-            result.appendChild(fragment);
+        });
+
+    }
+
+    function deletePoemCorrections(id) {
+        if (!confirm('آیا از حذف تغییرات پیشنهادی اطمینان دارید؟'))
+            return;
+
+        $('#deletecorrections').hide();
+        $('#saving').text('در حال ذخیره ...');
+
+        var url = '?handler=DeletePoemCorrections';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                poemid: id,
+            },
+            error: function() {
+                alert('خطا رخ داد.')
+            },
+            success: function() {
+                location.reload(true);
+            },
+
+        });
+    }
+
+    function editorcompare(id) {
+        var a = document.getElementById('original-' + id.toString());
+        var b = document.getElementById('id-' + id.toString());
+        var result = document.getElementById('compare-' + id.toString());
+        var diff = JsDiff.diffChars(a.textContent, b.textContent);
+        var fragment = document.createDocumentFragment();
+        for (var i = 0; i < diff.length; i++) {
+
+            if (diff[i].added && diff[i + 1] && diff[i + 1].removed) {
+                var swap = diff[i];
+                diff[i] = diff[i + 1];
+                diff[i + 1] = swap;
+            }
+
+            var node;
+            if (diff[i].removed) {
+                node = document.createElement('del');
+                node.style.color = 'red';
+                node.appendChild(document.createTextNode(diff[i].value));
+            } else if (diff[i].added) {
+                node = document.createElement('span');
+                node.style.color = 'white';
+                node.style.backgroundColor = 'green';
+                node.appendChild(document.createTextNode(diff[i].value));
+            } else {
+                node = document.createTextNode(diff[i].value);
+            }
+            fragment.appendChild(node);
         }
+
+        result.textContent = '';
+        result.appendChild(fragment);
+    }
 
     function breakPoem(poemId, vOrder, vText) {
         if (!confirm(vText))
@@ -147,14 +147,14 @@
                 poemId: poemId,
                 vOrder: vOrder
             },
-            success: function (id) {
-                if(String(id) == '-1'){
+            success: function(id) {
+                if (String(id) == '-1') {
                     alert('کار شکستن شعر شروع شد.');
                     return;
                 }
                 location.href = '/?p=' + String(id);
             },
-            error: function (e) {
+            error: function(e) {
                 if (e.responseText == null)
                     alert(e);
                 else
@@ -318,10 +318,10 @@ else
                 {
                     <div id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.MyLastEdit.Title</div>
                     <script>
-                        $(document).ready(function () {
+                        $(document).ready(function() {
                             editorcompare(0);
                         });
-                        document.getElementById("id-0").addEventListener("input", function () {
+                        document.getElementById("id-0").addEventListener("input", function() {
                             editorcompare(0)
                         }, false);
                     </script>
@@ -330,7 +330,7 @@ else
                 {
                     <div type="text" id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.PageInformation.Poem.Title</div>
                     <script>
-                        document.getElementById("id-0").addEventListener("input", function () {
+                        document.getElementById("id-0").addEventListener("input", function() {
                             editorcompare(0)
                         }, false);
                     </script>
@@ -387,10 +387,10 @@ else
 
 
                         <script>
-                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
+                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function() {
                                 editorcompare(@verse.VOrder)
                             }, false);
-                            $(document).ready(function () {
+                            $(document).ready(function() {
                                 editorcompare(@verse.VOrder);
                             });
                         </script>
@@ -399,7 +399,7 @@ else
                     {
                         <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" style="background-color:white">@verse.Text</div>
                         <script>
-                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
+                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function() {
                                 editorcompare(@verse.VOrder)
                             }, false);
                         </script>
@@ -494,13 +494,13 @@ else
                 <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
                 <br />
                 <script>
-                    function newRhythm(){
+                    function newRhythm() {
                         var rhythm = prompt("پیشنهاد وزن جدید", "");
-                        if(rhythm != null){
+                        if (rhythm != null) {
                             var select = document.getElementById('rhythm-new');
                             var options = select.options;
-                            for (let i = 0; i < options. length; i++){
-                                if(options[i].value == rhythm){
+                            for (let i = 0; i < options.length; i++) {
+                                if (options[i].value == rhythm) {
                                     alert('وزن پیشنهادی تکراری است.');
                                     return;
                                 }
@@ -639,6 +639,18 @@ else
                 </td>
             </tr>
         }
+        else
+        if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) == 1)
+            foreach (var poemSetion in Model.PageInformation.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First).ToList())
+            {
+                <tr>
+                    <td>
+                        <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index">
+                            شکستن شعر به قطعات مجزا
+                        </a>
+                    </td>
+                </tr>
+            }
 
         @if (Model.PageInformation.Poem.Previous != null)
         {
