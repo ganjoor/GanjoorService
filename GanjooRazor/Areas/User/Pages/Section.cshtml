@@ -15,9 +15,22 @@
 else
 {
     <script>
-        function saveSectionCorrection(id) {
+        function saveSectionCorrection(id, verseCount) {
 
-            if ($('#rhythm-old').text() == $('#rhythm-new').val()) {
+            var breakFromVIndices = [];
+            for (var i = 0; i <= verseCount; i++) {
+                var checkVIndex = '#break-from-' + i.toString();
+                if ($(checkVIndex).is(":checked")) {
+                    breakFromVIndices.push(i);
+                }
+            }
+
+            if(breakFromVIndices.length > 4){
+                alert('حداکثر از ۴ محل می‌توانید قطعه را بشکنید.');
+                return;
+            }
+
+            if (breakFromVIndices.length == 0 && $('#rhythm-old').text() == $('#rhythm-new').val()) {
                 alert('شما هیچ تغییری در متن نداده‌اید!');
                 return;
             }
@@ -39,6 +52,7 @@ else
                 data: {
                     sectionId: id,
                     rhythm: rhythm_new,
+                    breakFromVIndices: breakFromVIndices,
                     note: $('#note').val()
 
                 },
@@ -167,7 +181,26 @@ else
             {
                 <tr>
                     <td>
-                        <input type="checkbox" name="break-from-@Model.Verses[v].CoupletIndex" id="break-from-@Model.Verses[v].CoupletIndex" />
+                        @if(Model.MyLastEdit != null 
+                            &&
+                            (
+                            Model.MyLastEdit.BreakFromVerse1VOrder == Model.Verses[v].VOrder 
+                            ||
+                            Model.MyLastEdit.BreakFromVerse2VOrder == Model.Verses[v].VOrder 
+                            ||
+                            Model.MyLastEdit.BreakFromVerse3VOrder == Model.Verses[v].VOrder 
+                            ||
+                            Model.MyLastEdit.BreakFromVerse4VOrder == Model.Verses[v].VOrder 
+                            )
+                        )
+                        {
+                            <input type="checkbox" name="break-from-@v" id="break-from-@v" checked />
+                        }
+                        else
+                        {
+                            <input type="checkbox" name="break-from-@v" id="break-from-@v" />
+                        }
+                        
                         @Model.Verses[v].Text 
                     </td>
                 </tr>
@@ -203,7 +236,7 @@ else
 
         <tr>
             <td>
-                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="saveSectionCorrection(@Model.PoemSection.Id)">ذخیره</a>
+                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="saveSectionCorrection(@Model.PoemSection.Id, @Model.Verses.Count)">ذخیره</a>
             </td>
         </tr>
 

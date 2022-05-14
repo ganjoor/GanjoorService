@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
-using RMuseum.Services.Implementation;
 
 namespace GanjooRazor.Areas.User.Pages
 {
@@ -146,17 +145,78 @@ namespace GanjooRazor.Areas.User.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostSendSectionCorrectionsAsync(int sectionId, string rhythm, string note)
+        public async Task<IActionResult> OnPostSendSectionCorrectionsAsync(int sectionId, string rhythm, int[] breakFromVIndices, string note)
         {
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
 
+                    
+
+                    int? breakFromVerse1VOrder = null;
+                    int? breakFromVerse2VOrder = null;
+                    int? breakFromVerse3VOrder = null;
+                    int? breakFromVerse4VOrder = null;
+
+                    if(breakFromVIndices.Length > 0)
+                    {
+                        var sectionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/section/{sectionId}");
+                        if (!sectionResponse.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await sectionResponse.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+                        PoemSection = JsonConvert.DeserializeObject<GanjoorPoemSection>(await sectionResponse.Content.ReadAsStringAsync());
+
+                        var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={PoemSection.PoemId}");
+                        if (!pageUrlResponse.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+                        var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+
+                        var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
+                        if (!pageQuery.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+                        PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+                        Verses = _FilterSectionVerses(PoemSection, PageInformation.Poem.Verses);
+
+
+
+                        breakFromVerse1VOrder = Verses[breakFromVIndices[0]].VOrder;
+
+                        if (breakFromVIndices.Length > 1)
+                        {
+                            breakFromVerse2VOrder = Verses[breakFromVIndices[1]].VOrder;
+                        }
+
+                        if (breakFromVIndices.Length > 2)
+                        {
+                            breakFromVerse3VOrder = Verses[breakFromVIndices[2]].VOrder;
+                        }
+
+                        if (breakFromVIndices.Length > 3)
+                        {
+                            breakFromVerse4VOrder = Verses[breakFromVIndices[3]].VOrder;
+                        }
+                    }
+
+                    
+
                     GanjoorPoemSectionCorrectionViewModel correction = new GanjoorPoemSectionCorrectionViewModel()
                     {
                         SectionId = sectionId,
                         Rhythm = rhythm,
+                        BreakFromVerse1VOrder = breakFromVerse1VOrder,
+                        BreakFromVerse2VOrder = breakFromVerse2VOrder,
+                        BreakFromVerse3VOrder = breakFromVerse3VOrder,
+                        BreakFromVerse4VOrder = breakFromVerse4VOrder,
                         Note = note
                     };
 
