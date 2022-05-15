@@ -197,6 +197,40 @@ else
             </tr>
         }
 
+        <tr>
+            <td colspan="2">
+                <span class="red-color">شکستن</span>
+            </td>
+        </tr>
+
+        @for (int v = 0; v < Model.Verses.Count; v++)
+        {
+            if (
+                            Model.Correction.BreakFromVerse1VOrder == Model.Verses[v].VOrder 
+                            ||
+                            Model.Correction.BreakFromVerse2VOrder == Model.Verses[v].VOrder 
+                            ||
+                            Model.Correction.BreakFromVerse3VOrder == Model.Verses[v].VOrder 
+                            ||
+                            Model.Correction.BreakFromVerse4VOrder == Model.Verses[v].VOrder)
+            {
+                <tr>
+                    <td colspan="2">
+                        <input type="checkbox" name="break-from-@v" id="break-from-@v" checked />
+                        @Model.Verses[v].Text 
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td colspan="2">
+                        @Model.Verses[v].Text
+                    </td>
+                </tr>
+            }
+        }
+
 
 
 

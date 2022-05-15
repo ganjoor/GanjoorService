@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
+using System.Collections.Generic;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -47,6 +48,39 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// poem section
         /// </summary>
         public GanjoorPoemSection PoemSection { get; set; }
+
+        /// <summary>
+        /// verses
+        /// </summary>
+        public List<GanjoorVerseViewModel> Verses { get; set; }
+
+        private List<GanjoorVerseViewModel> _FilterSectionVerses(GanjoorPoemSection section, GanjoorVerseViewModel[] verses)
+        {
+            List<GanjoorVerseViewModel> sectionVerses = new List<GanjoorVerseViewModel>();
+            foreach (GanjoorVerseViewModel verse in verses)
+            {
+                switch (section.VerseType)
+                {
+                    case VersePoemSectionType.First:
+                        if (verse.SectionIndex1 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                    case VersePoemSectionType.Second:
+                        if (verse.SectionIndex2 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                    case VersePoemSectionType.Third:
+                        if (verse.SectionIndex3 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                    default:
+                        if (verse.SectionIndex4 == section.Index)
+                            sectionVerses.Add(verse);
+                        break;
+                }
+            }
+            return sectionVerses;
+        }
 
 
         public async Task<IActionResult> OnGetAsync()
@@ -111,6 +145,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                             if (Correction.OriginalRhythm == Correction.Rhythm)
                                 Correction.RhythmResult = CorrectionReviewResult.NotChanged;
                         }
+
+                        Verses = _FilterSectionVerses(PoemSection, PageInformation.Poem.Verses);
                     }
 
                 }
