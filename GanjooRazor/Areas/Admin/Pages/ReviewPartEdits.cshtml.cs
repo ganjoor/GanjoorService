@@ -170,6 +170,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId,
             string rhythmReviewResult,
+            int[] breakFromVIndices,
             string titleReviewNote)
         {
             using (HttpClient secureClient = new HttpClient())
@@ -184,6 +185,59 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     Correction = JsonConvert.DeserializeObject<GanjoorPoemSectionCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync());
 
+                    int? breakFromVerse1VOrder = null;
+                    int? breakFromVerse2VOrder = null;
+                    int? breakFromVerse3VOrder = null;
+                    int? breakFromVerse4VOrder = null;
+
+                    if (breakFromVIndices.Length > 0)
+                    {
+                        var sectionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/section/{Correction.SectionId}");
+                        if (!sectionResponse.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await sectionResponse.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+                        PoemSection = JsonConvert.DeserializeObject<GanjoorPoemSection>(await sectionResponse.Content.ReadAsStringAsync());
+
+                        var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={PoemSection.PoemId}");
+                        if (!pageUrlResponse.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+                        var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+
+                        var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
+                        if (!pageQuery.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+                        PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+                        Verses = _FilterSectionVerses(PoemSection, PageInformation.Poem.Verses);
+
+
+
+                        breakFromVerse1VOrder = Verses[breakFromVIndices[0]].VOrder;
+
+                        if (breakFromVIndices.Length > 1)
+                        {
+                            breakFromVerse2VOrder = Verses[breakFromVIndices[1]].VOrder;
+                        }
+
+                        if (breakFromVIndices.Length > 2)
+                        {
+                            breakFromVerse3VOrder = Verses[breakFromVIndices[2]].VOrder;
+                        }
+
+                        if (breakFromVIndices.Length > 3)
+                        {
+                            breakFromVerse4VOrder = Verses[breakFromVIndices[3]].VOrder;
+                        }
+                    }
+
 
                     if (Correction.Rhythm != null)
                     {
@@ -197,6 +251,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                             Correction.ReviewNote = titleReviewNote;
                         }
                     }
+
+                    Correction.BreakFromVerse1VOrder = breakFromVerse1VOrder;
+                    Correction.BreakFromVerse2VOrder = breakFromVerse2VOrder;
+                    Correction.BreakFromVerse3VOrder = breakFromVerse3VOrder;
+                    Correction.BreakFromVerse4VOrder = breakFromVerse4VOrder;
 
 
                     var moderationResponse = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/section/moderate",

@@ -20,13 +20,24 @@ else if (@Model.Correction == null)
 else
 {
     <script>
-        function moderateSectionCorrections(correctionId) {
+        function moderateSectionCorrections(correctionId, verseCount) {
 
             $('#moderatecorrections').hide();
             $('#saving').text('در حال بررسی ...');
 
 
-           
+           var breakFromVIndices = [];
+            for (var i = 0; i <= verseCount; i++) {
+                var checkVIndex = '#break-from-' + i.toString();
+                if ($(checkVIndex).is(":checked")) {
+                    breakFromVIndices.push(i);
+                }
+            }
+
+            if(breakFromVIndices.length > 4){
+                alert('حداکثر از ۴ محل می‌توانید قطعه را بشکنید.');
+                return;
+            }
 
             var rhythmReviewResult = 'DontCare';
             if ($('#rhythm_review_result_Approved').length > 0) { 
@@ -44,6 +55,7 @@ else
                 data: {
                     correctionId: correctionId,
                     rhythmReviewResult: rhythmReviewResult,
+                    breakFromVIndices: breakFromVIndices,
                     titleReviewNote: $('#title_review_note') == null? null : $('#title_review_note').val(),
                 },
                 success: function () {
@@ -77,7 +89,7 @@ else
         </tr>
         <tr>
             <td>
-                <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderateSectionCorrections(@Model.Correction.Id)">بررسی</a>
+                <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderateSectionCorrections(@Model.Correction.Id, @Model.Verses.Count)">بررسی</a>
             </td>
             <td>
                 <form method="post">
