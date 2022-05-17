@@ -26,7 +26,7 @@ else
             $('#saving').text('در حال بررسی ...');
 
 
-           var breakFromVIndices = [];
+            var breakFromVIndices = [];
             for (var i = 0; i <= verseCount; i++) {
                 var checkVIndex = '#break-from-' + i.toString();
                 if ($(checkVIndex).is(":checked")) {
@@ -34,13 +34,13 @@ else
                 }
             }
 
-            if(breakFromVIndices.length > 4){
+            if (breakFromVIndices.length > 4) {
                 alert('حداکثر از ۴ محل می‌توانید قطعه را بشکنید.');
                 return;
             }
 
             var rhythmReviewResult = 'DontCare';
-            if ($('#rhythm_review_result_Approved').length > 0) { 
+            if ($('#rhythm_review_result_Approved').length > 0) {
                 rhythmReviewResult = $('input[name=rhythm_review_result]:checked').val()
             }
 
@@ -56,12 +56,12 @@ else
                     correctionId: correctionId,
                     rhythmReviewResult: rhythmReviewResult,
                     breakFromVIndices: breakFromVIndices,
-                    titleReviewNote: $('#title_review_note') == null? null : $('#title_review_note').val(),
+                    titleReviewNote: $('#title_review_note') == null ? null : $('#title_review_note').val(),
                 },
-                success: function () {
+                success: function() {
                     location.reload(true);
                 },
-                error: function (e) {
+                error: function(e) {
                     if (e.responseText == null)
                         alert(e);
                     else
@@ -71,10 +71,25 @@ else
                 }
             });
 
-                        
+
 
         }
+
+        function checkAllNotCorrect(verseCount) {
+            var breakFromVIndices = [];
+            for (var i = 0; i <= verseCount; i++) {
+                var checkVIndex = '#break-from-' + i.toString();
+                if ($(checkVIndex).is(":checked")) {
+                    $(checkVIndex).prop("checked", false);
+                }
+            }
+            var allNotCorrect = document.getElementsByClassName("radio-notcorrect");
+            for (var i = 0; i < allNotCorrect.length; i++) {
+                allNotCorrect[i].checked = true;
+            }
+        }
     </script>
+
 
     <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
 
@@ -118,7 +133,7 @@ else
 
         <tr>
             <td colspan=2>
-                <a role="button" onclick="checkAllNotCorrect()" class="pagebutton">درست نیست</a>
+                <a role="button" onclick="checkAllNotCorrect(@Model.Verses.Count)" class="pagebutton">درست نیست</a>
             </td>
         </tr>
 
@@ -140,7 +155,7 @@ else
                 </td>
             </tr>
         }
-      
+
         @if (Model.Correction.Rhythm != null)
         {
             <tr>
@@ -150,7 +165,7 @@ else
             </tr>
             <tr>
                 <td colspan="2">
-                   @Html.Raw(Model.PoemSection.HtmlText)
+                    @Html.Raw(Model.PoemSection.HtmlText)
                 </td>
             </tr>
             <tr>
@@ -198,7 +213,7 @@ else
             </tr>
         }
 
-      
+
         @if (!string.IsNullOrEmpty(Model.Correction.Note))
         {
             <tr>
@@ -218,18 +233,18 @@ else
         @for (int v = 0; v < Model.Verses.Count; v++)
         {
             if (
-                            Model.Correction.BreakFromVerse1VOrder == Model.Verses[v].VOrder 
-                            ||
-                            Model.Correction.BreakFromVerse2VOrder == Model.Verses[v].VOrder 
-                            ||
-                            Model.Correction.BreakFromVerse3VOrder == Model.Verses[v].VOrder 
-                            ||
-                            Model.Correction.BreakFromVerse4VOrder == Model.Verses[v].VOrder)
+            Model.Correction.BreakFromVerse1VOrder == Model.Verses[v].VOrder
+            ||
+            Model.Correction.BreakFromVerse2VOrder == Model.Verses[v].VOrder
+            ||
+            Model.Correction.BreakFromVerse3VOrder == Model.Verses[v].VOrder
+            ||
+            Model.Correction.BreakFromVerse4VOrder == Model.Verses[v].VOrder)
             {
                 <tr>
                     <td colspan="2">
                         <input type="checkbox" name="break-from-@v" id="break-from-@v" checked />
-                        @Model.Verses[v].Text 
+                        @Model.Verses[v].Text
                     </td>
                 </tr>
             }
