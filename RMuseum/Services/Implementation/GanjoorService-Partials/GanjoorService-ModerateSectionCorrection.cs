@@ -86,6 +86,60 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
+            if(dbCorrection.BreakFromVerse1VOrder != null)
+            {
+                if(moderation.BreakFromVerse1VOrder != dbCorrection.BreakFromVerse1VOrder)
+                {
+                    dbCorrection.BreakFromVerse1VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                    dbCorrection.BreakFromVerse1VOrder = null;
+                }
+                else
+                {
+                    dbCorrection.BreakFromVerse1VOrderResult = CorrectionReviewResult.Approved;
+                }
+            }
+
+            if (dbCorrection.BreakFromVerse2VOrder != null)
+            {
+                if (moderation.BreakFromVerse2VOrder != dbCorrection.BreakFromVerse2VOrder)
+                {
+                    dbCorrection.BreakFromVerse2VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                    dbCorrection.BreakFromVerse2VOrder = null;
+                }
+                else
+                {
+                    dbCorrection.BreakFromVerse2VOrderResult = CorrectionReviewResult.Approved;
+                }
+            }
+
+            if (dbCorrection.BreakFromVerse3VOrder != null)
+            {
+                if (moderation.BreakFromVerse3VOrder != dbCorrection.BreakFromVerse3VOrder)
+                {
+                    dbCorrection.BreakFromVerse3VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                    dbCorrection.BreakFromVerse3VOrder = null;
+                }
+                else
+                {
+                    dbCorrection.BreakFromVerse3VOrderResult = CorrectionReviewResult.Approved;
+                }
+            }
+
+            if (dbCorrection.BreakFromVerse4VOrder != null)
+            {
+                if (moderation.BreakFromVerse4VOrder != dbCorrection.BreakFromVerse4VOrder)
+                {
+                    dbCorrection.BreakFromVerse4VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                    dbCorrection.BreakFromVerse4VOrder = null;
+                }
+                else
+                {
+                    dbCorrection.BreakFromVerse4VOrderResult = CorrectionReviewResult.Approved;
+                }
+            }
+
+            //TODO: break section here
+
 
             _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
             await _context.SaveChangesAsync();
