@@ -1,0 +1,81 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.AllPoemSectionsModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_UserPanelLayout";
+    ViewData["Title"] = "همهٔ قطعات شعر";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+<h1>@ViewData["Title"]</h1>
+@if (!string.IsNullOrEmpty(Model.FatalError))
+{
+    @Html.Raw(Model.FatalError)
+}
+else
+{
+    <table>
+        @foreach (var poemSection in Model.PoemSections)
+        {
+            <tr>
+                <td colspan="2">
+                    @Html.Raw(poemSection.HtmlText)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    نوع
+                </td>
+                <td>
+                    @poemSection.SectionType
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Verse Type
+                </td>
+                <td>
+                    @poemSection.VerseType
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Index
+                </td>
+                <td>
+                    @poemSection.Index
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Number
+                </td>
+                <td>
+                    @poemSection.Number
+                </td>
+            </tr>
+
+
+             <tr>
+                <td>
+                    وزن
+                </td>
+                <td>
+                    @(poemSection.GanjoorMetre == null ? "" : poemSection.GanjoorMetre.Rhythm)
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    حروف قافیه
+                </td>
+                <td>
+                    @poemSection.RhymeLetters
+                </td>
+            </tr>
+        }
+    </table>
+
+}
