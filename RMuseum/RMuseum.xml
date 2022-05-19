@@ -1707,6 +1707,14 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.UpdateRelatedSections(System.Int32,System.String)">
+            <summary>
+            update related sections manually
+            </summary>
+            <param name="metreId"></param>
+            <param name="rhyme"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemSectionByIdAsync(System.Int32)">
             <summary>
             get a specific poem section
@@ -11722,6 +11730,13 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.UpdateRelatedSections(System.Int32,System.String)">
+            <summary>
+            update related sections
+            </summary>
+            <param name="metreId"></param>
+            <param name="rhyme"></param>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedSong(System.Int32,System.Guid)">
             <summary>
             next unreviewed track
@@ -14736,6 +14751,13 @@
             <param name="vOrder"></param>
             <param name="userId"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateRelatedSections(System.Int32,System.String)">
+            <summary>
+            update related sections
+            </summary>
+            <param name="metreId"></param>
+            <param name="rhyme"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetOlderVersionsOfPage(System.Int32)">
             <summary>

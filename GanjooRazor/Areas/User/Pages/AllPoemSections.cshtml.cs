@@ -60,7 +60,7 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
-                    return new OkObjectResult(JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync()));
+                    return new OkResult();
                 }
                 else
                 {
