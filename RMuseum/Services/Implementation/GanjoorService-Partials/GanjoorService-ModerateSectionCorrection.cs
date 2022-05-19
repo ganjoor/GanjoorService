@@ -192,7 +192,7 @@ namespace RMuseum.Services.Implementation
                 Number = newSectionNumber,
                 PoemFormat = editingSectionNotTracked.PoemFormat,
             };
-            var verses = await _context.GanjoorVerses.Where(v => v.PoemId == editingSectionNotTracked.PoemId).ToListAsync();
+            var verses = await _context.GanjoorVerses.Where(v => v.PoemId == editingSectionNotTracked.PoemId).OrderBy(v => v.VOrder).ToListAsync();
             var editingSectionVerses = FilterSectionVerses(editingSectionNotTracked, verses);
 
             foreach (var verse in editingSectionVerses)
