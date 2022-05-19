@@ -26,195 +26,203 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<GanjoorPoemSectionCorrectionViewModel>> ModeratePoemSectionCorrection(Guid userId,
             GanjoorPoemSectionCorrectionViewModel moderation)
         {
-            var dbCorrection = await _context.GanjoorPoemSectionCorrections.Include(c => c.User)
+
+            try
+            {
+                var dbCorrection = await _context.GanjoorPoemSectionCorrections.Include(c => c.User)
                 .Where(c => c.Id == moderation.Id)
                 .FirstOrDefaultAsync();
 
-            if (dbCorrection == null)
-                return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null);
+                if (dbCorrection == null)
+                    return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null);
 
-            dbCorrection.ReviewerUserId = userId;
-            dbCorrection.ReviewDate = DateTime.Now;
-            dbCorrection.ApplicationOrder = await _context.GanjoorPoemSectionCorrections.Where(c => c.Reviewed).AnyAsync() ? 1 + await _context.GanjoorPoemSectionCorrections.Where(c => c.Reviewed).MaxAsync(c => c.ApplicationOrder) : 1;
-            dbCorrection.Reviewed = true;
-            dbCorrection.AffectedThePoem = false;
-            dbCorrection.ReviewNote = moderation.ReviewNote;
+                dbCorrection.ReviewerUserId = userId;
+                dbCorrection.ReviewDate = DateTime.Now;
+                dbCorrection.ApplicationOrder = await _context.GanjoorPoemSectionCorrections.Where(c => c.Reviewed).AnyAsync() ? 1 + await _context.GanjoorPoemSectionCorrections.Where(c => c.Reviewed).MaxAsync(c => c.ApplicationOrder) : 1;
+                dbCorrection.Reviewed = true;
+                dbCorrection.AffectedThePoem = false;
+                dbCorrection.ReviewNote = moderation.ReviewNote;
 
-            var editingSectionNotTracked = await _context.GanjoorPoemSections.AsNoTracking().Include(p => p.GanjoorMetre).Where(p => p.Id == moderation.SectionId).SingleOrDefaultAsync();
+                var editingSectionNotTracked = await _context.GanjoorPoemSections.AsNoTracking().Include(p => p.GanjoorMetre).Where(p => p.Id == moderation.SectionId).SingleOrDefaultAsync();
 
-            editingSectionNotTracked.OldGanjoorMetreId = editingSectionNotTracked.GanjoorMetreId;
-            editingSectionNotTracked.OldRhymeLetters = editingSectionNotTracked.RhymeLetters;
+                editingSectionNotTracked.OldGanjoorMetreId = editingSectionNotTracked.GanjoorMetreId;
+                editingSectionNotTracked.OldRhymeLetters = editingSectionNotTracked.RhymeLetters;
 
-            var sections = await _context.GanjoorPoemSections.Where(p => p.PoemId == editingSectionNotTracked.PoemId).ToListAsync();
+                var sections = await _context.GanjoorPoemSections.Where(p => p.PoemId == editingSectionNotTracked.PoemId).ToListAsync();
 
 
-            if (dbCorrection.Rhythm != null)
-            {
-                if (moderation.RhythmResult == CorrectionReviewResult.NotReviewed)
-                    return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null, "تغییرات وزن بررسی نشده است.");
-                dbCorrection.RhythmResult = moderation.RhythmResult;
-                if (dbCorrection.RhythmResult == CorrectionReviewResult.Approved)
+                if (dbCorrection.Rhythm != null)
                 {
-                    dbCorrection.AffectedThePoem = true;
-                    if (moderation.Rhythm == "")
+                    if (moderation.RhythmResult == CorrectionReviewResult.NotReviewed)
+                        return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null, "تغییرات وزن بررسی نشده است.");
+                    dbCorrection.RhythmResult = moderation.RhythmResult;
+                    if (dbCorrection.RhythmResult == CorrectionReviewResult.Approved)
                     {
-                        editingSectionNotTracked.GanjoorMetreId = null;
+                        dbCorrection.AffectedThePoem = true;
+                        if (moderation.Rhythm == "")
+                        {
+                            editingSectionNotTracked.GanjoorMetreId = null;
+                        }
+                        else
+                        {
+                            var metre = await _context.GanjoorMetres.AsNoTracking().Where(m => m.Rhythm == moderation.Rhythm).SingleOrDefaultAsync();
+                            if (metre == null)
+                            {
+                                metre = new GanjoorMetre()
+                                {
+                                    Rhythm = moderation.Rhythm,
+                                    VerseCount = 0
+                                };
+                                _context.GanjoorMetres.Add(metre);
+                                await _context.SaveChangesAsync();
+                            }
+                            editingSectionNotTracked.GanjoorMetreId = metre.Id;
+                        }
+
+                        editingSectionNotTracked.Modified = editingSectionNotTracked.OldGanjoorMetreId != editingSectionNotTracked.GanjoorMetreId;
+
+                        foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index || s.Id == editingSectionNotTracked.Id))
+                        {
+                            section.GanjoorMetreId = editingSectionNotTracked.GanjoorMetreId;
+                            section.Modified = editingSectionNotTracked.Modified;
+                            _context.Update(section);
+                        }
+                    }
+                }
+
+                if (dbCorrection.BreakFromVerse1VOrder != null)
+                {
+                    if (moderation.BreakFromVerse1VOrder != dbCorrection.BreakFromVerse1VOrder)
+                    {
+                        dbCorrection.BreakFromVerse1VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                        dbCorrection.BreakFromVerse1VOrder = null;
                     }
                     else
                     {
-                        var metre = await _context.GanjoorMetres.AsNoTracking().Where(m => m.Rhythm == moderation.Rhythm).SingleOrDefaultAsync();
-                        if (metre == null)
+                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse1VOrder);
+                        dbCorrection.BreakFromVerse1VOrderResult = CorrectionReviewResult.Approved;
+                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                if (dbCorrection.BreakFromVerse2VOrder != null)
+                {
+                    if (moderation.BreakFromVerse2VOrder != dbCorrection.BreakFromVerse2VOrder)
+                    {
+                        dbCorrection.BreakFromVerse2VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                        dbCorrection.BreakFromVerse2VOrder = null;
+                    }
+                    else
+                    {
+                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse2VOrder);
+                        dbCorrection.BreakFromVerse2VOrderResult = CorrectionReviewResult.Approved;
+                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                if (dbCorrection.BreakFromVerse3VOrder != null)
+                {
+                    if (moderation.BreakFromVerse3VOrder != dbCorrection.BreakFromVerse3VOrder)
+                    {
+                        dbCorrection.BreakFromVerse3VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                        dbCorrection.BreakFromVerse3VOrder = null;
+                    }
+                    else
+                    {
+                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse3VOrder);
+                        dbCorrection.BreakFromVerse3VOrderResult = CorrectionReviewResult.Approved;
+                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                if (dbCorrection.BreakFromVerse4VOrder != null)
+                {
+                    if (moderation.BreakFromVerse4VOrder != dbCorrection.BreakFromVerse4VOrder)
+                    {
+                        dbCorrection.BreakFromVerse4VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                        dbCorrection.BreakFromVerse4VOrder = null;
+                    }
+                    else
+                    {
+                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse4VOrder);
+                        dbCorrection.BreakFromVerse4VOrderResult = CorrectionReviewResult.Approved;
+                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                await _context.SaveChangesAsync();
+
+                var dbPoem = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == editingSectionNotTracked.PoemId).SingleAsync();
+
+                await _notificationService.PushNotification(dbCorrection.UserId,
+                                   "بررسی ویرایش پیشنهادی شما",
+                                   $"با سپاس از زحمت و همت شما ویرایش پیشنهادیتان برای <a href=\"{dbPoem.FullUrl}\" target=\"_blank\">{dbPoem.FullTitle}</a> بررسی شد.{Environment.NewLine}" +
+                                   $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «ویرایش‌های من» را مشاهده بفرمایید.{Environment.NewLine}"
+                                   );
+
+                foreach (var section in sections)
+                {
+                    if (section.Modified)
+                    {
+                        if (section.OldGanjoorMetreId != section.GanjoorMetreId || section.OldRhymeLetters != section.RhymeLetters)
                         {
-                            metre = new GanjoorMetre()
-                            {
-                                Rhythm = moderation.Rhythm,
-                                VerseCount = 0
-                            };
-                            _context.GanjoorMetres.Add(metre);
-                            await _context.SaveChangesAsync();
-                        }
-                        editingSectionNotTracked.GanjoorMetreId = metre.Id;
-                    }
-
-                    editingSectionNotTracked.Modified = editingSectionNotTracked.OldGanjoorMetreId != editingSectionNotTracked.GanjoorMetreId;
-
-                    foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index || s.Id == editingSectionNotTracked.Id))
-                    {
-                        section.GanjoorMetreId = editingSectionNotTracked.GanjoorMetreId;
-                        section.Modified = editingSectionNotTracked.Modified;
-                        _context.Update(section);
-                    }
-                }
-            }
-
-            if(dbCorrection.BreakFromVerse1VOrder != null)
-            {
-                if(moderation.BreakFromVerse1VOrder != dbCorrection.BreakFromVerse1VOrder)
-                {
-                    dbCorrection.BreakFromVerse1VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
-                    dbCorrection.BreakFromVerse1VOrder = null;
-                }
-                else
-                {
-                    await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse1VOrder);
-                    dbCorrection.BreakFromVerse1VOrderResult = CorrectionReviewResult.Approved;
-                    _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
-                    await _context.SaveChangesAsync();
-                }
-            }
-
-            if (dbCorrection.BreakFromVerse2VOrder != null)
-            {
-                if (moderation.BreakFromVerse2VOrder != dbCorrection.BreakFromVerse2VOrder)
-                {
-                    dbCorrection.BreakFromVerse2VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
-                    dbCorrection.BreakFromVerse2VOrder = null;
-                }
-                else
-                {
-                    await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse2VOrder);
-                    dbCorrection.BreakFromVerse2VOrderResult = CorrectionReviewResult.Approved;
-                    _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
-                    await _context.SaveChangesAsync();
-                }
-            }
-
-            if (dbCorrection.BreakFromVerse3VOrder != null)
-            {
-                if (moderation.BreakFromVerse3VOrder != dbCorrection.BreakFromVerse3VOrder)
-                {
-                    dbCorrection.BreakFromVerse3VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
-                    dbCorrection.BreakFromVerse3VOrder = null;
-                }
-                else
-                {
-                    await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse3VOrder);
-                    dbCorrection.BreakFromVerse3VOrderResult = CorrectionReviewResult.Approved;
-                    _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
-                    await _context.SaveChangesAsync();
-                }
-            }
-
-            if (dbCorrection.BreakFromVerse4VOrder != null)
-            {
-                if (moderation.BreakFromVerse4VOrder != dbCorrection.BreakFromVerse4VOrder)
-                {
-                    dbCorrection.BreakFromVerse4VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
-                    dbCorrection.BreakFromVerse4VOrder = null;
-                }
-                else
-                {
-                    await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse4VOrder);
-                    dbCorrection.BreakFromVerse4VOrderResult = CorrectionReviewResult.Approved;
-                    _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
-                    await _context.SaveChangesAsync();
-                }
-            }
-
-            _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
-            await _context.SaveChangesAsync();
-
-            var dbPoem = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == editingSectionNotTracked.PoemId).SingleAsync();
-
-            await _notificationService.PushNotification(dbCorrection.UserId,
-                               "بررسی ویرایش پیشنهادی شما",
-                               $"با سپاس از زحمت و همت شما ویرایش پیشنهادیتان برای <a href=\"{dbPoem.FullUrl}\" target=\"_blank\">{dbPoem.FullTitle}</a> بررسی شد.{Environment.NewLine}" +
-                               $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «ویرایش‌های من» را مشاهده بفرمایید.{Environment.NewLine}"
-                               );
-
-            foreach (var section in sections)
-            {
-                if (section.Modified)
-                {
-                    if (section.OldGanjoorMetreId != section.GanjoorMetreId || section.OldRhymeLetters != section.RhymeLetters)
-                    {
-                        _backgroundTaskQueue.QueueBackgroundWorkItem
-                                (
-                                async token =>
-                                {
-                                    using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
+                            _backgroundTaskQueue.QueueBackgroundWorkItem
+                                    (
+                                    async token =>
                                     {
-                                        if (section.OldGanjoorMetreId != null && !string.IsNullOrEmpty(section.OldRhymeLetters))
+                                        using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
                                         {
-                                            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(inlineContext);
-                                            var job = (await jobProgressServiceEF.NewJob($"بازسازی فهرست بخش‌های مرتبط", $"M: {section.OldGanjoorMetreId}, G: {section.OldRhymeLetters}")).Result;
-
-                                            try
+                                            if (section.OldGanjoorMetreId != null && !string.IsNullOrEmpty(section.OldRhymeLetters))
                                             {
-                                                await _UpdateRelatedSections(inlineContext, (int)section.OldGanjoorMetreId, section.OldRhymeLetters);
-                                                await inlineContext.SaveChangesAsync();
+                                                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(inlineContext);
+                                                var job = (await jobProgressServiceEF.NewJob($"بازسازی فهرست بخش‌های مرتبط", $"M: {section.OldGanjoorMetreId}, G: {section.OldRhymeLetters}")).Result;
 
-                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                                try
+                                                {
+                                                    await _UpdateRelatedSections(inlineContext, (int)section.OldGanjoorMetreId, section.OldRhymeLetters);
+                                                    await inlineContext.SaveChangesAsync();
+
+                                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                                }
+                                                catch (Exception exp)
+                                                {
+                                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                                }
                                             }
-                                            catch (Exception exp)
+
+                                            if (section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
                                             {
-                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(inlineContext);
+                                                var job = (await jobProgressServiceEF.NewJob($"بازسازی فهرست بخش‌های مرتبط", $"M: {section.GanjoorMetreId}, G: {section.RhymeLetters}")).Result;
+
+                                                try
+                                                {
+                                                    await _UpdateRelatedSections(inlineContext, (int)section.GanjoorMetreId, section.RhymeLetters);
+                                                    await inlineContext.SaveChangesAsync();
+                                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                                }
+                                                catch (Exception exp)
+                                                {
+                                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                                }
                                             }
                                         }
-
-                                        if (section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
-                                        {
-                                            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(inlineContext);
-                                            var job = (await jobProgressServiceEF.NewJob($"بازسازی فهرست بخش‌های مرتبط", $"M: {section.GanjoorMetreId}, G: {section.RhymeLetters}")).Result;
-
-                                            try
-                                            {
-                                                await _UpdateRelatedSections(inlineContext, (int)section.GanjoorMetreId, section.RhymeLetters);
-                                                await inlineContext.SaveChangesAsync();
-                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
-                                            }
-                                            catch (Exception exp)
-                                            {
-                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
-                                            }
-                                        }
-                                    }
-                                });
+                                    });
+                        }
                     }
                 }
-            }
 
-            return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(moderation);
+                return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(moderation);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null, exp.ToString());
+            }
         }
 
 
@@ -281,8 +289,8 @@ namespace RMuseum.Services.Implementation
             }
             _context.Update(updatingSection);
 
-            var relatedSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index);
-            foreach (var relatedSection in relatedSections)
+            List<GanjoorPoemSection> addedSections = new List<GanjoorPoemSection>();
+            foreach (var relatedSection in sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index))
             {
                 var relatedSectionVerses = FilterSectionVerses(relatedSection, verses);
                 if (relatedSectionVerses.Any(v => v.VOrder >= vOrder))
@@ -326,7 +334,7 @@ namespace RMuseum.Services.Implementation
                     relatedSectionCopy.RhymeLetters = LanguageUtils.FindRhyme(relatedSectionCopyVerses).Rhyme;
                     relatedSectionCopy.Modified = true;
                     _context.Add(relatedSectionCopy);
-                    sections.Add(relatedSectionCopy);
+                    addedSections.Add(relatedSectionCopy);
 
                     relatedSectionVerses = FilterSectionVerses(relatedSection, verses);
                     relatedSection.HtmlText = PrepareHtmlText(relatedSectionVerses);
@@ -370,7 +378,7 @@ namespace RMuseum.Services.Implementation
                     verseSection.HtmlText = PrepareHtmlText(rl);
                     verseSection.PlainText = PreparePlainText(rl);
                     verseSection.Modified = true;
-                    sections.Add(verseSection);
+                    addedSections.Add(verseSection);
                     _context.GanjoorPoemSections.Add(verseSection);
                 }
             }
@@ -407,10 +415,12 @@ namespace RMuseum.Services.Implementation
                     verseSection.HtmlText = PrepareHtmlText(rl);
                     verseSection.PlainText = PreparePlainText(rl);
                     verseSection.Modified = true;
-                    sections.Add(verseSection);
+                    addedSections.Add(verseSection);
                     _context.GanjoorPoemSections.Add(verseSection);
                 }
             }
+            if (addedSections.Count > 0)
+                sections.AddRange(addedSections);
         }
 
 
