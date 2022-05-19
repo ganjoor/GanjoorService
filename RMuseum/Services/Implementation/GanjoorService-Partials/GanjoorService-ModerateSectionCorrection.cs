@@ -244,13 +244,26 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
+            bool sectionCopyBecameMasnavi = false;
+
             var sectionCopyVerses = FilterSectionVerses(sectionCopy, verses);
             sectionCopy.HtmlText = PrepareHtmlText(sectionCopyVerses);
             sectionCopy.PlainText = PreparePlainText(sectionCopyVerses);
             sectionCopy.RhymeLetters = LanguageUtils.FindRhyme(sectionCopyVerses).Rhyme;
             _context.Add(sectionCopy);
             sectionCopy.Modified = true;
+
+            if(sectionCopy.PoemFormat != GanjoorPoemFormat.Masnavi)
+            {
+                if(_IsMasnavi(sectionCopyVerses))
+                {
+                    sectionCopy.PoemFormat = GanjoorPoemFormat.Masnavi;
+                    sectionCopyBecameMasnavi = true;
+                }
+            }
             sections.Add(sectionCopy);
+
+            bool updatingBecameMasnavi = false;
 
             var updatingSection = sections.Where(s => s.Id == editingSectionNotTracked.Id).Single();
             var updatingSectionVerses = FilterSectionVerses(updatingSection, verses);
@@ -258,6 +271,14 @@ namespace RMuseum.Services.Implementation
             updatingSection.PlainText = PreparePlainText(updatingSectionVerses);
             updatingSection.RhymeLetters = LanguageUtils.FindRhyme(updatingSectionVerses).Rhyme;
             updatingSection.Modified = true;
+            if (updatingSection.PoemFormat != GanjoorPoemFormat.Masnavi)
+            {
+                if (_IsMasnavi(updatingSectionVerses))
+                {
+                    updatingSection.PoemFormat = GanjoorPoemFormat.Masnavi;
+                    updatingBecameMasnavi = true;
+                }
+            }
             _context.Update(updatingSection);
 
             foreach (var relatedSection in sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index))
@@ -312,6 +333,81 @@ namespace RMuseum.Services.Implementation
                     relatedSection.RhymeLetters = LanguageUtils.FindRhyme(relatedSectionVerses).Rhyme;
                     relatedSection.Modified = true;
                     _context.Update(relatedSection);
+                }
+            }
+
+            if(sectionCopyBecameMasnavi)
+            {
+                for (int v = 0; v < sectionCopyVerses.Count; v += 2)
+                {
+                    newSectionIndex++;
+                    newSectionNumber++;
+                    var rightVerse = sectionCopyVerses[v];
+                    var leftVerse = sectionCopyVerses[v + 1];
+                    List<GanjoorVerse> coupletVerses = new List<GanjoorVerse>();
+                    coupletVerses.Add(rightVerse);
+                    coupletVerses.Add(leftVerse);
+                    var res = LanguageUtils.FindRhyme(coupletVerses);
+
+                    GanjoorPoemSection verseSection = new GanjoorPoemSection()
+                    {
+                        PoemId = sectionCopy.PoemId,
+                        PoetId = sectionCopy.PoetId,
+                        SectionType = PoemSectionType.Couplet,
+                        VerseType = VersePoemSectionType.Second,
+                        Index = newSectionIndex,
+                        Number = newSectionNumber,//couplet number
+                        GanjoorMetreId = sectionCopy.GanjoorMetreId,
+                        RhymeLetters = res.Rhyme,
+                        GanjoorMetreRefSectionIndex = sectionCopy.Index,
+                    };
+
+                    rightVerse.SectionIndex2 = verseSection.Index;
+                    leftVerse.SectionIndex2 = verseSection.Index;
+
+                    var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
+                    verseSection.HtmlText = PrepareHtmlText(rl);
+                    verseSection.PlainText = PreparePlainText(rl);
+                    verseSection.Modified = true;
+                    sections.Add(verseSection);
+                    _context.GanjoorPoemSections.Add(verseSection);
+                }
+            }
+            if(updatingBecameMasnavi)
+            {
+                for (int v = 0; v < updatingSectionVerses.Count; v += 2)
+                {
+                    newSectionIndex++;
+                    newSectionNumber++;
+                    var rightVerse = updatingSectionVerses[v];
+                    var leftVerse = updatingSectionVerses[v + 1];
+                    List<GanjoorVerse> coupletVerses = new List<GanjoorVerse>();
+                    coupletVerses.Add(rightVerse);
+                    coupletVerses.Add(leftVerse);
+                    var res = LanguageUtils.FindRhyme(coupletVerses);
+
+                    GanjoorPoemSection verseSection = new GanjoorPoemSection()
+                    {
+                        PoemId = updatingSection.PoemId,
+                        PoetId = updatingSection.PoetId,
+                        SectionType = PoemSectionType.Couplet,
+                        VerseType = VersePoemSectionType.Second,
+                        Index = newSectionIndex,
+                        Number = newSectionNumber,//couplet number
+                        GanjoorMetreId = updatingSection.GanjoorMetreId,
+                        RhymeLetters = res.Rhyme,
+                        GanjoorMetreRefSectionIndex = updatingSection.Index,
+                    };
+
+                    rightVerse.SectionIndex2 = verseSection.Index;
+                    leftVerse.SectionIndex2 = verseSection.Index;
+
+                    var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
+                    verseSection.HtmlText = PrepareHtmlText(rl);
+                    verseSection.PlainText = PreparePlainText(rl);
+                    verseSection.Modified = true;
+                    sections.Add(verseSection);
+                    _context.GanjoorPoemSections.Add(verseSection);
                 }
             }
         }
