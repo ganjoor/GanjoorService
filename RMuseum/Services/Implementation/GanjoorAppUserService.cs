@@ -328,6 +328,18 @@ namespace RMuseum.Services.Implementation
             context.UpdateRange(reviewedCorrections);
             await context.SaveChangesAsync();
 
+            var suggestedSectionCorrections = await context.GanjoorPoemSectionCorrections.Where(c => c.UserId == userId).ToListAsync();
+            foreach (var suggestedCorrection in suggestedSectionCorrections)
+                suggestedCorrection.UserId = deletedUserId;
+            context.UpdateRange(suggestedSectionCorrections);
+            await context.SaveChangesAsync();
+
+            var reviewedSectionCorrections = await context.GanjoorPoemSectionCorrections.Where(c => c.ReviewerUserId == userId).ToListAsync();
+            foreach (var reviewedCorrection in reviewedSectionCorrections)
+                reviewedCorrection.ReviewerUserId = deletedUserId;
+            context.UpdateRange(reviewedSectionCorrections);
+            await context.SaveChangesAsync();
+
             var reportedComments = await context.GanjoorReportedComments.Where(r => r.ReportedById == userId).ToListAsync();
             foreach (var reportedComment in reportedComments)
                 reportedComment.ReportedById = deletedUserId;
