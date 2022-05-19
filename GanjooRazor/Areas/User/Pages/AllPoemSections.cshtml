@@ -16,6 +16,17 @@ else
     <table>
         @foreach (var poemSection in Model.PoemSections)
         {
+            @if (poemSection.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem)
+            {
+                <tr>
+                    <td colspan="2">
+                        <a href="/User/Section?poemId=@poemSection.PoemId&index=@poemSection.Index">
+                            قطعهٔ @(poemSection.Number.ToPersianNumbers()):
+                        </a>
+                    </td>
+                </tr>
+            }
+
             <tr>
                 <td colspan="2">
                     @Html.Raw(poemSection.HtmlText)
@@ -58,12 +69,12 @@ else
             </tr>
 
 
-             <tr>
+            <tr>
                 <td>
                     وزن
                 </td>
                 <td>
-                    @(poemSection.GanjoorMetre == null ? "" : poemSection.GanjoorMetre.Rhythm)
+                    @(poemSection.GanjoorMetre == null ? "تعیین نشده" : poemSection.GanjoorMetre.Rhythm)
                 </td>
             </tr>
 

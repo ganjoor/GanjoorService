@@ -25,7 +25,7 @@ else
                 }
             }
 
-            if(breakFromVIndices.length > 1){
+            if (breakFromVIndices.length > 1) {
                 alert('حداکثر از ۱ محل می‌توانید قطعه را بشکنید.');
                 return;
             }
@@ -72,6 +72,12 @@ else
 
         }
     </script>
+    <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
+    <p>
+        <a href="/User/AllPoemSections?id=@Model.PageInformation.Id">
+            همهٔ قطعات شعر
+        </a>
+    </p>
     <table>
         <tr>
             <td>
@@ -181,18 +187,18 @@ else
             {
                 <tr>
                     <td>
-                        @if(Model.MyLastEdit != null 
-                            &&
-                            (
-                            Model.MyLastEdit.BreakFromVerse1VOrder == Model.Verses[v].VOrder 
-                            ||
-                            Model.MyLastEdit.BreakFromVerse2VOrder == Model.Verses[v].VOrder 
-                            ||
-                            Model.MyLastEdit.BreakFromVerse3VOrder == Model.Verses[v].VOrder 
-                            ||
-                            Model.MyLastEdit.BreakFromVerse4VOrder == Model.Verses[v].VOrder 
-                            )
-                        )
+                        @if (Model.MyLastEdit != null
+                       &&
+                       (
+                       Model.MyLastEdit.BreakFromVerse1VOrder == Model.Verses[v].VOrder
+                       ||
+                       Model.MyLastEdit.BreakFromVerse2VOrder == Model.Verses[v].VOrder
+                       ||
+                       Model.MyLastEdit.BreakFromVerse3VOrder == Model.Verses[v].VOrder
+                       ||
+                       Model.MyLastEdit.BreakFromVerse4VOrder == Model.Verses[v].VOrder
+                       )
+                       )
                         {
                             <input type="checkbox" name="break-from-@v" id="break-from-@v" checked />
                         }
@@ -200,8 +206,8 @@ else
                         {
                             <input type="checkbox" name="break-from-@v" id="break-from-@v" />
                         }
-                        
-                        @Model.Verses[v].Text 
+
+                        @Model.Verses[v].Text
                     </td>
                 </tr>
             }
