@@ -210,6 +210,7 @@ namespace RMuseum.Services.Implementation
             sectionCopy.HtmlText = PrepareHtmlText(sectionCopyVerses);
             sectionCopy.PlainText = PreparePlainText(sectionCopyVerses);
             sectionCopy.RhymeLetters = LanguageUtils.FindRhyme(sectionCopyVerses).Rhyme;
+            sectionCopy.CachedFirstCoupletIndex = (int)sectionCopyVerses.Min(v => v.CoupletIndex);
             _context.Add(sectionCopy);
             sectionCopy.Modified = true;
 
@@ -285,6 +286,7 @@ namespace RMuseum.Services.Implementation
                     relatedSectionCopy.PlainText = PreparePlainText(relatedSectionCopyVerses);
                     relatedSectionCopy.RhymeLetters = LanguageUtils.FindRhyme(relatedSectionCopyVerses).Rhyme;
                     relatedSectionCopy.Modified = true;
+                    relatedSectionCopy.CachedFirstCoupletIndex = (int)relatedSectionCopyVerses.Min(v => v.CoupletIndex);
                     _context.Add(relatedSectionCopy);
                     addedSections.Add(relatedSectionCopy);
 
@@ -331,6 +333,7 @@ namespace RMuseum.Services.Implementation
                     verseSection.PlainText = PreparePlainText(rl);
                     verseSection.Modified = true;
                     addedSections.Add(verseSection);
+                    verseSection.CachedFirstCoupletIndex = (int)rl.Min(v => v.CoupletIndex);
                     _context.GanjoorPoemSections.Add(verseSection);
                 }
             }
@@ -367,6 +370,7 @@ namespace RMuseum.Services.Implementation
                     verseSection.HtmlText = PrepareHtmlText(rl);
                     verseSection.PlainText = PreparePlainText(rl);
                     verseSection.Modified = true;
+                    verseSection.CachedFirstCoupletIndex = (int)rl.Min(v => v.CoupletIndex);
                     addedSections.Add(verseSection);
                     _context.GanjoorPoemSections.Add(verseSection);
                 }
