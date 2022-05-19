@@ -139,6 +139,12 @@ namespace GanjooRazor.Pages
             return new OkObjectResult(poet);
         }
 
+        public string AlternativeSearchPhrase { get; set; }
+
+        public string AlternativeSearchPhraseDescription { get; set; }
+
+        public bool Quoted { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
@@ -148,6 +154,32 @@ namespace GanjooRazor.Pages
             Query = LanguageUtils.MakeTextSearchable(Query); //replace zwnj with space
             if (quotes)
                 Query = $"\"{Query}\"";
+
+            Quoted = quotes && Query.Contains(" ");
+            AlternativeSearchPhrase = Quoted ? WebUtility.UrlEncode(Query.Replace("\"", "")) : Query.Contains(" ") ? WebUtility.UrlEncode($"\"{Query}\"") : "";
+            AlternativeSearchPhraseDescription = "";
+            if (Quoted)
+            {
+                AlternativeSearchPhraseDescription = "جستجوی ";
+                bool needsComma = false;
+                var splitteds = Query.Replace("\"", "").Split(' ');
+                for(int sp = 0; sp < splitteds.Length - 1; sp++)
+                {
+                    var splitted = splitteds[sp];
+                    if (needsComma)
+                        AlternativeSearchPhraseDescription += "، ";
+                    AlternativeSearchPhraseDescription += $"«{splitted}»";
+                    needsComma = true;
+                }
+                AlternativeSearchPhraseDescription += $" و «{splitteds[splitteds.Length - 1]}»";
+                AlternativeSearchPhraseDescription += " بدون لحاظ کردن ترتیب واژگان";
+            }
+            else
+            if (Query.Contains(" "))
+            {
+                AlternativeSearchPhraseDescription = $"جستجوی دقیق عبارت «{Query}»";
+            }
+
             PoetId = string.IsNullOrEmpty(Request.Query["author"]) ? 0 : int.Parse(Request.Query["author"]);
             CatId = string.IsNullOrEmpty(Request.Query["cat"]) ? 0 : int.Parse(Request.Query["cat"]);
 
@@ -189,7 +221,7 @@ namespace GanjooRazor.Pages
                 pageNumber = int.Parse(Request.Query["page"]);
             }
 
-            if(pageNumber > 1)
+            if (pageNumber > 1)
             {
                 ViewData["Title"] += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
             }
