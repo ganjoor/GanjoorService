@@ -5,6 +5,7 @@ using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -95,93 +96,10 @@ namespace RMuseum.Services.Implementation
                 }
                 else
                 {
-                    var newSectionIndex = sections.Max(s => s.Index) + 1;
-                    var newSectionNumber = sections.Max(s => s.Number) + 1;
-                    var sectionCopy = new GanjoorPoemSection()
-                    {
-                        PoemId = editingSectionNotTracked.PoemId,
-                        PoetId = editingSectionNotTracked.PoetId,
-                        SectionType = editingSectionNotTracked.SectionType,
-                        VerseType = editingSectionNotTracked.VerseType,
-                        Index = newSectionIndex,
-                        Number = newSectionNumber,
-                        PoemFormat = editingSectionNotTracked.PoemFormat,
-                    };
-                    var verses = await _context.GanjoorVerses.Where(v => v.PoemId == editingSectionNotTracked.PoemId).ToListAsync();
-                    var editingSectionVerses = FilterSectionVerses(editingSectionNotTracked, verses);
-
-                    foreach (var verse in editingSectionVerses)
-                    {
-                        if(verse.VOrder > dbCorrection.BreakFromVerse1VOrder)
-                        {
-                            verse.SectionIndex1 = newSectionIndex;
-                            _context.Update(verse);
-                        }
-                    }
-
-                    var sectionCopyVerses = FilterSectionVerses(sectionCopy, verses);
-                    sectionCopy.HtmlText = PrepareHtmlText(sectionCopyVerses);
-                    sectionCopy.PlainText = PreparePlainText(sectionCopyVerses);
-                    _context.Add(sectionCopy);
-
-                    var updatingSection = sections.Where(s => s.Id == editingSectionNotTracked.Id).Single();
-                    var updatingSectionVerses = FilterSectionVerses(updatingSection, verses);
-                    updatingSection.HtmlText = PrepareHtmlText(updatingSectionVerses);
-                    updatingSection.PlainText = PreparePlainText(updatingSectionVerses);
-                    _context.Update(updatingSection);
-
-                    foreach (var relatedSection in sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index))
-                    {
-                        var relatedSectionVerses = FilterSectionVerses(relatedSection, verses);
-                        if(relatedSectionVerses.Any(v => v.VOrder >= dbCorrection.BreakFromVerse1VOrder))
-                        {
-                            newSectionIndex++;
-                            newSectionNumber++;
-                            var relatedSectionCopy = new GanjoorPoemSection()
-                            {
-                                PoemId = relatedSection.PoemId,
-                                PoetId = relatedSection.PoetId,
-                                SectionType = relatedSection.SectionType,
-                                VerseType = relatedSection.VerseType,
-                                Index = newSectionIndex,
-                                Number = newSectionNumber,
-                                PoemFormat = relatedSection.PoemFormat,
-                            };
-
-                            foreach (var verse in relatedSectionVerses)
-                            {
-                                if (verse.VOrder > dbCorrection.BreakFromVerse1VOrder)
-                                {
-                                    switch(relatedSection.VerseType)
-                                    {
-                                        case VersePoemSectionType.Third:
-                                            verse.SectionIndex3 = newSectionIndex;
-                                            break;
-                                        case VersePoemSectionType.Forth:
-                                            verse.SectionIndex4 = newSectionIndex;
-                                            break;
-                                        default:
-                                            verse.SectionIndex2 = newSectionIndex;
-                                            break;
-                                    }
-                                    _context.Update(verse);
-                                }
-                            }
-
-                            var relatedSectionCopyVerses = FilterSectionVerses(relatedSectionCopy, verses);
-                            relatedSectionCopy.HtmlText = PrepareHtmlText(relatedSectionCopyVerses);
-                            relatedSectionCopy.PlainText = PreparePlainText(relatedSectionCopyVerses);
-                            _context.Add(relatedSectionCopy);
-
-                            relatedSectionVerses = FilterSectionVerses(relatedSection, verses);
-                            relatedSection.HtmlText = PrepareHtmlText(relatedSectionVerses);
-                            relatedSection.PlainText = PreparePlainText(relatedSectionVerses);
-                            _context.Update(relatedSection);
-
-                        }
-                    }
-
+                    await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse1VOrder);
                     dbCorrection.BreakFromVerse1VOrderResult = CorrectionReviewResult.Approved;
+                    _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                    await _context.SaveChangesAsync();
                 }
             }
 
@@ -194,7 +112,10 @@ namespace RMuseum.Services.Implementation
                 }
                 else
                 {
+                    await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse2VOrder);
                     dbCorrection.BreakFromVerse2VOrderResult = CorrectionReviewResult.Approved;
+                    _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                    await _context.SaveChangesAsync();
                 }
             }
 
@@ -207,7 +128,10 @@ namespace RMuseum.Services.Implementation
                 }
                 else
                 {
+                    await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse3VOrder);
                     dbCorrection.BreakFromVerse3VOrderResult = CorrectionReviewResult.Approved;
+                    _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                    await _context.SaveChangesAsync();
                 }
             }
 
@@ -220,11 +144,12 @@ namespace RMuseum.Services.Implementation
                 }
                 else
                 {
+                    await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse4VOrder);
                     dbCorrection.BreakFromVerse4VOrderResult = CorrectionReviewResult.Approved;
+                    _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                    await _context.SaveChangesAsync();
                 }
             }
-
-
 
             _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
             await _context.SaveChangesAsync();
@@ -290,6 +215,105 @@ namespace RMuseum.Services.Implementation
             }
 
             return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(moderation);
+        }
+
+
+        private async Task _BreakSection(List<GanjoorPoemSection> sections, GanjoorPoemSection editingSectionNotTracked, int vOrder)
+        {
+            var newSectionIndex = sections.Max(s => s.Index) + 1;
+            var newSectionNumber = sections.Max(s => s.Number) + 1;
+            var sectionCopy = new GanjoorPoemSection()
+            {
+                PoemId = editingSectionNotTracked.PoemId,
+                PoetId = editingSectionNotTracked.PoetId,
+                SectionType = editingSectionNotTracked.SectionType,
+                VerseType = editingSectionNotTracked.VerseType,
+                Index = newSectionIndex,
+                Number = newSectionNumber,
+                PoemFormat = editingSectionNotTracked.PoemFormat,
+            };
+            var verses = await _context.GanjoorVerses.Where(v => v.PoemId == editingSectionNotTracked.PoemId).ToListAsync();
+            var editingSectionVerses = FilterSectionVerses(editingSectionNotTracked, verses);
+
+            foreach (var verse in editingSectionVerses)
+            {
+                if (verse.VOrder > vOrder)
+                {
+                    verse.SectionIndex1 = newSectionIndex;
+                    _context.Update(verse);
+                }
+            }
+
+            var sectionCopyVerses = FilterSectionVerses(sectionCopy, verses);
+            sectionCopy.HtmlText = PrepareHtmlText(sectionCopyVerses);
+            sectionCopy.PlainText = PreparePlainText(sectionCopyVerses);
+            sectionCopy.RhymeLetters = LanguageUtils.FindRhyme(sectionCopyVerses).Rhyme;
+            _context.Add(sectionCopy);
+            sectionCopy.Modified = true;
+            sections.Add(sectionCopy);
+
+            var updatingSection = sections.Where(s => s.Id == editingSectionNotTracked.Id).Single();
+            var updatingSectionVerses = FilterSectionVerses(updatingSection, verses);
+            updatingSection.HtmlText = PrepareHtmlText(updatingSectionVerses);
+            updatingSection.PlainText = PreparePlainText(updatingSectionVerses);
+            updatingSection.RhymeLetters = LanguageUtils.FindRhyme(updatingSectionVerses).Rhyme;
+            updatingSection.Modified = true;
+            _context.Update(updatingSection);
+
+            foreach (var relatedSection in sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index))
+            {
+                var relatedSectionVerses = FilterSectionVerses(relatedSection, verses);
+                if (relatedSectionVerses.Any(v => v.VOrder >= vOrder))
+                {
+                    newSectionIndex++;
+                    newSectionNumber++;
+                    var relatedSectionCopy = new GanjoorPoemSection()
+                    {
+                        PoemId = relatedSection.PoemId,
+                        PoetId = relatedSection.PoetId,
+                        SectionType = relatedSection.SectionType,
+                        VerseType = relatedSection.VerseType,
+                        Index = newSectionIndex,
+                        Number = newSectionNumber,
+                        PoemFormat = relatedSection.PoemFormat,
+                    };
+
+                    foreach (var verse in relatedSectionVerses)
+                    {
+                        if (verse.VOrder > vOrder)
+                        {
+                            switch (relatedSection.VerseType)
+                            {
+                                case VersePoemSectionType.Third:
+                                    verse.SectionIndex3 = newSectionIndex;
+                                    break;
+                                case VersePoemSectionType.Forth:
+                                    verse.SectionIndex4 = newSectionIndex;
+                                    break;
+                                default:
+                                    verse.SectionIndex2 = newSectionIndex;
+                                    break;
+                            }
+                            _context.Update(verse);
+                        }
+                    }
+
+                    var relatedSectionCopyVerses = FilterSectionVerses(relatedSectionCopy, verses);
+                    relatedSectionCopy.HtmlText = PrepareHtmlText(relatedSectionCopyVerses);
+                    relatedSectionCopy.PlainText = PreparePlainText(relatedSectionCopyVerses);
+                    relatedSectionCopy.RhymeLetters = LanguageUtils.FindRhyme(relatedSectionCopyVerses).Rhyme;
+                    relatedSectionCopy.Modified = true;
+                    _context.Add(relatedSectionCopy);
+                    sections.Add(relatedSectionCopy);
+
+                    relatedSectionVerses = FilterSectionVerses(relatedSection, verses);
+                    relatedSection.HtmlText = PrepareHtmlText(relatedSectionVerses);
+                    relatedSection.PlainText = PreparePlainText(relatedSectionVerses);
+                    relatedSection.RhymeLetters = LanguageUtils.FindRhyme(relatedSectionVerses).Rhyme;
+                    relatedSection.Modified = true;
+                    _context.Update(relatedSection);
+                }
+            }
         }
 
 
