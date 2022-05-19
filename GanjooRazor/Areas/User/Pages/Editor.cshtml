@@ -634,6 +634,16 @@ else
                                     @Html.Raw(poemSetion.HtmlText)
                                 </td>
                             </tr>
+                            <tr>
+                                <td>
+                                    وزن: @(poemSetion.GanjoorMetre == null ? "تعیین نشده" : poemSetion.GanjoorMetre.Rhythm )
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <hr />
+                                </td>
+                            </tr>
                         }
                     </table>
                 </td>
