@@ -2795,6 +2795,25 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+
+        /// <summary>
+        /// update related sections manually
+        /// </summary>
+        /// <param name="metreId"></param>
+        /// <param name="rhyme"></param>
+        /// <returns></returns>
+
+        [HttpPost]
+        [Route("startfindingmissingrhythms")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult UpdateRelatedSections(int metreId, string rhyme)
+        {
+            _ganjoorService.UpdateRelatedSections(metreId, rhyme);
+            return Ok();
+        }
+
         /// <summary>
         /// get a specific poem section
         /// </summary>

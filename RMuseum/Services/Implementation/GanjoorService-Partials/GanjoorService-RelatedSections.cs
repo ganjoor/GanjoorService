@@ -40,6 +40,8 @@ namespace RMuseum.Services.Implementation
                 );
         }
 
+
+
         /// <summary>
         /// update related sections info (after metreId or rhyme for one of these sections changes)
         /// </summary>

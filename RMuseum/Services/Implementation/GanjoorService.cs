@@ -301,7 +301,7 @@ namespace RMuseum.Services.Implementation
                  null
             };
 
-            if(poems && mainSections)
+            if (poems && mainSections)
             {
                 foreach (var poem in catViewModel.Poems)
                 {
@@ -440,22 +440,22 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<string>(null); //not found
 
             var dbPage = pages[0];
-            for (int i= 1; i < pages.Count; i++)
+            for (int i = 1; i < pages.Count; i++)
             {
-                if(pages[i].RedirectFromFullUrl.Length > dbPage.RedirectFromFullUrl.Length)
+                if (pages[i].RedirectFromFullUrl.Length > dbPage.RedirectFromFullUrl.Length)
                 {
                     dbPage = pages[i];
                 }
             }
 
             var target = dbPage.FullUrl;
-            if(url != dbPage.RedirectFromFullUrl)
+            if (url != dbPage.RedirectFromFullUrl)
             {
                 target = dbPage.FullUrl + url.Substring(dbPage.RedirectFromFullUrl.Length);
             }
 
             var dbPageRedirected = await _context.GanjoorPages.Where(p => p.FullUrl == target).AsNoTracking().SingleOrDefaultAsync();
-            if(dbPageRedirected == null)
+            if (dbPageRedirected == null)
                 return new RServiceResult<string>(null); //not found
 
             return new RServiceResult<string>(target);
@@ -732,6 +732,8 @@ namespace RMuseum.Services.Implementation
         }
 
 
+
+
         /// <summary>
         /// get poem comments
         /// </summary>
@@ -864,7 +866,7 @@ namespace RMuseum.Services.Implementation
             var keepFirstTimeUsersComments = await _optionsService.GetValueAsync("KeepFirstTimeUsersComments", null);
             if (keepFirstTimeUsersComments.Result == true.ToString())
             {
-                if((await _context.GanjoorComments.AsNoTracking().Where(c => c.UserId == userId && c.Status == PublishStatus.Published).AnyAsync()) == false)//First time commenter
+                if ((await _context.GanjoorComments.AsNoTracking().Where(c => c.UserId == userId && c.Status == PublishStatus.Published).AnyAsync()) == false)//First time commenter
                 {
                     status = PublishStatus.Awaiting;
                 }
@@ -1131,7 +1133,7 @@ namespace RMuseum.Services.Implementation
             _context.Update(comment);
             await _context.SaveChangesAsync();
             return new RServiceResult<bool>(true);
-            
+
         }
 
         /// <summary>
@@ -1226,9 +1228,9 @@ namespace RMuseum.Services.Implementation
                  [HtmlComment] LANGUAGE 'English')
                  KEY INDEX [PK_GanjoorComments]ON ([GanjoorHtmlCommentTextCatalog], FILEGROUP [PRIMARY])
                  WITH (CHANGE_TRACKING = AUTO, STOPLIST = SYSTEM)
-                */ 
+                */
                 term = term.Replace("‌", " ");//replace zwnj with space
-                
+
                 if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
                 {
                     searchConditions = term.Replace("\"", "").Replace("'", "");
@@ -1257,7 +1259,7 @@ namespace RMuseum.Services.Implementation
                  &&
                  ((filterUserId == Guid.Empty) || (filterUserId != Guid.Empty && comment.UserId == filterUserId))
                  &&
-                 (string.IsNullOrEmpty(searchConditions) || (!string.IsNullOrEmpty(searchConditions) && EF.Functions.Contains(comment.HtmlComment, searchConditions)) )
+                 (string.IsNullOrEmpty(searchConditions) || (!string.IsNullOrEmpty(searchConditions) && EF.Functions.Contains(comment.HtmlComment, searchConditions)))
                  orderby comment.CommentDate descending
                  select new GanjoorCommentFullViewModel()
                  {
@@ -1348,7 +1350,7 @@ namespace RMuseum.Services.Implementation
                                     (
                                         (Guid)moderator.Id,
                                         "گزارش حاشیه",
-                                        $"گزارشی برای یک حاشیه ثبت شده است. لطفاً بخش حاشیه‌های گزارش شده را بررسی فرمایید.{ Environment.NewLine}" +
+                                        $"گزارشی برای یک حاشیه ثبت شده است. لطفاً بخش حاشیه‌های گزارش شده را بررسی فرمایید.{Environment.NewLine}" +
                                         $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی حاشیه‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
                                     );
                 }
@@ -1678,7 +1680,7 @@ namespace RMuseum.Services.Implementation
                 }
 
                 GanjoorPoemSection[] poemSections = null;
-                if(sections)
+                if (sections)
                 {
                     var poemSectionsRes = await GetPoemWholeSections(id);
                     if (!string.IsNullOrEmpty(poemSectionsRes.ExceptionString))
@@ -1768,10 +1770,10 @@ namespace RMuseum.Services.Implementation
 
             if (correction.Rhythm != null || correction.Rhythm2 != null)
             {
-                if(correction.Rhythm == "")
+                if (correction.Rhythm == "")
                     return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "امکان حذف وزن اول با وجود وزن دوم وجود ندارد.");
-                
-                if(mainSection == null)
+
+                if (mainSection == null)
                     return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "امکان تعیین وزن برای این مورد وجود ندارد.");
                 var poemVerses = await _context.GanjoorVerses.AsNoTracking().
                     Where(p => p.PoemId == correction.PoemId).OrderBy(v => v.VOrder).ToListAsync();
@@ -2209,7 +2211,7 @@ namespace RMuseum.Services.Implementation
                 .Where(s =>
                         (poetId == null || s.PoetId == poetId)
                         &&
-                        (string.IsNullOrEmpty(metre) || (metre == "null" && s.GanjoorMetreId == null) ||  (!string.IsNullOrEmpty(metre) && s.GanjoorMetre.Rhythm == metre) )
+                        (string.IsNullOrEmpty(metre) || (metre == "null" && s.GanjoorMetreId == null) || (!string.IsNullOrEmpty(metre) && s.GanjoorMetre.Rhythm == metre))
                         &&
                         ((string.IsNullOrEmpty(rhyme) && s.SectionType == PoemSectionType.WholePoem) || (!string.IsNullOrEmpty(rhyme) && s.RhymeLetters == rhyme))
                         )
@@ -2499,6 +2501,41 @@ namespace RMuseum.Services.Implementation
                         });
 
             return new RServiceResult<int>(-1);
+        }
+
+        /// <summary>
+        /// update related sections
+        /// </summary>
+        /// <param name="metreId"></param>
+        /// <param name="rhyme"></param>
+        public void UpdateRelatedSections(int metreId, string rhyme)
+        {
+            if (string.IsNullOrEmpty(rhyme))
+                return;
+            if (metreId <= 0)
+                return;
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                                    (
+                                    async token =>
+                                    {
+                                        using (RMuseumDbContext inlineContext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so context might be already been freed/collected by GC
+                                        {
+                                            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(inlineContext);
+                                            var job = (await jobProgressServiceEF.NewJob($"بازسازی فهرست بخش‌های مرتبط", $"M: {metreId}, G: {rhyme}")).Result;
+
+                                            try
+                                            {
+                                                await _UpdateRelatedSections(inlineContext, metreId, rhyme);
+                                                await inlineContext.SaveChangesAsync();
+
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                            }
+                                            catch (Exception exp)
+                                            {
+                                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                            }
+                                        }
+                                    });
         }
 
         /// <summary>
@@ -2882,7 +2919,7 @@ namespace RMuseum.Services.Implementation
 
                 var page = await _context.GanjoorPages.Where(p => p.Id == id && p.GanjoorPageType == GanjoorPageType.PoemPage).SingleAsync();
                 _context.Remove(page);
-               
+
                 _context.Remove(poem);
 
                 await _context.SaveChangesAsync();
@@ -2904,11 +2941,11 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                if(true == await _context.GanjoorPoems.Where(p => p.CatId == id).AnyAsync())
+                if (true == await _context.GanjoorPoems.Where(p => p.CatId == id).AnyAsync())
                 {
                     return new RServiceResult<bool>(false, "cat has poems!");
                 }
-                
+
                 var page = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == id).SingleAsync();
                 _context.Remove(page);
                 await _context.SaveChangesAsync();
@@ -2954,7 +2991,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<string[]>(new string[] { });
 
             var catPage = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleOrDefaultAsync();
-            if(catPage == null)
+            if (catPage == null)
             {
                 var catItSelf = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
                 catPage = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == catItSelf.PoetId).SingleAsync();
@@ -3075,7 +3112,7 @@ namespace RMuseum.Services.Implementation
                                 try
                                 {
                                     var res = LanguageUtils.FindRhyme(sectionVerses);
-                                    if(!string.IsNullOrEmpty(res.Rhyme))
+                                    if (!string.IsNullOrEmpty(res.Rhyme))
                                     {
                                         section.RhymeLetters = res.Rhyme;
                                         context.GanjoorPoemSections.Update(section);
@@ -3248,13 +3285,13 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                if(alwaysReturnaAResult)
+                if (alwaysReturnaAResult)
                 {
                     int maxCount = -1;
                     string rhytm = "";
                     foreach (var r in rhytmCounter)
                     {
-                        if(r.Value > maxCount)
+                        if (r.Value > maxCount)
                         {
                             maxCount = r.Value;
                             rhytm = r.Key;
@@ -3303,7 +3340,7 @@ namespace RMuseum.Services.Implementation
                             SrcPoemFullTitle = poem.FullTitle,
                             SrcPoemFullUrl = poem.FullUrl,
                             FirstVerse = firstVerse.Text,
-                            DestPoemId = dupPoem == null ? null :  dupPoem.DestPoemId,
+                            DestPoemId = dupPoem == null ? null : dupPoem.DestPoemId,
                             DestPoemFullTitle = dupPoem == null ? "" : destPoem.FullTitle,
                             DestPoemFullUrl = dupPoem == null ? "" : destPoem.FullUrl
                         }
@@ -3330,7 +3367,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var alreadyDup = await _context.GanjoorDuplicates.AsNoTracking().Where(p => p.SrcPoemId == srcPoemId).FirstOrDefaultAsync();
-                if(alreadyDup != null)
+                if (alreadyDup != null)
                 {
                     return new RServiceResult<bool>(false, $"already dupped : {alreadyDup.DestPoemId}");
                 }

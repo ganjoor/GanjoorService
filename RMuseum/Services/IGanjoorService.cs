@@ -275,6 +275,13 @@ namespace RMuseum.Services
         Task<RServiceResult<int>> BreakPoemAsync(int poemId, int vOrder, Guid userId);
 
         /// <summary>
+        /// update related sections
+        /// </summary>
+        /// <param name="metreId"></param>
+        /// <param name="rhyme"></param>
+        void UpdateRelatedSections(int metreId, string rhyme);
+
+        /// <summary>
         /// next unreviewed track
         /// </summary>
         /// <param name="skip"></param>
