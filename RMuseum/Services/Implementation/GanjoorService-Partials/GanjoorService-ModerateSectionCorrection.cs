@@ -281,7 +281,8 @@ namespace RMuseum.Services.Implementation
             }
             _context.Update(updatingSection);
 
-            foreach (var relatedSection in sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index))
+            var relatedSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index);
+            foreach (var relatedSection in relatedSections)
             {
                 var relatedSectionVerses = FilterSectionVerses(relatedSection, verses);
                 if (relatedSectionVerses.Any(v => v.VOrder >= vOrder))

@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Services\Implementation\GanjoorService-Partials\GanjoorService-ModerateSectionCorrection.cs~RF19e20e05.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DNTPersianUtils.Core" Version="5.4.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3">
