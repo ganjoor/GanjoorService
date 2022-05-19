@@ -13,6 +13,34 @@
 }
 else
 {
+    <script>
+        function rebuildRelatedSections(sectionId, meterId, rhyming) {
+        if (!confirm(String(meterId) + ' : ' + rhyming))
+            return;
+        $('#rebuild-related-' + String(sectionId)).hide();
+
+        var url = '?handler=RebuildRelatedSections';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                meterId: meterId,
+                rhyming: rhyming
+            },
+            success: function() {
+               alert('شروع شد.');
+            },
+            error: function(e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+                $('#rebuild-related-' + String(sectionId)).show();
+            }
+        });
+    }
+    </script>
     <table>
         @foreach (var poemSection in Model.PoemSections)
         {
@@ -86,6 +114,15 @@ else
                     @poemSection.RhymeLetters
                 </td>
             </tr>
+
+            @if (poemSection.GanjoorMetre != null && !string.IsNullOrEmpty(poemSection.RhymeLetters) && Model.CanEdit)
+            {
+                <tr>
+                    <td colspan="2">
+                        <a role="button" id="rebuild-related-@poemSection.Id" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" onclick="rebuildRelatedSections(@poemSection.Id, @poemSection.GanjoorMetreId, '@poemSection.RhymeLetters')">شکستن از اینجا</a>
+                    </td>
+                </tr>
+            }
         }
     </table>
 

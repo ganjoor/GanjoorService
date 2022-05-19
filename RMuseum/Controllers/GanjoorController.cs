@@ -2804,7 +2804,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
 
         [HttpPost]
-        [Route("startfindingmissingrhythms")]
+        [Route("sections/updaterelated")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]

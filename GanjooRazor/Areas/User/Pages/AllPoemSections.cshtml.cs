@@ -1,4 +1,5 @@
-using System.Net.Http;
+﻿using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using RMuseum.Models.Ganjoor;
 
 namespace GanjooRazor.Areas.User.Pages
 {
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class AllPoemSectionsModel : PageModel
     {
         /// <summary>
@@ -17,10 +19,16 @@ namespace GanjooRazor.Areas.User.Pages
 
         public GanjoorPoemSection[] PoemSections { get; set; }
 
+        /// <summary>
+        /// can edit
+        /// </summary>
+        public bool CanEdit { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
                 return Redirect("/");
+            CanEdit = Request.Cookies["CanEdit"] == "True";
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
@@ -35,6 +43,30 @@ namespace GanjooRazor.Areas.User.Pages
                 }
             }
             return Page();
+        }
+
+
+        public async Task<IActionResult> OnPostRebuildRelatedSectionsAsync(int meterId, string rhyming)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/sections/updaterelated?metreId={meterId}&rhyme={rhyming}",
+                        null
+                        );
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkObjectResult(JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync()));
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
         }
     }
 }
