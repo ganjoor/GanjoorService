@@ -106,54 +106,6 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                if (dbCorrection.BreakFromVerse2VOrder != null)
-                {
-                    if (moderation.BreakFromVerse2VOrder != dbCorrection.BreakFromVerse2VOrder)
-                    {
-                        dbCorrection.BreakFromVerse2VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
-                        dbCorrection.BreakFromVerse2VOrder = null;
-                    }
-                    else
-                    {
-                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse2VOrder);
-                        dbCorrection.BreakFromVerse2VOrderResult = CorrectionReviewResult.Approved;
-                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-
-                if (dbCorrection.BreakFromVerse3VOrder != null)
-                {
-                    if (moderation.BreakFromVerse3VOrder != dbCorrection.BreakFromVerse3VOrder)
-                    {
-                        dbCorrection.BreakFromVerse3VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
-                        dbCorrection.BreakFromVerse3VOrder = null;
-                    }
-                    else
-                    {
-                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse3VOrder);
-                        dbCorrection.BreakFromVerse3VOrderResult = CorrectionReviewResult.Approved;
-                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-
-                if (dbCorrection.BreakFromVerse4VOrder != null)
-                {
-                    if (moderation.BreakFromVerse4VOrder != dbCorrection.BreakFromVerse4VOrder)
-                    {
-                        dbCorrection.BreakFromVerse4VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
-                        dbCorrection.BreakFromVerse4VOrder = null;
-                    }
-                    else
-                    {
-                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse4VOrder);
-                        dbCorrection.BreakFromVerse4VOrderResult = CorrectionReviewResult.Approved;
-                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-
                 _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
                 await _context.SaveChangesAsync();
 
