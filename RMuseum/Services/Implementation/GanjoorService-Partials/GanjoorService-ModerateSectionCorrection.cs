@@ -237,7 +237,7 @@ namespace RMuseum.Services.Implementation
 
             foreach (var verse in editingSectionVerses)
             {
-                if (verse.VOrder > vOrder)
+                if (verse.VOrder >= vOrder)
                 {
                     verse.SectionIndex1 = newSectionIndex;
                     _context.Update(verse);
@@ -301,7 +301,7 @@ namespace RMuseum.Services.Implementation
 
                     foreach (var verse in relatedSectionVerses)
                     {
-                        if (verse.VOrder > vOrder)
+                        if (verse.VOrder >= vOrder)
                         {
                             switch (relatedSection.VerseType)
                             {
