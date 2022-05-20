@@ -184,5 +184,15 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// review note
         /// </summary>
         public string ReviewNote { get; set; }
+
+        /// <summary>
+        /// poem Id
+        /// </summary>
+        public int PoemId { get; set; }
+
+        /// <summary>
+        /// poem Id
+        /// </summary>
+        public int SectionIndex { get; set; }
     }
 }

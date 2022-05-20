@@ -22,4 +22,16 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\User\Pages\SectionEdits.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Areas\User\Pages\SectionEdits.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Areas\User\Pages\SectionEdits.cshtml" />
+  </ItemGroup>
+
 </Project>

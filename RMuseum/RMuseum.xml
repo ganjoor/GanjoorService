@@ -9338,6 +9338,16 @@
             review note
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.PoemId">
+            <summary>
+            poem Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.SectionIndex">
+            <summary>
+            poem Id
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel">
             <summary>
             poem summary

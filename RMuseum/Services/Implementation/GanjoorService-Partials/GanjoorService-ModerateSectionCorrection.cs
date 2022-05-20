@@ -268,7 +268,7 @@ namespace RMuseum.Services.Implementation
                 await _notificationService.PushNotification(dbCorrection.UserId,
                                    "بررسی ویرایش پیشنهادی شما",
                                    $"با سپاس از زحمت و همت شما ویرایش پیشنهادیتان برای <a href=\"{dbPoem.FullUrl}\" target=\"_blank\">{dbPoem.FullTitle}</a> بررسی شد.{Environment.NewLine}" +
-                                   $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «ویرایش‌های من» را مشاهده بفرمایید.{Environment.NewLine}"
+                                   $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «ویرایش‌های قطعات من» را مشاهده بفرمایید.{Environment.NewLine}"
                                    );
 
                 foreach (var section in sections)
@@ -564,6 +564,7 @@ namespace RMuseum.Services.Implementation
             List<GanjoorPoemSectionCorrectionViewModel> list = new List<GanjoorPoemSectionCorrectionViewModel>();
             foreach (var dbCorrection in dbPaginatedResult.Items)
             {
+                var section = await _context.GanjoorPoemSections.AsNoTracking().Where(s => s.Id == dbCorrection.SectionId).SingleOrDefaultAsync();
                 list.Add
                     (
                 new GanjoorPoemSectionCorrectionViewModel()
@@ -602,7 +603,9 @@ namespace RMuseum.Services.Implementation
                     Reviewed = dbCorrection.Reviewed,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    PoemId = section == null ? 0 : section.PoemId,
+                    SectionIndex = section == null ? 0 : section.Index,
                 }
                 );
             }

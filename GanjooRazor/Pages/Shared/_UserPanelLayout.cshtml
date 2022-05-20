@@ -17,17 +17,17 @@
     <script src="/lib/tinymce/tinymce.min.js"></script>
     <script>
         tinymce.init({
-                selector: 'textarea.editor',
-                language: 'fa_IR',
-                    menubar: false,
-                    plugins: 'link paste image',
-                    toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | link',
-                    paste_auto_cleanup_on_paste: true,
-                    paste_remove_styles: true,
-                    paste_remove_styles_if_webkit: true,
-                    paste_strip_class_attributes: true,
-                    a11y_advanced_options: true
-                });
+            selector: 'textarea.editor',
+            language: 'fa_IR',
+            menubar: false,
+            plugins: 'link paste image',
+            toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | link',
+            paste_auto_cleanup_on_paste: true,
+            paste_remove_styles: true,
+            paste_remove_styles_if_webkit: true,
+            paste_strip_class_attributes: true,
+            a11y_advanced_options: true
+        });
     </script>
     <script src="/lib/diff.js"></script>
     <script src="/js/bk.js?version=27"></script>
@@ -61,10 +61,6 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/Edits">ویرایش‌‌های من</a>
-                        </li>
-
-                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="User" asp-page="/UpVotedRecitations">خوانش‌های نشان شده</a>
                         </li>
 
@@ -74,6 +70,14 @@
 
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="User" asp-page="/MySuggestedSongs">آهنگ‌های پیشنهادی من</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="User" asp-page="/Edits">ویرایش‌‌های من</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="User" asp-page="/SectionEdits">ویرایش‌‌های قطعات من</a>
                         </li>
 
                         @if (ViewData.ContainsKey("ganjoor-songrevu"))

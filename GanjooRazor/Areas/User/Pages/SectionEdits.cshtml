@@ -1,0 +1,189 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.SectionEditsModel
+@using RMuseum.Models.Ganjoor
+@using RMuseum.Services.Implementation
+@{
+    Layout = "_UserPanelLayout";
+    ViewData["Title"] = "ویرایش‌های قطعات من";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+
+    if (@Model.CanEdit)
+    {
+        <div class="clear-both">
+            <p>
+                <a role="button" href="/User/SectionEdits?AllUsers=1" class="pagebutton">ویرایش‌های قطعات همه</a>
+            </p>
+        </div>
+    }
+
+    @if (Model.Corrections.Count == 0)
+    {
+        <p>
+            شما هنوز هیچ ویرایشی در گنجور انجام نداده‌اید. برای آشنایی با نحوهٔ ویرایش اشعار <a href="https://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/" target="_blank">اینجا</a> را ببینید.
+        </p>
+    }
+
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @foreach (var correction in Model.Corrections)
+    {
+        if (color == "gray")
+            color = "white";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="correction-@correction.Id">
+            <table>
+                <tr>
+                    <td colspan="3"><a href="/User/Section?poemId=@correction.PoemId&index=@correction.SectionIndex" target="_blank">مشاهدهٔ متن شعر یا بخش</a></td>
+                </tr>
+
+                @if (Model.AllUsersEdits)
+                {
+                    <tr>
+                        <td colspan="3"><a href="/hashieha/?userid=@correction.UserId" target="_blank">@correction.UserNickname</a></td>
+                    </tr>
+                }
+
+                <tr>
+                    <td>متن اولیه</td>
+                    <td>تغییرات من</td>
+                    <td>نتیجهٔ بررسی</td>
+                </tr>
+
+                @if (correction.Rhythm != null)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">@correction.OriginalRhythm</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.Rhythm</p>
+                        </td>
+                        <td>
+                            @if (correction.RhythmResult == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
+                            }
+                            else
+                            @if (correction.RhythmResult == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
+                            }
+                            else
+                            {
+                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
+                            }
+                        </td>
+                    </tr>
+                    @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                    {
+                        <tr>
+                            <td colspan="3">
+                                <p>@correction.ReviewNote</p>
+                            </td>
+                        </tr>
+                    }
+                }
+
+                @if (
+               correction.BreakFromVerse1VOrderResult == CorrectionReviewResult.Approved
+               ||
+               correction.BreakFromVerse2VOrderResult == CorrectionReviewResult.Approved
+               ||
+               correction.BreakFromVerse3VOrderResult == CorrectionReviewResult.Approved
+               ||
+               correction.BreakFromVerse4VOrderResult == CorrectionReviewResult.Approved
+               ||
+               correction.BreakFromVerse5VOrderResult == CorrectionReviewResult.Approved
+               ||
+               correction.BreakFromVerse6VOrderResult == CorrectionReviewResult.Approved
+               ||
+               correction.BreakFromVerse7VOrderResult == CorrectionReviewResult.Approved
+               ||
+               correction.BreakFromVerse8VOrderResult == CorrectionReviewResult.Approved
+               ||
+               correction.BreakFromVerse9VOrderResult == CorrectionReviewResult.Approved
+               ||
+               correction.BreakFromVerse10VOrderResult == CorrectionReviewResult.Approved
+               )
+                {
+                    <tr>
+                        <td colspan="3">
+                            <p>پیشنهاد شما برای شکستن قطعه تأیید شده است.</p>
+                        </td>
+                    </tr>
+                }
+
+                @if (!string.IsNullOrEmpty(correction.Note))
+                {
+                    <tr>
+                        <td>یادداشت:</td>
+                        <td colspan="2">
+                            @correction.Note
+                        </td>
+                    </tr>
+                }
+
+                <tr>
+                    <td colspan="3">
+                        @if (correction.Reviewed)
+                        {
+                            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" href="/User/Section?poemId=@correction.PoemId&index=@correction.SectionIndex">ویرایش مجدد</a>
+                        }
+                        else
+                        {
+                            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:blue;display:block" href="/User/Section?poemId=@correction.PoemId&index=@correction.SectionIndex">مشاهده</a>
+                        }
+                    </td>
+                </tr>
+
+            </table>
+
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+
+
+
+
+}
