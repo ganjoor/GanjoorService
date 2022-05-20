@@ -1770,6 +1770,20 @@
             <param name="skip"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserSectionCorrections(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get list of user suggested corrections
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetAllSectionCorrections(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get list of all suggested corrections
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12411,6 +12425,14 @@
             <param name="sectionId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUserSectionCorrections(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get user section corrections
+            </summary>
+            <param name="userId">if sent empty returns all corrections</param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestPoemSectionCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel)">
             <summary>
             send a correction for a section
@@ -14016,6 +14038,14 @@
             </summary>
             <param name="userId"></param>
             <param name="moderation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserSectionCorrections(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get user section corrections
+            </summary>
+            <param name="userId">if sent empty returns all corrections</param>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLastUnreviewedUserCorrectionForSection(System.Guid,System.Int32)">
