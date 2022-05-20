@@ -2978,6 +2978,11 @@
             section correctons
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.UpdatingRelSectsLogs">
+            <summary>
+            Updating related sections logs
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -8094,6 +8099,31 @@
         <member name="F:RMuseum.Models.Ganjoor.PoemSectionType.Couplet">
             <summary>
             couplets (virtual) for Masnavi
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.UpdatingRelSectsLog">
+            <summary>
+            Updating related sections logs
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.UpdatingRelSectsLog.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.UpdatingRelSectsLog.MeterId">
+            <summary>
+            meter id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.UpdatingRelSectsLog.RhymeLettes">
+            <summary>
+            rhyme letters
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.UpdatingRelSectsLog.DateTime">
+            <summary>
+            date/time
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.VersePoemSectionType">

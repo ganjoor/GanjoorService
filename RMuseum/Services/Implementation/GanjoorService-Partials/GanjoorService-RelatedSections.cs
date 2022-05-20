@@ -53,6 +53,19 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                if (await context.UpdatingRelSectsLogs.AsNoTracking()
+                    .Where(l => l.MeterId == metreId && l.RhymeLettes == rhyme && l.DateTime > DateTime.Now.AddMinutes(-10)).AnyAsync())
+                    return new RServiceResult<bool>(true);//prevent parallel updates for same data
+
+                var log = new UpdatingRelSectsLog()
+                {
+                    MeterId = metreId,
+                    RhymeLettes = rhyme,
+                    DateTime = DateTime.Now
+                };
+                context.Add(log);
+                await context.SaveChangesAsync();
+
                 var sections = await context.GanjoorPoemSections.AsNoTracking()
                     .Where(section => section.GanjoorMetreId == metreId && section.RhymeLetters == rhyme && section.SectionType == PoemSectionType.WholePoem)
                     .ToListAsync();
@@ -61,11 +74,18 @@ namespace RMuseum.Services.Implementation
                 {
                     await _UpdateSectionRelatedSectionsInfoNoSaveChanges(context, section, poetsImagesUrls, true);
                 }
+
+                var logs = await context.UpdatingRelSectsLogs
+                    .Where(l => l.MeterId == metreId && l.RhymeLettes == rhyme).ToListAsync();
+                context.RemoveRange(logs);
                 await context.SaveChangesAsync();
                 return new RServiceResult<bool>(true);
             }
             catch (Exception exp)
             {
+                var logs = await context.UpdatingRelSectsLogs
+                    .Where(l => l.MeterId == metreId && l.RhymeLettes == rhyme).ToListAsync();
+                context.RemoveRange(logs);
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
