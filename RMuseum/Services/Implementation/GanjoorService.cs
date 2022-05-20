@@ -308,7 +308,7 @@ namespace RMuseum.Services.Implementation
                     poem.MainSections = await _context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.PoemId == poem.Id && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).OrderBy(s => s.Index).ToArrayAsync();
                     foreach (var section in poem.MainSections)
                     {
-                        section.Excerpt = (await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId &&
+                        var firstVerse = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId &&
                             (
                             (section.VerseType == VersePoemSectionType.First && v.SectionIndex1 == section.Index)
                             ||
@@ -318,7 +318,8 @@ namespace RMuseum.Services.Implementation
                             ||
                             (section.VerseType == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
                             )
-                        ).OrderBy(v => v.VOrder).FirstOrDefaultAsync()).Text;
+                        ).OrderBy(v => v.VOrder).FirstOrDefaultAsync();
+                        section.Excerpt = firstVerse == null ? "" : firstVerse.Text;
                     }
                 }
             }
