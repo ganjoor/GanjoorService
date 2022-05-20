@@ -492,6 +492,77 @@ namespace RMuseum.Services.Implementation
                 ((dbPaginatedResult.PagingMeta, list.ToArray()));
         }
 
+        /// <summary>
+        /// effective corrections for section
+        /// </summary>
+        /// <param name="sectionId"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemSectionCorrectionViewModel[] Items)>> GetSectionEffectiveCorrections(int sectionId, PagingParameterModel paging)
+        {
+            var source = from dbCorrection in
+                             _context.GanjoorPoemSectionCorrections.AsNoTracking()
+                         where
+                         dbCorrection.SectionId == sectionId
+                         &&
+                         dbCorrection.Reviewed == true
+                         &&
+                         (
+                         dbCorrection.BreakFromVerse1VOrderResult == CorrectionReviewResult.Approved 
+                         ||
+                         dbCorrection.BreakFromVerse2VOrderResult == CorrectionReviewResult.Approved
+                         ||
+                         dbCorrection.BreakFromVerse3VOrderResult == CorrectionReviewResult.Approved
+                         ||
+                         dbCorrection.BreakFromVerse4VOrderResult == CorrectionReviewResult.Approved
+                         ||
+                         dbCorrection.RhythmResult == CorrectionReviewResult.Approved
+                         )
+                         orderby dbCorrection.Id descending
+                         select
+                         dbCorrection;
+
+            (PaginationMetadata PagingMeta, GanjoorPoemSectionCorrection[] Items) dbPaginatedResult =
+                await QueryablePaginator<GanjoorPoemSectionCorrection>.Paginate(source, paging);
+
+            List<GanjoorPoemSectionCorrectionViewModel> list = new List<GanjoorPoemSectionCorrectionViewModel>();
+            foreach (var dbCorrection in dbPaginatedResult.Items)
+            {
+                list.Add
+                    (
+                new GanjoorPoemSectionCorrectionViewModel()
+                {
+                    Id = dbCorrection.Id,
+                    SectionId = dbCorrection.SectionId,
+                    UserId = dbCorrection.UserId,
+                    Rhythm = dbCorrection.Rhythm,
+                    OriginalRhythm = dbCorrection.OriginalRhythm,
+                    RhythmResult = dbCorrection.RhythmResult,
+                    Rhythm2 = dbCorrection.Rhythm2,
+                    OriginalRhythm2 = dbCorrection.OriginalRhythm2,
+                    RhythmResult2 = dbCorrection.RhythmResult2,
+                    BreakFromVerse1VOrder = dbCorrection.BreakFromVerse1VOrder,
+                    BreakFromVerse1VOrderResult = dbCorrection.BreakFromVerse1VOrderResult,
+                    BreakFromVerse2VOrder = dbCorrection.BreakFromVerse2VOrder,
+                    BreakFromVerse2VOrderResult = dbCorrection.BreakFromVerse2VOrderResult,
+                    BreakFromVerse3VOrder = dbCorrection.BreakFromVerse3VOrder,
+                    BreakFromVerse3VOrderResult = dbCorrection.BreakFromVerse3VOrderResult,
+                    BreakFromVerse4VOrder = dbCorrection.BreakFromVerse4VOrder,
+                    BreakFromVerse4VOrderResult = dbCorrection.BreakFromVerse4VOrderResult,
+                    Note = dbCorrection.Note,
+                    Date = dbCorrection.Date,
+                    Reviewed = dbCorrection.Reviewed,
+                    ReviewNote = dbCorrection.ReviewNote,
+                    ReviewDate = dbCorrection.ReviewDate,
+                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                }
+                );
+            }
+
+            return new RServiceResult<(PaginationMetadata, GanjoorPoemSectionCorrectionViewModel[])>
+                ((dbPaginatedResult.PagingMeta, list.ToArray()));
+        }
+
 
         /// <summary>
         /// last unreviewed user correction for a section

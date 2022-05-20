@@ -1784,6 +1784,14 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetSectionEffectiveCorrections(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            effective corrections for section
+            </summary>
+            <param name="id"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12476,6 +12484,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetSectionEffectiveCorrections(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            effective corrections for section
+            </summary>
+            <param name="sectionId"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -14045,6 +14061,14 @@
             get user section corrections
             </summary>
             <param name="userId">if sent empty returns all corrections</param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSectionEffectiveCorrections(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            effective corrections for section
+            </summary>
+            <param name="sectionId"></param>
             <param name="paging"></param>
             <returns></returns>
         </member>
