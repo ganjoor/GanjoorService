@@ -189,6 +189,12 @@ namespace GanjooRazor.Areas.Admin.Pages
                     int? breakFromVerse2VOrder = null;
                     int? breakFromVerse3VOrder = null;
                     int? breakFromVerse4VOrder = null;
+                    int? breakFromVerse5VOrder = null;
+                    int? breakFromVerse6VOrder = null;
+                    int? breakFromVerse7VOrder = null;
+                    int? breakFromVerse8VOrder = null;
+                    int? breakFromVerse9VOrder = null;
+                    int? breakFromVerse10VOrder = null;
 
                     if (breakFromVIndices.Length > 0)
                     {
@@ -236,6 +242,36 @@ namespace GanjooRazor.Areas.Admin.Pages
                         {
                             breakFromVerse4VOrder = Verses[breakFromVIndices[3]].VOrder;
                         }
+
+                        if (breakFromVIndices.Length > 4)
+                        {
+                            breakFromVerse5VOrder = Verses[breakFromVIndices[4]].VOrder;
+                        }
+
+                        if (breakFromVIndices.Length > 5)
+                        {
+                            breakFromVerse6VOrder = Verses[breakFromVIndices[5]].VOrder;
+                        }
+
+                        if (breakFromVIndices.Length > 6)
+                        {
+                            breakFromVerse7VOrder = Verses[breakFromVIndices[6]].VOrder;
+                        }
+
+                        if (breakFromVIndices.Length > 7)
+                        {
+                            breakFromVerse8VOrder = Verses[breakFromVIndices[7]].VOrder;
+                        }
+
+                        if (breakFromVIndices.Length > 8)
+                        {
+                            breakFromVerse9VOrder = Verses[breakFromVIndices[8]].VOrder;
+                        }
+
+                        if (breakFromVIndices.Length > 9)
+                        {
+                            breakFromVerse10VOrder = Verses[breakFromVIndices[9]].VOrder;
+                        }
                     }
 
 
@@ -256,6 +292,12 @@ namespace GanjooRazor.Areas.Admin.Pages
                     Correction.BreakFromVerse2VOrder = breakFromVerse2VOrder;
                     Correction.BreakFromVerse3VOrder = breakFromVerse3VOrder;
                     Correction.BreakFromVerse4VOrder = breakFromVerse4VOrder;
+                    Correction.BreakFromVerse5VOrder = breakFromVerse5VOrder;
+                    Correction.BreakFromVerse6VOrder = breakFromVerse6VOrder;
+                    Correction.BreakFromVerse7VOrder = breakFromVerse7VOrder;
+                    Correction.BreakFromVerse8VOrder = breakFromVerse8VOrder;
+                    Correction.BreakFromVerse9VOrder = breakFromVerse9VOrder;
+                    Correction.BreakFromVerse10VOrder = breakFromVerse10VOrder;
 
 
                     var moderationResponse = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/section/moderate",

@@ -34,8 +34,8 @@ else
                 }
             }
 
-            if (breakFromVIndices.length > 4) {
-                alert('حداکثر از ۴ محل می‌توانید قطعه را بشکنید.');
+            if (breakFromVIndices.length > 10) {
+                alert('حداکثر از ۱۰ محل می‌توانید قطعه را بشکنید.');
                 return;
             }
 
@@ -239,14 +239,28 @@ else
 
         @for (int v = 0; v < Model.Verses.Count; v++)
         {
-            if (
+            if 
+            (
             Model.Correction.BreakFromVerse1VOrder == Model.Verses[v].VOrder
-            ||
+             ||
             Model.Correction.BreakFromVerse2VOrder == Model.Verses[v].VOrder
-            ||
+             ||
             Model.Correction.BreakFromVerse3VOrder == Model.Verses[v].VOrder
-            ||
-            Model.Correction.BreakFromVerse4VOrder == Model.Verses[v].VOrder)
+             ||
+            Model.Correction.BreakFromVerse4VOrder == Model.Verses[v].VOrder
+             ||
+            Model.Correction.BreakFromVerse5VOrder == Model.Verses[v].VOrder
+             ||
+            Model.Correction.BreakFromVerse6VOrder == Model.Verses[v].VOrder
+             ||
+            Model.Correction.BreakFromVerse7VOrder == Model.Verses[v].VOrder
+             ||
+            Model.Correction.BreakFromVerse8VOrder == Model.Verses[v].VOrder
+             ||
+            Model.Correction.BreakFromVerse9VOrder == Model.Verses[v].VOrder
+             ||
+            Model.Correction.BreakFromVerse10VOrder == Model.Verses[v].VOrder
+            )
             {
                 <tr>
                     <td colspan="2">

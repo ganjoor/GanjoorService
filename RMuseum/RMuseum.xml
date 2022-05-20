@@ -7303,7 +7303,7 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse4VOrderResult">
             <summary>
-            review result for break from verse3 VOrder
+            review result for break from verse4 VOrder
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.Note">
@@ -7359,6 +7359,66 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.AffectedThePoem">
             <summary>
             had any effect on poem after moderation? effective in history
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse5VOrder">
+            <summary>
+            break from verse5 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse5VOrderResult">
+            <summary>
+            review result for break from verse5 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse6VOrder">
+            <summary>
+            break from verse6 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse6VOrderResult">
+            <summary>
+            review result for break from verse6 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse7VOrder">
+            <summary>
+            break from verse7 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse7VOrderResult">
+            <summary>
+            review result for break from verse7 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse8VOrder">
+            <summary>
+            break from verse8 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse8VOrderResult">
+            <summary>
+            review result for break from verse8 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse9VOrder">
+            <summary>
+            break from verse9 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse9VOrderResult">
+            <summary>
+            review result for break from verse9 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse10VOrder">
+            <summary>
+            break from verse10 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse10VOrderResult">
+            <summary>
+            review result for break from verse10 VOrder
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
@@ -9181,6 +9241,66 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse4VOrderResult">
             <summary>
             review result for break from verse3 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse5VOrder">
+            <summary>
+            break from verse5 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse5VOrderResult">
+            <summary>
+            review result for break from verse5 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse6VOrder">
+            <summary>
+            break from verse6 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse6VOrderResult">
+            <summary>
+            review result for break from verse6 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse7VOrder">
+            <summary>
+            break from verse7 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse7VOrderResult">
+            <summary>
+            review result for break from verse7 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse8VOrder">
+            <summary>
+            break from verse8 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse8VOrderResult">
+            <summary>
+            review result for break from verse8 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse9VOrder">
+            <summary>
+            break from verse9 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse9VOrderResult">
+            <summary>
+            review result for break from verse9 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse10VOrder">
+            <summary>
+            break from verse10 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.BreakFromVerse10VOrderResult">
+            <summary>
+            review result for break from verse10 VOrder
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.Note">

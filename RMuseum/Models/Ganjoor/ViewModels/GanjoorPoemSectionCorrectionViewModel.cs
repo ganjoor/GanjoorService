@@ -88,6 +88,69 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public CorrectionReviewResult BreakFromVerse4VOrderResult { get; set; }
 
         /// <summary>
+        /// break from verse5 VOrder
+        /// </summary>
+        public int? BreakFromVerse5VOrder { get; set; }
+
+        /// <summary>
+        /// review result for break from verse5 VOrder
+        /// </summary>
+        public CorrectionReviewResult BreakFromVerse5VOrderResult { get; set; }
+
+        /// <summary>
+        /// break from verse6 VOrder
+        /// </summary>
+        public int? BreakFromVerse6VOrder { get; set; }
+
+        /// <summary>
+        /// review result for break from verse6 VOrder
+        /// </summary>
+        public CorrectionReviewResult BreakFromVerse6VOrderResult { get; set; }
+
+
+        /// <summary>
+        /// break from verse7 VOrder
+        /// </summary>
+        public int? BreakFromVerse7VOrder { get; set; }
+
+        /// <summary>
+        /// review result for break from verse7 VOrder
+        /// </summary>
+        public CorrectionReviewResult BreakFromVerse7VOrderResult { get; set; }
+
+
+        /// <summary>
+        /// break from verse8 VOrder
+        /// </summary>
+        public int? BreakFromVerse8VOrder { get; set; }
+
+        /// <summary>
+        /// review result for break from verse8 VOrder
+        /// </summary>
+        public CorrectionReviewResult BreakFromVerse8VOrderResult { get; set; }
+
+
+        /// <summary>
+        /// break from verse9 VOrder
+        /// </summary>
+        public int? BreakFromVerse9VOrder { get; set; }
+
+        /// <summary>
+        /// review result for break from verse9 VOrder
+        /// </summary>
+        public CorrectionReviewResult BreakFromVerse9VOrderResult { get; set; }
+
+        /// <summary>
+        /// break from verse10 VOrder
+        /// </summary>
+        public int? BreakFromVerse10VOrder { get; set; }
+
+        /// <summary>
+        /// review result for break from verse10 VOrder
+        /// </summary>
+        public CorrectionReviewResult BreakFromVerse10VOrderResult { get; set; }
+
+        /// <summary>
         /// note
         /// </summary>
         public string Note { get; set; }

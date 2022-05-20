@@ -90,6 +90,109 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
+
+                if (dbCorrection.BreakFromVerse10VOrder != null)
+                {
+                    if (moderation.BreakFromVerse10VOrder != dbCorrection.BreakFromVerse10VOrder)
+                    {
+                        dbCorrection.BreakFromVerse10VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                        dbCorrection.BreakFromVerse10VOrder = null;
+                    }
+                    else
+                    {
+                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse10VOrder);
+                        dbCorrection.BreakFromVerse10VOrderResult = CorrectionReviewResult.Approved;
+                        dbCorrection.AffectedThePoem = true;
+                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                if (dbCorrection.BreakFromVerse9VOrder != null)
+                {
+                    if (moderation.BreakFromVerse9VOrder != dbCorrection.BreakFromVerse9VOrder)
+                    {
+                        dbCorrection.BreakFromVerse9VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                        dbCorrection.BreakFromVerse9VOrder = null;
+                    }
+                    else
+                    {
+                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse9VOrder);
+                        dbCorrection.BreakFromVerse9VOrderResult = CorrectionReviewResult.Approved;
+                        dbCorrection.AffectedThePoem = true;
+                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                if (dbCorrection.BreakFromVerse8VOrder != null)
+                {
+                    if (moderation.BreakFromVerse8VOrder != dbCorrection.BreakFromVerse8VOrder)
+                    {
+                        dbCorrection.BreakFromVerse8VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                        dbCorrection.BreakFromVerse8VOrder = null;
+                    }
+                    else
+                    {
+                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse8VOrder);
+                        dbCorrection.BreakFromVerse8VOrderResult = CorrectionReviewResult.Approved;
+                        dbCorrection.AffectedThePoem = true;
+                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                if (dbCorrection.BreakFromVerse7VOrder != null)
+                {
+                    if (moderation.BreakFromVerse7VOrder != dbCorrection.BreakFromVerse7VOrder)
+                    {
+                        dbCorrection.BreakFromVerse7VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                        dbCorrection.BreakFromVerse7VOrder = null;
+                    }
+                    else
+                    {
+                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse7VOrder);
+                        dbCorrection.BreakFromVerse7VOrderResult = CorrectionReviewResult.Approved;
+                        dbCorrection.AffectedThePoem = true;
+                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                if (dbCorrection.BreakFromVerse6VOrder != null)
+                {
+                    if (moderation.BreakFromVerse6VOrder != dbCorrection.BreakFromVerse6VOrder)
+                    {
+                        dbCorrection.BreakFromVerse6VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                        dbCorrection.BreakFromVerse6VOrder = null;
+                    }
+                    else
+                    {
+                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse6VOrder);
+                        dbCorrection.BreakFromVerse6VOrderResult = CorrectionReviewResult.Approved;
+                        dbCorrection.AffectedThePoem = true;
+                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                if (dbCorrection.BreakFromVerse5VOrder != null)
+                {
+                    if (moderation.BreakFromVerse5VOrder != dbCorrection.BreakFromVerse5VOrder)
+                    {
+                        dbCorrection.BreakFromVerse5VOrderResult = CorrectionReviewResult.RejectedBecauseWrong;
+                        dbCorrection.BreakFromVerse5VOrder = null;
+                    }
+                    else
+                    {
+                        await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse5VOrder);
+                        dbCorrection.BreakFromVerse5VOrderResult = CorrectionReviewResult.Approved;
+                        dbCorrection.AffectedThePoem = true;
+                        _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
                 if (dbCorrection.BreakFromVerse4VOrder != null)
                 {
                     if (moderation.BreakFromVerse4VOrder != dbCorrection.BreakFromVerse4VOrder)
@@ -101,6 +204,7 @@ namespace RMuseum.Services.Implementation
                     {
                         await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse4VOrder);
                         dbCorrection.BreakFromVerse4VOrderResult = CorrectionReviewResult.Approved;
+                        dbCorrection.AffectedThePoem = true;
                         _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
                         await _context.SaveChangesAsync();
                     }
@@ -117,6 +221,7 @@ namespace RMuseum.Services.Implementation
                     {
                         await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse3VOrder);
                         dbCorrection.BreakFromVerse3VOrderResult = CorrectionReviewResult.Approved;
+                        dbCorrection.AffectedThePoem = true;
                         _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
                         await _context.SaveChangesAsync();
                     }
@@ -133,6 +238,7 @@ namespace RMuseum.Services.Implementation
                     {
                         await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse2VOrder);
                         dbCorrection.BreakFromVerse2VOrderResult = CorrectionReviewResult.Approved;
+                        dbCorrection.AffectedThePoem = true;
                         _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
                         await _context.SaveChangesAsync();
                     }
@@ -149,6 +255,7 @@ namespace RMuseum.Services.Implementation
                     {
                         await _BreakSection(sections, editingSectionNotTracked, (int)dbCorrection.BreakFromVerse1VOrder);
                         dbCorrection.BreakFromVerse1VOrderResult = CorrectionReviewResult.Approved;
+                        dbCorrection.AffectedThePoem = true;
                         _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
                         await _context.SaveChangesAsync();
                     }
@@ -478,6 +585,18 @@ namespace RMuseum.Services.Implementation
                     BreakFromVerse3VOrderResult = dbCorrection.BreakFromVerse3VOrderResult,
                     BreakFromVerse4VOrder = dbCorrection.BreakFromVerse4VOrder,
                     BreakFromVerse4VOrderResult = dbCorrection.BreakFromVerse4VOrderResult,
+                    BreakFromVerse5VOrder = dbCorrection.BreakFromVerse5VOrder,
+                    BreakFromVerse5VOrderResult = dbCorrection.BreakFromVerse5VOrderResult,
+                    BreakFromVerse6VOrder = dbCorrection.BreakFromVerse6VOrder,
+                    BreakFromVerse6VOrderResult = dbCorrection.BreakFromVerse6VOrderResult,
+                    BreakFromVerse7VOrder = dbCorrection.BreakFromVerse7VOrder,
+                    BreakFromVerse7VOrderResult = dbCorrection.BreakFromVerse7VOrderResult,
+                    BreakFromVerse8VOrder = dbCorrection.BreakFromVerse8VOrder,
+                    BreakFromVerse8VOrderResult = dbCorrection.BreakFromVerse8VOrderResult,
+                    BreakFromVerse9VOrder = dbCorrection.BreakFromVerse9VOrder,
+                    BreakFromVerse9VOrderResult = dbCorrection.BreakFromVerse9VOrderResult,
+                    BreakFromVerse10VOrder = dbCorrection.BreakFromVerse10VOrder,
+                    BreakFromVerse10VOrderResult = dbCorrection.BreakFromVerse10VOrderResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
@@ -549,6 +668,18 @@ namespace RMuseum.Services.Implementation
                     BreakFromVerse3VOrderResult = dbCorrection.BreakFromVerse3VOrderResult,
                     BreakFromVerse4VOrder = dbCorrection.BreakFromVerse4VOrder,
                     BreakFromVerse4VOrderResult = dbCorrection.BreakFromVerse4VOrderResult,
+                    BreakFromVerse5VOrder = dbCorrection.BreakFromVerse5VOrder,
+                    BreakFromVerse5VOrderResult = dbCorrection.BreakFromVerse5VOrderResult,
+                    BreakFromVerse6VOrder = dbCorrection.BreakFromVerse6VOrder,
+                    BreakFromVerse6VOrderResult = dbCorrection.BreakFromVerse6VOrderResult,
+                    BreakFromVerse7VOrder = dbCorrection.BreakFromVerse7VOrder,
+                    BreakFromVerse7VOrderResult = dbCorrection.BreakFromVerse7VOrderResult,
+                    BreakFromVerse8VOrder = dbCorrection.BreakFromVerse8VOrder,
+                    BreakFromVerse8VOrderResult = dbCorrection.BreakFromVerse8VOrderResult,
+                    BreakFromVerse9VOrder = dbCorrection.BreakFromVerse9VOrder,
+                    BreakFromVerse9VOrderResult = dbCorrection.BreakFromVerse9VOrderResult,
+                    BreakFromVerse10VOrder = dbCorrection.BreakFromVerse10VOrder,
+                    BreakFromVerse10VOrderResult = dbCorrection.BreakFromVerse10VOrderResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
@@ -601,6 +732,18 @@ namespace RMuseum.Services.Implementation
                     BreakFromVerse3VOrderResult = dbCorrection.BreakFromVerse3VOrderResult,
                     BreakFromVerse4VOrder = dbCorrection.BreakFromVerse4VOrder,
                     BreakFromVerse4VOrderResult = dbCorrection.BreakFromVerse4VOrderResult,
+                    BreakFromVerse5VOrder = dbCorrection.BreakFromVerse5VOrder,
+                    BreakFromVerse5VOrderResult = dbCorrection.BreakFromVerse5VOrderResult,
+                    BreakFromVerse6VOrder = dbCorrection.BreakFromVerse6VOrder,
+                    BreakFromVerse6VOrderResult = dbCorrection.BreakFromVerse6VOrderResult,
+                    BreakFromVerse7VOrder = dbCorrection.BreakFromVerse7VOrder,
+                    BreakFromVerse7VOrderResult = dbCorrection.BreakFromVerse7VOrderResult,
+                    BreakFromVerse8VOrder = dbCorrection.BreakFromVerse8VOrder,
+                    BreakFromVerse8VOrderResult = dbCorrection.BreakFromVerse8VOrderResult,
+                    BreakFromVerse9VOrder = dbCorrection.BreakFromVerse9VOrder,
+                    BreakFromVerse9VOrderResult = dbCorrection.BreakFromVerse9VOrderResult,
+                    BreakFromVerse10VOrder = dbCorrection.BreakFromVerse10VOrder,
+                    BreakFromVerse10VOrderResult = dbCorrection.BreakFromVerse10VOrderResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
@@ -718,6 +861,18 @@ namespace RMuseum.Services.Implementation
                     BreakFromVerse3VOrderResult = dbCorrection.BreakFromVerse3VOrderResult,
                     BreakFromVerse4VOrder = dbCorrection.BreakFromVerse4VOrder,
                     BreakFromVerse4VOrderResult = dbCorrection.BreakFromVerse4VOrderResult,
+                    BreakFromVerse5VOrder = dbCorrection.BreakFromVerse5VOrder,
+                    BreakFromVerse5VOrderResult = dbCorrection.BreakFromVerse5VOrderResult,
+                    BreakFromVerse6VOrder = dbCorrection.BreakFromVerse6VOrder,
+                    BreakFromVerse6VOrderResult = dbCorrection.BreakFromVerse6VOrderResult,
+                    BreakFromVerse7VOrder = dbCorrection.BreakFromVerse7VOrder,
+                    BreakFromVerse7VOrderResult = dbCorrection.BreakFromVerse7VOrderResult,
+                    BreakFromVerse8VOrder = dbCorrection.BreakFromVerse8VOrder,
+                    BreakFromVerse8VOrderResult = dbCorrection.BreakFromVerse8VOrderResult,
+                    BreakFromVerse9VOrder = dbCorrection.BreakFromVerse9VOrder,
+                    BreakFromVerse9VOrderResult = dbCorrection.BreakFromVerse9VOrderResult,
+                    BreakFromVerse10VOrder = dbCorrection.BreakFromVerse10VOrder,
+                    BreakFromVerse10VOrderResult = dbCorrection.BreakFromVerse10VOrderResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
@@ -763,6 +918,18 @@ namespace RMuseum.Services.Implementation
                     BreakFromVerse3VOrderResult = dbCorrection.BreakFromVerse3VOrderResult,
                     BreakFromVerse4VOrder = dbCorrection.BreakFromVerse4VOrder,
                     BreakFromVerse4VOrderResult = dbCorrection.BreakFromVerse4VOrderResult,
+                    BreakFromVerse5VOrder = dbCorrection.BreakFromVerse5VOrder,
+                    BreakFromVerse5VOrderResult = dbCorrection.BreakFromVerse5VOrderResult,
+                    BreakFromVerse6VOrder = dbCorrection.BreakFromVerse6VOrder,
+                    BreakFromVerse6VOrderResult = dbCorrection.BreakFromVerse6VOrderResult,
+                    BreakFromVerse7VOrder = dbCorrection.BreakFromVerse7VOrder,
+                    BreakFromVerse7VOrderResult = dbCorrection.BreakFromVerse7VOrderResult,
+                    BreakFromVerse8VOrder = dbCorrection.BreakFromVerse8VOrder,
+                    BreakFromVerse8VOrderResult = dbCorrection.BreakFromVerse8VOrderResult,
+                    BreakFromVerse9VOrder = dbCorrection.BreakFromVerse9VOrder,
+                    BreakFromVerse9VOrderResult = dbCorrection.BreakFromVerse9VOrderResult,
+                    BreakFromVerse10VOrder = dbCorrection.BreakFromVerse10VOrder,
+                    BreakFromVerse10VOrderResult = dbCorrection.BreakFromVerse10VOrderResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,

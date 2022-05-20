@@ -25,8 +25,8 @@ else
                 }
             }
 
-            if (breakFromVIndices.length > 4) {
-                alert('حداکثر از ۴ محل می‌توانید قطعه را بشکنید.');
+            if (breakFromVIndices.length > 10) {
+                alert('حداکثر از ۱۰ محل می‌توانید قطعه را بشکنید.');
                 return;
             }
 
@@ -197,6 +197,18 @@ else
                        Model.MyLastEdit.BreakFromVerse3VOrder == Model.Verses[v].VOrder
                        ||
                        Model.MyLastEdit.BreakFromVerse4VOrder == Model.Verses[v].VOrder
+                       ||
+                       Model.MyLastEdit.BreakFromVerse5VOrder == Model.Verses[v].VOrder
+                       ||
+                       Model.MyLastEdit.BreakFromVerse6VOrder == Model.Verses[v].VOrder
+                       ||
+                       Model.MyLastEdit.BreakFromVerse7VOrder == Model.Verses[v].VOrder
+                       ||
+                       Model.MyLastEdit.BreakFromVerse8VOrder == Model.Verses[v].VOrder
+                       ||
+                       Model.MyLastEdit.BreakFromVerse9VOrder == Model.Verses[v].VOrder
+                       ||
+                       Model.MyLastEdit.BreakFromVerse10VOrder == Model.Verses[v].VOrder
                        )
                        )
                         {
