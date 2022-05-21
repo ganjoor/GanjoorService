@@ -286,7 +286,7 @@ namespace RMuseum.Services.Implementation
                      Published = c.Published,
                  }
                  ).AsNoTracking().ToListAsync(),
-                Poems = poems ? await _context.GanjoorPoems.Include(p => p.GanjoorMetre)
+                Poems = poems ? await _context.GanjoorPoems
                 .Where(p => p.CatId == cat.Id).OrderBy(p => p.Id).Select
                  (
                      p => new GanjoorPoemSummaryViewModel()
@@ -1543,7 +1543,7 @@ namespace RMuseum.Services.Implementation
             var cachKey = $"GetPoemById({id}, {catInfo}, {catPoems}, {rhymes}, {recitations}, {images}, {songs}, {comments}, {verseDetails}, {navigation})";
             if (!_memoryCache.TryGetValue(cachKey, out GanjoorPoemCompleteViewModel poemViewModel))
             {
-                var poem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
+                var poem = await _context.GanjoorPoems.Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
                 if (poem == null)
                 {
                     return new RServiceResult<GanjoorPoemCompleteViewModel>(null); //not found
@@ -1699,8 +1699,7 @@ namespace RMuseum.Services.Implementation
                     UrlSlug = poem.UrlSlug,
                     HtmlText = poem.HtmlText,
                     PlainText = poem.PlainText,
-                    GanjoorMetre = poem.GanjoorMetre,
-                    RhymeLetters = poem.RhymeLetters,
+                    
                     SourceName = poem.SourceName,
                     SourceUrlSlug = poem.SourceUrlSlug,
                     OldTag = poem.OldTag,
@@ -2367,8 +2366,6 @@ namespace RMuseum.Services.Implementation
                         UrlSlug = poem.UrlSlug,
                         HtmlText = poem.HtmlText,
                         PlainText = poem.PlainText,
-                        GanjoorMetre = poem.GanjoorMetre,
-                        RhymeLetters = poem.RhymeLetters,
                         MixedModeOrder = poem.MixedModeOrder,
                         Published = poem.Published,
                         Language = poem.Language,
