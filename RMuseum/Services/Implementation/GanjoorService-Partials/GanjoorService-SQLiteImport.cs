@@ -430,22 +430,7 @@ namespace RMuseum.Services.Implementation
 
                     await _FillPoemCoupletIndices(context, poemId);
 
-                    try
-                    {
-                        var poemRhymeLettersRes = LanguageUtils.FindRhyme(poemVerses);
-                        if (!string.IsNullOrEmpty(poemRhymeLettersRes.Rhyme))
-                        {
-                            dbPoem.RhymeLetters = poemRhymeLettersRes.Rhyme;
-                            context.GanjoorPoems.Update(dbPoem);
-                        }
-                    }
-                    catch
-                    {
-
-                    }
-
-
-
+                    
                     GanjoorPage dbPoemPage = new GanjoorPage()
                     {
                         Id = poemId,
@@ -466,6 +451,8 @@ namespace RMuseum.Services.Implementation
 
                     context.GanjoorPages.Add(dbPoemPage);
                     await context.SaveChangesAsync();
+
+                    await _SectionizePoem(context, dbPoem, jobProgressServiceEF, job);
 
                     catHtmlText += $"<p><a href=\"{dbPoemPage.FullUrl}\">{dbPoemPage.Title}</a></p>{Environment.NewLine}";
 
