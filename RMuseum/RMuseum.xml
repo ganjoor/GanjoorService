@@ -14039,9 +14039,6 @@
             <summary>
             IGanjoorService implementation
             </summary>
-            <summary>
-            IGanjoorService implementation
-            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -14408,15 +14405,6 @@
             </summary>
             <param name="id">problable metre id</param>
             <param name="metre"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService._UpdateRelatedPoems(RMuseum.DbContext.RMuseumDbContext,System.Int32,System.String)">
-            <summary>
-            update related poems info (after metreId or rhyme for one of these poems changes)
-            </summary>
-            <param name="context"></param>
-            <param name="metreId"></param>
-            <param name="rhyme"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRelatedSections(System.Int32,System.Int32,System.Int32,System.Int32)">
