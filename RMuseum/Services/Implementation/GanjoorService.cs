@@ -2228,8 +2228,6 @@ namespace RMuseum.Services.Implementation
                         UrlSlug = section.Poem.UrlSlug,
                         HtmlText = section.HtmlText,
                         PlainText = section.PlainText,
-                        GanjoorMetre = section.GanjoorMetre,
-                        RhymeLetters = section.RhymeLetters,
                         MixedModeOrder = section.Poem.MixedModeOrder,
                         Published = section.Poem.Published,
                         Language = section.Poem.Language,

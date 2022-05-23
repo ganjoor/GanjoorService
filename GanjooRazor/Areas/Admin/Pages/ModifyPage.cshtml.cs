@@ -130,8 +130,6 @@ namespace GanjooRazor.Areas.Admin.Pages
                 SourceUrlSlug = PageInformation.Poem == null ? null : PageInformation.Poem.SourceUrlSlug,
                 OldTag = PageInformation.Poem == null ? null : PageInformation.Poem.OldTag,
                 OldTagPageUrl = PageInformation.Poem == null ? null : PageInformation.Poem.OldTagPageUrl,
-                RhymeLetters = PageInformation.Poem == null ? null : PageInformation.Poem.RhymeLetters,
-                Rhythm = PageInformation.Poem == null ? null : PageInformation.Poem.GanjoorMetre == null ? null : PageInformation.Poem.GanjoorMetre.Rhythm,
                 NoIndex = PageInformation.NoIndex,
                 RedirectFromFullUrl = PageInformation.RedirectFromFullUrl,
                 Language = PageInformation.Poem == null ? null : PageInformation.Poem.Language,

@@ -43,16 +43,6 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public string HtmlText { get; set; }
 
         /// <summary>
-        /// metre
-        /// </summary>
-        public GanjoorMetre GanjoorMetre { get; set; }
-
-        /// <summary>
-        /// rhyme letters
-        /// </summary>
-        public string RhymeLetters { get; set; }
-
-        /// <summary>
         /// source name
         /// </summary>
         public string SourceName { get; set; }
