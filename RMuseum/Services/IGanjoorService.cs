@@ -788,17 +788,17 @@ namespace RMuseum.Services
 
 
         /// <summary>
-        /// get next ganjoor poem probable metre
+        /// get next ganjoor section probable metre
         /// </summary>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetNextGanjoorPoemProbableMetre();
+        Task<RServiceResult<GanjoorPoemSection>> GetNextGanjoorPoemProbableMetre();
 
         /// <summary>
-        /// get a list of ganjoor poems probable metres
+        /// get a list of ganjoor poem sections probable metres
         /// </summary>
         /// <param name="paging"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetUnreviewedGanjoorPoemProbableMetres(PagingParameterModel paging);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemSection[] Items)>> GetUnreviewedGanjoorPoemProbableMetres(PagingParameterModel paging);
 
         /// <summary>
         /// save ganjoor poem probable metre

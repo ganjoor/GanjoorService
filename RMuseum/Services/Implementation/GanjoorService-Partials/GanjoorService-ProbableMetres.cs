@@ -1,10 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
-using RMuseum.Models.Ganjoor.ViewModels;
-using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Generic;
-using RSecurityBackend.Models.Generic.Db;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
@@ -38,38 +35,42 @@ namespace RMuseum.Services.Implementation
                                 var job = (await jobProgressServiceEF.NewJob($"StartFindingMissingRhythms", "Query data")).Result;
                                 try
                                 {
-                                    var poemIds = await context.GanjoorPoems.AsNoTracking()
+                                    var sectionIds = await context.GanjoorPoemSections.AsNoTracking()
                                             .Where(p =>
                                                 p.GanjoorMetreId == null && (onlyPoemsWithRhymes == false || !string.IsNullOrEmpty(p.RhymeLetters))
                                                 &&
-                                                false == (context.GanjoorVerses.Where(v => v.PoemId == p.Id && (v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single)).Any())
-                                                &&
-                                                false == (context.GanjoorPoemProbableMetres.Where(r => r.PoemId == p.Id).Any())
+                                                false == context.GanjoorPoemProbableMetres.Where(r => r.SectionId == p.Id).Any()
                                                 )
                                             .Take(poemsNum)
                                             .Select(p => p.Id)
                                             .ToArrayAsync();
-                                    await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Total: {poemIds.Length}");
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Total: {sectionIds.Length}");
                                     var metres = await context.GanjoorMetres.OrderBy(m => m.Rhythm).AsNoTracking().Select(m => m.Rhythm).ToArrayAsync();
 
                                     using (HttpClient httpClient = new HttpClient())
                                     {
-                                        for (int i = 0; i < poemIds.Length; i++)
+                                        for (int i = 0; i < sectionIds.Length; i++)
                                         {
-                                            var id = poemIds[i];
-                                            var res = await _FindPoemMainSectionRhythm(id, context, httpClient, metres, true);
-                                            if (res.Result == null)
-                                                res.Result = "";
-
-                                            GanjoorPoemProbableMetre prometre = new GanjoorPoemProbableMetre()
+                                            var id = sectionIds[i];
+                                            var section = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.Id == id).SingleOrDefaultAsync();
+                                            if(section != null)
                                             {
-                                                PoemId = id,
-                                                Metre = res.Result
-                                            };
+                                                var res = await _FindSectionRhythm(section, context, httpClient, metres, true);
+                                                if (res.Result == null)
+                                                    res.Result = "";
 
-                                            context.GanjoorPoemProbableMetres.Add(prometre);
+                                                GanjoorPoemProbableMetre prometre = new GanjoorPoemProbableMetre()
+                                                {
+                                                    PoemId = section.PoemId,
+                                                    SectionId = id,
+                                                    Metre = res.Result
+                                                };
 
-                                            await jobProgressServiceEF.UpdateJob(job.Id, i);
+                                                context.GanjoorPoemProbableMetres.Add(prometre);
+
+                                                await jobProgressServiceEF.UpdateJob(job.Id, i);
+                                            }
+                                            
                                         }
                                     }
 
@@ -90,22 +91,21 @@ namespace RMuseum.Services.Implementation
         /// get next ganjoor poem probable metre
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetNextGanjoorPoemProbableMetre()
+        public async Task<RServiceResult<GanjoorPoemSection>> GetNextGanjoorPoemProbableMetre()
         {
             var next = await _context.GanjoorPoemProbableMetres.Where(p => p.Metre != "dismissed").AsNoTracking().FirstOrDefaultAsync();
             if (next == null)
-                return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
-            var res = await GetPoemById(next.PoemId);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return new RServiceResult<GanjoorPoemCompleteViewModel>(null, res.ExceptionString);
-            if (res.Result == null)
-                return new RServiceResult<GanjoorPoemCompleteViewModel>(null, "poem does not exist!");
-            res.Result.GanjoorMetre = new GanjoorMetre()
+                return new RServiceResult<GanjoorPoemSection>(null);
+            var res = await _context.GanjoorPoemSections.AsNoTracking().Where(s => s.Id == next.SectionId).SingleOrDefaultAsync();
+           
+            if (res == null)
+                return new RServiceResult<GanjoorPoemSection>(null, "poem section does not exist!");
+            res.GanjoorMetre = new GanjoorMetre()
             {
                 Id = next.Id,
                 Rhythm = next.Metre
             };
-            return res;
+            return new RServiceResult<GanjoorPoemSection>(res);
         }
 
         /// <summary>
@@ -113,30 +113,29 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="paging"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetUnreviewedGanjoorPoemProbableMetres(PagingParameterModel paging)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemSection[] Items)>> GetUnreviewedGanjoorPoemProbableMetres(PagingParameterModel paging)
         {
             try
             {
                 var source = from probable in _context.GanjoorPoemProbableMetres.AsNoTracking() where probable.Metre != "dismissed" select probable;
                 (PaginationMetadata PagingMeta, GanjoorPoemProbableMetre[] Items) paginatedResult =
                     await QueryablePaginator<GanjoorPoemProbableMetre>.Paginate(source, paging);
-                List<GanjoorPoemCompleteViewModel> poems = new List<GanjoorPoemCompleteViewModel>();
+                List<GanjoorPoemSection> sections = new List<GanjoorPoemSection>();
                 foreach (var next in paginatedResult.Items)
                 {
-                    var res = await GetPoemById(next.PoemId);
-                    var poem = res.Result;
-                    poem.GanjoorMetre = new GanjoorMetre()
+                    var section = await _context.GanjoorPoemSections.AsNoTracking().Where(s => s.Id == next.SectionId).SingleOrDefaultAsync();
+                    section.GanjoorMetre = new GanjoorMetre()
                     {
                         Id = next.Id,
                         Rhythm = next.Metre
                     };
-                    poems.Add(poem);
+                    sections.Add(section);
                 }
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((paginatedResult.PagingMeta, poems.ToArray()));
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemSection[] Items)>((paginatedResult.PagingMeta, sections.ToArray()));
             }
             catch (Exception exp)
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), exp.ToString());
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemSection[] Items)>((null, null), exp.ToString());
             }
         }
 
@@ -172,10 +171,10 @@ namespace RMuseum.Services.Implementation
                     _context.GanjoorMetres.Add(rhythm);
                     await _context.SaveChangesAsync();
                 }
-                var poem = await _context.GanjoorPoems.Where(p => p.Id == item.PoemId).SingleAsync();
-                int? oldMetreId = poem.GanjoorMetreId;
-                poem.GanjoorMetreId = rhythm.Id;
-                _context.Update(poem);
+                var section = await _context.GanjoorPoemSections.Where(p => p.Id == item.SectionId).SingleAsync();
+                int? oldMetreId = section.GanjoorMetreId;
+                section.GanjoorMetreId = rhythm.Id;
+                _context.Update(section);
                 _context.Remove(item);
                 await _context.SaveChangesAsync();
                 _backgroundTaskQueue.QueueBackgroundWorkItem
@@ -184,15 +183,15 @@ namespace RMuseum.Services.Implementation
                         {
                             using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                             {
-                                if (oldMetreId != null && !string.IsNullOrEmpty(poem.RhymeLetters))
+                                if (oldMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
                                 {
-                                    await _UpdateRelatedPoems(context, (int)oldMetreId, poem.RhymeLetters);
+                                    await _UpdateRelatedSections(context, (int)oldMetreId, section.RhymeLetters);
                                     await context.SaveChangesAsync();
                                 }
 
-                                if (poem.GanjoorMetreId != null && !string.IsNullOrEmpty(poem.RhymeLetters))
+                                if (section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
                                 {
-                                    await _UpdateRelatedPoems(context, (int)poem.GanjoorMetreId, poem.RhymeLetters);
+                                    await _UpdateRelatedSections(context, (int)section.GanjoorMetreId, section.RhymeLetters);
                                     await context.SaveChangesAsync();
                                 }
                             }

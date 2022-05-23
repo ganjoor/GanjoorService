@@ -2580,12 +2580,12 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("probablemetre/next")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemSection))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetNextGanjoorPoemProbableMetre()
         {
-            RServiceResult<GanjoorPoemCompleteViewModel> res =
+            RServiceResult<GanjoorPoemSection> res =
                 await _ganjoorService.GetNextGanjoorPoemProbableMetre();
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -2603,7 +2603,7 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("probablemetre/list")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemSection>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetUnreviewedGanjoorPoemProbableMetres([FromQuery] PagingParameterModel paging)

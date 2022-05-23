@@ -24,5 +24,10 @@
         /// metre
         /// </summary>
         public string Metre { get; set; }
+
+        /// <summary>
+        /// section id
+        /// </summary>
+        public int SectionId { get; set; }
     }
 }

@@ -7098,6 +7098,11 @@
             metre
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre.SectionId">
+            <summary>
+            section id
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemSection">
             <summary>
             Ganjoor Poem Section
@@ -12420,13 +12425,13 @@
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetNextGanjoorPoemProbableMetre">
             <summary>
-            get next ganjoor poem probable metre
+            get next ganjoor section probable metre
             </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetUnreviewedGanjoorPoemProbableMetres(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
-            get a list of ganjoor poems probable metres
+            get a list of ganjoor poem sections probable metres
             </summary>
             <param name="paging"></param>
             <returns></returns>
