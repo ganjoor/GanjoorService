@@ -11,7 +11,7 @@
 {
     <p>@Model.LastMessage</p>
 }
-else if(Model.Rhythms != null && Model.Poem != null)
+else if(Model.Rhythms != null && Model.PoemSection != null)
 {
     <form method="post">
         <table>
@@ -34,13 +34,13 @@ else if(Model.Rhythms != null && Model.Poem != null)
             </tr>
             <tr>
                 <td>
-                    <select asp-for="Poem.GanjoorMetre.Rhythm" style="width: 500px">
+                    <select asp-for="PoemSection.GanjoorMetre.Rhythm" style="width: 500px">
                         @foreach (var rhythm in Model.Rhythms)
                         {
                             <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
                         }
                     </select>
-                    <input type="hidden" asp-for="Poem.GanjoorMetre.Id" />
+                    <input type="hidden" asp-for="PoemSection.GanjoorMetre.Id" />
                 </td>
             </tr>
             <tr>
@@ -60,7 +60,7 @@ else if(Model.Rhythms != null && Model.Poem != null)
         <table>
             <tr>
                 <td>
-                    <input type="hidden" asp-for="Poem.GanjoorMetre.Id" />
+                    <input type="hidden" asp-for="PoemSection.GanjoorMetre.Id" />
                     <button type="submit" style="width:100%;color:white;background-color:red">نادیده بگیر</button>
                 </td>
             </tr>
@@ -71,18 +71,10 @@ else if(Model.Rhythms != null && Model.Poem != null)
     <table>
         <tr>
             <td>
-                <a href="@Model.Poem.FullUrl" target="_blank">@Model.Poem.FullTitle</a>
+                <a href="@Model.PageInformation.FullUrl" target="_blank">@Model.PageInformation.FullTitle</a>
             </td>
         </tr>
-        @foreach(var verse in Model.Poem.Verses)
-        {
-            <tr>
-                <td>
-                    @verse.Text
-                </td>
-
-            </tr>
-        }
+        @Html.Raw(Model.PoemSection.HtmlText)
     </table>
 }
 

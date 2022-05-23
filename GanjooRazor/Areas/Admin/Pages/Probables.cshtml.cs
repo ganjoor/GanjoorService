@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
@@ -38,8 +39,14 @@ namespace GanjooRazor.Areas.Admin.Pages
             _httpClient = httpClient;
         }
 
+       
+        public GanjoorPageCompleteViewModel PageInformation { get; set; }
+
+        /// <summary>
+        /// poem section
+        /// </summary>
         [BindProperty]
-        public GanjoorPoemCompleteViewModel Poem { get; set; }
+        public GanjoorPoemSection PoemSection { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
@@ -62,8 +69,8 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             else
             {
-                Poem = JsonConvert.DeserializeObject<GanjoorPoemCompleteViewModel>(await response.Content.ReadAsStringAsync());
-                if(string.IsNullOrEmpty(Poem.GanjoorMetre.Rhythm))
+                PoemSection = JsonConvert.DeserializeObject<GanjoorPoemSection>(await response.Content.ReadAsStringAsync());
+                if(string.IsNullOrEmpty(PoemSection.GanjoorMetre.Rhythm))
                 {
                     Rhythms.Add
                         (
@@ -74,21 +81,38 @@ namespace GanjooRazor.Areas.Admin.Pages
                         }
                         );
                 }
+
+                var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={PoemSection.PoemId}");
+                if (!pageUrlResponse.IsSuccessStatusCode)
+                {
+                    LastMessage = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                    return Page();
+                }
+                var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+
+                var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
+                if (!pageQuery.IsSuccessStatusCode)
+                {
+                    LastMessage = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                    return Page();
+                }
+                PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
             }
 
             return Page();
         }
 
 
-        public async Task<IActionResult> OnPostAsync(GanjoorPoemCompleteViewModel Poem)
+        public async Task<IActionResult> OnPostAsync(GanjoorPoemSection PoemSection)
         {
             LastMessage = "";
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    int probableRecordId = Poem.GanjoorMetre.Id;
-                    string metre = Poem.GanjoorMetre.Rhythm;
+                    int probableRecordId = PoemSection.GanjoorMetre.Id;
+                    string metre = PoemSection.GanjoorMetre.Rhythm;
 
                     if(string.IsNullOrEmpty(metre))
                     {
@@ -117,14 +141,14 @@ namespace GanjooRazor.Areas.Admin.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostDismissAsync(GanjoorPoemCompleteViewModel Poem)
+        public async Task<IActionResult> OnPostDismissAsync(GanjoorPoemSection PoemSection)
         {
             LastMessage = "";
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    int probableRecordId = Poem.GanjoorMetre.Id;
+                    int probableRecordId = PoemSection.GanjoorMetre.Id;
                     var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/probablemetre/dismiss/{probableRecordId}");
 
                     if (!response.IsSuccessStatusCode)
