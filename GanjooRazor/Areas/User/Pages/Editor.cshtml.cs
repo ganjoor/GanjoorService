@@ -137,6 +137,11 @@ namespace GanjooRazor.Areas.User.Pages
                     rhythmsByVerseCount.Sort((a, b) => a.Rhythm.CompareTo(b.Rhythm));
                     rhythmsByVerseCount.Insert(0, new GanjoorMetre()
                     {
+                        Rhythm = "null"
+                    }
+                    );
+                    rhythmsByVerseCount.Insert(0, new GanjoorMetre()
+                    {
                         Rhythm = ""
                     }
                     );
@@ -245,11 +250,19 @@ namespace GanjooRazor.Areas.User.Pages
                     if (title == null && vOrderTexts.Count == 0 && rhythm == null && rhythm2 == null)
                         return new BadRequestObjectResult("شما هیچ تغییری در متن نداده‌اید!");
 
+                    if (rhythm == "null")
+                        rhythm = "";
+
+                    if (rhythm2 == "null")
+                        rhythm2 = "";
+
                     if (rhythm2 != null)
                     {
                         if (rhythm == rhythm2)
                             return new BadRequestObjectResult("وزن اول و دوم یکسانند!");
                     }
+
+
 
                     GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel()
                     {

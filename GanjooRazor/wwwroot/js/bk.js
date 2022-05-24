@@ -979,5 +979,5 @@ function doSearchInRhythmsCombo(selectSearchId, rhythmnewId) {
 }
 
 function resetRhythm(rhythmnewId) {
-    document.getElementById(rhythmnewId).value = '';
+    document.getElementById(rhythmnewId).value = 'null';
 }
