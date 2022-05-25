@@ -1962,7 +1962,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// delete reported other users comment comment
+        /// delete reported other users comment
         /// </summary>
         /// <param name="reportid"></param>
         /// <returns></returns>

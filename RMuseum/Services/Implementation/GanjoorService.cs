@@ -1037,6 +1037,8 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false);
             }
 
+            var reportUserId = report.ReportedById;
+
 
             GanjoorComment comment = await _context.GanjoorComments.Where(c => c.Id == report.GanjoorCommentId).SingleOrDefaultAsync();
             if (comment == null)
@@ -1045,6 +1047,7 @@ namespace RMuseum.Services.Implementation
             }
 
             var commentId = report.GanjoorCommentId;
+            string commentHtmltext = comment.HtmlComment;
 
 
             if (comment.UserId != null)
@@ -1114,6 +1117,14 @@ namespace RMuseum.Services.Implementation
             await _context.SaveChangesAsync();
 
             await CacheCleanForComment(report.GanjoorCommentId);
+
+            if(reportUserId != null)
+            {
+                await _notificationService.PushNotification((Guid)reportUserId, "حذف حاشیهٔ گزارش شده توسط شما",
+                    $"گزارش شما برای حاشیه‌ای با متن ذیل پذیرفته و حاشیه حذف شد. متن حاشیهٔ گزارش شده توسط شما:{Environment.NewLine}" + 
+                    commentHtmltext
+                    );
+            }
 
             return new RServiceResult<bool>(true);
         }
