@@ -146,7 +146,7 @@ namespace RMuseum.Services.Implementation
                                            }
                                            context.UpdateRange(pins);
 
-                                           var similars = await context.GanjoorCachedRelatedPoems.Where(s => s.FullUrl == srcPoem.FullUrl).ToListAsync();
+                                           var similars = await context.GanjoorCachedRelatedSections.Where(s => s.FullUrl.Contains(srcPoem.FullUrl)).ToListAsync();
                                            context.RemoveRange(similars);
 
                                            var corrections = await context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Where(c => c.PoemId == srcPoem.Id).ToListAsync();

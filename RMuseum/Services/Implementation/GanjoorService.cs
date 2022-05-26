@@ -2918,7 +2918,7 @@ namespace RMuseum.Services.Implementation
                 var music = await _context.GanjoorPoemMusicTracks.Where(m => m.PoemId == id).ToListAsync();
                 _context.RemoveRange(music);
 
-                var similars = await _context.GanjoorCachedRelatedPoems.Where(s => s.FullUrl == poem.FullUrl).ToListAsync();
+                var similars = await _context.GanjoorCachedRelatedSections.Where(s => s.FullUrl.Contains(poem.FullUrl)).ToListAsync();
                 _context.RemoveRange(similars);
 
                 var corrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Where(c => c.PoemId == id).ToListAsync();
