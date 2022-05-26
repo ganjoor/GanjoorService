@@ -42,12 +42,12 @@
         /// <summary>
         /// verse position
         /// </summary>
-        public VersePosition VersePosition { get; set; }
+        public VersePosition? VersePosition { get; set; }
 
         /// <summary>
         /// original verse position
         /// </summary>
-        public VersePosition OriginalVersePosition { get; set; }
+        public VersePosition? OriginalVersePosition { get; set; }
 
 
         /// <summary>
