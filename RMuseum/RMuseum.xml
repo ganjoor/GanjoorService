@@ -6890,7 +6890,7 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Result">
             <summary>
-            review result for title and rhythm
+            review result for title
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.RhythmResult">
@@ -7976,6 +7976,31 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.CoupletIndex">
             <summary>
             couplet indexs
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.VersePosition">
+            <summary>
+            verse position
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.OriginalVersePosition">
+            <summary>
+            original verse position
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.VersePositionResult">
+            <summary>
+            verse position result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.MarkForDelete">
+            <summary>
+            mark for delete
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.MarkForDeleteResult">
+            <summary>
+            mark for delete result
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemMusicTrack">

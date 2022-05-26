@@ -100,7 +100,7 @@ namespace RMuseum.Models.Ganjoor
         public int ApplicationOrder { get; set; }
 
         /// <summary>
-        /// review result for title and rhythm
+        /// review result for title
         /// </summary>
         public CorrectionReviewResult Result { get; set; }
 

@@ -38,5 +38,31 @@
         /// couplet indexs
         /// </summary>
         public int? CoupletIndex { get; set; }
+
+        /// <summary>
+        /// verse position
+        /// </summary>
+        public VersePosition VersePosition { get; set; }
+
+        /// <summary>
+        /// original verse position
+        /// </summary>
+        public VersePosition OriginalVersePosition { get; set; }
+
+
+        /// <summary>
+        /// verse position result
+        /// </summary>
+        public CorrectionReviewResult VersePositionResult { get; set; }
+
+        /// <summary>
+        /// mark for delete
+        /// </summary>
+        public bool MarkForDelete { get; set; }
+
+        /// <summary>
+        /// mark for delete result
+        /// </summary>
+        public CorrectionReviewResult MarkForDeleteResult { get; set; }
     }
 }
