@@ -86,6 +86,12 @@ namespace RMuseum.Services.Implementation
                     dbCorrection.AffectedThePoem = true;
                     dbPoem.Title = moderation.Title.Replace("ۀ", "هٔ").Replace("ك", "ک");
                     dbPage.Title = dbPoem.Title;
+                    if(dbPage.ParentId != null)
+                    {
+                        GanjoorPage parent = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == dbPage.ParentId).SingleAsync();
+                        dbPage.FullTitle = parent.FullTitle + " » " + dbPage.Title;
+                        dbPoem.FullTitle = dbPage.FullTitle;
+                    }
                     updatePoem = true;
                 }
             }
