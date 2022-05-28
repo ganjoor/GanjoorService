@@ -100,6 +100,12 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public bool CanEdit { get; set; }
 
+
+        /// <summary>
+        /// show admin ops
+        /// </summary>
+        public bool ShowAdminOps { get; set; }
+
         /// <summary>
         /// get
         /// </summary>
@@ -111,6 +117,8 @@ namespace GanjooRazor.Areas.User.Pages
 
             FatalError = "";
             CanEdit = Request.Cookies["CanEdit"] == "True";
+
+            ShowAdminOps = CanEdit && Request.Query["admin"] == "1";
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))

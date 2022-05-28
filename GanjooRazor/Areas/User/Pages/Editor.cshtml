@@ -171,25 +171,18 @@
 }
 else
 {
-    @if (Model.CanEdit)
-    {
-        <div class="related-images-frame">
-            <p>
-                <a role="button" href="/Admin/ModifyPage?id=@Model.PageInformation.Id" class="pagebutton">ویرایش مستقیم</a>
-            </p>
-        </div>
-    }
+    
     <p>لطفاً در ویرایش متن به <a href="https://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/" target="_blank">این نکات</a> توجه فرمایید.</p>
     <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
     <p><a href="/User/PoemCorrectionsHistory?id=@Model.PageInformation.Id" target="_blank">سوابق ویرایش</a></p>
 
     @if (Model.PageInformation.Poem.Previous != null)
     {
-        <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id">ویرایش شعر قبل</a></p>
+        <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button"  class="pagebutton">ویرایش شعر قبل</a></p>
     }
     @if (Model.PageInformation.Poem.Next != null)
     {
-        <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id">ویرایش شعر بعد</a></p>
+        <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button"  class="pagebutton">ویرایش شعر بعد</a></p>
     }
 
     if (Model.MyLastEdit != null)
@@ -417,7 +410,7 @@ else
                 </td>
             </tr>
 
-            @if (Model.CanEdit && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
+            @if (Model.ShowAdminOps && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
             {
                 <tr>
                     <td>
@@ -655,7 +648,7 @@ else
             {
                 <tr>
                     <td>
-                        <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index">
+                        <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index" role="button"  class="pagebutton">
                             شکستن شعر به قطعات مجزا
                         </a>
                     </td>
@@ -670,18 +663,29 @@ else
             </td>
         </tr>
 
+
+
         @if (Model.PageInformation.Poem.Previous != null)
         {
             <tr>
-                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id">ویرایش شعر قبل</a></td>
+                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button"  class="pagebutton">ویرایش شعر قبل</a></td>
             </tr>
         }
         @if (Model.PageInformation.Poem.Next != null)
         {
             <tr>
-                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id">ویرایش شعر بعد</a></td>
+                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button"  class="pagebutton">ویرایش شعر بعد</a></td>
             </tr>
         }
     </table>
+
+    @if (Model.CanEdit)
+    {
+        <div class="related-images-frame">
+            <p>
+                <a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="pagebutton">امکانات مدیریتی</a>
+            </p>
+        </div>
+    }
 
 }
