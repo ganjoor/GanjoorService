@@ -45,24 +45,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public string GetVersePosition(GanjoorVerseViewModel verse)
         {
-            switch (verse.VersePosition)
-            {
-                case VersePosition.Right:
-                    return "مصرع اول";
-                case VersePosition.Left:
-                    return "مصرع دوم";
-                case VersePosition.CenteredVerse1:
-                    return "مصرع اول بند";
-                case VersePosition.CenteredVerse2:
-                    return "مصرع دوم بند";
-                case VersePosition.Paragraph:
-                    return "پاراگراف نثر";
-                case VersePosition.Single:
-                    return "نیمایی یا آزاد";
-                case VersePosition.Comment:
-                    return "توضیح";
-            }
-            return "نامعتبر";
+            return VersePositionHelper.GetVersePositionString(verse.VersePosition);
         }
 
         public int GetVerseCoupletNumber(GanjoorVerseViewModel verse)

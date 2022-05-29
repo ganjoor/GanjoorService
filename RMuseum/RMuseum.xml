@@ -8264,6 +8264,33 @@
             Non-poem paragraph
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.VersePositionHelper">
+            <summary>
+            Verse Position strings
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.VersePositionHelper.VersePosition">
+            <summary>
+            Verse Position
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.VersePositionHelper.Text">
+            <summary>
+            Text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions">
+            <summary>
+            default verse positions
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString(RMuseum.Models.Ganjoor.VersePosition)">
+            <summary>
+            get verse position text
+            </summary>
+            <param name="versePosition"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel">
             <summary>
             Ganjoor Batch Naming Model
