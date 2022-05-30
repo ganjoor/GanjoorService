@@ -117,8 +117,6 @@ namespace RMuseum.Services.Implementation
                     //copy everything but url and title:
                     targetPoem.HtmlText = sourcePoem.HtmlText;
                     targetPoem.PlainText = sourcePoem.PlainText;
-                    //targetPoem.GanjoorMetreId = sourcePoem.GanjoorMetreId;
-                    //targetPoem.RhymeLetters = sourcePoem.RhymeLetters;
                     targetPoem.SourceName = sourcePoem.SourceName;
                     targetPoem.SourceUrlSlug = sourcePoem.SourceUrlSlug;
                     targetPoem.OldTag = sourcePoem.OldTag;
@@ -349,8 +347,6 @@ namespace RMuseum.Services.Implementation
 
                 dbLastTargetPoem.PlainText = PreparePlainText(targetPoemVerses);
                 dbLastTargetPoem.HtmlText = PrepareHtmlText(targetPoemVerses);
-                //dbLastTargetPoem.GanjoorMetreId = dbMainPoem.GanjoorMetreId;
-                //dbLastTargetPoem.RhymeLetters = dbMainPoem.RhymeLetters;
                 dbLastTargetPoem.SourceName = dbMainPoem.SourceName;
                 dbLastTargetPoem.SourceUrlSlug = dbMainPoem.SourceUrlSlug;
                 dbLastTargetPoem.OldTag = dbMainPoem.OldTag;
@@ -476,7 +472,6 @@ namespace RMuseum.Services.Implementation
                     UrlSlug = nextPoemUrlSluf,
                     FullTitle = $"{parentPage.FullTitle} » {nextPoemTitle}",
                     FullUrl = $"{parentPage.FullUrl}/{nextPoemUrlSluf}",
-                    //GanjoorMetreId = poem.GanjoorMetre == null ? null : poem.GanjoorMetre.Id,
                     SourceName = poem.SourceName,
                     SourceUrlSlug = poem.SourceUrlSlug,
                     Language = dbMainPoem.Language,
