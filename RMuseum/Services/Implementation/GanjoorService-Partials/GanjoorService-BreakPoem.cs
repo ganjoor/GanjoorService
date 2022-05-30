@@ -48,8 +48,8 @@ namespace RMuseum.Services.Implementation
                     OldTag = dbMainPoem.OldTag,
                     OldTagPageUrl = dbMainPoem.OldTagPageUrl
                 };
-                _context.GanjoorPageSnapshots.Add(firstSnapshot);
-                await _context.SaveChangesAsync();
+                context.GanjoorPageSnapshots.Add(firstSnapshot);
+                await context.SaveChangesAsync();
 
 
                 var poemList = await context.GanjoorPoems.AsNoTracking()
@@ -391,7 +391,7 @@ namespace RMuseum.Services.Implementation
                     OldTag = dbMainPoem.OldTag,
                     OldTagPageUrl = dbMainPoem.OldTagPageUrl
                 };
-                _context.GanjoorPageSnapshots.Add(firstSnapshot);
+                context.GanjoorPageSnapshots.Add(firstSnapshot);
 
 
                 var mainPoemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poemId && v.VOrder < vOrder).OrderBy(v => v.VOrder).ToListAsync();
@@ -399,12 +399,12 @@ namespace RMuseum.Services.Implementation
                 dbMainPoem.HtmlText = PrepareHtmlText(mainPoemVerses);
                 dbMainPoem.PlainText = PreparePlainText(mainPoemVerses);
                 dbPage.HtmlText = dbMainPoem.HtmlText;
-                _context.Update(dbMainPoem);
-                _context.Update(dbPage);
+                context.Update(dbMainPoem);
+                context.Update(dbPage);
 
                 
 
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
                 return new RServiceResult<int>(targetPoemId);
             }
@@ -447,8 +447,8 @@ namespace RMuseum.Services.Implementation
                     OldTag = dbMainPoem.OldTag,
                     OldTagPageUrl = dbMainPoem.OldTagPageUrl
                 };
-                _context.GanjoorPageSnapshots.Add(firstSnapshot);
-                await _context.SaveChangesAsync();
+                context.GanjoorPageSnapshots.Add(firstSnapshot);
+                await context.SaveChangesAsync();
 
 
 
@@ -603,7 +603,7 @@ namespace RMuseum.Services.Implementation
                     OldTag = dbMainPoem.OldTag,
                     OldTagPageUrl = dbMainPoem.OldTagPageUrl
                 };
-                _context.GanjoorPageSnapshots.Add(firstSnapshot);
+                context.GanjoorPageSnapshots.Add(firstSnapshot);
 
 
                 var mainPoemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poemId && v.VOrder < vOrder).OrderBy(v => v.VOrder).ToListAsync();
@@ -611,8 +611,8 @@ namespace RMuseum.Services.Implementation
                 dbMainPoem.HtmlText = PrepareHtmlText(mainPoemVerses);
                 dbMainPoem.PlainText = PreparePlainText(mainPoemVerses);
                 dbPage.HtmlText = dbMainPoem.HtmlText;
-                _context.Update(dbMainPoem);
-                _context.Update(dbPage);
+                context.Update(dbMainPoem);
+                context.Update(dbPage);
 
 
 
