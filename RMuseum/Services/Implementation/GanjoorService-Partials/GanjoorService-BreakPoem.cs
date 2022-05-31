@@ -411,30 +411,7 @@ namespace RMuseum.Services.Implementation
                 var dbMainPoem = await context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();
                 var dbPage = await context.GanjoorPages.Where(p => p.Id == poemId).SingleOrDefaultAsync();
 
-                var mainPoemSections = await context.GanjoorPoemSections.Include(s => s.GanjoorMetre).Where(s => s.PoemId == poemId).OrderBy(s => s.SectionType).ThenBy(s => s.Index).ToListAsync();
-                //beware: items consisting only of paragraphs have no main setion (mainSection in the following line can legitimately become null)
-                var mainPoemMainSection = mainPoemSections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First);
-
-                GanjoorPageSnapshot firstSnapshot = new GanjoorPageSnapshot()
-                {
-                    GanjoorPageId = dbPage.Id,
-                    MadeObsoleteByUserId = userId,
-                    RecordDate = DateTime.Now,
-                    Note = "گام اول شکستن شعر به اشعار مجزا",
-                    Title = dbMainPoem.Title,
-                    UrlSlug = dbMainPoem.UrlSlug,
-                    HtmlText = dbMainPoem.HtmlText,
-                    SourceName = dbMainPoem.SourceName,
-                    SourceUrlSlug = dbMainPoem.SourceUrlSlug,
-                    Rhythm = mainPoemMainSection == null || mainPoemMainSection.GanjoorMetre == null ? null : mainPoemMainSection.GanjoorMetre.Rhythm,
-                    RhymeLetters = mainPoemMainSection == null ? null : mainPoemMainSection.RhymeLetters,
-                    OldTag = dbMainPoem.OldTag,
-                    OldTagPageUrl = dbMainPoem.OldTagPageUrl
-                };
-                context.GanjoorPageSnapshots.Add(firstSnapshot);
-                await context.SaveChangesAsync();
-
-
+                
 
                 if (!int.TryParse(poem.UrlSlug.Substring("sh".Length), out int slugNumber))
                     return new RServiceResult<int>(-1, $"slug error: {poem.UrlSlug}");
@@ -472,7 +449,7 @@ namespace RMuseum.Services.Implementation
                     targetPoemVerses[i].PoemId = nextPoemId;
                     targetPoemVerses[i].CoupletIndex -= firstCoupletIndex;
                 }
-
+                var mainPoemSections = await context.GanjoorPoemSections.Where(s => s.PoemId == poemId).OrderBy(s => s.SectionType).ThenBy(s => s.Index).ToListAsync();
                 List<GanjoorPoemSection> targetPoemSections = new List<GanjoorPoemSection>();
                 foreach (var section in mainPoemSections)
                 {
@@ -571,25 +548,6 @@ namespace RMuseum.Services.Implementation
                 await context.SaveChangesAsync();
 
 
-                GanjoorPageSnapshot lastSnapshot = new GanjoorPageSnapshot()
-                {
-                    GanjoorPageId = dbMainPoem.Id,
-                    MadeObsoleteByUserId = userId,
-                    RecordDate = DateTime.Now,
-                    Note = "گام نهایی شکستن شعر به اشعار مجزا",
-                    Title = dbMainPoem.Title,
-                    UrlSlug = dbMainPoem.UrlSlug,
-                    HtmlText = dbMainPoem.HtmlText,
-                    SourceName = dbMainPoem.SourceName,
-                    SourceUrlSlug = dbMainPoem.SourceUrlSlug,
-                    Rhythm = mainPoemMainSection == null || mainPoemMainSection.GanjoorMetre == null ? null : mainPoemMainSection.GanjoorMetre.Rhythm,
-                    RhymeLetters = mainPoemMainSection == null ? null : mainPoemMainSection.RhymeLetters,
-                    OldTag = dbMainPoem.OldTag,
-                    OldTagPageUrl = dbMainPoem.OldTagPageUrl
-                };
-                context.GanjoorPageSnapshots.Add(firstSnapshot);
-
-
                 var mainPoemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poemId && v.VOrder < vOrder).OrderBy(v => v.VOrder).ToListAsync();
 
                 dbMainPoem.HtmlText = PrepareHtmlText(mainPoemVerses);
@@ -597,6 +555,33 @@ namespace RMuseum.Services.Implementation
                 dbPage.HtmlText = dbMainPoem.HtmlText;
                 context.Update(dbMainPoem);
                 context.Update(dbPage);
+
+                foreach (var section in mainPoemSections)
+                {
+                    var sectionVerses = FilterSectionVerses(section, mainPoemVerses);
+                    if (sectionVerses.Count == 0)
+                    {
+                        context.Remove(section);
+                    }
+                    else
+                    {
+                        section.HtmlText = PrepareHtmlText(sectionVerses);
+                        section.PlainText = PreparePlainText(sectionVerses);
+                        try
+                        {
+                            var sectionRhymeLettersRes = LanguageUtils.FindRhyme(sectionVerses);
+                            if (!string.IsNullOrEmpty(sectionRhymeLettersRes.Rhyme))
+                            {
+                                section.RhymeLetters = sectionRhymeLettersRes.Rhyme;
+                            }
+                        }
+                        catch
+                        {
+
+                        }
+                        context.Update(section);
+                    }
+                }
 
 
 
