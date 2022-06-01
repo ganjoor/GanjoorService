@@ -25,10 +25,10 @@ namespace RMuseum.Services.Implementation
                 {
                     return await _BreakLastPoemInItsCategoryAsync(context, poemId, vOrder, userId, poem, parentPage, poemTitleStaticPart);
                 }
-                var dbMainPoem = await context.GanjoorPoems.AsNoTracking().Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();
+                var dbMainPoem = await context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();
                 var dbPage = await context.GanjoorPages.Where(p => p.Id == poemId).SingleOrDefaultAsync();
 
-                var poemList = await context.GanjoorPoems.Where(p => p.CatId == dbMainPoem.CatId && p.Id > dbMainPoem.Id).OrderBy(p => p.Id).ToListAsync();
+                var poemList = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == dbMainPoem.CatId && p.Id > dbMainPoem.Id).OrderBy(p => p.Id).ToListAsync();
 
                 var lastPoemInCategory = poemList.Last();
 
@@ -85,36 +85,8 @@ namespace RMuseum.Services.Implementation
                 //now copy each poem to its next sibling in their category
                 for (int nPoemIndex = poemList.Count - 1; nPoemIndex >= 0; nPoemIndex--)
                 {
-
                     var sourcePoem = poemList[nPoemIndex];
-
                     var targetPoem = await context.GanjoorPoems.Where(p => p.Id == targetPoemId).SingleAsync();
-                    //copy everything but url and title:
-                    targetPoem.HtmlText = sourcePoem.HtmlText;
-                    targetPoem.PlainText = sourcePoem.PlainText;
-                    targetPoem.SourceName = sourcePoem.SourceName;
-                    targetPoem.SourceUrlSlug = sourcePoem.SourceUrlSlug;
-                    targetPoem.OldTag = sourcePoem.OldTag;
-                    targetPoem.OldTagPageUrl = sourcePoem.OldTagPageUrl;
-                    targetPoem.MixedModeOrder = sourcePoem.MixedModeOrder;
-                    targetPoem.Published = sourcePoem.Published;
-                    targetPoem.Language = sourcePoem.Language;
-                    context.Update(targetPoem);
-
-
-                    var sourcePage = await context.GanjoorPages.AsNoTracking().Where(p => p.Id == sourcePoem.Id).SingleAsync();
-                    var targetPage = await context.GanjoorPages.Where(p => p.Id == targetPoemId).SingleAsync();
-                    //copy everything but url and title:
-                    targetPage.Published = sourcePage.Published;
-                    targetPage.PageOrder = sourcePage.PageOrder;
-                    targetPage.ParentId = sourcePage.ParentId;
-                    targetPage.PoetId = sourcePage.PoetId;
-                    targetPage.CatId = sourcePage.CatId;
-                    targetPage.PostDate = sourcePage.PostDate;
-                    targetPage.NoIndex = sourcePage.NoIndex;
-                    targetPage.HtmlText = sourcePage.HtmlText; 
-                    context.Update(targetPage);
-
 
                     var poemVerses = await context.GanjoorVerses.Where(v => v.PoemId == sourcePoem.Id).ToListAsync();
                     for (int i = 0; i < poemVerses.Count; i++)
@@ -234,6 +206,31 @@ namespace RMuseum.Services.Implementation
                     }
                     context.UpdateRange(pinterests);
 
+                    //copy everything but url and title:
+                    targetPoem.HtmlText = sourcePoem.HtmlText;
+                    targetPoem.PlainText = sourcePoem.PlainText;
+                    targetPoem.SourceName = sourcePoem.SourceName;
+                    targetPoem.SourceUrlSlug = sourcePoem.SourceUrlSlug;
+                    targetPoem.OldTag = sourcePoem.OldTag;
+                    targetPoem.OldTagPageUrl = sourcePoem.OldTagPageUrl;
+                    targetPoem.MixedModeOrder = sourcePoem.MixedModeOrder;
+                    targetPoem.Published = sourcePoem.Published;
+                    targetPoem.Language = sourcePoem.Language;
+                    context.Update(targetPoem);
+
+                    var sourcePage = await context.GanjoorPages.AsNoTracking().Where(p => p.Id == sourcePoem.Id).SingleAsync();
+                    var targetPage = await context.GanjoorPages.Where(p => p.Id == targetPoemId).SingleAsync();
+                    //copy everything but url and title:
+                    targetPage.Published = sourcePage.Published;
+                    targetPage.PageOrder = sourcePage.PageOrder;
+                    targetPage.ParentId = sourcePage.ParentId;
+                    targetPage.PoetId = sourcePage.PoetId;
+                    targetPage.CatId = sourcePage.CatId;
+                    targetPage.PostDate = sourcePage.PostDate;
+                    targetPage.NoIndex = sourcePage.NoIndex;
+                    targetPage.HtmlText = sourcePage.HtmlText;
+                    context.Update(targetPage);
+
                     targetPoemId = sourcePoem.Id;
                 }
 
@@ -329,7 +326,8 @@ namespace RMuseum.Services.Implementation
                 dbLastTargetPoem.MixedModeOrder = dbMainPoem.MixedModeOrder;
                 dbLastTargetPoem.Published = dbMainPoem.Published;
                 dbLastTargetPoem.Language = dbMainPoem.Language;
-                
+                context.Update(dbLastTargetPoem);
+
 
                 var dbLastTargetPage = await context.GanjoorPages.Where(p => p.Id == targetPoemId).SingleAsync();
                 dbLastTargetPage.Published = dbPage.Published;
@@ -343,13 +341,11 @@ namespace RMuseum.Services.Implementation
                 context.Update(dbLastTargetPage);
 
 
-                context.Update(dbLastTargetPoem);
                 context.GanjoorVerses.UpdateRange(targetPoemVerses);
 
 
 
                 await context.SaveChangesAsync();
-
 
                 var mainPoemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poemId && v.VOrder < vOrder).OrderBy(v => v.VOrder).ToListAsync();
 
