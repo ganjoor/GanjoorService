@@ -62,7 +62,6 @@ body {
     background-image: url('/image/sky.jpg');
     background-repeat: no-repeat;
     background-size: cover;
-    cursor: pointer
 }
 
 #content {
@@ -126,6 +125,10 @@ body {
         text-decoration: none;
         color: yellow
     }
+
+.cursor-pointer{
+    cursor: pointer;
+}
 
 #footer {
     position: fixed;
