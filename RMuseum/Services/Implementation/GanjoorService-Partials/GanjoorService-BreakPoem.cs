@@ -159,13 +159,6 @@ namespace RMuseum.Services.Implementation
                 {
                     relatedSections[i].PoemId = targetPoemId;
                 }
-                var inRelationSections = await context.GanjoorCachedRelatedSections.Where(c => c.FullUrl.StartsWith(sourcePoem.FullUrl)).ToListAsync();
-                for (int i = 0; i < inRelationSections.Count; i++)
-                {
-                    inRelationSections[i].FullUrl = inRelationSections[i].FullUrl.Replace(sourcePoem.FullUrl, targetPoem.FullUrl);
-                    inRelationSections[i].FullTitle = inRelationSections[i].FullTitle.Replace(sourcePoem.FullTitle, targetPoem.FullTitle);
-                }
-                relatedSections.AddRange(inRelationSections);
                 context.UpdateRange(relatedSections);
 
                 var probables = await context.GanjoorPoemProbableMetres.Where(c => c.PoemId == sourcePoem.Id).ToListAsync();
@@ -382,6 +375,17 @@ namespace RMuseum.Services.Implementation
 
 
             await context.SaveChangesAsync();
+
+            var updatePoemListId = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == dbMainPoem.CatId && p.Id >= dbMainPoem.Id).Select(p => p.Id).ToListAsync();
+            foreach (var updatePoemId in updatePoemListId)
+            {
+                var sections = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == updatePoemId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters)).ToListAsync();
+                foreach (var section in sections)
+                {
+                    await _UpdateRelatedSections(context, (int)section.GanjoorMetreId, section.RhymeLetters);
+                }
+            }
+
 
             return new RServiceResult<int>(targetPoemId);
         }
