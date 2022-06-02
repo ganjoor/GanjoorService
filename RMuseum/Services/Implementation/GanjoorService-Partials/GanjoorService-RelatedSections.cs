@@ -40,6 +40,51 @@ namespace RMuseum.Services.Implementation
                 );
         }
 
+        /// <summary>
+        /// regenerate category related sections
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public RServiceResult<bool> StartRegeneratingCateoryRelatedSections(int catId)
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                   var job = (await jobProgressServiceEF.NewJob("StartRegeneratingCateoryRelatedSections", "Query data")).Result;
+                                   try
+                                   {
+                                       var updatePoemListId = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).Select(p => p.Id).ToListAsync();
+                                       foreach (var updatePoemId in updatePoemListId)
+                                       {
+                                           var sections = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == updatePoemId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters)).ToListAsync();
+                                           foreach (var section in sections)
+                                           {
+                                               await _UpdateRelatedSections(context, (int)section.GanjoorMetreId, section.RhymeLetters);
+                                           }
+                                       }
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                   }
+                                   catch (Exception exp)
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                   }
+
+                               }
+                           });
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
 
 
         /// <summary>
