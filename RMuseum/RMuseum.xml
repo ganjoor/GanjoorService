@@ -1715,6 +1715,13 @@
             <param name="rhyme"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartRegeneratingCateoryRelatedSections(System.Int32)">
+            <summary>
+            regenerate category related sections
+            </summary>
+            <param name="id">category id</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemSectionByIdAsync(System.Int32)">
             <summary>
             get a specific poem section
@@ -12699,6 +12706,13 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartRegeneratingCateoryRelatedSections(System.Int32)">
+            <summary>
+            regenerate category related sections
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -14457,6 +14471,13 @@
             <param name="sectionIndex">section index</param>
             <param name="skip"></param>
             <param name="itemsCount">if sent 0 or less returns all items</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingCateoryRelatedSections(System.Int32)">
+            <summary>
+            regenerate category related sections
+            </summary>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._UpdateRelatedSections(RMuseum.DbContext.RMuseumDbContext,System.Int32,System.String)">

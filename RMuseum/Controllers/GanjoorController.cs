@@ -2815,6 +2815,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// regenerate category related sections
+        /// </summary>
+        /// <param name="id">category id</param>
+        /// <returns></returns>
+
+        [HttpPut]
+        [Route("cat/{id}/regenrelatedsections")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartRegeneratingCateoryRelatedSections(int id)
+        {
+
+            RServiceResult<bool> res =
+                _ganjoorService.StartRegeneratingCateoryRelatedSections(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// get a specific poem section
         /// </summary>
         /// <param name="sectionId"></param>
@@ -3097,6 +3118,8 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result.Items);
         }
+
+        
 
 
         /// <summary>

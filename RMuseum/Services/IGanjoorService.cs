@@ -1023,5 +1023,13 @@ namespace RMuseum.Services
         /// <param name="paging"></param>
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemSectionCorrectionViewModel[] Items)>> GetSectionEffectiveCorrections(int sectionId, PagingParameterModel paging);
+
+
+        /// <summary>
+        /// regenerate category related sections
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartRegeneratingCateoryRelatedSections(int catId);
     }
 }
