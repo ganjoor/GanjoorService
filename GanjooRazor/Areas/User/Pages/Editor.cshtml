@@ -174,16 +174,8 @@ else
 
     <p>لطفاً در ویرایش متن به <a href="https://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/" target="_blank">این نکات</a> توجه فرمایید.</p>
     <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
-    <p><a href="/User/PoemCorrectionsHistory?id=@Model.PageInformation.Id" target="_blank">سوابق ویرایش</a></p>
 
-    @if (Model.PageInformation.Poem.Previous != null)
-    {
-        <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a></p>
-    }
-    @if (Model.PageInformation.Poem.Next != null)
-    {
-        <p><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a></p>
-    }
+
 
     if (Model.MyLastEdit != null)
     {
@@ -262,6 +254,21 @@ else
     }
 
     <table>
+        <tr>
+            <td><a href="/User/PoemCorrectionsHistory?id=@Model.PageInformation.Id" role="button" class="pagebutton" target="_blank">سوابق ویرایش</a></td>
+        </tr>
+        @if (Model.PageInformation.Poem.Previous != null)
+        {
+            <tr>
+                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a></td>
+            </tr>
+        }
+        @if (Model.PageInformation.Poem.Next != null)
+        {
+            <tr>
+                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a></td>
+            </tr>
+        }
         @if (Model.TextSourceImage != null)
         {
             <tr>
@@ -689,11 +696,12 @@ else
 
         <tr>
             <td>
-                <a href="/User/AllPoemSections?id=@Model.PageInformation.Id">
+                <a href="/User/AllPoemSections?id=@Model.PageInformation.Id"  class="pagebutton">
                     همهٔ قطعات شعر
                 </a>
             </td>
         </tr>
+
 
 
 
