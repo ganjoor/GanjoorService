@@ -655,15 +655,7 @@ else
             </td>
         </tr>
 
-        <tr>
-            <td>
-                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
-            </td>
-        </tr>
-
-        <tr>
-            <td><p id="saving">&nbsp;</p></td>
-        </tr>
+       
 
         @if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) > 1)
         {
@@ -761,6 +753,16 @@ else
                 <td><a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="pagebutton">امکانات مدیریتی</a></td>
             </tr>
         }
+
+         <tr>
+            <td>
+                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td><p id="saving">&nbsp;</p></td>
+        </tr>
     </table>
 
 
