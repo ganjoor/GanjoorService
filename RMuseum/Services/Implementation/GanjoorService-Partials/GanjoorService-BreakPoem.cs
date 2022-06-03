@@ -25,6 +25,9 @@ namespace RMuseum.Services.Implementation
             }
             var dbMainPoem = await context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();
 
+            if(dbMainPoem.Title.IndexOf(poemTitleStaticPart) != 0)
+                return new RServiceResult<int>(-1, $"dbMainPoem.Title.IndexOf(poemTitleStaticPart) != 0");
+
             if (!int.TryParse(dbMainPoem.UrlSlug.Substring("sh".Length), out int mainPoemSlugNumber))
                 return new RServiceResult<int>(-1, $"slug error for the last poem in the category: {dbMainPoem.UrlSlug}");
 

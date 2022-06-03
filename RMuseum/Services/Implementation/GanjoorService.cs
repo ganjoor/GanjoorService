@@ -2496,7 +2496,12 @@ namespace RMuseum.Services.Implementation
                                 var job = (await jobProgressServiceEF.NewJob($"Breaking poem {poem.FullTitle}", "Query data")).Result;
                                 try
                                 {
-                                    await _BreakPoemAsync(context, poemId, vOrder, userId, poem, parentPage, poemTitleStaticPart);
+                                    var res = await _BreakPoemAsync(context, poemId, vOrder, userId, poem, parentPage, poemTitleStaticPart);
+                                    if(!string.IsNullOrEmpty(res.ExceptionString))
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, res.ExceptionString);
+                                    }
+
                                     await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                 }
                                 catch (Exception exp)
