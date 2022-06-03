@@ -78,6 +78,8 @@ namespace GanjooRazor.Areas.User.Pages
 
         public GanjoorMetre GanjoorMetre2 { get; set; }
 
+        public string RhymeLetters { get; set; }
+
         /// <summary>
         /// can edit
         /// </summary>
@@ -154,6 +156,11 @@ namespace GanjooRazor.Areas.User.Pages
                         return Page();
                     }
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+                    if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && !string.IsNullOrEmpty(s.RhymeLetters)).Any())
+                    {
+                        RhymeLetters = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && !string.IsNullOrEmpty(s.RhymeLetters)).OrderBy(s => s.VerseType).First().RhymeLetters;
+                    }
 
                     if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).Any())
                     {
@@ -307,6 +314,29 @@ namespace GanjooRazor.Areas.User.Pages
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                     return new OkObjectResult(JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync()));
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
+
+        public async Task<IActionResult> OnPostUpdateRelatedSectionsAsync(int meterId, string rhyme)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/sections/updaterelated?metreId={meterId}&rhyme={rhyme}",
+                        null
+                        );
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkResult();
                 }
                 else
                 {

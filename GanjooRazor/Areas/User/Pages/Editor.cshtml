@@ -164,6 +164,29 @@
 
         });
     }
+
+    function updateRelatedSections(meterId, rhymeletters) {
+        var url = '?handler=UpdateRelatedSections';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                meterId: meterId,
+                rhyme: rhymeletters,
+            },
+            success: function() {
+                alert('انجام شد.');
+            },
+            error: function(e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+            }
+
+        });
+    }
 </script>
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
@@ -717,15 +740,29 @@ else
                 <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a></td>
             </tr>
         }
+
+        @if(Model.ShowAdminOps && Model.GanjoorMetre1 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
+        {
+             <tr>
+                <td><a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre1.Id, '@Model.RhymeLetters')" class="pagebutton">بازسازی فهرست اشعار هم‌آهنگ با وزن اول</a></td>
+            </tr>
+        }
+
+        @if(Model.ShowAdminOps && Model.GanjoorMetre2 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
+        {
+             <tr>
+                <td><a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre2.Id, '@Model.RhymeLetters')" class="pagebutton">بازسازی فهرست اشعار هم‌آهنگ با وزن دوم</a></td>
+            </tr>
+        }
+
+        @if(Model.CanEdit && !Model.ShowAdminOps)
+        {
+             <tr>
+                <td><a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="pagebutton">امکانات مدیریتی</a></td>
+            </tr>
+        }
     </table>
 
-    @if (Model.CanEdit)
-    {
-        <div class="related-images-frame">
-            <p>
-                <a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="pagebutton">امکانات مدیریتی</a>
-            </p>
-        </div>
-    }
+
 
 }
