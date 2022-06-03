@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using System.Linq;
@@ -16,12 +17,19 @@ namespace GanjooRazor.Pages
         private readonly HttpClient _httpClient;
 
         /// <summary>
+        /// configration file reader (appsettings.json)
+        /// </summary>
+        private readonly IConfiguration Configuration;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        public RecitationsOrderModel(HttpClient httpClient)
+        /// <param name="configuration"></param>
+        public RecitationsOrderModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            Configuration = configuration;
         }
 
         /// <summary>
@@ -33,6 +41,11 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (bool.Parse(Configuration["MaintenanceMode"]))
+            {
+                return StatusCode(503);
+            }
+
             LastError = "";
 
             if (!string.IsNullOrEmpty(Request.Query["p"]))

@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
+using Microsoft.Extensions.Configuration;
 
 namespace GanjooRazor.Pages
 {
@@ -21,6 +22,11 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (bool.Parse(Configuration["MaintenanceMode"]))
+            {
+                return StatusCode(503);
+            }
+
             var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{Request.Query["p"]}?verseDetails=true&catInfo=false&rhymes=false&recitations=false&images=false&songs=false&comments=false&navigation=false");
             if (!responsePoem.IsSuccessStatusCode)
             {
@@ -37,6 +43,11 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly HttpClient _httpClient;
 
+        /// <summary>
+        /// configration file reader (appsettings.json)
+        /// </summary>
+        private readonly IConfiguration Configuration;
+
 
 
         /// <summary>
@@ -44,9 +55,11 @@ namespace GanjooRazor.Pages
         /// </summary>
         /// <param name="httpClient"></param>
         /// <param name="configuration"></param>
-        public t6eModel(HttpClient httpClient)
+        public t6eModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            Configuration
+                = configuration;
         }
     }
 }

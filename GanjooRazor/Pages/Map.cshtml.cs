@@ -86,7 +86,12 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            ViewData["GoogleAnalyticsCode"] = _configuration["GoogleAnalyticsCode"];
+            if (bool.Parse(Configuration["MaintenanceMode"]))
+            {
+                return StatusCode(503);
+            }
+
+            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
             await _PreparePoetGroups();
             return Page();
         }
@@ -99,12 +104,12 @@ namespace GanjooRazor.Pages
         /// <summary>
         /// configration file reader (appsettings.json)
         /// </summary>
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration Configuration;
 
         public MapModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _configuration = configuration;
+            Configuration = configuration;
         }
     }
 }

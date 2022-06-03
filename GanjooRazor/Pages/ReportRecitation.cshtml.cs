@@ -1,6 +1,7 @@
 ﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
@@ -16,18 +17,25 @@ namespace GanjooRazor.Pages
     [IgnoreAntiforgeryToken(Order = 1001)]
     public class ReportRecitationModel : PageModel
     {
-        // <summary>
+        /// <summary>
         /// HttpClient instance
         /// </summary>
         private readonly HttpClient _httpClient;
 
         /// <summary>
+        /// configration file reader (appsettings.json)
+        /// </summary>
+        private readonly IConfiguration Configuration;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        public ReportRecitationModel(HttpClient httpClient)
+        /// <param name="configuration"></param>
+        public ReportRecitationModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            Configuration = configuration;
         }
 
 
@@ -63,6 +71,11 @@ namespace GanjooRazor.Pages
         public RecitationErrorReportViewModel Report { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
+            if (bool.Parse(Configuration["MaintenanceMode"]))
+            {
+                return StatusCode(503);
+            }
+
             PostSuccess = false;
             LastError = "";
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);

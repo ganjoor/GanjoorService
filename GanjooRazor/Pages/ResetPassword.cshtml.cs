@@ -28,12 +28,12 @@ namespace GanjooRazor.Pages
         /// <summary>
         /// configuration
         /// </summary>
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration Configuration;
 
         public ResetPasswordModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _configuration = configuration;
+            Configuration = configuration;
         }
 
 
@@ -59,6 +59,11 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (bool.Parse(Configuration["MaintenanceMode"]))
+            {
+                return StatusCode(503);
+            }
+
             if (!string.IsNullOrEmpty(Request.Query["secret"]))
                 return await OnPostVerifyAsync(Request.Query["secret"]);
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Name"]);
@@ -70,7 +75,7 @@ namespace GanjooRazor.Pages
             {
                 ClientAppName = "وبگاه گنجور",
                 Language = "fa-IR",
-                CallbackUrl = $"{_configuration["SiteUrl"]}/resetpassword"
+                CallbackUrl = $"{Configuration["SiteUrl"]}/resetpassword"
             };
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/captchaimage");
@@ -233,7 +238,7 @@ namespace GanjooRazor.Pages
 
 
 
-            return Redirect($"{_configuration["SiteUrl"]}/User");
+            return Redirect($"{Configuration["SiteUrl"]}/User");
         }
     }
 }

@@ -3,6 +3,7 @@ using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Auth.Memory;
@@ -55,6 +56,11 @@ namespace GanjooRazor.Pages
         }
         public async Task<IActionResult> OnGetAsync()
         {
+            if (bool.Parse(Configuration["MaintenanceMode"]))
+            {
+                return StatusCode(503);
+            }
+
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
 
@@ -298,9 +304,14 @@ namespace GanjooRazor.Pages
             return new OkResult();
         }
 
-        public PhotosModel(HttpClient httpClient) : base(httpClient)
-        {
+        /// <summary>
+        /// configration file reader (appsettings.json)
+        /// </summary>
+        private readonly IConfiguration Configuration;
 
+        public PhotosModel(HttpClient httpClient, IConfiguration configuration) : base(httpClient)
+        {
+            Configuration = configuration;
         }
     }
 }

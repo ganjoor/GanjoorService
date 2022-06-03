@@ -38,6 +38,11 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (bool.Parse(Configuration["MaintenanceMode"]))
+            {
+                return StatusCode(503);
+            }
+
             ViewData["Title"] = $"گنجور » پرسش‌های متداول";
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 

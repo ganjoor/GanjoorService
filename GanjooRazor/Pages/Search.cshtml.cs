@@ -147,6 +147,11 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (bool.Parse(Configuration["MaintenanceMode"]))
+            {
+                return StatusCode(503);
+            }
+
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
             Query = Request.Query["s"].ApplyCorrectYeKe().Trim();

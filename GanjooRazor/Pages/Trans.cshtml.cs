@@ -23,7 +23,7 @@ namespace GanjooRazor.Pages
         /// <summary>
         /// configration file reader (appsettings.json)
         /// </summary>
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration Configuration;
 
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace GanjooRazor.Pages
         public TransModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _configuration = configuration;
+            Configuration = configuration;
         }
         /// <summary>
         /// poem
@@ -60,6 +60,11 @@ namespace GanjooRazor.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (bool.Parse(Configuration["MaintenanceMode"]))
+            {
+                return StatusCode(503);
+            }
+
             ErrorMessage = "";
 
             CanTranslate = false;
@@ -76,7 +81,7 @@ namespace GanjooRazor.Pages
 
             PoemId = int.Parse(Request.Query["p"]);
 
-            ViewData["GoogleAnalyticsCode"] = _configuration["GoogleAnalyticsCode"];
+            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
 
             HttpResponseMessage responseLanguages = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
             if (!responseLanguages.IsSuccessStatusCode)
