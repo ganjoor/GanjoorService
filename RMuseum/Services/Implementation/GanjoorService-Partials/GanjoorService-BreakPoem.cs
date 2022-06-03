@@ -224,11 +224,11 @@ namespace RMuseum.Services.Implementation
 
                 if (title.Length > 0)
                 {
-                    title = $"{poemTitleStaticPart} {(mainPoemSlugNumber + nPoemIndex + 1).ToPersianNumbers()} - {title}";
+                    title = $"{poemTitleStaticPart} {(mainPoemSlugNumber + nPoemIndex + 2).ToPersianNumbers()} - {title}";
                 }
                 else
                 {
-                    title = $"{poemTitleStaticPart} {(mainPoemSlugNumber + nPoemIndex + 1).ToPersianNumbers()}";
+                    title = $"{poemTitleStaticPart} {(mainPoemSlugNumber + nPoemIndex + 2).ToPersianNumbers()}";
                 }
 
                 targetPoem.Title = title;
@@ -346,7 +346,8 @@ namespace RMuseum.Services.Implementation
                 context.AddRange(targetPoemSections);
             }
 
-
+            dbLastTargetPoem.Title = $"{poemTitleStaticPart} {(mainPoemSlugNumber + 1).ToPersianNumbers()}";
+            dbLastTargetPoem.FullTitle = $"{catPage.FullTitle} » {dbLastTargetPoem.Title}";
             dbLastTargetPoem.PlainText = PreparePlainText(targetPoemVerses);
             dbLastTargetPoem.HtmlText = PrepareHtmlText(targetPoemVerses);
             dbLastTargetPoem.SourceName = dbMainPoem.SourceName;
@@ -360,6 +361,8 @@ namespace RMuseum.Services.Implementation
 
 
             var dbLastTargetPage = await context.GanjoorPages.Where(p => p.Id == targetPoemId).SingleAsync();
+            dbLastTargetPage.Title = dbLastTargetPoem.Title;
+            dbLastTargetPage.FullTitle = dbLastTargetPoem.FullTitle;
             dbLastTargetPage.Published = dbPage.Published;
             dbLastTargetPage.PageOrder = dbPage.PageOrder;
             dbLastTargetPage.ParentId = dbPage.ParentId;
