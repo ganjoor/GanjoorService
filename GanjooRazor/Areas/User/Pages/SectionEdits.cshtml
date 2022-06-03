@@ -147,6 +147,16 @@ else
                     </tr>
                 }
 
+                @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                {
+                    <tr>
+                        <td>یادداشت بررسی:</td>
+                        <td colspan="2">
+                            @correction.ReviewNote
+                        </td>
+                    </tr>
+                }
+
                 <tr>
                     <td colspan="3">
                         @if (correction.Reviewed)

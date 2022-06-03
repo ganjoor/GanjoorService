@@ -171,7 +171,8 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId,
             string rhythmReviewResult,
             int[] breakFromVIndices,
-            string titleReviewNote)
+            string titleReviewNote,
+            string reviewNote)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -298,6 +299,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                     Correction.BreakFromVerse8VOrder = breakFromVerse8VOrder;
                     Correction.BreakFromVerse9VOrder = breakFromVerse9VOrder;
                     Correction.BreakFromVerse10VOrder = breakFromVerse10VOrder;
+
+                    Correction.ReviewNote = reviewNote;
 
 
                     var moderationResponse = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/section/moderate",

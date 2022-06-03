@@ -57,6 +57,7 @@ else
                     rhythmReviewResult: rhythmReviewResult,
                     breakFromVIndices: breakFromVIndices,
                     titleReviewNote: $('#title_review_note') == null ? null : $('#title_review_note').val(),
+                    reviewNote: $('#review_note').val()
                 },
                 success: function() {
                     location.reload(true);
@@ -278,6 +279,11 @@ else
                 </tr>
             }
         }
+
+        <tr>
+            <td>یادداشت بررسی:</td>
+            <td><input type="text" id="review_note" name="review_note" value="" size="50" /></td>
+        </tr>
 
 
 
