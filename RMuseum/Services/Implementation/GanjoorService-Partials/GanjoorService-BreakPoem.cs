@@ -26,6 +26,8 @@ namespace RMuseum.Services.Implementation
             var dbMainPoem = await context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();
             var dbPage = await context.GanjoorPages.Where(p => p.Id == poemId).SingleOrDefaultAsync();
 
+            var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == dbMainPoem.CatId).SingleOrDefaultAsync();
+
             var poemList = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == dbMainPoem.CatId && p.Id > dbMainPoem.Id).OrderBy(p => p.Id).ToListAsync();
 
             var lastPoemInCategory = poemList.Last();
@@ -196,7 +198,38 @@ namespace RMuseum.Services.Implementation
                 }
                 context.UpdateRange(pinterests);
 
-                //copy everything but url and title
+                string title = sourcePoem.Title;
+                char[] numbers = "0123456789۰۱۲۳۴۵۶۷۸۹".ToArray();
+                int index = title.IndexOfAny(numbers);
+                if (index != 0)
+                {
+                    while ((index + 1) < title.Length)
+                    {
+                        if (numbers.Contains(title[index + 1]))
+                            index++;
+                        else
+                            break;
+                    }
+                    title = title[(index + 1)..].Trim();
+                    if (title.IndexOf('-') == 0)
+                    {
+                        title = title[1..].Trim();
+                    }
+                }
+
+                if (title.Length > 0)
+                {
+                    title = $"{poemTitleStaticPart} {(nPoemIndex + 1).ToPersianNumbers()} - {title}";
+                }
+                else
+                {
+                    title = $"{poemTitleStaticPart} {(nPoemIndex + 1).ToPersianNumbers()}";
+                }
+
+                targetPoem.Title = title;
+                targetPoem.FullTitle = $"{catPage.FullTitle} » {title}";
+
+                //copy everything but url
                 targetPoem.HtmlText = sourcePoem.HtmlText;
                 targetPoem.PlainText = sourcePoem.PlainText;
                 targetPoem.SourceName = sourcePoem.SourceName;
@@ -210,7 +243,9 @@ namespace RMuseum.Services.Implementation
 
                 var sourcePage = await context.GanjoorPages.AsNoTracking().Where(p => p.Id == sourcePoem.Id).SingleAsync();
                 var targetPage = await context.GanjoorPages.Where(p => p.Id == targetPoemId).SingleAsync();
-                //copy everything but url and title:
+                //copy everything but url:
+                targetPage.Title = targetPoem.Title;
+                targetPage.FullTitle = targetPoem.FullTitle;
                 targetPage.Published = sourcePage.Published;
                 targetPage.PageOrder = sourcePage.PageOrder;
                 targetPage.ParentId = sourcePage.ParentId;
