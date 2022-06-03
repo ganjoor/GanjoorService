@@ -56,7 +56,7 @@ namespace RMuseum.Services.Implementation
                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                {
                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                   var job = (await jobProgressServiceEF.NewJob("StartRegeneratingCateoryRelatedSections", "Query data")).Result;
+                                   var job = (await jobProgressServiceEF.NewJob($"StartRegeneratingCateoryRelatedSections - {catId}", "Query data")).Result;
                                    try
                                    {
                                        var updatePoemListId = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).Select(p => p.Id).ToListAsync();

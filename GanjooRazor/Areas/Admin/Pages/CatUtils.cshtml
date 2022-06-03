@@ -86,6 +86,31 @@
         });
     }
 
+    function regenRelatedSections(catId) {
+         if (!confirm('آیا از شروع کار بازسازی قطعات مرتبط بخش اطمینان دارید؟'))
+            return;
+
+        var url = '?handler=StartRegeneratingRelatedSections';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                id: catId,
+            },
+            error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+            success: function () {
+                alert('کار بازسازی قطعات مرتبط بخش شروع شد.')
+            },
+
+        });
+    }
+
     function tagPoemsWithLanguage(catId) {
 
         var lang = document.getElementById('cat-poem-language').value;
@@ -552,6 +577,9 @@
 </table>
 
 <p><a href="/Admin/CatTrans?id=@Model.Cat.Cat.Id">انتقال بخش</a></p>
+
+
+<p><a role="button" onclick="regenRelatedSections(@Model.Cat.Cat.Id)" class="actionlink" title="بازسازی قطعات مرتبط">بازسازی قطعات مرتبط</a></p>
 
 
 
