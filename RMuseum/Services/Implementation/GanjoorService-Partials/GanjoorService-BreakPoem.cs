@@ -24,6 +24,11 @@ namespace RMuseum.Services.Implementation
                 return await _BreakLastPoemInItsCategoryAsync(context, poemId, vOrder, userId, poem, parentPage, poemTitleStaticPart);
             }
             var dbMainPoem = await context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleOrDefaultAsync();
+
+            if (!int.TryParse(dbMainPoem.UrlSlug.Substring("sh".Length), out int mainPoemSlugNumber))
+                return new RServiceResult<int>(-1, $"slug error for the last poem in the category: {dbMainPoem.UrlSlug}");
+
+
             var dbPage = await context.GanjoorPages.Where(p => p.Id == poemId).SingleOrDefaultAsync();
 
             var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == dbMainPoem.CatId).SingleOrDefaultAsync();
@@ -219,11 +224,11 @@ namespace RMuseum.Services.Implementation
 
                 if (title.Length > 0)
                 {
-                    title = $"{poemTitleStaticPart} {(nPoemIndex + 1).ToPersianNumbers()} - {title}";
+                    title = $"{poemTitleStaticPart} {(mainPoemSlugNumber + nPoemIndex + 1).ToPersianNumbers()} - {title}";
                 }
                 else
                 {
-                    title = $"{poemTitleStaticPart} {(nPoemIndex + 1).ToPersianNumbers()}";
+                    title = $"{poemTitleStaticPart} {(mainPoemSlugNumber + nPoemIndex + 1).ToPersianNumbers()}";
                 }
 
                 targetPoem.Title = title;
