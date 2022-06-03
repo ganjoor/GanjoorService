@@ -389,7 +389,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")">
+                    <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")" disabled>
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
                         {
                             @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
