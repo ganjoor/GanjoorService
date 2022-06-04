@@ -2923,9 +2923,11 @@ namespace RMuseum.Services.Implementation
                 var music = await _context.GanjoorPoemMusicTracks.Where(m => m.PoemId == id).ToListAsync();
                 _context.RemoveRange(music);
 
+                //these lines cause timeout, so I commented them:
+                /*
                 var similars = await _context.GanjoorCachedRelatedSections.Where(s => s.FullUrl.Contains(poem.FullUrl)).ToListAsync();
                 _context.RemoveRange(similars);
-
+                */
                 var corrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Where(c => c.PoemId == id).ToListAsync();
                 _context.RemoveRange(corrections);
 
