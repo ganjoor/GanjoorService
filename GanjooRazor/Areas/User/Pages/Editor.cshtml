@@ -747,6 +747,13 @@ else
             </tr>
         }
 
+         @if(Model.ShowAdminOps)
+         {
+             <tr>
+                 <td>برای حذف شعر از قسمت مدیریت بخش اقدام کنید.</td>
+             </tr>
+         }
+
         @if(Model.CanEdit && !Model.ShowAdminOps)
         {
              <tr>
