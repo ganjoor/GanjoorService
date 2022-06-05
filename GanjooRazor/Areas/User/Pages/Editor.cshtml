@@ -17,13 +17,19 @@
 
     function savePoemCorrections(id, verseCount) {
         var verseOrderText = [];
+        var verseOrderMarkedForDelete = [];
         for (var i = 0; i <= verseCount; i++) {
             var oldElementName = '#original-' + i.toString();
             var newElementName = '#id-' + i.toString();
-            if ($(newElementName).text() != $(oldElementName).text()) {
+            var checkVIndex = '#marked-for-delete-' + i.toString();
+            if ($(newElementName).text() != $(oldElementName).text() || $(checkVIndex).is(":checked")) {
                 verseOrderText.push(i.toString() + 'TextSeparator' + $(newElementName).text());
+                verseOrderMarkedForDelete.push(i);
             }
         }
+
+
+
 
         if (verseOrderText.length == 0) {
             if ($('#rhythm-old').text() == $('#rhythm-new').val() && $('#rhythm-old2').text() == $('#rhythm-new2').val()) {
@@ -53,6 +59,7 @@
             data: {
                 poemid: id,
                 verseOrderText: verseOrderText,
+                verseOrderMarkedForDelete: verseOrderMarkedForDelete,
                 rhythm: rhythm_new,
                 rhythm2: rhythm_new2,
                 note: $('#note').val()
@@ -248,7 +255,20 @@ else
             @if (Model.MyLastEdit.VerseOrderText != null)
                 @foreach (var verse in Model.MyLastEdit.VerseOrderText)
                 {
-                    <tr>
+                    @if (verse.MarkForDelete)
+                    {
+                        <tr>
+                            <td>
+                                <p>@verse.OriginalText</p>
+                            </td>
+                            <td>
+                                <p style="color:red">باید حذف شود</p>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                         <tr>
                         <td>
                             <p style="color:red">@verse.OriginalText</p>
                         </td>
@@ -256,6 +276,8 @@ else
                             <p style="color:green">@verse.Text</p>
                         </td>
                     </tr>
+                    }
+                   
                 }
             @if (!string.IsNullOrEmpty(Model.MyLastEdit.Note))
             {
@@ -471,6 +493,20 @@ else
                     <p id="compare-@($"{verse.VOrder}")">@verse.Text</p>
                 </td>
             </tr>
+            <tr>
+                <td>
+                    @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.MarkForDelete).Any())
+                    {
+                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" checked />
+                        <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
+                    }
+                    else
+                    {
+                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" />
+                        <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
+                    }
+                </td>
+            </tr>
 
             @if (Model.ShowAdminOps && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
             {
@@ -655,7 +691,7 @@ else
             </td>
         </tr>
 
-       
+
 
         @if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) > 1)
         {
@@ -711,7 +747,7 @@ else
 
         <tr>
             <td>
-                <a href="/User/AllPoemSections?id=@Model.PageInformation.Id"  class="pagebutton">
+                <a href="/User/AllPoemSections?id=@Model.PageInformation.Id" class="pagebutton">
                     همهٔ قطعات شعر
                 </a>
             </td>
@@ -733,35 +769,35 @@ else
             </tr>
         }
 
-        @if(Model.ShowAdminOps && Model.GanjoorMetre1 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
+        @if (Model.ShowAdminOps && Model.GanjoorMetre1 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
         {
-             <tr>
+            <tr>
                 <td><a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre1.Id, '@Model.RhymeLetters')" class="pagebutton">بازسازی فهرست اشعار هم‌آهنگ با وزن اول</a></td>
             </tr>
         }
 
-        @if(Model.ShowAdminOps && Model.GanjoorMetre2 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
+        @if (Model.ShowAdminOps && Model.GanjoorMetre2 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
         {
-             <tr>
+            <tr>
                 <td><a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre2.Id, '@Model.RhymeLetters')" class="pagebutton">بازسازی فهرست اشعار هم‌آهنگ با وزن دوم</a></td>
             </tr>
         }
 
-         @if(Model.ShowAdminOps)
-         {
-             <tr>
-                 <td>برای حذف شعر از قسمت مدیریت بخش اقدام کنید.</td>
-             </tr>
-         }
-
-        @if(Model.CanEdit && !Model.ShowAdminOps)
+        @if (Model.ShowAdminOps)
         {
-             <tr>
+            <tr>
+                <td>برای حذف شعر از قسمت مدیریت بخش اقدام کنید.</td>
+            </tr>
+        }
+
+        @if (Model.CanEdit && !Model.ShowAdminOps)
+        {
+            <tr>
                 <td><a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="pagebutton">امکانات مدیریتی</a></td>
             </tr>
         }
 
-         <tr>
+        <tr>
             <td>
                 <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
             </td>

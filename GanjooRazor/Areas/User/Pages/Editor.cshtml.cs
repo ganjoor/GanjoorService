@@ -218,7 +218,7 @@ namespace GanjooRazor.Areas.User.Pages
             return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
-        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, string rhythm, string rhythm2, string note)
+        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, string rhythm, string rhythm2, string note)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -239,7 +239,8 @@ namespace GanjooRazor.Areas.User.Pages
                                 new GanjoorVerseVOrderText()
                                 {
                                     VORder = vOrder,
-                                    Text = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک")
+                                    Text = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک"),
+                                    MarkForDelete = verseOrderMarkedForDelete.Any(v => v == vOrder),
                                 }
                                 );
                         }
