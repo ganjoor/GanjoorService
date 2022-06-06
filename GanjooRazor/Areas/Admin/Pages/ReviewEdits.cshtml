@@ -41,22 +41,25 @@
 
         var verseReviewResult = [];
         var verseReviewNotes = [];
-        var versesToBeDeletedVOrders = [];
         for (var i = 0; i <= verseCount; i++) {
 
             var elementId = '#verse' + (i + 1).toString() + '_review_result_Approved';
             if ($(elementId).length > 0) {
                 var elementName = 'verse' + (i + 1).toString() + '_review_result';
                 verseReviewResult.push($('input[name=' + elementName + ']:checked').val())
-
                 verseReviewNotes.push($('#verse' + (i + 1).toString() + '_review_note').val())
             }
             else {
-                var deleteElementId = 'marked-for-delete-' + (i + 1).toString();
-                if ($(checkVIndex).is(":checked")) {
-                    versesToBeDeletedVOrders.push(i + 1);
+                var deleteElementId = '#marked-for-delete-' + (i + 1).toString();
+                if ($(deleteElementId).length > 0) {
+                    if ($(deleteElementId).is(":checked")) {
+                        verseReviewResult.push('Approved');
+                    }
+                    else {
+                        verseReviewResult.push('Rejected');
+                    }
+                    verseReviewNotes.push($('#verse' + (i + 1).toString() + '_review_note').val())
                 }
-                verseReviewNotes.push($('#verse' + (i + 1).toString() + '_review_note').val())
             }
         }
 
@@ -73,7 +76,6 @@
                 titleReviewNote: $('#title_review_note') == null ? null : $('#title_review_note').val(),
                 verseReviewResult: verseReviewResult,
                 verseReviewNotes: verseReviewNotes,
-                versesToBeDeletedVOrders: versesToBeDeletedVOrders,
             },
             success: function() {
                 location.reload(true);

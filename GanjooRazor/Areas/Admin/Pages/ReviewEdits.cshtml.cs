@@ -221,7 +221,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         {
                             if (Correction.VerseOrderText[i].MarkForDelete)
                             {
-                                Correction.VerseOrderText[i].MarkForDeleteResult = versesToBeDeletedVOrders.Contains(Correction.VerseOrderText[i].VORder) ? CorrectionReviewResult.Approved : CorrectionReviewResult.Rejected;
+                                Correction.VerseOrderText[i].MarkForDeleteResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
                             }
                             else
                             {
