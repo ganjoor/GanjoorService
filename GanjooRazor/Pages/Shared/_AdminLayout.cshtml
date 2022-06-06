@@ -256,72 +256,7 @@
             result.appendChild(fragment);
         }
 
-        function moderatePoemCorrections(verseCount, correctionId) {
-
-            $('#moderatecorrections').hide();
-            $('#saving').text('در حال بررسی ...');
-
-
-            var titleReviewResult = 'DontCare';
-            if ($('#title_review_result_Approved').length > 0) { //has title
-                titleReviewResult = $('input[name=title_review_result]:checked').val()
-            }
-           
-
-            var rhythmReviewResult = 'DontCare';
-            if ($('#rhythm_review_result_Approved').length > 0) { 
-                rhythmReviewResult = $('input[name=rhythm_review_result]:checked').val()
-            }
-
-            var rhythm2ReviewResult = 'DontCare';
-            if ($('#rhythm2_review_result_Approved').length > 0) { 
-                rhythm2ReviewResult = $('input[name=rhythm2_review_result]:checked').val()
-            }
-
-
-            var verseReviewResult = [];
-            var verseReviewNotes = [];
-            for (var i = 0; i <= verseCount; i++) {
-                
-                var elementId = '#verse' + (i + 1).toString() + '_review_result_Approved';
-                if ($(elementId).length > 0) {
-                    var elementName = 'verse' + (i + 1).toString() + '_review_result';
-                    verseReviewResult.push($('input[name=' + elementName + ']:checked').val())
-
-                    verseReviewNotes.push($('#verse' + (i + 1).toString() + '_review_note').val())
-                }
-            }
-
-            var url = '?handler=SendCorrectionsModeration';
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: {
-                    correctionId: correctionId,
-                    titleReviewResult: titleReviewResult,
-                    rhythmReviewResult: rhythmReviewResult,
-                    rhythm2ReviewResult: rhythm2ReviewResult,
-                    titleReviewNote: $('#title_review_note') == null? null : $('#title_review_note').val(),
-                    verseReviewResult: verseReviewResult,
-                    verseReviewNotes: verseReviewNotes,
-                },
-                success: function () {
-                    location.reload(true);
-                },
-                error: function (e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
-                    $('#moderatecorrections').show();
-                    $('#saving').text('');
-                }
-            });
-
-                        
-
-        }
+        
     </script>
 </head>
 

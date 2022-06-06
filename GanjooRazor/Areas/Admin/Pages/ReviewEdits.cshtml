@@ -9,11 +9,87 @@
 
 <h1>@ViewData["Title"]</h1>
 <script>
-    function checkAllNotCorrect(){
+    function checkAllNotCorrect() {
         var allNotCorrect = document.getElementsByClassName("radio-notcorrect");
-        for(var i = 0; i < allNotCorrect.length; i++){
+        for (var i = 0; i < allNotCorrect.length; i++) {
             allNotCorrect[i].checked = true;
         }
+    }
+
+    function moderatePoemCorrections(verseCount, correctionId) {
+
+        $('#moderatecorrections').hide();
+        $('#saving').text('در حال بررسی ...');
+
+
+        var titleReviewResult = 'DontCare';
+        if ($('#title_review_result_Approved').length > 0) { //has title
+            titleReviewResult = $('input[name=title_review_result]:checked').val()
+        }
+
+
+        var rhythmReviewResult = 'DontCare';
+        if ($('#rhythm_review_result_Approved').length > 0) {
+            rhythmReviewResult = $('input[name=rhythm_review_result]:checked').val()
+        }
+
+        var rhythm2ReviewResult = 'DontCare';
+        if ($('#rhythm2_review_result_Approved').length > 0) {
+            rhythm2ReviewResult = $('input[name=rhythm2_review_result]:checked').val()
+        }
+
+
+        var verseReviewResult = [];
+        var verseReviewNotes = [];
+        var versesToBeDeletedVOrders = [];
+        for (var i = 0; i <= verseCount; i++) {
+
+            var elementId = '#verse' + (i + 1).toString() + '_review_result_Approved';
+            if ($(elementId).length > 0) {
+                var elementName = 'verse' + (i + 1).toString() + '_review_result';
+                verseReviewResult.push($('input[name=' + elementName + ']:checked').val())
+
+                verseReviewNotes.push($('#verse' + (i + 1).toString() + '_review_note').val())
+            }
+            else {
+                var deleteElementId = 'marked-for-delete-' + (i + 1).toString();
+                if ($(checkVIndex).is(":checked")) {
+                    versesToBeDeletedVOrders.push(i + 1);
+                }
+                verseReviewNotes.push($('#verse' + (i + 1).toString() + '_review_note').val())
+            }
+        }
+
+        var url = '?handler=SendCorrectionsModeration';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                correctionId: correctionId,
+                titleReviewResult: titleReviewResult,
+                rhythmReviewResult: rhythmReviewResult,
+                rhythm2ReviewResult: rhythm2ReviewResult,
+                titleReviewNote: $('#title_review_note') == null ? null : $('#title_review_note').val(),
+                verseReviewResult: verseReviewResult,
+                verseReviewNotes: verseReviewNotes,
+                versesToBeDeletedVOrders: versesToBeDeletedVOrders,
+            },
+            success: function() {
+                location.reload(true);
+            },
+            error: function(e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+                $('#moderatecorrections').show();
+                $('#saving').text('');
+            }
+        });
+
+
+
     }
 </script>
 @if (!string.IsNullOrEmpty(Model.FatalError))
@@ -113,7 +189,7 @@ else
                 <td colspan="2">
                     <p id="title-compare">@Model.Correction.OriginalTitle</p>
                     <script>
-                        $(document).ready(function () {
+                        $(document).ready(function() {
                             compareCorrectionBlocks('original-title', 'edited-title', 'title-compare');
                         });
                     </script>
@@ -315,58 +391,78 @@ else
                         }
                     </td>
                 </tr>
-                <tr>
-                    <td>متن اولیه</td>
-                    <td>پیشنهاد</td>
-                </tr>
-                <tr>
-                    <td>
-                        <p style="color:red" id="verse-original-@verse.VORder">@verse.OriginalText</p>
-                    </td>
-                    <td>
-                        <p style="color:green" id="verse-edited-@verse.VORder">@verse.Text</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <p id="verse-compare-@verse.VORder">@verse.OriginalText</p>
-                        <script>
-                            $(document).ready(function () {
-                                compareCorrectionBlocks('verse-original-@verse.VORder', 'verse-edited-@verse.VORder', 'verse-compare-@verse.VORder');
-                            });
-                        </script>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        @if (verse.Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
-                        {
-                            <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                            <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+                if (@verse.MarkForDelete)
+                {
+                    <tr>
+                        <td colspan="2">
+                            <p style="color:red" id="verse-original-@verse.VORder">@verse.OriginalText</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><p style="color:red">حذف شود</p></td>
+                        <td>
+                            <input type="checkbox" name="marked-for-delete-@verse.VORder" id="marked-for-delete-@verse.VORder" />
+                            <label for="marked-for-delete-@verse.VORder">تأیید حذف</label>
+                            <input type="text" id="verse@(verse.VORder)_review_note" name="verse@(verse.VORder)_review_note" value="" size="50" />
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>متن اولیه</td>
+                        <td>پیشنهاد</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p style="color:red" id="verse-original-@verse.VORder">@verse.OriginalText</p>
+                        </td>
+                        <td>
+                            <p style="color:green" id="verse-edited-@verse.VORder">@verse.Text</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <p id="verse-compare-@verse.VORder">@verse.OriginalText</p>
+                            <script>
+                                $(document).ready(function() {
+                                    compareCorrectionBlocks('verse-original-@verse.VORder', 'verse-edited-@verse.VORder', 'verse-compare-@verse.VORder');
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            @if (verse.Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                            {
+                                <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                                <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
 
-                            <br>
-                            <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
-                        }
-                        else
-                        {
-                            <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                            <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+                                <br>
+                                <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
+                            }
+                            else
+                            {
+                                <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                                <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
 
-                            <br>
-                            <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
-                        }
-                        <label for="verse@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
-                        <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                        <label for="verse@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
-                        <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseVariant" name="verse@(verse.VORder)_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
-                        <label for="verse@(verse.VORder)_review_result_RejectedBecauseVariant">مربوط به نسخهٔ دیگری است</label><br>
-                        <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange" name="verse@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
-                        <label for="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
-                        <input type="radio" id="verse@(verse.VORder)_review_result_Rejected" name="verse@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                        <label for="verse@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
-                        <input type="text" id="verse@(verse.VORder)_review_note" name="verse@(verse.VORder)_review_note" value="" size="50" />
-                    </td>
-                </tr>
+                                <br>
+                                <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
+                            }
+                            <label for="verse@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
+                            <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
+                            <label for="verse@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                            <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseVariant" name="verse@(verse.VORder)_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
+                            <label for="verse@(verse.VORder)_review_result_RejectedBecauseVariant">مربوط به نسخهٔ دیگری است</label><br>
+                            <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange" name="verse@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
+                            <label for="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
+                            <input type="radio" id="verse@(verse.VORder)_review_result_Rejected" name="verse@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
+                            <label for="verse@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                            <input type="text" id="verse@(verse.VORder)_review_note" name="verse@(verse.VORder)_review_note" value="" size="50" />
+                        </td>
+                    </tr>
+                }
+
             }
         @if (!string.IsNullOrEmpty(Model.Correction.Note))
         {

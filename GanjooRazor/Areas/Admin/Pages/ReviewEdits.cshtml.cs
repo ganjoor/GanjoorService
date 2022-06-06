@@ -155,7 +155,9 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId, 
             string titleReviewResult, string rhythmReviewResult, string rhythm2ReviewResult,
             string titleReviewNote, string[] verseReviewResult,
-            string[] verseReviewNotes)
+            string[] verseReviewNotes,
+            int[] versesToBeDeletedVOrders
+            )
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -217,7 +219,14 @@ namespace GanjooRazor.Areas.Admin.Pages
                     {
                         for (int i = 0; i < Correction.VerseOrderText.Length; i++)
                         {
-                            Correction.VerseOrderText[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
+                            if (Correction.VerseOrderText[i].MarkForDelete)
+                            {
+                                Correction.VerseOrderText[i].MarkForDeleteResult = versesToBeDeletedVOrders.Contains(Correction.VerseOrderText[i].VORder) ? CorrectionReviewResult.Approved : CorrectionReviewResult.Rejected;
+                            }
+                            else
+                            {
+                                Correction.VerseOrderText[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
+                            }
                             Correction.VerseOrderText[i].ReviewNote = verseReviewNotes[i];
                         }
                     }
