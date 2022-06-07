@@ -108,6 +108,8 @@ namespace RMuseum.Services.Implementation
 
             foreach (var moderatedVerse in moderation.VerseOrderText)
             {
+                if (moderatedVerse.MarkForDelete)
+                    continue;
                 if (moderatedVerse.Result == CorrectionReviewResult.NotReviewed)
                     return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"تغییرات مصرع {moderatedVerse.VORder} بررسی نشده است.");
                 var dbVerse = dbCorrection.VerseOrderText.Where(c => c.VORder == moderatedVerse.VORder).Single();
@@ -122,7 +124,30 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-            if(modifiedVerses.Count > 0)
+            bool versesDeleted = false;
+
+            foreach (var moderatedVerse in moderation.VerseOrderText.Where(v => v.MarkForDelete).ToList())
+            {
+                if(moderatedVerse.Result == CorrectionReviewResult.NotReviewed)
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"نتیجهٔ پیشنهاد حذف مصرع {moderatedVerse.VORder} بررسی نشده است.");
+                var dbVerse = dbCorrection.VerseOrderText.Where(c => c.VORder == moderatedVerse.VORder).Single();
+                dbVerse.MarkForDeleteResult = moderatedVerse.MarkForDeleteResult;
+                dbVerse.ReviewNote = moderatedVerse.ReviewNote;
+                if (dbVerse.MarkForDeleteResult == CorrectionReviewResult.Approved)
+                {
+                    dbCorrection.AffectedThePoem = true;
+                    versesDeleted = true;
+                    updatePoem = true;
+
+                    var poemVerse = poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).Single();
+                    _context.Remove(poemVerse);
+
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "هنوز حذف مصرع‌ها پیاده‌سازی نشده است.");
+                }
+            }
+
+
+            if (modifiedVerses.Count > 0)
             {
                 _context.UpdateRange(modifiedVerses);
                 dbPoem.HtmlText = PrepareHtmlText(poemVerses);
@@ -131,10 +156,20 @@ namespace RMuseum.Services.Implementation
                 updatePoem = true;
             }
 
-            if(updatePoem)
+
+            if (updatePoem)
             {
                 _context.Update(dbPoem);
                 _context.Update(dbPage);
+            }
+
+            if (versesDeleted)
+            {
+                var undeletedPoemVerss = await _context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == dbCorrection.PoemId).OrderBy(v => v.VOrder).ToListAsync();
+                dbPoem.HtmlText = PrepareHtmlText(undeletedPoemVerss);
+                dbPoem.PlainText = PreparePlainText(undeletedPoemVerss);
+                dbPage.HtmlText = dbPoem.HtmlText;
+                updatePoem = true;
             }
 
             if (modifiedVerses.Count > 0)
