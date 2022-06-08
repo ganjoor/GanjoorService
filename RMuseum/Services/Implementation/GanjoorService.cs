@@ -2500,6 +2500,7 @@ namespace RMuseum.Services.Implementation
                                     if(!string.IsNullOrEmpty(res.ExceptionString))
                                     {
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, res.ExceptionString);
+                                        return;
                                     }
 
                                     await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
