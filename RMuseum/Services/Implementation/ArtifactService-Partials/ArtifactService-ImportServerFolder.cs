@@ -115,97 +115,7 @@ namespace RMuseum.Services.Implementation
                                         await importJobUpdaterDb.SaveChangesAsync();
                                     }
 
-                                    List<RArtifactItemRecord> pages = new List<RArtifactItemRecord>();
-                                    string[] fileNames = Directory.GetFiles(job.ResourceNumber, "*.jpg");
-                                    int order = 0;
-                                    foreach (string fileName in fileNames)
-                                    {
-                                        using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
-                                        {
-                                            job.ProgressPercent = order * 100 / (decimal)fileNames.Length;
-                                            importJobUpdaterDb.Update(job);
-                                            await importJobUpdaterDb.SaveChangesAsync();
-                                        }
-
-                                        order++;
-
-                                        RArtifactItemRecord page = new RArtifactItemRecord()
-                                        {
-                                            Name = $"تصویر {order}",
-                                            NameInEnglish = $"Image {order} of {book.NameInEnglish}",
-                                            Description = "",
-                                            DescriptionInEnglish = "",
-                                            Order = order,
-                                            FriendlyUrl = $"p{$"{order}".PadLeft(4, '0')}",
-                                            LastModified = DateTime.Now
-                                        };
-
-
-                                        page.Tags = new RTagValue[] { };
-
-                                        if (
-                                        File.Exists
-                                        (
-                                        Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "orig"), $"{order}".PadLeft(4, '0') + ".jpg")
-                                        )
-
-                                                           )
-                                        {
-                                            File.Delete
-                                           (
-                                           Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "orig"), $"{order}".PadLeft(4, '0') + ".jpg")
-                                           );
-                                        }
-                                        if (
-
-                                           File.Exists
-                                           (
-                                           Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "norm"), $"{order}".PadLeft(4, '0') + ".jpg")
-                                           )
-
-                                       )
-                                        {
-                                            File.Delete
-                                            (
-                                            Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "norm"), $"{order}".PadLeft(4, '0') + ".jpg")
-                                            );
-                                        }
-                                        if (
-
-                                           File.Exists
-                                           (
-                                           Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "thumb"), $"{order}".PadLeft(4, '0') + ".jpg")
-                                           )
-                                       )
-                                        {
-                                            File.Delete
-                                            (
-                                            Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "thumb"), $"{order}".PadLeft(4, '0') + ".jpg")
-                                            );
-                                        }
-                                        using (FileStream imageStream = new FileStream(fileName, FileMode.Open))
-                                        {
-                                            RServiceResult<RPictureFile> picture = await _pictureFileService.Add(page.Name, page.Description, 1, null, job.SrcUrl, imageStream, $"{order}".PadLeft(4, '0') + ".jpg", friendlyUrl);
-                                            if (picture.Result == null)
-                                            {
-                                                throw new Exception($"_pictureFileService.Add : {picture.ExceptionString}");
-                                            }
-
-                                            page.Images = new RPictureFile[] { picture.Result };
-
-                                            page.CoverImageIndex = 0;
-
-                                            if (book.CoverItemIndex == (order - 1))
-                                            {
-                                                book.CoverImage = RPictureFile.Duplicate(picture.Result);
-                                            }
-
-                                        }
-
-
-                                        pages.Add(page);
-                                    }
-
+                                    List<RArtifactItemRecord> pages = await _ImportAndReturnServerFolderJobImages(book, job, 0);
 
                                     book.Tags = meta.ToArray();
 
@@ -260,6 +170,103 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
+        }
+
+
+        private async Task<List<RArtifactItemRecord>> _ImportAndReturnServerFolderJobImages(RArtifactMasterRecord book, ImportJob job, int order)
+        {
+            List<RArtifactItemRecord> pages = new List<RArtifactItemRecord>();
+            string[] fileNames = Directory.GetFiles(job.ResourceNumber, "*.jpg");
+            ;
+            foreach (string fileName in fileNames)
+            {
+                using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                {
+                    job.ProgressPercent = order * 100 / (decimal)fileNames.Length;
+                    importJobUpdaterDb.Update(job);
+                    await importJobUpdaterDb.SaveChangesAsync();
+                }
+
+                order++;
+
+                RArtifactItemRecord page = new RArtifactItemRecord()
+                {
+                    Name = $"تصویر {order}",
+                    NameInEnglish = $"Image {order} of {book.NameInEnglish}",
+                    Description = "",
+                    DescriptionInEnglish = "",
+                    Order = order,
+                    FriendlyUrl = $"p{$"{order}".PadLeft(4, '0')}",
+                    LastModified = DateTime.Now
+                };
+
+
+                page.Tags = new RTagValue[] { };
+
+                if (
+                File.Exists
+                (
+                Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, book.FriendlyUrl), "orig"), $"{order}".PadLeft(4, '0') + ".jpg")
+                )
+
+                                   )
+                {
+                    File.Delete
+                   (
+                   Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, book.FriendlyUrl), "orig"), $"{order}".PadLeft(4, '0') + ".jpg")
+                   );
+                }
+                if (
+
+                   File.Exists
+                   (
+                   Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, book.FriendlyUrl), "norm"), $"{order}".PadLeft(4, '0') + ".jpg")
+                   )
+
+               )
+                {
+                    File.Delete
+                    (
+                    Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, book.FriendlyUrl), "norm"), $"{order}".PadLeft(4, '0') + ".jpg")
+                    );
+                }
+                if (
+
+                   File.Exists
+                   (
+                   Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, book.FriendlyUrl), "thumb"), $"{order}".PadLeft(4, '0') + ".jpg")
+                   )
+               )
+                {
+                    File.Delete
+                    (
+                    Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, book.FriendlyUrl), "thumb"), $"{order}".PadLeft(4, '0') + ".jpg")
+                    );
+                }
+                using (FileStream imageStream = new FileStream(fileName, FileMode.Open))
+                {
+                    RServiceResult<RPictureFile> picture = await _pictureFileService.Add(page.Name, page.Description, 1, null, job.SrcUrl, imageStream, $"{order}".PadLeft(4, '0') + ".jpg", book.FriendlyUrl);
+                    if (picture.Result == null)
+                    {
+                        throw new Exception($"_pictureFileService.Add : {picture.ExceptionString}");
+                    }
+
+                    page.Images = new RPictureFile[] { picture.Result };
+
+                    page.CoverImageIndex = 0;
+
+                    if (book.CoverItemIndex == (order - 1))
+                    {
+                        book.CoverImage = RPictureFile.Duplicate(picture.Result);
+                    }
+
+                }
+
+
+                pages.Add(page);
+            }
+
+            return pages;
         }
     }
 }
