@@ -1187,7 +1187,7 @@ namespace RMuseum.Services.Implementation
                  await StartImportingFromServerFolder(resourceNumber, friendlyUrl, resourcePrefix)
                  :
                  srcType == "append" ?
-                 await StartAppendingFromServerFolder(resourceNumber, Guid.Parse(resourceNumber))
+                 await StartAppendingFromServerFolder(resourceNumber, Guid.Parse(friendlyUrl))
                  :
                  srcType == "walters" ?
                  await StartImportingFromWalters(resourceNumber, friendlyUrl)

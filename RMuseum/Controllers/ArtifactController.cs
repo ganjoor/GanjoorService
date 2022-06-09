@@ -1078,9 +1078,9 @@ namespace RMuseum.Controllers
         /// <summary>
         /// import from external resources
         /// </summary>
-        /// <param name="srcType">loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl</param>
-        /// <param name="resourceNumber">119</param>
-        /// <param name="friendlyUrl">golestan-baysonghori</param>
+        /// <param name="srcType">loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append</param>
+        /// <param name="resourceNumber">119/foldername</param>
+        /// <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
         /// <param name="resourcePrefix"></param>
         /// <returns></returns>
         [HttpPost]
