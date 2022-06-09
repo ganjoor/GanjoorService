@@ -1154,9 +1154,9 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// import from external resources
         /// </summary>
-        /// <param name="srcType">loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl</param>
-        /// <param name="resourceNumber">119</param>
-        /// <param name="friendlyUrl">golestan-baysonghori</param>
+        /// <param name="srcType">loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append</param>
+        /// <param name="resourceNumber">119/foldername</param>
+        /// <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
         /// <param name="resourcePrefix"></param>
         /// <returns></returns>
         public async Task<RServiceResult<bool>> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix)
@@ -1185,6 +1185,9 @@ namespace RMuseum.Services.Implementation
                  :
                  srcType == "folder" ?
                  await StartImportingFromServerFolder(resourceNumber, friendlyUrl, resourcePrefix)
+                 :
+                 srcType == "append" ?
+                 await StartAppendingFromServerFolder(resourceNumber, Guid.Parse(resourceNumber))
                  :
                  srcType == "walters" ?
                  await StartImportingFromWalters(resourceNumber, friendlyUrl)

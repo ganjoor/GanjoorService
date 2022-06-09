@@ -16,6 +16,7 @@
         BritishLibrary = 8,
         ServerFolder = 9,
         Walters = 10,
-        ChesterBeatty = 11
+        ChesterBeatty = 11,
+        AppendFromServerFolder = 12,
     }
 }
