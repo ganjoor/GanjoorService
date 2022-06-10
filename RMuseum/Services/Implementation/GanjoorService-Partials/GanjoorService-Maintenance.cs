@@ -685,11 +685,18 @@ namespace RMuseum.Services.Implementation
                             {
                                 catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.CatId == poem.CatId).SingleOrDefaultAsync();
                             }
-                            poem.FullTitle = $"{catPage.FullTitle} » {poem.Title}";
-                            context.Update(poem);
+                            var title = $"{catPage.FullTitle} » {poem.Title}";
+                            if(title != poem.FullTitle)
+                            {
+                                poem.FullTitle = title;
+                                context.Update(poem);
+                            }                          
                             var page = await context.GanjoorPages.Where(p => p.Id == poem.Id).SingleOrDefaultAsync();
-                            page.FullTitle = poem.FullTitle;
-                            context.Update(page);
+                            if(title != page.FullTitle)
+                            {
+                                page.FullTitle = title;
+                                context.Update(page);
+                            }
                         }
 
                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
