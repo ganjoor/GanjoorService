@@ -651,5 +651,55 @@ namespace RMuseum.Services.Implementation
 
             return new RServiceResult<bool>(true);
         }
+
+        /// <summary>
+        /// regenerate poem full titles to fix an old bug
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> RegeneratePoemsFullTitles()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+            (
+            async token =>
+            {
+                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                {
+                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                    var job = (await jobProgressServiceEF.NewJob("RegenratePoemsFullTitles", "Query data")).Result;
+                    int percent = 0;
+                    try
+                    {
+                        var poemIds = await context.GanjoorPoems.AsNoTracking().Select(p => p.Id).ToListAsync();
+                        
+                        for (int i = 0; i < poemIds.Count; i++)
+                        {
+                            if (i * 100 / poemIds.Count > percent)
+                            {
+                                percent++;
+                                await jobProgressServiceEF.UpdateJob(job.Id, percent);
+                            }
+
+                            var poem = await context.GanjoorPoems.Where(p => p.Id == poemIds[i]).SingleOrDefaultAsync();
+                            var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == poem.CatId).SingleOrDefaultAsync();
+                            poem.FullTitle = $"{catPage.FullTitle} » {poem.Title}";
+                            context.Update(poem);
+                            var page = await context.GanjoorPages.Where(p => p.Id == poem.Id).SingleOrDefaultAsync();
+                            page.FullTitle = poem.FullTitle;
+                            context.Update(page);
+                        }
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                    }
+                    catch (Exception exp)
+                    {
+                        await jobProgressServiceEF.UpdateJob(job.Id, percent, "", false, exp.ToString());
+                    }
+
+                }
+            }
+            );
+
+            return new RServiceResult<bool>(true);
+        }
     }
 }

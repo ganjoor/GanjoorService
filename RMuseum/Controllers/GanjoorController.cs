@@ -2300,6 +2300,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// regenerate poem full titles to fix an old bug
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("maintenance/regenfulltitles")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult RegeneratePoemsFullTitles()
+        {
+            RServiceResult<bool> res =
+                 _ganjoorService.RegeneratePoemsFullTitles();
+            if (res.Result)
+                return Ok();
+            return BadRequest(res.ExceptionString);
+        }
+
+        /// <summary>
         /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
         /// </summary>
         /// <param name="catId">if it is 0 it is ignored</param>

@@ -562,6 +562,12 @@ namespace RMuseum.Services
         RServiceResult<bool> StartFillingPoemsCoupletIndices();
 
         /// <summary>
+        /// regenerate poem full titles to fix an old bug
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> RegeneratePoemsFullTitles();
+
+        /// <summary>
         /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
         /// </summary>
         /// <param name="catId"></param>
