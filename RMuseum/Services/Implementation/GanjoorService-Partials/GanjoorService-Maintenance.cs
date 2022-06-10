@@ -681,6 +681,10 @@ namespace RMuseum.Services.Implementation
 
                             var poem = await context.GanjoorPoems.Where(p => p.Id == poemIds[i]).SingleOrDefaultAsync();
                             var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == poem.CatId).SingleOrDefaultAsync();
+                            if(catPage == null)
+                            {
+                                catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.CatId == poem.CatId).SingleOrDefaultAsync();
+                            }
                             poem.FullTitle = $"{catPage.FullTitle} » {poem.Title}";
                             context.Update(poem);
                             var page = await context.GanjoorPages.Where(p => p.Id == poem.Id).SingleOrDefaultAsync();
