@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DNTPersianUtils.Core;
 using RSecurityBackend.Services.Implementation;
+using RMuseum.Models.Auth.Memory;
 
 namespace RMuseum.Services.Implementation
 {
@@ -178,6 +179,21 @@ namespace RMuseum.Services.Implementation
             _context.GanjoorPoemMusicTracks.Update(sug);
             await _context.SaveChangesAsync();
             song.Id = sug.Id;
+
+            var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, RMuseumSecurableItem.ReviewSongs);
+            if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+            {
+                foreach (var moderator in moderators.Result)
+                {
+                    await _notificationService.PushNotification
+                                    (
+                                        (Guid)moderator.Id,
+                                        "پیشنهاد آهنگ",
+                                        $"کاربری آهنگ مرتبط جدیدی را برای یک شعر پیشنهاد داده است. لطفاً بخش <a href=\"/User/ReviewSongs\">آهنگ‌های پیشنهادی</a> را بررسی فرمایید.{Environment.NewLine}" +
+                                        $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی آهنگ‌های پیشنهادی است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                    );
+                }
+            }
 
             return new RServiceResult<PoemMusicTrackViewModel>(song);
         }
