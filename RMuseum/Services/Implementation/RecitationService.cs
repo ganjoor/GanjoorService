@@ -643,6 +643,21 @@ namespace RMuseum.Services.Implementationa
                 return new RServiceResult<UploadSession>(null, "نمایهٔ پیش‌فرض شما مشخص نیست. لطفا پیش از ارسال خوانش نمایهٔ پیش‌فرض خود را تعریف کنید.");
             }
 
+            if (!string.IsNullOrEmpty(defProfile.ArtistUrl))
+            {
+                if (defProfile.ArtistUrl.ToLower().IndexOf("http") != 0)
+                {
+                    return new RServiceResult<UploadSession>(null, $"نشانی سایت یا صفحهٔ‌اینستاگرام یا کانال تلگرام نمایهٔ شما باید با http:// یا https:// شروع شود. {defProfile.ArtistUrl} قابل پذیرش نیست.");
+                }
+            }
+            if (!string.IsNullOrEmpty(defProfile.AudioSrcUrl))
+            {
+                if (defProfile.AudioSrcUrl.ToLower().IndexOf("http") != 0)
+                {
+                    return new RServiceResult<UploadSession>(null, $"نشانی وب منبع در نمایهٔ شما باید با http:// یا https:// شروع شود. {defProfile.AudioSrcUrl} قابل پذیرش نیست.");
+                }
+            }
+
             UploadSession session = new UploadSession()
             {
                 SessionType = replace ? UploadSessionType.ReplaceAudio : UploadSessionType.NewAudio,
@@ -1347,14 +1362,14 @@ namespace RMuseum.Services.Implementationa
             {
                 if(profile.ArtistUrl.ToLower().IndexOf("http") != 0)
                 {
-                    return new RServiceResult<UserRecitationProfileViewModel>(null, "نشانی سایت یا صفحهٔ‌اینستاگرام یا کانال تلگرام باید با http:// یا https:// شروع شود.");
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, $"نشانی سایت یا صفحهٔ‌اینستاگرام یا کانال تلگرام باید با http:// یا https:// شروع شود. {profile.ArtistUrl} قابل قبول نیست.");
                 }
             }
             if (!string.IsNullOrEmpty(profile.AudioSrcUrl))
             {
                 if (profile.AudioSrcUrl.ToLower().IndexOf("http") != 0)
                 {
-                    return new RServiceResult<UserRecitationProfileViewModel>(null, "نشانی وب منبع باید با http:// یا https:// شروع شود.");
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, $"نشانی وب منبع باید با http:// یا https:// شروع شود. {profile.AudioSrcUrl} قابل قبول نیست.");
                 }
             }
             profile.FileSuffixWithoutDash = GeneratedProfileFileSuffixWithoutDash(profile.FileSuffixWithoutDash, profile.ArtistName);
@@ -1443,14 +1458,14 @@ namespace RMuseum.Services.Implementationa
             {
                 if (profile.ArtistUrl.ToLower().IndexOf("http") != 0)
                 {
-                    return new RServiceResult<UserRecitationProfileViewModel>(null, "نشانی سایت یا صفحهٔ‌اینستاگرام یا کانال تلگرام باید با http:// یا https:// شروع شود.");
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, $"نشانی سایت یا صفحهٔ‌اینستاگرام یا کانال تلگرام باید با http:// یا https:// شروع شود. {profile.ArtistUrl} قابل قبول نیست.");
                 }
             }
             if (!string.IsNullOrEmpty(profile.AudioSrcUrl))
             {
                 if (profile.AudioSrcUrl.ToLower().IndexOf("http") != 0)
                 {
-                    return new RServiceResult<UserRecitationProfileViewModel>(null, "نشانی وب منبع باید با http:// یا https:// شروع شود.");
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, $"نشانی وب منبع باید با http:// یا https:// شروع شود. {profile.AudioSrcUrl} قابل قبول نیست.");
                 }
             }
 
