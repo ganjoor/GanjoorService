@@ -1343,6 +1343,20 @@ namespace RMuseum.Services.Implementationa
         /// <returns></returns>
         public async Task<RServiceResult<UserRecitationProfileViewModel>> AddUserNarrationProfiles(UserRecitationProfileViewModel profile)
         {
+            if(!string.IsNullOrEmpty(profile.ArtistUrl))
+            {
+                if(profile.ArtistUrl.ToLower().IndexOf("http") != 0)
+                {
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, "نشانی سایت یا صفحهٔ‌اینستاگرام یا کانال تلگرام باید با http:// یا https:// شروع شود.");
+                }
+            }
+            if (!string.IsNullOrEmpty(profile.AudioSrcUrl))
+            {
+                if (profile.AudioSrcUrl.ToLower().IndexOf("http") != 0)
+                {
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, "نشانی وب منبع باید با http:// یا https:// شروع شود.");
+                }
+            }
             profile.FileSuffixWithoutDash = GeneratedProfileFileSuffixWithoutDash(profile.FileSuffixWithoutDash, profile.ArtistName);
 
             var p = new UserRecitationProfile()
@@ -1424,6 +1438,21 @@ namespace RMuseum.Services.Implementationa
 
             if (p.UserId != profile.UserId)
                 return new RServiceResult<UserRecitationProfileViewModel>(null, "permission error");
+
+            if (!string.IsNullOrEmpty(profile.ArtistUrl))
+            {
+                if (profile.ArtistUrl.ToLower().IndexOf("http") != 0)
+                {
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, "نشانی سایت یا صفحهٔ‌اینستاگرام یا کانال تلگرام باید با http:// یا https:// شروع شود.");
+                }
+            }
+            if (!string.IsNullOrEmpty(profile.AudioSrcUrl))
+            {
+                if (profile.AudioSrcUrl.ToLower().IndexOf("http") != 0)
+                {
+                    return new RServiceResult<UserRecitationProfileViewModel>(null, "نشانی وب منبع باید با http:// یا https:// شروع شود.");
+                }
+            }
 
             profile.FileSuffixWithoutDash = GeneratedProfileFileSuffixWithoutDash(profile.FileSuffixWithoutDash, profile.ArtistName);
 
