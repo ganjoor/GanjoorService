@@ -124,11 +124,27 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-            bool versesDeleted = false;
 
+            if (modifiedVerses.Count > 0)
+            {
+                _context.UpdateRange(modifiedVerses);
+                dbPoem.HtmlText = PrepareHtmlText(poemVerses);
+                dbPoem.PlainText = PreparePlainText(poemVerses);
+                dbPage.HtmlText = dbPoem.HtmlText;
+                updatePoem = true;
+            }
+
+            
+            if (updatePoem)
+            {
+                _context.Update(dbPoem);
+                _context.Update(dbPage);
+            }
+
+            bool versesDeleted = false;
             foreach (var moderatedVerse in moderation.VerseOrderText.Where(v => v.MarkForDelete).ToList())
             {
-                if(moderatedVerse.Result == CorrectionReviewResult.NotReviewed)
+                if (moderatedVerse.MarkForDeleteResult == CorrectionReviewResult.NotReviewed)
                     return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"نتیجهٔ پیشنهاد حذف مصرع {moderatedVerse.VORder} بررسی نشده است.");
                 var dbVerse = dbCorrection.VerseOrderText.Where(c => c.VORder == moderatedVerse.VORder).Single();
                 dbVerse.MarkForDeleteResult = moderatedVerse.MarkForDeleteResult;
@@ -141,38 +157,46 @@ namespace RMuseum.Services.Implementation
 
                     var poemVerse = poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).Single();
                     _context.Remove(poemVerse);
-
-                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "هنوز حذف مصرع‌ها پیاده‌سازی نشده است.");
                 }
-            }
-
-
-            if (modifiedVerses.Count > 0)
-            {
-                _context.UpdateRange(modifiedVerses);
-                dbPoem.HtmlText = PrepareHtmlText(poemVerses);
-                dbPoem.PlainText = PreparePlainText(poemVerses);
-                dbPage.HtmlText = dbPoem.HtmlText;
-                updatePoem = true;
-            }
-
-
-            if (updatePoem)
-            {
-                _context.Update(dbPoem);
-                _context.Update(dbPage);
             }
 
             if (versesDeleted)
             {
-                var undeletedPoemVerss = await _context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == dbCorrection.PoemId).OrderBy(v => v.VOrder).ToListAsync();
+                var undeletedPoemVerss = poemVerses.Where(v => !moderation.VerseOrderText.Any(mv => mv.VORder == v.VOrder)).ToList();
+                for (int vOrder = 1; vOrder < undeletedPoemVerss.Count; vOrder++)
+                {
+                    if (undeletedPoemVerss[vOrder - 1].VOrder != vOrder)
+                    {
+                        undeletedPoemVerss[vOrder - 1].VOrder = vOrder;
+                        
+                    }
+                }
+
+                int cIndex = -1;
+                foreach (var verse in undeletedPoemVerss)
+                {
+                    if (verse.VersePosition != VersePosition.Left && verse.VersePosition != VersePosition.CenteredVerse2 && verse.VersePosition != VersePosition.Comment)
+                        cIndex++;
+                    if (verse.VersePosition != VersePosition.Comment)
+                    {
+                        verse.CoupletIndex = cIndex;
+                    }
+                    else
+                    {
+                        verse.CoupletIndex = null;
+                    }
+                }
+                _context.UpdateRange(undeletedPoemVerss);
                 dbPoem.HtmlText = PrepareHtmlText(undeletedPoemVerss);
                 dbPoem.PlainText = PreparePlainText(undeletedPoemVerss);
                 dbPage.HtmlText = dbPoem.HtmlText;
                 updatePoem = true;
+                poemVerses = undeletedPoemVerss;
             }
 
-            if (modifiedVerses.Count > 0)
+
+
+            if (modifiedVerses.Count > 0 || versesDeleted)
             {
                 foreach (var section in sections)
                 {
