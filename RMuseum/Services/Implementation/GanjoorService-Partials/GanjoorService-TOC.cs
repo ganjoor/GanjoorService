@@ -348,6 +348,17 @@ namespace RMuseum.Services.Implementation
                     html += $"</div>{Environment.NewLine}";
                 }
 
+                var poemIds = poems.Select(p => p.Id).ToArray();
+
+                var mainPoemSections = await context.GanjoorPoemSections.Where(s => poemIds.Contains(s.PoemId) && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).ToListAsync();
+
+                foreach (var poem in poems)
+                {
+                    var section = mainPoemSections.Where(s => s.PoemId == poem.Id).FirstOrDefault();
+                    if (section != null)
+                        poem.RhymeLetters = section.RhymeLetters;
+                }
+
                 if (poems.Count > 0)
                 {
                     if (options == GanjoorTOC.Analyse)
