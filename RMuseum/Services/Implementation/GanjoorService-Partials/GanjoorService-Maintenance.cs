@@ -62,7 +62,7 @@ namespace RMuseum.Services.Implementation
 
                                     if(section.GanjoorMetreId != null)
                                     {
-                                        var dependentSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == section.Id).ToList();
+                                        var dependentSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == section.Index).ToList();
                                         foreach (var dsection in dependentSections)
                                         {
                                             dsection.GanjoorMetreId = section.GanjoorMetreId;
@@ -78,7 +78,7 @@ namespace RMuseum.Services.Implementation
 
                                     if (section.GanjoorMetreId != null)
                                     {
-                                        var dependentSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == section.Id).ToList();
+                                        var dependentSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == section.Index).ToList();
                                         foreach (var dsection in dependentSections)
                                         {
                                             if(dsection.GanjoorMetreId != null && !string.IsNullOrEmpty(dsection.RhymeLetters))
