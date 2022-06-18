@@ -81,7 +81,7 @@ namespace RMuseum.Services.Implementation
 
                         editingSectionNotTracked.Modified = editingSectionNotTracked.OldGanjoorMetreId != editingSectionNotTracked.GanjoorMetreId;
 
-                        foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index || s.Id == editingSectionNotTracked.Id))
+                        foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == editingSectionNotTracked.Index))
                         {
                             section.GanjoorMetreId = editingSectionNotTracked.GanjoorMetreId;
                             section.Modified = editingSectionNotTracked.Modified;
