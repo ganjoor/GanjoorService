@@ -268,16 +268,16 @@ else
                     }
                     else
                     {
-                         <tr>
-                        <td>
-                            <p style="color:red">@verse.OriginalText</p>
-                        </td>
-                        <td>
-                            <p style="color:green">@verse.Text</p>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>
+                                <p style="color:red">@verse.OriginalText</p>
+                            </td>
+                            <td>
+                                <p style="color:green">@verse.Text</p>
+                            </td>
+                        </tr>
                     }
-                   
+
                 }
             @if (!string.IsNullOrEmpty(Model.MyLastEdit.Note))
             {
@@ -305,13 +305,37 @@ else
         @if (Model.PageInformation.Poem.Previous != null)
         {
             <tr>
-                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a></td>
+                <td>
+                    @if (Model.ShowAdminOps)
+                    {
+                        <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a>
+                    }
+                    else
+                    {
+                        <a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a>
+                    }
+                </td>
             </tr>
         }
         @if (Model.PageInformation.Poem.Next != null)
         {
             <tr>
-                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a></td>
+                <td>
+                    @if (Model.ShowAdminOps)
+                    {
+                        <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a>
+                    }
+                    else
+                    {
+                        <a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a>
+                    }
+                </td>
+            </tr>
+        }
+        @if (Model.CanEdit && !Model.ShowAdminOps)
+        {
+            <tr>
+                <td><a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="pagebutton">امکانات مدیریتی</a></td>
             </tr>
         }
         @if (Model.TextSourceImage != null)
@@ -759,13 +783,31 @@ else
         @if (Model.PageInformation.Poem.Previous != null)
         {
             <tr>
-                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a></td>
+                <td>
+                    @if (Model.ShowAdminOps)
+                    {
+                        <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a>
+                    }
+                    else
+                    {
+                        <a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a>
+                    }
+                </td>
             </tr>
         }
         @if (Model.PageInformation.Poem.Next != null)
         {
-            <tr>
-                <td><a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a></td>
+             <tr>
+                <td>
+                    @if (Model.ShowAdminOps)
+                    {
+                        <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a>
+                    }
+                    else
+                    {
+                        <a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a>
+                    }
+                </td>
             </tr>
         }
 
