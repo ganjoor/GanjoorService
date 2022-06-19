@@ -184,6 +184,7 @@ form:after, form div:after {
     .poem p {
         text-indent: 20px;
         text-align: justify;
+        margin: 10px;
     }
 
 
@@ -234,7 +235,7 @@ select {
 
     #guides p {
         text-indent: 0;
-        margin: 5px 5px 5px 5px;
+        margin: 5px;
         font-family: Vazir;
         font-weight: 300;
         font-size: 1em;
@@ -453,7 +454,8 @@ div.n, div.l {
 #commentsp p, #comments p {
     text-indent: 20px;
     text-align: justify;
-    color: #ffffe1
+    color: #ffffe1;
+    margin: 10px;
 }
 
 #comments p {
@@ -1640,4 +1642,12 @@ fieldset {
     padding: 5px;
     border: 2px solid #300;
     border-radius: 20px;
+}
+
+.margin-top-5px{
+    margin-top: 5px;
+}
+
+.padding-20px{
+    padding: 20px;
 }

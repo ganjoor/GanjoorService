@@ -14,7 +14,7 @@
         @ViewData["Title"]
     </title>
 
-    <link href="/css/p8.css?version=41" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=42" rel="stylesheet" type="text/css" />
     <link href="/css/fab.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
@@ -94,14 +94,14 @@
             <div id="maincnt">
 
                 <div class="sitem actionbox">
-                    <div class="related-images-frame">
+                    <div class="related-images-frame padding-20px">
                         <form method="get" id="searchcommentsform">
                             <input type="text" name="w" id="w" class="width-100per" value="@Model.Query" placeholder="جستجو در @Model.Title" />
                             @if(Model.Profile != null)
                             {
                                 <input type="hidden" id="userid" name="userid" value="@Model.Profile.Id" />
                             }
-                            <input type="submit" class="width-100per" value="جستجو در @Model.Title" />
+                            <input type="submit" class="width-100per margin-top-5px" value="جستجو در @Model.Title" />
                         </form>
                     </div><!-- related-images-frame -->
             </div> <!-- sitem actionbo -->
