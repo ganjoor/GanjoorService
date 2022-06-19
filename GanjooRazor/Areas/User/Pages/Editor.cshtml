@@ -24,7 +24,9 @@
             var checkVIndex = '#marked-for-delete-' + i.toString();
             if ($(newElementName).text() != $(oldElementName).text() || $(checkVIndex).is(":checked")) {
                 verseOrderText.push(i.toString() + 'TextSeparator' + $(newElementName).text());
-                verseOrderMarkedForDelete.push(i);
+                if($(checkVIndex).is(":checked")){
+                    verseOrderMarkedForDelete.push(i);
+                }
             }
         }
 
