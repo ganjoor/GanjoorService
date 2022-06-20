@@ -218,12 +218,28 @@ namespace GanjooRazor.Areas.User.Pages
             return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
-        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, string rhythm, string rhythm2, string note)
+        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, VersePosition[] versePositions, string rhythm, string rhythm2, string note)
         {
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
+                    var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={poemid}");
+                    if (!pageUrlResponse.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                        return new BadRequestObjectResult(FatalError);
+                    }
+                    var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+
+                    var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
+                    if (!pageQuery.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                        return new BadRequestObjectResult(FatalError);
+                    }
+                    var pageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();                    
+                    
                     string title = null;
                     List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
                     foreach (string v in verseOrderText)
@@ -241,6 +257,7 @@ namespace GanjooRazor.Areas.User.Pages
                                     VORder = vOrder,
                                     Text = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک"),
                                     MarkForDelete = verseOrderMarkedForDelete.Any(v => v == vOrder),
+                                    VersePosition = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : versePositions[vOrder - 1],
                                 }
                                 );
                         }

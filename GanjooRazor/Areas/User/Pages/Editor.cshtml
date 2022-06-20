@@ -18,19 +18,21 @@
     function savePoemCorrections(id, verseCount) {
         var verseOrderText = [];
         var verseOrderMarkedForDelete = [];
+        var versePositions = [];
         for (var i = 0; i <= verseCount; i++) {
             var oldElementName = '#original-' + i.toString();
             var newElementName = '#id-' + i.toString();
             var checkVIndex = '#marked-for-delete-' + i.toString();
-            if ($(newElementName).text() != $(oldElementName).text() || $(checkVIndex).is(":checked")) {
+            var oldVersePosition = '#versepostion-original-' + i.toString();
+            var newVersePosition = '#versepostion-' + i.toString();
+            versePositions.push($(newVersePosition).val());
+            if ($(newElementName).text() != $(oldElementName).text() || $(checkVIndex).is(":checked") || $(newVersePosition).val() != $(oldVersePosition).val()) {
                 verseOrderText.push(i.toString() + 'TextSeparator' + $(newElementName).text());
                 if($(checkVIndex).is(":checked")){
                     verseOrderMarkedForDelete.push(i);
                 }
             }
         }
-
-
 
 
         if (verseOrderText.length == 0) {
@@ -62,6 +64,7 @@
                 poemid: id,
                 verseOrderText: verseOrderText,
                 verseOrderMarkedForDelete: verseOrderMarkedForDelete,
+                versePositions: versePositions,
                 rhythm: rhythm_new,
                 rhythm2: rhythm_new2,
                 note: $('#note').val()
@@ -437,7 +440,8 @@ else
             </tr>
             <tr>
                 <td>
-                    <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")" disabled>
+                   
+                    <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")">
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
                         {
                             @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
@@ -462,8 +466,16 @@ else
                                     <option value="@verseposition.VersePosition">@verseposition.Text</option>
                                 }
                         }
-
                     </select>
+                    @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
+                    {
+                        <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().VersePosition" />
+                    }
+                    else
+                    {
+                        <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@verse.VersePosition" />
+                    }
+                     
                 </td>
 
             </tr>
