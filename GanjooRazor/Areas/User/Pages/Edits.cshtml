@@ -235,6 +235,29 @@ else
                                 </td>
                             </tr>
                         }
+                        @if(verse.VersePosition != null)
+                        {
+                             <tr>
+                                <td colspan="2">
+                                    <p style="color:orange">تبدیل نوع مصرع به @RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((VersePosition)verse.VersePosition)</p>
+                                </td>
+                                <td>
+                                    @if (verse.VersePositionResult == CorrectionReviewResult.NotReviewed)
+                                    {
+                                        <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.VersePositionResult)</p>
+                                    }
+                                    else
+                                    if (verse.VersePositionResult == CorrectionReviewResult.Approved)
+                                    {
+                                        <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.VersePositionResult)</p>
+                                    }
+                                    else
+                                    {
+                                        <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.VersePositionResult)</p>
+                                    }
+                                </td>
+                            </tr>
+                        }
                         @if (!string.IsNullOrEmpty(verse.ReviewNote))
                         {
                             <tr>
