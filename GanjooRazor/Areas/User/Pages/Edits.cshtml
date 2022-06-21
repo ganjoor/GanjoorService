@@ -198,7 +198,7 @@ else
                                         <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.MarkForDeleteResult)</p>
                                     }
                                     else
-                                    if (verse.MarkForDeleteResult == CorrectionReviewResult.Approved)
+                                   if (verse.MarkForDeleteResult == CorrectionReviewResult.Approved)
                                     {
                                         <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.MarkForDeleteResult)</p>
                                     }
@@ -224,7 +224,7 @@ else
                                         <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.Result)</p>
                                     }
                                     else
-                                    if (verse.Result == CorrectionReviewResult.Approved)
+                                   if (verse.Result == CorrectionReviewResult.Approved)
                                     {
                                         <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.Result)</p>
                                     }
@@ -235,10 +235,16 @@ else
                                 </td>
                             </tr>
                         }
-                        @if(verse.VersePosition != null)
+                        @if (verse.VersePosition != null)
                         {
-                             <tr>
-                                <td colspan="2">
+                            <tr>
+                                <td>
+                                    @if(verse.OriginalVersePosition != null)
+                                    {
+                                        <p>تبدیل نوع مصرع از @RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((VersePosition)verse.OriginalVersePosition)</p>
+                                    }
+                                </td>
+                                <td>
                                     <p style="color:orange">تبدیل نوع مصرع به @RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((VersePosition)verse.VersePosition)</p>
                                 </td>
                                 <td>
@@ -247,7 +253,7 @@ else
                                         <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.VersePositionResult)</p>
                                     }
                                     else
-                                    if (verse.VersePositionResult == CorrectionReviewResult.Approved)
+                                   if (verse.VersePositionResult == CorrectionReviewResult.Approved)
                                     {
                                         <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.VersePositionResult)</p>
                                     }

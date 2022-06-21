@@ -258,8 +258,9 @@ namespace GanjooRazor.Areas.User.Pages
                                     Text = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک"),
                                     MarkForDelete = verseOrderMarkedForDelete.Any(v => v == vOrder),
                                     VersePosition = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : versePositions[vOrder - 1],
+                                    OriginalVersePosition = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition,
                                 }
-                                );
+                                ); ;
                         }
                     }
 
