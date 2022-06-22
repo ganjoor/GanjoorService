@@ -184,7 +184,8 @@ form:after, form div:after {
     .poem p {
         text-indent: 20px;
         text-align: justify;
-        margin: 10px;
+        margin-left: 10px;
+        margin-right: 10px;
     }
 
 
@@ -455,7 +456,8 @@ div.n, div.l {
     text-indent: 20px;
     text-align: justify;
     color: #ffffe1;
-    margin: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 #comments p {
