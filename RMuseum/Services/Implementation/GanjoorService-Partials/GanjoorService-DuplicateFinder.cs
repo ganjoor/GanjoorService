@@ -100,6 +100,25 @@ namespace RMuseum.Services.Implementation
                                            destPage.RedirectFromFullUrl = srcPoem.FullUrl;
                                            context.Update(destPage);
 
+                                           var destMainPoemSection = await context.GanjoorPoemSections.Where(s => s.PoemId == dup.DestPoemId && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).OrderBy(s => s.Index).FirstOrDefaultAsync();
+                                           if(destMainPoemSection != null && destMainPoemSection.GanjoorMetreId == null)
+                                           {
+                                               var srcMainPoemSection = await context.GanjoorPoemSections.AsNoTracking().
+                                                                Where(s => s.PoemId == dup.SrcPoemId && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First && s.GanjoorMetreId != null).OrderBy(s => s.Index).FirstOrDefaultAsync();
+                                               if(srcMainPoemSection != null)
+                                               {
+                                                   destMainPoemSection.GanjoorMetreId = srcMainPoemSection.GanjoorMetreId;
+                                                   context.Update(destMainPoemSection);
+
+                                                   var dependentSections = await context.GanjoorPoemSections.Where(s => s.PoemId == dup.DestPoemId && s.GanjoorMetreRefSectionIndex == destMainPoemSection.Index).ToListAsync();
+                                                   foreach (var dependentSection in dependentSections)
+                                                   {
+                                                       dependentSection.GanjoorMetreId = srcMainPoemSection.GanjoorMetreId;
+                                                   }
+                                                   context.UpdateRange(dependentSections);
+                                               }
+                                           }
+
                                            var comments = await context.GanjoorComments.Where(c => c.PoemId == dup.SrcPoemId).ToListAsync();
                                            foreach (var comment in comments)
                                            {
@@ -146,13 +165,8 @@ namespace RMuseum.Services.Implementation
                                            }
                                            context.UpdateRange(pins);
 
-                                           var similars = await context.GanjoorCachedRelatedSections.Where(s => s.FullUrl.Contains(srcPoem.FullUrl)).ToListAsync();
-                                           context.RemoveRange(similars);
-
                                            var corrections = await context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Where(c => c.PoemId == srcPoem.Id).ToListAsync();
                                            context.RemoveRange(corrections);
-
-                                          
 
                                            var page = await context.GanjoorPages.Where(p => p.Id == srcPoem.Id && p.GanjoorPageType == GanjoorPageType.PoemPage).SingleAsync();
                                            context.Remove(page);
