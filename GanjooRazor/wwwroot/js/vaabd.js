@@ -35,12 +35,12 @@ document.addEventListener('selectionchange', function() {
 
 	
 	$meaning.attr({
-		href: 'http://www.vajehyab.com/?q=' + encodeURI(text), 
+		href: 'https://www.vajehyab.com/?q=' + encodeURI(text), 
 		title: 'جستجو در واژه‌یاب',
 		target: '_blank'
 	})
 	$abjad.attr({
-		href: 'http://abjad.ganjoor.net/?q=' + encodeURI(text) + '&r=' + window.location.href,
+		href: 'https://abjad.ganjoor.net/?q=' + encodeURI(text) + '&r=' + window.location.href,
 		title: 'محاسبه ابجد معادل عبارت',
 		target: '_blank'
 	})
