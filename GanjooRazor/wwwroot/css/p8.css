@@ -1653,3 +1653,37 @@ fieldset {
 .padding-20px{
     padding: 20px;
 }
+
+.td-button-container {
+    padding: 4px;
+}
+
+
+.editor-button {
+    cursor: pointer;
+    color: white !important;
+    display: block;
+    text-align: center;
+    border-color: #300;
+    border-radius: 5px;
+    box-shadow: 0 5px 0.3rem rgba(0, 0, 0, 0.3);
+    width: 100%;
+    padding: 3px;
+}
+
+.background-green {
+    background-color: green;
+}
+
+
+.background-red {
+    background-color: red;
+}
+
+.background-gray {
+    background-color: slategray;
+}
+
+.background-white {
+    background-color: white;
+}

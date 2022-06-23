@@ -28,7 +28,7 @@
             versePositions.push($(newVersePosition).val());
             if ($(newElementName).text() != $(oldElementName).text() || $(checkVIndex).is(":checked") || $(newVersePosition).val() != $(oldVersePosition).val()) {
                 verseOrderText.push(i.toString() + 'TextSeparator' + $(newElementName).text());
-                if($(checkVIndex).is(":checked")){
+                if ($(checkVIndex).is(":checked")) {
                     verseOrderMarkedForDelete.push(i);
                 }
             }
@@ -228,10 +228,10 @@ else
             {
                 <tr>
                     <td>
-                        <p style="color:red">@Model.MyLastEdit.OriginalTitle</p>
+                        <p class="red-color">@Model.MyLastEdit.OriginalTitle</p>
                     </td>
                     <td>
-                        <p style="color:green">@Model.MyLastEdit.Title</p>
+                        <p class="green-color">@Model.MyLastEdit.Title</p>
                     </td>
                 </tr>
             }
@@ -239,10 +239,10 @@ else
             {
                 <tr>
                     <td>
-                        <p style="color:red">@Model.MyLastEdit.OriginalRhythm</p>
+                        <p class="red-color">@Model.MyLastEdit.OriginalRhythm</p>
                     </td>
                     <td>
-                        <p style="color:green">@Model.MyLastEdit.Rhythm</p>
+                        <p class="green-color">@Model.MyLastEdit.Rhythm</p>
                     </td>
                 </tr>
             }
@@ -250,10 +250,10 @@ else
             {
                 <tr>
                     <td>
-                        <p style="color:red">@Model.MyLastEdit.OriginalRhythm2</p>
+                        <p class="red-color">@Model.MyLastEdit.OriginalRhythm2</p>
                     </td>
                     <td>
-                        <p style="color:green">@Model.MyLastEdit.Rhythm2</p>
+                        <p class="green-color">@Model.MyLastEdit.Rhythm2</p>
                     </td>
                 </tr>
             }
@@ -267,7 +267,7 @@ else
                                 <p>@verse.OriginalText</p>
                             </td>
                             <td>
-                                <p style="color:red">باید حذف شود</p>
+                                <p class="red-color">باید حذف شود</p>
                             </td>
                         </tr>
                     }
@@ -275,10 +275,10 @@ else
                     {
                         <tr>
                             <td>
-                                <p style="color:red">@verse.OriginalText</p>
+                                <p class="red-color">@verse.OriginalText</p>
                             </td>
                             <td>
-                                <p style="color:green">@verse.Text</p>
+                                <p class="green-color">@verse.Text</p>
                             </td>
                         </tr>
                     }
@@ -295,8 +295,8 @@ else
             }
 
             <tr>
-                <td colspan="2">
-                    <a role="button" id="deletecorrections" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" onclick="deletePoemCorrections(@Model.PageInformation.Poem.Id)">انصراف و حذف این ویرایش</a>
+                <td colspan="2" class="td-button-container">
+                    <a role="button" id="deletecorrections" class="editor-button background-red" onclick="deletePoemCorrections(@Model.PageInformation.Poem.Id)">انصراف و حذف این ویرایش</a>
                 </td>
             </tr>
 
@@ -336,6 +336,23 @@ else
                     }
                 </td>
             </tr>
+        }
+        @if (Model.CanAssignRhythms)
+        {
+            <tr>
+                <td class="td-button-container">
+                    <a role="button" href="#rhythms-section" class="editor-button background-gray">لغزش به بخش وزن</a>
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td class="td-button-container">
+                    <a role="button" href="#poem-sections" class="editor-button background-gray">لغزش به بخش قطعات</a>
+                </td>
+            </tr>
+            
         }
         @if (Model.CanEdit && !Model.ShowAdminOps)
         {
@@ -390,7 +407,7 @@ else
 
                 @if (Model.MyLastEdit != null && Model.MyLastEdit.Title != null)
                 {
-                    <div id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.MyLastEdit.Title</div>
+                    <div id="id-0" name="id-0" contenteditable="true" class="background-white">@Model.MyLastEdit.Title</div>
                     <script>
                         $(document).ready(function() {
                             editorcompare(0);
@@ -402,7 +419,7 @@ else
                 }
                 else
                 {
-                    <div type="text" id="id-0" name="id-0" contenteditable="true" style="background-color:white">@Model.PageInformation.Poem.Title</div>
+                    <div type="text" id="id-0" name="id-0" contenteditable="true" class="background-white">@Model.PageInformation.Poem.Title</div>
                     <script>
                         document.getElementById("id-0").addEventListener("input", function() {
                             editorcompare(0)
@@ -453,7 +470,7 @@ else
                 <td>
                     @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
                     {
-                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" style="background-color:white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text</div>
+                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" class="background-white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text</div>
 
 
                         <script>
@@ -467,7 +484,7 @@ else
                     }
                     else
                     {
-                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" style="background-color:white">@verse.Text</div>
+                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" class="background-white">@verse.Text</div>
                         <script>
                             document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function() {
                                 editorcompare(@verse.VOrder)
@@ -501,14 +518,14 @@ else
                 </td>
             </tr>
 
-                        <tr>
+            <tr>
                 <td>
                     نوع
                 </td>
             </tr>
             <tr>
                 <td>
-                   
+
                     <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")">
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
                         {
@@ -543,16 +560,22 @@ else
                     {
                         <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@verse.VersePosition" />
                     }
-                     
+
                 </td>
 
+            </tr>
+
+            <tr>
+                <td class="td-button-container">
+                    <a role="button" href="#savecorrections" class="editor-button background-gray">لغزش به دکمهٔ ذخیره</a>
+                </td>
             </tr>
 
             @if (Model.ShowAdminOps && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
             {
                 <tr>
-                    <td>
-                        <a role="button" id="breakpoem-@verse.VOrder" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">شکستن از اینجا</a>
+                    <td class="td-button-container">
+                        <a role="button" id="breakpoem-@verse.VOrder" class="editor-button background-red" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">شکستن از اینجا</a>
                     </td>
                 </tr>
             }
@@ -567,7 +590,7 @@ else
                 </td>
             </tr>
         }
-        <tr>
+        <tr id="rhythms-section">
             <td>
                 وزن فعلی:
             </td>
@@ -774,7 +797,8 @@ else
         }
         else
        if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) == 1)
-            foreach (var poemSetion in Model.PageInformation.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First).ToList())
+       {
+           foreach (var poemSetion in Model.PageInformation.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First).ToList())
             {
                 <tr>
                     <td>
@@ -784,8 +808,9 @@ else
                     </td>
                 </tr>
             }
+       }
 
-        <tr>
+        <tr id="poem-sections">
             <td>
                 <a href="/User/AllPoemSections?id=@Model.PageInformation.Id" class="pagebutton">
                     همهٔ قطعات شعر
@@ -813,7 +838,7 @@ else
         }
         @if (Model.PageInformation.Poem.Next != null)
         {
-             <tr>
+            <tr>
                 <td>
                     @if (Model.ShowAdminOps)
                     {
@@ -856,13 +881,19 @@ else
         }
 
         <tr>
-            <td>
-                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
+            <td class="td-button-container">
+                <a role="button" id="savecorrections" class="editor-button background-green" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
             </td>
         </tr>
 
         <tr>
             <td><p id="saving">&nbsp;</p></td>
+        </tr>
+
+        <tr>
+            <td class="td-button-container">
+                <a role="button" href="#" class="editor-button background-gray">لغزش به بالای صفحه</a>
+            </td>
         </tr>
     </table>
 
