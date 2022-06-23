@@ -512,7 +512,7 @@ else
                     }
                     else
                     {
-                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" />
+                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" disabled />
                         <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
                     }
                 </td>
@@ -526,7 +526,7 @@ else
             <tr>
                 <td>
 
-                    <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")">
+                    <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")" disabled>
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
                         {
                             @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
