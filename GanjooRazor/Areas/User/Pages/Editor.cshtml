@@ -423,62 +423,17 @@ else
         </tr>
         @foreach (var verse in Model.PageInformation.Poem.Verses)
         {
-            <tr>
+            <tr id="tr-@verse.VOrder">
                 <td>
                     بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers()
                 </td>
             </tr>
             <tr>
                 <td>
-                    مصرع @verse.VOrder.ToPersianNumbers()
+                    ترتیب مصرع یا خط از ابتدا: @verse.VOrder.ToPersianNumbers()
                 </td>
             </tr>
-            <tr>
-                <td>
-                    نوع
-                </td>
-            </tr>
-            <tr>
-                <td>
-                   
-                    <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")">
-                        @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
-                        {
-                            @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
-                                if (verseposition.VersePosition == Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().VersePosition)
-                                {
-                                    <option value="@verseposition.VersePosition" selected>@verseposition.Text</option>
-                                }
-                                else
-                                {
-                                    <option value="@verseposition.VersePosition">@verseposition.Text</option>
-                                }
-                        }
-                        else
-                        {
-                            @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
-                                if (verseposition.VersePosition == verse.VersePosition)
-                                {
-                                    <option value="@verseposition.VersePosition" selected>@verseposition.Text</option>
-                                }
-                                else
-                                {
-                                    <option value="@verseposition.VersePosition">@verseposition.Text</option>
-                                }
-                        }
-                    </select>
-                    @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
-                    {
-                        <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().VersePosition" />
-                    }
-                    else
-                    {
-                        <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@verse.VersePosition" />
-                    }
-                     
-                </td>
 
-            </tr>
             <tr>
                 <td>
                     متن فعلی:
@@ -544,6 +499,53 @@ else
                         <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
                     }
                 </td>
+            </tr>
+
+                        <tr>
+                <td>
+                    نوع
+                </td>
+            </tr>
+            <tr>
+                <td>
+                   
+                    <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")">
+                        @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
+                        {
+                            @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
+                                if (verseposition.VersePosition == Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().VersePosition)
+                                {
+                                    <option value="@verseposition.VersePosition" selected>@verseposition.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@verseposition.VersePosition">@verseposition.Text</option>
+                                }
+                        }
+                        else
+                        {
+                            @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
+                                if (verseposition.VersePosition == verse.VersePosition)
+                                {
+                                    <option value="@verseposition.VersePosition" selected>@verseposition.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@verseposition.VersePosition">@verseposition.Text</option>
+                                }
+                        }
+                    </select>
+                    @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
+                    {
+                        <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().VersePosition" />
+                    }
+                    else
+                    {
+                        <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@verse.VersePosition" />
+                    }
+                     
+                </td>
+
             </tr>
 
             @if (Model.ShowAdminOps && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)

@@ -387,7 +387,7 @@ function playCouplet(coupletIndex) {
 function editCouplet(poemId, coupletIndex) {
 
     var vIndex = getVerseIndexFromCoupleIndex(coupletIndex);
-    location.href = '/User/Editor?id=' + poemId + '#id-' + String(vIndex + 1);
+    location.href = '/User/Editor?id=' + poemId + '#tr-' + String(vIndex + 1);
 }
 
 function switchBookmark(poemId, coupletIndex, divSuffix) {
