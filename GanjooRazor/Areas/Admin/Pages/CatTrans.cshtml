@@ -26,13 +26,13 @@ else
                 data: {
                     id: id
                 },
-                error: function (e) {
+                error: function(e) {
                     if (e.responseText == null)
                         alert(e);
                     else
                         alert(e.responseText);
                 },
-                success: function () {
+                success: function() {
                     var trBlockId = '#tr-' + id;
                     $(trBlockId).remove();
                 },
@@ -43,7 +43,9 @@ else
     <table>
         <tr>
             <th>مبدأ</th>
+            <th>مصرع اول</th>
             <th>مقصد</th>
+            <th>مصرع اول</th>
             <th>#</th>
         </tr>
 
@@ -51,7 +53,10 @@ else
         {
             <tr id="tr-@poem.Id">
                 <td>
-                    <a href="@poem.SrcPoemFullUrl">@poem.SrcPoemFullTitle</a>
+                    <a href="@poem.SrcPoemFullUrl">@poem.SrcPoemFullTitle</a> :
+                </td>
+                <td>
+                    @poem.FirstVerse
                 </td>
                 <td>
                     @if (!string.IsNullOrEmpty(poem.DestPoemFullUrl))
@@ -60,7 +65,13 @@ else
                     }
                 </td>
                 <td>
-                   <a role="button" onclick="deleteThisOne(@poem.Id)" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
+                    @if (!string.IsNullOrEmpty(poem.DestPoemFirstVerse))
+                    {
+                        @poem.DestPoemFirstVerse
+                    }
+                </td>
+                <td>
+                    <a role="button" onclick="deleteThisOne(@poem.Id)" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
                 </td>
             </tr>
         }

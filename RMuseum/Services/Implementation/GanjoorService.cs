@@ -3346,6 +3346,8 @@ namespace RMuseum.Services.Implementation
                     var dupPoem = await _context.GanjoorDuplicates.AsNoTracking().Where(d => d.SrcCatId == catId && d.SrcPoemId == poem.Id).FirstOrDefaultAsync();
                     GanjoorPoem destPoem = dupPoem == null || dupPoem.DestPoemId == null ? null :
                                     await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == dupPoem.DestPoemId).SingleAsync();
+                   var destPoemFirstVerse = dupPoem == null || dupPoem.DestPoemId == null ? null :
+                                    await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == dupPoem.DestPoemId).OrderBy(v => v.VOrder).FirstAsync();
                     dups.Add
                         (
                         new GanjoorDuplicateViewModel()
@@ -3357,7 +3359,8 @@ namespace RMuseum.Services.Implementation
                             FirstVerse = firstVerse.Text,
                             DestPoemId = dupPoem == null ? null : dupPoem.DestPoemId,
                             DestPoemFullTitle = dupPoem == null ? "" : destPoem.FullTitle,
-                            DestPoemFullUrl = dupPoem == null ? "" : destPoem.FullUrl
+                            DestPoemFullUrl = dupPoem == null ? "" : destPoem.FullUrl,
+                            DestPoemFirstVerse = destPoemFirstVerse == null ? null : destPoemFirstVerse.Text,
                         }
                         );
                 }

@@ -217,7 +217,7 @@ namespace RMuseum.Services.Implementation
                     var sourceVerses = await context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
                     if (alreayFoundOnes.Any(p => p.SrcPoemId == poem.Id))
                         continue;
-                    var probablyTheOnes = targetPoems.Where(p => p.GanjoorMetreId == poem.GanjoorMetreId && p.RhymeLetters == poem.RhymeLetters).ToList();
+                    var probablyTheOnes = targetPoems.Where(p => poem.GanjoorMetreId != null && p.GanjoorMetreId == poem.GanjoorMetreId && p.RhymeLetters == poem.RhymeLetters).ToList();
                     bool found = false;
                     foreach (var probable in probablyTheOnes)
                     {
@@ -270,6 +270,7 @@ namespace RMuseum.Services.Implementation
                                     found = true;
                                     break;
                                 }
+                                break;//only compare the first verses
                             }
                             if (found) break;
                             if (!hardTry) break;

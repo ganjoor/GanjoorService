@@ -44,5 +44,10 @@
         /// destination Poem sample: /hafez/ghazal/sh1
         /// </summary>
         public string DestPoemFullUrl { get; set; }
+
+        /// <summary>
+        /// destination poem first verse
+        /// </summary>
+        public string DestPoemFirstVerse { get; set; }
     }
 }

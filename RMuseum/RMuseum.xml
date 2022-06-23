@@ -8728,6 +8728,11 @@
             destination Poem sample: /hafez/ghazal/sh1
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorDuplicateViewModel.DestPoemFirstVerse">
+            <summary>
+            destination poem first verse
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjooRhymeAnalysisResult">
             <summary>
             Rhyme Analysis Result
