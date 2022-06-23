@@ -137,7 +137,7 @@ namespace RMuseum.Services.Implementation
                                            foreach (var song in songs)
                                            {
                                                var alreadyAdded = await context.GanjoorPoemMusicTracks.Where(m => m.PoemId == dup.DestPoemId && m.TrackUrl == song.TrackUrl).FirstOrDefaultAsync();
-                                               if(alreadyAdded != null)
+                                               if(alreadyAdded == null)
                                                {
                                                    song.PoemId = (int)dup.DestPoemId;
                                                }
