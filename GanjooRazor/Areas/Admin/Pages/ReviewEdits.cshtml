@@ -181,10 +181,10 @@ else
             </tr>
             <tr>
                 <td>
-                    <p id="original-title" style="color:red">@Model.Correction.OriginalTitle</p>
+                    <p id="original-title" class="red-color">@Model.Correction.OriginalTitle</p>
                 </td>
                 <td>
-                    <p id="edited-title" style="color:green">@Model.Correction.Title</p>
+                    <p id="edited-title" class="green-color">@Model.Correction.Title</p>
                 </td>
             </tr>
             <tr>
@@ -255,10 +255,10 @@ else
             </tr>
             <tr>
                 <td>
-                    <p style="color:red">@Model.Correction.OriginalRhythm</p>
+                    <p class="red-color">@Model.Correction.OriginalRhythm</p>
                 </td>
                 <td>
-                    <p style="color:green">@Model.Correction.Rhythm</p>
+                    <p class="green-color">@Model.Correction.Rhythm</p>
                 </td>
             </tr>
             <tr>
@@ -329,10 +329,10 @@ else
             </tr>
             <tr>
                 <td>
-                    <p style="color:red">@Model.Correction.OriginalRhythm2</p>
+                    <p class="red-color">@Model.Correction.OriginalRhythm2</p>
                 </td>
                 <td>
-                    <p style="color:green">@Model.Correction.Rhythm2</p>
+                    <p class="green-color">@Model.Correction.Rhythm2</p>
                 </td>
             </tr>
             <tr>
@@ -397,11 +397,11 @@ else
                 {
                     <tr>
                         <td colspan="2">
-                            <p style="color:red" id="verse-original-@verse.VORder">@verse.OriginalText</p>
+                            <p class="red-color" id="verse-original-@verse.VORder">@verse.OriginalText</p>
                         </td>
                     </tr>
                     <tr>
-                        <td><p style="color:red">حذف شود</p></td>
+                        <td><p class="red-color">حذف شود</p></td>
                         <td>
                             <input type="checkbox" name="marked-for-delete-@verse.VORder" id="marked-for-delete-@verse.VORder" />
                             <label for="marked-for-delete-@verse.VORder">تأیید حذف</label>
@@ -411,16 +411,58 @@ else
                 }
                 else
                 {
+
                     <tr>
                         <td>متن اولیه</td>
                         <td>پیشنهاد</td>
                     </tr>
+                    @if (verse.VersePosition != null)
+                    {
+                        <tr>
+                            <td>
+                                @if (verse.OriginalVersePosition != null)
+                                {
+                                    <text>
+                                        نوع پیشین مصرع: <p class="red-color">@RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((RMuseum.Models.Ganjoor.VersePosition)verse.OriginalVersePosition)</p>
+                                    </text>
+                                }
+                            </td>
+                            <td>
+                                نوع پیشنهادی مصرع: <p class="green-color">@RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((RMuseum.Models.Ganjoor.VersePosition)verse.VersePosition)</p>
+                            </td>
+                        </tr>
+                        <tr>
+                        <td colspan="2">
+                            @if (verse.VersePositionResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                            {
+                                <input type="radio" id="verse-position@(verse.VORder)_review_result_Approved" name="verse-position@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                                <label for="verse-position@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+
+                                <br>
+                                <input type="radio" id="verse-position@(verse.VORder)_review_result_NotChanged" name="verse-position@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
+                            }
+                            else
+                            {
+                                <input type="radio" id="verse-position@(verse.VORder)_review_result_Approved" name="verse-position@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                                <label for="verse-position@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+
+                                <br>
+                                <input type="radio" id="verse-position@(verse.VORder)_review_result_NotChanged" name="verse-position@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
+                            }
+                            <label for="verse-position@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
+                            <input type="radio" id="verse-position@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse-position@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
+                            <label for="verse-position@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                            <input type="radio" id="verse-position@(verse.VORder)_review_result_Rejected" name="verse-position@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
+                            <label for="verse-position@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                        </td>
+                    </tr>
+                    }
                     <tr>
                         <td>
-                            <p style="color:red" id="verse-original-@verse.VORder">@verse.OriginalText</p>
+                            <p class="red-color" id="verse-original-@verse.VORder">@verse.OriginalText</p>
                         </td>
                         <td>
-                            <p style="color:green" id="verse-edited-@verse.VORder">@verse.Text</p>
+                            <p class="green-color" id="verse-edited-@verse.VORder">@verse.Text</p>
                         </td>
                     </tr>
                     <tr>
