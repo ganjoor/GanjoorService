@@ -273,6 +273,22 @@ else
                     }
                     else
                     {
+                        @if (verse.VersePosition != null)
+                        {
+                            <tr>
+                                <td>
+                                    @if(verse.OriginalVersePosition != null)
+                                    {
+                                        <text>
+                                            نوع پیشین مصرع: <p class="red-color">@RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((RMuseum.Models.Ganjoor.VersePosition)verse.OriginalVersePosition)</p>
+                                        </text>
+                                    }
+                                </td>
+                                <td>
+                                    نوع پیشنهادی مصرع: <p class="green-color">@RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((RMuseum.Models.Ganjoor.VersePosition)verse.VersePosition)</p>
+                                </td>
+                            </tr>
+                        }
                         <tr>
                             <td>
                                 <p class="red-color">@verse.OriginalText</p>
@@ -352,7 +368,7 @@ else
                     <a role="button" href="#poem-sections" class="editor-button background-gray">لغزش به بخش قطعات</a>
                 </td>
             </tr>
-            
+
         }
         @if (Model.CanEdit && !Model.ShowAdminOps)
         {
@@ -797,8 +813,8 @@ else
         }
         else
        if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) == 1)
-       {
-           foreach (var poemSetion in Model.PageInformation.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First).ToList())
+        {
+            foreach (var poemSetion in Model.PageInformation.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First).ToList())
             {
                 <tr>
                     <td>
@@ -808,7 +824,7 @@ else
                     </td>
                 </tr>
             }
-       }
+        }
 
         <tr id="poem-sections">
             <td>
