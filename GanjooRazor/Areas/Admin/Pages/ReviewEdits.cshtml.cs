@@ -155,6 +155,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId, 
             string titleReviewResult, string rhythmReviewResult, string rhythm2ReviewResult,
             string titleReviewNote, string[] verseReviewResult,
+            string[] versePosReviewResult,
             string[] verseReviewNotes
             )
         {
@@ -175,7 +176,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     {
                         if(titleReviewResult == null)
                         {
-                            return new BadRequestObjectResult("لطفا تغییر عنوان را بازبینی کنید.");
+                            return new BadRequestObjectResult("لطفاً تغییر عنوان را بازبینی کنید.");
                         }
                         else
                         {
@@ -188,7 +189,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     {
                         if(rhythmReviewResult == null)
                         {
-                            return new BadRequestObjectResult("لطفا تغییر وزن را بازبینی کنید.");
+                            return new BadRequestObjectResult("لطفاً تغییر وزن را بازبینی کنید.");
                         }
                         else
                         {
@@ -201,7 +202,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     {
                         if (rhythm2ReviewResult == null)
                         {
-                            return new BadRequestObjectResult("لطفا تغییر وزن دوم را بازبینی کنید.");
+                            return new BadRequestObjectResult("لطفاً تغییر وزن دوم را بازبینی کنید.");
                         }
                         else
                         {
@@ -212,7 +213,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     if (verseReviewResult.Length != Correction.VerseOrderText.Length)
                     {
-                        return new BadRequestObjectResult("لطفا تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
+                        return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
                     }
                     else
                     {
@@ -227,6 +228,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                                 Correction.VerseOrderText[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
                                 if (Correction.VerseOrderText[i].VersePosition != null)
                                 {
+                                    Correction.VerseOrderText[i].VersePositionResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), versePosReviewResult[i]);
                                 }
                             }
                             Correction.VerseOrderText[i].ReviewNote = verseReviewNotes[i];
@@ -246,7 +248,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 }
                 else
                 {
-                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجدداً به آن وارد شوید.");
                 }
             }
         }

@@ -40,6 +40,7 @@
 
 
         var verseReviewResult = [];
+        var versePosReviewResult = [];
         var verseReviewNotes = [];
         for (var i = 0; i <= verseCount; i++) {
 
@@ -48,6 +49,15 @@
                 var elementName = 'verse' + (i + 1).toString() + '_review_result';
                 verseReviewResult.push($('input[name=' + elementName + ']:checked').val())
                 verseReviewNotes.push($('#verse' + (i + 1).toString() + '_review_note').val())
+
+                var versePosElementId = '#verse-position' + (i + 1).toString() + '_review_result_Approved';
+                if ($(versePosElementId).length > 0) {
+                    var versePosElementName = 'verse-position' + (i + 1).toString() + '_review_result';
+                    versePosReviewResult.push($('input[name=' + versePosElementName + ']:checked').val())
+                }
+                else{
+                    versePosReviewResult.push('NotChanged');
+                }
             }
             else {
                 var deleteElementId = '#marked-for-delete-' + (i + 1).toString();
@@ -75,6 +85,7 @@
                 rhythm2ReviewResult: rhythm2ReviewResult,
                 titleReviewNote: $('#title_review_note') == null ? null : $('#title_review_note').val(),
                 verseReviewResult: verseReviewResult,
+                versePosReviewResult: versePosReviewResult,
                 verseReviewNotes: verseReviewNotes,
             },
             success: function() {
