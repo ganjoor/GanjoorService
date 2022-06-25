@@ -115,11 +115,20 @@ namespace RMuseum.Services.Implementation
                 var dbVerse = dbCorrection.VerseOrderText.Where(c => c.VORder == moderatedVerse.VORder).Single();
                 dbVerse.Result = moderatedVerse.Result;
                 dbVerse.ReviewNote = moderatedVerse.ReviewNote;
-                if (dbVerse.Result == CorrectionReviewResult.Approved)
+                if(dbVerse.VersePosition != null)
+                {
+                    if(moderatedVerse.VersePositionResult == CorrectionReviewResult.NotReviewed)
+                        return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"تغییرات نوع مصرع {moderatedVerse.VORder} بررسی نشده است.");
+                    dbVerse.VersePositionResult = moderatedVerse.VersePositionResult;
+                }
+                if (dbVerse.Result == CorrectionReviewResult.Approved || dbVerse.VersePositionResult == CorrectionReviewResult.Approved)
                 {
                     dbCorrection.AffectedThePoem = true;
                     var poemVerse = poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).Single();
-                    poemVerse.Text = moderatedVerse.Text.Replace("ۀ", "هٔ").Replace("ك", "ک");
+                    if(dbVerse.Result == CorrectionReviewResult.Approved)
+                        poemVerse.Text = moderatedVerse.Text.Replace("ۀ", "هٔ").Replace("ك", "ک");
+                    if (dbVerse.VersePositionResult == CorrectionReviewResult.Approved)
+                        poemVerse.VersePosition = (VersePosition)dbVerse.VersePosition;
                     modifiedVerses.Add(poemVerse);
                 }
             }
