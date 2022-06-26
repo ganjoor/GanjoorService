@@ -5,6 +5,7 @@
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "ویرایشگر";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "#eee";
 }
 <h1>@ViewData["Title"]</h1>
 <script>
@@ -456,33 +457,41 @@ else
         </tr>
         @foreach (var verse in Model.PageInformation.Poem.Verses)
         {
-            <tr id="tr-@verse.VOrder">
+            if(color == "#eee")
+            {
+                color = "#ddd";
+            }
+            else
+            {
+                color  = "#eee";
+            }
+            <tr id="tr-@verse.VOrder" style="background-color:@color">
                 <td>
                     بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers()
                 </td>
             </tr>
-            <tr>
+            <tr style="background-color:@color">
                 <td>
                     ترتیب مصرع یا خط از ابتدا: @verse.VOrder.ToPersianNumbers()
                 </td>
             </tr>
 
-            <tr>
+            <tr style="background-color:@color">
                 <td>
                     متن فعلی:
                 </td>
             </tr>
-            <tr>
+            <tr style="background-color:@color">
                 <td>
                     <p id="original-@($"{verse.VOrder}")">@verse.Text</p>
                 </td>
             </tr>
-            <tr>
+            <tr style="background-color:@color">
                 <td>
                     ویراستهٔ من:
                 </td>
             </tr>
-            <tr>
+            <tr style="background-color:@color">
                 <td>
                     @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
                     {
@@ -509,40 +518,27 @@ else
                     }
                 </td>
             </tr>
-            <tr>
+            <tr style="background-color:@color">
                 <td>
                     تغییرات:
                 </td>
             </tr>
-            <tr>
+            <tr style="background-color:@color">
                 <td>
                     <p id="compare-@($"{verse.VOrder}")">@verse.Text</p>
                 </td>
             </tr>
-            <tr>
-                <td>
-                    @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.MarkForDelete).Any())
-                    {
-                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" checked />
-                        <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
-                    }
-                    else
-                    {
-                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" disabled />
-                        <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
-                    }
-                </td>
-            </tr>
+            
 
-            <tr>
+            <tr style="background-color:@color">
                 <td>
                     نوع
                 </td>
             </tr>
-            <tr>
+            <tr style="background-color:@color">
                 <td>
 
-                    <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")" disabled>
+                    <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")">
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
                         {
                             @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
@@ -581,7 +577,22 @@ else
 
             </tr>
 
-            <tr>
+            <tr style="background-color:@color">
+                <td>
+                    @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.MarkForDelete).Any())
+                    {
+                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" checked />
+                        <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
+                    }
+                    else
+                    {
+                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" disabled />
+                        <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
+                    }
+                </td>
+            </tr>
+
+            <tr style="background-color:@color">
                 <td class="td-button-container">
                     <a role="button" href="#savecorrections" class="editor-button background-gray">لغزش به دکمهٔ ذخیره</a>
                 </td>
@@ -589,7 +600,7 @@ else
 
             @if (Model.ShowAdminOps && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
             {
-                <tr>
+                <tr style="background-color:@color">
                     <td class="td-button-container">
                         <a role="button" id="breakpoem-@verse.VOrder" class="editor-button background-red" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">شکستن از اینجا</a>
                     </td>
