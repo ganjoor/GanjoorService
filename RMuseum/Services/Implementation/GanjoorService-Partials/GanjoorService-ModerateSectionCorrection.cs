@@ -39,7 +39,7 @@ namespace RMuseum.Services.Implementation
                 dbCorrection.ReviewerUserId = userId;
                 dbCorrection.ReviewDate = DateTime.Now;
                 dbCorrection.ApplicationOrder = await _context.GanjoorPoemSectionCorrections.Where(c => c.Reviewed).AnyAsync() ? 1 + await _context.GanjoorPoemSectionCorrections.Where(c => c.Reviewed).MaxAsync(c => c.ApplicationOrder) : 1;
-                dbCorrection.Reviewed = true;
+                
                 dbCorrection.AffectedThePoem = false;
                 dbCorrection.ReviewNote = moderation.ReviewNote;
 
@@ -260,6 +260,7 @@ namespace RMuseum.Services.Implementation
                         await _context.SaveChangesAsync();
                     }
                 }
+                dbCorrection.Reviewed = true;
                 _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
                 await _context.SaveChangesAsync();
 
