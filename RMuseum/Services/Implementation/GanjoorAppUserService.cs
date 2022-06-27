@@ -62,7 +62,7 @@ namespace RMuseum.Services.Implementation
         public override string GetEmailSubject(RVerifyQueueType op, string secretCode)
         {
             string opString = 
-                op == RVerifyQueueType.SignUp ? "ثبت نام"
+                op == RVerifyQueueType.SignUp ? "نام‌نویسی"
                 :
                 op == RVerifyQueueType.ForgotPassword
                 ?
@@ -81,8 +81,8 @@ namespace RMuseum.Services.Implementation
         /// <returns>html content</returns>
         public override string GetEmailHtmlContent(RVerifyQueueType op, string secretCode, string signupCallbackUrl)
         {
-            string opString = op == RVerifyQueueType.SignUp ? "ثبت نام" : op == RVerifyQueueType.ForgotPassword ? "بازیابی کلمهٔ عبور" : "حذف حساب کاربری";
-            string ifNot = op == RVerifyQueueType.SignUp ? "اگر در گنجور ثبت نام نکرده‌اید لطفاً این نامه را نادیده بگیرید."
+            string opString = op == RVerifyQueueType.SignUp ? "نام‌نویسی" : op == RVerifyQueueType.ForgotPassword ? "بازیابی کلمهٔ عبور" : "حذف حساب کاربری";
+            string ifNot = op == RVerifyQueueType.SignUp ? "اگر در گنجور نام‌نویسی نکرده‌اید لطفاً این نامه را نادیده بگیرید."
                                 : op == RVerifyQueueType.ForgotPassword ?
                                 "اگر در گنجور فراموشی گذرواژه را نزده‌اید یا گذرواژه‌تان را به خاطر آوردید لطفاً این نامه را نادیده بگیرید."
                                 :
@@ -123,7 +123,7 @@ namespace RMuseum.Services.Implementation
                 +
                 (
                 op == RVerifyQueueType.KickOutUser ?
-                $"<p style=\"font:normal 12px tahoma;direction:rtl\">کاربر گرامی، متأسفیم که به اطلاع برسانیم که به دلیل نقض قوانین استفاده از گنجور و به طور مشخص {secretCode} حساب کاربری شما به همراه حاشیه‌ها، خوانش‌ها و سایر اطلاعات خصوصیتان از گنجور حذف شده است. امیدواریم در آینده در صورت تمایل به استفاده از گنجور در چارچوب‌های قابل پذیرش برای ما با حساب کاربری جدیدی پذیرای شما باشیم. با این ایمیل امکان ثبت نام مجدد نخواهید داشت.</p>"
+                $"<p style=\"font:normal 12px tahoma;direction:rtl\">کاربر گرامی، متأسفیم که به اطلاع برسانیم که به دلیل نقض قوانین استفاده از گنجور و به طور مشخص {secretCode} حساب کاربری شما به همراه حاشیه‌ها، خوانش‌ها و سایر اطلاعات خصوصیتان از گنجور حذف شده است. امیدواریم در آینده در صورت تمایل به استفاده از گنجور در چارچوب‌های قابل پذیرش برای ما با حساب کاربری جدیدی پذیرای شما باشیم. با این ایمیل امکان نام‌نویسی مجدد نخواهید داشت.</p>"
                 :
                 string.IsNullOrEmpty(signupCallbackUrl) ?
                 $"<p style=\"font:normal 12px tahoma;direction:rtl\">لطفاً جهت تکمیل {opString} در گنجور کد <strong>{secretCode}</strong> را به عنوان رمز دریافتی در صفحهٔ {opString} وارد کنید.</p>"
@@ -162,9 +162,9 @@ namespace RMuseum.Services.Implementation
             RServiceResult<RVerifyQueueItem> res = await base.SignUp(email, clientIPAddress, clientAppName, langauge);
             if(res.Result == null)
             {
-                if(res.ExceptionString == "شما قبلا ثبت نام کرده‌اید.")
+                if(res.ExceptionString == "شما قبلا نام‌نویسی کرده‌اید.")
                 {
-                    return new RServiceResult<RVerifyQueueItem>(null, "شما قبلا ثبت نام کرده‌اید. توجه بفرمایید که کاربران گنجینهٔ گنجور و پیشخان خوانشگران یکسانند و می‌توانید با همان نام کاربری اینجا وارد شوید.");
+                    return new RServiceResult<RVerifyQueueItem>(null, "شما قبلا نام‌نویسی کرده‌اید. توجه بفرمایید که کاربران گنجینهٔ گنجور و پیشخان خوانشگران یکسانند و می‌توانید با همان نام کاربری اینجا وارد شوید.");
                 }
             }
             return res;
