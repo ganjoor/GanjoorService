@@ -260,7 +260,7 @@ namespace GanjooRazor.Areas.User.Pages
                                     VersePosition = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : versePositions[vOrder - 1],
                                     OriginalVersePosition = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition,
                                 }
-                                ); ;
+                                );
                         }
                     }
 

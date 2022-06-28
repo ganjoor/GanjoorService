@@ -200,6 +200,15 @@
 
         });
     }
+
+    function secondR() {
+        const secondtrs = document.querySelectorAll('#secondr1, #secondr2, #secondr3, #secondr4, #secondr5, #secondr6');
+        secondtrs.forEach(function(secondtr) {
+            secondtr.removeAttribute("style");
+        });
+
+        document.getElementById('secondr-btn').style.display = 'none';
+    }
 </script>
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
@@ -278,7 +287,7 @@ else
                         {
                             <tr>
                                 <td>
-                                    @if(verse.OriginalVersePosition != null)
+                                    @if (verse.OriginalVersePosition != null)
                                     {
                                         <text>
                                             نوع پیشین مصرع: <p class="red-color">@RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((RMuseum.Models.Ganjoor.VersePosition)verse.OriginalVersePosition)</p>
@@ -457,13 +466,13 @@ else
         </tr>
         @foreach (var verse in Model.PageInformation.Poem.Verses)
         {
-            if(color == "#eee")
+            if (color == "#eee")
             {
                 color = "#ddd";
             }
             else
             {
-                color  = "#eee";
+                color = "#eee";
             }
             <tr id="tr-@verse.VOrder" style="background-color:@color">
                 <td>
@@ -528,7 +537,7 @@ else
                     <p id="compare-@($"{verse.VOrder}")">@verse.Text</p>
                 </td>
             </tr>
-            
+
 
             <tr style="background-color:@color">
                 <td>
@@ -704,22 +713,36 @@ else
             </td>
         </tr>
 
-        <tr>
+
+
+        <tr id="secondr-btn">
+            <td>
+                <a role="button" onclick="secondR()" class="pagebutton">این شعر دو وزنی است</a>
+            </td>
+        </tr>
+
+        <tr id="secondr1" style="display:none">
             <td>
                 وزن دوم (شعرهای چندوزنی):
             </td>
+
         </tr>
-        <tr>
+        <tr id="secondr2" style="display:none">
+            <td>
+                <p class="red-color">تعدادی کمی از شعرها دو وزنی هستند.</p>
+            </td>
+        </tr>
+        <tr id="secondr3" style="display:none">
             <td>
                 <p id="rhythm-old2">@(Model.GanjoorMetre2 == null ? "" : Model.GanjoorMetre2.Rhythm)</p>
             </td>
         </tr>
-        <tr>
+        <tr id="secondr4" style="display:none">
             <td>
                 وزن ویراستهٔ من (دوم):
             </td>
         </tr>
-        <tr>
+        <tr id="secondr5" style="display:none">
             <td>
                 <label for="select-search2">جستجوی وزن (دوم):</label><br />
                 <input type="text" id="select-search2" value="" oninput="doSearchInRhythmsCombo('select-search2', 'rhythm-new2')" list="inputRhythms" autocomplete="off" size="50" />
@@ -733,7 +756,7 @@ else
 
             </td>
         </tr>
-        <tr>
+        <tr id="secondr6" style="display:none">
             <td>
                 <label for="rhythm-new2">وزن (دوم) انتخاب شده:</label><br /><select id="rhythm-new2" name="rhythm-new2">
                     @foreach (var rhythm in Model.RhythmsAlphabetically)
