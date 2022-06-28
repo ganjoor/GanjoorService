@@ -160,6 +160,7 @@ namespace RMuseum.Services.Implementation
                 dbVerse.ReviewNote = moderatedVerse.ReviewNote;
                 if (dbVerse.MarkForDeleteResult == CorrectionReviewResult.Approved)
                 {
+                    dbVerse.OriginalText = dbVerse.Text;
                     dbCorrection.AffectedThePoem = true;
                     versesDeleted = true;
                     updatePoem = true;
