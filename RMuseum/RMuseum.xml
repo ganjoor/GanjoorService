@@ -1713,6 +1713,13 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.RegeneratePoemSections(System.Int32)">
+            <summary>
+            regenerate poem sections (dangerous: wipes out existing data)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.UpdateRelatedSections(System.Int32,System.String)">
             <summary>
             update related sections manually
@@ -12649,6 +12656,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.RegeneratePoemSections(System.Int32)">
+            <summary>
+            regenerate poem sections (dangerous: wipes out existing data)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemSectionByIdAsync(System.Int32)">
             <summary>
             get a specific poem section
@@ -14448,6 +14462,13 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemSectionsAsync(System.Int32)">
             <summary>
             get all poem sections
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.RegeneratePoemSections(System.Int32)">
+            <summary>
+            regenerate poem sections (dangerous: wipes out existing data)
             </summary>
             <param name="id"></param>
             <returns></returns>

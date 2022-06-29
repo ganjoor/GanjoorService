@@ -643,6 +643,33 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// regenerate poem sections (dangerous: wipes out existing data)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> RegeneratePoemSections(int id)
+        {
+            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(_context);
+            var job = (await jobProgressServiceEF.NewJob($"RegeneratePoemSections  - {id}", "Query data")).Result;
+            try
+            {
+                var sections = await _context.GanjoorPoemSections.Where(s => s.PoemId == id).ToListAsync();
+                _context.RemoveRange(sections);
+                await _context.SaveChangesAsync();
+                var poem = await _context.GanjoorPoems.AsNoTracking().SingleAsync(p => p.Id == id);
+               
+                await _SectionizePoem(_context, poem, jobProgressServiceEF, job);
+                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get a specific poem sections
         /// </summary>
         /// <param name="sectionId"></param>

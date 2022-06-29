@@ -956,6 +956,13 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoemSection[]>> GetPoemSectionsAsync(int id);
 
         /// <summary>
+        /// regenerate poem sections (dangerous: wipes out existing data)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RegeneratePoemSections(int id);
+
+        /// <summary>
         /// get a specific poem section
         /// </summary>
         /// <param name="sectionId"></param>

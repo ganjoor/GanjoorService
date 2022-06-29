@@ -2813,6 +2813,24 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// regenerate poem sections (dangerous: wipes out existing data)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("poem/{id}/sections/regenerate")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> RegeneratePoemSections(int id)
+        {
+            var res = await _ganjoorService.RegeneratePoemSections(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
 
         /// <summary>
         /// update related sections manually
