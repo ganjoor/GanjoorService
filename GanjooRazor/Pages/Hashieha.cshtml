@@ -85,7 +85,7 @@
                     <input type="submit" value="بیاب" />
                 </form>
             </div><!-- .actionbox -->
-    </div>
+        </div>
 
         <!-- #hdr2 -->
 
@@ -97,47 +97,47 @@
                     <div class="related-images-frame padding-20px">
                         <form method="get" id="searchcommentsform">
                             <input type="text" name="w" id="w" class="width-100per" value="@Model.Query" placeholder="جستجو در @Model.Title" />
-                            @if(Model.Profile != null)
+                            @if (Model.Profile != null)
                             {
                                 <input type="hidden" id="userid" name="userid" value="@Model.Profile.Id" />
                             }
                             <input type="submit" class="width-100per margin-top-5px" value="جستجو در @Model.Title" />
                         </form>
                     </div><!-- related-images-frame -->
-            </div> <!-- sitem actionbo -->
-            <div class="poem">
-                <h2>
-                    <a href="@Model.HomeLink">
-                        @Model.Title
-                    </a>
-                </h2>
-                @if (Model.Profile != null)
-                {
-                    <div class="text-align-center">
-                        <small><a href="/hashieha">همهٔ حاشیه‌ها</a></small>
-                    </div>
-                    <div id="profile">
-                        <p>
-                            @Model.Profile.NickName
+                </div> <!-- sitem actionbo -->
+                <div class="poem">
+                    <h2>
+                        <a href="@Model.HomeLink">
+                            @Model.Title
+                        </a>
+                    </h2>
+                    @if (Model.Profile != null)
+                    {
+                        <div class="text-align-center">
+                            <small><a href="/hashieha">همهٔ حاشیه‌ها</a></small>
+                        </div>
+                        <div id="profile">
+                            <p>
+                                @Model.Profile.NickName
 
-                            @if (!string.IsNullOrEmpty(Model.Profile.Website))
+                                @if (!string.IsNullOrEmpty(Model.Profile.Website))
+                                {
+                                    <a href="@Model.Profile.Website">🌐</a>
+                                }
+
+                                @if (Model.CanAdministerUsers)
+                                {
+                                    <a href="/Admin/ExamineUser?id=@Model.Profile.Id">#</a>
+                                }
+                            </p>
+
+                            @if (!string.IsNullOrEmpty(Model.Profile.Bio))
                             {
-                                <a href="@Model.Profile.Website">🌐</a>
-                            }
-
-                            @if (Model.CanAdministerUsers)
-                            {
-                                <a href="/Admin/ExamineUser?id=@Model.Profile.Id">#</a>
-                            }
-                        </p>
-
-                        @if (!string.IsNullOrEmpty(Model.Profile.Bio))
-                        {
                                 @Html.Raw(Model.Profile.Bio)
-                        }
-                    </div>
-                    <hr />
-                }
+                            }
+                        </div>
+                        <hr />
+                    }
                     @if (Model.Comments.Count == 0)
                     {
                         <p>حاشیه‌ای با مشخصات مورد نظر شما پیدا نشد.</p>
@@ -145,37 +145,37 @@
                     else
                         foreach (var comment in Model.Comments)
                         {
-                                <p>
-                                    @if (comment.UserId == null)
-                                    {
-                                        @comment.AuthorName
-                                    }
-                                    else
-                                    {
-                                        <a href="/hashieha/?userid=@comment.UserId">@comment.AuthorName</a>
-                                    }
-                                    <small>
-                                        در @comment.CommentDate.ToFriendlyPersianDateTextify()
-                                        @if (comment.InReplyTo != null)
-                                        {
-                                            <text>
-                                                @(" ")در پاسخ به @comment.InReplyTo.AuthorName
-                                            </text>
-                                        }
-                                    </small>
-                                    @(" ")دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>:
-                                </p>
-                                @if (comment.CoupletIndex != -1)
+                            <p>
+                                @if (comment.UserId == null)
                                 {
-                                    <div class="commentquote">
-                                        @comment.CoupletSummary
-                                    </div>
+                                    @comment.AuthorName
                                 }
-                                <blockquote>
-                                    @Html.Raw(comment.HtmlComment)
-                                </blockquote>
-                                <div class="spacer">&nbsp;</div>
-                                <hr />
+                                else
+                                {
+                                    <a href="/hashieha/?userid=@comment.UserId">@comment.AuthorName</a>
+                                }
+                                <small>
+                                    در @comment.CommentDate.ToFriendlyPersianDateTextify()
+                                    @if (comment.InReplyTo != null)
+                                    {
+                                        <text>
+                                            @(" ")در پاسخ به @comment.InReplyTo.AuthorName
+                                        </text>
+                                    }
+                                </small>
+                                @(" ")دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>:
+                            </p>
+                            @if (comment.CoupletIndex != -1)
+                            {
+                                <div class="commentquote">
+                                    @comment.CoupletSummary
+                                </div>
+                            }
+                            <blockquote>
+                                @Html.Raw(comment.HtmlComment)
+                            </blockquote>
+                            <div class="spacer">&nbsp;</div>
+                            <hr />
                         }
                 </div>
 
@@ -197,17 +197,14 @@
 
         @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
         {
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=@(ViewData["GoogleAnalyticsCode"])"></script>
             <script>
-                (function (i, s, o, g, r, a, m) {
-                    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-                        (i[r].q = i[r].q || []).push(arguments)
-                    }, i[r].l = 1 * new Date(); a = s.createElement(o),
-                        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-                })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+                window.dataLayer = window.dataLayer || [];
+                function gtag() { dataLayer.push(arguments); }
+                gtag('js', new Date());
 
-                ga('create', '@ViewData["GoogleAnalyticsCode"]', 'auto');
-                ga('send', 'pageview');
-
+                gtag('config', '@ViewData["GoogleAnalyticsCode"]');
             </script>
         }
     }

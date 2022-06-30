@@ -22,7 +22,7 @@
     </script>
     <script src="/js/bk.js?version=29"></script>
 
-    @if(Model.GanjoorPage != null && Model.GanjoorPage.NoIndex)
+    @if (Model.GanjoorPage != null && Model.GanjoorPage.NoIndex)
     {
         <meta name="robots" content="noindex, nofollow" />
     }
@@ -33,11 +33,11 @@
     }
     else
     {
-        <link  rel="canonical" href="@Model.CanonicalUrl" />
+        <link rel="canonical" href="@Model.CanonicalUrl" />
         if (Model.IsPoemPage)
         {
             <script>
-                $(document).ready(function () {
+                $(document).ready(function() {
                     checkWebShareSupport();
                     btshmr(@Model.GanjoorPage.Id);
                     checkIfBookmarked(@Model.GanjoorPage.Id);
@@ -68,18 +68,18 @@
                 var nLastHighlight = -1;
                 var vCount = 0;
 
-                var _setXml = function (xmlUrl) {
+                var _setXml = function(xmlUrl) {
                     $.ajax({
                         type: "GET",
                         url: xmlUrl,
                         dataType: "xml",
-                        success: function (xml) {
+                        success: function(xml) {
                             var nOneSecondBugFix = 2000;
-                            $(xml).find('OneSecondBugFix').each(function () {
+                            $(xml).find('OneSecondBugFix').each(function() {
                                 nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
                             });
                             var v = 0;
-                            $(xml).find('SyncInfo').each(function () {
+                            $(xml).find('SyncInfo').each(function() {
                                 verseStart[v] = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
                                 verseIndex[v] = parseInt($(this).find('VerseOrder').text());
                                 if (v > 0)
@@ -94,7 +94,7 @@
                     });
                 }
 
-                var _trackTimeChanged = function (audio) {
+                var _trackTimeChanged = function(audio) {
                     var currentTime = audio.currentTime;
 
                     if (currentTime > 0) {
@@ -118,8 +118,8 @@
                 @foreach (var recitation in Model.GanjoorPage.Poem.Recitations)
                 {
                     <text>
-                                        narrators.push('@Html.Raw(recitation.AudioArtist)');
-                                        audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
+                        narrators.push('@Html.Raw(recitation.AudioArtist)');
+                    audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
                     </text>
                 }
             </script>
@@ -152,8 +152,8 @@
         if (!string.IsNullOrEmpty(Model.PinterestUrl))
         {
             <script>
-                $(function () {
-                    $("a").attr('href', function (i, h) {
+                $(function() {
+                    $("a").attr('href', function(i, h) {
                         if (h != null) {
                             return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
                         }
@@ -171,10 +171,10 @@
             var userNotifiedOnEditInsteadOfComment = false;
 
             function createInformationNotification() {
-              tinymce.activeEditor.notificationManager.open({
-                text: 'تمنا می‌کنیم که به جای گوشزد کردن خطاهای املایی و تایپی در حاشیه‌ها از دکمهٔ «ویرایش» استفاده کنید و خطا را تصحیح کنید.',
-                type: 'info'
-              });
+                tinymce.activeEditor.notificationManager.open({
+                    text: 'تمنا می‌کنیم که به جای گوشزد کردن خطاهای املایی و تایپی در حاشیه‌ها از دکمهٔ «ویرایش» استفاده کنید و خطا را تصحیح کنید.',
+                    type: 'info'
+                });
             }
 
             tinymce.init({
@@ -189,37 +189,34 @@
                 paste_strip_class_attributes: true,
                 a11y_advanced_options: true,
                 setup: function(editor) {
-                editor.on('tap', function(e) {
-                    if(userNotifiedOnEditInsteadOfComment == false){
-                        userNotifiedOnEditInsteadOfComment = true;
-                        createInformationNotification();
-                    }
-                },
-                );
-                editor.on('click', function(e) {
-                    if(userNotifiedOnEditInsteadOfComment == false){
-                        userNotifiedOnEditInsteadOfComment = true;
-                        createInformationNotification();
-                    }
-                },
-                );
+                    editor.on('tap', function(e) {
+                        if (userNotifiedOnEditInsteadOfComment == false) {
+                            userNotifiedOnEditInsteadOfComment = true;
+                            createInformationNotification();
+                        }
+                    },
+                    );
+                    editor.on('click', function(e) {
+                        if (userNotifiedOnEditInsteadOfComment == false) {
+                            userNotifiedOnEditInsteadOfComment = true;
+                            createInformationNotification();
+                        }
+                    },
+                    );
                 },
             });
         </script>
     }
     @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
     {
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@(ViewData["GoogleAnalyticsCode"])"></script>
         <script>
-            (function (i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-                    (i[r].q = i[r].q || []).push(arguments)
-                }, i[r].l = 1 * new Date(); a = s.createElement(o),
-                    m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
 
-            ga('create', '@ViewData["GoogleAnalyticsCode"]', 'auto');
-            ga('send', 'pageview');
-
+            gtag('config', '@ViewData["GoogleAnalyticsCode"]');
         </script>
     }
 

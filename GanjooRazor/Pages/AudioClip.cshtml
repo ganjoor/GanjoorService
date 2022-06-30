@@ -155,166 +155,163 @@
         <script src="~/dist/jplayer/jquery.jplayer.min.js"></script>
         <script src="~/dist/add-on/jplayer.playlist.min.js"></script>
         <script>
-        var verses = [];
+            var verses = [];
 
-        @{
-            <text>
-                @Html.Raw($" var normaltext = { (Model.Poem.Verses.Where(v => v.VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph).Any() ? "true" : "false") }")
-            </text>
-            for (int i = 0; i < Model.Poem.Verses.Length; i++)
-            {
+            @{
                 <text>
-                    @Html.Raw($"verses[{i}] = '{Model.Poem.Verses[i].Text}';")
+                    @Html.Raw($" var normaltext = { (Model.Poem.Verses.Where(v => v.VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph).Any() ? "true" : "false") }")
                 </text>
+                for (int i = 0; i < Model.Poem.Verses.Length; i++)
+                {
+                    <text>
+                        @Html.Raw($"verses[{i}] = '{Model.Poem.Verses[i].Text}';")
+                    </text>
+                }
             }
-        }
 
-        function prepareclip(xmlfilename, poemtitle, auartist, oggurl, mp3url, verseArray) {
-            var verseStart = [];
-            var verseEnd = [];
-            var verseIndex = [];
-            var nLastHighlight = -1;
-            var vCount = 0;
+                function prepareclip(xmlfilename, poemtitle, auartist, oggurl, mp3url, verseArray) {
+                    var verseStart = [];
+                    var verseEnd = [];
+                    var verseIndex = [];
+                    var nLastHighlight = -1;
+                    var vCount = 0;
 
-            audioxmlfiles[0] = xmlfilename;
+                    audioxmlfiles[0] = xmlfilename;
 
 
-            var jlist = new jPlayerPlaylist({
-                jPlayer: "#jquery_jplayer_1",
-                cssSelectorAncestor: "#jp_container_1"
-            }, [
-                {
-                    title: poemtitle,
-                    artist: auartist,
-                    mp3: mp3url
-                },
-            ],
-                {
-                    setmedia: function (event) {
+                    var jlist = new jPlayerPlaylist({
+                        jPlayer: "#jquery_jplayer_1",
+                        cssSelectorAncestor: "#jp_container_1"
+                    }, [
+                        {
+                            title: poemtitle,
+                            artist: auartist,
+                            mp3: mp3url
+                        },
+                    ],
+                        {
+                            setmedia: function(event) {
 
-                        $.ajax({
-                            type: "GET",
-                            url: audioxmlfiles[jlist.current],
-                            dataType: "xml",
-                            success: function (xml) {
-                                var nOneSecondBugFix = 2000;
-                                $(xml).find('OneSecondBugFix').each(function () {
-                                    nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
+                                $.ajax({
+                                    type: "GET",
+                                    url: audioxmlfiles[jlist.current],
+                                    dataType: "xml",
+                                    success: function(xml) {
+                                        var nOneSecondBugFix = 2000;
+                                        $(xml).find('OneSecondBugFix').each(function() {
+                                            nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
+                                        });
+                                        var v = 0;
+                                        $(xml).find('SyncInfo').each(function() {
+                                            verseStart[v] = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
+                                            verseIndex[v] = parseInt($(this).find('VerseOrder').text());
+                                            if (v > 0)
+                                                verseEnd[v - 1] = verseStart[v];
+                                            v++;
+                                        });
+                                        v--;
+                                        if (v > 1)
+                                            verseEnd[v] = verseStart[v] + 2 * (verseEnd[v - 1] - verseStart[v - 1]);
+                                        vCount = v;
+                                    }
                                 });
-                                var v = 0;
-                                $(xml).find('SyncInfo').each(function () {
-                                    verseStart[v] = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
-                                    verseIndex[v] = parseInt($(this).find('VerseOrder').text());
-                                    if (v > 0)
-                                        verseEnd[v - 1] = verseStart[v];
-                                    v++;
-                                });
-                                v--;
-                                if (v > 1)
-                                    verseEnd[v] = verseStart[v] + 2 * (verseEnd[v - 1] - verseStart[v - 1]);
-                                vCount = v;
-                            }
+
+
+                            },
+
+                            timeupdate: function(event) { // 4Hz
+                                var curTime = event.jPlayer.status.currentTime;
+                                if (curTime > 0) {
+                                    if (normaltext == true) {
+                                        for (i = 0; i <= vCount; i++) {
+                                            if (curTime >= verseStart[i] && curTime <= verseEnd[i]) {
+
+
+                                                if (nLastHighlight != verseIndex[i]) {
+
+                                                    $('#title1').hide();
+                                                    $('#title2').hide();
+                                                    $('#title3').hide();
+                                                    $('#title4').hide();
+                                                    $('#normal').text(verseArray[verseIndex[i]]);
+                                                    $('#verse1div').css("visibility", "hidden");
+                                                    $('#verse2div').css("visibility", "hidden");
+                                                    $('#verse1div').hide();
+                                                    $('#verse2div').hide();
+                                                    $('#normaldiv').css("visibility", "visible");
+
+                                                }
+                                                nLastHighlight = verseIndex[i];
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        for (i = 0; i <= vCount; i += 2) {
+                                            if (curTime >= verseStart[i] && curTime <= verseEnd[i]) {
+
+
+                                                if (nLastHighlight != verseIndex[i]) {
+
+                                                    $('#title1').hide();
+                                                    $('#title2').hide();
+                                                    $('#title3').hide();
+                                                    $('#title4').hide();
+                                                    $('#verse1').text(verseArray[verseIndex[i]]);
+                                                    $('#verse2').text(verseArray[verseIndex[i] + 1]);
+                                                    $('#normaldiv').css("visibility", "hidden");
+                                                    $('#normaldiv').hide();
+                                                    $('#verse1div').css("visibility", "visible");
+                                                    $('#verse2div').css("visibility", "visible");
+                                                }
+                                                nLastHighlight = verseIndex[i];
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
+                            },
+                            ended: function(event) { // 4Hz
+
+                            },
+                            swfPath: "dist/jplayer",
+                            supplied: "mp3",
+                            wmode: "window",
+                            useStateClassSkin: true,
+                            autoBlur: false,
+                            smoothPlayBar: true,
+                            keyEnabled: true,
+                            remainingDuration: true,
+                            toggleDuration: true
                         });
 
+                    return jlist;
 
-                    },
-
-                    timeupdate: function (event) { // 4Hz
-                        var curTime = event.jPlayer.status.currentTime;
-                        if (curTime > 0) {
-                            if (normaltext == true) {
-                                for (i = 0; i <= vCount; i++) {
-                                    if (curTime >= verseStart[i] && curTime <= verseEnd[i]) {
+                }
 
 
-                                        if (nLastHighlight != verseIndex[i]) {
+            //<![CDATA[
+            $(document).ready(function() {
 
-                                            $('#title1').hide();
-                                            $('#title2').hide();
-                                            $('#title3').hide();
-                                            $('#title4').hide();
-                                            $('#normal').text(verseArray[verseIndex[i]]);
-                                            $('#verse1div').css("visibility", "hidden");
-                                            $('#verse2div').css("visibility", "hidden");
-                                            $('#verse1div').hide();
-                                            $('#verse2div').hide();
-                                            $('#normaldiv').css("visibility", "visible");
-
-                                        }
-                                        nLastHighlight = verseIndex[i];
-                                        break;
-                                    }
-                                }
-                            }
-                            else {
-                                for (i = 0; i <= vCount; i += 2) {
-                                    if (curTime >= verseStart[i] && curTime <= verseEnd[i]) {
+                prepareclip('@Html.Raw($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.Recitation.Id}.xml")', '@Model.Recitation.AudioTitle',
+                    'به خوانش @Model.Recitation.AudioArtist', '', '@Model.Recitation.Mp3Url', verses);
 
 
-                                        if (nLastHighlight != verseIndex[i]) {
-
-                                            $('#title1').hide();
-                                            $('#title2').hide();
-                                            $('#title3').hide();
-                                            $('#title4').hide();
-                                            $('#verse1').text(verseArray[verseIndex[i]]);
-                                            $('#verse2').text(verseArray[verseIndex[i] + 1]);
-                                            $('#normaldiv').css("visibility", "hidden");
-                                            $('#normaldiv').hide();
-                                            $('#verse1div').css("visibility", "visible");
-                                            $('#verse2div').css("visibility", "visible");
-                                        }
-                                        nLastHighlight = verseIndex[i];
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-
-                    },
-                    ended: function (event) { // 4Hz
-
-                    },
-                    swfPath: "dist/jplayer",
-                    supplied: "mp3",
-                    wmode: "window",
-                    useStateClassSkin: true,
-                    autoBlur: false,
-                    smoothPlayBar: true,
-                    keyEnabled: true,
-                    remainingDuration: true,
-                    toggleDuration: true
-                });
-
-            return jlist;
-
-        }
-
-
-        //<![CDATA[
-        $(document).ready(function () {
-
-            prepareclip('@Html.Raw($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.Recitation.Id}.xml")', '@Model.Recitation.AudioTitle',
-                'به خوانش @Model.Recitation.AudioArtist', '', '@Model.Recitation.Mp3Url', verses);
-
-
-        });
-        //]]>
+            });
+            //]]>
         </script>
 
         @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
         {
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=@(ViewData["GoogleAnalyticsCode"])"></script>
             <script>
-            (function (i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-                    (i[r].q = i[r].q || []).push(arguments)
-                }, i[r].l = 1 * new Date(); a = s.createElement(o),
-                    m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+                window.dataLayer = window.dataLayer || [];
+                function gtag() { dataLayer.push(arguments); }
+                gtag('js', new Date());
 
-            ga('create', '@ViewData["GoogleAnalyticsCode"]', 'auto');
-            ga('send', 'pageview');
-
+                gtag('config', '@ViewData["GoogleAnalyticsCode"]');
             </script>
         }
     }
