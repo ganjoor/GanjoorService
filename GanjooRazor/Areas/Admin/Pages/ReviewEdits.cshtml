@@ -55,7 +55,7 @@
                     var versePosElementName = 'verse-position' + (i + 1).toString() + '_review_result';
                     versePosReviewResult.push($('input[name=' + versePosElementName + ']:checked').val())
                 }
-                else{
+                else {
                     versePosReviewResult.push('NotChanged');
                 }
             }
@@ -348,21 +348,15 @@ else
             </tr>
             <tr>
                 <td colspan="2">
-
+                    <input type="radio" id="rhythm2_review_result_Approved" name="rhythm2_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                    <label for="rhythm2_review_result_Approved">تأیید می‌شود</label>
+                    <br>
                     @if (Model.Correction.Rhythm2Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                     {
-                        <input type="radio" id="rhythm2_review_result_Approved" name="rhythm2_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                        <label for="rhythm2_review_result_Approved">تأیید می‌شود</label>
-
-                        <br>
                         <input type="radio" id="rhythm2_review_result_NotChanged" name="rhythm2_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
                     }
                     else
                     {
-                        <input type="radio" id="rhythm2_review_result_Approved" name="rhythm2_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                        <label for="rhythm2_review_result_Approved">تأیید می‌شود</label>
-
-                        <br>
                         <input type="radio" id="rhythm2_review_result_NotChanged" name="rhythm2_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                     }
                     <label for="rhythm2_review_result_NotChanged">تغییری نکرده</label><br>
@@ -447,30 +441,25 @@ else
                             </td>
                         </tr>
                         <tr>
-                        <td colspan="2">
-                            @if (verse.VersePositionResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
-                            {
+                            <td colspan="2">
                                 <input type="radio" id="verse-position@(verse.VORder)_review_result_Approved" name="verse-position@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
                                 <label for="verse-position@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
-
                                 <br>
-                                <input type="radio" id="verse-position@(verse.VORder)_review_result_NotChanged" name="verse-position@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
-                            }
-                            else
-                            {
-                                <input type="radio" id="verse-position@(verse.VORder)_review_result_Approved" name="verse-position@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                                <label for="verse-position@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
-
-                                <br>
-                                <input type="radio" id="verse-position@(verse.VORder)_review_result_NotChanged" name="verse-position@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
-                            }
-                            <label for="verse-position@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
-                            <input type="radio" id="verse-position@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse-position@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                            <label for="verse-position@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
-                            <input type="radio" id="verse-position@(verse.VORder)_review_result_Rejected" name="verse-position@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                            <label for="verse-position@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
-                        </td>
-                    </tr>
+                                @if (verse.VersePositionResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                                {
+                                    <input type="radio" id="verse-position@(verse.VORder)_review_result_NotChanged" name="verse-position@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
+                                }
+                                else
+                                {
+                                    <input type="radio" id="verse-position@(verse.VORder)_review_result_NotChanged" name="verse-position@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
+                                }
+                                <label for="verse-position@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
+                                <input type="radio" id="verse-position@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse-position@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
+                                <label for="verse-position@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                                <input type="radio" id="verse-position@(verse.VORder)_review_result_Rejected" name="verse-position@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
+                                <label for="verse-position@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                            </td>
+                        </tr>
                     }
                     <tr>
                         <td>
