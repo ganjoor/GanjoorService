@@ -538,7 +538,7 @@ namespace RMuseum.Services.Implementation
                            }
                            );
 
-                page.HtmlText = (await _GenerateTableOfContents(context, cat.Id, GanjoorTOC.TitlesAndFirstVerse)).Result;
+                page.HtmlText = (await _GenerateTableOfContents(context, cat.Id, GanjoorTOC.TitlesAndFirstCouplet)).Result;
                 context.GanjoorPages.Update(page);
                 await context.SaveChangesAsync();
 
