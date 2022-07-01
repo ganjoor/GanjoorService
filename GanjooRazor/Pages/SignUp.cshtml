@@ -2,19 +2,7 @@
 @model GanjooRazor.Pages.SignUpModel
 @{
     Layout = null;
-    if (Model.SignupPhase1)
-    {
-        ViewData["Title"] = "گنجور » نام‌نویسی » ورود ایمیل";
-    }
-    else
-    if(Model.SignupVerifyEmailPhase)
-    {
-        ViewData["Title"] = "گنجور » نام‌نویسی » ورود رمز دریافتی در ایمیل";
-    }
-    else
-    {
-        ViewData["Title"] = "گنجور » نام‌نویسی » مرحلهٔ نهایی";
-    }
+    
 }
 <!DOCTYPE html>
 <html lang="fa-IR" dir="rtl">
@@ -24,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
-    <link href="/css/p8.css?version=45" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=46" rel="stylesheet" type="text/css" />
 </head>
 <body class="bk-background">
     <div id="hdr">
@@ -193,6 +181,19 @@
             }
 
         </div>
+        <partial name="_FooterPartial" model="null" />
     </div>
+    @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
+    {
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@(ViewData["GoogleAnalyticsCode"])"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+
+            gtag('config', '@ViewData["GoogleAnalyticsCode"]');
+        </script>
+    }
 </body>
 </html>

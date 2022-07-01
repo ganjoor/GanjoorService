@@ -54,6 +54,24 @@ namespace GanjooRazor.Pages
 
         [BindProperty]
         public VerifiedSignUpViewModelWithRepPass FinalViewModel { get; set; }
+
+        private void _FillViewData()
+        {
+            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
+            if (SignupPhase1)
+            {
+                ViewData["Title"] = "گنجور » نام‌نویسی » ورود ایمیل";
+            }
+            else
+            if (SignupVerifyEmailPhase)
+            {
+                ViewData["Title"] = "گنجور » نام‌نویسی » ورود رمز دریافتی در ایمیل";
+            }
+            else
+            {
+                ViewData["Title"] = "گنجور » نام‌نویسی » مرحلهٔ نهایی";
+            }
+        }
         public async Task<IActionResult> OnGetAsync()
         {
             if (bool.Parse(Configuration["MaintenanceMode"]))
@@ -86,6 +104,8 @@ namespace GanjooRazor.Pages
 
             CaptchaImageUrl = $"{APIRoot.InternetUrl}/api/rimages/{SignUpViewModel.CaptchaImageId}.jpg";
 
+            _FillViewData();
+
             return Page();
         }
 
@@ -98,7 +118,7 @@ namespace GanjooRazor.Pages
             SignupFinalPhase = false;
 
             var response = await _httpClient.PostAsync($"{APIRoot.Url}/api/users/signup", new StringContent(JsonConvert.SerializeObject(SignUpViewModel), Encoding.UTF8, "application/json"));
-            if(!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
                 LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
 
@@ -122,12 +142,13 @@ namespace GanjooRazor.Pages
                 SignUpViewModel.CaptchaImageId = JsonConvert.DeserializeObject<Guid>(await response.Content.ReadAsStringAsync());
                 CaptchaImageUrl = $"{APIRoot.InternetUrl}/api/rimages/{SignUpViewModel.CaptchaImageId}.jpg";
 
-                
+
                 return Page();
             }
             SignupPhase1 = false;
             SignupVerifyEmailPhase = true;
 
+            _FillViewData();
 
             return Page();
         }
@@ -160,6 +181,8 @@ namespace GanjooRazor.Pages
             SignupVerifyEmailPhase = false;
             SignupFinalPhase = true;
 
+            _FillViewData();
+
             return Page();
         }
 
@@ -171,7 +194,7 @@ namespace GanjooRazor.Pages
             SignupVerifyEmailPhase = false;
             SignupFinalPhase = true;
 
-            if(FinalViewModel.Password != FinalViewModel.PasswordConfirmation)
+            if (FinalViewModel.Password != FinalViewModel.PasswordConfirmation)
             {
                 LastError = "گذرواژه و تکرار آن یکی نیستند.";
                 return Page();
@@ -240,7 +263,7 @@ namespace GanjooRazor.Pages
 
             Response.Cookies.Append("CanEdit", canEditContent.ToString(), cookieOption);
 
-
+            _FillViewData();
 
             return Redirect($"{Configuration["SiteUrl"]}/User");
         }
