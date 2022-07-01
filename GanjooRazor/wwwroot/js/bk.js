@@ -152,6 +152,19 @@ function switchPlayerScrollLock() {
 
 }
 
+function scrollToTargetAdjusted(element) {
+    var stickyNavbar = document.getElementsByClassName("sticky");
+    var headerOffset = stickyNavbar.length == 0 ? 0 : document.getElementById('main-navbar').clientHeight;
+    var elementPosition = element.getBoundingClientRect().top;
+    var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+    window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+    });
+}
+
+
 function hilightverse(vnum, clr, sc, forceScroll) {
     var root = document;
     if (typeof root == "string") root = document.getElementById(root);
@@ -207,7 +220,7 @@ function hilightverse(vnum, clr, sc, forceScroll) {
 
                     if (forceScroll)
                         if (!!element && element.scrollIntoView) {
-                            element.scrollIntoView();
+                            scrollToTargetAdjusted(element);
                         }
                 }
                 return true;
@@ -274,7 +287,7 @@ function hilightverse(vnum, clr, sc, forceScroll) {
 
                             if (forceScroll)
                                 if (!!element && element.scrollIntoView) {
-                                    element.scrollIntoView();
+                                    scrollToTargetAdjusted(element);
                                 }
                         }
                         return true;
