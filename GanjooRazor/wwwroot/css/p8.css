@@ -1769,9 +1769,28 @@ fieldset {
     content: 'push_pin';
 }
 
+.up-btn::after {
+    content: 'arrow_circle_up';
+}
+
+.down-btn::after {
+    content: 'arrow_circle_down';
+}
 
 .float-right{
     float: right;
+}
+
+.float-left{
+    float: left;
+}
+
+.width-76px{
+    width: 76px;
+}
+
+.display-inline-flex{
+    display:inline-flex;
 }
 
 .noborder-btn {
