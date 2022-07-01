@@ -1637,6 +1637,10 @@ audio {
     content: 'run_circle'
 }
 
+.account-icon::after {
+    content: 'account_circle'
+}
+
 
 .visible-notification-badge {
     position: absolute;
@@ -1735,8 +1739,13 @@ fieldset {
     padding: 1px;
 }
 
-    #main-navbar .circled-number {
+    #main-navbar .pagebutton {
+        display: inline-table;
         border: 3px solid black;
+        padding-top: 0;
+        padding-bottom: 0;
+        padding-left: 10px;
+        padding-right: 10px;
     }
 /* The sticky class is added to the navbar with JS when it reaches its scroll position */
 .sticky {
@@ -1745,4 +1754,6 @@ fieldset {
     z-index: 2;
     border-radius: 0px !important;
 }
+
+
 

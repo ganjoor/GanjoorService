@@ -14,7 +14,7 @@
                 @{
                     foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
                     {
-                        <option value="@poet.Id">@poet.Nickname</option>
+                            <option value="@poet.Id">@poet.Nickname</option>
                     }
                 }
             </select>
@@ -22,12 +22,12 @@
         </form>
     </div>
 
-  
+
 
     <div id="main-navbar" role="navigation">
-        @if (Model.LoggedIn)
-        {
-            <div class="clear-both">
+        <div class="clear-both">
+            @if (Model.LoggedIn)
+            {
                 <a href="/User" role="button" class="w3tooltip cursor-pointer">
                     <div class="circled-number">
                         <i class="noindent-info-button user-home-icon"></i>
@@ -52,14 +52,21 @@
                     </div>
                     <span class="w3tooltiptext">ادامهٔ مطالعه</span>
                 </a>
-                 <a href="javascript:document.getElementById('logoutform').submit();" role="button" class="w3tooltip cursor-pointer">
+                <a href="javascript:document.getElementById('logoutform').submit();" role="button" class="w3tooltip cursor-pointer">
                     <div class="circled-number">
                         <i class="noindent-info-button logout-icon"></i>
                     </div>
                     <span class="w3tooltiptext">خروج</span>
                 </a>
-            </div>
-        }
+            }
+            else
+            {
+                <a onclick="document.getElementById('id01').style.display='block'" role="button" class="w3tooltip cursor-pointer pagebutton" style="display:inline-table;border: 3px solid black">
+                    ورود کاربر / نام‌نویسی <i class="noindent-info-button account-icon"></i>
+                </a>
+            }
+        </div>
+
     </div>
 
 
@@ -75,95 +82,95 @@
 
                 if (popularGroup.ShowInTimeLine)
                 {
-                    <div class="century">
-                        @popularGroup.Name
-                    </div>
-                }
-                <div class="spacer">
-                    @foreach (var poet in popularGroup.Poets)
-                    {
-                        <div class="poet">
-                            <a href="@poet.FullUrl" title="@poet.Name">
-                                <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
-                            </a>
-                            <div class="caption">
-                                <a href="@poet.FullUrl">@poet.Nickname</a>
-                            </div>
+                        <div class="century">
+                            @popularGroup.Name
                         </div>
+                }
+                    <div class="spacer">
+                        @foreach (var poet in popularGroup.Poets)
+                    {
+                            <div class="poet">
+                                <a href="@poet.FullUrl" title="@poet.Name">
+                                    <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
+                                </a>
+                                <div class="caption">
+                                    <a href="@poet.FullUrl">@poet.Nickname</a>
+                                </div>
+                            </div>
                     }
-                </div>
-                <div class="clear-both">
-                    <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onInlineSearch(this.value, 'found-poets', 'poet')" />
-                    <div class="spacer" id="found-poets"></div>
-                </div>
-                <div class="century" id="cl">
-                    دسته‌بندی بر اساس قرن
-                </div>
+                    </div>
+                    <div class="clear-both">
+                        <input type="text" id="findpoet" placeholder="جستجوی شاعر" size="35" value="" oninput="onInlineSearch(this.value, 'found-poets', 'poet')" />
+                        <div class="spacer" id="found-poets"></div>
+                    </div>
+                    <div class="century" id="cl">
+                        دسته‌بندی بر اساس قرن
+                    </div>
 
-                <div id="real-centuries">
-                    <div class="circled-number-container">
-                        @foreach (var g in Model.PoetGroups)
+                    <div id="real-centuries">
+                        <div class="circled-number-container">
+                            @foreach (var g in Model.PoetGroups)
                         {
                             if (g.Id != 0)
                             {
-                                <a href="#pg-@g.Id">
-                                    <div class="circled-number">
-                                        @((g.HalfCenturyOrder + 2).ToPersianNumbers())
-                                    </div>
-                                </a>
+                                    <a href="#pg-@g.Id">
+                                        <div class="circled-number">
+                                            @((g.HalfCenturyOrder + 2).ToPersianNumbers())
+                                        </div>
+                                    </a>
                             }
                         }
-                        <a href="#gmap">
-                            <div class="circled-number">
-                                <i class="noindent-info-button map-icon"></i>
-                            </div>
-                        </a>
-                    </div>
+                            <a href="#gmap">
+                                <div class="circled-number">
+                                    <i class="noindent-info-button map-icon"></i>
+                                </div>
+                            </a>
+                        </div>
 
-                    @foreach (var poetGroup in Model.PoetGroups)
+                        @foreach (var poetGroup in Model.PoetGroups)
                     {
                         if (poetGroup.Id == 0) continue;
                         if (poetGroup.ShowInTimeLine)
                         {
-                            <div class="century" id="pg-@poetGroup.Id">
-                                @poetGroup.Name
-                                <a role="button" class="w3tooltip cursor-pointer" href="#cl"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">برگشت</span></a>
-                            </div>
-                        }
-                        <div class="spacer">
-                            @foreach (var poet in poetGroup.Poets)
-                            {
-                                <div class="poet" data-value="@poet.Nickname">
-                                    <a href="@poet.FullUrl" title="@poet.Name">
-                                        <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
-                                    </a>
-                                    <div class="caption">
-                                        <a href="@poet.FullUrl">@poet.Nickname</a>
-                                    </div>
+                                <div class="century" id="pg-@poetGroup.Id">
+                                    @poetGroup.Name
+                                    <a role="button" class="w3tooltip cursor-pointer" href="#cl"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">برگشت</span></a>
                                 </div>
+                        }
+                            <div class="spacer">
+                                @foreach (var poet in poetGroup.Poets)
+                            {
+                                    <div class="poet" data-value="@poet.Nickname">
+                                        <a href="@poet.FullUrl" title="@poet.Name">
+                                            <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
+                                        </a>
+                                        <div class="caption">
+                                            <a href="@poet.FullUrl">@poet.Nickname</a>
+                                        </div>
+                                    </div>
                             }
-                        </div>
-                        @if (poetGroup.Id == 0)
-                        {
-                            <div class="century" id="cl">
-                                دسته‌بندی بر اساس قرن
                             </div>
-                            <div class="circled-number-container">
-                                @foreach (var g in Model.PoetGroups)
+                            @if (poetGroup.Id == 0)
+                        {
+                                <div class="century" id="cl">
+                                    دسته‌بندی بر اساس قرن
+                                </div>
+                                <div class="circled-number-container">
+                                    @foreach (var g in Model.PoetGroups)
                                 {
                                     if (g.Id != 0)
                                     {
-                                        <a href="#pg-@g.Id">
-                                            <div class="circled-number">
-                                                @((g.HalfCenturyOrder + 2).ToPersianNumbers())
-                                            </div>
-                                        </a>
+                                            <a href="#pg-@g.Id">
+                                                <div class="circled-number">
+                                                    @((g.HalfCenturyOrder + 2).ToPersianNumbers())
+                                                </div>
+                                            </a>
                                     }
                                 }
-                            </div>
+                                </div>
                         }
                     }
-                </div>
+                    </div>
             }
 
 
