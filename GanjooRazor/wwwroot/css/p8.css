@@ -1734,9 +1734,8 @@ fieldset {
     margin-bottom: 2px;
     display: block;
     background-color: #300;
-    border: none;
     border-radius: 20px;
-    padding: 1px;
+    border: 2px solid black;
 }
 
     #main-navbar .pagebutton {
@@ -1746,14 +1745,19 @@ fieldset {
         padding-bottom: 0;
         padding-left: 10px;
         padding-right: 10px;
+        background-color: darkred;
     }
-/* The sticky class is added to the navbar with JS when it reaches its scroll position */
-.sticky {
-    position: sticky !important;
-    top: 0;
-    z-index: 2;
-    border-radius: 0px !important;
-}
+
+    #main-navbar .circled-number{
+        background-color: darkred;
+    }
+    /* The sticky class is added to the navbar with JS when it reaches its scroll position */
+    .sticky {
+        position: sticky !important;
+        top: 0;
+        z-index: 2;
+        border-radius: 0px !important;
+    }
 
 
 
