@@ -2,7 +2,7 @@
 @model GanjooRazor.Pages.SignUpModel
 @{
     Layout = null;
-    
+
 }
 <!DOCTYPE html>
 <html lang="fa-IR" dir="rtl">
@@ -102,29 +102,30 @@
             if (Model.SignupVerifyEmailPhase)
             {
                 <form method="post" action="/signup?Handler=Phase2">
-                    <table>
-                        <tr class="nobackground">
-                            <td class="noborder" colspan="2">
-                                <p>لطفا پست الکترونیکی خود را بررسی کنید. در صورتی که نشانی پست الکترونیکی خود را درست وارد کرده باشید نامه‌ای از گنجور دریافت کرده‌اید که حاوی یک رمز است. </p>
-                                <p>رمز دریافتی را در کادر زیر وارد کرده، روی دکمهٔ «ادامه» کلیک کنید</p>
-                                <p style="color:red">تذکر: ممکن است نامه به پوشه اسپم منتقل شده باشد</p>
-                            </td>
-                        </tr>
-
+                    <table class="font-size-1em">
                         <tr class="nobackground">
                             <td class="noborder">
                                 <span class="inputlabel">رمز دریافتی:</span>
                             </td>
                             <td class="noborder">
-                                <input asp-for="Secret" placeholder="رمز دریافتی" />
+                                <input asp-for="Secret" class="signupemail" placeholder="رمز دریافتی" />
+                            </td>
+                        </tr>
+                         <tr class="nobackground">
+                            <td class="noborder" colspan="2">
+                                <div class="notice width-100per">
+                                    <p>لطفاً پست الکترونیکی خود را بررسی کنید. در صورتی که نشانی پست الکترونیکی خود را درست وارد کرده باشید نامه‌ای از گنجور دریافت کرده‌اید که حاوی یک رمز است. </p>
+                                    <p>رمز دریافتی را در کادر بالا وارد کرده، روی دکمهٔ «ادامه» کلیک کنید</p>
+                                    <p><span class="red-color">تذکر:</span> ممکن است نامه به پوشه اسپم منتقل شده باشد.</p>
+                                </div>
                             </td>
                         </tr>
                         <tr class="nobackground">
-                            <td class="noborder"><a role="button" style="cursor: pointer; width: 100%; color: white; background-color: red; display: block" href="/signup">برگشت</a></td>
-                            <td class="noborder"><input type="submit" name="submit" id="submit" style="width:100%;background-color:green;color:white;text-align:center;cursor:pointer;border-color:white;font-size:2.0em" value="ادامه" /></td>
+                            <td class="noborder"><a role="button" class="pagebutton" href="/signup">برگشت</a></td>
+                            <td class="noborder"><input type="submit" name="submit" id="submit" class="pagebutton font-size-2em background-green width-100per padding-bottom-50px" value="ادامه" /></td>
                         </tr>
                     </table>
-                    <div><p style="color:red">@Model.LastError</p></div>
+                    <div class="background-red color-white"><p>@Model.LastError</p></div>
                 </form>
             }
             else
