@@ -111,6 +111,10 @@ a {
     text-decoration: none;
 }
 
+.bk-background {
+    background: transparent url(/image/bk.png) top center repeat scroll;
+}
+
 #fa {
     direction: rtl;
     font-family: Vazir;
@@ -277,7 +281,7 @@ select {
 }
 
 .width-100per {
-    width: 100%;
+    width: 100% !important;
 }
 
 .text-align-center {
@@ -531,7 +535,7 @@ td {
     border: 1px solid #000;
 }
 
-.noborder td {
+.noborder {
     border: none;
 }
 
@@ -560,6 +564,7 @@ td.c3, td.c4 {
 td.c2 {
     width: 350px;
 }
+
 
 
 #selection-image {
@@ -1666,18 +1671,39 @@ fieldset {
 }
 
 .background-green {
-    background-color: green;
+    background-color: green !important;
 }
 
 
 .background-red {
-    background-color: red;
+    background-color: red !important;
 }
 
 .background-gray {
-    background-color: slategray;
+    background-color: slategray !important;
 }
 
 .background-white {
-    background-color: white;
+    background-color: white !important;
+}
+
+.nobackground {
+    background: none !important;
+}
+
+.signupemail {
+    text-align: left;
+    direction: ltr;
+    width: 100%;
+}
+
+.font-size-1em{
+    font-size:1em !important;
+}
+
+.font-size-2em {
+    font-size: 2em !important;
+}
+.padding-bottom-50px {
+    padding-bottom: 50px !important;
 }

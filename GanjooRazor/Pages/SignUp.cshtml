@@ -2,7 +2,19 @@
 @model GanjooRazor.Pages.SignUpModel
 @{
     Layout = null;
-    ViewData["Title"] = "نام‌نویسی";
+    if (Model.SignupPhase1)
+    {
+        ViewData["Title"] = "گنجور » نام‌نویسی » ورود ایمیل";
+    }
+    else
+    if(Model.SignupVerifyEmailPhase)
+    {
+        ViewData["Title"] = "گنجور » نام‌نویسی » ورود رمز دریافتی در ایمیل";
+    }
+    else
+    {
+        ViewData["Title"] = "گنجور » نام‌نویسی » مرحلهٔ نهایی";
+    }
 }
 <!DOCTYPE html>
 <html lang="fa-IR" dir="rtl">
@@ -14,12 +26,12 @@
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link href="/css/p8.css?version=45" rel="stylesheet" type="text/css" />
 </head>
-<body>
+<body class="bk-background">
     <div id="hdr">
         <h1><a href="/" title="گنجور"><img src="/image/gdap.png" alt="گنجور" style="width:auto;margin:auto;" /></a></h1>
     </div>
     <div id="login">
-        <div id="login-container">
+        <div id="main">
             @if (Model.LoggedIn)
             {
                 <div>
@@ -27,95 +39,101 @@
                 </div>
             }
             else
-          if (Model.SignupPhase1)
+            if (Model.SignupPhase1)
             {
                 <form method="post" action="/signup?Handler=Phase1">
-                    <table>
-                        <tr>
-                            <td colspan="2">
-                                <p>
-                                    برای نام‌نویسی در گنجور نیاز به یک ایمیل دارید. فرایند نام‌نویسی با ارسال یک رمز به ایمیل (پست الکترونیکی) شما ادامه پیدا می‌کند و اگر ایمیلتان درست نباشد یا به آن دسترسی نداشته باشید نمی‌توانید در گنجور نام‌نویسی کنید.
-
-                                </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
+                    <table class="font-size-1em">
+                        <tr class="nobackground">
+                            <td class="noborder">
                                 <span class="inputlabel">پست الکترونیکی: </span>
                             </td>
-                            <td>
-                                <input type="email" asp-for="SignUpViewModel.Email" placeholder="پست الکترونیکی" />
+                            <td class="noborder">
+                                <input type="email" asp-for="SignUpViewModel.Email" class="signupemail" placeholder="پست الکترونیکی" />
                             </td>
                         </tr>
-                        <tr>
-                            <td>
+                        <tr class="nobackground">
+                            <td class="noborder" colspan="2">
+                                <div class="notice width-100per">
+                                    <p>
+                                        برای نام‌نویسی در گنجور نیاز به یک ایمیل دارید. فرایند نام‌نویسی با ارسال یک رمز به ایمیل (پست الکترونیکی) شما ادامه پیدا می‌کند و اگر ایمیلتان درست نباشد یا به آن دسترسی نداشته باشید نمی‌توانید در گنجور نام‌نویسی کنید.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="nobackground">
+                            <td class="noborder">
                                 <span class="inputlabel">تصویر امنیتی:</span>
                             </td>
-                            <td>
-                                <img src="@Model.CaptchaImageUrl" />
+                            <td class="noborder">
+                                <img src="@Model.CaptchaImageUrl" alt="تصویر امنیتی" width="100" />
                                 <input type="hidden" asp-for="SignUpViewModel.ClientAppName" />
                                 <input type="hidden" asp-for="SignUpViewModel.Language" />
                                 <input type="hidden" asp-for="SignUpViewModel.CallbackUrl" />
                                 <input type="hidden" asp-for="SignUpViewModel.CaptchaImageId" />
                             </td>
                         </tr>
-                        <tr>
-                            <td colspan="2">
-                                <p>
-                                    تصویر امنیتی بالا کمک می‌کند بین کاربران واقعی و رباتها و برنامه‌های کامپیوتری تمایز قائل شویم. لطفاً عددی را که در تصویر امنیتی بالا می‌بینید در کادر زیر وارد کنید:
-                                </p>
+                        <tr class="nobackground">
+                            <td class="noborder" colspan="2">
+                                <div class="notice width-100per">
+                                    <p>
+                                        تصویر امنیتی بالا کمک می‌کند بین کاربران واقعی و رباتها و برنامه‌های کامپیوتری تمایز قائل شویم. لطفاً عددی را که در تصویر امنیتی بالا می‌بینید در کادر زیر وارد کنید:
+                                    </p>
+                                </div>
+
                             </td>
                         </tr>
-                        <tr>
-                            <td>
+                        <tr class="nobackground">
+                            <td class="noborder">
                                 <span class="inputlabel">عدد تصویر امنیتی: </span>
                             </td>
-                            <td>
-                                <input type="password" asp-for="SignUpViewModel.CaptchaValue" id="password" placeholder="عدد تصویر امنیتی" />
+                            <td class="noborder">
+                                <input asp-for="SignUpViewModel.CaptchaValue" class="signupemail" placeholder="عدد تصویر امنیتی" />
                             </td>
                         </tr>
-                        <tr>
-                            <td colspan="2"><input type="submit" name="submit" id="submit" style="width:100%;background-color:green;color:white;text-align:center;cursor:pointer;border-color:white;font-size:2.0em" value="ادامه" /></td>
+                        <tr class="nobackground">
+                            <td class="noborder" colspan="2"><input type="submit" name="submit" id="submit" class="pagebutton font-size-2em background-green width-100per padding-bottom-50px" value="ادامه" /></td>
                         </tr>
-                        <tr>
-                            <td colspan="2">
-                                <div><p style="color:red">@Model.LastError</p></div>
-                                <p>لطفاً به نکات زیر توجه کنید:</p>
-                                <p>۱. اگر پیشتر در <a href="https://museum.ganjoor.net">گنجینهٔ گنجور</a> یا <a href="https://gaudiopanel.ganjoor.net">پیشخان خوانشگران گنجور</a> نام‌نویسی کرده‌اید می‌توانید با همان اطلاعات کاربری در گنجور وارد شوید و نیاز به و امکان نام‌نویسی مجدد با همان ایمیل را ندارید. </p>
-                                <p>۲. برای مطالعهٔ اشعار نیازی به نام‌نویسی ندارید. نام‌نویسی برای درج حاشیه و مشارکت در سایت مورد نیاز است.</p>
-                                <p>۳. گنجور اطلاعاتی راجع به این که شما با نام کاربری خود چه صفحاتی را مطالعه می‌کنید جمع آوری نمی‌کند. برای اطمینان مفاد صفحهٔ <a href="/privacy">حریم خصوصی</a> را مطالعه بفرمایید.</p>
-                                <p>۴. بعد از نام‌نویسی امکان حذف حساب کاربری خود را دارید. با این کار اطلاعات خاص شما مثل حاشیه‌ها و خوانش‌ها حذف می‌شود و مشارکت‌های شما مثل ویرایش‌ها و ... به نام کاربر سیستم گنجور ثبت می‌شود.</p>
+                        <tr class="nobackground">
+                            <td class="noborder" colspan="2">
+                                <div><p class="red-color">@Model.LastError</p></div>
+                                <div class="notice width-100per">
+                                    <p>لطفاً به نکات زیر توجه کنید:</p>
+                                    <p>۱. اگر پیشتر در <a href="https://museum.ganjoor.net">گنجینهٔ گنجور</a> یا <a href="https://gaudiopanel.ganjoor.net">پیشخان خوانشگران گنجور</a> نام‌نویسی کرده‌اید می‌توانید با همان اطلاعات کاربری در گنجور وارد شوید و نیاز به و امکان نام‌نویسی مجدد با همان ایمیل را ندارید. </p>
+                                    <p>۲. برای مطالعهٔ اشعار نیازی به نام‌نویسی ندارید. نام‌نویسی برای درج حاشیه و مشارکت در سایت مورد نیاز است.</p>
+                                    <p>۳. گنجور اطلاعاتی راجع به این که شما با نام کاربری خود چه صفحاتی را مطالعه می‌کنید جمع آوری نمی‌کند. برای اطمینان مفاد صفحهٔ <a href="/privacy">حریم خصوصی</a> را مطالعه بفرمایید.</p>
+                                    <p>۴. بعد از نام‌نویسی امکان حذف حساب کاربری خود را دارید. با این کار اطلاعات خاص شما مثل حاشیه‌ها و خوانش‌ها حذف می‌شود و مشارکت‌های شما مثل ویرایش‌ها و ... به نام کاربر سیستم گنجور ثبت می‌شود.</p>
+                                </div>
                             </td>
                         </tr>
                     </table>
-                    
+
                 </form>
 
             }
             else
-      if (Model.SignupVerifyEmailPhase)
+            if (Model.SignupVerifyEmailPhase)
             {
                 <form method="post" action="/signup?Handler=Phase2">
                     <table>
-                        <tr>
-                            <td colspan="2">
+                        <tr class="nobackground">
+                            <td class="noborder" colspan="2">
                                 <p>لطفا پست الکترونیکی خود را بررسی کنید. در صورتی که نشانی پست الکترونیکی خود را درست وارد کرده باشید نامه‌ای از گنجور دریافت کرده‌اید که حاوی یک رمز است. </p>
                                 <p>رمز دریافتی را در کادر زیر وارد کرده، روی دکمهٔ «ادامه» کلیک کنید</p>
                                 <p style="color:red">تذکر: ممکن است نامه به پوشه اسپم منتقل شده باشد</p>
                             </td>
                         </tr>
 
-                        <tr>
-                            <td>
+                        <tr class="nobackground">
+                            <td class="noborder">
                                 <span class="inputlabel">رمز دریافتی:</span>
                             </td>
-                            <td>
+                            <td class="noborder">
                                 <input asp-for="Secret" placeholder="رمز دریافتی" />
                             </td>
                         </tr>
-                        <tr>
-                            <td><a role="button" style="cursor: pointer; width: 100%; color: white; background-color: red; display: block" href="/signup">برگشت</a></td>
-                            <td><input type="submit" name="submit" id="submit" style="width:100%;background-color:green;color:white;text-align:center;cursor:pointer;border-color:white;font-size:2.0em" value="ادامه" /></td>
+                        <tr class="nobackground">
+                            <td class="noborder"><a role="button" style="cursor: pointer; width: 100%; color: white; background-color: red; display: block" href="/signup">برگشت</a></td>
+                            <td class="noborder"><input type="submit" name="submit" id="submit" style="width:100%;background-color:green;color:white;text-align:center;cursor:pointer;border-color:white;font-size:2.0em" value="ادامه" /></td>
                         </tr>
                     </table>
                     <div><p style="color:red">@Model.LastError</p></div>
@@ -125,48 +143,48 @@
             {
                 <form method="post" action="/signup?Handler=Phase3">
                     <table>
-                        <tr>
-                            <td>
+                        <tr class="nobackground">
+                            <td class="noborder">
                                 <span class="inputlabel">نام: </span>
                             </td>
-                            <td>
+                            <td class="noborder">
                                 <input asp-for="FinalViewModel.FirstName" style="direction:rtl;text-align:right" placeholder="نام" />
                             </td>
                         </tr>
-                        <tr>
-                            <td>
+                        <tr class="nobackground">
+                            <td class="noborder">
                                 <span class="inputlabel">نام خانوادگی: </span>
                             </td>
-                            <td>
+                            <td class="noborder">
                                 <input asp-for="FinalViewModel.SureName" style="direction:rtl;text-align:right" placeholder="نام خانوادگی" />
                             </td>
                         </tr>
-                        <tr>
-                            <td>
+                        <tr class="nobackground">
+                            <td class="noborder">
                                 <span class="inputlabel">گذرواژه: </span>
                             </td>
-                            <td>
+                            <td class="noborder">
                                 <input type="password" asp-for="FinalViewModel.Password" id="password" placeholder="گذرواژه" />
                             </td>
                         </tr>
-                        <tr>
-                            <td>
+                        <tr class="nobackground">
+                            <td class="noborder">
                                 <span class="inputlabel">تکرار گذرواژه: </span>
                             </td>
-                            <td>
+                            <td class="noborder">
                                 <input type="password" asp-for="FinalViewModel.PasswordConfirmation" placeholder="تکرار گذرواژه" />
                             </td>
                         </tr>
-                        <tr>
-                            <td colspan="2">
+                        <tr class="nobackground">
+                            <td class="noborder" colspan="2">
                                 <input type="hidden" asp-for="FinalViewModel.Email" />
                                 <input type="hidden" asp-for="FinalViewModel.Secret" />
                                 <p>گذرواژه باید دست کم شامل ۶ حرف باشد و از ترکیبی از اعداد و حروف انگلیسی تشکیل شده باشد.</p>
                                 <p>حروف و اعداد نباید تکراری باشند و وجود حداقل یک عدد و یک حرف کوچک انگلیسی در گذرواژه الزامی است</p>
                             </td>
                         </tr>
-                        <tr>
-                            <td colspan="2"><input type="submit" name="submit" id="submit" style="width:100%;background-color:green;color:white;text-align:center;cursor:pointer;border-color:white;font-size:2.0em" value="ادامه" /></td>
+                        <tr class="nobackground">
+                            <td class="noborder" colspan="2"><input type="submit" name="submit" id="submit" style="width:100%;background-color:green;color:white;text-align:center;cursor:pointer;border-color:white;font-size:2.0em" value="ادامه" /></td>
                         </tr>
                     </table>
                     <div><p style="color:red">@Model.LastError</p></div>
