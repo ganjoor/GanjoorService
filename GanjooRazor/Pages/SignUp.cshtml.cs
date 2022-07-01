@@ -97,6 +97,7 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
             {
                 LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                _FillViewData();
                 return Page();
             }
 
@@ -121,11 +122,16 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
             {
                 LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                if(LastError == null)
+                {
+                    LastError = "لطفاً ایمیل خود و عدد تصویر امنیتی را به درستی وارد کنید.";
+                }
 
                 response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/captchaimage");
                 if (!response.IsSuccessStatusCode)
                 {
                     LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    _FillViewData();
                     return Page();
                 }
 
@@ -142,7 +148,7 @@ namespace GanjooRazor.Pages
                 SignUpViewModel.CaptchaImageId = JsonConvert.DeserializeObject<Guid>(await response.Content.ReadAsStringAsync());
                 CaptchaImageUrl = $"{APIRoot.InternetUrl}/api/rimages/{SignUpViewModel.CaptchaImageId}.jpg";
 
-
+                _FillViewData();
                 return Page();
             }
             SignupPhase1 = false;
@@ -165,6 +171,7 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
             {
                 LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                _FillViewData();
                 return Page();
             }
 
@@ -197,6 +204,7 @@ namespace GanjooRazor.Pages
             if (FinalViewModel.Password != FinalViewModel.PasswordConfirmation)
             {
                 LastError = "گذرواژه و تکرار آن یکی نیستند.";
+                _FillViewData();
                 return Page();
             }
 
@@ -213,6 +221,7 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
             {
                 LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                _FillViewData();
                 return Page();
             }
 
@@ -232,6 +241,7 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
             {
                 LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                _FillViewData();
                 return Page();
             }
 
