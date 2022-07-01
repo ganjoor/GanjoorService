@@ -62,6 +62,50 @@
 </div><!-- #hdr2 -->
 
 <div id="fa">
+        <div id="main-navbar" role="navigation">
+        @if (Model.LoggedIn)
+        {
+            <div class="clear-both">
+                <a href="/User" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button home-icon"></i>
+                    </div>
+                    <span class="w3tooltiptext">پیشخان</span>
+                </a>
+                <a href="/User/MyComments" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button recitation-comments"></i>
+                    </div>
+                    <span class="w3tooltiptext">حاشیه‌های من</span>
+                </a>
+                <a href="/User/MyBookmarks" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button bookmarking-icon"></i>
+                    </div>
+                    <span class="w3tooltiptext">نشان‌شده‌های من</span>
+                </a>
+                <a href="/User/Notifications" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button notifications-icon"><span id="notification-badge" class="hidden-recitation"></span></i>
+                    </div>
+                    <span class="w3tooltiptext">اعلان‌های من</span>
+                </a>
+                <a href="/User/UpVotedRecitations" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button recitation-listen"></i>
+                    </div>
+                    <span class="w3tooltiptext">خوانش‌های نشان شده</span>
+                </a>
+                <a href="/User/History" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button history-icon"></i>
+                    </div>
+                    <span class="w3tooltiptext">ادامهٔ مطالعه</span>
+                </a>
+            </div>
+        }
+    </div>
+
     <div id="maincnt">
 
         @if (!string.IsNullOrEmpty(Model.LastError))
