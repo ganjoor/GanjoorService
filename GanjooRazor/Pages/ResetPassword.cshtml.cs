@@ -57,6 +57,24 @@ namespace GanjooRazor.Pages
 
         public bool PhaseVerify { get; set; }
 
+        private void _FillViewData()
+        {
+            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
+            if (PhaseSendEmail)
+            {
+                ViewData["Title"] = "گنجور » فراموشی گذرواژه » ورود ایمیل";
+            }
+            else
+            if (PhaseSendEmail)
+            {
+                ViewData["Title"] = "گنجور » فراموشی گذرواژه » ورود رمز دریافتی در ایمیل";
+            }
+            else
+            {
+                ViewData["Title"] = "گنجور » فراموشی گذرواژه » مرحلهٔ نهایی";
+            }
+        }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (bool.Parse(Configuration["MaintenanceMode"]))
@@ -82,6 +100,7 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
             {
                 LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                _FillViewData();
                 return Page();
             }
 
@@ -89,6 +108,7 @@ namespace GanjooRazor.Pages
 
             CaptchaImageUrl = $"{APIRoot.InternetUrl}/api/rimages/{ForgotPasswordViewModel.CaptchaImageId}.jpg";
 
+            _FillViewData();
             return Page();
         }
 
@@ -108,6 +128,7 @@ namespace GanjooRazor.Pages
                 if (!response.IsSuccessStatusCode)
                 {
                     LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    _FillViewData();
                     return Page();
                 }
 
@@ -124,13 +145,13 @@ namespace GanjooRazor.Pages
                 ForgotPasswordViewModel.CaptchaImageId = JsonConvert.DeserializeObject<Guid>(await response.Content.ReadAsStringAsync());
                 CaptchaImageUrl = $"{APIRoot.InternetUrl}/api/rimages/{ForgotPasswordViewModel.CaptchaImageId}.jpg";
 
-
+                _FillViewData();
                 return Page();
             }
             PhaseSendEmail = false;
             PhaseVerify = true;
 
-
+            _FillViewData();
             return Page();
         }
 
@@ -145,6 +166,7 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
             {
                 LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                _FillViewData();
                 return Page();
             }
 
@@ -158,7 +180,7 @@ namespace GanjooRazor.Pages
 
             PhaseVerify = false;
 
-
+            _FillViewData();
             return Page();
         }
 
@@ -172,6 +194,7 @@ namespace GanjooRazor.Pages
             if (ResetPasswordViewModel.Password != ResetPasswordViewModel.PasswordConfirmation)
             {
                 LastError = "گذرواژه و تکرار آن یکی نیستند.";
+                _FillViewData();
                 return Page();
             }
 
@@ -186,6 +209,7 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
             {
                 LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                _FillViewData();
                 return Page();
             }
 
@@ -205,6 +229,7 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
             {
                 LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                _FillViewData();
                 return Page();
             }
 
@@ -237,7 +262,7 @@ namespace GanjooRazor.Pages
             Response.Cookies.Append("CanEdit", canEditContent.ToString(), cookieOption);
 
 
-
+            _FillViewData();
             return Redirect($"{Configuration["SiteUrl"]}/User");
         }
     }
