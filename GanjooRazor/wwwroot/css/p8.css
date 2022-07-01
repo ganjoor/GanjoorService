@@ -1266,6 +1266,8 @@ ol {
     content: 'help';
 }
 
+
+
 .bnum-partial-table {
     width: 100%;
     margin-bottom: 10px;
@@ -1301,7 +1303,11 @@ ol {
 }
 
 .color-white {
-    color: white;
+    color: white !important;
+}
+
+.color-gray {
+    color: gray !important;
 }
 
 .clear-both {
@@ -1759,5 +1765,26 @@ fieldset {
         border-radius: 0px !important;
     }
 
+.pin-button::after {
+    content: 'push_pin';
+}
 
 
+.float-right{
+    float: right;
+}
+
+.noborder-btn {
+    width: 34px;
+    height: 34px;
+    padding: 2px;
+    background-color: darkred;
+    border: 3px solid black;
+    color: white;
+    text-align: center;
+    display: inline-table;
+    margin: 2px;
+    border: none;
+    background: unset;
+    padding: 5px;
+}

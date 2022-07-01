@@ -52,7 +52,7 @@
         </script>
     }
 
-    
+
 
 </head>
 <body>
@@ -153,16 +153,16 @@
     @{
         if (!string.IsNullOrEmpty(Model.PinterestUrl))
         {
-            <script>
-                $(function() {
-                    $("a").attr('href', function(i, h) {
-                        if (h != null) {
-                            return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
-                        }
-                        return h;
-                    });
-                });
-            </script>
+                                        <script>
+                                            $(function() {
+                                                $("a").attr('href', function(i, h) {
+                                                    if (h != null) {
+                                                        return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
+                                                    }
+                                                    return h;
+                                                });
+                                            });
+                                        </script>
         }
     }
 
@@ -250,6 +250,7 @@
     }
 
     <script>
+        var stickyEnabled = true;
         // When the user scrolls the page, execute stickyFunction
         window.onscroll = function() { stickyFunction() };
 
@@ -261,11 +262,25 @@
 
         // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
         function stickyFunction() {
-            if (window.pageYOffset >= sticky) {
-                navbar.classList.add("sticky")
+            if (stickyEnabled && window.pageYOffset >= sticky) {
+                navbar.classList.add("sticky");
             } else {
                 navbar.classList.remove("sticky");
             }
+        }
+
+        function switchSticky(){
+            stickyEnabled = !stickyEnabled;
+            var btnSticky = document.getElementById("pin_button");
+            if(stickyEnabled){
+                btnSticky.classList.remove("color-gray");
+                btnSticky.classList.add("color-white");
+            }
+            else{
+                btnSticky.classList.remove("color-white");;
+                btnSticky.classList.add("color-gray")
+            }
+            stickyFunction();
         }
     </script>
 
