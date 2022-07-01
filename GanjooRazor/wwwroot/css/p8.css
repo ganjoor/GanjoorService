@@ -1707,3 +1707,8 @@ fieldset {
 .padding-bottom-50px {
     padding-bottom: 50px !important;
 }
+
+.rtl-right {
+    direction: rtl;
+    text-align: right;
+}

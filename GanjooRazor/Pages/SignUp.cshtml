@@ -111,7 +111,7 @@
                                 <input asp-for="Secret" class="signupemail" placeholder="رمز دریافتی" />
                             </td>
                         </tr>
-                         <tr class="nobackground">
+                        <tr class="nobackground">
                             <td class="noborder" colspan="2">
                                 <div class="notice width-100per">
                                     <p>لطفاً پست الکترونیکی خود را بررسی کنید. در صورتی که نشانی پست الکترونیکی خود را درست وارد کرده باشید نامه‌ای از گنجور دریافت کرده‌اید که حاوی یک رمز است. </p>
@@ -121,7 +121,7 @@
                             </td>
                         </tr>
                         <tr class="nobackground">
-                            <td class="noborder"><a role="button" class="pagebutton" href="/signup">برگشت</a></td>
+                            <td class="noborder"><a role="button" class="pagebutton" href="/signup">مرحلهٔ قبل</a></td>
                             <td class="noborder"><input type="submit" name="submit" id="submit" class="pagebutton font-size-2em background-green width-100per padding-bottom-50px" value="ادامه" /></td>
                         </tr>
                     </table>
@@ -131,13 +131,13 @@
             else
             {
                 <form method="post" action="/signup?Handler=Phase3">
-                    <table>
+                    <table class="font-size-1em">
                         <tr class="nobackground">
                             <td class="noborder">
                                 <span class="inputlabel">نام: </span>
                             </td>
                             <td class="noborder">
-                                <input asp-for="FinalViewModel.FirstName" style="direction:rtl;text-align:right" placeholder="نام" />
+                                <input asp-for="FinalViewModel.FirstName" class="rtl-right width-100per" placeholder="نام" />
                             </td>
                         </tr>
                         <tr class="nobackground">
@@ -145,7 +145,7 @@
                                 <span class="inputlabel">نام خانوادگی: </span>
                             </td>
                             <td class="noborder">
-                                <input asp-for="FinalViewModel.SureName" style="direction:rtl;text-align:right" placeholder="نام خانوادگی" />
+                                <input asp-for="FinalViewModel.SureName" class="rtl-right width-100per" placeholder="نام خانوادگی" />
                             </td>
                         </tr>
                         <tr class="nobackground">
@@ -153,7 +153,7 @@
                                 <span class="inputlabel">گذرواژه: </span>
                             </td>
                             <td class="noborder">
-                                <input type="password" asp-for="FinalViewModel.Password" id="password" placeholder="گذرواژه" />
+                                <input type="password" asp-for="FinalViewModel.Password" id="password" class="signupemail" placeholder="گذرواژه" />
                             </td>
                         </tr>
                         <tr class="nobackground">
@@ -161,22 +161,24 @@
                                 <span class="inputlabel">تکرار گذرواژه: </span>
                             </td>
                             <td class="noborder">
-                                <input type="password" asp-for="FinalViewModel.PasswordConfirmation" placeholder="تکرار گذرواژه" />
+                                <input type="password" asp-for="FinalViewModel.PasswordConfirmation" class="signupemail" placeholder="تکرار گذرواژه" />
                             </td>
                         </tr>
                         <tr class="nobackground">
                             <td class="noborder" colspan="2">
                                 <input type="hidden" asp-for="FinalViewModel.Email" />
                                 <input type="hidden" asp-for="FinalViewModel.Secret" />
-                                <p>گذرواژه باید دست کم شامل ۶ حرف باشد و از ترکیبی از اعداد و حروف انگلیسی تشکیل شده باشد.</p>
-                                <p>حروف و اعداد نباید تکراری باشند و وجود حداقل یک عدد و یک حرف کوچک انگلیسی در گذرواژه الزامی است</p>
+                                 <div class="notice width-100per">
+                                    <p>گذرواژه باید دست کم شامل <span class="red-color"><strong>۶</strong></span> حرف باشد و از ترکیبی از <span class="red-color"><strong>اعداد و حروف انگلیسی</strong></span> تشکیل شده باشد.</p>
+                                    <p>حروف و اعداد نباید تکراری باشند و وجود <span class="red-color"><strong>حداقل یک عدد</strong></span> و <span class="red-color"><strong>یک حرف کوچک انگلیسی</strong></span> در گذرواژه الزامی است.</p>
+                                </div>
                             </td>
                         </tr>
                         <tr class="nobackground">
-                            <td class="noborder" colspan="2"><input type="submit" name="submit" id="submit" style="width:100%;background-color:green;color:white;text-align:center;cursor:pointer;border-color:white;font-size:2.0em" value="ادامه" /></td>
+                            <td class="noborder" colspan="2"><input type="submit" name="submit" id="submit" class="pagebutton font-size-2em background-green width-100per padding-bottom-50px" value="ادامه" /></td>
                         </tr>
                     </table>
-                    <div><p style="color:red">@Model.LastError</p></div>
+                   <div class="background-red color-white"><p>@Model.LastError</p></div>
                 </form>
 
             }
