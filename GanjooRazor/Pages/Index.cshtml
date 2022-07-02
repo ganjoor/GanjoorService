@@ -17,10 +17,17 @@
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
-    <script>
-        var playerScrollLock = false;
-    </script>
     <script src="/js/bk.js?version=30"></script>
+    <script>
+
+
+        var cookieValue = getCookie("playerScrollLock");
+        var playerScrollLock = cookieValue === "true";
+
+        cookieValue = getCookie("stickyEnabled");
+        var stickyEnabled = cookieValue === "true";
+
+    </script>
 
     @if (Model.GanjoorPage != null && Model.GanjoorPage.NoIndex)
     {
@@ -153,16 +160,16 @@
     @{
         if (!string.IsNullOrEmpty(Model.PinterestUrl))
         {
-                                        <script>
-                                            $(function() {
-                                                $("a").attr('href', function(i, h) {
-                                                    if (h != null) {
-                                                        return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
-                                                    }
-                                                    return h;
-                                                });
-                                            });
-                                        </script>
+            <script>
+                $(function() {
+                    $("a").attr('href', function(i, h) {
+                        if (h != null) {
+                            return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
+                        }
+                        return h;
+                    });
+                });
+            </script>
         }
     }
 
@@ -250,7 +257,6 @@
     }
 
     <script>
-        var stickyEnabled = true;
         // When the user scrolls the page, execute stickyFunction
         window.onscroll = function() { stickyFunction() };
 
@@ -259,6 +265,19 @@
 
         // Get the offset position of the navbar
         var sticky = navbar.offsetTop;
+
+        if(sticky != null){
+            var btnSticky = document.getElementById("pin_button");
+            if (stickyEnabled) {
+                btnSticky.classList.remove("color-gray");
+                btnSticky.classList.add("color-white");
+            }
+            else {
+                btnSticky.classList.remove("color-white");;
+                btnSticky.classList.add("color-gray")
+            }
+        }
+
 
         // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
         function stickyFunction() {
@@ -269,14 +288,15 @@
             }
         }
 
-        function switchSticky(){
+        function switchSticky() {
             stickyEnabled = !stickyEnabled;
+            setCookie("stickyEnabled", stickyEnabled ? "true" : "false", 365);
             var btnSticky = document.getElementById("pin_button");
-            if(stickyEnabled){
+            if (stickyEnabled) {
                 btnSticky.classList.remove("color-gray");
                 btnSticky.classList.add("color-white");
             }
-            else{
+            else {
                 btnSticky.classList.remove("color-white");;
                 btnSticky.classList.add("color-gray")
             }

@@ -42,7 +42,7 @@ function bnumClick(poemId, index) {
     }
     var divParent = msr1s[index].className == "m1" ? msr1s[index].parentElement : msr1s[index];
     var imgElementId = 'loadingimg-' + divId;
-    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="' + divId + '"><img id="' + imgElementId +'" src="/image/loading.gif" alt="بارگذاری"/></div>';
+    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="' + divId + '"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
     $.ajax({
         type: "GET",
         url: '?Handler=BNumPartial&poemId=' + String(poemId) + '&coupletIndex=' + String(index),
@@ -127,6 +127,7 @@ function btshmr(poemId) {
 
 function switchPlayerScrollLock() {
     playerScrollLock = !playerScrollLock;
+    setCookie("playerScrollLock", playerScrollLock ? "true" : "false", 365);
     if (playerScrollLock) {
 
         $('#scroll-lock').text('🔒');
@@ -149,7 +150,6 @@ function switchPlayerScrollLock() {
             lockButtons.classList.toggle('recitation-scrolllock');
         });
     }
-
 }
 
 function scrollToTargetAdjusted(element) {
@@ -270,6 +270,7 @@ function hilightverse(vnum, clr, sc, forceScroll) {
                             btnLock.className = 'inlineanchor';
                             btnLock.onclick = function () {
                                 playerScrollLock = !playerScrollLock;
+                                setCookie("playerScrollLock", playerScrollLock ? "true" : "false", 365);
                                 if (playerScrollLock) {
 
                                     $('#scroll-lock').text('🔒');
@@ -300,7 +301,7 @@ function hilightverse(vnum, clr, sc, forceScroll) {
 }
 
 function fillnarrations(coupletIndex) {
-    if (typeof(narrators) == "undefined") {
+    if (typeof (narrators) == "undefined") {
         var blockid = '#play-block-' + coupletIndex;
         $(blockid).hide();
         return;
@@ -356,8 +357,8 @@ function playCouplet(coupletIndex) {
     var comboId = '#narrators-' + coupletIndex;
     var recitationIndex = parseInt($(comboId).find(":selected").val());
     var recitationOrder = recitationIndex + 1;
-    
-    
+
+
 
     if (audioxmlfiles.length > 0) {
         $.ajax({
@@ -477,7 +478,7 @@ function checkIfBookmarked(poemId) {
                     else if (bookmark.coupletIndex < 0) {
                         var commentBookmark = document.getElementById('bookmark-comment-' + (-bookmark.coupletIndex).toString());
                         if (commentBookmark != null) {
-                            commentBookmark.innerHTML = '<i class="pageicons" id="bookmark-icon-comment-' + (-bookmark.coupletIndex).toString()+'">star</i><span class="w3tooltiptext">نشان کردن / حذف نشان</span>';
+                            commentBookmark.innerHTML = '<i class="pageicons" id="bookmark-icon-comment-' + (-bookmark.coupletIndex).toString() + '">star</i><span class="w3tooltiptext">نشان کردن / حذف نشان</span>';
                         }
                     }
                 }
@@ -551,7 +552,7 @@ function copyCoupletUrl(coupletIndex) {
     if (url.indexOf('#') != -1) {
         url = url.substring(0, url.indexOf('#'));
     }
-    url += ( '#bn' + String(coupletIndex + 1));
+    url += ('#bn' + String(coupletIndex + 1));
     navigator.clipboard.writeText(url);
     var tooltip = document.getElementById("copylink-tooltip-" + String(coupletIndex));
     tooltip.innerHTML = "نشانی در حافظه رونوشت شد.";
@@ -823,7 +824,7 @@ function loadMoreRelatedPoems(poemId, skip, rhythm, rhymeLetters, poemFullUrl, s
     var divParent = document.getElementById('load-more-related-' + String(sectionIndex));
     var imgeId = 'load-more-related-loadingimg-' + String(sectionIndex);
     divParent.innerHTML = divParent.innerHTML + '<img id="' + imgeId + '" src="/image/loading.gif" alt="بارگذاری  "/>';
-    
+
     $.ajax({
         type: "GET",
         url: '?Handler=SimilarPoemsPartial&poemId=' + String(poemId) + '&skip=' + String(skip) + '&prosodyMetre=' + rhythm + '&rhymeLetters=' + rhymeLetters + '&poemFullUrl=' + poemFullUrl + '&sectionId=' + String(sectionIndex),
@@ -832,7 +833,7 @@ function loadMoreRelatedPoems(poemId, skip, rhythm, rhymeLetters, poemFullUrl, s
             var imgElement = document.getElementById(imgeId);
             imgElement.remove();
 
-            $(data).appendTo(document.getElementById('more-related-placeholder-' + String(sectionIndex) ));
+            $(data).appendTo(document.getElementById('more-related-placeholder-' + String(sectionIndex)));
         },
     });
 }
@@ -869,7 +870,7 @@ function showAllRecitations() {
     document.getElementById('load-all-recitations').style.display = 'none';
 }
 
-function switch_section(sectionId, buttonId){
+function switch_section(sectionId, buttonId) {
     if (document.getElementById(sectionId).style.display == 'none') {
         document.getElementById(sectionId).style.display = 'block';
     }
@@ -896,7 +897,7 @@ function switchRecitationVote(recitationId) {
                 document.getElementById('recitaion-' + String(recitationId)).classList.remove('recitation-vote');
                 document.getElementById('recitaion-' + String(recitationId)).classList.add('recitation-novote');
             }
-            
+
         },
         error: function (e) {
             if (e.responseText == null)
@@ -993,4 +994,27 @@ function doSearchInRhythmsCombo(selectSearchId, rhythmnewId) {
 
 function resetRhythm(rhythmnewId) {
     document.getElementById(rhythmnewId).value = 'null';
+}
+
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
