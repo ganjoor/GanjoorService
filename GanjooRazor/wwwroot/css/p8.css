@@ -1742,6 +1742,7 @@ fieldset {
     background-color: #300;
     border-radius: 20px;
     border: 2px solid black;
+    overflow: hidden;
 }
 
     #main-navbar .pagebutton {
