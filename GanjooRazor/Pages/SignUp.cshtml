@@ -205,7 +205,7 @@
             }
 
         </div>
-        <partial name="_FooterPartial" model="null" />
+        <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = false}) />
     </div>
     @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
     {

@@ -11,7 +11,7 @@
             <li><a href="/simi">مشابه‌یابی</a></li>
             <li><a href="https://blog.ganjoor.net">تازه‌های گنجور</a></li>
         </ul>
-         <ul class="link-list-tools">
+        <ul class="link-list-tools">
             <li><a href="https://c.ganjoor.net">کدهای گنجور</a></li>
             <li><a href="https://dg.ganjoor.net">گنجور رومیزی</a></li>
             <li><a href="http://pozh.org/saaghar">ساغر</a></li>
@@ -32,3 +32,54 @@
         </ul>
     </div>
 </div>
+
+@if (Model.StickyEnabled)
+{
+    <script>
+        // When the user scrolls the page, execute stickyFunction
+        window.onscroll = function() { stickyFunction() };
+
+        // Get the navbar
+        var navbar = document.getElementById("main-navbar");
+
+        // Get the offset position of the navbar
+        var sticky = navbar.offsetTop;
+
+        if (sticky != null) {
+            var btnSticky = document.getElementById("pin_button");
+            if (stickyEnabled) {
+                btnSticky.classList.remove("color-gray");
+                btnSticky.classList.add("color-white");
+            }
+            else {
+                btnSticky.classList.remove("color-white");;
+                btnSticky.classList.add("color-gray")
+            }
+        }
+
+
+        // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
+        function stickyFunction() {
+            if (stickyEnabled && window.pageYOffset >= sticky) {
+                navbar.classList.add("sticky");
+            } else {
+                navbar.classList.remove("sticky");
+            }
+        }
+
+        function switchSticky() {
+            stickyEnabled = !stickyEnabled;
+            setCookie("stickyEnabled", stickyEnabled ? "true" : "false", 365);
+            var btnSticky = document.getElementById("pin_button");
+            if (stickyEnabled) {
+                btnSticky.classList.remove("color-gray");
+                btnSticky.classList.add("color-white");
+            }
+            else {
+                btnSticky.classList.remove("color-white");;
+                btnSticky.classList.add("color-gray")
+            }
+            stickyFunction();
+        }
+    </script>
+}

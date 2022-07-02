@@ -13,7 +13,6 @@
     </title>
 
     <link href="/css/p8.css?version=46" rel="stylesheet" type="text/css" />
-    <link href="/css/fab.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
 
@@ -99,7 +98,7 @@
 
             <partial name="_InlineLoginPartial" model="Model" />
 
-            <partial name="_FooterPartial" model="null" />
+            <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true}) />
 
         </div>
 

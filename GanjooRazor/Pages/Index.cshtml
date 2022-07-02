@@ -13,20 +13,16 @@
         @Html.Raw(ViewData["Title"])
     </title>
     <link href="/css/p8.css?version=46" rel="stylesheet" type="text/css" />
-    <link href="/css/fab.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
     <script src="/js/bk.js?version=30"></script>
     <script>
-
-
         var cookieValue = getCookie("playerScrollLock");
         var playerScrollLock = cookieValue === "true";
 
         cookieValue = getCookie("stickyEnabled");
         var stickyEnabled = cookieValue === "true";
-
     </script>
 
     @if (Model.GanjoorPage != null && Model.GanjoorPage.NoIndex)
@@ -256,53 +252,7 @@
         }
     }
 
-    <script>
-        // When the user scrolls the page, execute stickyFunction
-        window.onscroll = function() { stickyFunction() };
 
-        // Get the navbar
-        var navbar = document.getElementById("main-navbar");
-
-        // Get the offset position of the navbar
-        var sticky = navbar.offsetTop;
-
-        if(sticky != null){
-            var btnSticky = document.getElementById("pin_button");
-            if (stickyEnabled) {
-                btnSticky.classList.remove("color-gray");
-                btnSticky.classList.add("color-white");
-            }
-            else {
-                btnSticky.classList.remove("color-white");;
-                btnSticky.classList.add("color-gray")
-            }
-        }
-
-
-        // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
-        function stickyFunction() {
-            if (stickyEnabled && window.pageYOffset >= sticky) {
-                navbar.classList.add("sticky");
-            } else {
-                navbar.classList.remove("sticky");
-            }
-        }
-
-        function switchSticky() {
-            stickyEnabled = !stickyEnabled;
-            setCookie("stickyEnabled", stickyEnabled ? "true" : "false", 365);
-            var btnSticky = document.getElementById("pin_button");
-            if (stickyEnabled) {
-                btnSticky.classList.remove("color-gray");
-                btnSticky.classList.add("color-white");
-            }
-            else {
-                btnSticky.classList.remove("color-white");;
-                btnSticky.classList.add("color-gray")
-            }
-            stickyFunction();
-        }
-    </script>
 
 </body>
 </html>

@@ -1,41 +1,84 @@
 ﻿@model GanjooRazor.Pages.LoginPartialEnabledPageModel
 
-@if (Model.LoggedIn)
-{
-    <div class="fab">
-        <span class="fab-action-button">
-            <i class="fab-action-button-loggedin__icon"></i>
-        </span>
-        <ul class="fab-buttons">
-            <li class="fab-buttons__item">
-                <a asp-page="Index" asp-area="User" class="fab-buttons__link" data-tooltip="پیشخان">
-                    <i class="icon-material icon-material_panel"></i>
-                </a>
-            </li>
-            <li class="fab-buttons__item">
-                <form method="post" id="logoutform" action="?handler=Logout">
-                </form>
-                <a href="javascript:document.getElementById('logoutform').submit();" class="fab-buttons__link" data-tooltip="خروج">
-                    <i class="icon-material icon-material_exit"></i>
-                </a>
-            </li>
-        </ul>
-    </div>
-}
-else
-{
-    <div class="fab">
-        <span class="fab-action-button">
-            <a role="button" class="actionlink" onclick="document.getElementById('id01').style.display='block'" data-tooltip="ورود کاربر" title="ورود کاربر">
-                <i class="fab-action-button__icon"></i>
+<div id="main-navbar" role="navigation">
+    <div class="clear-both">
+        <div class="float-right display-inline-flex width-76px">
+            <a onclick="switchSticky()" role="button" class="w3tooltip cursor-pointer float-right">
+                <div class="noborder-btn color-white" id="pin_button">
+                    <i class="noindent-info-button pin-button"></i>
+                </div>
+                <span class="w3tooltiptext">چسبانی</span>
             </a>
-        </span>
+        </div>
+
+        @if (Model.LoggedIn)
+        {
+            <a href="/User" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button user-home-icon"></i>
+                </div>
+                <span class="w3tooltiptext">پیشخان</span>
+            </a>
+            <a href="/User/MyBookmarks" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button bookmarking-icon"></i>
+                </div>
+                <span class="w3tooltiptext">نشان‌شده‌های من</span>
+            </a>
+            <a href="/User/Notifications" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button notifications-icon"><span id="notification-badge" class="hidden-recitation"></span></i>
+                </div>
+                <span class="w3tooltiptext">اعلان‌های من</span>
+            </a>
+            <a href="/User/History" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button history-icon"></i>
+                </div>
+                <span class="w3tooltiptext">ادامهٔ مطالعه</span>
+            </a>
+            <a href="javascript:document.getElementById('logoutform').submit();" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button logout-icon"></i>
+                </div>
+                <span class="w3tooltiptext">خروج</span>
+            </a>
+        }
+        else
+        {
+            <a onclick="document.getElementById('id01').style.display='block'" role="button" class="w3tooltip cursor-pointer pagebutton" style="display:inline-table;border: 3px solid black">
+                ورود کاربر / نام‌نویسی <i class="noindent-info-button account-icon"></i>
+            </a>
+        }
+
+        <div class="float-left display-inline-flex width-76px">
+
+            <a href="#footer" role="button" class="w3tooltip cursor-pointer">
+                <div class="noborder-btn">
+                    <i class="noindent-info-button down-btn"></i>
+                </div>
+                <span class="w3tooltiptext">پایین صفحه</span>
+            </a>
+
+            <a href="#" role="button" class="w3tooltip cursor-pointer">
+                <div class="noborder-btn">
+                    <i class="noindent-info-button up-btn"></i>
+                </div>
+                <span class="w3tooltiptext">بالای صفحه</span>
+            </a>
+
+        </div>
+
     </div>
 
+</div>
+
+@if (!Model.LoggedIn)
+{
     <!-- The Modal -->
     <div id="id01" class="modal">
         <span onclick="document.getElementById('id01').style.display='none'"
-              class="close" title="بستن">&times;</span>
+          class="close" title="بستن">&times;</span>
 
         <!-- Modal Content -->
         <form class="modal-content animate" method="post" action="?handler=Login">
@@ -99,10 +142,10 @@ else
                 </tr>
 
             </table>
-           
+
         </form>
 
-      
+
 
     </div>
 }

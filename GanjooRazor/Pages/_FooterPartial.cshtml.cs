@@ -4,8 +4,6 @@ namespace GanjooRazor.Pages
 {
     public class _FooterPartialModel : PageModel
     {
-        public void OnGet()
-        {
-        }
+        public bool StickyEnabled { get; set; }
     }
 }
