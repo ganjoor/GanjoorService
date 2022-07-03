@@ -1,6 +1,7 @@
 ﻿@model GanjooRazor.Pages.LoginPartialEnabledPageModel
 
 <div id="main-navbar" role="navigation">
+
     <div class="clear-both">
         <div class="float-right display-inline-flex width-76px">
             <a onclick="switchSticky()" role="button" class="w3tooltip cursor-pointer float-right">
@@ -71,6 +72,54 @@
         </div>
 
     </div>
+
+    @if (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null)
+    {
+        <div class="clear-both">
+
+            <a href="#tools" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button edit-poem-button"></i>
+                </div>
+                <span class="w3tooltiptext">ابزارها</span>
+            </a>
+
+            <a href="#discussions" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button recitation-comments"></i>
+                </div>
+                <span class="w3tooltiptext">حاشیه‌ها</span>
+            </a>
+
+            <a href="#manuscripts" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button recitation-manuscripts"></i>
+                </div>
+                <span class="w3tooltiptext">نگاره‌ها</span>
+            </a>
+
+            @if (Model.SectionsWithRelated.Count > 0)
+            {
+                <a href="#rpoems" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button recitation-explore"></i>
+                    </div>
+                    <span class="w3tooltiptext">نگاره‌ها</span>
+                </a>
+            }
+
+            @if (Model.GanjoorPage.Poem.Recitations.Length > 0)
+            {
+                <a href="#recitations" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button recitation-listen"></i>
+                    </div>
+                    <span class="w3tooltiptext">خوانش‌ها</span>
+                </a>
+            }
+
+        </div>
+    }
 
 </div>
 

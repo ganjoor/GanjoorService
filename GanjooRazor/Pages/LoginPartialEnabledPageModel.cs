@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Auth.ViewModel;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Auth.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -31,6 +33,8 @@ namespace GanjooRazor.Pages
         /// Corresponding Ganjoor Page
         /// </summary>
         public GanjoorPageCompleteViewModel GanjoorPage { get; set; }
+
+        public List<GanjoorPoemSection> SectionsWithRelated { get; set; }
 
         /// <summary>
         /// logout

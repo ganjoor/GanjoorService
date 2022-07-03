@@ -260,34 +260,6 @@
                             </div>
                         </nav>
 
-                        <div class="ring-menucircle open" id="menu">
-                            <div class="ring open">
-                                <a href="#tools" class="menuItem ringmenu-icon edit-poem-button w3tooltip"><span class="w3tooltiptext">ابزارها</span></a>
-                                <a href="#discussions" class="menuItem ringmenu-icon recitation-comments w3tooltip"><span class="w3tooltiptext">حاشیه‌ها</span></a>
-                                <a href="#manuscripts" class="menuItem ringmenu-icon recitation-manuscripts w3tooltip"><span class="w3tooltiptext">نگاره‌ها</span></a>
-                                <a href="#songs" class="menuItem ringmenu-icon recitation-music w3tooltip"><span class="w3tooltiptext">ترانه‌ها</span></a>
-                                @if (Model.SectionsWithRelated.Count > 0)
-                                {
-                                    <a href="#rpoems" class="menuItem ringmenu-icon recitation-explore w3tooltip"><span class="w3tooltiptext">هم‌آهنگ‌ها</span></a>
-                                }
-                                @if (Model.GanjoorPage.Poem.Recitations.Length > 0)
-                                {
-                                    <a href="#recitations" class="menuItem ringmenu-icon recitation-listen w3tooltip"><span class="w3tooltiptext">خوانش‌ها</span></a>
-                                }
-                            </div>
-                            <a href="#" class="ringmenu-center open ringmenu-icon recitation-navigation"></a>
-                        </div>
-
-                        <script>
-                            var items = document.querySelectorAll('.menuItem');
-
-                            for (var i = 0, l = items.length; i < l; i++) {
-                                items[i].style.left = (50 - 35 * Math.cos(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + "%";
-
-                                items[i].style.top = (50 + 35 * Math.sin(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + "%";
-                            }
-                        </script>
-
                         <div id="comments">
 
 

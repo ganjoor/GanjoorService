@@ -553,8 +553,6 @@ namespace GanjooRazor.Pages
 
         public bool MutiPartPoemPage { get; set; }
 
-        public List<GanjoorPoemSection> SectionsWithRelated { get; set; }
-
         public List<GanjoorPoemSection> SectionsWithMetreAndRhymes { get; set; }
         private void _prepareRelatedSecions()
         {
