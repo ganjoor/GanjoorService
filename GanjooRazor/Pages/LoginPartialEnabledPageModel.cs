@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Auth.ViewModel;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Auth.ViewModels;
 using System;
@@ -25,6 +26,11 @@ namespace GanjooRazor.Pages
 
         [BindProperty]
         public LoginViewModel LoginViewModel { get; set; }
+
+        /// <summary>
+        /// Corresponding Ganjoor Page
+        /// </summary>
+        public GanjoorPageCompleteViewModel GanjoorPage { get; set; }
 
         /// <summary>
         /// logout

@@ -254,15 +254,11 @@ namespace GanjooRazor.Pages
         /// is home page
         /// </summary>
         public bool IsHomePage { get; set; }
+
         /// <summary>
         /// Poets
         /// </summary>
         public List<GanjoorPoetViewModel> Poets { get; set; }
-
-        /// <summary>
-        /// Corresponding Ganojoor Page
-        /// </summary>
-        public GanjoorPageCompleteViewModel GanjoorPage { get; set; }
 
         /// <summary>
         /// is poet page
