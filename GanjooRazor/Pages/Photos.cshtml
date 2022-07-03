@@ -16,29 +16,36 @@
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
     <script src="/js/bk.js?version=30"></script>
+    <script>
+        var cookieValue = getCookie("playerScrollLock");
+        var playerScrollLock = cookieValue === "true";
+
+        cookieValue = getCookie("stickyEnabled");
+        var stickyEnabled = cookieValue === "true";
+    </script>
 
     @if (Model.Poet != null)
     {
         <script src="/lib/tinymce/tinymce.min.js"></script>
         <script>
-                        tinymce.init({
-                                selector: 'textarea.editor',
-                                language: 'fa_IR',
-                                    menubar: false,
-                                    plugins: 'link paste image',
-                                    toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | link',
-                                    paste_auto_cleanup_on_paste: true,
-                                    paste_remove_styles: true,
-                                    paste_remove_styles_if_webkit: true,
-                                    paste_strip_class_attributes: true,
-                                    a11y_advanced_options: true,
-                                });
+            tinymce.init({
+                selector: 'textarea.editor',
+                language: 'fa_IR',
+                menubar: false,
+                plugins: 'link paste image',
+                toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | link',
+                paste_auto_cleanup_on_paste: true,
+                paste_remove_styles: true,
+                paste_remove_styles_if_webkit: true,
+                paste_strip_class_attributes: true,
+                a11y_advanced_options: true,
+            });
 
 
             function suggestNote(buttonSelector) {
                 var commentformSelector = '#commentform';
 
-                $(commentformSelector).unbind('submit').bind('submit', function (e) {
+                $(commentformSelector).unbind('submit').bind('submit', function(e) {
 
                     e.preventDefault(); // avoid to execute the actual submit of the form.
 
@@ -56,12 +63,12 @@
                         type: "POST",
                         url: url,
                         data: form.serialize(), // serializes the form's elements.
-                        error: function (data) {
+                        error: function(data) {
                             $(data).appendTo(parent1);
                             $(buttonSelector).text('پیشنهاد');
                             $(buttonSelector).prop("disabled", false);
                         },
-                        success: function (data) {
+                        success: function(data) {
                             $(data).appendTo(parent1);
                             $(buttonSelector).text('پیشنهاد');
                             $(buttonSelector).prop("disabled", false);
@@ -132,6 +139,8 @@
         </div>
         <div id="fa">
 
+            <partial name="_InlineLoginPartial" model="Model" />
+
             <div id="main">
                 <div id="guides">
 
@@ -169,32 +178,32 @@
                             </div>
 
                             @if (Model.ModeratePoetPhotos)
-                        {
-                            <script>
-                                function deleteSpec(id) {
-                                    if (!confirm('آیا از حذف این نکته اطمینان دارید؟'))
-                                          return;
+                            {
+                                <script>
+                                    function deleteSpec(id) {
+                                        if (!confirm('آیا از حذف این نکته اطمینان دارید؟'))
+                                            return;
 
 
-                                      $.ajax({
-                                          type: "DELETE",
-                                          url: '?Handler=SpecLine',
-                                          data: {
-                                              id: id
-                                          },
-                                          error: function (e) {
-                                          if (e.responseText == null)
-                                              alert(e);
-                                          else
-                                              alert(e.responseText);
-                                          },
-                                          success: function () {
-                                              location.reload();
-                                          },
-                                      });
-                                }
-                            </script>
-                        }
+                                        $.ajax({
+                                            type: "DELETE",
+                                            url: '?Handler=SpecLine',
+                                            data: {
+                                                id: id
+                                            },
+                                            error: function(e) {
+                                                if (e.responseText == null)
+                                                    alert(e);
+                                                else
+                                                    alert(e.responseText);
+                                            },
+                                            success: function() {
+                                                location.reload();
+                                            },
+                                        });
+                                    }
+                                </script>
+                            }
 
                             @foreach (var line in Model.SpecLines)
                             {
@@ -253,49 +262,49 @@
                             <script>
                                 function choosePhoto(id) {
                                     if (!confirm('این تصویر انتخاب شده است؟'))
-                                          return;
+                                        return;
 
-                                      var url = '?handler=ChoosePhoto';
+                                    var url = '?handler=ChoosePhoto';
 
-                                      $.ajax({
-                                          type: "PUT",
-                                          url: url,
-                                          data: {
-                                              id: id
-                                          },
-                                          error: function (e) {
-                                          if (e.responseText == null)
-                                              alert(e);
-                                          else
-                                              alert(e.responseText);
-                                          },
-                                          success: function () {
-                                              location.reload();
-                                          },
-                                      });
+                                    $.ajax({
+                                        type: "PUT",
+                                        url: url,
+                                        data: {
+                                            id: id
+                                        },
+                                        error: function(e) {
+                                            if (e.responseText == null)
+                                                alert(e);
+                                            else
+                                                alert(e.responseText);
+                                        },
+                                        success: function() {
+                                            location.reload();
+                                        },
+                                    });
                                 }
 
                                 function deletePhoto(id) {
                                     if (!confirm('آیا از حذف این تصویر اطمینان دارید؟'))
-                                          return;
+                                        return;
 
 
-                                      $.ajax({
-                                          type: "DELETE",
-                                          url: '',
-                                          data: {
-                                              id: id
-                                          },
-                                          error: function (e) {
-                                          if (e.responseText == null)
-                                              alert(e);
-                                          else
-                                              alert(e.responseText);
-                                          },
-                                          success: function () {
-                                              location.reload();
-                                          },
-                                      });
+                                    $.ajax({
+                                        type: "DELETE",
+                                        url: '',
+                                        data: {
+                                            id: id
+                                        },
+                                        error: function(e) {
+                                            if (e.responseText == null)
+                                                alert(e);
+                                            else
+                                                alert(e.responseText);
+                                        },
+                                        success: function() {
+                                            location.reload();
+                                        },
+                                    });
                                 }
                             </script>
                         }
@@ -358,67 +367,67 @@
                             <div class="clear-both">
                                 @if (Model.LoggedIn)
                                 {
-                                    @if(string.IsNullOrEmpty(Model.LastError) && Model.UploadedPhoto == null)
+                                    @if (string.IsNullOrEmpty(Model.LastError) && Model.UploadedPhoto == null)
                                     {
-                                         <form method="post" enctype="multipart/form-data">
-                                        <fieldset>
-                                            <legend>💬 شما تصویر تازه‌ای پیشنهاد کنید ...</legend>
-                                            <table class="comment-table">
-                                                <tr>
-                                                    <td>
-                                                        تصویر:
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="required">
-                                                            <input type="file" accept="image/*" asp-for="Upload.Image" />
-                                                        </div>
-                                                        <input asp-for="Upload.PoetId" value="@Model.Poet.Id" type="hidden" />
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        عنوان:
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <input asp-for="Upload.Title" />
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        توضیح:
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <textarea asp-for="Upload.Description" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
-                                                    </td>
-                                                </tr>
+                                        <form method="post" enctype="multipart/form-data">
+                                            <fieldset>
+                                                <legend>💬 شما تصویر تازه‌ای پیشنهاد کنید ...</legend>
+                                                <table class="comment-table">
+                                                    <tr>
+                                                        <td>
+                                                            تصویر:
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="required">
+                                                                <input type="file" accept="image/*" asp-for="Upload.Image" />
+                                                            </div>
+                                                            <input asp-for="Upload.PoetId" value="@Model.Poet.Id" type="hidden" />
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            عنوان:
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input asp-for="Upload.Title" />
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            توضیح:
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <textarea asp-for="Upload.Description" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
+                                                        </td>
+                                                    </tr>
 
-                                                <tr>
-                                                    <td>
-                                                        <input type="submit" value="بارگذاری" />
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="submit" value="بارگذاری" />
+                                                        </td>
+                                                    </tr>
+                                                </table>
 
 
-                                            <div class="notice">
-                                                <p>
-                                                    تصاویر پیشنهادی پس از بررسی منتشر می‌شوند.
-                                                </p>
-                                            </div>
-                                        </fieldset>
-                                    </form>
+                                                <div class="notice">
+                                                    <p>
+                                                        تصاویر پیشنهادی پس از بررسی منتشر می‌شوند.
+                                                    </p>
+                                                </div>
+                                            </fieldset>
+                                        </form>
                                     }
                                     else
                                     {
                                         <a role="button" class="pagebutton" href="/photos?p=@Model.Poet.FullUrl.Substring(1)">بارگذاری تصویر دیگر</a>
                                     }
-                                   
+
                                 }
                                 else
                                 {
@@ -436,7 +445,7 @@
 
 
                     <div class="spacer"></div>
-                    <partial name="_InlineLoginPartial" model="Model" />
+
                 </div>
             </div>
 

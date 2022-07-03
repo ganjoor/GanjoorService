@@ -18,6 +18,15 @@
     <link href="/css/p8.css?version=46" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/js/bk.js?version=30"></script>
+    <script>
+        var cookieValue = getCookie("playerScrollLock");
+        var playerScrollLock = cookieValue === "true";
+
+        cookieValue = getCookie("stickyEnabled");
+        var stickyEnabled = cookieValue === "true";
+    </script>
 
 </head>
 <body>
@@ -127,6 +136,8 @@
 
             <div id="maincnt">
 
+                <partial name="_InlineLoginPartial" model="Model" />
+
                 <div class="spacer">&nbsp;</div>
 
                 @if (!string.IsNullOrEmpty(Model.AlternativeSearchPhrase))
@@ -192,14 +203,12 @@
 
             </div>
 
-            <partial name="_InlineLoginPartial" model="Model" />
 
             <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true}) />
 
         </div>
 
-        <script src="/lib/jquery/dist/jquery.min.js"></script>
-        <script src="/js/bk.js?version=30"></script>
+
         <script src="/js/vaabd.js?version=2"></script>
 
         @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))

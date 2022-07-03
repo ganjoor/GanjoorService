@@ -1650,8 +1650,8 @@ audio {
 
 .visible-notification-badge {
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: 0px;
+    right:  0px;
     padding: 1px 1px;
     border-radius: 100%;
     background: red none repeat scroll 0% 0%;
