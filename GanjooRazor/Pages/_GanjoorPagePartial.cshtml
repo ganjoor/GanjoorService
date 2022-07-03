@@ -268,7 +268,6 @@
                                 <div class="related-images-frame" id="tools">
                                     <div class="century">
                                         ابزارها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('tools-section', 'tools-collapse-button')"><i class="info-buttons expand_circle_down" id="tools-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
-                                        <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                     </div>
                                     <div id="tools-section">
                                         <p>
@@ -385,7 +384,6 @@
                                         <div class="related-images-frame" id="recitations">
                                             <div class="century">
                                                 @(Model.GanjoorPage.Poem.Recitations.Length > 1 ? "خوانش‌ها" : "خوانش") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('recitations-section', 'recitations-collapse-button')"><i class="info-buttons expand_circle_down" id="recitations-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
-                                                <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                             </div>
                                             <div id="recitations-section">
                                                 <partial name="_AudioPlayerPartial" model=Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations) />
@@ -399,7 +397,6 @@
                                     <div class="related-images-frame" id="rpoems">
                                         <div class="century">
                                             موارد هم آهنگ <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('rpoems-section', 'rpoems-collapse-button')"><i class="info-buttons expand_circle_down" id="rpoems-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
-                                            <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                         </div>
                                         <div id="rpoems-section">
                                             @foreach (var s in Model.SectionsWithRelated)
@@ -463,7 +460,6 @@
                                     <div class="related-songs" id="songs">
                                         <div class="century">
                                             این شعر را چه کسی در کدام آهنگ خوانده است؟ <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('songs-section', 'songs-collapse-button')"><i class="info-buttons expand_circle_down" id="songs-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
-                                            <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                         </div>
                                         <div id="songs-section">
                                             @foreach (var song in Model.GanjoorPage.Poem.Songs)
@@ -493,7 +489,6 @@
                                     {
                                         <div class="century">
                                             تصاویر مرتبط در گنجینهٔ گنجور <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('images-section', 'images-collapse-button')"><i class="info-buttons expand_circle_down" id="images-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
-                                            <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                         </div>
                                         <div id="images-section">
                                             <div class="related-images">
@@ -540,7 +535,6 @@
 
                                 <div class="century">
                                     حاشیه‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('comments-section', 'comments-collapse-button')"><i class="info-buttons expand_circle_down" id="comments-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
-                                    <a role="button" class="w3tooltip cursor-pointer" href="#menu"><i class="info-buttons recitation-navigation"></i><span class="w3tooltiptext">منو</span></a>
                                 </div>
 
                                 <div id="comments-section">
