@@ -1,4 +1,5 @@
 ﻿@model GanjooRazor.Pages.LoginPartialEnabledPageModel
+@using DNTPersianUtils.Core
 
 <div id="main-navbar" role="navigation">
 
@@ -139,12 +140,39 @@
                 <span class="w3tooltiptext" id="copytext-tooltip">رونوشت متن</span>
             </a>
 
-             <a onclick="webSharePoem()" role="button" class="w3tooltip cursor-pointer" id="share_span">
+            <a onclick="webSharePoem()" role="button" class="w3tooltip cursor-pointer" id="share_span">
                 <div class="circled-number">
                     <i class="noindent-info-button share-icon"></i>
                 </div>
                 <span class="w3tooltiptext">همرسانی</span>
             </a>
+
+            @if (Model.SectionsWithMetreAndRhymes != null)
+            {
+                @if (Model.SectionsWithMetreAndRhymes.Any())
+                {
+                    <text>
+                        <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" role="button" class="w3tooltip cursor-pointer">
+                            <div class="circled-number">
+                                <i class="noindent-info-button rhyming-poems"></i>
+                            </div>
+                            <span class="w3tooltiptext">موارد هم آهنگ</span>
+                        </a>
+                    </text>
+
+                    @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
+                    {
+                        <text>
+                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" role="button" class="w3tooltip cursor-pointer">
+                                <div class="circled-number">
+                                    <i class="noindent-info-button rhyming-poems"></i>
+                                </div>
+                                <span class="w3tooltiptext">موارد هم آهنگ (وزن @((nSectionIndex + 1).ToPersianNumbers()))</span>
+                            </a>
+                        </text>
+                    }
+                }
+            }
 
         </div>
     }

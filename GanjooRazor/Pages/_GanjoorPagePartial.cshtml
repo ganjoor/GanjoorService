@@ -325,23 +325,6 @@
                                                 </text>
                                             }
 
-                                            @if (Model.SectionsWithMetreAndRhymes != null)
-                                            {
-                                                @if (Model.SectionsWithMetreAndRhymes.Any())
-                                                {
-                                                    <text>
-                                                        <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")">موارد هم آهنگ<i class="info-buttons rhyming-poems"></i></a>
-                                                    </text>
-
-                                                    @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
-                                                    {
-                                                        <text>
-                                                            <a role="button" class="pagebutton" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")">موارد هم آهنگ (وزن @((nSectionIndex + 1).ToPersianNumbers()))<i class="info-buttons rhyming-poems"></i></a>
-                                                        </text>
-                                                    }
-                                                }
-                                            }
-
                                             <span id="t6e" class="w3tooltip">
                                                 <a role="button" id="t6e-button" target="_blank" class="pagebutton" href="/t6e?p=@Model.GanjoorPage.Id"><i class="info-buttons menu-book"></i></a>
                                                 <span class="w3tooltiptext" id="t6e-tooltip">نمای چاپی</span>

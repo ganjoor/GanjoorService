@@ -37,6 +37,8 @@ namespace GanjooRazor.Pages
 
         public List<GanjoorPoemSection> SectionsWithRelated { get; set; }
 
+        public List<GanjoorPoemSection> SectionsWithMetreAndRhymes { get; set; }
+
         /// <summary>
         /// logout
         /// </summary>
