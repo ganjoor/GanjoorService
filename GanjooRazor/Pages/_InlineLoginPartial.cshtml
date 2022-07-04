@@ -23,7 +23,7 @@
                     <i class="noindent-info-button bookmarking-icon"></i>
                 </div>
             </a>
-             <a href="/User/Notifications" role="button" class="w3tooltip cursor-pointer">
+            <a href="/User/Notifications" role="button" class="w3tooltip cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button notifications-icon"><span id="notification-badge" class="hidden-recitation"></span></i>
                 </div>
@@ -91,7 +91,7 @@
                 <span class="w3tooltiptext">نگاره‌ها</span>
             </a>
 
-             <a href="#songs" role="button" class="w3tooltip cursor-pointer">
+            <a href="#songs" role="button" class="w3tooltip cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button recitation-music"></i>
                 </div>
@@ -118,11 +118,18 @@
                 </a>
             }
 
-             <a onclick="btshmr(@Model.GanjoorPage.Id)" role="button" class="w3tooltip cursor-pointer">
+            <a onclick="btshmr(@Model.GanjoorPage.Id)" role="button" class="w3tooltip cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button format_list_numbered_rtl" id="bnum-button"></i>
                 </div>
                 <span class="w3tooltiptext">شماره‌گذاری</span>
+            </a>
+
+            <a onclick="copyPoemLink()" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button copylink-icon"></i>
+                </div>
+                <span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span>
             </a>
 
         </div>
