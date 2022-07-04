@@ -23,6 +23,9 @@
 
         cookieValue = getCookie("stickyEnabled");
         var stickyEnabled = cookieValue != "false";
+
+        cookieValue = getCookie("lineNumbers");
+        var lineNumbers = cookieValue != "false";
     </script>
 
     @if (Model.GanjoorPage != null && Model.GanjoorPage.NoIndex)
@@ -42,7 +45,9 @@
             <script>
                 $(document).ready(function() {
                     checkWebShareSupport();
-                    btshmr(@Model.GanjoorPage.Id);
+                    if (lineNumbers) {
+                        btshmr(@Model.GanjoorPage.Id);
+                    }
                     checkIfBookmarked(@Model.GanjoorPage.Id);
                 });
             </script>
@@ -244,7 +249,7 @@
             }
         }
 
-        
+
     }
 
 

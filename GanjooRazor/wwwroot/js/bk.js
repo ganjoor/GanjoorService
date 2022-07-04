@@ -92,6 +92,7 @@ function btshmr_internal(poemId) {
             bnumdiv[i].remove();
         }
         document.getElementById("bnum-button").innerHTML = 'شماره‌گذاری<i class="info-buttons" id="format_list_numbered_rtl">format_list_numbered_rtl</i>';
+        setCookie("lineNumbers", "false", 365);
         return true;
     }
     document.getElementById("bnum-button").innerHTML = 'حذف شماره‌ها<i class="info-buttons" id="format_list_numbered_rtl">format_list_numbered_rtl</i>';
@@ -118,6 +119,7 @@ function btshmr_internal(poemId) {
             j = 0;
         }
     }
+    setCookie("lineNumbers", "true", 365);
     return true;
 }
 
