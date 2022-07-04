@@ -1615,9 +1615,18 @@ audio {
     transform: none;
 }
 
+.bookmarks-icon::after {
+    content: 'hotel_class'
+}
+
 .bookmarking-icon::after {
     content: 'star'
 }
+
+.menu-icon::after {
+    content: 'menu'
+}
+
 
 .notifications-icon::after {
     content: 'notifications'
