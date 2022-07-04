@@ -1786,6 +1786,14 @@ fieldset {
     content: 'arrow_circle_down';
 }
 
+.left-btn::after {
+    content: 'arrow_circle_left';
+}
+
+.right-btn::after {
+    content: 'arrow_circle_right';
+}
+
 .float-right{
     float: right;
 }

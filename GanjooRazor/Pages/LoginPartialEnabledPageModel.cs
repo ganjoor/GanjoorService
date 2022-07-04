@@ -35,6 +35,14 @@ namespace GanjooRazor.Pages
         /// </summary>
         public GanjoorPageCompleteViewModel GanjoorPage { get; set; }
 
+        public string NextUrl { get; set; }
+
+        public string NextTitle { get; set; }
+
+        public string PreviousUrl { get; set; }
+
+        public string PreviousTitle { get; set; }
+
         public List<GanjoorPoemSection> SectionsWithRelated { get; set; }
 
         public List<GanjoorPoemSection> SectionsWithMetreAndRhymes { get; set; }

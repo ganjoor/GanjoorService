@@ -478,13 +478,7 @@ namespace GanjooRazor.Pages
         /// </summary>
         public string HtmlLanguage { get; set; } = "fa-IR";
 
-        public string NextUrl { get; set; }
 
-        public string NextTitle { get; set; }
-
-        public string PreviousUrl { get; set; }
-
-        public string PreviousTitle { get; set; }
 
         private void _prepareNextPre()
         {

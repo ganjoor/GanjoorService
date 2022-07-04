@@ -198,6 +198,27 @@
                 </a>
             }
 
+
+            @if(!string.IsNullOrEmpty(Model.PreviousUrl))
+            {
+                <a href="@Html.Raw(Model.PreviousUrl)" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button right-btn"></i>
+                    </div>
+                    <span class="w3tooltiptext">پیش از این</span>
+                </a>
+            }
+
+             @if(!string.IsNullOrEmpty(Model.NextUrl))
+            {
+                <a href="@Html.Raw(Model.NextUrl)" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button left-btn"></i>
+                    </div>
+                    <span class="w3tooltiptext">پس از این</span>
+                </a>
+            }
+
         </div>
     }
 
