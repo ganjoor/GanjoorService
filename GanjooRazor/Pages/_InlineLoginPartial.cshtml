@@ -181,6 +181,16 @@
                 <span class="w3tooltiptext">نمای چاپی</span>
             </a>
 
+            @if (Model.LoggedIn)
+            {
+                <a onclick="switchBookmark(@Model.GanjoorPage.Id, 0, '')" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number" id="bookmark">
+                        <i class="noindent-info-button" id="bookmark-icon">star_border</i>
+                    </div>
+                    <span class="w3tooltiptext">نشان کردن</span>
+                </a>
+            }
+
         </div>
     }
 

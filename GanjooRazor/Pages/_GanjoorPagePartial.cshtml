@@ -316,18 +316,6 @@
                                         }
 
 
-
-                                        <div class="poem-actions">
-                                            @if (Model.LoggedIn)
-                                            {
-                                                <text>
-                                                    <a role="button" id="bookmark" class="pagebutton" onclick="switchBookmark(@Model.GanjoorPage.Id, 0, '')">نشان کردن / حذف نشان<i class="info-buttons" id="bookmark-icon">star_border</i></a>
-                                                </text>
-                                            }
-
-                                           
-                                        </div>
-
                                         @if (Model.LoggedIn)
                                         {
                                             <a role="button" class="textualbutton" href="/User/Editor?id=@Model.GanjoorPage.Id">ویرایش<i class="info-buttons edit-poem-button"></i></a>

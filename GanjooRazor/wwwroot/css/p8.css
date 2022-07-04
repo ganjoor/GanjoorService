@@ -1310,6 +1310,10 @@ ol {
     color: gray !important;
 }
 
+.color-yellow {
+    color: yellow !important;
+}
+
 .color-disabled {
     color: #a17a7a !important;
 }

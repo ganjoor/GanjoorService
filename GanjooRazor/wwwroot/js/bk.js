@@ -449,7 +449,7 @@ function switchBookmark(poemId, coupletIndex, divSuffix) {
                 }
 
                 if (coupletIndex == 0) {
-                    document.getElementById('bookmark').innerHTML = 'نشان شده<i class="info-buttons" id="bookmark-icon">star</i>';
+                    document.getElementById('bookmark').innerHTML = '<i class="noindent-info-button color-yellow" id="bookmark-icon">star</i>';
                 }
             }
             else {
@@ -462,7 +462,7 @@ function switchBookmark(poemId, coupletIndex, divSuffix) {
                 }
 
                 if (coupletIndex == 0) {
-                    document.getElementById('bookmark').innerHTML = 'نشان کردن<i class="info-buttons" id="bookmark-icon">star_border</i>';
+                    document.getElementById('bookmark').innerHTML = '<i class="noindent-info-button color-white" id="bookmark-icon">star_border</i>';
                 }
             }
         },
@@ -494,10 +494,10 @@ function checkIfBookmarked(poemId) {
                     }
                 }
                 if (isBookmarked) {
-                    document.getElementById('bookmark').innerHTML = 'نشان شده<i class="info-buttons" id="bookmark-icon">star</i>';
+                    document.getElementById('bookmark').innerHTML = '<i class="noindent-info-button color-yellow" id="bookmark-icon">star</i>';
                 }
                 else {
-                    document.getElementById('bookmark').innerHTML = 'نشان کردن<i class="info-buttons" id="bookmark-icon">star_border</i>';
+                    document.getElementById('bookmark').innerHTML = '<i class="noindent-info-button color-white" id="bookmark-icon">star_border</i>';
                 }
             },
         });
