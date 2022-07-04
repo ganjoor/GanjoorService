@@ -39,7 +39,7 @@
                 <span class="w3tooltiptext">ادامهٔ مطالعه</span>
             </a>
 
-            <a href="javascript:document.getElementById('logoutform').submit();" role="button" class="w3tooltip cursor-pointer">
+            <a href="/login" role="button" class="w3tooltip cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button logout-icon"></i>
                 </div>
@@ -132,8 +132,6 @@
 
 @if (Model.LoggedIn)
 {
-    <form method="post" id="logoutform" action="?handler=Logout">
-    </form>
     <script>
         CheckIfHasNotificationsForHomePage();
     </script>

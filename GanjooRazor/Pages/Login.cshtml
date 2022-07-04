@@ -15,7 +15,7 @@
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link href="/css/p8.css?version=46" rel="stylesheet" type="text/css" />
 </head>
-<body>
+<body class="bk-background">
     <div id="hdr">
         <h1><a href="/" title="گنجور"><img src="/image/gdap.png" alt="گنجور" style="width:auto;margin:auto;" /></a></h1>
     </div>
@@ -26,12 +26,21 @@
                 <form method="post" action="?handler=Logout">
                     <table>
                         <tr>
-                            <td><input type="submit" name="submit" id="submit" value="خروج" /></td>
+                            <td>
+                                @Model.UserFriendlyName
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="submit" name="submit" id="submit" class="pagebutton font-size-2em background-green width-100per padding-bottom-50px" value="خروج از حساب کاربری" /></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a role="button" class="pagebutton" href="/">برگشت به گنجور</a>
+                            </td>
                         </tr>
                     </table>
                     <div>@Model.LastError</div>
                 </form>
-                <div>@Model.UserFriendlyName</div>
             }
             else
             {
@@ -54,14 +63,17 @@
                             </td>
                         </tr>
                         <tr>
-                            <td></td>
-                            <td><input type="submit" name="submit" id="submit" value="ورود" /></td>
+                            <td colspan="2"><input type="submit" name="submit" id="submit" style="direction:rtl;text-align:center" class="pagebutton font-size-2em background-green width-100per padding-bottom-50px" value="ورود" /></td>
                         </tr>
                         <tr>
-                            <td><a href="/signup">نام‌نویسی</a></td>
-                            <td><a href="/resetpassword">فراموشی گذرواژه</a></td>
+                            <td><a role="button" class="pagebutton" href="/signup">نام‌نویسی</a></td>
+                            <td><a role="button" class="pagebutton" href="/resetpassword">فراموشی گذرواژه</a></td>
                         </tr>
-
+                        <tr>
+                            <td colspan="2">
+                                <a role="button" class="pagebutton" href="/">برگشت به گنجور</a>
+                            </td>
+                        </tr>
 
                     </table>
                     <div>@Model.LastError</div>
