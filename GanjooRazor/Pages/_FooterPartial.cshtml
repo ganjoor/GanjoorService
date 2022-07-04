@@ -83,3 +83,18 @@
         }
     </script>
 }
+
+@if (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null)
+{
+    <script>
+        var btnLineNumbers = document.getElementById("bnum-button");
+        if (lineNumbers) {
+            btnLineNumbers.classList.remove("color-disabled");
+            btnLineNumbers.classList.add("color-white");
+        }
+        else {
+            btnLineNumbers.classList.remove("color-white");;
+            btnLineNumbers.classList.add("color-disabled")
+        }
+    </script>
+}

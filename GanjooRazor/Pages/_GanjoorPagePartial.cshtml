@@ -318,7 +318,6 @@
 
 
                                         <div class="poem-actions">
-                                            <a role="button" onclick="btshmr(@Model.GanjoorPage.Id)" class="pagebutton" id="bnum-button">حذف شماره‌ها<i class="info-buttons format_list_numbered_rtl"></i></a>
                                             @if (Model.LoggedIn)
                                             {
                                                 <text>
@@ -725,7 +724,7 @@
 
 
 
-    <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true}) />
+    <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true, GanjoorPage = Model.GanjoorPage}) />
 
 
 </div>

@@ -84,6 +84,7 @@ function bshfarsinum(englishnum) {
 function btshmr_internal(poemId) {
     var bnum = getElements("bnum");
     if (bnum.length != 0) {
+        lineNumbers = false;
         for (var i = 0; i < bnum.length; ++i) {
             bnum[i].remove();
         }
@@ -91,35 +92,43 @@ function btshmr_internal(poemId) {
         for (var i = 0; i < bnumdiv.length; ++i) {
             bnumdiv[i].remove();
         }
-        document.getElementById("bnum-button").innerHTML = 'شماره‌گذاری<i class="info-buttons" id="format_list_numbered_rtl">format_list_numbered_rtl</i>';
-        setCookie("lineNumbers", "false", 365);
-        return true;
     }
-    document.getElementById("bnum-button").innerHTML = 'حذف شماره‌ها<i class="info-buttons" id="format_list_numbered_rtl">format_list_numbered_rtl</i>';
-    var msr1s = getElements("m1", "b2", "n", "l");
-    if (msr1s.length == 0) return true;
-    var j = 0;
-    var k = 1;
-    for (var i = 0; i < msr1s.length; ++i) {
-        if (msr1s[i].className != "b2") {
-            if (msr1s[i].className != "m1") {
-                msr1s[i].innerHTML = '<div class="bnum normalbnum" onclick="bnumClick(' + String(poemId) + ',' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;//no alt, so that when user copies text does not appear in the copied content
+    else {
+        lineNumbers = true;
+        var msr1s = getElements("m1", "b2", "n", "l");
+        if (msr1s.length == 0) return true;
+        var j = 0;
+        var k = 1;
+        for (var i = 0; i < msr1s.length; ++i) {
+            if (msr1s[i].className != "b2") {
+                if (msr1s[i].className != "m1") {
+                    msr1s[i].innerHTML = '<div class="bnum normalbnum" onclick="bnumClick(' + String(poemId) + ',' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;//no alt, so that when user copies text does not appear in the copied content
+                }
+                else {
+                    msr1s[i].parentElement.innerHTML = '<div class="bnum normalbnum" onclick="bnumClick(' + String(poemId) + ',' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].parentElement.innerHTML;//no alt, so that when user copies text does not appear in the copied content
+                }
+
+                document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage(bshfarsinum(String(j + 1)), "red") + ')';
+                j++;
             }
             else {
-                msr1s[i].parentElement.innerHTML = '<div class="bnum normalbnum" onclick="bnumClick(' + String(poemId) + ',' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].parentElement.innerHTML;//no alt, so that when user copies text does not appear in the copied content
+                msr1s[i].innerHTML = '<div class="bnum bandnum" onclick="bnumClick(' + String(poemId) + ',' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;
+                document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage("بند " + bshfarsinum(String(k)), "blue") + ')';
+                k++;
+                j = 0;
             }
-
-            document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage(bshfarsinum(String(j + 1)), "red") + ')';
-            j++;
-        }
-        else {
-            msr1s[i].innerHTML = '<div class="bnum bandnum" onclick="bnumClick(' + String(poemId) + ',' + String(i) + ');" id="bnum' + String(i + 1) + '"></div>' + msr1s[i].innerHTML;
-            document.getElementById("bnum" + String(i + 1)).style.background = 'url(' + coupletNumImage("بند " + bshfarsinum(String(k)), "blue") + ')';
-            k++;
-            j = 0;
         }
     }
-    setCookie("lineNumbers", "true", 365);
+    setCookie("lineNumbers", lineNumbers ? "true" : "false", 365);
+    if (lineNumbers) {
+        btnLineNumbers.classList.remove("color-disabled");
+        btnLineNumbers.classList.add("color-white");
+    }
+    else {
+        btnLineNumbers.classList.remove("color-white");;
+        btnLineNumbers.classList.add("color-disabled")
+    }
+
     return true;
 }
 
