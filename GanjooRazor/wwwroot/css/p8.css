@@ -1310,6 +1310,10 @@ ol {
     color: gray !important;
 }
 
+.color-disabled {
+    color: #a17a7a !important;
+}
+
 .clear-both {
     clear: both;
 }

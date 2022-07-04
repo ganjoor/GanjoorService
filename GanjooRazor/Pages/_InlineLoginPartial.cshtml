@@ -4,69 +4,61 @@
 
     <div class="clear-both">
         <div class="float-right display-inline-flex width-76px">
-            <a onclick="switchSticky()" role="button" class="w3tooltip cursor-pointer float-right">
+            <a onclick="switchSticky()" role="button" class="cursor-pointer float-right" title="چسبانی">
                 <div class="noborder-btn color-white" id="pin_button">
                     <i class="noindent-info-button pin-button"></i>
                 </div>
-                <span class="w3tooltiptext">چسبانی</span>
             </a>
         </div>
 
         @if (Model.LoggedIn)
         {
-            <a href="/User" role="button" class="w3tooltip cursor-pointer">
+            <a href="/User" role="button" class="cursor-pointer" title="پیشخان کاربر">
                 <div class="circled-number">
                     <i class="noindent-info-button user-home-icon"></i>
                 </div>
-                <span class="w3tooltiptext">پیشخان</span>
             </a>
-            <a href="/User/MyBookmarks" role="button" class="w3tooltip cursor-pointer">
+            <a href="/User/MyBookmarks" role="button" class="cursor-pointer" title="نشان‌شده‌های من">
                 <div class="circled-number">
                     <i class="noindent-info-button bookmarking-icon"></i>
                 </div>
-                <span class="w3tooltiptext">نشان‌شده‌های من</span>
             </a>
-            <a href="/User/Notifications" role="button" class="w3tooltip cursor-pointer">
+            <a href="/User/Notifications" role="button" class="cursor-pointer" title="اعلان‌های من">
                 <div class="circled-number">
                     <i class="noindent-info-button notifications-icon"><span id="notification-badge" class="hidden-recitation"></span></i>
                 </div>
-                <span class="w3tooltiptext">اعلان‌های من</span>
             </a>
-            <a href="/User/History" role="button" class="w3tooltip cursor-pointer">
+            <a href="/User/History" role="button" class="cursor-pointer" title="ادامهٔ مطالعه">
                 <div class="circled-number">
                     <i class="noindent-info-button history-icon"></i>
                 </div>
-                <span class="w3tooltiptext">ادامهٔ مطالعه</span>
             </a>
 
-            <a href="/login" role="button" class="w3tooltip cursor-pointer">
+            <a href="/login" role="button" class="cursor-pointer" title="خروج">
                 <div class="circled-number">
                     <i class="noindent-info-button logout-icon"></i>
                 </div>
-                <span class="w3tooltiptext">خروج</span>
             </a>
         }
         else
         {
-            <a onclick="document.getElementById('id01').style.display='block'" role="button" class="w3tooltip cursor-pointer pagebutton" style="display:inline-table;border: 3px solid black">
+            <a onclick="document.getElementById('id01').style.display='block'" role="button" class="cursor-pointer pagebutton" style="display:inline-table;border: 3px solid black">
                 ورود کاربر / نام‌نویسی <i class="noindent-info-button account-icon"></i>
             </a>
         }
 
         <div class="float-left display-inline-flex width-76px">
 
-            <a href="#footer" role="button" class="w3tooltip cursor-pointer">
+            <a href="#footer" role="button" class="cursor-pointer" title="پایین صفحه">
                 <div class="noborder-btn">
                     <i class="noindent-info-button down-btn"></i>
                 </div>
-                <span class="w3tooltiptext">پایین صفحه</span>
             </a>
 
-            <a href="#" role="button" class="w3tooltip cursor-pointer">
+            <a href="#" role="button" class="cursor-pointer" title="بالای صفحه">
                 <div class="noborder-btn">
                     <i class="noindent-info-button up-btn"></i>
                 </div>
-                <span class="w3tooltiptext">بالای صفحه</span>
             </a>
 
         </div>

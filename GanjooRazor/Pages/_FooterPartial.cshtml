@@ -48,12 +48,12 @@
         if (sticky != null) {
             var btnSticky = document.getElementById("pin_button");
             if (stickyEnabled) {
-                btnSticky.classList.remove("color-gray");
+                btnSticky.classList.remove("color-disabled");
                 btnSticky.classList.add("color-white");
             }
             else {
                 btnSticky.classList.remove("color-white");;
-                btnSticky.classList.add("color-gray")
+                btnSticky.classList.add("color-disabled")
             }
         }
 
@@ -72,12 +72,12 @@
             setCookie("stickyEnabled", stickyEnabled ? "true" : "false", 365);
             var btnSticky = document.getElementById("pin_button");
             if (stickyEnabled) {
-                btnSticky.classList.remove("color-gray");
+                btnSticky.classList.remove("color-disabled");
                 btnSticky.classList.add("color-white");
             }
             else {
                 btnSticky.classList.remove("color-white");;
-                btnSticky.classList.add("color-gray")
+                btnSticky.classList.add("color-disabled")
             }
             stickyFunction();
         }
