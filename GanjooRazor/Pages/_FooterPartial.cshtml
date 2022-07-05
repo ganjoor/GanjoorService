@@ -96,5 +96,20 @@
             btnLineNumbers.classList.remove("color-white");;
             btnLineNumbers.classList.add("color-disabled")
         }
+
+        if (playerScrollLock) {
+            const lockButtons = document.querySelectorAll('.recitation-scrollunlock');
+            lockButtons.forEach(function(lockButton) {
+                lockButton.classList.toggle('recitation-scrollunlock');
+                lockButton.classList.toggle('recitation-scrolllock');
+            });
+        }
+        else {
+            const lockButtons = document.querySelectorAll('.recitation-scrolllock');
+            lockButtons.forEach(function(lockButtons) {
+                lockButtons.classList.toggle('recitation-scrollunlock');
+                lockButtons.classList.toggle('recitation-scrolllock');
+            });
+        }
     </script>
 }
