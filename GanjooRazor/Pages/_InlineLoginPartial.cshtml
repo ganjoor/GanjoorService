@@ -5,9 +5,14 @@
 
     <div class="clear-both">
         <div class="float-right display-inline-flex width-76px">
-            <a onclick="switchSticky()" role="button" class="cursor-pointer float-right" title="چسبانی">
+            <a onclick="switchSticky()" role="button" class="cursor-pointer" title="چسبانی">
                 <div class="noborder-btn color-white" id="pin_button">
                     <i class="noindent-info-button pin-button"></i>
+                </div>
+            </a>
+            <a href="#" role="button" class="cursor-pointer" title="راهنما">
+                <div class="noborder-btn color-white">
+                    <i class="noindent-info-button help-button mirror"></i>
                 </div>
             </a>
         </div>
@@ -206,7 +211,7 @@
             }
 
 
-            @if(!string.IsNullOrEmpty(Model.PreviousUrl))
+            @if (!string.IsNullOrEmpty(Model.PreviousUrl))
             {
                 <a href="@Html.Raw(Model.PreviousUrl)" role="button" class="w3tooltip cursor-pointer">
                     <div class="circled-number">
@@ -216,7 +221,7 @@
                 </a>
             }
 
-             @if(!string.IsNullOrEmpty(Model.NextUrl))
+            @if (!string.IsNullOrEmpty(Model.NextUrl))
             {
                 <a href="@Html.Raw(Model.NextUrl)" role="button" class="w3tooltip cursor-pointer">
                     <div class="circled-number">
