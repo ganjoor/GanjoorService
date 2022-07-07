@@ -102,5 +102,10 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// </summary>
         public RecitationMistakeViewModel[] Mistakes { get; set; }
 
+        /// <summary>
+        /// upvoted by current user (filled at client)
+        /// </summary>
+        public bool UpVotedByUser { get; set; }
+
     }
 }

@@ -333,7 +333,7 @@ namespace GanjooRazor.Pages
         /// <summary>
         /// specify which comments belong to current user
         /// </summary>
-        private void _markMyComments()
+        private async Task _markMyCommentsAndBringUpMyRecitations()
         {
             if (GanjoorPage == null)
             {
@@ -359,6 +359,26 @@ namespace GanjooRazor.Pages
             {
                 comment.MyComment = comment.UserId == userId;
                 _markMyReplies(comment, userId, null);
+            }
+
+            if(GanjoorPage.Poem.Recitations.Length > 0)
+            {
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    {
+                        HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorPage.Poem.Id}/recitations/upvotes");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var upVotedIds = JsonConvert.DeserializeObject<int[]>(await response.Content.ReadAsStringAsync());
+                            foreach (var recitation in GanjoorPage.Poem.Recitations)
+                            {
+                                recitation.UpVotedByUser = upVotedIds.Contains(recitation.Id);
+                            }
+                        }
+
+                    }
+                }
             }
         }
 
@@ -649,7 +669,7 @@ namespace GanjooRazor.Pages
                 switch (GanjoorPage.GanjoorPageType)
                 {
                     case GanjoorPageType.PoemPage:
-                        _markMyComments();
+                        await _markMyCommentsAndBringUpMyRecitations();
                         _preparePoemExcerpt(GanjoorPage.Poem.Next);
                         _preparePoemExcerpt(GanjoorPage.Poem.Previous);
                         GanjoorPage.PoetOrCat = GanjoorPage.Poem.Category;
@@ -906,6 +926,11 @@ namespace GanjooRazor.Pages
             return new OkObjectResult(false);
         }
 
+        /// <summary>
+        /// unused now, to be removed
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
         public async Task<IActionResult> OnGetUserUpvotedRecitationsAsync(int poemId)
         {
             using (HttpClient secureClient = new HttpClient())

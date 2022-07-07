@@ -4861,6 +4861,11 @@
             mistakes
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.UpVotedByUser">
+            <summary>
+            upvoted by current user (filled at client)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel">
             <summary>
             Post Error Report for recitations

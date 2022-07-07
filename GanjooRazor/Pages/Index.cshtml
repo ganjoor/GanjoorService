@@ -234,13 +234,6 @@
     {
         if (Model.IsPoemPage)
         {
-            if (Model.GanjoorPage.Poem.Recitations.Length > 0)
-            {
-                <script>
-                    MarkUserUpvotedRecitations(@Model.GanjoorPage.Id);
-                </script>
-            }
-
             if (Model.KeepHistory)
             {
                 <script>
@@ -248,8 +241,6 @@
                 </script>
             }
         }
-
-
     }
 
 
