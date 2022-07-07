@@ -103,6 +103,11 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         public RecitationMistakeViewModel[] Mistakes { get; set; }
 
         /// <summary>
+        /// This determines where an audio is displayed between a list of sounds related to a specfic poem
+        /// </summary>
+        public int AudioOrder { get; set; }
+
+        /// <summary>
         /// upvoted by current user (filled at client)
         /// </summary>
         public bool UpVotedByUser { get; set; }

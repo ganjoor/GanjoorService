@@ -149,7 +149,9 @@ namespace RMuseum.Services.Implementationa
                                      Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                                      PlainText = poem.PlainText,
-                                     HtmlText = poem.HtmlText
+                                     HtmlText = poem.HtmlText,
+                                     AudioOrder = audio.AudioOrder,
+                                     UpVotedByUser = false,
                                  };
 
                 (PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items) paginatedResult =
@@ -204,7 +206,9 @@ namespace RMuseum.Services.Implementationa
                                      Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                                      PlainText = poem.PlainText,
-                                     HtmlText = poem.HtmlText
+                                     HtmlText = poem.HtmlText,
+                                     AudioOrder = audio.AudioOrder,
+                                     UpVotedByUser = false,
                                  };
 
                 (PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items) paginatedResult =
@@ -258,7 +262,9 @@ namespace RMuseum.Services.Implementationa
                                      Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                                      PlainText = poem.PlainText,
-                                     HtmlText = poem.HtmlText
+                                     HtmlText = poem.HtmlText,
+                                     AudioOrder = audio.AudioOrder,
+                                     UpVotedByUser = false,
                                  };
 
                 (PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items) paginatedResult =
@@ -300,7 +306,9 @@ namespace RMuseum.Services.Implementationa
                      Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                      PlainText = poem.PlainText,
-                     HtmlText = poem.HtmlText
+                     HtmlText = poem.HtmlText,
+                     AudioOrder = audio.AudioOrder,
+                     UpVotedByUser = false,
                  };
 
             return new RServiceResult<PublicRecitationViewModel>(await source.SingleOrDefaultAsync());
@@ -2172,7 +2180,9 @@ namespace RMuseum.Services.Implementationa
                      Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{upvote.Recitation.Id}.mp3",
                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{upvote.Recitation.Id}",
                      PlainText = poem.PlainText,
-                     HtmlText = poem.HtmlText
+                     HtmlText = poem.HtmlText,
+                     AudioOrder = upvote.Recitation.AudioOrder,
+                     UpVotedByUser = true,
                  };
 
             (PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items) paginatedResult =

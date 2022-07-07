@@ -643,6 +643,8 @@ namespace RMuseum.Services.Implementation
                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                      PlainText = "", //poem.PlainText 
                      HtmlText = "",//poem.HtmlText
+                     AudioOrder = audio.AudioOrder,
+                     UpVotedByUser = false,
                  };
             var recitations = await source.AsNoTracking().ToArrayAsync();
             foreach (var recitation in recitations)

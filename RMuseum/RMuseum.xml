@@ -4861,6 +4861,11 @@
             mistakes
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.AudioOrder">
+            <summary>
+            This determines where an audio is displayed between a list of sounds related to a specfic poem
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.UpVotedByUser">
             <summary>
             upvoted by current user (filled at client)

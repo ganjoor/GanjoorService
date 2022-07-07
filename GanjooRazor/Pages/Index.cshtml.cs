@@ -371,9 +371,13 @@ namespace GanjooRazor.Pages
                         if (response.IsSuccessStatusCode)
                         {
                             var upVotedIds = JsonConvert.DeserializeObject<int[]>(await response.Content.ReadAsStringAsync());
-                            foreach (var recitation in GanjoorPage.Poem.Recitations)
+                            if(upVotedIds.Length > 0)
                             {
-                                recitation.UpVotedByUser = upVotedIds.Contains(recitation.Id);
+                                foreach (var recitation in GanjoorPage.Poem.Recitations)
+                                {
+                                    recitation.UpVotedByUser = upVotedIds.Contains(recitation.Id);
+                                }
+                                Array.Sort(GanjoorPage.Poem.Recitations, (a, b) => b.UpVotedByUser == a.UpVotedByUser ? a.AudioOrder.CompareTo(b.AudioOrder) : b.UpVotedByUser.CompareTo(a.UpVotedByUser));
                             }
                         }
 
