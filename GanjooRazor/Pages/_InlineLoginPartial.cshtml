@@ -10,7 +10,7 @@
                     <i class="noindent-info-button pin-button"></i>
                 </div>
             </a>
-            <a href="#" role="button" class="cursor-pointer" title="راهنما">
+            <a onclick="document.getElementById('navbarhelp').style.display='block'" role="button" class="cursor-pointer" title="راهنما">
                 <div class="noborder-btn color-white">
                     <i class="noindent-info-button help-button mirror"></i>
                 </div>
@@ -305,7 +305,7 @@ else
                 <tr>
                     <td colspan="2">
                         <p>
-                            اگر پیشتر در <a href="https://museum.ganjoor.net" target="_blank">گنجینه</a> یا <a href="https://gaudiopanel.ganjoor.net" target="_blank">پیشخان خوانشگران</a> گنجور نام‌نویسی کرده‌اید می‌توانید با همان اطلاعات کاربری به گنجور وارد شوید.
+                            اگر پیش‌تر در <a href="https://museum.ganjoor.net" target="_blank">گنجینه</a> یا <a href="https://gaudiopanel.ganjoor.net" target="_blank">پیشخان خوانشگران</a> گنجور نام‌نویسی کرده‌اید می‌توانید با همان اطلاعات کاربری به گنجور وارد شوید.
                         </p>
                     </td>
                 </tr>
@@ -316,3 +316,166 @@ else
 
     </div>
 }
+
+<div id="navbarhelp" class="modal">
+    <span onclick="document.getElementById('navbarhelp').style.display='none'"
+          class="close red-color" title="بستن">&times;</span>
+
+    <!-- Modal Content -->
+    <div class="modal-content animate">
+        <table class="width-100per">
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button pin-button"></i>
+                    </div>
+                </td>
+                <td>
+                    غیرفعال و فعال کردن دوبارهٔ حالت چسبانی نوار ابزار به بالای صفحات
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button help-button mirror"></i>
+                    </div>
+                </td>
+                <td>
+                    راهنمای نوار ابزار
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button user-home-icon"></i>
+                    </div>
+                </td>
+                <td>
+                    پیشخان کاربر
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button bookmarks-icon"></i>
+                    </div>
+                </td>
+                <td>
+                    اشعار و ابیات نشان‌شدهٔ کاربر
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button notifications-icon"></i>
+                    </div>
+                </td>
+                <td>
+                    اعلان‌های کاربر
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button history-icon"></i>
+                    </div>
+                </td>
+                <td>
+                    ادامهٔ مطالعه (تاریخچه)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button down-btn"></i>
+                    </div>
+                </td>
+                <td>
+                    لغزش به پایین صفحه
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button up-btn"></i>
+                    </div>
+                </td>
+                <td>
+                    لغزش به بالای صفحه
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button menu-icon"></i>
+                    </div>
+                </td>
+                <td>
+                    لغزش به بخش اطلاعات شعر
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button recitation-comments"></i>
+                    </div>
+                </td>
+                <td>
+                    لغزش به بخش حاشیه‌های شعر
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button recitation-manuscripts"></i>
+                    </div>
+                </td>
+                <td>
+                    لغزش به بخش تصاویر نسخه‌های خطی، چاپی و نگاره‌های هنری مرتبط با شعر
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button recitation-music"></i>
+                    </div>
+                </td>
+                <td>
+                    لغزش به بخش ترانه‌ها و قطعات موسیقی مرتبط با شعر
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button recitation-explore"></i>
+                    </div>
+                </td>
+                <td>
+                    لغزش به بخش شعرهای هم‌آهنگ
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button recitation-listen"></i>
+                    </div>
+                </td>
+                <td>
+                    لغزش به بخش خوانش‌های شعر
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-help-button">
+                        <i class="noindent-info-button recitation-scrollunlock"></i>
+                    </div>
+                </td>
+                <td>
+                    فعال یا غیرفعال کردن لغزش خودکار به خط مرتبط با محل فعلی خوانش
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+</div>

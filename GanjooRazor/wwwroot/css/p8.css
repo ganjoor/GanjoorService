@@ -1576,7 +1576,7 @@ audio {
     direction: ltr;
 }
 
-.circled-number, .circled-number-diff {
+.circled-number, .circled-number-diff, .navbar-help-button {
     border-radius: 50%;
     width: 34px;
     height: 34px;
@@ -1591,6 +1591,17 @@ audio {
 
 .circled-number-diff {
     background-color: rgba(255, 0, 0, 0.5);
+}
+
+.navbar-help-button {
+    background-color: black;
+    border-radius: 0;
+}
+
+#navbarhelp {
+    background: #222 none repeat scroll 0;
+    opacity: .95;
+    border-radius: 10px;
 }
 
 .map-icon::after {
