@@ -670,16 +670,19 @@ namespace GanjooRazor.Pages
                 if (IsPoemPage)
                 {
                     HtmlLanguage = string.IsNullOrEmpty(GanjoorPage.Poem.Language) ? "fa-IR" : GanjoorPage.Poem.Language;
-                    var bannerQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/banners/random");
-                    if (!bannerQuery.IsSuccessStatusCode)
+                    if (bool.Parse(Configuration["BannersEnabled"]))
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await bannerQuery.Content.ReadAsStringAsync());
-                        return Page();
-                    }
-                    string bannerResponse = await bannerQuery.Content.ReadAsStringAsync();
-                    if (!string.IsNullOrEmpty(bannerResponse))
-                    {
-                        Banner = JObject.Parse(bannerResponse).ToObject<GanjoorSiteBannerViewModel>();
+                        var bannerQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/banners/random");
+                        if (!bannerQuery.IsSuccessStatusCode)
+                        {
+                            LastError = JsonConvert.DeserializeObject<string>(await bannerQuery.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+                        string bannerResponse = await bannerQuery.Content.ReadAsStringAsync();
+                        if (!string.IsNullOrEmpty(bannerResponse))
+                        {
+                            Banner = JObject.Parse(bannerResponse).ToObject<GanjoorSiteBannerViewModel>();
+                        }
                     }
                 }
             }
