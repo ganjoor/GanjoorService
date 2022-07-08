@@ -155,7 +155,7 @@ namespace GanjooRazor.Pages
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
             Query = Request.Query["s"].ApplyCorrectYeKe().Trim();
-            bool quotes = Query.IndexOf("\"") != -1;
+            bool quotes = Query.IndexOf("\"") != -1 || Request.Query["es"] == "1";
             Query = LanguageUtils.MakeTextSearchable(Query); //replace zwnj with space
             if (quotes)
                 Query = $"\"{Query}\"";
@@ -165,7 +165,7 @@ namespace GanjooRazor.Pages
             AlternativeSearchPhraseDescription = "";
             if (Quoted)
             {
-                AlternativeSearchPhraseDescription = "جستجوی ";
+                AlternativeSearchPhraseDescription = "راضی نشدید؟! ";
                 bool needsComma = false;
                 var splitteds = Query.Replace("\"", "").Split(' ');
                 for(int sp = 0; sp < splitteds.Length - 1; sp++)
@@ -177,12 +177,12 @@ namespace GanjooRazor.Pages
                     needsComma = true;
                 }
                 AlternativeSearchPhraseDescription += $" و «{splitteds[splitteds.Length - 1]}»";
-                AlternativeSearchPhraseDescription += " بدون لحاظ کردن ترتیب واژگان";
+                AlternativeSearchPhraseDescription += " را بدون لحاظ کردن ترتیب واژگان جستجو کنید.";
             }
             else
             if (Query.Contains(" "))
             {
-                AlternativeSearchPhraseDescription = $"جستجوی دقیق عبارت «{Query}»";
+                AlternativeSearchPhraseDescription = $"راضی نشدید؟! عبارت «{Query}» را به طور دقیق جستجو کنید.";
             }
 
             PoetId = string.IsNullOrEmpty(Request.Query["author"]) ? 0 : int.Parse(Request.Query["author"]);
