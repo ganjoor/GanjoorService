@@ -290,6 +290,8 @@ namespace GanjooRazor.Pages
                         }
                     }
 
+                    
+
 
                     string plainText = "";
                     for (int i = 0; i < linesInExcerpt.Count; i++)
@@ -307,7 +309,10 @@ namespace GanjooRazor.Pages
                     {
                         finalPlainText += $"<p>{line}</p>";
                     }
-                    poem.PlainText = finalPlainText;
+                    if(linesInExcerpt.Count >0 )
+                    {
+                        poem.PlainText = finalPlainText;
+                    }
 
                     for (int i = 0; i < queryParts.Length; i++)
                     {
