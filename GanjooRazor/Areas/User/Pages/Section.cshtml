@@ -15,6 +15,28 @@
 else
 {
     <script>
+
+        function countSections(verseCount) {
+            var c = 0;
+            for (var i = 0; i < verseCount; i++) {
+                var checkVIndex = '#break-from-' + i.toString();
+                var relatedSpan = '#break-counter-' + + i.toString();
+                if ($(checkVIndex).is(":checked")) {
+                    c++;
+                    if(c > 10){
+                        $(relatedSpan).html('<p class="red-color">' + c.toString() + '</p>');
+                    }
+                    else{
+                        $(relatedSpan).html('<p class="green-color">' + c.toString() + '</p>');
+                    }
+                    
+                }
+                else{
+                    $(relatedSpan).html('');
+                }
+            }
+        }
+
         function saveSectionCorrection(id, verseCount) {
 
             var breakFromVIndices = [];
@@ -26,7 +48,7 @@ else
             }
 
             if (breakFromVIndices.length > 10) {
-                alert('حداکثر از ۱۰ محل می‌توانید قطعه را بشکنید.');
+                alert('در هر نوبت حداکثر از ۱۰ محل می‌توانید قطعه را بشکنید.');
                 return;
             }
 
@@ -187,6 +209,9 @@ else
             {
                 <tr>
                     <td>
+                        <span id="break-counter-@v">
+
+                        </span>
                         @if (Model.MyLastEdit != null
                        &&
                        (
@@ -212,11 +237,11 @@ else
                        )
                        )
                         {
-                            <input type="checkbox" name="break-from-@v" id="break-from-@v" checked />
+                            <input type="checkbox" onclick="countSections(@Model.Verses.Count)" name="break-from-@v" id="break-from-@v" checked />
                         }
                         else
                         {
-                            <input type="checkbox" name="break-from-@v" id="break-from-@v" />
+                            <input type="checkbox" onclick="countSections(@Model.Verses.Count)" name="break-from-@v" id="break-from-@v" />
                         }
 
                         @Model.Verses[v].Text
