@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -79,6 +80,10 @@ namespace GanjooRazor.Areas.User.Pages
             return sectionVerses;
         }
 
+        public GanjoorPoemSection Next { get; set; }
+
+        public GanjoorPoemSection Previous { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
@@ -131,6 +136,16 @@ namespace GanjooRazor.Areas.User.Pages
                     RhythmsAlphabetically = rhythmsByVerseCount.ToArray();
 
                     PoemSection = PageInformation.Poem.Sections.Where(s => s.Index == int.Parse(Request.Query["index"])).Single();
+
+                    int index = Array.IndexOf(PageInformation.Poem.Sections, PoemSection);
+                    if(index > 0)
+                    {
+                        Previous = PageInformation.Poem.Sections[index - 1];
+                    }
+                    if(index != (PageInformation.Poem.Sections.Length - 1))
+                    {
+                        Next = PageInformation.Poem.Sections[index + 1];
+                    }
 
                     var editResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/section/correction/last/{PoemSection.Id}");
                     if (!editResponse.IsSuccessStatusCode)

@@ -23,15 +23,15 @@ else
                 var relatedSpan = '#break-counter-' + + i.toString();
                 if ($(checkVIndex).is(":checked")) {
                     c++;
-                    if(c > 10){
+                    if (c > 10) {
                         $(relatedSpan).html('<p class="red-color">' + c.toString() + '</p>');
                     }
-                    else{
+                    else {
                         $(relatedSpan).html('<p class="green-color">' + c.toString() + '</p>');
                     }
-                    
+
                 }
-                else{
+                else {
                     $(relatedSpan).html('');
                 }
             }
@@ -95,12 +95,35 @@ else
         }
     </script>
     <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
-    <p>
-        <a href="/User/AllPoemSections?id=@Model.PageInformation.Id">
-            همهٔ قطعات شعر
-        </a>
-    </p>
+
     <table>
+        <tr>
+            <td>
+                <a href="/User/AllPoemSections?id=@Model.PageInformation.Id" role="button" class="pagebutton">
+                    همهٔ قطعات شعر
+                </a>
+            </td>
+        </tr>
+        @if (Model.Previous != null)
+        {
+            <tr>
+                <td>
+                    <a href="/User/Section?poemId=@Model.PageInformation.Id&index=@Model.Previous.Index" role="button" class="pagebutton">
+                        قطعهٔ قبل
+                    </a>
+                </td>
+            </tr>
+        }
+        @if (Model.Next != null)
+        {
+            <tr>
+                <td>
+                    <a href="/User/Section?poemId=@Model.PageInformation.Id&index=@Model.Next.Index" role="button" class="pagebutton">
+                        قطعهٔ بعد
+                    </a>
+                </td>
+            </tr>
+        }
         <tr>
             <td>
                 @Html.Raw(Model.PoemSection.HtmlText)
@@ -150,7 +173,7 @@ else
                         {
                             if (Model.PoemSection.GanjoorMetre != null && Model.PoemSection.GanjoorMetre.Rhythm == rhythm.Rhythm)
                             {
-                                 <option value="@rhythm.Rhythm" selected>@(rhythm.Rhythm == "" ? "هیچکدام" : rhythm.Rhythm == "null" ? "وزنیابی نشده" : rhythm.Rhythm)</option>
+                                <option value="@rhythm.Rhythm" selected>@(rhythm.Rhythm == "" ? "هیچکدام" : rhythm.Rhythm == "null" ? "وزنیابی نشده" : rhythm.Rhythm)</option>
                             }
                             else
                             {
@@ -286,5 +309,26 @@ else
         <tr>
             <td><p id="saving">&nbsp;</p></td>
         </tr>
+
+        @if (Model.Previous != null)
+        {
+            <tr>
+                <td>
+                    <a href="/User/Section?poemId=@Model.PageInformation.Id&index=@Model.Previous.Index" role="button" class="pagebutton">
+                        قطعهٔ قبل
+                    </a>
+                </td>
+            </tr>
+        }
+        @if (Model.Next != null)
+        {
+            <tr>
+                <td>
+                    <a href="/User/Section?poemId=@Model.PageInformation.Id&index=@Model.Next.Index" role="button" class="pagebutton">
+                        قطعهٔ بعد
+                    </a>
+                </td>
+            </tr>
+        }
     </table>
 }
