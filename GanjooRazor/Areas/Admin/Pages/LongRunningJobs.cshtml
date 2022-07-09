@@ -20,10 +20,10 @@
         $.ajax({
             type: "POST",
             url: '?handler=CleanupJobs',
-            error: function () {
+            error: function() {
                 alert('خطا رخ داد.')
             },
-            success: function () {
+            success: function() {
                 location.reload();
             },
         });
@@ -41,13 +41,15 @@
             data: {
                 id: id
             },
-            success: function () {
+            success: function() {
                 var jobIdBlockId = '#tr-' + id;
                 $(jobIdBlockId).remove();
             },
         });
     }
 </script>
+
+
 
 @if (Model.Jobs != null)
 {
@@ -61,6 +63,11 @@
             <th>خطا</th>
             <th>#</th>
         </tr>
+        <tr>
+            <td colspan="7">
+                <a role="button" onclick="cleanUpJobs()" class="pagebutton" title="حذف کارهای قدیمی">حذف کارهای قدیمی <i class="noindent-info-button delete-icon"></i></a>
+            </td>
+        </tr>
         @foreach (var job in Model.Jobs)
         {
             <tr id="tr-@job.Id">
@@ -70,12 +77,20 @@
                 <td>@job.Progress</td>
                 <td>@job.Succeeded</td>
                 <td>@job.Exception</td>
-                <td><a role="button" onclick="deleteLongRunningJob('@job.Id')" class="actionlink" title="حذف">🗑</a></td>
+                <td><a role="button" onclick="deleteLongRunningJob('@job.Id')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a></td>
+            </tr>
+        }
+        @if (Model.Jobs.Length > 0)
+        {
+            <tr>
+                <td colspan="7">
+                    <a role="button" onclick="cleanUpJobs()" class="pagebutton" title="حذف کارهای قدیمی">حذف کارهای قدیمی <i class="noindent-info-button delete-icon"></i></a>
+                </td>
             </tr>
         }
     </table>
 
-    <a role="button" onclick="cleanUpJobs()" class="actionlink" title="حذف کارهای قدیمی">حذف کارهای قدیمی 🗑</a>
+
 }
 
 
