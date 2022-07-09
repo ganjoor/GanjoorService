@@ -820,7 +820,7 @@ else
                         {
                             <tr>
                                 <td>
-                                    <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index">
+                                    <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index" role="button" class="pagebutton">
                                         قطعهٔ @(poemSetion.Number.ToPersianNumbers()):
                                     </a>
                                 </td>
@@ -862,7 +862,7 @@ else
 
         <tr id="poem-sections">
             <td>
-                <a href="/User/AllPoemSections?id=@Model.PageInformation.Id" class="pagebutton">
+                <a href="/User/AllPoemSections?id=@Model.PageInformation.Id" role="button" class="pagebutton">
                     همهٔ قطعات شعر
                 </a>
             </td>
