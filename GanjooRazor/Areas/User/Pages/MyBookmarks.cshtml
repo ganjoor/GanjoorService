@@ -35,14 +35,14 @@ else
         }
 
         function editPrivateNote(bookmarkId) {
-            var commentTextBlockId = '#comment-text-' + bookmarkId;
-            tinymce.get('editCommentText').setContent($(commentTextBlockId).html());
+            var noteTextBlockId = '#note-text-' + bookmarkId;
+            tinymce.get('editNoteText').setContent($(noteTextBlockId).html());
             $("#editbookmarkId").val(bookmarkId);
-            document.getElementById('id02').style.display = 'block';
+            document.getElementById('bookmark-note-dialog').style.display = 'block';
         }
 
         function editPrivateNoteFinal() {
-            $("#editcommentform").unbind('submit').bind('submit', function (e) {
+            $("#editnoteform").unbind('submit').bind('submit', function (e) {
 
                 e.preventDefault(); // avoid to execute the actual submit of the form.
 
@@ -56,14 +56,14 @@ else
                     url: url,
                     data: {
                         id: bookmarkId,
-                        note: $("textarea#editCommentText").val()
+                        note: $("textarea#editNoteText").val()
                     },
                     success: function () {
-                        document.getElementById('id02').style.display = 'none';
+                        document.getElementById('bookmark-note-dialog').style.display = 'none';
 
-                        var commentTextBlockId = '#comment-text-' + bookmarkId;
+                        var noteTextBlockId = '#note-text-' + bookmarkId;
 
-                        $(commentTextBlockId).html($("textarea#editCommentText").val());
+                        $(noteTextBlockId).html($("textarea#editNoteText").val());
                     },
 
                 });
@@ -101,9 +101,9 @@ else
         <div style="background-color:@color" id="bookmark-@bookmark.Id">
             <blockquote>
                 <p>
-                    از <a href="@($"{bookmark.PoemFullUrl}{(bookmark.CoupletIndex < 0 ? $"#comment-{-bookmark.CoupletIndex}" :$"#bn{bookmark.CoupletIndex + 1}")}")">@bookmark.PoemFullTitle</a> <small>در @bookmark.DateTime.ToFriendlyPersianDateTextify()</small>
+                    از <a href="@($"{bookmark.PoemFullUrl}{(bookmark.CoupletIndex < 0 ? $"#note-{-bookmark.CoupletIndex}" :$"#bn{bookmark.CoupletIndex + 1}")}")">@bookmark.PoemFullTitle</a> <small>در @bookmark.DateTime.ToFriendlyPersianDateTextify()</small>
                 </p>
-                <a href="@($"{bookmark.PoemFullUrl}{(bookmark.CoupletIndex < 0 ? $"#comment-{-bookmark.CoupletIndex}" :$"#bn{bookmark.CoupletIndex + 1}")}")">
+                <a href="@($"{bookmark.PoemFullUrl}{(bookmark.CoupletIndex < 0 ? $"#note-{-bookmark.CoupletIndex}" :$"#bn{bookmark.CoupletIndex + 1}")}")">
                     <img src="@bookmark.PoetImageUrl" style="width:unset;display:unset;border:unset" alt="@bookmark.PoetName" />
                 </a>
                 <div id="bookmark-text-@bookmark.Id">
@@ -121,13 +121,13 @@ else
                 </div>
                 @if (!string.IsNullOrEmpty(bookmark.PrivateNote))
                 {
-                    <div id="comment-text-@bookmark.Id" class="ganjoor-comment">
+                    <div id="note-text-@bookmark.Id" class="ganjoor-comment">
                         @Html.Raw(bookmark.PrivateNote)
                     </div>
                 }
                 else
                 {
-                    <div id="comment-text-@bookmark.Id">
+                    <div id="note-text-@bookmark.Id">
                     </div>
                 }
             </blockquote>
@@ -157,20 +157,20 @@ else
         }
     </p>
 
-    <div id="id02" class="modal">
-        <span onclick="document.getElementById('id02').style.display='none'"
+    <div id="bookmark-note-dialog" class="modal">
+        <span onclick="document.getElementById('bookmark-note-dialog').style.display='none'"
           class="close" title="بستن">&times;</span>
-        <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
+        <form class="modal-content animate" method="post" id="editnoteform">
             <table style="max-width:100%; width:100%; margin:0">
                 <tr>
                     <td>
-                        <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
+                        <textarea name="editNoteText" id="editNoteText" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
                         <input type="hidden" name="editbookmarkId" id="editbookmarkId" value="" />
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <button name="editcomment" id="editcomment" class="submitCommentButton width-100per" onclick="return editPrivateNoteFinal();">ویرایش یادداشت</button>
+                        <button name="editnote" id="editnote" class="submitCommentButton width-100per" onclick="return editPrivateNoteFinal();">ویرایش یادداشت</button>
                     </td>
                 </tr>
                 <tr>
