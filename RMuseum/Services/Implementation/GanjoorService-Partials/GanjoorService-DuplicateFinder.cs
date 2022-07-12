@@ -179,7 +179,7 @@ namespace RMuseum.Services.Implementation
                                        await jobProgressServiceEF.UpdateJob(job.Id, 1,  "Removing Category and poems");
 
                                        var catPage = await context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleAsync();
-                                       var destCatPage = await context.GanjoorPages.Where(p => p.CatId == destCatId).SingleOrDefaultAsync();
+                                       var destCatPage = await context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == destCatId).SingleOrDefaultAsync();
                                        destCatPage.RedirectFromFullUrl = catPage.FullUrl;
                                        context.Update(destCatPage);
                                        context.Remove(catPage);
