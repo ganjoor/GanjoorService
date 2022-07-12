@@ -2435,6 +2435,32 @@ namespace RMuseum.Controllers
             }
             return Ok(res.Result != null);
         }
+        /// <summary>
+        /// switch bookmark and return bookmark id (0 for switching off a bookmark)
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="coupletIndex">if you send a negative number it means you are trying to bookmark a comment</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("bookmark/switch/ret/{poemId}/{coupletIndex}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> SwitchCoupletBookmarkReturnId(int poemId, int coupletIndex)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<GanjoorUserBookmark> res = await _ganjoorService.SwitchCoupletBookmark(loggedOnUserId, poemId, coupletIndex);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                if (res.ExceptionString == "verse not found")
+                    return NotFound();
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok(res.Result == null ? 0 : res.Result.Id);
+        }
 
         /// <summary>
         /// Bookmark couplet if it is not
