@@ -122,7 +122,7 @@ else
                 @if (!string.IsNullOrEmpty(bookmark.PrivateNote))
                 {
                     <div id="note-text-@bookmark.Id" class="ganjoor-comment">
-                        @Html.Raw(bookmark.PrivateNote)
+                        <span class="red-color">یادداشت: </span>@Html.Raw(bookmark.PrivateNote)
                     </div>
                 }
                 else
