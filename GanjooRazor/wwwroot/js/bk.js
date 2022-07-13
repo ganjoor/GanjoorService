@@ -440,7 +440,8 @@ function switchBookmark(poemId, coupletIndex, divSuffix) {
         error: function (err) {
             alert(err)
         },
-        success: function (isBookmarked) {
+        success: function (bookmarkId) {
+            var isBookmarked = bookmarkId != '0';
             if (isBookmarked == true) {
                 if (document.getElementById(iconElementId) != null) {
                     document.getElementById(iconElementId).innerHTML = 'star';
@@ -451,6 +452,12 @@ function switchBookmark(poemId, coupletIndex, divSuffix) {
 
                 if (coupletIndex == 0) {
                     document.getElementById('bookmark').innerHTML = '<i class="noindent-info-button color-yellow" id="bookmark-icon">star</i>';
+                }
+
+                if (coupletIndex >= 0) {
+                    tinymce.get('editNoteText').setContent('');
+                    $("#editbookmarkId").val(bookmarkId);
+                    document.getElementById('bookmark-note-dialog').style.display = 'block';
                 }
             }
             else {
@@ -503,6 +510,30 @@ function checkIfBookmarked(poemId) {
             },
         });
     }, 1);
+}
+
+function savePrivateNote() {
+    $("#editnoteform").unbind('submit').bind('submit', function (e) {
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        var url = '?handler=BookmarkNote';
+
+        var bookmarkId = $("#editbookmarkId").val();
+
+        $.ajax({
+            type: "PUT",
+            url: url,
+            data: {
+                id: bookmarkId,
+                note: $("textarea#editNoteText").val()
+            },
+            success: function () {
+                document.getElementById('bookmark-note-dialog').style.display = 'none';
+            },
+
+        });
+    });
 }
 
 function checkWebShareSupport() {

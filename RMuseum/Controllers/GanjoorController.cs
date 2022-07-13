@@ -2436,7 +2436,7 @@ namespace RMuseum.Controllers
             return Ok(res.Result != null);
         }
         /// <summary>
-        /// switch bookmark and return bookmark id (0 for switching off a bookmark)
+        /// switch bookmark and return bookmark id ('0' for switching off a bookmark)
         /// </summary>
         /// <param name="poemId"></param>
         /// <param name="coupletIndex">if you send a negative number it means you are trying to bookmark a comment</param>
@@ -2444,7 +2444,7 @@ namespace RMuseum.Controllers
         [HttpPost]
         [Route("bookmark/switch/ret/{poemId}/{coupletIndex}")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> SwitchCoupletBookmarkReturnId(int poemId, int coupletIndex)
@@ -2459,7 +2459,7 @@ namespace RMuseum.Controllers
                     return NotFound();
                 return BadRequest(res.ExceptionString);
             }
-            return Ok(res.Result == null ? 0 : res.Result.Id);
+            return Ok(res.Result == null ? "0" : res.Result.Id.ToString());
         }
 
         /// <summary>

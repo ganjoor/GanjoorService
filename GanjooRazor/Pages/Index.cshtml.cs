@@ -879,12 +879,12 @@ namespace GanjooRazor.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     HttpResponseMessage response = await secureClient.PostAsync(
-                        $"{APIRoot.Url}/api/ganjoor/bookmark/switch/{poemId}/{coupletIndex}", null);
+                        $"{APIRoot.Url}/api/ganjoor/bookmark/switch/ret/{poemId}/{coupletIndex}", null);
                     if (!response.IsSuccessStatusCode)
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
-                    var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                    var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                     return new OkObjectResult(res);
                 }
                 else
@@ -1007,6 +1007,26 @@ namespace GanjooRazor.Pages
                     return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
+        }
+
+        public async Task<IActionResult> OnPutBookmarkNote(Guid id, string note)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{id}", new StringContent(JsonConvert.SerializeObject(note), Encoding.UTF8, "application/json"));
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+            return new JsonResult(true);
         }
     }
 }

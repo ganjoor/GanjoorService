@@ -384,7 +384,7 @@ else
                     ادامهٔ مطالعه (تاریخچه)
                 </td>
             </tr>
-             <tr>
+            <tr>
                 <td>
                     <div class="navbar-help-button">
                         <i class="noindent-info-button logout-icon"></i>
@@ -564,7 +564,7 @@ else
                     ویرایش شعر جاری
                 </td>
             </tr>
-             <tr>
+            <tr>
                 <td>
                     <div class="navbar-help-button">
                         <i class="noindent-info-button right-btn"></i>
@@ -589,3 +589,36 @@ else
     </div>
 
 </div>
+
+@if (Model.LoggedIn && Model.GanjoorPage != null && Model.GanjoorPage.Poem != null)
+{
+    <div id="bookmark-note-dialog" class="modal">
+        <span onclick="document.getElementById('bookmark-note-dialog').style.display='none'"
+          class="close" title="بستن">&times;</span>
+        <form class="modal-content animate" method="post" id="editnoteform">
+            <table class="max-width-100per width-100per">
+                <tr>
+                    <td>
+                        <textarea name="editNoteText" id="editNoteText" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
+                        <input type="hidden" name="editbookmarkId" id="editbookmarkId" value="" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button name="editnote" id="editnote" class="submitCommentButton width-100per" onclick="return savePrivateNote();">ذخیرهٔ یادداشت برای نشان‌شده</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a role="button" class="editor-button background-gray" onclick="document.getElementById('bookmark-note-dialog').style.display='none'">بدون یادداشت</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        یادداشتهایی که روی نشان‌شده‌ها می‌نویسید خصوصی هستند، در پیشخان کاربر بخش نشان‌شده‌های من قابل مشاهده‌اند و با حذف نشان بدون هیچ اخطاری پاک می‌شوند.
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+}
