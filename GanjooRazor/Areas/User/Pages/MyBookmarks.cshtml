@@ -121,8 +121,9 @@ else
                 </div>
                 @if (!string.IsNullOrEmpty(bookmark.PrivateNote))
                 {
+                    <span class="red-color">یادداشت:</span>
                     <div id="note-text-@bookmark.Id" class="ganjoor-comment">
-                        <span class="red-color">یادداشت: </span>@Html.Raw(bookmark.PrivateNote)
+                        @Html.Raw(bookmark.PrivateNote)
                     </div>
                 }
                 else
