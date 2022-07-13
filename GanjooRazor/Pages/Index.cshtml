@@ -199,17 +199,23 @@
                 paste_strip_class_attributes: true,
                 a11y_advanced_options: true,
                 setup: function(editor) {
-                    editor.on('tap', function(e) {
-                        if (userNotifiedOnEditInsteadOfComment == false) {
-                            userNotifiedOnEditInsteadOfComment = true;
-                            createInformationNotification();
+                    editor.on('tap', function(e, f) {
+                        var editor_id = e.view.frameElement.id.slice(0, -4);
+                        if (editor_id != 'editNoteText') {
+                            if (userNotifiedOnEditInsteadOfComment == false) {
+                                userNotifiedOnEditInsteadOfComment = true;
+                                createInformationNotification();
+                            }
                         }
                     },
                     );
-                    editor.on('click', function(e) {
-                        if (userNotifiedOnEditInsteadOfComment == false) {
-                            userNotifiedOnEditInsteadOfComment = true;
-                            createInformationNotification();
+                    editor.on('click', function(e, f) {
+                        var editor_id = e.view.frameElement.id.slice(0, -4);
+                        if (editor_id != 'editNoteText') {
+                            if (userNotifiedOnEditInsteadOfComment == false) {
+                                userNotifiedOnEditInsteadOfComment = true;
+                                createInformationNotification();
+                            }
                         }
                     },
                     );
