@@ -1820,6 +1820,14 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.TransferMeterAsync(System.Int32,System.Int32)">
+            <summary>
+            transfer poems and sections from a meter to another one and delete the source meter
+            </summary>
+            <param name="srcId"></param>
+            <param name="destId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12762,6 +12770,14 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.TransferMeterAsync(System.Int32,System.Int32)">
+            <summary>
+            transfer poems and sections from a meter to another one
+            </summary>
+            <param name="srcMeterId"></param>
+            <param name="destMeterId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -14152,6 +14168,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -14322,6 +14341,14 @@
             <summary>
             regenerate poem full titles to fix an old bug
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.TransferMeterAsync(System.Int32,System.Int32)">
+            <summary>
+            transfer poems and sections from a meter to another one
+            </summary>
+            <param name="srcMeterId"></param>
+            <param name="destMeterId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ModeratePoemCorrection(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">

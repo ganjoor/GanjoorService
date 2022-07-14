@@ -3181,7 +3181,28 @@ namespace RMuseum.Controllers
             return Ok(res.Result.Items);
         }
 
-        
+
+        /// <summary>
+        /// transfer poems and sections from a meter to another one and delete the source meter
+        /// </summary>
+        /// <param name="srcId"></param>
+        /// <param name="destId"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("prosody/transfer/{srcId}/{destId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> TransferMeterAsync(int srcId, int destId)
+        {
+            RServiceResult<bool> res =
+                await _ganjoorService.TransferMeterAsync(srcId, destId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+
 
 
         /// <summary>

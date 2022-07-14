@@ -1044,5 +1044,13 @@ namespace RMuseum.Services
         /// <param name="catId"></param>
         /// <returns></returns>
         RServiceResult<bool> StartRegeneratingCateoryRelatedSections(int catId);
+
+        /// <summary>
+        /// transfer poems and sections from a meter to another one
+        /// </summary>
+        /// <param name="srcMeterId"></param>
+        /// <param name="destMeterId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> TransferMeterAsync(int srcMeterId, int destMeterId);
     }
 }
