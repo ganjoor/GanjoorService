@@ -1,0 +1,120 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.TransferMeterModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using DNTPersianUtils.Core
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "انتقال وزن";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (!string.IsNullOrEmpty(Model.FatalError))
+{
+    <p>@Model.FatalError</p>
+}
+else
+{
+     <table>
+         
+        <tr>
+            <td>
+                وزنی که حذف می‌شود:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="select-search">جستجوی وزن:</label><br />
+                <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" size="50" />
+                <datalist id="inputRhythms">
+                    @if (Model.RhythmsByVerseCount != null)
+                        @foreach (var rhythm in Model.RhythmsByVerseCount)
+                        {
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
+                </datalist>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                
+                <select id="rhythm-new" name="rhythm-new">
+                    @foreach (var rhythm in Model.RhythmsAlphabetically)
+                    {
+                        <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                    }
+                </select>
+                <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
+               
+            </td>
+        </tr>
+
+
+
+       
+
+        <tr>
+            <td>
+                وزن مقصد:
+            </td>
+
+        </tr>
+       
+        <tr>
+            <td>
+                <label for="select-search2">جستجوی وزن (دوم):</label><br />
+                <input type="text" id="select-search2" value="" oninput="doSearchInRhythmsCombo('select-search2', 'rhythm-new2')" list="inputRhythms" autocomplete="off" size="50" />
+                <datalist id="inputRhythms2">
+                    @if (Model.RhythmsByVerseCount != null)
+                        @foreach (var rhythm in Model.RhythmsByVerseCount)
+                        {
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
+                </datalist>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="rhythm-new2">وزن (دوم) انتخاب شده:</label><br /><select id="rhythm-new2" name="rhythm-new2">
+                    @foreach (var rhythm in Model.RhythmsAlphabetically)
+                    {
+                        <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+
+                    }
+                </select>
+                <a role="button" onclick="resetRhythm('rhythm-new2')" class="pagebutton">پاک کردن وزن</a>
+                 <br />
+                <script>
+                    function newRhythm() {
+                        var rhythm = prompt("پیشنهاد وزن جدید", "");
+                        if (rhythm != null) {
+                            var select = document.getElementById('rhythm-new');
+                            var options = select.options;
+                            for (let i = 0; i < options.length; i++) {
+                                if (options[i].value == rhythm) {
+                                    alert('وزن پیشنهادی تکراری است.');
+                                    return;
+                                }
+                            }
+                            var opt = document.createElement('option');
+                            opt.value = rhythm;
+                            opt.innerHTML = rhythm;
+                            select.appendChild(opt);
+
+                            var opt2 = document.createElement('option');
+                            opt2.value = rhythm;
+                            opt2.innerHTML = rhythm;
+                            document.getElementById('rhythm-new2').appendChild(opt2);
+
+                            alert('وزن پیشنهادی به انتهای لیست وزن‌ها اضافه شده. لطفاً از لیست آن را انتخاب کنید.');
+                        }
+                    }
+                </script>
+                <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
+            </td>
+        </tr>
+     </table>
+}
+
