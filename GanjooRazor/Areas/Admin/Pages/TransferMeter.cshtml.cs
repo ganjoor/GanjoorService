@@ -33,6 +33,8 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public bool CanEdit { get; set; }
 
+        public string InitialSourceMeter { get; set; }
+
         /// <summary>
         /// get
         /// </summary>
@@ -44,6 +46,12 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             FatalError = "";
             CanEdit = Request.Cookies["CanEdit"] == "True";
+
+            InitialSourceMeter = "";
+            if (!string.IsNullOrEmpty(Request.Query["m"]))
+            {
+                InitialSourceMeter = Request.Query["m"];
+            }
 
             using (HttpClient secureClient = new HttpClient())
             {

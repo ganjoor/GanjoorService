@@ -71,6 +71,12 @@ namespace GanjooRazor.Pages
         public string PagingToolsHtml { get; set; }
         public string LastError { get; set; }
 
+
+        /// <summary>
+        /// can edit
+        /// </summary>
+        public bool CanEdit { get; set; }
+
         private async Task<bool> preparePoets()
         {
             var cacheKey = $"/api/ganjoor/poets";
@@ -154,6 +160,8 @@ namespace GanjooRazor.Pages
             }
 
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
+
+            CanEdit = Request.Cookies["CanEdit"] == "True";
 
             PoetId = string.IsNullOrEmpty(Request.Query["a"]) ? 0 : int.Parse(Request.Query["a"]);
 

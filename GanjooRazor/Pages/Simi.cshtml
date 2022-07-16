@@ -26,6 +26,16 @@
         var stickyEnabled = cookieValue != "false";
     </script>
 
+    @if(Model.CanEdit)
+    {
+        <script>
+            function redirectToTransferMeter(){
+                var meter = document.getElementById("v").value;
+                window.location.href = "/Admin/TransferMeter?m=" + encodeURIComponent(meter);
+            }
+        </script>
+    }
+
 </head>
 <body>
 
@@ -162,8 +172,12 @@
                             <label for="g" class="width-100per">قافیه:</label>
                             <input type="text" name="g" id="g" class="width-100per" value="@Model.Rhyme" placeholder="حروف قافیه" />
 
-                            <input type="submit" class="width-100per" value="اعمال ورودی‌ها" />
+                            <input type="submit" class="width-100per margin-top-5px" value="اعمال ورودی‌ها" />
 
+                            @if(Model.CanEdit)
+                            {
+                                <a onclick="redirectToTransferMeter()" class="pagebutton" role="button">انتقال وزن</a>
+                            }
 
                         </form>
                     </div><!-- related-images-frame -->

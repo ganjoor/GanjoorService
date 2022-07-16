@@ -17,13 +17,11 @@ else
 {
     <script>
         function confirmAndFinalize() {
-            if (!confirm('آیا از حذف وزن انتخابی و انتقال شعرهای آن به وزن مقصد اطمینان دارید؟'))
-                return;
 
             var rhythm_new = $('#rhythm-new').val();
-
             var rhythm_new2 = $('#rhythm-new2').val();
-
+            if (!confirm('آیا از حذف وزن «'+rhythm_new+'» و انتقال شعرهای آن به وزن «'+rhythm_new2+'» اطمینان دارید؟'))
+                return;
 
             $.ajax({
                 type: "POST",
@@ -40,13 +38,13 @@ else
                         alert(e.responseText);
                 },
                 success: function(b) {
-                    if(b == true){
+                    if (b == true) {
                         alert('انتقال انجام شد.');
                     }
-                    else{
-                         alert('خطا رخ داد.');
+                    else {
+                        alert('خطا رخ داد.');
                     }
-                    
+
                 },
 
             });
@@ -62,7 +60,7 @@ else
         <tr>
             <td>
                 <label for="select-search">جستجوی وزن:</label><br />
-                <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" size="50" />
+                <input type="text" id="select-search" value="@Model.InitialSourceMeter" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" size="50" />
                 <datalist id="inputRhythms">
                     @if (Model.RhythmsByVerseCount != null)
                         @foreach (var rhythm in Model.RhythmsByVerseCount)
@@ -78,9 +76,14 @@ else
 
                 <select id="rhythm-new" name="rhythm-new">
                     @foreach (var rhythm in Model.RhythmsAlphabetically)
-                    {
-                        <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                    }
+                        if (rhythm.Rhythm == Model.InitialSourceMeter)
+                        {
+                            <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
+                        }
+                        else
+                        {
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
                 </select>
                 <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
 
