@@ -15,8 +15,45 @@
 }
 else
 {
-     <table>
-         
+    <script>
+        function confirmAndFinalize() {
+            if (!confirm('آیا از حذف وزن انتخابی و انتقال شعرهای آن به وزن مقصد اطمینان دارید؟'))
+                return;
+
+            var rhythm_new = $('#rhythm-new').val();
+
+            var rhythm_new2 = $('#rhythm-new2').val();
+
+
+            $.ajax({
+                type: "POST",
+                url: '',
+                data: {
+                    rhythm: rhythm_new,
+                    rhythm2: rhythm_new2,
+
+                },
+                error: function(e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function(b) {
+                    if(b == true){
+                        alert('انتقال انجام شد.');
+                    }
+                    else{
+                         alert('خطا رخ داد.');
+                    }
+                    
+                },
+
+            });
+        }
+    </script>
+    <table>
+
         <tr>
             <td>
                 وزنی که حذف می‌شود:
@@ -38,7 +75,7 @@ else
         </tr>
         <tr>
             <td>
-                
+
                 <select id="rhythm-new" name="rhythm-new">
                     @foreach (var rhythm in Model.RhythmsAlphabetically)
                     {
@@ -46,13 +83,9 @@ else
                     }
                 </select>
                 <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
-               
+
             </td>
         </tr>
-
-
-
-       
 
         <tr>
             <td>
@@ -60,10 +93,10 @@ else
             </td>
 
         </tr>
-       
+
         <tr>
             <td>
-                <label for="select-search2">جستجوی وزن (دوم):</label><br />
+                <label for="select-search2">جستجوی وزن مقصد:</label><br />
                 <input type="text" id="select-search2" value="" oninput="doSearchInRhythmsCombo('select-search2', 'rhythm-new2')" list="inputRhythms" autocomplete="off" size="50" />
                 <datalist id="inputRhythms2">
                     @if (Model.RhythmsByVerseCount != null)
@@ -77,7 +110,7 @@ else
         </tr>
         <tr>
             <td>
-                <label for="rhythm-new2">وزن (دوم) انتخاب شده:</label><br /><select id="rhythm-new2" name="rhythm-new2">
+                <label for="rhythm-new2">وزن مقصد انتخاب شده:</label><br /><select id="rhythm-new2" name="rhythm-new2">
                     @foreach (var rhythm in Model.RhythmsAlphabetically)
                     {
                         <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
@@ -85,7 +118,7 @@ else
                     }
                 </select>
                 <a role="button" onclick="resetRhythm('rhythm-new2')" class="pagebutton">پاک کردن وزن</a>
-                 <br />
+                <br />
                 <script>
                     function newRhythm() {
                         var rhythm = prompt("پیشنهاد وزن جدید", "");
@@ -115,6 +148,12 @@ else
                 <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
             </td>
         </tr>
-     </table>
+
+        <tr>
+            <td>
+                <a role="button" onclick="confirmAndFinalize()" class="pagebutton">انتقال</a>
+            </td>
+        </tr>
+    </table>
 }
 

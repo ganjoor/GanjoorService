@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -94,6 +95,35 @@ namespace GanjooRazor.Areas.Admin.Pages
                 }
             }
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(string rhythm, string rhythm2)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms?sortOnVerseCount=true");
+                    if (!rhythmResponse.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await rhythmResponse.Content.ReadAsStringAsync());
+                        return new BadRequestObjectResult(FatalError);
+                    }
+
+                    RhythmsByVerseCount = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
+
+                    var sourceMeter = RhythmsByVerseCount.Where(m => m.Rhythm == rhythm).Single();
+                    var destMeter = RhythmsByVerseCount.Where(m => m.Rhythm == rhythm2).Single();
+
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/prosody/transfer/{sourceMeter.Id}/{destMeter.Id}", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
         }
     }
 }
