@@ -14577,13 +14577,16 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService._UpdateRelatedSections(RMuseum.DbContext.RMuseumDbContext,System.Int32,System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._UpdateRelatedSections(RMuseum.DbContext.RMuseumDbContext,System.Int32,System.String,RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF,RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus,System.Int32)">
             <summary>
             update related sections info (after metreId or rhyme for one of these sections changes)
             </summary>
             <param name="context"></param>
             <param name="metreId"></param>
             <param name="rhyme"></param>
+            <param name="jobProgressServiceEF"></param>
+            <param name="job"></param>
+            <param name="progress"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartGeneratingRelatedSectionsInfo(System.Boolean)">

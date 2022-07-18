@@ -3,6 +3,7 @@ using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Utils;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Models.Generic.Db;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
@@ -60,12 +61,14 @@ namespace RMuseum.Services.Implementation
                                    try
                                    {
                                        var updatePoemListId = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).Select(p => p.Id).ToListAsync();
-                                       foreach (var updatePoemId in updatePoemListId)
+                                       for (int i = 0; i<updatePoemListId.Count; i++)
                                        {
+                                           var updatePoemId = updatePoemListId[i];
                                            var sections = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == updatePoemId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters)).ToListAsync();
-                                           foreach (var section in sections)
+                                           for (int j = 0; j < sections.Count; j++)
                                            {
-                                               await _UpdateRelatedSections(context, (int)section.GanjoorMetreId, section.RhymeLetters);
+                                               var section = sections[j];
+                                               await _UpdateRelatedSections(context, (int)section.GanjoorMetreId, section.RhymeLetters, jobProgressServiceEF, job, (i * 10 + j) * 100 / (10 * (updatePoemListId.Count + 1)));
                                            }
                                        }
                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
@@ -93,11 +96,18 @@ namespace RMuseum.Services.Implementation
         /// <param name="context"></param>
         /// <param name="metreId"></param>
         /// <param name="rhyme"></param>
+        /// <param name="jobProgressServiceEF"></param>
+        /// <param name="job"></param>
+        /// <param name="progress"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> _UpdateRelatedSections(RMuseumDbContext context, int metreId, string rhyme)
+        private async Task<RServiceResult<bool>> _UpdateRelatedSections(RMuseumDbContext context, int metreId, string rhyme, LongRunningJobProgressServiceEF jobProgressServiceEF = null, RLongRunningJobStatus job = null , int progress = 0)
         {
             try
             {
+                if(jobProgressServiceEF != null)
+                {
+                    await jobProgressServiceEF.UpdateJob(job.Id, progress, $"M: {metreId}, G: {rhyme}");
+                }
                 if (await context.UpdatingRelSectsLogs.AsNoTracking()
                     .Where(l => l.MeterId == metreId && l.RhymeLettes == rhyme && l.DateTime > DateTime.Now.AddMinutes(-10)).AnyAsync())
                     return new RServiceResult<bool>(true);//prevent parallel updates for same data
