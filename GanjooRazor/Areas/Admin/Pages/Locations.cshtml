@@ -10,6 +10,21 @@
 
 <p>@Model.LastMessage</p>
 
+<script>
+    function displayLocationOnMap() {
+        link = document.createElement("a")
+        link.href = 'https://maps.google.com/?q=' + document.getElementById('Location_Latitude').value + ',' + document.getElementById('Location_Longitude').value + '&ll=' + document.getElementById('Location_Latitude').value + ',' + document.getElementById('Location_Longitude').value + '&z=3';
+        link.target = "_blank"
+        link.click()
+    }
+    function viewLocation(lt, lg) {
+        link = document.createElement("a")
+        link.href = 'https://maps.google.com/?q=' + lt + ',' + lg + '&ll=' + lt + ',' + lg + '&z=3';
+        link.target = "_blank"
+        link.click()
+    }
+</script>
+
 <form method="post">
     <table>
         <tr>
@@ -34,6 +49,11 @@
             </td>
             <td>
                 <input asp-for="Location.Longitude" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <a onclick="displayLocationOnMap()" class="pagebutton" role="button">مشاهده روی نقشه</a>
             </td>
         </tr>
         <tr>
@@ -66,13 +86,13 @@
                     latitude: $(latInput).val(),
                     longitude: $(lonInput).val(),
                 },
-                error: function (e) {
+                error: function(e) {
                     if (e.responseText == null)
                         alert(e);
                     else
                         alert(e.responseText);
                 },
-                success: function () {
+                success: function() {
                     alert('ردیف به درستی ویرایش شد.')
                 },
 
@@ -91,18 +111,18 @@
                 data: {
                     id: itemId
                 },
-                error: function (e) {
+                error: function(e) {
                     if (e.responseText == null)
                         alert(e);
                     else
                         alert(e.responseText);
                 },
-                success: function () {
+                success: function() {
                     var itemIdBlockId = '#tr-' + itemId;
                     $(itemIdBlockId).remove();
                 },
             });
-    }
+        }
     </script>
     <table>
         <tr>
@@ -115,15 +135,16 @@
         </tr>
         @foreach (var location in Model.Locations)
         {
-    <tr id="tr-@location.Id">
-        <td><input type="text" name="name-@location.Id" id="name-@location.Id" value="@location.Name" /></td>
-        <td><input type="text" name="lat-@location.Id" id="lat-@location.Id" value="@location.Latitude" /></td>
-        <td><input type="text" name="lon-@location.Id" id="lon-@location.Id" value="@location.Longitude" /></td>
-        <td>
-            <a role="button" onclick="editLocation(@location.Id)" class="actionlink" title="ویرایش">✎</a>
-            <a role="button" onclick="deleteLocation(@location.Id)" class="actionlink" title="حذف">🗑</a>
-        </td>
-    </tr>
+            <tr id="tr-@location.Id">
+                <td><input type="text" name="name-@location.Id" id="name-@location.Id" value="@location.Name" /></td>
+                <td><input type="text" name="lat-@location.Id" id="lat-@location.Id" value="@location.Latitude" /></td>
+                <td><input type="text" name="lon-@location.Id" id="lon-@location.Id" value="@location.Longitude" /></td>
+                <td>
+                    <a role="button" onclick="editLocation(@location.Id)" class="actionlink" title="ویرایش">✎</a>
+                    <a role="button" onclick="deleteLocation(@location.Id)" class="actionlink" title="حذف">🗑</a>
+                    <a role="button" onclick="viewLocation('@location.Latitude', '@location.Longitude')" class="actionlink" title="مشاهده">مشاهده</a>
+                </td>
+            </tr>
         }
     </table>
 
