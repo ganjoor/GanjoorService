@@ -173,7 +173,7 @@ namespace RMuseum.Services.Implementation
             if (versesDeleted)
             {
                 var undeletedPoemVerss = poemVerses.Where(v => !moderation.VerseOrderText.Any(mv => mv.VORder == v.VOrder && mv.MarkForDelete == true )).ToList();
-                for (int vOrder = 1; vOrder < undeletedPoemVerss.Count; vOrder++)
+                for (int vOrder = 1; vOrder <= undeletedPoemVerss.Count; vOrder++)
                 {
                     if (undeletedPoemVerss[vOrder - 1].VOrder != vOrder)
                     {
