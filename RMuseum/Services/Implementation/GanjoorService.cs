@@ -1955,7 +1955,7 @@ namespace RMuseum.Services.Implementation
                          (
                          dbCorrection.Result == CorrectionReviewResult.Approved || dbCorrection.RhythmResult == CorrectionReviewResult.Approved || dbCorrection.Rhythm2Result == CorrectionReviewResult.Approved
                          ||
-                         dbCorrection.VerseOrderText.Any(v => v.Result == CorrectionReviewResult.Approved)
+                         dbCorrection.VerseOrderText.Any(v => v.Result == CorrectionReviewResult.Approved || v.VersePositionResult == CorrectionReviewResult.Approved || v.MarkForDeleteResult == CorrectionReviewResult.Approved)
                          )
                          orderby dbCorrection.Id descending
                          select
