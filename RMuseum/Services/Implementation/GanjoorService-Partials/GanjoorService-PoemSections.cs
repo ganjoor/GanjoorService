@@ -656,7 +656,7 @@ namespace RMuseum.Services.Implementation
                 var sections = await _context.GanjoorPoemSections.Where(s => s.PoemId == id).ToListAsync();
                 _context.RemoveRange(sections);
                 await _context.SaveChangesAsync();
-                var poem = await _context.GanjoorPoems.AsNoTracking().SingleAsync(p => p.Id == id);
+                var poem = await _context.GanjoorPoems.Include(p => p.Cat).AsNoTracking().SingleAsync(p => p.Id == id);
                
                 await _SectionizePoem(_context, poem, jobProgressServiceEF, job);
                 await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
