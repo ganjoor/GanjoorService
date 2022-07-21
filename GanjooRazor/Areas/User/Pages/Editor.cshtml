@@ -209,6 +209,36 @@
 
         document.getElementById('secondr-btn').style.display = 'none';
     }
+
+    function regenerateSections(id) {
+        if (!confirm('آیا از قطعه‌بندی مجدد اطمینان دارید؟'))
+            return;
+
+        if (!confirm('قطعه‌بندی مجدد باعث حذف اطلاعات وزن‌ها می‌شود. آیا اطمینان دارید؟'))
+            return;
+
+
+
+        var url = '?handler=RegeneratePoemSections';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                id: id,
+            },
+            error: function(e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+            },
+            success: function() {
+                alert('انجام شد.');
+            },
+
+        });
+    }
 </script>
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
@@ -918,6 +948,10 @@ else
 
         @if (Model.ShowAdminOps)
         {
+            <tr>
+                <td><a role="button" onclick="regenerateSections(@Model.PageInformation.Poem.Id)" class="pagebutton">قطعه‌بندی مجدد</a></td>
+            </tr>
+
             <tr>
                 <td>برای حذف شعر از قسمت مدیریت بخش اقدام کنید.</td>
             </tr>
