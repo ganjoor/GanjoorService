@@ -228,13 +228,14 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
+        /// <param name="q"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmarkViewModel[] Bookmarks)>> GetUserBookmarks(PagingParameterModel paging, Guid userId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmarkViewModel[] Bookmarks)>> GetUserBookmarks(PagingParameterModel paging, Guid userId, string q)
         {
             var source =
                  _context.GanjoorUserBookmarks
                  .Include(b => b.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet)
-                 .Where(b => b.UserId == userId)
+                 .Where(b => b.UserId == userId && (string.IsNullOrEmpty(q) || (!string.IsNullOrEmpty(q) && b.PrivateNote.Contains(q))))
                 .OrderByDescending(b => b.DateTime)
                 .AsQueryable();
 

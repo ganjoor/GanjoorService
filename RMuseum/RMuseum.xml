@@ -1625,10 +1625,13 @@
             <param name="coupletIndex"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
             <summary>
             user bookmarks
             </summary>
+            <param name="q">
+            a phrase to be searched through user private notes
+            </param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.StartGeneratingRelatedSectionsInfo(System.Boolean)">
@@ -12495,12 +12498,13 @@
             <param name="coupletIndex"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,System.String)">
             <summary>
             get user bookmarks (artifacts and items)
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
+            <param name="q"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.RegenerateHalfCenturiesAsync">
@@ -14242,12 +14246,13 @@
             <param name="note"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserBookmarks(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,System.String)">
             <summary>
             get user bookmarks (artifacts and items)
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
+            <param name="q"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCenturiesAsync">

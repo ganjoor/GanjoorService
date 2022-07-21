@@ -2580,17 +2580,20 @@ namespace RMuseum.Controllers
         /// <summary>
         /// user bookmarks
         /// </summary>
+        /// <param name="q">
+        /// a phrase to be searched through user private notes
+        /// </param>
         /// <returns></returns>
         [HttpGet]
         [Route("bookmark")]
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserBookmarkViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetUserBookmarks([FromQuery] PagingParameterModel paging)
+        public async Task<IActionResult> GetUserBookmarks([FromQuery] PagingParameterModel paging, string q)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
 
-            RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmarkViewModel[] Bookmarks)> res = await _ganjoorService.GetUserBookmarks(paging, loggedOnUserId);
+            RServiceResult<(PaginationMetadata PagingMeta, GanjoorUserBookmarkViewModel[] Bookmarks)> res = await _ganjoorService.GetUserBookmarks(paging, loggedOnUserId, q);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             // Paging Header
