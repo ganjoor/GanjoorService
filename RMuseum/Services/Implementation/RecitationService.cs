@@ -776,6 +776,8 @@ namespace RMuseum.Services.Implementationa
 
                     UserRecitationProfile defProfile = await context.UserRecitationProfiles.Where(p => p.UserId == session.UseId && p.IsDefault == true).FirstOrDefaultAsync(); //this should not be null
 
+                    int maxRecitationsPerPoem = int.Parse(Configuration.GetSection("AudioUploadService")["MaxRecitationsPerPoem"]);
+
                     foreach (UploadSessionFile file in session.UploadedFiles.Where(file => Path.GetExtension(file.FilePath) == ".xml").ToList())
                     {
                         try
@@ -851,103 +853,135 @@ namespace RMuseum.Services.Implementationa
                                     }
                                     else
                                     {
-                                        File.Move(mp3file.FilePath, localMp3FilePath);
-                                        int mp3fileSize = File.ReadAllBytes(localMp3FilePath).Length;
-
-                                        bool replace = false;
-                                        if (session.SessionType == UploadSessionType.ReplaceAudio)
+                                        bool overCrowdedPoem = false;
+                                        if (maxRecitationsPerPoem != 0 && maxRecitationsPerPoem <= (await context.Recitations.AsNoTracking().CountAsync(r => r.GanjoorPostId == audio.PoemId)))
                                         {
-                                            Recitation existing = await context.Recitations.Where(r => r.OwnerId == session.UseId && r.GanjoorPostId == audio.PoemId && r.AudioArtist == defProfile.ArtistName).FirstOrDefaultAsync();
-                                            if (existing != null)
+                                            if
+                                            (
+                                            !(
+                                            session.SessionType == UploadSessionType.ReplaceAudio
+                                            &&
+                                            await context.Recitations.Where(r => r.OwnerId == session.UseId && r.GanjoorPostId == audio.PoemId && r.AudioArtist == defProfile.ArtistName).AnyAsync()
+                                            )
+                                            )
                                             {
-                                                replace = true;
-
-                                                File.Move(localXmlFilePath, existing.LocalXmlFilePath, true);
-                                                File.Move(localMp3FilePath, existing.LocalMp3FilePath, true);
-                                                existing.Mp3FileCheckSum = audio.FileCheckSum;
-                                                existing.Mp3SizeInBytes = mp3fileSize;
-                                                existing.FileLastUpdated = session.UploadEndTime;
-                                                existing.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
-                                                context.Recitations.Update(existing);
-
-                                                bool recomputeOrders = false;
-                                                var mistakes = await context.RecitationApprovedMistakes.Where(m => m.RecitationId == existing.Id).ToListAsync();
-                                                if (mistakes.Count > 0)
-                                                {
-                                                    context.RemoveRange(mistakes);
-                                                    recomputeOrders = true;
-                                                }
-
-                                                await context.SaveChangesAsync();
-
-                                                await new RNotificationService(context).PushNotification
-                                                (
-                                                    existing.OwnerId,
-                                                    "انتشار نهایی خوانش ارسالی",
-                                                    $"خوانش ارسالی {existing.AudioTitle} منتشر شد.{Environment.NewLine}" +
-                                                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={existing.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
-                                                );
-
-                                                if (recomputeOrders)
-                                                {
-                                                    await _ComputePoemRecitationsOrdersAsync(context, existing.GanjoorPostId, true);
-                                                }
-
+                                                overCrowdedPoem = true;
                                             }
                                         }
 
-
-                                        if (!replace)
+                                        if(overCrowdedPoem)
                                         {
-                                            Guid legacyAudioGuid = audio.SyncGuid;
-                                            while (
-                                                (await context.Recitations.Where(a => a.LegacyAudioGuid == legacyAudioGuid).FirstOrDefaultAsync()) != null
-                                                )
-                                            {
-                                                legacyAudioGuid = Guid.NewGuid();
-                                            }
+                                            session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = $"این شعر در حال حاضر دارای دست کم {maxRecitationsPerPoem.ToPersianNumbers()} خوانش است و امکان ارسال خوانش جدید برای آن وجود ندارد. اگر روی ارسال خوانش برای این شعر اصرار دارید لطفاً خوانش‌های موجود آن را بررسی کنید و اشکالاتی که منطقاً خوانش را قابل حذف می‌کند از طریق ابزار گزارش خطا گزارش کنید. راه دیگر آن است که برای اشعار دیگری که تعداد زیادی خوانش ندارند خوانش ارسال کنید.";
+                                            context.UploadSessions.Update(session);
+                                            await context.SaveChangesAsync();
 
+                                            await new RNotificationService(context).PushNotification
+                                                     (
+                                                         session.UseId,
+                                                         "خطای تعداد زیاد خوانش موجود برای شعر",
+                                                         $"متأسفانه این شعر در حال حاضر دارای دست کم {maxRecitationsPerPoem.ToPersianNumbers()} خوانش است و امکان ارسال خوانش جدید برای آن وجود ندارد. اگر روی ارسال خوانش برای این شعر اصرار دارید لطفاً خوانش‌های موجود آن را بررسی کنید و اشکالاتی که منطقاً خوانش را قابل حذف می‌کند از طریق ابزار گزارش خطا گزارش کنید. راه دیگر آن است که برای اشعار دیگری که تعداد زیادی خوانش ندارند خوانش ارسال کنید.{Environment.NewLine}" +
+                                                         $"{file.FileName}"
+                                                     );
+                                        }
+                                        else
+                                        {
+                                            File.Move(mp3file.FilePath, localMp3FilePath);
+                                            int mp3fileSize = File.ReadAllBytes(localMp3FilePath).Length;
 
-                                            Recitation narration = new Recitation()
+                                            bool replace = false;
+                                            if (session.SessionType == UploadSessionType.ReplaceAudio)
                                             {
-                                                GanjoorPostId = audio.PoemId,
-                                                OwnerId = session.UseId,
-                                                GanjoorAudioId = 1 + await context.Recitations.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
-                                                AudioOrder = 1 + await context.Recitations.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.AudioOrder).Select(a => a.AudioOrder).FirstOrDefaultAsync(),
-                                                FileNameWithoutExtension = fileNameWithoutExtension,
-                                                SoundFilesFolder = currentTargetFolder,
-                                                AudioTitle = string.IsNullOrEmpty(audio.PoemTitle) ? audio.Description : audio.PoemTitle,
-                                                AudioArtist = defProfile.ArtistName,
-                                                AudioArtistUrl = defProfile.ArtistUrl,
-                                                AudioSrc = defProfile.AudioSrc,
-                                                AudioSrcUrl = defProfile.AudioSrcUrl,
-                                                LegacyAudioGuid = legacyAudioGuid,
-                                                Mp3FileCheckSum = audio.FileCheckSum,
-                                                Mp3SizeInBytes = mp3fileSize,
-                                                OggSizeInBytes = 0,
-                                                UploadDate = session.UploadEndTime,
-                                                FileLastUpdated = session.UploadEndTime,
-                                                LocalMp3FilePath = localMp3FilePath,
-                                                LocalXmlFilePath = localXmlFilePath,
-                                                AudioSyncStatus = AudioSyncStatus.NewItem,
-                                                ReviewStatus = AudioReviewStatus.Draft
-                                            };
-
-                                            if (narration.AudioTitle.IndexOf("فایل صوتی") == 0) //no modification on title
-                                            {
-                                                GanjoorPoem poem = await context.GanjoorPoems.Where(p => p.Id == audio.PoemId).SingleOrDefaultAsync();
-                                                if (poem != null)
+                                                Recitation existing = await context.Recitations.Where(r => r.OwnerId == session.UseId && r.GanjoorPostId == audio.PoemId && r.AudioArtist == defProfile.ArtistName).FirstOrDefaultAsync();
+                                                if (existing != null)
                                                 {
-                                                    narration.AudioTitle = poem.Title;
+                                                    replace = true;
+
+                                                    File.Move(localXmlFilePath, existing.LocalXmlFilePath, true);
+                                                    File.Move(localMp3FilePath, existing.LocalMp3FilePath, true);
+                                                    existing.Mp3FileCheckSum = audio.FileCheckSum;
+                                                    existing.Mp3SizeInBytes = mp3fileSize;
+                                                    existing.FileLastUpdated = session.UploadEndTime;
+                                                    existing.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
+                                                    context.Recitations.Update(existing);
+
+                                                    bool recomputeOrders = false;
+                                                    var mistakes = await context.RecitationApprovedMistakes.Where(m => m.RecitationId == existing.Id).ToListAsync();
+                                                    if (mistakes.Count > 0)
+                                                    {
+                                                        context.RemoveRange(mistakes);
+                                                        recomputeOrders = true;
+                                                    }
+
+                                                    await context.SaveChangesAsync();
+
+                                                    await new RNotificationService(context).PushNotification
+                                                    (
+                                                        existing.OwnerId,
+                                                        "انتشار نهایی خوانش ارسالی",
+                                                        $"خوانش ارسالی {existing.AudioTitle} منتشر شد.{Environment.NewLine}" +
+                                                        $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={existing.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                                                    );
+
+                                                    if (recomputeOrders)
+                                                    {
+                                                        await _ComputePoemRecitationsOrdersAsync(context, existing.GanjoorPostId, true);
+                                                    }
+
                                                 }
                                             }
-                                            context.Recitations.Add(narration);
-                                        }
 
-                                        session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "";
-                                        session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResult = true;
-                                        session.UploadedFiles.Where(f => f.Id == mp3file.Id).SingleOrDefault().ProcessResultMsg = "";
-                                        session.UploadedFiles.Where(f => f.Id == mp3file.Id).SingleOrDefault().ProcessResult = true;
+                                            if (!replace)
+                                            {
+                                                Guid legacyAudioGuid = audio.SyncGuid;
+                                                while (
+                                                    (await context.Recitations.AsNoTracking().Where(a => a.LegacyAudioGuid == legacyAudioGuid).FirstOrDefaultAsync()) != null
+                                                    )
+                                                {
+                                                    legacyAudioGuid = Guid.NewGuid();
+                                                }
+
+
+                                                Recitation narration = new Recitation()
+                                                {
+                                                    GanjoorPostId = audio.PoemId,
+                                                    OwnerId = session.UseId,
+                                                    GanjoorAudioId = 1 + await context.Recitations.OrderByDescending(a => a.GanjoorAudioId).Select(a => a.GanjoorAudioId).FirstOrDefaultAsync(),
+                                                    AudioOrder = 1 + await context.Recitations.Where(a => a.GanjoorPostId == audio.PoemId).OrderByDescending(a => a.AudioOrder).Select(a => a.AudioOrder).FirstOrDefaultAsync(),
+                                                    FileNameWithoutExtension = fileNameWithoutExtension,
+                                                    SoundFilesFolder = currentTargetFolder,
+                                                    AudioTitle = string.IsNullOrEmpty(audio.PoemTitle) ? audio.Description : audio.PoemTitle,
+                                                    AudioArtist = defProfile.ArtistName,
+                                                    AudioArtistUrl = defProfile.ArtistUrl,
+                                                    AudioSrc = defProfile.AudioSrc,
+                                                    AudioSrcUrl = defProfile.AudioSrcUrl,
+                                                    LegacyAudioGuid = legacyAudioGuid,
+                                                    Mp3FileCheckSum = audio.FileCheckSum,
+                                                    Mp3SizeInBytes = mp3fileSize,
+                                                    OggSizeInBytes = 0,
+                                                    UploadDate = session.UploadEndTime,
+                                                    FileLastUpdated = session.UploadEndTime,
+                                                    LocalMp3FilePath = localMp3FilePath,
+                                                    LocalXmlFilePath = localXmlFilePath,
+                                                    AudioSyncStatus = AudioSyncStatus.NewItem,
+                                                    ReviewStatus = AudioReviewStatus.Draft
+                                                };
+
+                                                if (narration.AudioTitle.IndexOf("فایل صوتی") == 0) //no modification on title
+                                                {
+                                                    GanjoorPoem poem = await context.GanjoorPoems.Where(p => p.Id == audio.PoemId).SingleOrDefaultAsync();
+                                                    if (poem != null)
+                                                    {
+                                                        narration.AudioTitle = poem.Title;
+                                                    }
+                                                }
+                                                context.Recitations.Add(narration);
+                                            }
+
+                                            session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "";
+                                            session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResult = true;
+                                            session.UploadedFiles.Where(f => f.Id == mp3file.Id).SingleOrDefault().ProcessResultMsg = "";
+                                            session.UploadedFiles.Where(f => f.Id == mp3file.Id).SingleOrDefault().ProcessResult = true;
+                                        }
                                     }
                                 }
 
