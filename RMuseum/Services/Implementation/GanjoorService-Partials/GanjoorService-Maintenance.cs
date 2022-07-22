@@ -33,16 +33,19 @@ namespace RMuseum.Services.Implementation
                     var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).ToListAsync();
 
                     int i = 0;
+                    List<Tuple<int, string>> updateList = new List<Tuple<int, string>>();
                     using (HttpClient httpClient = new HttpClient())
                     {
+                        
                         foreach (var poem in poems)
                         {
+
                             var sections = await context.GanjoorPoemSections.Where(p => p.PoemId == poem.Id).ToListAsync();
                             foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == null).ToList())
                             {
                                 if (retag || section.GanjoorMetreId == null)
                                 {
-                                    await jobProgressServiceEF.UpdateJob(job.Id, i++);
+                                    
                                     if (preDeterminedMetre == null)
                                     {
                                         var res = await _FindSectionRhythm(section, context, httpClient, rhythms);
@@ -50,14 +53,12 @@ namespace RMuseum.Services.Implementation
                                         {
                                             section.GanjoorMetreId = metres.Where(m => m.Rhythm == res.Result).Single().Id;
                                             context.GanjoorPoemSections.Update(section);
-                                            await context.SaveChangesAsync();
                                         }
                                     }
                                     else
                                     {
                                         section.GanjoorMetreId = preDeterminedMetre.Id;
                                         context.GanjoorPoemSections.Update(section);
-                                        await context.SaveChangesAsync();
                                     }
 
                                     if(section.GanjoorMetreId != null)
@@ -67,13 +68,16 @@ namespace RMuseum.Services.Implementation
                                         {
                                             dsection.GanjoorMetreId = section.GanjoorMetreId;
                                             context.GanjoorPoemSections.Update(dsection);
-                                            await context.SaveChangesAsync();
                                         }
                                     }
 
                                     if (section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
                                     {
-                                        await _UpdateRelatedSections(context, (int)section.GanjoorMetreId, section.RhymeLetters);
+                                        if(!updateList.Any(u  => u.Item1  == section.GanjoorMetreId && u.Item2 == section.RhymeLetters))
+                                        {
+                                            updateList.Add(new Tuple<int, string>((int)section.GanjoorMetreId, section.RhymeLetters));
+                                        }
+
                                     }
 
                                     if (section.GanjoorMetreId != null)
@@ -83,15 +87,27 @@ namespace RMuseum.Services.Implementation
                                         {
                                             if(dsection.GanjoorMetreId != null && !string.IsNullOrEmpty(dsection.RhymeLetters))
                                             {
-                                                await _UpdateRelatedSections(context, (int)dsection.GanjoorMetreId, dsection.RhymeLetters);
+                                                if (!updateList.Any(u => u.Item1 == dsection.GanjoorMetreId && u.Item2 == dsection.RhymeLetters))
+                                                {
+                                                    updateList.Add(new Tuple<int, string>((int)dsection.GanjoorMetreId, dsection.RhymeLetters));
+                                                }
+
                                             }
                                         }
                                     }
+
+                                    await jobProgressServiceEF.UpdateJob(job.Id, i++);
                                 }
                             }
+
+                            
                         }
                     }
-                    await jobProgressServiceEF.UpdateJob(job.Id, 99);
+
+                    foreach (var item in updateList)
+                    {
+                        await _UpdateRelatedSections(context, item.Item1, item.Item2, jobProgressServiceEF, job);
+                    }
 
                     await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                 }
