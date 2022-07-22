@@ -27,7 +27,7 @@ else
                 data: {
                     id: bookmarkId
                 },
-                success: function () {
+                success: function() {
                     var notificationBlockId = '#bookmark-' + bookmarkId;
                     $(notificationBlockId).remove();
                 },
@@ -42,7 +42,7 @@ else
         }
 
         function editPrivateNoteFinal() {
-            $("#editnoteform").unbind('submit').bind('submit', function (e) {
+            $("#editnoteform").unbind('submit').bind('submit', function(e) {
 
                 e.preventDefault(); // avoid to execute the actual submit of the form.
 
@@ -58,7 +58,7 @@ else
                         id: bookmarkId,
                         note: $("textarea#editNoteText").val()
                     },
-                    success: function () {
+                    success: function() {
                         document.getElementById('bookmark-note-dialog').style.display = 'none';
 
                         var noteTextBlockId = '#note-text-' + bookmarkId;
@@ -90,6 +90,15 @@ else
             شما هنوز هیچ بیتی را نشان نکرده‌اید. برای آشنایی با نحوهٔ نشان کردن اشعار <a href="https://blog.ganjoor.net/1400/07/08/ganjoor-bookmarking/" target="_blank">اینجا</a> را ببینید.
         </p>
     }
+
+    <div class="sitem actionbox">
+        <div class="related-images-frame padding-20px">
+            <form method="get" id="searchcommentsform">
+                <input type="text" name="w" id="w" class="width-100per" value="@Model.Query" placeholder="جستجو در یادداشتها" />
+                <input type="submit" class="width-100per margin-top-5px" value="جستجو در یادداشتها" />
+            </form>
+        </div><!-- related-images-frame -->
+    </div> <!-- sitem actionbo -->
 
     @foreach (var bookmark in Model.Bookmarks)
     {

@@ -32,10 +32,14 @@ namespace GanjooRazor.Areas.User.Pages
 
         public List<GanjoorUserBookmarkViewModel> Bookmarks { get; set; }
 
+        public string Query { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
                 return Redirect("/");
+
+            Query = Request.Query["w"];
 
             LastError = "";
             using (HttpClient secureClient = new HttpClient())
@@ -47,7 +51,7 @@ namespace GanjooRazor.Areas.User.Pages
                         {
                             pageNumber = int.Parse(Request.Query["page"]);
                         }
-                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/?PageNumber={pageNumber}&PageSize=20");
+                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/?PageNumber={pageNumber}&PageSize=20&q={Query}");
                         if (!response.IsSuccessStatusCode)
                         {
                             LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
@@ -70,7 +74,7 @@ namespace GanjooRazor.Areas.User.Pages
                                         new NameIdUrlImage()
                                         {
                                             Name = "صفحهٔ اول",
-                                            Url = "/User/MyBookmarks/?page=1"
+                                            Url = $"/User/MyBookmarks/?page=1&w={Query}"
                                         }
                                         );
                                 }
@@ -97,7 +101,7 @@ namespace GanjooRazor.Areas.User.Pages
                                                 new NameIdUrlImage()
                                                 {
                                                     Name = i.ToPersianNumbers(),
-                                                    Url = $"/User/MyBookmarks/?page={i}"
+                                                    Url = $"/User/MyBookmarks/?page={i}&w={Query}"
                                                 }
                                                 );
                                         }
@@ -119,7 +123,7 @@ namespace GanjooRazor.Areas.User.Pages
                                        new NameIdUrlImage()
                                        {
                                            Name = "صفحهٔ آخر",
-                                           Url = $"/User/MyBookmarks/?page={paginationMetadata.totalPages}"
+                                           Url = $"/User/MyBookmarks/?page={paginationMetadata.totalPages}&w={Query}"
                                        }
                                        );
                                 }
