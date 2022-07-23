@@ -42,6 +42,10 @@
             <div class="actionbox">
                 <form action="/search" method="get" id="searchform">
                     <input type="text" name="s" id="s" class="inputText" value="@Model.Query" placeholder="جستجو" />
+                    @if(Model.ExactSearch)
+                    {
+                        <input type="hidden" name="es" id="es" value="1" />
+                    }
                     <select name="author" id="author" onchange="onSelectedPoetChanged()">
 
                         @{

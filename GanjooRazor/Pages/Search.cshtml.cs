@@ -145,6 +145,8 @@ namespace GanjooRazor.Pages
 
         public bool Quoted { get; set; }
 
+        public bool ExactSearch { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (bool.Parse(Configuration["MaintenanceMode"]))
@@ -155,7 +157,8 @@ namespace GanjooRazor.Pages
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
             Query = Request.Query["s"].ApplyCorrectYeKe().Trim();
-            bool quotes = Query.IndexOf("\"") != -1 || Request.Query["es"] == "1";
+            ExactSearch = Request.Query["es"] == "1";
+            bool quotes = Query.IndexOf("\"") != -1 || ExactSearch;
             Query = LanguageUtils.MakeTextSearchable(Query); //replace zwnj with space
             if (quotes)
                 Query = $"\"{Query}\"";
