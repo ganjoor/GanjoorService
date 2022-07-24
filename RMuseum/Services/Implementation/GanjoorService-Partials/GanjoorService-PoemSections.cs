@@ -654,11 +654,51 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var sections = await _context.GanjoorPoemSections.Where(s => s.PoemId == id).ToListAsync();
+                int? meterId = sections.Any(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First) ? sections.First(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).GanjoorMetreId : null;
                 _context.RemoveRange(sections);
                 await _context.SaveChangesAsync();
                 var poem = await _context.GanjoorPoems.Include(p => p.Cat).AsNoTracking().SingleAsync(p => p.Id == id);
                
                 await _SectionizePoem(_context, poem, jobProgressServiceEF, job);
+
+                if(meterId != null)
+                {
+                    List<string> rhymes = new List<string>();
+                    var newSections = await _context.GanjoorPoemSections.Where(s => s.PoemId == id).ToListAsync();
+                    foreach (var section in newSections)
+                    {
+                        section.GanjoorMetreId = meterId;
+                        if(!string.IsNullOrEmpty(section.RhymeLetters))
+                        {
+                            if(!rhymes.Contains(section.RhymeLetters))
+                            {
+                                rhymes.Add(section.RhymeLetters);
+                            }
+                        }
+                    }
+                    _context.UpdateRange(newSections);
+                    await _context.SaveChangesAsync();
+                    if (rhymes.Count > 0)
+                    {
+                        _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF2 = new LongRunningJobProgressServiceEF(context);
+                                   var job2 = (await jobProgressServiceEF2.NewJob($"RegeneratePoemSections  - Updating related sections", "Query data")).Result;
+                                   foreach (var rhyme in rhymes)
+                                   {
+                                       await _UpdateRelatedSections(context, (int)meterId, rhyme, jobProgressServiceEF2, job2);
+                                   }
+                               }
+                           }
+                           );
+                    }
+                   
+                }
+
                 await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                 return new RServiceResult<bool>(true);
             }
