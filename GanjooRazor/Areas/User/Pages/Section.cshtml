@@ -218,6 +218,33 @@ else
 
         <tr>
             <td>
+                حروف قافیهٔ فعلی:
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <p id="rhyme-letters-old">@Model.PoemSection.RhymeLetters</p>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="rhyme-letters">حروف قافیهٔ پیشنهادی من (بدون فاصله و حرکات):</label>
+                <br />
+                @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.RhymeLetters))
+                {
+                    <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.MyLastEdit.RhymeLetters" size="50" />
+                }
+                else
+                {
+                    <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.PoemSection.RhymeLetters" size="50" />
+                }
+            </td>
+        </tr>
+
+        <tr>
+            <td>
                 <p>
                     <span class="red-color">شکستن قطعه: </span>اگر قطعه شامل بیش از یک قطعه شعر است و می‌بایست شکسته شود محل شکستن قطعه را علامت بزنید.
                 </p>
