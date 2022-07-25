@@ -1025,6 +1025,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// find poem section rhyming letters
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("section/analyserhyme/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjooRhymeAnalysisResult))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> FindSectionRhyme(int id)
+        {
+            var res = await _ganjoorService.FindSectionRhyme(id);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// delete a poem
         /// </summary>
         /// <param name="id"></param>

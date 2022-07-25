@@ -3105,6 +3105,20 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<GanjooRhymeAnalysisResult>(LanguageUtils.FindRhyme(FilterSectionVerses(section, verses)));
         }
 
+        /// <summary>
+        /// find poem section rhyme
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjooRhymeAnalysisResult>> FindSectionRhyme(int id)
+        {
+            var section = await _context.GanjoorPoemSections.AsNoTracking().Where(s => s.Id == id).FirstOrDefaultAsync();
+            if (section == null)
+                return new RServiceResult<GanjooRhymeAnalysisResult>(null, "no sections");
+            var verses = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync();
+            return new RServiceResult<GanjooRhymeAnalysisResult>(LanguageUtils.FindRhyme(FilterSectionVerses(section, verses)));
+        }
+
         private async Task _FindCategoryPoemsRhymesInternal(int catId, bool retag)
         {
             using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
@@ -3205,6 +3219,7 @@ namespace RMuseum.Services.Implementation
             var metres = (await GetGanjoorMetres()).Result.Select(m => m.Rhythm).ToArray();
             return await _FindPoemMainSectionRhythm(id, _context, _httpClient, metres);
         }
+
 
         private async Task<RServiceResult<string>> _FindPoemMainSectionRhythm(int id, RMuseumDbContext context, HttpClient httpClient, string[] metres, bool alwaysReturnaAResult = false)
         {
