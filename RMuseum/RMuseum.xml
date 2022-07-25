@@ -1629,6 +1629,7 @@
             <summary>
             user bookmarks
             </summary>
+            <param name="paging"></param>
             <param name="q">
             a phrase to be searched through user private notes
             </param>
@@ -6997,6 +6998,21 @@
             review result for rhythm 4
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.RhymeLetters">
+            <summary>
+            rhyme letters
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.OriginalRhymeLetters">
+            <summary>
+            original rhyme letters
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.RhymeLettersReviewResult">
+            <summary>
+            rhyme letters review result
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemFormat">
             <summary>
             poem format
@@ -7473,6 +7489,21 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.BreakFromVerse10VOrderResult">
             <summary>
             review result for break from verse10 VOrder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.RhymeLetters">
+            <summary>
+            rhyme letters
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.OriginalRhymeLetters">
+            <summary>
+            original rhyme letters
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.RhymeLettersReviewResult">
+            <summary>
+            rhyme letters review result
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">

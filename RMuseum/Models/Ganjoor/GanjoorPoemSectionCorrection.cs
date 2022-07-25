@@ -211,7 +211,20 @@ namespace RMuseum.Models.Ganjoor
         /// </summary>
         public CorrectionReviewResult BreakFromVerse10VOrderResult { get; set; }
 
+        /// <summary>
+        /// rhyme letters
+        /// </summary>
+        public string RhymeLetters { get; set; }
 
+        /// <summary>
+        /// original rhyme letters
+        /// </summary>
+        public string OriginalRhymeLetters { get; set; }
+
+        /// <summary>
+        /// rhyme letters review result
+        /// </summary>
+        public CorrectionReviewResult RhymeLettersReviewResult { get; set; }
 
     }
 }
