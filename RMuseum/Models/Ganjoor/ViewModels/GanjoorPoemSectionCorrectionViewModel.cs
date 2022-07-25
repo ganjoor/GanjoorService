@@ -194,5 +194,20 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// poem Id
         /// </summary>
         public int SectionIndex { get; set; }
+
+        /// <summary>
+        /// rhyme letters
+        /// </summary>
+        public string RhymeLetters { get; set; }
+
+        /// <summary>
+        /// original rhyme letters
+        /// </summary>
+        public string OriginalRhymeLetters { get; set; }
+
+        /// <summary>
+        /// rhyme letters review result
+        /// </summary>
+        public CorrectionReviewResult RhymeLettersReviewResult { get; set; }
     }
 }

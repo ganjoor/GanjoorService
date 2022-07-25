@@ -131,5 +131,20 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// review result for rhythm 4
         /// </summary>
         public CorrectionReviewResult Rhythm4Result { get; set; }
+
+        /// <summary>
+        /// rhyme letters
+        /// </summary>
+        public string RhymeLetters { get; set; }
+
+        /// <summary>
+        /// original rhyme letters
+        /// </summary>
+        public string OriginalRhymeLetters { get; set; }
+
+        /// <summary>
+        /// rhyme letters review result
+        /// </summary>
+        public CorrectionReviewResult RhymeLettersReviewResult { get; set; }
     }
 }
