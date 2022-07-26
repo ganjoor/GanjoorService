@@ -52,18 +52,23 @@ else
                 return;
             }
 
-            if (breakFromVIndices.length == 0 && $('#rhythm-old').text() == $('#rhythm-new').val()) {
+            var rhythm_new = $('#rhythm-new').val();
+            if (rhythm_new == $('#rhythm-old').text()) {
+                rhythm_new = null;
+            }
+
+            var rhyme_letters = $('#rhyme-letters').val();
+            if (rhyme_letters == $('#rhyme-letters-old').text()) {
+                rhyme_letters = null;
+            }
+
+            if (breakFromVIndices.length == 0 && rhythm_new == null && rhyme_letters == null) {
                 alert('شما هیچ تغییری در متن نداده‌اید!');
                 return;
             }
 
             $('#savecorrections').hide();
             $('#saving').text('در حال ذخیره ...');
-
-            var rhythm_new = $('#rhythm-new').val();
-            if (rhythm_new == $('#rhythm-old').text()) {
-                rhythm_new = null;
-            }
 
 
             var url = '?handler=SendSectionCorrections';
@@ -74,6 +79,7 @@ else
                 data: {
                     sectionId: id,
                     rhythm: rhythm_new,
+                    rhyme: rhyme_letters,
                     breakFromVIndices: breakFromVIndices,
                     note: $('#note').val()
 

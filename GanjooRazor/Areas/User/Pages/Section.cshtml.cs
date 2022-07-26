@@ -165,7 +165,7 @@ namespace GanjooRazor.Areas.User.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostSendSectionCorrectionsAsync(int sectionId, string rhythm, int[] breakFromVIndices, string note)
+        public async Task<IActionResult> OnPostSendSectionCorrectionsAsync(int sectionId, string rhythm, string rhyme, int[] breakFromVIndices, string note)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -271,6 +271,7 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         SectionId = sectionId,
                         Rhythm = rhythm,
+                        RhymeLetters = rhyme,
                         BreakFromVerse1VOrder = breakFromVerse1VOrder,
                         BreakFromVerse2VOrder = breakFromVerse2VOrder,
                         BreakFromVerse3VOrder = breakFromVerse3VOrder,
