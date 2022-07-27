@@ -1874,6 +1874,9 @@ namespace RMuseum.Services.Implementation
                     RhythmResult = dbCorrection.RhythmResult,
                     Rhythm2 = dbCorrection.Rhythm2,
                     OriginalRhythm2 = dbCorrection.OriginalRhythm2,
+                    RhymeLetters = dbCorrection.RhymeLetters,
+                    OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
+                    RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
@@ -1882,7 +1885,7 @@ namespace RMuseum.Services.Implementation
                     ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
-                );
+                ); ;
         }
 
         /// <summary>
@@ -1922,6 +1925,9 @@ namespace RMuseum.Services.Implementation
                     Rhythm2 = dbCorrection.Rhythm2,
                     OriginalRhythm2 = dbCorrection.OriginalRhythm2,
                     Rhythm2Result = dbCorrection.Rhythm2Result,
+                    RhymeLetters = dbCorrection.RhymeLetters,
+                    OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
+                    RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
@@ -1983,6 +1989,9 @@ namespace RMuseum.Services.Implementation
                     Rhythm2 = dbCorrection.Rhythm2,
                     OriginalRhythm2 = dbCorrection.OriginalRhythm2,
                     Rhythm2Result = dbCorrection.Rhythm2Result,
+                    RhymeLetters = dbCorrection.RhymeLetters,
+                    OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
+                    RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
@@ -2027,6 +2036,9 @@ namespace RMuseum.Services.Implementation
                     Rhythm2 = dbCorrection.Rhythm2,
                     OriginalRhythm2 = dbCorrection.OriginalRhythm2,
                     Rhythm2Result = dbCorrection.Rhythm2Result,
+                    RhymeLetters = dbCorrection.RhymeLetters,
+                    OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
+                    RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
@@ -2067,6 +2079,9 @@ namespace RMuseum.Services.Implementation
                     Rhythm = dbCorrection.Rhythm,
                     OriginalRhythm = dbCorrection.OriginalRhythm,
                     RhythmResult = dbCorrection.RhythmResult,
+                    RhymeLetters = dbCorrection.RhymeLetters,
+                    OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
+                    RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
