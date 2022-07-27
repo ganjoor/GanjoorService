@@ -778,6 +778,8 @@ namespace RMuseum.Services.Implementation
                     UserId = correction.UserId,
                     Rhythm = correction.Rhythm,
                     RhythmResult = CorrectionReviewResult.NotReviewed,
+                    RhymeLetters = correction.RhymeLetters,
+                    RhymeLettersReviewResult = CorrectionReviewResult.NotReviewed,
                     BreakFromVerse1VOrder = correction.BreakFromVerse1VOrder,
                     BreakFromVerse1VOrderResult = CorrectionReviewResult.NotReviewed,
                     BreakFromVerse2VOrder = correction.BreakFromVerse2VOrder,
