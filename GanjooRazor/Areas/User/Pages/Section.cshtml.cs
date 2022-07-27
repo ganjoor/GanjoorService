@@ -302,5 +302,26 @@ namespace GanjooRazor.Areas.User.Pages
                 }
             }
         }
+
+        public async Task<IActionResult> OnGetComputeRhymeAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/section/analyserhyme/{id}");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    var rhyme = JsonConvert.DeserializeObject<GanjooRhymeAnalysisResult>(await response.Content.ReadAsStringAsync());
+                    return new OkObjectResult(rhyme.Rhyme);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
     }
 }

@@ -98,6 +98,27 @@ else
 
             });
 
+
+        }
+
+        function computeSectionRhyme(sectionId, elementId) {
+            $.ajax({
+                type: "GET",
+                url: '?Handler=ComputeRhyme',
+                data: {
+                    id: sectionId
+                },
+                error: function(e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function(rhyme) {
+                    $(elementId).val(rhyme);
+                    return false;
+                },
+            });
         }
     </script>
     <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
@@ -246,6 +267,7 @@ else
                 {
                     <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.PoemSection.RhymeLetters" size="50" />
                 }
+                <a role="button" onclick="computeSectionRhyme(@Model.PoemSection.Id, '#rhyme-letters')" class="pagebutton">محاسبه</a>
             </td>
         </tr>
 
