@@ -247,6 +247,37 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
+            if(dbCorrection.RhymeLetters != null)
+            {
+                if(moderation.RhymeLettersReviewResult == CorrectionReviewResult.NotReviewed)
+                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات قافیه بررسی نشده است.");
+                dbCorrection.RhymeLettersReviewResult = moderation.RhymeLettersReviewResult;
+                if(dbCorrection.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
+                {
+                    if (mainSection == null)
+                    {
+                        return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "شعر فاقد بخش اصلی برای ذخیرهٔ قافیه است.");
+                    }
+                    if (poemVerses.Where(v => v.VersePosition == VersePosition.Paragraph).Any())
+                    {
+                        return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "امکان انتساب قافیه به متون مخلوط از طریق ویرایشگر کاربر وجود ندارد.");
+                    }
+
+                    dbCorrection.AffectedThePoem = true;
+                    dbCorrection.OriginalRhymeLetters = mainSection.RhymeLetters;
+                    if (moderation.RhymeLetters == "")
+                    {
+                        mainSection.RhymeLetters = null;
+                    }
+                    else
+                    {
+                        mainSection.RhymeLetters = dbCorrection.RhymeLetters;
+                    }
+
+                    mainSection.Modified = true;
+                }
+            }
+
             
 
             if (dbCorrection.Rhythm != null)
@@ -270,6 +301,7 @@ namespace RMuseum.Services.Implementation
                     }
 
                     dbCorrection.AffectedThePoem = true;
+                    dbCorrection.OriginalRhythm = mainSection.GanjoorMetre == null ? null : mainSection.GanjoorMetre.Rhythm;
                     mainSection.OldGanjoorMetreId = mainSection.GanjoorMetreId;
                     if (moderation.Rhythm == "")
                     {
@@ -332,6 +364,7 @@ namespace RMuseum.Services.Implementation
 
                     dbCorrection.AffectedThePoem = true;
                     var secondMetreSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.Second);
+                    dbCorrection.OriginalRhythm2 = secondMetreSection.GanjoorMetre == null ? null : secondMetreSection.GanjoorMetre.Rhythm;
 
                     if (moderation.Rhythm2 == "")
                     {
