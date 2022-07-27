@@ -39,7 +39,7 @@ namespace RMuseum.Services.Implementation
                 dbCorrection.ReviewerUserId = userId;
                 dbCorrection.ReviewDate = DateTime.Now;
                 dbCorrection.ApplicationOrder = await _context.GanjoorPoemSectionCorrections.Where(c => c.Reviewed).AnyAsync() ? 1 + await _context.GanjoorPoemSectionCorrections.Where(c => c.Reviewed).MaxAsync(c => c.ApplicationOrder) : 1;
-                
+
                 dbCorrection.AffectedThePoem = false;
                 dbCorrection.ReviewNote = moderation.ReviewNote;
 
@@ -50,7 +50,6 @@ namespace RMuseum.Services.Implementation
 
                 var sections = await _context.GanjoorPoemSections.Where(p => p.PoemId == editingSectionNotTracked.PoemId).ToListAsync();
 
-
                 if (dbCorrection.Rhythm != null)
                 {
                     if (moderation.RhythmResult == CorrectionReviewResult.NotReviewed)
@@ -58,6 +57,7 @@ namespace RMuseum.Services.Implementation
                     dbCorrection.RhythmResult = moderation.RhythmResult;
                     if (dbCorrection.RhythmResult == CorrectionReviewResult.Approved)
                     {
+                        dbCorrection.OriginalRhythm = editingSectionNotTracked.GanjoorMetre == null ? null : editingSectionNotTracked.GanjoorMetre.Rhythm;
                         dbCorrection.AffectedThePoem = true;
                         if (moderation.Rhythm == "")
                         {
@@ -85,8 +85,40 @@ namespace RMuseum.Services.Implementation
                         {
                             section.GanjoorMetreId = editingSectionNotTracked.GanjoorMetreId;
                             section.Modified = editingSectionNotTracked.Modified;
-                            _context.Update(section);
                         }
+                    }
+                }
+
+                if (dbCorrection.RhymeLetters != null)
+                {
+                    if (moderation.RhymeLettersReviewResult == CorrectionReviewResult.NotReviewed)
+                        return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null, "تغییرات قافیه بررسی نشده است.");
+                    dbCorrection.RhymeLettersReviewResult = moderation.RhymeLettersReviewResult;
+                    if (dbCorrection.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
+                    {
+                        dbCorrection.AffectedThePoem = true;
+                        dbCorrection.OriginalRhymeLetters = editingSectionNotTracked.RhymeLetters;
+                        if (moderation.RhymeLetters == "")
+                        {
+                            editingSectionNotTracked.RhymeLetters = null;
+                        }
+                        else
+                        {
+                            editingSectionNotTracked.RhymeLetters = dbCorrection.RhymeLetters;
+                        }
+
+                        var section = sections.Single(s => s.Id == editingSectionNotTracked.Id);
+                        section.RhymeLetters = editingSectionNotTracked.RhymeLetters;
+                        section.Modified = editingSectionNotTracked.Modified;
+                    }
+
+                }
+
+                foreach (var section in sections)
+                {
+                    if (section.Modified)
+                    {
+                        _context.Update(section);
                     }
                 }
 
@@ -335,7 +367,7 @@ namespace RMuseum.Services.Implementation
 
         private async Task _BreakSection(List<GanjoorPoemSection> sections, GanjoorPoemSection editingSectionNotTracked, int vOrder)
         {
-            
+
             var newSectionIndex = sections.Max(s => s.Index) + 1;
             var newSectionNumber = sections.Max(s => s.Number) + 1;
             int breakingMainSectionIndex = newSectionIndex;
@@ -371,9 +403,9 @@ namespace RMuseum.Services.Implementation
             _context.Add(sectionCopy);
             sectionCopy.Modified = true;
 
-            if(sectionCopy.PoemFormat != GanjoorPoemFormat.Masnavi)
+            if (sectionCopy.PoemFormat != GanjoorPoemFormat.Masnavi)
             {
-                if(_IsMasnavi(sectionCopyVerses))
+                if (_IsMasnavi(sectionCopyVerses))
                 {
                     sectionCopy.PoemFormat = GanjoorPoemFormat.Masnavi;
                     sectionCopyBecameMasnavi = true;
@@ -405,7 +437,7 @@ namespace RMuseum.Services.Implementation
                 var relatedSectionVerses = FilterSectionVerses(relatedSection, verses);
                 if (relatedSectionVerses.Any(v => v.VOrder >= vOrder))
                 {
-                    if(relatedSectionVerses.Any(v => v.VOrder < vOrder))
+                    if (relatedSectionVerses.Any(v => v.VOrder < vOrder))
                     {
                         newSectionIndex++;
                         newSectionNumber++;
@@ -464,7 +496,7 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-            if(sectionCopyBecameMasnavi)
+            if (sectionCopyBecameMasnavi)
             {
                 for (int v = 0; v < sectionCopyVerses.Count; v += 2)
                 {
@@ -502,7 +534,7 @@ namespace RMuseum.Services.Implementation
                     _context.GanjoorPoemSections.Add(verseSection);
                 }
             }
-            if(updatingBecameMasnavi)
+            if (updatingBecameMasnavi)
             {
                 for (int v = 0; v < updatingSectionVerses.Count; v += 2)
                 {
@@ -579,6 +611,9 @@ namespace RMuseum.Services.Implementation
                     Rhythm2 = dbCorrection.Rhythm2,
                     OriginalRhythm2 = dbCorrection.OriginalRhythm2,
                     RhythmResult2 = dbCorrection.RhythmResult2,
+                    RhymeLetters = dbCorrection.RhymeLetters,
+                    OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
+                    RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
                     BreakFromVerse1VOrder = dbCorrection.BreakFromVerse1VOrder,
                     BreakFromVerse1VOrderResult = dbCorrection.BreakFromVerse1VOrderResult,
                     BreakFromVerse2VOrder = dbCorrection.BreakFromVerse2VOrder,
@@ -631,7 +666,7 @@ namespace RMuseum.Services.Implementation
                          dbCorrection.Reviewed == true
                          &&
                          (
-                         dbCorrection.BreakFromVerse1VOrderResult == CorrectionReviewResult.Approved 
+                         dbCorrection.BreakFromVerse1VOrderResult == CorrectionReviewResult.Approved
                          ||
                          dbCorrection.BreakFromVerse2VOrderResult == CorrectionReviewResult.Approved
                          ||
@@ -664,6 +699,9 @@ namespace RMuseum.Services.Implementation
                     Rhythm2 = dbCorrection.Rhythm2,
                     OriginalRhythm2 = dbCorrection.OriginalRhythm2,
                     RhythmResult2 = dbCorrection.RhythmResult2,
+                    RhymeLetters = dbCorrection.RhymeLetters,
+                    OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
+                    RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
                     BreakFromVerse1VOrder = dbCorrection.BreakFromVerse1VOrder,
                     BreakFromVerse1VOrderResult = dbCorrection.BreakFromVerse1VOrderResult,
                     BreakFromVerse2VOrder = dbCorrection.BreakFromVerse2VOrder,
@@ -728,6 +766,9 @@ namespace RMuseum.Services.Implementation
                     Rhythm2 = dbCorrection.Rhythm2,
                     OriginalRhythm2 = dbCorrection.OriginalRhythm2,
                     RhythmResult2 = dbCorrection.RhythmResult2,
+                    RhymeLetters = dbCorrection.RhymeLetters,
+                    OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
+                    RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
                     BreakFromVerse1VOrder = dbCorrection.BreakFromVerse1VOrder,
                     BreakFromVerse1VOrderResult = dbCorrection.BreakFromVerse1VOrderResult,
                     BreakFromVerse2VOrder = dbCorrection.BreakFromVerse2VOrder,
@@ -871,6 +912,9 @@ namespace RMuseum.Services.Implementation
                     Rhythm2 = dbCorrection.Rhythm2,
                     OriginalRhythm2 = dbCorrection.OriginalRhythm2,
                     RhythmResult2 = dbCorrection.RhythmResult2,
+                    RhymeLetters = dbCorrection.RhymeLetters,
+                    OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
+                    RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
                     BreakFromVerse1VOrder = dbCorrection.BreakFromVerse1VOrder,
                     BreakFromVerse1VOrderResult = dbCorrection.BreakFromVerse1VOrderResult,
                     BreakFromVerse2VOrder = dbCorrection.BreakFromVerse2VOrder,
@@ -928,6 +972,9 @@ namespace RMuseum.Services.Implementation
                     Rhythm2 = dbCorrection.Rhythm2,
                     OriginalRhythm2 = dbCorrection.OriginalRhythm2,
                     RhythmResult2 = dbCorrection.RhythmResult2,
+                    RhymeLetters = dbCorrection.RhymeLetters,
+                    OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
+                    RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
                     BreakFromVerse1VOrder = dbCorrection.BreakFromVerse1VOrder,
                     BreakFromVerse1VOrderResult = dbCorrection.BreakFromVerse1VOrderResult,
                     BreakFromVerse2VOrder = dbCorrection.BreakFromVerse2VOrder,
