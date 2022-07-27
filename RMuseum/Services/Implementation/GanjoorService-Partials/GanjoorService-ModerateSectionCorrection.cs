@@ -675,6 +675,8 @@ namespace RMuseum.Services.Implementation
                          dbCorrection.BreakFromVerse4VOrderResult == CorrectionReviewResult.Approved
                          ||
                          dbCorrection.RhythmResult == CorrectionReviewResult.Approved
+                         ||
+                         dbCorrection.RhymeLettersReviewResult == CorrectionReviewResult.Approved
                          )
                          orderby dbCorrection.Id descending
                          select
