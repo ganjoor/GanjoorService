@@ -43,6 +43,12 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
 
+        public GanjoorMetre GanjoorMetre1 { get; set; }
+
+        public GanjoorMetre GanjoorMetre2 { get; set; }
+
+        public string RhymeLetters { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
@@ -85,6 +91,20 @@ namespace GanjooRazor.Areas.Admin.Pages
                             return Page();
                         }
                         PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+                        if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && !string.IsNullOrEmpty(s.RhymeLetters)).Any())
+                        {
+                            RhymeLetters = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && !string.IsNullOrEmpty(s.RhymeLetters)).OrderBy(s => s.VerseType).First().RhymeLetters;
+                        }
+
+                        if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).Any())
+                        {
+                            GanjoorMetre1 = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).OrderBy(s => s.VerseType).First().GanjoorMetre;
+                            if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).Count() > 1)
+                            {
+                                GanjoorMetre2 = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null).OrderBy(s => s.VerseType).ToList()[1].GanjoorMetre;
+                            }
+                        }
 
                         if (PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).Any())
                         {
@@ -153,7 +173,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         }
 
         public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId, 
-            string titleReviewResult, string rhythmReviewResult, string rhythm2ReviewResult,
+            string titleReviewResult, string rhythmReviewResult, string rhythm2ReviewResult, string rhymeReviewResult,
             string titleReviewNote, string[] verseReviewResult,
             string[] versePosReviewResult,
             string[] verseReviewNotes
@@ -207,6 +227,19 @@ namespace GanjooRazor.Areas.Admin.Pages
                         else
                         {
                             Correction.Rhythm2Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), rhythm2ReviewResult);
+                            Correction.ReviewNote = titleReviewNote;
+                        }
+                    }
+
+                    if (Correction.RhymeLetters != null)
+                    {
+                        if (rhymeReviewResult == null)
+                        {
+                            return new BadRequestObjectResult("لطفا تغییر قافیه را بازبینی کنید.");
+                        }
+                        else
+                        {
+                            Correction.RhymeLettersReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), rhymeReviewResult);
                             Correction.ReviewNote = titleReviewNote;
                         }
                     }

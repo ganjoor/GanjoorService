@@ -75,6 +75,19 @@ else
                     </tr>
 
                 }
+                @if (correction.RhymeLetters != null && correction.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">قافیه: @correction.OriginalRhymeLetters</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.RhymeLetters</p>
+                        </td>
+
+                    </tr>
+
+                }
                 @if (correction.VerseOrderText != null)
                     @foreach (var verse in correction.VerseOrderText)
                     {
