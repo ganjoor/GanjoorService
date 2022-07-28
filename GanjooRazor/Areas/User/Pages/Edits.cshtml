@@ -141,6 +141,43 @@ else
                         </tr>
                     }
                 }
+
+                @if (correction.RhymeLetters != null)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">قافیه: @correction.OriginalRhymeLetters</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.RhymeLetters</p>
+                        </td>
+                        <td>
+                            @if (correction.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.RhymeLettersReviewResult)</p>
+                            }
+                            else
+                            @if (correction.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.RhymeLettersReviewResult)</p>
+                            }
+                            else
+                            {
+                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.RhymeLettersReviewResult)</p>
+                            }
+                        </td>
+                    </tr>
+                    @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                    {
+                        <tr>
+                            <td colspan="3">
+                                <p>@correction.ReviewNote</p>
+                            </td>
+                        </tr>
+                    }
+                }
+
+
                 @if (correction.Rhythm2 != null)
                 {
                     <tr>
@@ -239,7 +276,7 @@ else
                         {
                             <tr>
                                 <td>
-                                    @if(verse.OriginalVersePosition != null)
+                                    @if (verse.OriginalVersePosition != null)
                                     {
                                         <p>تبدیل نوع مصرع از @RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((VersePosition)verse.OriginalVersePosition)</p>
                                     }
