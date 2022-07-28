@@ -35,16 +35,10 @@
             }
         }
 
-
-        if (verseOrderText.length == 0) {
-            if ($('#rhythm-old').text() == $('#rhythm-new').val() && $('#rhythm-old2').text() == $('#rhythm-new2').val()) {
-                alert('شما هیچ تغییری در متن نداده‌اید!');
-                return;
-            }
+        var rhyme_letters = $('#rhyme-letters').val();
+        if (rhyme_letters == $('#rhyme-letters-old').text()) {
+            rhyme_letters = null;
         }
-
-        $('#savecorrections').hide();
-        $('#saving').text('در حال ذخیره ...');
 
         var rhythm_new = $('#rhythm-new').val();
         if (rhythm_new == $('#rhythm-old').text()) {
@@ -55,6 +49,18 @@
         if (rhythm_new2 == $('#rhythm-old2').text()) {
             rhythm_new2 = null;
         }
+
+        if (verseOrderText.length == 0) {
+            if (rhythm_new == null && rhythm_new2 == null && rhyme_letters == null) {
+                alert('شما هیچ تغییری در متن نداده‌اید!');
+                return;
+            }
+        }
+
+        $('#savecorrections').hide();
+        $('#saving').text('در حال ذخیره ...');
+
+
 
         var url = '?handler=SendPoemCorrections';
 
@@ -68,6 +74,7 @@
                 versePositions: versePositions,
                 rhythm: rhythm_new,
                 rhythm2: rhythm_new2,
+                rhyme: rhyme_letters,
                 note: $('#note').val()
 
             },
@@ -85,6 +92,26 @@
 
         });
 
+    }
+
+    function computePoemRhyme(poemId, elementId) {
+        $.ajax({
+            type: "GET",
+            url: '?Handler=ComputeRhyme',
+            data: {
+                id: poemId
+            },
+            error: function() {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+            },
+            success: function(rhyme) {
+                $(elementId).val(rhyme);
+                return false;
+            },
+        });
     }
 
     function deletePoemCorrections(id) {
@@ -294,6 +321,17 @@ else
                     </td>
                     <td>
                         <p class="green-color">@Model.MyLastEdit.Rhythm2</p>
+                    </td>
+                </tr>
+            }
+            @if (Model.MyLastEdit.RhymeLetters != null)
+            {
+                <tr>
+                    <td>
+                        <p class="red-color">@Model.RhymeLetters</p>
+                    </td>
+                    <td>
+                        <p class="green-color">@Model.MyLastEdit.RhymeLetters</p>
                     </td>
                 </tr>
             }
@@ -652,7 +690,7 @@ else
         {
             <tr>
                 <td>
-                    <p class="red-color">این مورد شامل بیش از یک قطعه شعر یا دارای پاراگراف نثر است و امکان انتساب وزن به آن وجود ندارد.</p>
+                    <p class="red-color">این مورد شامل بیش از یک قطعه شعر یا دارای پاراگراف نثر است و امکان انتساب وزن به آن یا تعیین حروف قافیهٔ ان وجود ندارد.</p>
                 </td>
             </tr>
         }
@@ -740,6 +778,37 @@ else
                     }
                 </script>
                 <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                حروف قافیهٔ فعلی:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p id="rhyme-letters-old">@Model.RhymeLetters</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                حروف قافیهٔ ویراستهٔ من (بدون فاصله و حرکات):
+            </td>
+        </tr>
+        <tr>
+            <td>
+
+                @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.RhymeLetters))
+                {
+                    <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.MyLastEdit.RhymeLetters" size="50" />
+                }
+                else
+                {
+                    <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.RhymeLetters" size="50" />
+                }
+                <a role="button" onclick="computePoemRhyme(@Model.PageInformation.Id, '#rhyme-letters')" class="pagebutton">محاسبه</a>
+
             </td>
         </tr>
 

@@ -218,7 +218,7 @@ namespace GanjooRazor.Areas.User.Pages
             return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
-        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, VersePosition[] versePositions, string rhythm, string rhythm2, string note)
+        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, VersePosition[] versePositions, string rhythm, string rhythm2, string rhyme, string note)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -264,7 +264,7 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                     }
 
-                    if (title == null && vOrderTexts.Count == 0 && rhythm == null && rhythm2 == null)
+                    if (title == null && vOrderTexts.Count == 0 && rhythm == null && rhythm2 == null && rhyme == null)
                         return new BadRequestObjectResult("شما هیچ تغییری در متن نداده‌اید!");
 
                     if (rhythm == "null")
@@ -288,6 +288,7 @@ namespace GanjooRazor.Areas.User.Pages
                         VerseOrderText = vOrderTexts.ToArray(),
                         Rhythm = rhythm,
                         Rhythm2 = rhythm2,
+                        RhymeLetters = rhyme,
                         Note = note
                     };
 
@@ -385,6 +386,29 @@ namespace GanjooRazor.Areas.User.Pages
                     return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
+        }
+
+        public async Task<IActionResult> OnGetComputeRhymeAsync(int id)
+        {
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/analysisrhyme/{id}");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    var rhyme = JsonConvert.DeserializeObject<GanjooRhymeAnalysisResult>(await response.Content.ReadAsStringAsync());
+                    return new OkObjectResult(rhyme.Rhyme);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+
         }
     }
 }

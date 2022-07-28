@@ -1820,6 +1820,8 @@ namespace RMuseum.Services.Implementation
                 OriginalRhythm = (mainSection == null || mainSection.GanjoorMetre == null) ? null : mainSection.GanjoorMetre.Rhythm,
                 Rhythm2 = correction.Rhythm2,
                 OriginalRhythm2 = (secondSection == null || secondSection.GanjoorMetre == null) ? null : secondSection.GanjoorMetre.Rhythm,
+                RhymeLetters = correction.RhymeLetters,
+                OriginalRhymeLetters = mainSection == null  ? null : mainSection.RhymeLetters,
                 Note = correction.Note,
                 Date = DateTime.Now,
                 Result = CorrectionReviewResult.NotReviewed,
