@@ -170,6 +170,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId,
             string rhythmReviewResult,
+            string rhymeReviewResult,
             int[] breakFromVIndices,
             string titleReviewNote,
             string reviewNote)
@@ -285,6 +286,19 @@ namespace GanjooRazor.Areas.Admin.Pages
                         else
                         {
                             Correction.RhythmResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), rhythmReviewResult);
+                            Correction.ReviewNote = titleReviewNote;
+                        }
+                    }
+
+                    if (Correction.RhymeLetters != null)
+                    {
+                        if (rhymeReviewResult == null)
+                        {
+                            return new BadRequestObjectResult("لطفا تغییر قافیه را بازبینی کنید.");
+                        }
+                        else
+                        {
+                            Correction.RhymeLettersReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), rhymeReviewResult);
                             Correction.ReviewNote = titleReviewNote;
                         }
                     }
