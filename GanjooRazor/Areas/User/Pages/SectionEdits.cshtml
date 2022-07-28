@@ -77,7 +77,7 @@ else
                 {
                     <tr>
                         <td>
-                            <p style="color:red">@correction.OriginalRhythm</p>
+                            <p style="color:red">وزن: @correction.OriginalRhythm</p>
                         </td>
                         <td>
                             <p style="color:green">@correction.Rhythm</p>
@@ -95,6 +95,41 @@ else
                             else
                             {
                                 <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
+                            }
+                        </td>
+                    </tr>
+                    @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                    {
+                        <tr>
+                            <td colspan="3">
+                                <p>@correction.ReviewNote</p>
+                            </td>
+                        </tr>
+                    }
+                }
+
+                @if (correction.RhymeLetters != null)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">قافیه: @correction.OriginalRhymeLetters</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.RhymeLetters</p>
+                        </td>
+                        <td>
+                            @if (correction.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.RhymeLettersReviewResult)</p>
+                            }
+                            else
+                            @if (correction.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.RhymeLettersReviewResult)</p>
+                            }
+                            else
+                            {
+                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.RhymeLettersReviewResult)</p>
                             }
                         </td>
                     </tr>
