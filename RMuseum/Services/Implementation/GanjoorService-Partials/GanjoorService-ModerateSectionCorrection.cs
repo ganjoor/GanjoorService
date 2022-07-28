@@ -106,8 +106,9 @@ namespace RMuseum.Services.Implementation
                         {
                             editingSectionNotTracked.RhymeLetters = dbCorrection.RhymeLetters;
                         }
-
+                        editingSectionNotTracked.Modified = true;
                         var section = sections.Single(s => s.Id == editingSectionNotTracked.Id);
+                        section.OldRhymeLetters = section.RhymeLetters;
                         section.RhymeLetters = editingSectionNotTracked.RhymeLetters;
                         section.Modified = editingSectionNotTracked.Modified;
                     }
