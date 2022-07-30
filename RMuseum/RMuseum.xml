@@ -8090,6 +8090,61 @@
             mark for delete result
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.PoemGeoDateTag">
+            <summary>
+            Geo + date tags for poems
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.PoemId">
+            <summary>
+            Poem Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.Poem">
+            <summary>
+            Poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.CoupletIndex">
+            <summary>
+            couplet index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.LocationId">
+            <summary>
+            location
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.Location">
+            <summary>
+            geo location
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.LunarYear">
+            <summary>
+            Hijri Ghamari year
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.LunarMonth">
+            <summary>
+            Hijri Ghamari month
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.LunarDay">
+            <summary>
+            Hijri Ghamari day
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.LunarDateTotalNumber">
+            <summary>
+            sample: 14440101, would be used in sorting events
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemMusicTrack">
             <summary>
             poem related track
