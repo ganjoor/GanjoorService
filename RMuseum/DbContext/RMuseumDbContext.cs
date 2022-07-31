@@ -496,5 +496,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<UpdatingRelSectsLog> UpdatingRelSectsLogs{ get; set; }
 
+        /// <summary>
+        /// PoemGeoDateTags
+        /// </summary>
+        public DbSet<PoemGeoDateTag> PoemGeoDateTags { get; set; }
+
     }
 }
