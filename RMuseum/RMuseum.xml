@@ -1839,6 +1839,34 @@
             <param name="destId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemGeoDateTagsAsync(System.Int32)">
+            <summary>
+            get poem tags ordered by LunarDateTotalNumber then by Id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.AddPoemGeoDateTagAsync(RMuseum.Models.Ganjoor.PoemGeoDateTag)">
+            <summary>
+            add poem geo tag
+            </summary>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.UpdatePoemGeoDateTagAsync(RMuseum.Models.Ganjoor.PoemGeoDateTag)">
+            <summary>
+            update poem tag
+            </summary>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemGeoDateTagAsync(System.Int32)">
+            <summary>
+            delete poem tag
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12915,6 +12943,34 @@
             </summary>
             <param name="srcMeterId"></param>
             <param name="destMeterId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.AddPoemGeoDateTagAsync(RMuseum.Models.Ganjoor.PoemGeoDateTag)">
+            <summary>
+            add poem geo tag
+            </summary>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.UpdatePoemGeoDateTagAsync(RMuseum.Models.Ganjoor.PoemGeoDateTag)">
+            <summary>
+            update poem tag
+            </summary>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePoemGeoDateTagAsync(System.Int32)">
+            <summary>
+            delete poem tag
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemGeoDateTagsAsync(System.Int32)">
+            <summary>
+            get poem tags ordered by LunarDateTotalNumber then by Id
+            </summary>
+            <param name="poemId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">

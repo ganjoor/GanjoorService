@@ -3228,6 +3228,84 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// get poem tags ordered by LunarDateTotalNumber then by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/{id}/geotag")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PoemGeoDateTag>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPoemGeoDateTagsAsync(int id)
+        {
+            var res =
+                await _ganjoorService.GetPoemGeoDateTagsAsync(id);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// add poem geo tag
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("poem/geotag")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemGeoDateTag))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> AddPoemGeoDateTagAsync([FromBody] PoemGeoDateTag tag)
+        {
+            RServiceResult<PoemGeoDateTag> res =
+                await _ganjoorService.AddPoemGeoDateTagAsync(tag);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// update poem tag
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("poem/geotag")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> UpdatePoemGeoDateTagAsync([FromBody] PoemGeoDateTag tag)
+        {
+            RServiceResult<bool> res =
+                await _ganjoorService.UpdatePoemGeoDateTagAsync(tag);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// delete poem tag
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("poem/geotag/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeletePoemGeoDateTagAsync(int id)
+        {
+            RServiceResult<bool> res =
+                await _ganjoorService.DeletePoemGeoDateTagAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
 
 
 
