@@ -1060,5 +1060,35 @@ namespace RMuseum.Services
         /// <param name="destMeterId"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> TransferMeterAsync(int srcMeterId, int destMeterId);
+
+
+        /// <summary>
+        /// add poem geo tag
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemGeoDateTag>> AddPoemGeoDateTagAsync(PoemGeoDateTag tag);
+
+
+        /// <summary>
+        /// update poem tag
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> UpdatePoemGeoDateTagAsync(PoemGeoDateTag tag);
+
+        /// <summary>
+        /// delete poem tag
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePoemGeoDateTagAsync(int id);
+
+        /// <summary>
+        /// get poem tags ordered by LunarDateTotalNumber then by Id
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemGeoDateTag[]>> GetPoemGeoDateTagsAsync(int poemId);
     }
 }
