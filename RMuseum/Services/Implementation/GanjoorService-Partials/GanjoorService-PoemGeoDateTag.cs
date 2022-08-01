@@ -13,6 +13,25 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+
+        private int? _PrepareLunarDateTotalNumber(PoemGeoDateTag tag)
+        {
+            if (tag.LunarYear == null)
+                return null;
+            int res = (int)tag.LunarYear * 10000;
+            if(tag.LunarMonth != null)
+            {
+                res += (int)tag.LunarMonth * 100;
+
+                if(tag.LunarDay != null)
+                {
+                    res += (int)tag.LunarDay;
+                }
+            }
+            return res;
+
+        }
+
         /// <summary>
         /// add poem geo tag
         /// </summary>
@@ -22,6 +41,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                tag.LunarDateTotalNumber = _PrepareLunarDateTotalNumber(tag);
                 _context.PoemGeoDateTags.Add(tag);
                 await _context.SaveChangesAsync();
                 return new RServiceResult<PoemGeoDateTag>(tag);
@@ -49,7 +69,7 @@ namespace RMuseum.Services.Implementation
                 dbTag.LunarMonth = tag.LunarMonth;
                 dbTag.LunarDay = tag.LunarDay;
                 dbTag.PoemId = tag.PoemId;
-                dbTag.LunarDateTotalNumber = tag.LunarDateTotalNumber;
+                dbTag.LunarDateTotalNumber = _PrepareLunarDateTotalNumber(tag);
                 _context.Update(dbTag);
                 await _context.SaveChangesAsync();
                 return new RServiceResult<bool>(true);
