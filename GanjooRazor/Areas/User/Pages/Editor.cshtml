@@ -266,6 +266,38 @@
 
         });
     }
+
+
+    function newGeoDateTag(poemId) {
+        var url = '?handler=NewGeoDateTag';
+        var locationId = $('#location').val();
+        var year = $('#year').val();
+        var month = $('#month').val()
+        var day = $('#day').val()
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                poemId: poemId,
+                locationId: locationId,
+                year: year,
+                month: month,
+                day: day
+            },
+            success: function() {
+                alert('انجام شد.');
+                location.reload();
+            },
+            error: function(e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+            }
+
+        });
+    }
+
 </script>
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
@@ -1072,7 +1104,7 @@ else
                                     @{
                                         foreach (var location in Model.Locations)
                                         {
-                                            <option value="@location.Name">@location.Name</option>
+                                            <option value="@location.Id">@location.Name</option>
                                         }
                                     }
                                 </select>
@@ -1081,7 +1113,21 @@ else
                                 <input type="text" id="year" />
                             </td>
                             <td>
-                                <input type="text" id="month" />
+                                <select id="month">
+                                    <option value="0">هیچکدام</option>
+                                    <option value="1">محرم</option>
+                                    <option value="2">صفر</option>
+                                    <option value="3">ربیع‌الاول</option>
+                                    <option value="4">ربیع‌الثانی</option>
+                                    <option value="5">جمادی‌الاول</option>
+                                    <option value="6">جمادی‌الثانی</option>
+                                    <option value="7">رجب</option>
+                                    <option value="8">شعبان</option>
+                                    <option value="9">رمضان</option>
+                                    <option value="10">شوال</option>
+                                    <option value="11">ذیقعده</option>
+                                    <option value="12">ذیحجه</option>
+                                </select>
                             </td>
                             <td>
                                 <input type="text" id="day" />
@@ -1089,7 +1135,7 @@ else
                         </tr>
                         <tr>
                             <td colspan="4">
-                                <a role="button" class="pagebutton" onclick="newLocation()">برچسب جدید</a>
+                                <a role="button" class="pagebutton" onclick="newGeoDateTag(@Model.PageInformation.Id)">برچسب جدید</a>
                             </td>
                         </tr>
                     </table>
@@ -1097,7 +1143,7 @@ else
             </tr>
             <tr>
                 <td>
-                     <a href="/Admin/Locations" role="button" class="pagebutton">مکان‌ها</a>
+                    <a href="/Admin/Locations" role="button" class="pagebutton">مکان‌ها</a>
                 </td>
             </tr>
         }
