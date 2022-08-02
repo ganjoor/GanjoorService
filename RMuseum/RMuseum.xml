@@ -1867,6 +1867,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCatPoemGeoDateTagsAsync(System.Int32)">
+            <summary>
+            get a categoty poem tags
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -12973,6 +12980,13 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatPoemGeoDateTagsAsync(System.Int32)">
+            <summary>
+            get a categoty poem tags
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -14707,6 +14721,13 @@
             get poem tags ordered by LunarDateTotalNumber then by Id
             </summary>
             <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatPoemGeoDateTagsAsync(System.Int32)">
+            <summary>
+            get a categoty poem tags
+            </summary>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFillingPoemSectionsCoupletIndex">

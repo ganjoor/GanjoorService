@@ -3249,6 +3249,7 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+
         /// <summary>
         /// add poem geo tag
         /// </summary>
@@ -3304,6 +3305,28 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();
+        }
+
+        /// <summary>
+        /// get a categoty poem tags
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("cat/{id}/geotag")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PoemGeoDateTag>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetCatPoemGeoDateTagsAsync(int id)
+        {
+            var res =
+                await _ganjoorService.GetCatPoemGeoDateTagsAsync(id);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
         }
 
 

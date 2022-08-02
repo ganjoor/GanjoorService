@@ -122,6 +122,28 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// get a categoty poem tags
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PoemGeoDateTag[]>> GetCatPoemGeoDateTagsAsync(int catId)
+        {
+            try
+            {
+                return new RServiceResult<PoemGeoDateTag[]>(
+                    await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Include(t => t.Poem).Where(t => t.Poem.CatId == catId)
+                                .OrderBy(t => t.LunarDateTotalNumber)
+                                .ThenBy(t => t.PoemId)
+                                .ToArrayAsync()
+            );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PoemGeoDateTag[]>(null, exp.ToString());
+            }
+        }
+
 
 
     }

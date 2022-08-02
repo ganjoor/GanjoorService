@@ -1090,5 +1090,12 @@ namespace RMuseum.Services
         /// <param name="poemId"></param>
         /// <returns></returns>
         Task<RServiceResult<PoemGeoDateTag[]>> GetPoemGeoDateTagsAsync(int poemId);
+
+        /// <summary>
+        /// get a categoty poem tags
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemGeoDateTag[]>> GetCatPoemGeoDateTagsAsync(int catId);
     }
 }
