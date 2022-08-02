@@ -110,7 +110,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 return new RServiceResult<PoemGeoDateTag[]>(
-                    await _context.PoemGeoDateTags.AsNoTracking().Where(t => t.PoemId == poemId)
+                    await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Where(t => t.PoemId == poemId)
                                 .OrderBy(t => t.LunarDateTotalNumber)
                                 .ThenBy(t => t.Id)
                                 .ToArrayAsync()
