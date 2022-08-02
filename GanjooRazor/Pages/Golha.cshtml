@@ -14,7 +14,7 @@
     <link href="/css/spotify.css" rel="stylesheet" type="text/css" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/golha.js"></script>
-    <script type="text/javascript">
+    <script>
         $(function () {
             $('#spotify').on('click', function() {
                 window.location.href = "@Html.Raw($"/spotify/?p={Model.PoemId}")";

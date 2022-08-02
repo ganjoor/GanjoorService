@@ -26,15 +26,23 @@
         var stickyEnabled = cookieValue != "false";
     </script>
 
-    @if(Model.CanEdit)
+    @if (Model.CanEdit)
     {
         <script>
-            function redirectToTransferMeter(){
+            function redirectToTransferMeter() {
                 var meter = document.getElementById("v").value;
                 window.location.href = "/Admin/TransferMeter?m=" + encodeURIComponent(meter);
             }
         </script>
     }
+
+    <script>
+        (function(c, l, a, r, i, t, y) {
+            c[a] = c[a] || function() { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "d1fo6nsibh");
+    </script>
 
 </head>
 <body>
@@ -174,7 +182,7 @@
 
                             <input type="submit" class="width-100per margin-top-5px" value="اعمال ورودی‌ها" />
 
-                            @if(Model.CanEdit)
+                            @if (Model.CanEdit)
                             {
                                 <a onclick="redirectToTransferMeter()" class="pagebutton" role="button">انتقال وزن</a>
                             }

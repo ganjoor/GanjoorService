@@ -24,6 +24,7 @@
             color: #fff;
             border: none !important;
         }
+
         .stacktrace .st-type {
             color: #0a8472;
             font-weight: bolder
@@ -56,7 +57,13 @@
         }
     </style>
 
-    
+    <script>
+        (function(c, l, a, r, i, t, y) {
+            c[a] = c[a] || function() { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "d1fo6nsibh");
+    </script>
 </head>
 
 <body>
@@ -101,15 +108,15 @@
 
     <script>
         /*!
- * netStack v1.0.14
- * A simple and easy jQuery plugin for highlighting .NET stack traces
- * License : Apache 2
- * Author : https://elmah.io
- */
-        (function ($) {
+        * netStack v1.0.14
+        * A simple and easy jQuery plugin for highlighting .NET stack traces
+        * License : Apache 2
+        * Author : https://elmah.io
+        */
+        (function($) {
             'use strict';
 
-            $.fn.netStack = function (options) {
+            $.fn.netStack = function(options) {
 
                 function search(nameKey, myArray) {
                     for (var i = 0; i < myArray.length; i++) {
@@ -139,7 +146,7 @@
                             repl: '\r\n   --- End of inner exception stack trace ---'
                         }
                     ]
-                    searchReplaces.forEach(function (item) {
+                    searchReplaces.forEach(function(item) {
                         result = result.replace(item.find, item.repl);
                     });
                     return result;
@@ -166,7 +173,7 @@
                     { name: 'german', at: 'bei', in: 'in', line: 'Zeile' }
                 ];
 
-                return this.each(function () {
+                return this.each(function() {
 
                     // Get the stacktrace, sanitize it, and split it into lines
 
@@ -293,13 +300,13 @@
         }(jQuery));
 
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('.stacktrace').netStack({
                 prettyprint: true
             });
         });
 
-       
+
     </script>
 
 </body>
