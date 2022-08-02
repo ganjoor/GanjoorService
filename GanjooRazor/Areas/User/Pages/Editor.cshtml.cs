@@ -92,6 +92,17 @@ namespace GanjooRazor.Areas.User.Pages
         public bool ShowAdminOps { get; set; }
 
         /// <summary>
+        /// locations
+        /// </summary>
+        public List<GanjoorGeoLocation> Locations { get; set; }
+
+
+        /// <summary>
+        /// poem geo date tags
+        /// </summary>
+        public PoemGeoDateTag[] PoemGeoDateTags { get; set; }
+
+        /// <summary>
         /// get
         /// </summary>
         /// <returns></returns>
@@ -190,6 +201,40 @@ namespace GanjooRazor.Areas.User.Pages
                         if (PageInformation.Poem.Sections.Length == 0)
                     {
                         CanAssignRhythms = false;
+                    }
+
+                    if(ShowAdminOps)
+                    {
+                        var responseLocations = await secureClient.GetAsync($"{APIRoot.Url}/api/locations");
+                        if (!responseLocations.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await responseLocations.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+
+                        Locations = new List<GanjoorGeoLocation>();
+                        Locations.Add
+                            (
+                            new GanjoorGeoLocation()
+                            {
+                                Id = 0,
+                                Latitude = 0,
+                                Longitude = 0,
+                                Name = ""
+                            }
+                            );
+
+                        Locations.AddRange(JsonConvert.DeserializeObject<GanjoorGeoLocation[]>(await responseLocations.Content.ReadAsStringAsync()));
+
+
+                        var tagsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{PageInformation.Id}/geotag");
+                        if (!tagsResponse.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await tagsResponse.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+
+                        PoemGeoDateTags = JsonConvert.DeserializeObject<PoemGeoDateTag[]>(await tagsResponse.Content.ReadAsStringAsync());
                     }
                 }
                 else

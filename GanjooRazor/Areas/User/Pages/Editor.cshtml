@@ -1043,6 +1043,65 @@ else
             <td><p id="saving">&nbsp;</p></td>
         </tr>
 
+        @if (Model.ShowAdminOps)
+        {
+            <tr>
+                <td>برچسب‌های زمان و  مکان</td>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <th>مکان</th>
+                            <th>سال</th>
+                            <th>ماه</th>
+                            <th>روز</th>
+                        </tr>
+                        @foreach (var tag in Model.PoemGeoDateTags)
+                        {
+                            <tr>
+                                <td>@($"{(tag.Location == null ? "" : tag.Location.Name)}")</td>
+                                <td>@tag.LunarYear</td>
+                                <td>@tag.LunarMonth</td>
+                                <td>@tag.LunarDay</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td>
+                                <select id="location">
+                                    @{
+                                        foreach (var location in Model.Locations)
+                                        {
+                                            <option value="@location.Name">@location.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" id="year" />
+                            </td>
+                            <td>
+                                <input type="text" id="month" />
+                            </td>
+                            <td>
+                                <input type="text" id="day" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <a role="button" class="pagebutton" onclick="newLocation()">برچسب جدید</a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                     <a href="/Admin/Locations" role="button" class="pagebutton">مکان‌ها</a>
+                </td>
+            </tr>
+        }
+
         <tr>
             <td class="td-button-container">
                 <a role="button" href="#" class="editor-button background-gray">لغزش به بالای صفحه</a>
