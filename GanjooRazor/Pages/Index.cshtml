@@ -82,7 +82,9 @@
         </style>
         <script src="~/js/leaflet.js"></script>
         <script src="~/js/leaflet-providers.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
         <script>
+            var poemGeoTags = [];
             var map;
             var oms;
             var layerGroup;
@@ -100,7 +102,29 @@
                 }).addTo(map);
 
                 L.tileLayer.provider('Stamen.Watercolor').addTo(map);
+
+                oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
+                layerGroup = L.layerGroup().addTo(map);
+                poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
+
+                var polygon = L.polygon([
+            @foreach (var poemGeoTag in Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray())
+            {
+                @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
+            }
+                                                    ]).addTo(map);
+
+                for (var i = 0; i < poemGeoTags.length; i++) {
+                    var poemGeoTag = poemGeoTags[i];
+                    marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
+                    marker.desc = poemGeoTag.Poem.FullTitle;
+                    marker.url = poemGeoTag.Poem.FullUrl;
+                    marker.addTo(layerGroup);
+                    oms.addMarker(marker);
+                }
             });
+
+
         </script>
     }
 
