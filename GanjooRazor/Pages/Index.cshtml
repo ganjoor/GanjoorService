@@ -68,6 +68,42 @@
         })(window, document, "clarity", "script", "d1fo6nsibh");
     </script>
 
+    @if (Model.IsCatPage && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+    {
+        <link rel="stylesheet" href="/css/leaflet.css" />
+        <style>
+            .leaflet-container {
+                background-color: #c5e8ff;
+            }
+
+            .leaflet-popup-content {
+                font-family: 'Vazir'
+            }
+        </style>
+        <script src="~/js/leaflet.js"></script>
+        <script src="~/js/leaflet-providers.js"></script>
+        <script>
+            var map;
+            var oms;
+            var layerGroup;
+            var myGeoJSONPath = '/json/world.json';
+            var myCustomStyle = {
+                stroke: true,
+                weight: 1,
+                color: '#300',
+            }
+            $.getJSON(myGeoJSONPath, function(data) {
+                var map = L.map('catmap').setView([34, 53.6880], 4);
+                L.geoJson(data, {
+                    clickable: false,
+                    style: myCustomStyle
+                }).addTo(map);
+
+                L.tileLayer.provider('Stamen.Watercolor').addTo(map);
+            });
+        </script>
+    }
+
 </head>
 <body>
     <script src="/js/vaabd.js?version=2"></script>
