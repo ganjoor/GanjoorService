@@ -305,6 +305,12 @@ namespace GanjooRazor.Pages
         /// </summary>
         public bool ShowAllRecitaions { get; set; }
 
+
+        /// <summary>
+        /// category poem geo date tags
+        /// </summary>
+        public PoemGeoDateTag[] CategoryPoemGeoDateTags { get; set; }
+
         /// <summary>
         /// prepare poem except
         /// </summary>
@@ -781,6 +787,18 @@ namespace GanjooRazor.Pages
 
 
             ViewData["BrearCrumpList"] = breadCrumbList.ToString();
+
+            if(IsCatPage)
+            {
+                var tagsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{GanjoorPage.PoetOrCat.Cat.Id}/geotag");
+                if (!tagsResponse.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await tagsResponse.Content.ReadAsStringAsync());
+                    return Page();
+                }
+
+                CategoryPoemGeoDateTags = JsonConvert.DeserializeObject<PoemGeoDateTag[]>(await tagsResponse.Content.ReadAsStringAsync());
+            }
 
 
             return Page();
