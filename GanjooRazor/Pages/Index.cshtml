@@ -94,6 +94,7 @@
                 weight: 1,
                 color: '#300',
             }
+
             $.getJSON(myGeoJSONPath, function(data) {
                 var map = L.map('catmap').setView([34, 53.6880], 4);
                 L.geoJson(data, {
@@ -107,18 +108,30 @@
                 layerGroup = L.layerGroup().addTo(map);
                 poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
 
+                var popup = new L.Popup();
+                oms.addListener('click', function(marker) {
+
+                    var poemDesc = marker.order.toString() + ' - ' + marker.poemGeoTag.Location.Name + '<br /> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
+                    if(marker.poemGeoTag.LunarYear != null){
+                        poemDesc += '<br /> سال ' + marker.poemGeoTag.LunarYear.toString() + ' قمری';
+                    }
+                    popup.setContent(poemDesc);
+                    popup.setLatLng(marker.getLatLng());
+                    map.openPopup(popup);
+                });
+
                 var polygon = L.polygon([
             @foreach (var poemGeoTag in Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray())
             {
                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
             }
-                                                    ]).addTo(map);
+                                                                            ]).addTo(map);
 
                 for (var i = 0; i < poemGeoTags.length; i++) {
                     var poemGeoTag = poemGeoTags[i];
                     marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
-                    marker.desc = poemGeoTag.Poem.FullTitle;
-                    marker.url = poemGeoTag.Poem.FullUrl;
+                    marker.poemGeoTag = poemGeoTag
+                    marker.order = i + 1;
                     marker.addTo(layerGroup);
                     oms.addMarker(marker);
                 }
@@ -227,16 +240,16 @@
     @{
         if (!string.IsNullOrEmpty(Model.PinterestUrl))
         {
-            <script>
-                $(function() {
-                    $("a").attr('href', function(i, h) {
-                        if (h != null) {
-                            return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
-                        }
-                        return h;
-                    });
-                });
-            </script>
+                    <script>
+                        $(function() {
+                            $("a").attr('href', function(i, h) {
+                                if (h != null) {
+                                    return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
+                                }
+                                return h;
+                            });
+                        });
+                    </script>
         }
     }
 
