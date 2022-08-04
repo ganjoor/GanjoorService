@@ -8185,6 +8185,16 @@
             sample: 14440101, would be used in sorting events
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.VerifiedDate">
+            <summary>
+            verified date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.IgnoreInCategory">
+            <summary>
+            ignore in category
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemMusicTrack">
             <summary>
             poem related track

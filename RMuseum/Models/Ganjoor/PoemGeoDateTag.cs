@@ -54,5 +54,15 @@
         /// sample: 14440101, would be used in sorting events
         /// </summary>
         public int? LunarDateTotalNumber { get; set; }
+
+        /// <summary>
+        /// verified date
+        /// </summary>
+        public bool VerifiedDate { get; set; }
+
+        /// <summary>
+        /// ignore in category
+        /// </summary>
+        public bool IgnoreInCategory { get; set; }
     }
 }
