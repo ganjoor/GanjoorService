@@ -69,6 +69,8 @@ namespace RMuseum.Services.Implementation
                 dbTag.LunarMonth = tag.LunarMonth;
                 dbTag.LunarDay = tag.LunarDay;
                 dbTag.PoemId = tag.PoemId;
+                dbTag.VerifiedDate = tag.VerifiedDate;
+                dbTag.IgnoreInCategory = tag.IgnoreInCategory;
                 dbTag.LunarDateTotalNumber = _PrepareLunarDateTotalNumber(tag);
                 _context.Update(dbTag);
                 await _context.SaveChangesAsync();
@@ -107,14 +109,19 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PoemGeoDateTag[]>> GetPoemGeoDateTagsAsync(int poemId)
         {
+           
             try
             {
-                return new RServiceResult<PoemGeoDateTag[]>(
-                    await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Where(t => t.PoemId == poemId)
-                                .OrderBy(t => t.LunarDateTotalNumber)
-                                .ThenBy(t => t.Id)
-                                .ToArrayAsync()
-            );
+                var tags = await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Where(t => t.PoemId == poemId)
+                               .OrderBy(t => t.LunarDateTotalNumber)
+                               .ThenBy(t => t.Id)
+                               .ToArrayAsync();
+                foreach (var tag in tags)
+                {
+                    tag.Poem.HtmlText = "";
+                    tag.Poem.PlainText = "";
+                }
+                return new RServiceResult<PoemGeoDateTag[]>(tags);
             }
             catch (Exception exp)
             {
@@ -131,12 +138,16 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                return new RServiceResult<PoemGeoDateTag[]>(
-                    await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Include(t => t.Poem).Where(t => t.Poem.CatId == catId)
+                var tags = await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Include(t => t.Poem).Where(t => t.Poem.CatId == catId && t.IgnoreInCategory == false)
                                 .OrderBy(t => t.LunarDateTotalNumber)
                                 .ThenBy(t => t.PoemId)
-                                .ToArrayAsync()
-            );
+                                .ToArrayAsync();
+                foreach (var tag in tags)
+                {
+                    tag.Poem.HtmlText = "";
+                    tag.Poem.PlainText = "";
+                }
+                return new RServiceResult<PoemGeoDateTag[]>(tags);
             }
             catch (Exception exp)
             {
