@@ -120,7 +120,7 @@
                     map.openPopup(popup);
                 });
 
-                var polygon = L.polygon([
+                var polygon = L.polyline([
             @foreach (var poemGeoTag in Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray())
             {
                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
