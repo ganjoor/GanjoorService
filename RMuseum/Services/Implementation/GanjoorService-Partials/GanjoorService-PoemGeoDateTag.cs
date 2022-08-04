@@ -116,11 +116,6 @@ namespace RMuseum.Services.Implementation
                                .OrderBy(t => t.LunarDateTotalNumber)
                                .ThenBy(t => t.Id)
                                .ToArrayAsync();
-                foreach (var tag in tags)
-                {
-                    tag.Poem.HtmlText = "";
-                    tag.Poem.PlainText = "";
-                }
                 return new RServiceResult<PoemGeoDateTag[]>(tags);
             }
             catch (Exception exp)
