@@ -1702,6 +1702,12 @@ namespace RMuseum.Services.Implementation
                     poemSections = poemSectionsRes.Result;
                 }
 
+                var tagsRes = await GetPoemGeoDateTagsAsync(id);
+                if (!string.IsNullOrEmpty(tagsRes.ExceptionString))
+                    return new RServiceResult<GanjoorPoemCompleteViewModel>(null, tagsRes.ExceptionString);
+                PoemGeoDateTag[] geoDateTags = tagsRes.Result;
+
+
 
                 poemViewModel = new GanjoorPoemCompleteViewModel()
                 {
@@ -1712,7 +1718,7 @@ namespace RMuseum.Services.Implementation
                     UrlSlug = poem.UrlSlug,
                     HtmlText = poem.HtmlText,
                     PlainText = poem.PlainText,
-                    
+
                     SourceName = poem.SourceName,
                     SourceUrlSlug = poem.SourceUrlSlug,
                     OldTag = poem.OldTag,
@@ -1728,7 +1734,8 @@ namespace RMuseum.Services.Implementation
                     Verses = verses,
                     Songs = tracks,
                     Comments = poemComments,
-                    Sections = poemSections
+                    Sections = poemSections,
+                    GeoDateTags = geoDateTags
                 };
 
                 if (AggressiveCacheEnabled)

@@ -121,5 +121,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// poem sections
         /// </summary>
         public GanjoorPoemSection[] Sections { get; set; }
+
+        /// <summary>
+        /// geo/date tags
+        /// </summary>
+        public PoemGeoDateTag[] GeoDateTags { get; set; }
     }
 }
