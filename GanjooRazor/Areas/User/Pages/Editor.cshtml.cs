@@ -491,5 +491,27 @@ namespace GanjooRazor.Areas.User.Pages
                 }
             }
         }
+
+        public async Task<IActionResult> OnDeleteGeoDateTagAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.DeleteAsync(
+                        $"{APIRoot.Url}/api/ganjoor/poem/geotag/{id}"
+                        );
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkResult();
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
     }
 }

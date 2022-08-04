@@ -285,6 +285,30 @@
                 day: day
             },
             success: function() {
+                location.reload();
+            },
+            error: function(e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+            }
+
+        });
+    }
+
+    function deletTag(tagId)  {
+        if  (!confirm('آیا از حذف این برچسب اطمینان دارید؟'))  {
+            return;
+        }
+
+        $.ajax({
+            type: "DELETE",
+            url: '?handler=GeoDateTag',
+            data: {
+                id: tagId,
+            },
+            success: function() {
                 alert('انجام شد.');
                 location.reload();
             },
@@ -1088,14 +1112,18 @@ else
                             <th>سال</th>
                             <th>ماه</th>
                             <th>روز</th>
+                            <th>#</th>
                         </tr>
                         @foreach (var tag in Model.PoemGeoDateTags)
                         {
-                            <tr>
+                            <tr id="tag-@tag.Id">
                                 <td>@($"{(tag.Location == null ? "" : tag.Location.Name)}")</td>
                                 <td>@tag.LunarYear</td>
                                 <td>@tag.LunarMonth</td>
                                 <td>@tag.LunarDay</td>
+                                <td>
+                                    <a role="button" onclick="deletTag(@tag.Id)" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
+                                </td>
                             </tr>
                         }
                         <tr>
