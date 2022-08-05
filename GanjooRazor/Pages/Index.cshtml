@@ -12,11 +12,11 @@
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
-    <link href="/css/p8.css?version=48" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=49" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
-    <script src="/js/bk.js?version=33"></script>
+    <script src="/js/bk.js?version=34"></script>
     <script>
         var cookieValue = getCookie("playerScrollLock");
         var playerScrollLock = cookieValue === "true";
@@ -111,9 +111,9 @@
                 var popup = new L.Popup();
                 oms.addListener('click', function(marker) {
 
-                    var poemDesc = marker.order.toString() + ' - ' + marker.poemGeoTag.Location.Name + '<br /> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
+                    var poemDesc = marker.order + ' - ' + marker.poemGeoTag.Location.Name + '<br /> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
                     if(marker.poemGeoTag.LunarYear != null){
-                        poemDesc += '<br /> سال ' + marker.poemGeoTag.LunarYear.toString() + ' قمری';
+                        poemDesc += '<br /> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
                     }
                     popup.setContent(poemDesc);
                     popup.setLatLng(marker.getLatLng());
@@ -131,7 +131,7 @@
                     var poemGeoTag = poemGeoTags[i];
                     marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
                     marker.poemGeoTag = poemGeoTag
-                    marker.order = i + 1;
+                    marker.order = persianizeNumerals((i + 1).toString());
                     marker.addTo(layerGroup);
                     oms.addMarker(marker);
                 }
