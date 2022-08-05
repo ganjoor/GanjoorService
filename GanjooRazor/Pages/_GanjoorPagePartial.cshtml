@@ -203,11 +203,14 @@
                     }
 
 
-                    @if (Model.IsCatPage && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+                    @if (
+                        (Model.IsCatPage && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+                        ||
+                        (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
+                        )
                     {
                         <div id="catmap" class="inline-map"></div>
                     }
-
 
                 </article>
 

@@ -141,6 +141,70 @@
         </script>
     }
 
+    @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
+    {
+         <link rel="stylesheet" href="/css/leaflet.css" />
+        <style>
+            .leaflet-container {
+                background-color: #c5e8ff;
+            }
+
+            .leaflet-popup-content {
+                font-family: 'Vazir'
+            }
+        </style>
+        <script src="~/js/leaflet.js"></script>
+        <script src="~/js/leaflet-providers.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
+        <script>
+            var poemGeoTags = [];
+            var map;
+            var oms;
+            var layerGroup;
+            var myGeoJSONPath = '/json/world.json';
+            var myCustomStyle = {
+                stroke: true,
+                weight: 1,
+                color: '#300',
+            }
+
+            $.getJSON(myGeoJSONPath, function(data) {
+                poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.GanjoorPage.Poem.GeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
+                var map = L.map('catmap').setView([poemGeoTags[0].Location.Latitude, poemGeoTags[0].Location.Longitude], 4);
+                L.geoJson(data, {
+                    clickable: false,
+                    style: myCustomStyle
+                }).addTo(map);
+
+                L.tileLayer.provider('Stamen.Watercolor').addTo(map);
+
+                oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
+                layerGroup = L.layerGroup().addTo(map);
+                
+
+                var popup = new L.Popup();
+                oms.addListener('click', function(marker) {
+
+                    popup.setContent(marker.poemGeoTag.Location.Name);
+                    popup.setLatLng(marker.getLatLng());
+                    map.openPopup(popup);
+                });
+
+
+                for (var i = 0; i < poemGeoTags.length; i++) {
+                    var poemGeoTag = poemGeoTags[i];
+                    marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
+                    marker.poemGeoTag = poemGeoTag
+                    marker.order = persianizeNumerals((i + 1).toString());
+                    marker.addTo(layerGroup);
+                    oms.addMarker(marker);
+                }
+            });
+
+
+        </script>
+    }
+
 </head>
 <body>
     <script src="/js/vaabd.js?version=2"></script>
