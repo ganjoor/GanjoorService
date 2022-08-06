@@ -297,8 +297,8 @@
         });
     }
 
-    function deletTag(tagId)  {
-        if  (!confirm('آیا از حذف این برچسب اطمینان دارید؟'))  {
+    function deletTag(tagId) {
+        if (!confirm('آیا از حذف این برچسب اطمینان دارید؟')) {
             return;
         }
 
@@ -1112,6 +1112,8 @@ else
                             <th>سال</th>
                             <th>ماه</th>
                             <th>روز</th>
+                            <th>تاریخ مستند</th>
+                            <th>مختص شعر</th>
                             <th>#</th>
                         </tr>
                         @foreach (var tag in Model.PoemGeoDateTags)
@@ -1119,8 +1121,83 @@ else
                             <tr id="tag-@tag.Id">
                                 <td>@($"{(tag.Location == null ? "" : tag.Location.Name)}")</td>
                                 <td>@tag.LunarYear</td>
-                                <td>@tag.LunarMonth</td>
+                                <td>
+                                    @{
+                                        switch (tag.LunarMonth)
+                                        {
+                                            case 1:
+                                                @("محرم")
+                                                ;
+                                                break;
+                                            case 2:
+                                                @("صفر")
+                                                ;
+                                                break;
+                                            case 3:
+                                                @("ربیع‌الاول")
+                                                ;
+                                                break;
+                                            case 4:
+                                                @("ربیع‌الثانی")
+                                                ;
+                                                break;
+                                            case 5:
+                                                @("جمادی‌الاول")
+                                                ;
+                                                break;
+                                            case 6:
+                                                @("جمادی‌الثانی")
+                                                ;
+                                                break;
+                                            case 7:
+                                                @("رجب")
+                                                ;
+                                                break;
+                                            case 8:
+                                                @("شعبان")
+                                                ;
+                                                break;
+                                            case 9:
+                                                @("رمضان")
+                                                ;
+                                                break;
+                                            case 10:
+                                                @("شوال")
+                                                ;
+                                                break;
+                                            case 11:
+                                                @("ذیقعده")
+                                                ;
+                                                break;
+                                            case 12:
+                                                @("ذیحجه")
+                                                ;
+                                                break;
+                                        }
+                                    }
+                                </td>
                                 <td>@tag.LunarDay</td>
+                                <td>
+                                    @if (tag.VerifiedDate)
+                                    {
+                                        <input type="checkbox" disabled checked />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" disabled />
+                                    }
+
+                                </td>
+                                <td>
+                                    @if (tag.IgnoreInCategory)
+                                    {
+                                        <input type="checkbox" disabled checked />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" disabled />
+                                    }
+                                </td>
                                 <td>
                                     <a role="button" onclick="deletTag(@tag.Id)" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
                                 </td>
