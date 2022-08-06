@@ -12,7 +12,7 @@
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
-    <link href="/css/p8.css?version=49" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=50" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
@@ -83,62 +83,6 @@
         <script src="~/js/leaflet.js"></script>
         <script src="~/js/leaflet-providers.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
-        <script>
-            var poemGeoTags = [];
-            var map;
-            var oms;
-            var layerGroup;
-            var myGeoJSONPath = '/json/world.json';
-            var myCustomStyle = {
-                stroke: true,
-                weight: 1,
-                color: '#300',
-            }
-
-            $.getJSON(myGeoJSONPath, function(data) {
-                var map = L.map('catmap').setView([34, 53.6880], 4);
-                L.geoJson(data, {
-                    clickable: false,
-                    style: myCustomStyle
-                }).addTo(map);
-
-                L.tileLayer.provider('Stamen.Watercolor').addTo(map);
-
-                oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
-                layerGroup = L.layerGroup().addTo(map);
-                poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
-
-                var popup = new L.Popup();
-                oms.addListener('click', function(marker) {
-
-                    var poemDesc = marker.order + ' - ' + marker.poemGeoTag.Location.Name + '<br /> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
-                    if(marker.poemGeoTag.LunarYear != null){
-                        poemDesc += '<br /> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
-                    }
-                    popup.setContent(poemDesc);
-                    popup.setLatLng(marker.getLatLng());
-                    map.openPopup(popup);
-                });
-
-                var polygon = L.polyline([
-            @foreach (var poemGeoTag in Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray())
-            {
-                @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
-            }
-                                                                            ]).addTo(map);
-
-                for (var i = 0; i < poemGeoTags.length; i++) {
-                    var poemGeoTag = poemGeoTags[i];
-                    marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
-                    marker.poemGeoTag = poemGeoTag
-                    marker.order = persianizeNumerals((i + 1).toString());
-                    marker.addTo(layerGroup);
-                    oms.addMarker(marker);
-                }
-            });
-
-
-        </script>
     }
 
     @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
@@ -156,53 +100,6 @@
         <script src="~/js/leaflet.js"></script>
         <script src="~/js/leaflet-providers.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
-        <script>
-            var poemGeoTags = [];
-            var map;
-            var oms;
-            var layerGroup;
-            var myGeoJSONPath = '/json/world.json';
-            var myCustomStyle = {
-                stroke: true,
-                weight: 1,
-                color: '#300',
-            }
-
-            $.getJSON(myGeoJSONPath, function(data) {
-                poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.GanjoorPage.Poem.GeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
-                var map = L.map('catmap').setView([poemGeoTags[0].Location.Latitude, poemGeoTags[0].Location.Longitude], 4);
-                L.geoJson(data, {
-                    clickable: false,
-                    style: myCustomStyle
-                }).addTo(map);
-
-                L.tileLayer.provider('Stamen.Watercolor').addTo(map);
-
-                oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
-                layerGroup = L.layerGroup().addTo(map);
-                
-
-                var popup = new L.Popup();
-                oms.addListener('click', function(marker) {
-
-                    popup.setContent(marker.poemGeoTag.Location.Name);
-                    popup.setLatLng(marker.getLatLng());
-                    map.openPopup(popup);
-                });
-
-
-                for (var i = 0; i < poemGeoTags.length; i++) {
-                    var poemGeoTag = poemGeoTags[i];
-                    marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
-                    marker.poemGeoTag = poemGeoTag
-                    marker.order = persianizeNumerals((i + 1).toString());
-                    marker.addTo(layerGroup);
-                    oms.addMarker(marker);
-                }
-            });
-
-
-        </script>
     }
 
 </head>

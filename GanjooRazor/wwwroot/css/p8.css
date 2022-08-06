@@ -1853,7 +1853,7 @@ fieldset {
     transform: scale(-1, 1);
 }
 
-.inline-map {
+#catmap, .inline-map {
     margin-top: 50px;
     height: 300px;
 }
