@@ -10,9 +10,18 @@
 <h1>@ViewData["Title"]</h1>
 <script>
     function checkAllNotCorrect() {
+        if (!confirm('همه نادرست؟')) return;
         var allNotCorrect = document.getElementsByClassName("radio-notcorrect");
         for (var i = 0; i < allNotCorrect.length; i++) {
             allNotCorrect[i].checked = true;
+        }
+    }
+
+    function checkAllCorrect() {
+         if (!confirm('همه درست؟')) return;
+        var allCorrect = document.getElementsByClassName("radio-approved");
+        for (var i = 0; i < allCorrect.length; i++) {
+            allCorrect[i].checked = true;
         }
     }
 
@@ -571,6 +580,12 @@ else
                 </td>
             </tr>
         }
+
+        <tr>
+            <td colspan=2>
+                <a role="button" onclick="checkAllCorrect()" class="pagebutton">همه درست</a>
+            </td>
+        </tr>
 
 
 
