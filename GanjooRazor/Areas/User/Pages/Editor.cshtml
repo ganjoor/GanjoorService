@@ -15,6 +15,14 @@
 </script>
 <script>
 
+    function resetVersePositions(verseCount) {
+         for (var i = 1; i <= verseCount; i++) {
+            var newVersePosition = 'versepostion-' + i.toString();
+             document.getElementById(newVersePosition).value = i % 2 == 1 ? 'Right' : 'Left';
+        }
+        alert('انجام شد.');
+    }
+
 
     function savePoemCorrections(id, verseCount) {
         var verseOrderText = [];
@@ -1023,6 +1031,10 @@ else
             </td>
         </tr>
 
+        <tr>
+                <td><a role="button" onclick="resetVersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش پیش‌فرض نوع مصرع‌ها</a></td>
+            </tr>
+
 
 
 
@@ -1101,6 +1113,8 @@ else
 
         @if (Model.ShowAdminOps)
         {
+            
+
             <tr>
                 <td>برچسب‌های زمان و  مکان</td>
             </tr>
@@ -1126,51 +1140,51 @@ else
                                         switch (tag.LunarMonth)
                                         {
                                             case 1:
-                                                @("محرم")
+                                                            @("محرم")
                                                 ;
                                                 break;
                                             case 2:
-                                                @("صفر")
+                                                            @("صفر")
                                                 ;
                                                 break;
                                             case 3:
-                                                @("ربیع‌الاول")
+                                                            @("ربیع‌الاول")
                                                 ;
                                                 break;
                                             case 4:
-                                                @("ربیع‌الثانی")
+                                                            @("ربیع‌الثانی")
                                                 ;
                                                 break;
                                             case 5:
-                                                @("جمادی‌الاول")
+                                                            @("جمادی‌الاول")
                                                 ;
                                                 break;
                                             case 6:
-                                                @("جمادی‌الثانی")
+                                                            @("جمادی‌الثانی")
                                                 ;
                                                 break;
                                             case 7:
-                                                @("رجب")
+                                                            @("رجب")
                                                 ;
                                                 break;
                                             case 8:
-                                                @("شعبان")
+                                                            @("شعبان")
                                                 ;
                                                 break;
                                             case 9:
-                                                @("رمضان")
+                                                            @("رمضان")
                                                 ;
                                                 break;
                                             case 10:
-                                                @("شوال")
+                                                            @("شوال")
                                                 ;
                                                 break;
                                             case 11:
-                                                @("ذیقعده")
+                                                            @("ذیقعده")
                                                 ;
                                                 break;
                                             case 12:
-                                                @("ذیحجه")
+                                                            @("ذیحجه")
                                                 ;
                                                 break;
                                         }
@@ -1209,7 +1223,7 @@ else
                                     @{
                                         foreach (var location in Model.Locations)
                                         {
-                                            <option value="@location.Id">@location.Name</option>
+                                                        <option value="@location.Id">@location.Name</option>
                                         }
                                     }
                                 </select>
