@@ -3114,6 +3114,56 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<string[]>(poems.Select(p => p.Title).ToArray());
         }
 
+        /// <summary>
+        /// re sulg cat poems
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> BatchReSlugCatPoems(int catId)
+        {
+            try
+            {
+                var poems = await _context.GanjoorPoems.Where(p => p.CatId == catId).OrderBy(p => p.Id).ToListAsync();
+                if (poems.Count == 0)
+                    return new RServiceResult<bool>(true);
+
+                var catPage = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleOrDefaultAsync();
+                if (catPage == null)
+                {
+                    var catItSelf = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
+                    catPage = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == catItSelf.PoetId).SingleAsync();
+                }
+
+                for (int i = 0; i < poems.Count; i++)
+                {
+                    if (poems[i].UrlSlug.IndexOf("sh") != 0)
+                    {
+                        return new RServiceResult<bool>(false, $"{poems[i].FullUrl}");
+                    }
+                    poems[i].UrlSlug = $"sh{i + 1}";
+                    poems[i].FullUrl = $"{catPage.FullUrl}/{poems[i].UrlSlug}";
+                }
+
+                foreach (var poem in poems)
+                {
+                    var page = await _context.GanjoorPages.Where(p => p.Id == poem.Id).SingleAsync();
+                    page.UrlSlug = poem.UrlSlug;
+                    page.FullUrl = poem.FullUrl;
+                    _context.GanjoorPages.Update(page);
+                }
+
+                _context.GanjoorPoems.UpdateRange(poems);
+
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// find poem rhyme

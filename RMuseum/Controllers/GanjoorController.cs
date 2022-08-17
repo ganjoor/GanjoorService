@@ -483,6 +483,26 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// batch resulg category poems
+        /// </summary>
+        /// <param name="idl"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("cat/reslugpoems/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> BatchReSlugCatPoems(int id)
+        {
+
+            RServiceResult<bool> res =
+                await _ganjoorService.BatchReSlugCatPoems(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
 
         [HttpPut]
         [Route("cat/startassigningrhymes/{id}/{retag}")]

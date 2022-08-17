@@ -990,6 +990,13 @@
             <param name="model"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.BatchReSlugCatPoems(System.Int32)">
+            <summary>
+            batch resulg category poems
+            </summary>
+            <param name="idl"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SetCategoryLanguageTag(System.Int32,System.String)">
             <summary>
             set category poems language tag
@@ -12542,6 +12549,13 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.BatchReSlugCatPoems(System.Int32)">
+            <summary>
+            re sulg cat poems
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.FindPoemMainSectionRhyme(System.Int32)">
             <summary>
             find poem rhyme
@@ -15475,6 +15489,13 @@
             <param name="catId"></param>
             <param name="model"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BatchReSlugCatPoems(System.Int32)">
+            <summary>
+            re sulg cat poems
+            </summary>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindPoemMainSectionRhyme(System.Int32)">
