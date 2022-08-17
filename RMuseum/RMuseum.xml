@@ -994,7 +994,7 @@
             <summary>
             batch resulg category poems
             </summary>
-            <param name="idl"></param>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SetCategoryLanguageTag(System.Int32,System.String)">

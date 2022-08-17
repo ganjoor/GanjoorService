@@ -486,7 +486,7 @@ namespace RMuseum.Controllers
         /// <summary>
         /// batch resulg category poems
         /// </summary>
-        /// <param name="idl"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [HttpPut]
         [Route("cat/reslugpoems/{id}")]

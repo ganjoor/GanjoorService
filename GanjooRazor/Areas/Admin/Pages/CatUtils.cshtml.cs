@@ -422,5 +422,25 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new OkObjectResult(false);
         }
 
+        public async Task<IActionResult> OnPostBatchReSlugCatPoemsAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/reslugpoems/{id}", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return new BadRequestObjectResult(res);
+                    }
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
+        
+
     }
 }

@@ -10,6 +10,31 @@
 <h1>@ViewData["Title"]</h1>
 
 <script>
+     function reslugCat(catId) {
+        if (!confirm('آیا از تولید مجدد نشانی‌های شعرهای بخش اطمینان دارید؟'))
+            return;
+
+        var url = '?handler=BatchReSlugCatPoems';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                id: catId
+            },
+           error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+            success: function () {
+                alert('انجام شد!')
+            },
+
+        });
+    }
+
     function startTocGenerationForSubCats(catId) {
         if (!confirm('آیا از شروع کار تولید مجدد فهرست همهٔ زیربخشها اطمینان دارید؟'))
             return;
@@ -580,6 +605,9 @@
 
 
 <p><a role="button" onclick="regenRelatedSections(@Model.Cat.Cat.Id)" class="actionlink" title="بازسازی قطعات مرتبط">بازسازی قطعات مرتبط</a></p>
+
+
+<p><a role="button" onclick="reslugCat(@Model.Cat.Cat.Id)" class="actionlink">تولید مجدد نشانی‌های اشعار بخش</a></p>
 
 
 
