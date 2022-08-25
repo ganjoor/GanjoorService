@@ -186,8 +186,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var correctionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/correction/{correctionId}");
                     if (!correctionResponse.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await correctionResponse.Content.ReadAsStringAsync());
-                        return Page();
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await correctionResponse.Content.ReadAsStringAsync()));
                     }
 
                     Correction = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync());
@@ -261,7 +260,15 @@ namespace GanjooRazor.Areas.Admin.Pages
                                 Correction.VerseOrderText[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
                                 if (Correction.VerseOrderText[i].VersePosition != null)
                                 {
-                                    Correction.VerseOrderText[i].VersePositionResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), versePosReviewResult[i]);
+                                    if (versePosReviewResult[i] == null)
+                                    {
+                                        return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
+                                    }
+                                    else
+                                    {
+                                        Correction.VerseOrderText[i].VersePositionResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), versePosReviewResult[i]);
+                                    }
+                                    
                                 }
                             }
                             Correction.VerseOrderText[i].ReviewNote = verseReviewNotes[i];
