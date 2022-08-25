@@ -260,6 +260,18 @@ namespace GanjooRazor.Areas.Admin.Pages
                                 Correction.VerseOrderText[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
                                 if (Correction.VerseOrderText[i].VersePosition != null)
                                 {
+                                    if( i >= versePosReviewResult.Length)
+                                    {
+                                        if (Correction.VerseOrderText[i].Result != CorrectionReviewResult.Approved)
+                                        {
+                                            Correction.VerseOrderText[i].VersePositionResult = CorrectionReviewResult.NotSuggectedByUser;
+                                        }
+                                        else
+                                        {
+                                            Correction.VerseOrderText[i].VersePositionResult = CorrectionReviewResult.Approved;
+                                        }
+                                    }
+                                    else
                                     if (versePosReviewResult[i] == null)
                                     {
                                         return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");

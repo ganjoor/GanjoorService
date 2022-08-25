@@ -18,10 +18,18 @@
     }
 
     function checkAllCorrect() {
-         if (!confirm('همه درست؟')) return;
+        if (!confirm('همه درست؟')) return;
         var allCorrect = document.getElementsByClassName("radio-approved");
         for (var i = 0; i < allCorrect.length; i++) {
             allCorrect[i].checked = true;
+        }
+    }
+
+    function rejectVersePositionChanges() {
+         if (!confirm('تغییر نوع مصرع‌ها اشکال نرم‌افزاری است؟')) return;
+        var allNotCorrect = document.getElementsByClassName("radio-bug");
+        for (var i = 0; i < allNotCorrect.length; i++) {
+            allNotCorrect[i].checked = true;
         }
     }
 
@@ -173,6 +181,13 @@ else
         <tr>
             <td colspan=2>
                 <a role="button" onclick="checkAllNotCorrect()" class="pagebutton">درست نیست</a>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td colspan=2>
+                <a role="button" onclick="rejectVersePositionChanges()" class="pagebutton">تغییر مصرع‌ها اشکال نرم‌افزاری است</a>
             </td>
         </tr>
 
@@ -517,6 +532,8 @@ else
                                 <label for="verse-position@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
                                 <input type="radio" id="verse-position@(verse.VORder)_review_result_Rejected" name="verse-position@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
                                 <label for="verse-position@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                                <input type="radio" id="verse-position@(verse.VORder)_review_result_NotSuggectedByUser" name="verse-position@(verse.VORder)_review_result" class="radio-bug" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotSuggectedByUser">
+                                <label for="verse-position@(verse.VORder)_review_result_NotSuggectedByUser">اشکال نرم‌افزار گنجور</label><br>
                             </td>
                         </tr>
                     }

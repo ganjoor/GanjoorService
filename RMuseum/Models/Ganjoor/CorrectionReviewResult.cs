@@ -11,6 +11,7 @@
         RejectedBecauseWrong = 3,
         RejectedBecauseVariant = 4,
         RejectedBecauseUnnecessaryChange = 5,
-        Rejected = 6
+        Rejected = 6,
+        NotSuggectedByUser = 7,
     }
 }
