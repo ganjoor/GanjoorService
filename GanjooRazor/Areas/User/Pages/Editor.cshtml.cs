@@ -458,7 +458,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         }
 
-        public async Task<IActionResult> OnPostNewGeoDateTagAsync(int poemId, int locationId, string year, int month, string day)
+        public async Task<IActionResult> OnPostNewGeoDateTagAsync(int poemId, int locationId, string year, int month, string day, bool verifiedDate, bool ignoreInCategory)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -473,7 +473,9 @@ namespace GanjooRazor.Areas.User.Pages
                                  LocationId = locationId == 0 ? null : locationId,
                                  LunarYear = string.IsNullOrEmpty(year) ? null : int.Parse(year),
                                  LunarMonth = month == 0 ? null : month,
-                                 LunarDay = string.IsNullOrEmpty(day) ? null : int.Parse(day)
+                                 LunarDay = string.IsNullOrEmpty(day) ? null : int.Parse(day),
+                                 VerifiedDate = verifiedDate,
+                                 IgnoreInCategory = ignoreInCategory,
                              }
                              ),
                         Encoding.UTF8,

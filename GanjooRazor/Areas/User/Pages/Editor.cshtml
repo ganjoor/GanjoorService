@@ -290,7 +290,10 @@
                 locationId: locationId,
                 year: year,
                 month: month,
-                day: day
+                day: day,
+                verifiedDate: $("#verifiedDate").is(':checked'),
+                ignoreInCategory: $("#ignoreInCategory").is(':checked'),
+
             },
             success: function() {
                 location.reload();
@@ -1251,9 +1254,18 @@ else
                             <td>
                                 <input type="text" id="day" />
                             </td>
+                            <td>
+                                   <input type="checkbox" id="verifiedDate" />
+
+                                </td>
+                                <td>
+                                   <input type="checkbox" id="ignoreInCategory" />
+                                </td>
+                                <td>
+                                </td>
                         </tr>
                         <tr>
-                            <td colspan="4">
+                            <td colspan="7">
                                 <a role="button" class="pagebutton" onclick="newGeoDateTag(@Model.PageInformation.Id)">برچسب جدید</a>
                             </td>
                         </tr>
