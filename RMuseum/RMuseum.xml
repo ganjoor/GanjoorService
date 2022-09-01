@@ -1074,6 +1074,14 @@
             <param name="page"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.AdminEditPoem(System.Int32,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
+            <summary>
+            modify poem => only these fields: NoIndex, RedirectFromFullUrl, MixedModeOrder
+            </summary>
+            <param name="id"></param>
+            <param name="page"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.CacheCleanForPageById(System.Int32)">
             <summary>
             clean cache by id
@@ -12381,6 +12389,15 @@
             <param name="pageData"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.UpdatePoemAsync(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
+            <summary>
+            modify poem => only these fields: NoIndex, RedirectFromFullUrl, MixedModeOrder
+            </summary>
+            <param name="id"></param>
+            <param name="editingUserId"></param>
+            <param name="pageData"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.UpdatePoetAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel,System.Guid)">
             <summary>
             modify poet
@@ -15387,6 +15404,15 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePageAsync(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
             <summary>
             modify page
+            </summary>
+            <param name="id"></param>
+            <param name="editingUserId"></param>
+            <param name="pageData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdatePoemAsync(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
+            <summary>
+            modify poem => only these fields: NoIndex, RedirectFromFullUrl, MixedModeOrder
             </summary>
             <param name="id"></param>
             <param name="editingUserId"></param>

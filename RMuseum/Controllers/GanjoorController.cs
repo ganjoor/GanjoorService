@@ -738,7 +738,33 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
-       
+        /// <summary>
+        /// modify poem => only these fields: NoIndex, RedirectFromFullUrl, MixedModeOrder
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("poem/adminedit/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> AdminEditPoem(int id, [FromBody] GanjoorModifyPageViewModel page)
+        {
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<GanjoorPageCompleteViewModel> res =
+                await _ganjoorService.UpdatePoemAsync(id, userId, page);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+
         /// <summary>
         /// clean cache by id
         /// </summary>

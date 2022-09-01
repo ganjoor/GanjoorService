@@ -2496,6 +2496,18 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// modify poem => only these fields: NoIndex, RedirectFromFullUrl, MixedModeOrder
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="editingUserId"></param>
+        /// <param name="pageData"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> UpdatePoemAsync(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData)
+        {
+            return await _UpdatePoemAsync(_context, id, editingUserId, pageData, true);
+        }
+
+        /// <summary>
         /// break a poem from a verse forward
         /// </summary>
         /// <param name="poemId"></param>

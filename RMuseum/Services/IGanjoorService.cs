@@ -459,6 +459,15 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPageCompleteViewModel>> UpdatePageAsync(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData);
 
         /// <summary>
+        /// modify poem => only these fields: NoIndex, RedirectFromFullUrl, MixedModeOrder
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="editingUserId"></param>
+        /// <param name="pageData"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPageCompleteViewModel>> UpdatePoemAsync(int id, Guid editingUserId, GanjoorModifyPageViewModel pageData);
+
+        /// <summary>
         /// modify poet
         /// </summary>
         /// <param name="poet"></param>

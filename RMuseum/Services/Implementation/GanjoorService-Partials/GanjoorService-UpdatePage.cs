@@ -18,6 +18,39 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
 
+        private async Task<RServiceResult<GanjoorPageCompleteViewModel>> _UpdatePoemAsync(RMuseumDbContext context, int id, Guid editingUserId, GanjoorModifyPageViewModel pageData, bool needsReturn)
+        {
+            try
+            {
+                var dbPage = await context.GanjoorPages.Where(p => p.Id == id).SingleOrDefaultAsync();
+                if (dbPage == null)
+                    return new RServiceResult<GanjoorPageCompleteViewModel>(null);//not found
+                if (dbPage.GanjoorPageType != GanjoorPageType.PoemPage)
+                {
+                    return new RServiceResult<GanjoorPageCompleteViewModel>(null, "از _UpdatePageAsync استفاده کنید.");
+                }
+                dbPage.NoIndex = pageData.NoIndex;
+                dbPage.RedirectFromFullUrl = string.IsNullOrEmpty(pageData.RedirectFromFullUrl) ? null : pageData.RedirectFromFullUrl;
+                context.GanjoorPages.Update(dbPage);
+
+                var dbPoem = await context.GanjoorPoems.Where(p => p.Id == id).SingleOrDefaultAsync();
+                dbPoem.MixedModeOrder = pageData.MixedModeOrder;
+                context.Update(dbPoem);
+
+                await context.SaveChangesAsync();
+                CacheCleanForPageByUrl(dbPage.FullUrl);
+
+                if (needsReturn)
+                {
+                    return await GetPageByUrl(dbPage.FullUrl);
+                }
+                return new RServiceResult<GanjoorPageCompleteViewModel>(null);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPageCompleteViewModel>(null, exp.ToString());
+            }
+        }
         private async Task<RServiceResult<GanjoorPageCompleteViewModel>> _UpdatePageAsync(RMuseumDbContext context, int id, Guid editingUserId, GanjoorModifyPageViewModel pageData, bool needsReturn)
         {
             try
