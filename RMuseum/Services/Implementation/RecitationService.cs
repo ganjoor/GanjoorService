@@ -788,9 +788,14 @@ namespace RMuseum.Services.Implementationa
                             //the code would fail!
                             foreach (PoemAudio audio in PoemAudioListProcessor.Load(file.FilePath))
                             {
-                                if (await context.Recitations.Where(a => a.Mp3FileCheckSum == audio.FileCheckSum && a.ReviewStatus != AudioReviewStatus.Rejected).SingleOrDefaultAsync() != null)
+                                var preUploadedRecitaion = await context.Recitations.Include(r => r.Owner).AsNoTracking().Where(a => a.Mp3FileCheckSum == audio.FileCheckSum && a.ReviewStatus != AudioReviewStatus.Rejected).SingleOrDefaultAsync();
+                                if (preUploadedRecitaion != null)
                                 {
-                                    session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = "فایل صوتیی همسان با فایل ارسالی پیشتر آپلود شده است.";
+                                    var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == preUploadedRecitaion.GanjoorPostId).SingleOrDefaultAsync();
+                                    session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg 
+                                            = $"فایل صوتیی همسان با فایل ارسالی پیشتر بارگذاری شده است.{Environment.NewLine}" +
+                                            $"مشخصات فایل موجود: {preUploadedRecitaion.AudioTitle} - {preUploadedRecitaion.AudioArtist} - شناسهٔ شعر: {preUploadedRecitaion.GanjoorPostId} {Environment.NewLine}" +
+                                            $"{(poem == null ? "شعر نامشخص" : poem.FullTitle)} - کاربر: {preUploadedRecitaion.Owner.NickName}";
                                     context.UploadSessions.Update(session);
 
                                     await new RNotificationService(context).PushNotification
