@@ -788,14 +788,31 @@ namespace RMuseum.Services.Implementationa
                             //the code would fail!
                             foreach (PoemAudio audio in PoemAudioListProcessor.Load(file.FilePath))
                             {
+                                var audioPoem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == audio.PoemId).SingleOrDefaultAsync();
                                 var preUploadedRecitaion = await context.Recitations.Include(r => r.Owner).AsNoTracking().Where(a => a.Mp3FileCheckSum == audio.FileCheckSum && a.ReviewStatus != AudioReviewStatus.Rejected).SingleOrDefaultAsync();
+                                if (audioPoem == null)
+                                {
+                                    session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg
+                                            = $"شعری با این شناسه در گنجور وجود ندارد: {audio.PoemId}.{Environment.NewLine}" +
+                                            $"ممکن است شعر مد نظر در گنجور جابجا یا حذف شده باشد. لطفاً از طریق دریافت مجموعه‌ها در گنجور رومیزی آخرین نسخهٔ مجموعهٔ شاعر مد نظر را دریافت کنید.";
+                                    context.UploadSessions.Update(session);
+
+                                    await new RNotificationService(context).PushNotification
+                                     (
+                                         session.UseId,
+                                         "خطا در پردازش فایل ارسالی",
+                                         $"شعری با این شناسه در گنجور وجود ندارد.{Environment.NewLine}" +
+                                         $"{file.FileName}"
+                                     );
+                                }
+                                else
                                 if (preUploadedRecitaion != null)
                                 {
-                                    var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == preUploadedRecitaion.GanjoorPostId).SingleOrDefaultAsync();
+                                    var preUploadedPoem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == preUploadedRecitaion.GanjoorPostId).SingleOrDefaultAsync();
                                     session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg 
                                             = $"فایل صوتیی همسان با فایل ارسالی پیشتر بارگذاری شده است.{Environment.NewLine}" +
                                             $"مشخصات فایل موجود: {preUploadedRecitaion.AudioTitle} - {preUploadedRecitaion.AudioArtist} - شناسهٔ شعر: {preUploadedRecitaion.GanjoorPostId} {Environment.NewLine}" +
-                                            $"{(poem == null ? "شعر نامشخص" : poem.FullTitle)} - کاربر: {preUploadedRecitaion.Owner.NickName}";
+                                            $"{(preUploadedPoem == null ? "شعر نامشخص" : preUploadedPoem.FullTitle)} - کاربر: {preUploadedRecitaion.Owner.NickName}";
                                     context.UploadSessions.Update(session);
 
                                     await new RNotificationService(context).PushNotification
