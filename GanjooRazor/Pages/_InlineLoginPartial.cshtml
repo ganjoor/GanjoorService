@@ -1,6 +1,127 @@
 ﻿@model GanjooRazor.Pages.LoginPartialEnabledPageModel
 @using DNTPersianUtils.Core
 
+<style>
+    .w3-sidebar {
+        height: 100%;
+        width: 300px;
+        top: 0px;
+        background-color: #fff;
+        position: fixed !important;
+        z-index: 1;
+        overflow: auto
+    }
+
+    .w3-bar-block .w3-dropdown-hover, .w3-bar-block .w3-dropdown-click {
+        width: 100%
+    }
+
+        .w3-bar-block .w3-dropdown-hover .w3-dropdown-content, .w3-bar-block .w3-dropdown-click .w3-dropdown-content {
+            min-width: 100%
+        }
+
+        .w3-bar-block .w3-dropdown-hover .w3-button, .w3-bar-block .w3-dropdown-click .w3-button {
+            width: 100%;
+            padding: 8px 16px
+        }
+
+    .w3-bar .w3-bar-item {
+        padding: 8px 16px;
+        float: left;
+        width: auto;
+        border: none;
+        display: block;
+        outline: 0;
+    }
+
+    .w3-bar-block .w3-bar-item {
+        width: 100%;
+        display: block;
+        padding: 8px 16px;
+        border: none;
+        white-space: normal;
+        float: none;
+        outline: 0;
+        text-align: right;
+    }
+
+    .w3-bar-block.w3-center .w3-bar-item {
+        text-align: center
+    }
+
+    .w3-block {
+        display: block;
+        width: 100%
+    }
+
+    .w3-btn, .w3-button {
+        border: none;
+        display: inline-block;
+        padding: 8px 16px;
+        vertical-align: middle;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        background-color: inherit;
+        text-align: center;
+        cursor: pointer;
+        white-space: nowrap
+    }
+
+        .w3-btn:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19)
+        }
+
+    .w3-btn, .w3-button {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none
+    }
+
+        .w3-disabled, .w3-btn:disabled, .w3-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.3
+        }
+
+            .w3-disabled *, :disabled * {
+                pointer-events: none
+            }
+
+    .w3-dropdown-hover:hover > .w3-button:first-child, .w3-dropdown-click:hover > .w3-button:first-child {
+        background-color: #ccc;
+        color: #000
+    }
+
+    .w3-bar-block .w3-dropdown-hover .w3-button, .w3-bar-block .w3-dropdown-click .w3-button {
+        width: 100%;
+        padding: 8px 16px
+    }
+
+    .w3-bar .w3-button {
+        white-space: normal
+    }
+
+    .w3-dropdown-hover.w3-mobile, .w3-dropdown-hover.w3-mobile .w3-btn, .w3-dropdown-hover.w3-mobile .w3-button, .w3-dropdown-click.w3-mobile, .w3-dropdown-click.w3-mobile .w3-btn, .w3-dropdown-click.w3-mobile .w3-button {
+        width: 100%
+    }
+
+    .w3-overlay {
+        position: fixed;
+        display: none;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 2
+    }
+
+</style>
+
 <div id="main-navbar" role="navigation">
 
     <div class="clear-both">
@@ -10,11 +131,28 @@
                     <i class="noindent-info-button pin-button"></i>
                 </div>
             </a>
-            <a onclick="document.getElementById('navbarhelp').style.display='block'" role="button" class="cursor-pointer" title="راهنما">
-                <div class="noborder-btn color-white">
-                    <i class="noindent-info-button help-button mirror"></i>
-                </div>
-            </a>
+
+            @if (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null)
+            {
+                <script>
+                    function w3_open() {
+                        document.getElementById("mySidebar").style.display = "block";
+                        document.getElementById("myOverlay").style.display = "block";
+                    }
+
+                    function w3_close() {
+                        document.getElementById("mySidebar").style.display = "none";
+                        document.getElementById("myOverlay").style.display = "none";
+                    }
+                </script>
+                <a onclick="w3_open()" role="button" class="cursor-pointer" title="ابزارها">
+                    <div class="noborder-btn color-white">
+                        <i class="noindent-info-button menu-icon mirror"></i>
+                    </div>
+                </a>
+            }
+
+
         </div>
 
         @if (Model.LoggedIn)
@@ -72,169 +210,215 @@
 
     </div>
 
-    @if (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null)
-    {
-        <div class="clear-both">
 
-            <a href="#tools" role="button" class="w3tooltip cursor-pointer">
+
+</div>
+
+
+@if (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null)
+{
+
+    <div class="w3-overlay" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
+
+    <div class="w3-sidebar w3-bar-block" style="display:none;z-index:5" id="mySidebar">
+        <button class="w3-bar-item w3-button w3-xxlarge" onclick="w3_close()">بستن &times;</button>
+
+        <div class="w3-bar-item w3-button">
+            <a href="#tools" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button menu-icon"></i>
                 </div>
-                <span class="w3tooltiptext">اطلاعات</span>
+                اطلاعات شعر
             </a>
+        </div>
 
-            <a href="#discussions" role="button" class="w3tooltip cursor-pointer">
+
+        <div class="w3-bar-item w3-button">
+            <a href="#discussions" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button recitation-comments"></i>
                 </div>
-                <span class="w3tooltiptext">حاشیه‌ها</span>
+                حاشیه‌های شعر
             </a>
+        </div>
 
-            <a href="#manuscripts" role="button" class="w3tooltip cursor-pointer">
+        <div class="w3-bar-item w3-button">
+            <a href="#manuscripts" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button recitation-manuscripts"></i>
                 </div>
-                <span class="w3tooltiptext">نگاره‌ها</span>
+                نگاره‌های مرتبط با شعر
             </a>
+        </div>
 
-            <a href="#songs" role="button" class="w3tooltip cursor-pointer">
+        <div class="w3-bar-item w3-button">
+            <a href="#songs" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button recitation-music"></i>
                 </div>
-                <span class="w3tooltiptext">ترانه‌ها</span>
+                ترانه‌های مرتبط با شعر
             </a>
+        </div>
 
-            @if (Model.SectionsWithRelated.Count > 0)
-            {
-                <a href="#rpoems" role="button" class="w3tooltip cursor-pointer">
+        @if (Model.SectionsWithRelated.Count > 0)
+        {
+            <div class="w3-bar-item w3-button">
+                <a href="#rpoems" role="button" class="cursor-pointer">
                     <div class="circled-number">
                         <i class="noindent-info-button recitation-explore"></i>
                     </div>
-                    <span class="w3tooltiptext">هم‌آهنگ‌ها</span>
+                    شعرهای هم‌آهنگ‌ها
                 </a>
-            }
+            </div>
+        }
 
-            @if (Model.GanjoorPage.Poem.Recitations.Length > 0)
-            {
-                <a href="#recitations" role="button" class="w3tooltip cursor-pointer">
+        @if (Model.GanjoorPage.Poem.Recitations.Length > 0)
+        {
+            <div class="w3-bar-item w3-button">
+                <a href="#recitations" role="button" class="cursor-pointer">
                     <div class="circled-number">
                         <i class="noindent-info-button recitation-listen"></i>
                     </div>
-                    <span class="w3tooltiptext">خوانش‌ها</span>
+                    خوانش‌های شعر
                 </a>
+            </div>
 
-                <a onclick="switchPlayerScrollLock()" role="button" class="w3tooltip cursor-pointer">
+            <div class="w3-bar-item w3-button">
+                <a onclick="switchPlayerScrollLock()" role="button" class="cursor-pointer">
                     <div class="circled-number">
                         <i class="noindent-info-button recitation-scrollunlock"></i>
                     </div>
-                    <span class="w3tooltiptext">قفل روی خوانش</span>
+                    قفل روی خوانش
                 </a>
-            }
+            </div>
+        }
 
-            <a onclick="btshmr(@Model.GanjoorPage.Id)" role="button" class="w3tooltip cursor-pointer">
+        <div class="w3-bar-item w3-button">
+            <a onclick="btshmr(@Model.GanjoorPage.Id)" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button format_list_numbered_rtl" id="bnum-button"></i>
                 </div>
-                <span class="w3tooltiptext">شماره‌گذاری</span>
+                شماره‌گذاری
             </a>
+        </div>
 
-            <a onclick="copyPoemLink()" role="button" class="w3tooltip cursor-pointer">
+        <div class="w3-bar-item w3-button">
+            <a onclick="copyPoemLink()" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button copylink-icon"></i>
                 </div>
-                <span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span>
+                رونوشت نشانی
             </a>
+        </div>
 
-            <a onclick="copyPoemText()" role="button" class="w3tooltip cursor-pointer">
+        <div class="w3-bar-item w3-button">
+            <a onclick="copyPoemText()" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button copytext-icon"></i>
                 </div>
-                <span class="w3tooltiptext" id="copytext-tooltip">رونوشت متن</span>
+                رونوشت متن
             </a>
+        </div>
 
-            <a onclick="webSharePoem()" role="button" class="w3tooltip cursor-pointer" id="share_span">
+        <div class="w3-bar-item w3-button" id="share_span">
+            <a onclick="webSharePoem()" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button share-icon"></i>
                 </div>
-                <span class="w3tooltiptext">همرسانی</span>
+                همرسانی
             </a>
+        </div>
 
-            @if (Model.SectionsWithMetreAndRhymes != null)
+        @if (Model.SectionsWithMetreAndRhymes != null)
+        {
+            @if (Model.SectionsWithMetreAndRhymes.Any())
             {
-                @if (Model.SectionsWithMetreAndRhymes.Any())
-                {
-                    <text>
-                        <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" role="button" class="w3tooltip cursor-pointer">
+                <text>
+                    <div class="w3-bar-item w3-button">
+                        <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" role="button" class="cursor-pointer">
                             <div class="circled-number">
                                 <i class="noindent-info-button rhyming-poems"></i>
                             </div>
-                            <span class="w3tooltiptext">موارد هم آهنگ</span>
+                            موارد هم آهنگ
                         </a>
-                    </text>
+                    </div>
+                </text>
 
-                    @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
-                    {
+                @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
+                {
+                    <div class="w3-bar-item w3-button">
                         <text>
-                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" role="button" class="w3tooltip cursor-pointer">
+                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" role="button" class="cursor-pointer">
                                 <div class="circled-number">
                                     <i class="noindent-info-button rhyming-poems"></i>
                                 </div>
-                                <span class="w3tooltiptext">موارد هم آهنگ (وزن @((nSectionIndex + 1).ToPersianNumbers()))</span>
+                                موارد هم آهنگ (وزن @((nSectionIndex + 1).ToPersianNumbers()))
                             </a>
                         </text>
-                    }
+                    </div>
                 }
             }
+        }
 
-            <a href="/t6e?p=@Model.GanjoorPage.Id" role="button" class="w3tooltip cursor-pointer" target="_blank">
+        <div class="w3-bar-item w3-button">
+            <a href="/t6e?p=@Model.GanjoorPage.Id" role="button" class="cursor-pointer" target="_blank">
                 <div class="circled-number">
                     <i class="noindent-info-button menu-book"></i>
                 </div>
-                <span class="w3tooltiptext">نمای چاپی</span>
+                نمای چاپی‌مانند
             </a>
+        </div>
 
-            @if (Model.LoggedIn)
-            {
-                <a onclick="switchBookmark(@Model.GanjoorPage.Id, 0, '')" role="button" class="w3tooltip cursor-pointer">
+        @if (Model.LoggedIn)
+        {
+            <div class="w3-bar-item w3-button">
+                <a onclick="switchBookmark(@Model.GanjoorPage.Id, 0, '')" role="button" class="cursor-pointer">
                     <div class="circled-number" id="bookmark">
                         <i class="noindent-info-button" id="bookmark-icon">star_border</i>
                     </div>
-                    <span class="w3tooltiptext">نشان کردن</span>
+                    نشان کردن شعر
                 </a>
+            </div>
 
-                <a href="/User/Editor?id=@Model.GanjoorPage.Id" role="button" class="w3tooltip cursor-pointer">
+            <div class="w3-bar-item w3-button">
+                <a href="/User/Editor?id=@Model.GanjoorPage.Id" role="button" class="cursor-pointer">
                     <div class="circled-number">
                         <i class="noindent-info-button edit-poem-button"></i>
                     </div>
-                    <span class="w3tooltiptext">ویرایش</span>
+                    ویرایش شعر
                 </a>
-            }
+            </div>
+        }
 
 
-            @if (!string.IsNullOrEmpty(Model.PreviousUrl))
-            {
-                <a href="@Html.Raw(Model.PreviousUrl)" role="button" class="w3tooltip cursor-pointer">
+        @if (!string.IsNullOrEmpty(Model.PreviousUrl))
+        {
+            <div class="w3-bar-item w3-button">
+                <a href="@Html.Raw(Model.PreviousUrl)" role="button" class="cursor-pointer">
                     <div class="circled-number">
                         <i class="noindent-info-button right-btn"></i>
                     </div>
-                    <span class="w3tooltiptext">پیش از این</span>
+                    شعر قبلی
                 </a>
-            }
+            </div>
+        }
 
-            @if (!string.IsNullOrEmpty(Model.NextUrl))
-            {
+        @if (!string.IsNullOrEmpty(Model.NextUrl))
+        {
+            <div class="w3-bar-item w3-button">
                 <a href="@Html.Raw(Model.NextUrl)" role="button" class="w3tooltip cursor-pointer">
                     <div class="circled-number">
                         <i class="noindent-info-button left-btn"></i>
                     </div>
-                    <span class="w3tooltiptext">پس از این</span>
+                    شعر بعدی
                 </a>
-            }
+            </div>
+        }
 
-        </div>
-    }
+    </div>
 
-</div>
+
+}
 
 @if (Model.LoggedIn)
 {
