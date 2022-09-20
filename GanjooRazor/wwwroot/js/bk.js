@@ -1073,3 +1073,8 @@ function w3_open() {
 function w3_close() {
     document.getElementById("mySidebar").style.display = "none";
 }
+
+function w3_close_showHelp() {
+    document.getElementById("mySidebar").style.display = "none";
+    document.getElementById('navbarhelp').style.display = 'block'
+}

@@ -20,6 +20,14 @@
                     </div>
                 </a>
             }
+            else
+            {
+                <a onclick="document.getElementById('navbarhelp').style.display='block'" role="button" class="cursor-pointer" title="راهنما">
+                    <div class="noborder-btn color-white">
+                        <i class="noindent-info-button help-button mirror"></i>
+                    </div>
+                </a>
+            }
 
 
         </div>
@@ -89,6 +97,15 @@
 
     <div class="w3-sidebar w3-bar-block" style="display:none;z-index:5" id="mySidebar">
         <button class="w3-bar-item w3-button w3-xxlarge" onclick="w3_close()">بستن &times;</button>
+
+        <div class="w3-bar-item w3-button">
+            <a onclick="w3_close_showHelp();" role="button" class="cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button help-button mirror"></i>
+                </div>
+                راهنمای سریع
+            </a>
+        </div>
 
         <div class="w3-bar-item w3-button">
             <a href="#tools" role="button" class="cursor-pointer">
