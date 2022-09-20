@@ -1,126 +1,6 @@
 ﻿@model GanjooRazor.Pages.LoginPartialEnabledPageModel
 @using DNTPersianUtils.Core
 
-<style>
-    .w3-sidebar {
-        height: 100%;
-        width: 300px;
-        top: 0px;
-        background-color: #fff;
-        position: fixed !important;
-        z-index: 1;
-        overflow: auto
-    }
-
-    .w3-bar-block .w3-dropdown-hover, .w3-bar-block .w3-dropdown-click {
-        width: 100%
-    }
-
-        .w3-bar-block .w3-dropdown-hover .w3-dropdown-content, .w3-bar-block .w3-dropdown-click .w3-dropdown-content {
-            min-width: 100%
-        }
-
-        .w3-bar-block .w3-dropdown-hover .w3-button, .w3-bar-block .w3-dropdown-click .w3-button {
-            width: 100%;
-            padding: 8px 16px
-        }
-
-    .w3-bar .w3-bar-item {
-        padding: 8px 16px;
-        float: left;
-        width: auto;
-        border: none;
-        display: block;
-        outline: 0;
-    }
-
-    .w3-bar-block .w3-bar-item {
-        width: 100%;
-        display: block;
-        padding: 8px 16px;
-        border: none;
-        white-space: normal;
-        float: none;
-        outline: 0;
-        text-align: right;
-    }
-
-    .w3-bar-block.w3-center .w3-bar-item {
-        text-align: center
-    }
-
-    .w3-block {
-        display: block;
-        width: 100%
-    }
-
-    .w3-btn, .w3-button {
-        border: none;
-        display: inline-block;
-        padding: 8px 16px;
-        vertical-align: middle;
-        overflow: hidden;
-        text-decoration: none;
-        color: inherit;
-        background-color: inherit;
-        text-align: center;
-        cursor: pointer;
-        white-space: nowrap
-    }
-
-        .w3-btn:hover {
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19)
-        }
-
-    .w3-btn, .w3-button {
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none
-    }
-
-        .w3-disabled, .w3-btn:disabled, .w3-button:disabled {
-            cursor: not-allowed;
-            opacity: 0.3
-        }
-
-            .w3-disabled *, :disabled * {
-                pointer-events: none
-            }
-
-    .w3-dropdown-hover:hover > .w3-button:first-child, .w3-dropdown-click:hover > .w3-button:first-child {
-        background-color: #ccc;
-        color: #000
-    }
-
-    .w3-bar-block .w3-dropdown-hover .w3-button, .w3-bar-block .w3-dropdown-click .w3-button {
-        width: 100%;
-        padding: 8px 16px
-    }
-
-    .w3-bar .w3-button {
-        white-space: normal
-    }
-
-    .w3-dropdown-hover.w3-mobile, .w3-dropdown-hover.w3-mobile .w3-btn, .w3-dropdown-hover.w3-mobile .w3-button, .w3-dropdown-click.w3-mobile, .w3-dropdown-click.w3-mobile .w3-btn, .w3-dropdown-click.w3-mobile .w3-button {
-        width: 100%
-    }
-
-    .w3-overlay {
-        position: fixed;
-        display: none;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0,0,0,0.5);
-        z-index: 2
-    }
-
-</style>
 
 <div id="main-navbar" role="navigation">
 
@@ -137,17 +17,15 @@
                 <script>
                     function w3_open() {
                         document.getElementById("mySidebar").style.display = "block";
-                        document.getElementById("myOverlay").style.display = "block";
                     }
 
                     function w3_close() {
                         document.getElementById("mySidebar").style.display = "none";
-                        document.getElementById("myOverlay").style.display = "none";
                     }
                 </script>
                 <a onclick="w3_open()" role="button" class="cursor-pointer" title="ابزارها">
                     <div class="noborder-btn color-white">
-                        <i class="noindent-info-button menu-icon mirror"></i>
+                        <i class="noindent-info-button menu-icon mirror spinnerIcon color-yellow"></i>
                     </div>
                 </a>
             }
@@ -217,8 +95,6 @@
 
 @if (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null)
 {
-
-    <div class="w3-overlay" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
 
     <div class="w3-sidebar w3-bar-block" style="display:none;z-index:5" id="mySidebar">
         <button class="w3-bar-item w3-button w3-xxlarge" onclick="w3_close()">بستن &times;</button>
