@@ -98,6 +98,30 @@
     <div class="w3-sidebar w3-bar-block" style="display:none;z-index:5" id="mySidebar">
         <button class="w3-bar-item w3-button w3-xxlarge sticky sidebar-close" onclick="w3_close()">بستن &times;</button>
 
+        @if (!string.IsNullOrEmpty(Model.PreviousUrl))
+        {
+            <div class="w3-bar-item w3-button">
+                <a href="@Html.Raw(Model.PreviousUrl)" role="button" class="cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button right-btn"></i>
+                    </div>
+                    شعر قبلی
+                </a>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.NextUrl))
+        {
+            <div class="w3-bar-item w3-button">
+                <a href="@Html.Raw(Model.NextUrl)" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button left-btn"></i>
+                    </div>
+                    شعر بعدی
+                </a>
+            </div>
+        }
+
         <div class="w3-bar-item w3-button">
             <a onclick="w3_close_showHelp();" role="button" class="cursor-pointer">
                 <div class="circled-number">
@@ -107,8 +131,10 @@
             </a>
         </div>
 
+
+
         <div class="w3-bar-item w3-button">
-            <a href="#tools" role="button" class="cursor-pointer">
+            <a onclick="w3_close()" href="#tools" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button menu-icon"></i>
                 </div>
@@ -118,7 +144,7 @@
 
 
         <div class="w3-bar-item w3-button">
-            <a href="#discussions" role="button" class="cursor-pointer">
+            <a onclick="w3_close()" href="#discussions" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button recitation-comments"></i>
                 </div>
@@ -127,31 +153,31 @@
         </div>
 
         <div class="w3-bar-item w3-button">
-            <a href="#manuscripts" role="button" class="cursor-pointer">
+            <a onclick="w3_close()" href="#manuscripts" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button recitation-manuscripts"></i>
                 </div>
-                نگاره‌های مرتبط با شعر
+                تصاویر نسخه‌های خطی و چاپی
             </a>
         </div>
 
         <div class="w3-bar-item w3-button">
-            <a href="#songs" role="button" class="cursor-pointer">
+            <a onclick="w3_close()" href="#songs" role="button" class="cursor-pointer">
                 <div class="circled-number">
                     <i class="noindent-info-button recitation-music"></i>
                 </div>
-                ترانه‌های مرتبط با شعر
+                آهنگ‌های مرتبط با شعر
             </a>
         </div>
 
         @if (Model.SectionsWithRelated.Count > 0)
         {
             <div class="w3-bar-item w3-button">
-                <a href="#rpoems" role="button" class="cursor-pointer">
+                <a onclick="w3_close()" href="#rpoems" role="button" class="cursor-pointer">
                     <div class="circled-number">
                         <i class="noindent-info-button recitation-explore"></i>
                     </div>
-                    شعرهای هم‌آهنگ‌ها
+                    شعرهای هم‌وزن و هم‌قافیه
                 </a>
             </div>
         }
@@ -159,11 +185,11 @@
         @if (Model.GanjoorPage.Poem.Recitations.Length > 0)
         {
             <div class="w3-bar-item w3-button">
-                <a href="#recitations" role="button" class="cursor-pointer">
+                <a onclick="w3_close()" href="#recitations" role="button" class="cursor-pointer">
                     <div class="circled-number">
                         <i class="noindent-info-button recitation-listen"></i>
                     </div>
-                    خوانش‌های شعر
+                    روخوانی‌های شعر
                 </a>
             </div>
 
@@ -191,7 +217,7 @@
                 <div class="circled-number">
                     <i class="noindent-info-button copylink-icon"></i>
                 </div>
-                رونوشت نشانی
+                <span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span>
             </a>
         </div>
 
@@ -200,7 +226,7 @@
                 <div class="circled-number">
                     <i class="noindent-info-button copytext-icon"></i>
                 </div>
-                رونوشت متن
+                <span class="w3tooltiptext" id="copytext-tooltip">رونوشت متن</span>
             </a>
         </div>
 
@@ -223,7 +249,7 @@
                             <div class="circled-number">
                                 <i class="noindent-info-button rhyming-poems"></i>
                             </div>
-                            موارد هم آهنگ
+                            مشابه‌یابی بر اساس وزن و قافیه
                         </a>
                     </div>
                 </text>
@@ -275,29 +301,7 @@
         }
 
 
-        @if (!string.IsNullOrEmpty(Model.PreviousUrl))
-        {
-            <div class="w3-bar-item w3-button">
-                <a href="@Html.Raw(Model.PreviousUrl)" role="button" class="cursor-pointer">
-                    <div class="circled-number">
-                        <i class="noindent-info-button right-btn"></i>
-                    </div>
-                    شعر قبلی
-                </a>
-            </div>
-        }
-
-        @if (!string.IsNullOrEmpty(Model.NextUrl))
-        {
-            <div class="w3-bar-item w3-button">
-                <a href="@Html.Raw(Model.NextUrl)" role="button" class="w3tooltip cursor-pointer">
-                    <div class="circled-number">
-                        <i class="noindent-info-button left-btn"></i>
-                    </div>
-                    شعر بعدی
-                </a>
-            </div>
-        }
+        
 
     </div>
 
