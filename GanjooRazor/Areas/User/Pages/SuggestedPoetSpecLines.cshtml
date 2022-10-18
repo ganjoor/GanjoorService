@@ -3,7 +3,7 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_UserPanelLayout";
-    ViewData["Title"] = "نکات پیشنهادی برای تصاویر شاعران";
+    ViewData["Title"] = "نکات پیشنهادی برای تصاویر سخنوران";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
 
@@ -18,7 +18,7 @@ else
         <table style="width:100%" class="noborder">
             <tr>
                 <td>
-                    <span class="inputlabel">شاعر: </span>
+                    <span class="inputlabel">سخنور: </span>
                 </td>
                 <td>
                     <a href="/photos?p=@Model.Poet.FullUrl.Substring(1)" target="_blank">@Model.Poet.Nickname</a>

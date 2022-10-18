@@ -142,7 +142,7 @@ namespace RMuseum.Services.Implementation
 
             string htmlText = $"<p>در این صفحه فهرست اشعار استفاده شده در آلبومهای موسیقی را با استفاده از اطلاعات جمع‌آوری شده در <a href=\"http://blog.ganjoor.net/1395/06/28/bptags/\">این پروژه</a> به تفکیک خواننده و به ترتیب نزولی تعداد قطعات مرتبط گرد آورده‌ایم." +
             $" تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} ارتباط {poemMusicTracks.Count.ToPersianNumbers()} قطعهٔ موسیقی از {poemMusicTracks.GroupBy(m => m.ArtistName).Count().ToPersianNumbers()} هنرمند با {poemMusicTracks.GroupBy(m => m.PoemId).Count().ToPersianNumbers()} شعر در پایگاه گنجور ثبت و تأیید شده است.  </p>{Environment.NewLine}";
-            htmlText += $"<p>جهت مشاهدهٔ این اطلاعات به تفکیک شاعران <small>(به همراه اطلاعات مجموعهٔ گلها و سایت اسپاتیفای)</small> <a href=\"/mundex/bypoet/\" > این صفحه</a> را ببینید.</p>{Environment.NewLine}";
+            htmlText += $"<p>جهت مشاهدهٔ این اطلاعات به تفکیک سخنوران <small>(به همراه اطلاعات مجموعهٔ گلها و سایت اسپاتیفای)</small> <a href=\"/mundex/bypoet/\" > این صفحه</a> را ببینید.</p>{Environment.NewLine}";
             htmlText += $"<p>جهت کمک به تکمیل این مجموعه <a href=\"http://blog.ganjoor.net/1395/06/28/bptags/\">این مطلب</a> را مطالعه بفرمایید و <a href=\"http://www.aparat.com/v/kxGre\">این فیلم</a> را مشاهده کنید.</p>{Environment.NewLine}";
 
             var singers = poemMusicTracks.GroupBy(m => new { m.SingerId })
@@ -208,8 +208,8 @@ namespace RMuseum.Services.Implementation
             var dbPage = await context.GanjoorPages.Where(p => p.FullUrl == "/mundex/bypoet").SingleAsync();
 
 
-            string htmlText = $"<p>در این صفحه فهرست اشعار استفاده شده در آلبومهای موسیقی را با استفاده از اطلاعات جمع‌آوری شده در <a href=\"http://blog.ganjoor.net/1395/06/28/bptags/\">این پروژه</a> به تفکیک شاعر و به ترتیب نزولی تعداد اشعار مرتبط گرد آورده‌ایم." +
-            $" تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} ارتباط {poemMusicTracks.GroupBy(m => m.PoemId).Count().ToPersianNumbers()} شعر از {poemMusicTracks.GroupBy(m => m.Poem.Cat.PoetId).Count().ToPersianNumbers()} شاعر با {poemMusicTracks.Count.ToPersianNumbers()} قطعهٔ موسیقی در پایگاه گنجور ثبت و تأیید شده است.  </p>{Environment.NewLine}";
+            string htmlText = $"<p>در این صفحه فهرست اشعار استفاده شده در آلبومهای موسیقی را با استفاده از اطلاعات جمع‌آوری شده در <a href=\"http://blog.ganjoor.net/1395/06/28/bptags/\">این پروژه</a> به تفکیک سخنور و به ترتیب نزولی تعداد اشعار مرتبط گرد آورده‌ایم." +
+            $" تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} ارتباط {poemMusicTracks.GroupBy(m => m.PoemId).Count().ToPersianNumbers()} شعر از {poemMusicTracks.GroupBy(m => m.Poem.Cat.PoetId).Count().ToPersianNumbers()} سخنور با {poemMusicTracks.Count.ToPersianNumbers()} قطعهٔ موسیقی در پایگاه گنجور ثبت و تأیید شده است.  </p>{Environment.NewLine}";
             htmlText += $"<p>جهت مشاهدهٔ این اطلاعات به تفکیک هنرمندان <small>(بدون اطلاعات مجموعهٔ گلها و سایت اسپاتیفای)</small> <a href=\"/mundex/\" > این صفحه</a> را ببینید.</p>{Environment.NewLine}";
             htmlText += $"<p>جهت کمک به تکمیل این مجموعه <a href=\"http://blog.ganjoor.net/1395/06/28/bptags/\">این مطلب</a> را مطالعه بفرمایید و <a href=\"http://www.aparat.com/v/kxGre\">این فیلم</a> را مشاهده کنید.</p>{Environment.NewLine}";
 
@@ -262,7 +262,7 @@ namespace RMuseum.Services.Implementation
                 }
 
 
-            await _UpdatePageHtmlText(context, editingUserId, dbPage, "به روزرسانی خودکار صفحهٔ شاعران به روایت آهنگها", htmlText);
+            await _UpdatePageHtmlText(context, editingUserId, dbPage, "به روزرسانی خودکار صفحهٔ سخنوران به روایت آهنگها", htmlText);
         }
 
 

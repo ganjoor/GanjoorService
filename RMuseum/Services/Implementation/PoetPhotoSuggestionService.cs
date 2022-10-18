@@ -133,8 +133,8 @@ namespace RMuseum.Services.Implementation
                         await _notificationService.PushNotification
                                         (
                                             (Guid)moderator.Id,
-                                            "ثبت تصویر پیشنهادی جدید برای شاعر",
-                                            $"درخواستی برای ثبت تصویر پیشنهادی جدیدی برای «{poet.Nickname}» ثبت شده است. در صورت تمایل به بررسی، بخش مربوط به شاعر را <a href=\"/User/SuggestedPoetPhotos\">اینجا</a> ببینید.{ Environment.NewLine}" +
+                                            "ثبت تصویر پیشنهادی جدید برای سخنور",
+                                            $"درخواستی برای ثبت تصویر پیشنهادی جدیدی برای «{poet.Nickname}» ثبت شده است. در صورت تمایل به بررسی، بخش مربوط به سخنور را <a href=\"/User/SuggestedPoetPhotos\">اینجا</a> ببینید.{ Environment.NewLine}" +
                                             $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی تصاویر است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
                                         );
                     }
@@ -284,7 +284,7 @@ namespace RMuseum.Services.Implementation
                     var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == dbModel.PoetId).SingleAsync();
                     await _notificationService.PushNotification((Guid)dbModel.SuggestedById,
                                       $"انتشار تصویر پیشنهادی شما برای {poet.Nickname}",
-                                      $"با سپاس! پیشنهاد شما برای تصویر {poet.Nickname} در فهرست تصاویر قابل انتخاب برای شاعر قابل مشاهده است."
+                                      $"با سپاس! پیشنهاد شما برای تصویر {poet.Nickname} در فهرست تصاویر قابل انتخاب برای سخنور قابل مشاهده است."
                                       );
                 }
 

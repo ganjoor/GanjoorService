@@ -3,7 +3,7 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
-    ViewData["Title"] = "ویرایش شاعر";
+    ViewData["Title"] = "ویرایش سخنور";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -119,7 +119,7 @@
         <td colspan="2">
             @if(Model.Poet != null)
             {
-                <a href="@Model.Poet.FullUrl">صفحهٔ متناظر شاعر</a>
+                <a href="@Model.Poet.FullUrl">صفحهٔ متناظر سخنور</a>
             }
         </td>
     </tr>
@@ -162,7 +162,7 @@
 
 <table>
     <tr>
-        <td><a role="button" href="/Admin/PoetDel/?id=@Model.Poet.Id" class="actionlink">حذف شاعر</a></td>
+        <td><a role="button" href="/Admin/PoetDel/?id=@Model.Poet.Id" class="actionlink">حذف سخنور</a></td>
     </tr>
 </table>
 

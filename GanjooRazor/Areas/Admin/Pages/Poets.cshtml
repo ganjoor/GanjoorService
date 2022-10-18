@@ -3,7 +3,7 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
-    ViewData["Title"] = "مدیریت شاعران";
+    ViewData["Title"] = "مدیریت سخنوران";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -60,13 +60,13 @@
 
 <table>
     <tr>
-        <th>نام شاعر</th>
+        <th>نام سخنور</th>
         <th>زاده</th>
         <th>درگذشته</th>
         <th>چسبانی</th>
     </tr>
     <tr>
-        <td colspan="4"><a href="/Admin/Poet">شاعر جدید</a></td>
+        <td colspan="4"><a href="/Admin/Poet">سخنور جدید</a></td>
     </tr>
     @foreach (var poet in Model.Poets)
     {

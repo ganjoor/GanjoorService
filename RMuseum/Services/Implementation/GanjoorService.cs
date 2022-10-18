@@ -2706,7 +2706,7 @@ namespace RMuseum.Services.Implementation
                     {
                         Title = poet.Nickname,
                         HtmlText = dbPoetPage.HtmlText,
-                        Note = "ویرایش مستقیم مشخصات شاعر",
+                        Note = "ویرایش مستقیم مشخصات سخنور",
                         UrlSlug = poet.FullUrl.Substring(1),
                     }
                     );
@@ -2864,7 +2864,7 @@ namespace RMuseum.Services.Implementation
                 GanjoorPageId = poetPageId,
                 MadeObsoleteByUserId = editingUserId,
                 RecordDate = DateTime.Now,
-                Note = "ایجاد شاعر",
+                Note = "ایجاد سخنور",
                 Title = dbPage.Title,
                 UrlSlug = dbPage.UrlSlug,
                 HtmlText = dbPage.HtmlText,

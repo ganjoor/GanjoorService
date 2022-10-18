@@ -182,7 +182,7 @@ namespace RMuseum.Models.Auth.Memory
                             new SecurableItemOperation(Banners, "مدیریت آگاهی‌ها", false),
                             new SecurableItemOperation(Donations, "مدیریت کمکهای مالی", false),
                             new SecurableItemOperation(Translations, "ترجمه", false),
-                            new SecurableItemOperation(ModeratePoetPhotos, "مدیریت تصاویر شاعران", false),
+                            new SecurableItemOperation(ModeratePoetPhotos, "مدیریت تصاویر سخنوران", false),
                         }
                     },
                     new SecurableItem()

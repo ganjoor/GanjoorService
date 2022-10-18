@@ -109,7 +109,7 @@ namespace GanjooRazor.Pages
                 Poets = await _PreparePoets();
             }
 
-            ViewData["Title"] = Poet == null ? "پیشنهاد تصویر برای شاعران" : $"پیشنهاد تصویر برای {Poet.Nickname}";
+            ViewData["Title"] = Poet == null ? "پیشنهاد تصویر برای سخنوران" : $"پیشنهاد تصویر برای {Poet.Nickname}";
 
             return Page();
         }

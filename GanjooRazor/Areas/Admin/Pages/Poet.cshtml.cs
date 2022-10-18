@@ -197,7 +197,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         _memoryCache.Remove(cacheKey2);
                     }
 
-                    LastResult = $"ویرایش انجام شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش شاعر</a>";
+                    LastResult = $"ویرایش انجام شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش سخنور</a>";
 
                     await PreparePoet();
 
@@ -235,7 +235,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         return Page();
                     }
 
-                    LastResult = $"تصویر بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش شاعر</a>";
+                    LastResult = $"تصویر بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش سخنور</a>";
 
                 }
             }
@@ -271,7 +271,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         return Page();
                     }
 
-                    LastResult = $"پایگاه داده‌ها بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش شاعر</a>";
+                    LastResult = $"پایگاه داده‌ها بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش سخنور</a>";
 
                 }
             }
@@ -307,7 +307,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         return Page();
                     }
 
-                    LastResult = $"پایگاه داده‌های اصلاحی بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش شاعر</a>";
+                    LastResult = $"پایگاه داده‌های اصلاحی بارگذاری شد. <a role=\"button\" href=\"/Admin/Poet?id={Request.Query["id"]}\" class=\"actionlink\">برگشت به صفحهٔ ویرایش سخنور</a>";
 
                 }
             }

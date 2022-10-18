@@ -5,9 +5,9 @@ namespace ganjoor
 {
     public class GDBInfo
     {
-        [DisplayName("شاعر/بخش")]
+        [DisplayName("سخنور/بخش")]
         public string CatName { get; set; }
-        [DisplayName("شناسهٔ شاعر")]
+        [DisplayName("شناسهٔ سخنور")]
         public int PoetID { get; set; }
         [DisplayName("شناسهٔ بخش")]
         public int CatID { get; set; }

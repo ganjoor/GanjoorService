@@ -794,7 +794,7 @@ namespace RMuseum.Services.Implementationa
                                 {
                                     session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg
                                             = $"شعری با این شناسه در گنجور وجود ندارد: {audio.PoemId}.{Environment.NewLine}" +
-                                            $"ممکن است شعر مد نظر در گنجور جابجا یا حذف شده باشد. لطفاً از طریق دریافت مجموعه‌ها در گنجور رومیزی آخرین نسخهٔ مجموعهٔ شاعر مد نظر را دریافت کنید.";
+                                            $"ممکن است شعر مد نظر در گنجور جابجا یا حذف شده باشد. لطفاً از طریق دریافت مجموعه‌ها در گنجور رومیزی آخرین نسخهٔ مجموعهٔ سخنور مد نظر را دریافت کنید.";
                                     context.UploadSessions.Update(session);
 
                                     await new RNotificationService(context).PushNotification

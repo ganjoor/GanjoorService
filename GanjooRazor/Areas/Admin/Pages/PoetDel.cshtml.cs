@@ -96,7 +96,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     _memoryCache.Remove(cacheKey2);
                 }
 
-                LastResult = "عملیات حذف شاعر شروع شد.";
+                LastResult = "عملیات حذف سخنور شروع شد.";
 
                 return Page();
 

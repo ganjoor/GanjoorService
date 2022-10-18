@@ -180,8 +180,8 @@ namespace RMuseum.Services.Implementation
                         await _notificationService.PushNotification
                                         (
                                             (Guid)moderator.Id,
-                                            "ثبت مشخصات جدید برای شاعر",
-                                            $"درخواستی برای ثبت مشخصات جدید برای «{poet.Nickname}» ثبت شده است. در صورت تمایل به بررسی، بخش مربوط به شاعر را <a href=\"/User/SuggestedPoetSpecLines\">اینجا</a> ببینید.{ Environment.NewLine}" +
+                                            "ثبت مشخصات جدید برای سخنور",
+                                            $"درخواستی برای ثبت مشخصات جدید برای «{poet.Nickname}» ثبت شده است. در صورت تمایل به بررسی، بخش مربوط به سخنور را <a href=\"/User/SuggestedPoetSpecLines\">اینجا</a> ببینید.{ Environment.NewLine}" +
                                             $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی مشخصات است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
                                         );
                     }

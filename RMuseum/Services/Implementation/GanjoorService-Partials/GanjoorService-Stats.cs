@@ -397,13 +397,13 @@ namespace RMuseum.Services.Implementation
 
                                         var poets = await context.GanjoorPoets.AsNoTracking().ToListAsync();
 
-                                        string htmlText = $"<p>تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} مجموعاً {LanguageUtils.FormatMoney(sumPoetsCouplets)} بیت شعر از طریق سایت گنجور در دسترس قرار گرفته است. در جدول زیر که شاعران در آنها بر اساس تعداد ابیات اشعارشان به صورت نزولی مرتب شده‌اند با کلیک بر روی نام هر شاعر می‌توانید آمار اوزان اشعار او را مشاهده کنید.</p>{Environment.NewLine}";
-                                        htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در گنجور (مثل آثار خیام)، یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمس‌ها و همینطور این که اشعار نقل شده از شاعران دیگر در تذکره‌ها و کتابهایی مانند آن به نام مؤلف نقل‌کنندهٔ شعر ثبت شده تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
+                                        string htmlText = $"<p>تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} مجموعاً {LanguageUtils.FormatMoney(sumPoetsCouplets)} بیت شعر از طریق سایت گنجور در دسترس قرار گرفته است. در جدول زیر که سخنوران در آنها بر اساس تعداد ابیات اشعارشان به صورت نزولی مرتب شده‌اند با کلیک بر روی نام هر سخنور می‌توانید آمار اوزان اشعار او را مشاهده کنید.</p>{Environment.NewLine}";
+                                        htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در گنجور (مثل آثار خیام)، یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمس‌ها و همینطور این که اشعار نقل شده از سخنوران دیگر در تذکره‌ها و کتابهایی مانند آن به نام مؤلف نقل‌کنندهٔ شعر ثبت شده تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
 
                                         htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
-                                            $"<td class=\"c2\">شاعر</td>{Environment.NewLine}" +
+                                            $"<td class=\"c2\">سخنور</td>{Environment.NewLine}" +
                                             $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                                             $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
                                             $"</tr>{Environment.NewLine}";
