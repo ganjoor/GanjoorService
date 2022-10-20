@@ -166,7 +166,7 @@ namespace RMuseum.Services.Implementation
 
                     htmlText += $"<p><br style=\"clear: both;\" /></p>{Environment.NewLine}";
                     htmlText += $"<h2>{(nSinger + 1).ToPersianNumbers()}. <a href=\"{dbSinger.Url}\">";
-                    htmlText += $"{dbSinger.Name} ({singer.TrackCount.ToPersianNumbers()} قطعه)</a></h2>{Environment.NewLine}";
+                    htmlText += $"{dbSinger.Name}</a></h2>{Environment.NewLine}";
                     htmlText += "<div class=\"spacer\">&nbsp;</div>";
 
 
@@ -180,6 +180,11 @@ namespace RMuseum.Services.Implementation
                             $"</div>{Environment.NewLine}";
                     }
 
+                    htmlText += $"<div class=\"century\">{Environment.NewLine}";
+                    htmlText += $"{singer.TrackCount.ToPersianNumbers()} قطعه";
+                    htmlText += $"<a role=\"button\" class=\"w3tooltip cursor-pointer\" onclick=\"switch_section('item-section-{nSinger}', 'item-collapse-button-{nSinger}')\"><i class=\"info-buttons collapse_circle_down\" id=\"item-collapse-button-{nSinger}\"></i><span class=\"w3tooltiptext\">جمع شود / باز شود</span></a>";
+                    htmlText += $"</div>{Environment.NewLine}";
+                    htmlText += $"<div id=\"item-section-{nSinger}\" style=\"display:none\">{Environment.NewLine}";
                     htmlText += $"<ol>{Environment.NewLine}";
 
                     foreach (var song in tracks)
@@ -191,6 +196,7 @@ namespace RMuseum.Services.Implementation
                     }
 
                     htmlText += $"</ol>{Environment.NewLine}";
+                    htmlText += $"</div>{Environment.NewLine}";
                 }
 
 
@@ -235,8 +241,12 @@ namespace RMuseum.Services.Implementation
                     htmlText += $"<h2>{(nPoetIndex+1).ToPersianNumbers()}. <a href=\"{poetCat.FullUrl}\">{poet.Nickname}</a></h2>{Environment.NewLine}";
                     htmlText += $"<div class=\"spacer\">&nbsp;</div>{Environment.NewLine}";
                     htmlText += $"<div style=\"width:82px;margin:auto\"><a href=\"{poetCat.FullUrl}\"><img src=\"{WebServiceUrl.Url}/api/ganjoor/poet/image/{poetCat.UrlSlug}.gif\" alt=\"{poet.Nickname}\" /></a></div>{Environment.NewLine}";
-                    htmlText += $"<div style=\"width:100%;margin:auto\"><a href=\"/{poetCat.FullUrl}\" >{poet.Nickname}</a> ({tracks.Count.ToPersianNumbers()} قطعه)</div>{Environment.NewLine}" +
-                        $"<div class=\"spacer\">&nbsp;</div>{Environment.NewLine}";
+
+                    htmlText += $"<div class=\"century\">{Environment.NewLine}";
+                    htmlText += $"{tracks.Count.ToPersianNumbers()} قطعه";
+                    htmlText += $"<a role=\"button\" class=\"w3tooltip cursor-pointer\" onclick=\"switch_section('item-section-{nPoetIndex}', 'item-collapse-button-{nPoetIndex}')\"><i class=\"info-buttons collapse_circle_down\" id=\"item-collapse-button-{nPoetIndex}\"></i><span class=\"w3tooltiptext\">جمع شود / باز شود</span></a>";
+                    htmlText += $"</div>{Environment.NewLine}";
+                    htmlText += $"<div id=\"item-section-{nPoetIndex}\" style=\"display:none\">{Environment.NewLine}";
 
                     htmlText += $"<ol>{Environment.NewLine}";
 
@@ -259,6 +269,7 @@ namespace RMuseum.Services.Implementation
                     }
 
                     htmlText += $"</ol>{Environment.NewLine}";
+                    htmlText += $"</div>{Environment.NewLine}";
                 }
 
 
