@@ -13,6 +13,14 @@
                 <source src="@recitaion.Mp3Url" title="@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")" data-track-number="@(nRecitationIndex + 1)" />
                 مرورگر شما از پخش صدای HTML 5 پشتیبانی نمی‌کند.
             </audio>
+            @if (nRecitationIndex != (Model.Recitations.Length - 1))
+            {
+                <script>
+                    document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener("ended", function () {
+                        document.getElementById('audio-@(nRecitationIndex + 2)').play()
+                    });
+                </script>
+            }
             <div class="recitaion-info">
                 <a role="button" onclick="document.getElementById('audio-@(nRecitationIndex + 1)').play()" class="actionlink">@recitaion.AudioTitle</a> @Html.Raw(Model.getAudioDesc(recitaion, nRecitationIndex == 0))
             </div>
@@ -25,7 +33,7 @@
                     <a role="button" class="w3tooltip cursor-pointer recitation-button" onclick="switchRecitationVote(@recitaion.Id)"><i class="recitation-icons @(recitaion.UpVotedByUser ? "recitation-vote" : "recitation-novote")" id="@($"recitaion-{recitaion.Id}")"></i><span class="w3tooltiptext">رأی به خوانش</span></a>
                 }
                 <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/RecitationsOrder/?p={recitaion.PoemId}#a{recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="recitation-icons recitation-score"></i><span class="w3tooltiptext">اطلاعات رتبه‌بندی</span></a>
-                @if(recitaion.AudioArtistUrl.IndexOf("http") == 0)
+                @if (recitaion.AudioArtistUrl.IndexOf("http") == 0)
                 {
                     <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@Html.Raw(recitaion.AudioArtistUrl)" target="_blank"><i class="recitation-icons recitation-website"></i><span class="w3tooltiptext">@recitaion.AudioArtist</span></a>
                 }
@@ -40,7 +48,7 @@
                     {
                         <div class="recitaion-mistake">
                             <p>
-                                @if(mistake.CoupletIndex != -1)
+                                @if (mistake.CoupletIndex != -1)
                                 {
                                     <a href="@($"#bn{mistake.CoupletIndex + 1}")">#</a>
                                 }
@@ -54,16 +62,16 @@
                 document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('play', () => {
                     currentAudio = document.getElementById('audio-@(nRecitationIndex + 1)');
                     var audioList = document.querySelectorAll('audio');
-                    audioList.forEach(function(audioElement) {
-                      if(audioElement != currentAudio){
-                          audioElement.pause();
-                      }
+                    audioList.forEach(function (audioElement) {
+                        if (audioElement != currentAudio) {
+                            audioElement.pause();
+                        }
                     });
 
                     _setXml('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")');
                 });
 
-                 document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('timeupdate', () => {
+                document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('timeupdate', () => {
                     _trackTimeChanged(document.getElementById('audio-@(nRecitationIndex + 1)'));
                 });
             </script>
