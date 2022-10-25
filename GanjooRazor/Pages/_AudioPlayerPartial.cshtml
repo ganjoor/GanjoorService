@@ -17,7 +17,8 @@
             {
                 <script>
                     document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener("ended", function () {
-                        document.getElementById('audio-@(nRecitationIndex + 2)').play()
+                        document.getElementById('audio-@(nRecitationIndex + 2)').play();
+                        showAllRecitations();
                     });
                 </script>
             }
