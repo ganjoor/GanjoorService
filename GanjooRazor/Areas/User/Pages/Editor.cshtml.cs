@@ -515,5 +515,37 @@ namespace GanjooRazor.Areas.User.Pages
                 }
             }
         }
+
+        public async Task<IActionResult> OnPostSaveMetaAsync(int poemId, bool noindex, string redirectfromurl, int mixedmodeorder)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/poem/adminedit/{poemId}",
+                         new StringContent(JsonConvert.SerializeObject(
+                             new GanjoorModifyPageViewModel()
+                             {
+                                 NoIndex = noindex,
+                                 RedirectFromFullUrl = redirectfromurl,
+                                 MixedModeOrder = mixedmodeorder
+                             }
+                             ),
+                        Encoding.UTF8,
+                        "application/json")
+                        );
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkResult();
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
     }
 }

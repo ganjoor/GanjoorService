@@ -9,20 +9,21 @@
 }
 <h1>@ViewData["Title"]</h1>
 <script>
-    $(document).ready(function() {
-        $('[contenteditable]').keypress(function(e) { return e.which != 13; });
+    $(document).ready(function () {
+        $('[contenteditable]').keypress(function (e) { return e.which != 13; });
     });
 </script>
 <script>
 
     function resetVersePositions(verseCount) {
-         for (var i = 1; i <= verseCount; i++) {
+        for (var i = 1; i <= verseCount; i++) {
             var newVersePosition = 'versepostion-' + i.toString();
-             document.getElementById(newVersePosition).value = i % 2 == 1 ? 'Right' : 'Left';
+            document.getElementById(newVersePosition).value = i % 2 == 1 ? 'Right' : 'Left';
         }
         alert('انجام شد.');
     }
 
+ 
 
     function savePoemCorrections(id, verseCount) {
         var verseOrderText = [];
@@ -86,10 +87,10 @@
                 note: $('#note').val()
 
             },
-            success: function() {
+            success: function () {
                 location.reload(true);
             },
-            error: function(e) {
+            error: function (e) {
                 if (e.responseText == null)
                     alert(e);
                 else
@@ -109,13 +110,13 @@
             data: {
                 id: poemId
             },
-            error: function() {
+            error: function () {
                 if (e.responseText == null)
                     alert(e);
                 else
                     alert(e.responseText);
             },
-            success: function(rhyme) {
+            success: function (rhyme) {
                 $(elementId).val(rhyme);
                 return false;
             },
@@ -137,15 +138,44 @@
             data: {
                 poemid: id,
             },
-            error: function() {
+            error: function () {
                 alert('خطا رخ داد.')
             },
-            success: function() {
+            success: function () {
                 location.reload(true);
             },
 
         });
     }
+
+    function savemeta(id){
+         $('#saving').text('در حال ذخیره ...');
+
+        var url = '?handler=SaveMeta';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                poemid: id,
+                noindex: $('#chk_noindex').is(":checked"),
+                redirectfromurl: $('#redirect_from_url').val(),
+                mixedmodeorder: $('#mixed_mode_order').val()
+
+            },
+            error: function (e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+            },
+            success: function () {
+                location.reload(true);
+            },
+
+        });
+    }
+
 
     function editorcompare(id) {
         var a = document.getElementById('original-' + id.toString());
@@ -195,14 +225,14 @@
                 poemId: poemId,
                 vOrder: vOrder
             },
-            success: function(id) {
+            success: function (id) {
                 if (String(id) == '-1') {
                     alert('کار شکستن شعر شروع شد.');
                     return;
                 }
                 location.href = '/?p=' + String(id);
             },
-            error: function(e) {
+            error: function (e) {
                 if (e.responseText == null)
                     alert(e);
                 else
@@ -223,10 +253,10 @@
                 meterId: meterId,
                 rhyme: rhymeletters,
             },
-            success: function() {
+            success: function () {
                 alert('انجام شد.');
             },
-            error: function(e) {
+            error: function (e) {
                 if (e.responseText == null)
                     alert(e);
                 else
@@ -238,7 +268,7 @@
 
     function secondR() {
         const secondtrs = document.querySelectorAll('#secondr1, #secondr2, #secondr3, #secondr4, #secondr5, #secondr6');
-        secondtrs.forEach(function(secondtr) {
+        secondtrs.forEach(function (secondtr) {
             secondtr.removeAttribute("style");
         });
 
@@ -262,13 +292,13 @@
             data: {
                 id: id,
             },
-            error: function(e) {
+            error: function (e) {
                 if (e.responseText == null)
                     alert(e);
                 else
                     alert(e.responseText);
             },
-            success: function() {
+            success: function () {
                 alert('انجام شد.');
             },
 
@@ -295,10 +325,10 @@
                 ignoreInCategory: $("#ignoreInCategory").is(':checked'),
 
             },
-            success: function() {
+            success: function () {
                 location.reload();
             },
-            error: function(e) {
+            error: function (e) {
                 if (e.responseText == null)
                     alert(e);
                 else
@@ -319,11 +349,11 @@
             data: {
                 id: tagId,
             },
-            success: function() {
+            success: function () {
                 alert('انجام شد.');
                 location.reload();
             },
-            error: function(e) {
+            error: function (e) {
                 if (e.responseText == null)
                     alert(e);
                 else
@@ -570,10 +600,10 @@ else
                 {
                     <div id="id-0" name="id-0" contenteditable="true" class="background-white">@Model.MyLastEdit.Title</div>
                     <script>
-                        $(document).ready(function() {
+                        $(document).ready(function () {
                             editorcompare(0);
                         });
-                        document.getElementById("id-0").addEventListener("input", function() {
+                        document.getElementById("id-0").addEventListener("input", function () {
                             editorcompare(0)
                         }, false);
                     </script>
@@ -582,7 +612,7 @@ else
                 {
                     <div type="text" id="id-0" name="id-0" contenteditable="true" class="background-white">@Model.PageInformation.Poem.Title</div>
                     <script>
-                        document.getElementById("id-0").addEventListener("input", function() {
+                        document.getElementById("id-0").addEventListener("input", function () {
                             editorcompare(0)
                         }, false);
                     </script>
@@ -643,10 +673,10 @@ else
 
 
                         <script>
-                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function() {
+                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
                                 editorcompare(@verse.VOrder)
                             }, false);
-                            $(document).ready(function() {
+                            $(document).ready(function () {
                                 editorcompare(@verse.VOrder);
                             });
                         </script>
@@ -655,7 +685,7 @@ else
                     {
                         <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" class="background-white">@verse.Text</div>
                         <script>
-                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function() {
+                            document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
                                 editorcompare(@verse.VOrder)
                             }, false);
                         </script>
@@ -998,7 +1028,7 @@ else
                             </tr>
                             <tr>
                                 <td>
-                                    وزن: @(poemSetion.GanjoorMetre == null ? "تعیین نشده" : poemSetion.GanjoorMetre.Rhythm )
+                                    وزن: @(poemSetion.GanjoorMetre == null ? "تعیین نشده" : poemSetion.GanjoorMetre.Rhythm)
                                 </td>
                             </tr>
                             <tr>
@@ -1035,8 +1065,8 @@ else
         </tr>
 
         <tr>
-                <td><a role="button" onclick="resetVersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش پیش‌فرض نوع مصرع‌ها</a></td>
-            </tr>
+            <td><a role="button" onclick="resetVersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش پیش‌فرض نوع مصرع‌ها</a></td>
+        </tr>
 
 
 
@@ -1116,8 +1146,6 @@ else
 
         @if (Model.ShowAdminOps)
         {
-            
-
             <tr>
                 <td>برچسب‌های زمان و  مکان</td>
             </tr>
@@ -1143,51 +1171,51 @@ else
                                         switch (tag.LunarMonth)
                                         {
                                             case 1:
-                                                            @("محرم")
+                                                @("محرم")
                                                 ;
                                                 break;
                                             case 2:
-                                                            @("صفر")
+                                                @("صفر")
                                                 ;
                                                 break;
                                             case 3:
-                                                            @("ربیع‌الاول")
+                                                @("ربیع‌الاول")
                                                 ;
                                                 break;
                                             case 4:
-                                                            @("ربیع‌الثانی")
+                                                @("ربیع‌الثانی")
                                                 ;
                                                 break;
                                             case 5:
-                                                            @("جمادی‌الاول")
+                                                @("جمادی‌الاول")
                                                 ;
                                                 break;
                                             case 6:
-                                                            @("جمادی‌الثانی")
+                                                @("جمادی‌الثانی")
                                                 ;
                                                 break;
                                             case 7:
-                                                            @("رجب")
+                                                @("رجب")
                                                 ;
                                                 break;
                                             case 8:
-                                                            @("شعبان")
+                                                @("شعبان")
                                                 ;
                                                 break;
                                             case 9:
-                                                            @("رمضان")
+                                                @("رمضان")
                                                 ;
                                                 break;
                                             case 10:
-                                                            @("شوال")
+                                                @("شوال")
                                                 ;
                                                 break;
                                             case 11:
-                                                            @("ذیقعده")
+                                                @("ذیقعده")
                                                 ;
                                                 break;
                                             case 12:
-                                                            @("ذیحجه")
+                                                @("ذیحجه")
                                                 ;
                                                 break;
                                         }
@@ -1226,7 +1254,7 @@ else
                                     @{
                                         foreach (var location in Model.Locations)
                                         {
-                                                        <option value="@location.Id">@location.Name</option>
+                                            <option value="@location.Id">@location.Name</option>
                                         }
                                     }
                                 </select>
@@ -1255,14 +1283,14 @@ else
                                 <input type="text" id="day" />
                             </td>
                             <td>
-                                   <input type="checkbox" id="verifiedDate" />
+                                <input type="checkbox" id="verifiedDate" />
 
-                                </td>
-                                <td>
-                                   <input type="checkbox" id="ignoreInCategory" />
-                                </td>
-                                <td>
-                                </td>
+                            </td>
+                            <td>
+                                <input type="checkbox" id="ignoreInCategory" />
+                            </td>
+                            <td>
+                            </td>
                         </tr>
                         <tr>
                             <td colspan="7">
@@ -1275,6 +1303,56 @@ else
             <tr>
                 <td>
                     <a href="/Admin/Locations" role="button" class="pagebutton">مکان‌ها</a>
+                </td>
+            </tr>
+        }
+
+        @if (Model.ShowAdminOps)
+        {
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td colspan="2">ابرداده‌های اضافه</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="inputlabel">ایندکس نشود</span>
+                            </td>
+                            <td>
+                                @if (Model.PageInformation.NoIndex)
+                                {
+                                    <input type="checkbox" id="chk_noindex" name="chk_noindex" checked />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" id="chk_noindex" name="chk_noindex" />
+                                }
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="inputlabel">از این نشانی (کامل) هم به این صفحه ری‌دایرکت شود</span>
+                            </td>
+                            <td>
+                                <input style="text-align:left;direction:ltr;" value="@Model.PageInformation.RedirectFromFullUrl" id="redirect_from_url" name="redirect_from_url" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="inputlabel">ترتیب در فهرستها:</span>
+                            </td>
+                            <td>
+                                <input value="@Model.PageInformation.Poem.MixedModeOrder" id="mixed_mode_order" name="mixed_mode_order" />
+                            </td>
+                        </tr>
+                        <tr style="background-color:@color">
+                            <td class="td-button-container" colspan="2">
+                                <a role="button" class="editor-button background-green" onclick="savemeta(@Model.PageInformation.Id)">ذخیرهٔ ابرداده‌ها</a>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         }
