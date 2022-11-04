@@ -522,14 +522,14 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    HttpResponseMessage response = await secureClient.PostAsync(
+                    HttpResponseMessage response = await secureClient.PutAsync(
                         $"{APIRoot.Url}/api/ganjoor/poem/adminedit/{poemId}",
                          new StringContent(JsonConvert.SerializeObject(
                              new GanjoorModifyPageViewModel()
                              {
                                  NoIndex = noindex,
                                  RedirectFromFullUrl = redirectfromurl,
-                                 MixedModeOrder = mixedmodeorder
+                                 MixedModeOrder = mixedmodeorder,
                              }
                              ),
                         Encoding.UTF8,
