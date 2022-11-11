@@ -3281,7 +3281,7 @@ namespace RMuseum.Services.Implementation
                        ||
                        p.Tags.Where(t => EF.Functions.Contains(t.Value, searchConditions) || EF.Functions.Contains(t.ValueInEnglish, searchConditions)).Any()
                        )
-                       );
+                       ).OrderBy(i => i.Id);
 
 
             (PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items) paginatedResult =
@@ -3343,7 +3343,7 @@ namespace RMuseum.Services.Implementation
                        ||
                        p.Tags.Where(t => EF.Functions.Contains(t.Value, searchConditions) || EF.Functions.Contains(t.ValueInEnglish, searchConditions)).Any()
                        )
-                       );
+                       ).OrderBy(i => i.Id);
 
 
             (PaginationMetadata PagingMeta, RArtifactItemRecord[] Items) paginatedResult =
