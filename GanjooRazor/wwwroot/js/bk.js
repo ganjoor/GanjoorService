@@ -1020,7 +1020,7 @@ function CheckIfHasNotificationsForHomePage() {
             },
             success: function (result) {
                 if (result != '') {
-                    document.getElementById('notification-badge').classList.toggle('hidden-recitation');
+                    document.getElementById('notification-badge').classList.toggle('display-none');
                     document.getElementById('notification-badge').classList.toggle('visible-notification-badge');
                 }
             },

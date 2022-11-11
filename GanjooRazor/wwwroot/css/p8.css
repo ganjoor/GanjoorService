@@ -1224,6 +1224,10 @@ ol {
 .recitaion-info {
 }
 
+.display-none {
+    display: none;
+}
+
 .hidden-recitation {
     display: none;
 }
