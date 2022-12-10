@@ -3320,6 +3320,10 @@ namespace RMuseum.Services.Implementation
             {
                 var poemVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).ToListAsync();
                 var verses = FilterSectionVerses(section, poemVerses);
+                if(verses.Any(v => v.VersePosition == VersePosition.Paragraph))
+                {
+                    return new RServiceResult<string>("");
+                }
 
                 Dictionary<string, int> rhytmCounter = new Dictionary<string, int>();
 
