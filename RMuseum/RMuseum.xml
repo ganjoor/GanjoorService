@@ -12595,10 +12595,11 @@
             <param name="retag"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.StartFindingMissingRhythms(System.Guid,System.Boolean,System.Int32)">
             <summary>
             Start finding missing rhthms
             </summary>
+            <param name="userId"></param>
             <param name="onlyPoemsWithRhymes"></param>
             <param name="poemsNum"></param>
             <returns></returns>
@@ -14825,10 +14826,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Boolean,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingMissingRhythms(System.Guid,System.Boolean,System.Int32)">
             <summary>
             Start finding missing rhthms
             </summary>
+            <param name="userId"></param>
             <param name="onlyPoemsWithRhymes"></param>
             <param name="poemsNum"></param>
             <returns></returns>

@@ -594,11 +594,12 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartFindingMissingRhythms(bool onlyPoemsWithRhymes = true, int poemsNum = 1000)
+        public async Task<IActionResult> StartFindingMissingRhythms(bool onlyPoemsWithRhymes = true, int poemsNum = 1000)
         {
-
+            string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+            var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
             RServiceResult<bool> res =
-                _ganjoorService.StartFindingMissingRhythms(onlyPoemsWithRhymes, poemsNum);
+                _ganjoorService.StartFindingMissingRhythms(systemUserId, onlyPoemsWithRhymes, poemsNum);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

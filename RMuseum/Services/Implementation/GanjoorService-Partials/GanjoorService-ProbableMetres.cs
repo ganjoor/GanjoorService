@@ -21,10 +21,11 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// Start finding missing rhthms
         /// </summary>
+        /// <param name="userId"></param>
         /// <param name="onlyPoemsWithRhymes"></param>
         /// <param name="poemsNum"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartFindingMissingRhythms(bool onlyPoemsWithRhymes, int poemsNum = 1000)
+        public RServiceResult<bool> StartFindingMissingRhythms(Guid userId, bool onlyPoemsWithRhymes, int poemsNum = 1000)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
                         (
@@ -36,9 +37,7 @@ namespace RMuseum.Services.Implementation
                                 var job = (await jobProgressServiceEF.NewJob($"StartFindingMissingRhythms", "Query data")).Result;
                                 try
                                 {
-                                    string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
-                                    var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
-
+                                 
                                     var sectionIds = await context.GanjoorPoemSections.AsNoTracking()
                                             .Where(p =>
                                                 p.GanjoorMetreId == null && (onlyPoemsWithRhymes == false || !string.IsNullOrEmpty(p.RhymeLetters))
@@ -76,17 +75,19 @@ namespace RMuseum.Services.Implementation
 
                                                 if(!string.IsNullOrEmpty(res.Result))
                                                 {
-                                                    GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel()
+                                                    GanjoorPoemCorrection dbCorrection = new GanjoorPoemCorrection()
                                                     {
                                                         PoemId = section.PoemId,
+                                                        UserId = userId,
                                                         VerseOrderText = new GanjoorVerseVOrderText[] { },
                                                         Rhythm = res.Result,
-                                                        UserId = systemUserId,
-                                                        Note = "وزنیابی سیستمی"
-
+                                                        Note = "وزنیابی سیستمی",
+                                                        Date = DateTime.Now,
+                                                        Result = CorrectionReviewResult.NotReviewed,
+                                                        Reviewed = false,
+                                                        AffectedThePoem = false
                                                     };
-
-                                                    await SuggestPoemCorrection(correction);
+                                                    context.GanjoorPoemCorrections.Add(dbCorrection);
                                                 }
 
                                                 await jobProgressServiceEF.UpdateJob(job.Id, i);
