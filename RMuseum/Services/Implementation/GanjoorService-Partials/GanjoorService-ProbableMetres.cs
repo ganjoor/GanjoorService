@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -35,9 +36,14 @@ namespace RMuseum.Services.Implementation
                                 var job = (await jobProgressServiceEF.NewJob($"StartFindingMissingRhythms", "Query data")).Result;
                                 try
                                 {
+                                    string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+                                    var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
+
                                     var sectionIds = await context.GanjoorPoemSections.AsNoTracking()
                                             .Where(p =>
                                                 p.GanjoorMetreId == null && (onlyPoemsWithRhymes == false || !string.IsNullOrEmpty(p.RhymeLetters))
+                                                &&
+                                                p.SectionType == PoemSectionType.WholePoem
                                                 &&
                                                 false == context.GanjoorPoemProbableMetres.Where(r => r.SectionId == p.Id).Any()
                                                 )
@@ -55,7 +61,7 @@ namespace RMuseum.Services.Implementation
                                             var section = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.Id == id).SingleOrDefaultAsync();
                                             if(section != null)
                                             {
-                                                var res = await _FindSectionRhythm(section, context, httpClient, metres, true);
+                                                var res = await _FindSectionRhythm(section, context, httpClient, metres, false);
                                                 if (res.Result == null)
                                                     res.Result = "";
 
@@ -67,6 +73,21 @@ namespace RMuseum.Services.Implementation
                                                 };
 
                                                 context.GanjoorPoemProbableMetres.Add(prometre);
+
+                                                if(!string.IsNullOrEmpty(res.Result))
+                                                {
+                                                    GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel()
+                                                    {
+                                                        PoemId = section.PoemId,
+                                                        VerseOrderText = new GanjoorVerseVOrderText[] { },
+                                                        Rhythm = res.Result,
+                                                        UserId = systemUserId,
+                                                        Note = "وزنیابی سیستمی"
+
+                                                    };
+
+                                                    await SuggestPoemCorrection(correction);
+                                                }
 
                                                 await jobProgressServiceEF.UpdateJob(job.Id, i);
                                             }
