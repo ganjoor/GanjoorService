@@ -2063,11 +2063,15 @@ namespace RMuseum.Services.Implementation
         /// get next unreviewed correction
         /// </summary>
         /// <param name="skip"></param>
+        /// <param name="onlyUserCorrections"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetNextUnreviewedCorrection(int skip)
+        public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetNextUnreviewedCorrection(int skip, bool onlyUserCorrections)
         {
+            string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+            var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
+
             var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
-                .Where(c => c.Reviewed == false)
+                .Where(c => c.Reviewed == false && (onlyUserCorrections == false || c.UserId != systemUserId))
                 .OrderBy(c => c.Id)
                 .Skip(skip)
                 .FirstOrDefaultAsync();
@@ -2108,11 +2112,14 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// unreview correction count
         /// </summary>
+        /// <param name="onlyUserCorrections"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<int>> GetUnreviewedCorrectionCount()
+        public async Task<RServiceResult<int>> GetUnreviewedCorrectionCount(bool onlyUserCorrections)
         {
+            string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+            var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
             return new RServiceResult<int>(await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText)
-                .Where(c => c.Reviewed == false)
+                .Where(c => c.Reviewed == false && (onlyUserCorrections == false || c.UserId != systemUserId))
                 .CountAsync());
         }
 

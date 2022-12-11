@@ -1269,11 +1269,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnreviewedCorrection(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnreviewedCorrection(System.Int32,System.Boolean)">
             <summary>
             get next unreviewed correction
             </summary>
             <param name="skip"></param>
+            <param name="onlyUserCorrections"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ModeratePoemCorrection(RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
@@ -12176,17 +12177,19 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedCorrection(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedCorrection(System.Int32,System.Boolean)">
             <summary>
             get next unreviewed correction
             </summary>
             <param name="skip"></param>
+            <param name="onlyUserCorrections"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetUnreviewedCorrectionCount">
+        <member name="M:RMuseum.Services.IGanjoorService.GetUnreviewedCorrectionCount(System.Boolean)">
             <summary>
             unreview correction count
             </summary>
+            <param name="onlyUserCorrections"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.ModeratePoemCorrection(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
@@ -15348,17 +15351,19 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedCorrection(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedCorrection(System.Int32,System.Boolean)">
             <summary>
             get next unreviewed correction
             </summary>
             <param name="skip"></param>
+            <param name="onlyUserCorrections"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedCorrectionCount">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedCorrectionCount(System.Boolean)">
             <summary>
             unreview correction count
             </summary>
+            <param name="onlyUserCorrections"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._GetRandomPoemId(System.Int32,System.Int32)">

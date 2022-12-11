@@ -248,14 +248,16 @@ namespace RMuseum.Services
         /// get next unreviewed correction
         /// </summary>
         /// <param name="skip"></param>
+        /// <param name="onlyUserCorrections"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetNextUnreviewedCorrection(int skip);
+        Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetNextUnreviewedCorrection(int skip, bool onlyUserCorrections);
 
         /// <summary>
         /// unreview correction count
         /// </summary>
+        /// <param name="onlyUserCorrections"></param>
         /// <returns></returns>
-        Task<RServiceResult<int>> GetUnreviewedCorrectionCount();
+        Task<RServiceResult<int>> GetUnreviewedCorrectionCount(bool onlyUserCorrections);
 
         /// <summary>
         /// moderate poem correction
