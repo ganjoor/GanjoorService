@@ -75,19 +75,29 @@ namespace RMuseum.Services.Implementation
 
                                                 if(!string.IsNullOrEmpty(res.Result))
                                                 {
-                                                    GanjoorPoemCorrection dbCorrection = new GanjoorPoemCorrection()
+                                                    GanjoorPoemSectionCorrection dbCorrection = new GanjoorPoemSectionCorrection()
                                                     {
-                                                        PoemId = section.PoemId,
+                                                        SectionId = section.Id,
                                                         UserId = userId,
-                                                        VerseOrderText = new GanjoorVerseVOrderText[] { },
                                                         Rhythm = res.Result,
                                                         Note = "وزنیابی سیستمی",
                                                         Date = DateTime.Now,
-                                                        Result = CorrectionReviewResult.NotReviewed,
+                                                        RhythmResult = CorrectionReviewResult.NotReviewed,
                                                         Reviewed = false,
-                                                        AffectedThePoem = false
+                                                        AffectedThePoem = false,
+                                                        RhymeLettersReviewResult = CorrectionReviewResult.NotReviewed,
+                                                        BreakFromVerse1VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                        BreakFromVerse2VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                        BreakFromVerse3VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                        BreakFromVerse4VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                        BreakFromVerse5VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                        BreakFromVerse6VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                        BreakFromVerse7VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                        BreakFromVerse8VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                        BreakFromVerse9VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                        BreakFromVerse10VOrderResult = CorrectionReviewResult.NotReviewed,
                                                     };
-                                                    context.GanjoorPoemCorrections.Add(dbCorrection);
+                                                    context.GanjoorPoemSectionCorrections.Add(dbCorrection);
                                                 }
 
                                                 await jobProgressServiceEF.UpdateJob(job.Id, i);
