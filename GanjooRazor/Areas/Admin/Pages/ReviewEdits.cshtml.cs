@@ -38,6 +38,8 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public PoemRelatedImage TextSourceImage { get; set; }
 
+        public bool OnlyUserCorrections { get; set; }
+
         /// <summary>
         /// page
         /// </summary>
@@ -57,11 +59,12 @@ namespace GanjooRazor.Areas.Admin.Pages
             FatalError = "";
             TotalCount = 0;
             Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
+            OnlyUserCorrections = string.IsNullOrEmpty(Request.Query["onlyUserCorrections"]) ? true : bool.Parse(Request.Query["onlyUserCorrections"]);
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var nextResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/correction/next?skip={Skip}");
+                    var nextResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/correction/next?skip={Skip}&onlyUserCorrections={OnlyUserCorrections}");
                     if (!nextResponse.IsSuccessStatusCode)
                     {
                         FatalError = JsonConvert.DeserializeObject<string>(await nextResponse.Content.ReadAsStringAsync());
@@ -165,9 +168,10 @@ namespace GanjooRazor.Areas.Admin.Pages
         public IActionResult OnPost()
         {
             Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
+            OnlyUserCorrections = string.IsNullOrEmpty(Request.Query["onlyUserCorrections"]) ? true : bool.Parse(Request.Query["onlyUserCorrections"]);
             if (Request.Form["next"].Count == 1)
             {
-                return Redirect($"/Admin/ReviewEdits/?skip={Skip + 1}");
+                return Redirect($"/Admin/ReviewEdits/?skip={Skip + 1}&onlyUserCorrections={OnlyUserCorrections}");
             }
             return Page();
         }
