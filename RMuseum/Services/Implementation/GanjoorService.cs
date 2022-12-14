@@ -3393,6 +3393,9 @@ namespace RMuseum.Services.Implementation
                         if (rhythm == "مفاعلتن مفاعلتن مفاعلتن مفاعلتن")
                             rhythm = "مفاعیلن مفاعیلن مفاعیلن مفاعیلن (هزج مثمن سالم)";
 
+                        if (rhythm == "فاعلات مفعولن فاعلات مفعولن")
+                            rhythm = "فاعلن مفاعیلن فاعلن مفاعیلن (مقتضب مثمن مطوی مقطوع)";
+
                         if (rhytmCounter.TryGetValue(rhythm, out int count))
                         {
                             count++;
