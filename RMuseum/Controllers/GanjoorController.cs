@@ -598,8 +598,10 @@ namespace RMuseum.Controllers
         {
             string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
             var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
+            string deletedUserEmail = $"{Configuration.GetSection("Ganjoor")["DeleteUserEmail"]}";
+            var deletedUserId = (Guid)(await _appUserService.FindUserByEmail(deletedUserEmail)).Result.Id;
             RServiceResult<bool> res =
-                _ganjoorService.StartFindingMissingRhythms(systemUserId, onlyPoemsWithRhymes, poemsNum);
+                _ganjoorService.StartFindingMissingRhythms(systemUserId, deletedUserId, onlyPoemsWithRhymes, poemsNum);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

@@ -671,11 +671,12 @@ namespace RMuseum.Services
         /// <summary>
         /// Start finding missing rhthms
         /// </summary>
-        /// <param name="userId"></param>
+        /// <param name="systemUserId"></param>
+        /// <param name="deletedUserId"></param>
         /// <param name="onlyPoemsWithRhymes"></param>
         /// <param name="poemsNum"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartFindingMissingRhythms(Guid userId, bool onlyPoemsWithRhymes, int poemsNum = 1000);
+        RServiceResult<bool> StartFindingMissingRhythms(Guid systemUserId, Guid deletedUserId, bool onlyPoemsWithRhymes, int poemsNum = 1000);
 
         /// <summary>
         /// find poem rhythm

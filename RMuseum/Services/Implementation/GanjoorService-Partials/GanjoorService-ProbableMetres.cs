@@ -20,11 +20,12 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// Start finding missing rhthms
         /// </summary>
-        /// <param name="userId"></param>
+        /// <param name="systemUserId"></param>
+        /// <param name="deletedUserId"></param>
         /// <param name="onlyPoemsWithRhymes"></param>
         /// <param name="poemsNum"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartFindingMissingRhythms(Guid userId, bool onlyPoemsWithRhymes, int poemsNum = 1000)
+        public RServiceResult<bool> StartFindingMissingRhythms(Guid systemUserId, Guid deletedUserId, bool onlyPoemsWithRhymes, int poemsNum = 1000)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
                         (
@@ -72,33 +73,36 @@ namespace RMuseum.Services.Implementation
 
                                                 context.GanjoorPoemProbableMetres.Add(prometre);
 
+                                                var userId = !string.IsNullOrEmpty(res.Result) && res.Result != "dismissed" ? systemUserId : deletedUserId;
                                                 if(!string.IsNullOrEmpty(res.Result) && res.Result != "dismissed")
                                                 {
-                                                    GanjoorPoemSectionCorrection dbCorrection = new GanjoorPoemSectionCorrection()
-                                                    {
-                                                        SectionId = section.Id,
-                                                        UserId = userId,
-                                                        Rhythm = res.Result,
-                                                        Note = "وزنیابی سیستمی",
-                                                        Date = DateTime.Now,
-                                                        RhythmResult = CorrectionReviewResult.NotReviewed,
-                                                        Reviewed = false,
-                                                        AffectedThePoem = false,
-                                                        RhymeLettersReviewResult = CorrectionReviewResult.NotReviewed,
-                                                        BreakFromVerse1VOrderResult = CorrectionReviewResult.NotReviewed,
-                                                        BreakFromVerse2VOrderResult = CorrectionReviewResult.NotReviewed,
-                                                        BreakFromVerse3VOrderResult = CorrectionReviewResult.NotReviewed,
-                                                        BreakFromVerse4VOrderResult = CorrectionReviewResult.NotReviewed,
-                                                        BreakFromVerse5VOrderResult = CorrectionReviewResult.NotReviewed,
-                                                        BreakFromVerse6VOrderResult = CorrectionReviewResult.NotReviewed,
-                                                        BreakFromVerse7VOrderResult = CorrectionReviewResult.NotReviewed,
-                                                        BreakFromVerse8VOrderResult = CorrectionReviewResult.NotReviewed,
-                                                        BreakFromVerse9VOrderResult = CorrectionReviewResult.NotReviewed,
-                                                        BreakFromVerse10VOrderResult = CorrectionReviewResult.NotReviewed,
-                                                    };
-                                                    context.GanjoorPoemSectionCorrections.Add(dbCorrection);
+                                                    res.Result = "فاعلاتن فاعلاتن فاعلاتن فاعلن (رمل مثمن محذوف)";
                                                 }
 
+
+                                                GanjoorPoemSectionCorrection dbCorrection = new GanjoorPoemSectionCorrection()
+                                                {
+                                                    SectionId = section.Id,
+                                                    UserId = userId,
+                                                    Rhythm = res.Result,
+                                                    Note = "وزنیابی سیستمی",
+                                                    Date = DateTime.Now,
+                                                    RhythmResult = CorrectionReviewResult.NotReviewed,
+                                                    Reviewed = false,
+                                                    AffectedThePoem = false,
+                                                    RhymeLettersReviewResult = CorrectionReviewResult.NotReviewed,
+                                                    BreakFromVerse1VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                    BreakFromVerse2VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                    BreakFromVerse3VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                    BreakFromVerse4VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                    BreakFromVerse5VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                    BreakFromVerse6VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                    BreakFromVerse7VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                    BreakFromVerse8VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                    BreakFromVerse9VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                    BreakFromVerse10VOrderResult = CorrectionReviewResult.NotReviewed,
+                                                };
+                                                context.GanjoorPoemSectionCorrections.Add(dbCorrection);
                                                 await jobProgressServiceEF.UpdateJob(job.Id, i);
                                             }
                                             
