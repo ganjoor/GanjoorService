@@ -3329,7 +3329,7 @@ namespace RMuseum.Services.Implementation
                 var verses = FilterSectionVerses(section, poemVerses);
                 if(verses.Any(v => v.VersePosition == VersePosition.Paragraph))
                 {
-                    return new RServiceResult<string>("");
+                    return new RServiceResult<string>("paragraph");
                 }
 
                 Dictionary<string, int> rhytmCounter = new Dictionary<string, int>();
@@ -3433,7 +3433,7 @@ namespace RMuseum.Services.Implementation
                     if (!string.IsNullOrEmpty(rhytm))
                         return new RServiceResult<string>(rhytm);
 
-                    if (verses.Count < 3)
+                    if (verses.Count < 9)
                         return new RServiceResult<string>("dismissed");
                 }
 

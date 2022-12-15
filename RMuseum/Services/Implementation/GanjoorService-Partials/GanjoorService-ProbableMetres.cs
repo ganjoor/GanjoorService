@@ -73,8 +73,11 @@ namespace RMuseum.Services.Implementation
 
                                                 context.GanjoorPoemProbableMetres.Add(prometre);
 
+                                                if (res.Result == "paragraph")
+                                                    continue;
+
                                                 var userId = !string.IsNullOrEmpty(res.Result) && res.Result != "dismissed" ? systemUserId : deletedUserId;
-                                                if(!string.IsNullOrEmpty(res.Result) && res.Result != "dismissed")
+                                                if(string.IsNullOrEmpty(res.Result) || res.Result == "dismissed")
                                                 {
                                                     res.Result = "فاعلاتن فاعلاتن فاعلاتن فاعلن (رمل مثمن محذوف)";
                                                 }
