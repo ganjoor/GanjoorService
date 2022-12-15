@@ -898,7 +898,7 @@ namespace RMuseum.Services.Implementation
             var deletedUserId = (Guid)(await _appUserService.FindUserByEmail(deletedUserEmail)).Result.Id;
 
             var dbCorrection = await _context.GanjoorPoemSectionCorrections.AsNoTracking().Include(c => c.User)
-                .Where(c => c.Reviewed == false && ((deletedUserSections == false && c.UserId != deletedUserId ) || c.UserId == deletedUserId))
+                .Where(c => c.Reviewed == false && ((deletedUserSections == false && c.UserId != deletedUserId ) || (deletedUserSections == true && c.UserId == deletedUserId)))
                 .OrderBy(c => c.Id)
                 .Skip(skip)
                 .FirstOrDefaultAsync();
@@ -1021,7 +1021,7 @@ namespace RMuseum.Services.Implementation
             string deletedUserEmail = $"{Configuration.GetSection("Ganjoor")["DeleteUserEmail"]}";
             var deletedUserId = (Guid)(await _appUserService.FindUserByEmail(deletedUserEmail)).Result.Id;
             return new RServiceResult<int>(await _context.GanjoorPoemSectionCorrections.AsNoTracking()
-                .Where(c => c.Reviewed == false && ((deletedUserSections == false && c.UserId != deletedUserId) || c.UserId == deletedUserId))
+                .Where(c => c.Reviewed == false && ((deletedUserSections == false && c.UserId != deletedUserId) || (deletedUserSections == true && c.UserId == deletedUserId)))
                 .CountAsync());
         }
     }
