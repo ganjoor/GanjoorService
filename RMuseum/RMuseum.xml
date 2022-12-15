@@ -1818,11 +1818,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnreviewedPoemSectionCorrection(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnreviewedPoemSectionCorrection(System.Int32,System.Boolean)">
             <summary>
             get next unreviewed correction for poem sections
             </summary>
             <param name="skip"></param>
+            <param name="deletedUserSections"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetUserSectionCorrections(RSecurityBackend.Models.Generic.PagingParameterModel)">
@@ -12960,17 +12961,19 @@
             <param name="sectionId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedPoemSectionCorrection(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedPoemSectionCorrection(System.Int32,System.Boolean)">
             <summary>
             get next unreviewed correction for a poem section
             </summary>
             <param name="skip"></param>
+            <param name="deletedUserSections"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetUnreviewedPoemSectionCorrectionCount">
+        <member name="M:RMuseum.Services.IGanjoorService.GetUnreviewedPoemSectionCorrectionCount(System.Boolean)">
             <summary>
             unreviewed poem section correction count
             </summary>
+            <param name="deletedUserSections"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetSectionCorrectionById(System.Int32)">
@@ -14670,11 +14673,12 @@
             <param name="sectionId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedPoemSectionCorrection(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedPoemSectionCorrection(System.Int32,System.Boolean)">
             <summary>
             get next unreviewed correction for a poem section
             </summary>
             <param name="skip"></param>
+            <param name="deletedUserSections"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSectionCorrectionById(System.Int32)">
@@ -14684,7 +14688,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedPoemSectionCorrectionCount">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedPoemSectionCorrectionCount(System.Boolean)">
             <summary>
             unreview poem section correction count
             </summary>

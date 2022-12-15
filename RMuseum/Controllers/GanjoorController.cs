@@ -3146,6 +3146,7 @@ namespace RMuseum.Controllers
         /// get next unreviewed correction for poem sections
         /// </summary>
         /// <param name="skip"></param>
+        /// <param name="deletedUserSections"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("section/correction/next")]
@@ -3153,14 +3154,14 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemSectionCorrectionViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetNextUnreviewedPoemSectionCorrection(int skip = 0)
+        public async Task<IActionResult> GetNextUnreviewedPoemSectionCorrection(int skip = 0, bool deletedUserSections = false)
         {
             RServiceResult<GanjoorPoemSectionCorrectionViewModel> res =
-                await _ganjoorService.GetNextUnreviewedPoemSectionCorrection(skip);
+                await _ganjoorService.GetNextUnreviewedPoemSectionCorrection(skip, deletedUserSections);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 
-            var resCount = await _ganjoorService.GetUnreviewedPoemSectionCorrectionCount();
+            var resCount = await _ganjoorService.GetUnreviewedPoemSectionCorrectionCount(deletedUserSections);
             if (!string.IsNullOrEmpty(resCount.ExceptionString))
                 return BadRequest(resCount.ExceptionString);
 
