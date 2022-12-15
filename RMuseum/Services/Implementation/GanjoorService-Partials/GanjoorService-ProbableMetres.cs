@@ -60,7 +60,7 @@ namespace RMuseum.Services.Implementation
                                             var section = await context.GanjoorPoemSections.AsNoTracking().Where(s => s.Id == id).SingleOrDefaultAsync();
                                             if(section != null)
                                             {
-                                                var res = await _FindSectionRhythm(section, context, httpClient, metres, false);
+                                                var res = await _FindSectionRhythm(section, context, httpClient, metres, true);
                                                 if (res.Result == null)
                                                     res.Result = "";
 
