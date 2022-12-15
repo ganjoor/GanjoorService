@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
-using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -73,7 +72,7 @@ namespace RMuseum.Services.Implementation
 
                                                 context.GanjoorPoemProbableMetres.Add(prometre);
 
-                                                if(!string.IsNullOrEmpty(res.Result))
+                                                if(!string.IsNullOrEmpty(res.Result) && res.Result != "dismissed")
                                                 {
                                                     GanjoorPoemSectionCorrection dbCorrection = new GanjoorPoemSectionCorrection()
                                                     {
