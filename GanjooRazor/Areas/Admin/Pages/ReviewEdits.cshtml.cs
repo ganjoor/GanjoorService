@@ -268,7 +268,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                                     {
                                         if (Correction.VerseOrderText[i].Result != CorrectionReviewResult.Approved)
                                         {
-                                            Correction.VerseOrderText[i].VersePositionResult = CorrectionReviewResult.NotSuggectedByUser;
+                                            Correction.VerseOrderText[i].VersePositionResult = CorrectionReviewResult.NotSuggestedByUser;
                                         }
                                         else
                                         {
