@@ -3434,7 +3434,7 @@ namespace RMuseum.Services.Implementation
                         return new RServiceResult<string>(rhytm);
 
                     if (verses.Count < 9)
-                        return new RServiceResult<string>("dismissed");
+                        return new RServiceResult<string>("paragraph");
                 }
 
                 return new RServiceResult<string>("");
