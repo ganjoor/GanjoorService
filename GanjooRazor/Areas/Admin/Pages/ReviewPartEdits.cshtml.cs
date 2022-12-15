@@ -37,6 +37,11 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public int TotalCount { get; set; }
 
+        /// <summary>
+        /// deleted user sections
+        /// </summary>
+        public bool DeletedUserSections { get; set; }
+
         public PoemRelatedImage TextSourceImage { get; set; }
 
         /// <summary>
@@ -91,11 +96,12 @@ namespace GanjooRazor.Areas.Admin.Pages
             FatalError = "";
             TotalCount = 0;
             Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
+            DeletedUserSections = string.IsNullOrEmpty(Request.Query["deletedUserSections"]) ? false : bool.Parse(Request.Query["deletedUserSections"]);
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var nextResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/section/correction/next?skip={Skip}");
+                    var nextResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/section/correction/next?skip={Skip}&deletedUserSections={DeletedUserSections}");
                     if (!nextResponse.IsSuccessStatusCode)
                     {
                         FatalError = JsonConvert.DeserializeObject<string>(await nextResponse.Content.ReadAsStringAsync());
@@ -161,9 +167,10 @@ namespace GanjooRazor.Areas.Admin.Pages
         public IActionResult OnPost()
         {
             Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
+            DeletedUserSections = string.IsNullOrEmpty(Request.Query["deletedUserSections"]) ? false : bool.Parse(Request.Query["deletedUserSections"]);
             if (Request.Form["next"].Count == 1)
             {
-                return Redirect($"/Admin/ReviewPartEdits/?skip={Skip + 1}");
+                return Redirect($"/Admin/ReviewPartEdits/?skip={Skip + 1}&deletedUserSections={DeletedUserSections}");
             }
             return Page();
         }

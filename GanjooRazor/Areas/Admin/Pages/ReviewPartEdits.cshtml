@@ -9,6 +9,10 @@
 
 <h1>@ViewData["Title"]</h1>
 
+<a role="button" href="/Admin/ReviewPartEdits/?deletedUserSections=true" class="pagebutton">پیشنهادهای سیستمی</a>
+
+
+
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
     <p>@Model.FatalError</p>
@@ -342,9 +346,14 @@ else
         </tr>
 
 
-
-
-
+        @if(Model.PoemSection != null)
+        {
+            <tr>
+                <td colspan="2">
+                    <a role="button" href=@($"/User/Section?poemId={Model.PoemSection.PoemId}&index={Model.PoemSection.Index}") class="pagebutton" target="_blank">خودم ویرایش کنم</a>
+                </td>
+            </tr>
+        }
 
     </table>
 }
