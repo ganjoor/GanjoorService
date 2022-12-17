@@ -59,6 +59,16 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public List<GanjoorVerseViewModel> Verses { get; set; }
 
+        /// <summary>
+        /// rhythms alphabetically
+        /// </summary>
+        public GanjoorMetre[] RhythmsAlphabetically { get; set; }
+
+        /// <summary>
+        /// rhythms by frequency
+        /// </summary>
+        public GanjoorMetre[] RhythmsByVerseCount { get; set; }
+
         private List<GanjoorVerseViewModel> _FilterSectionVerses(GanjoorPoemSection section, GanjoorVerseViewModel[] verses)
         {
             List<GanjoorVerseViewModel> sectionVerses = new List<GanjoorVerseViewModel>();
@@ -153,6 +163,33 @@ namespace GanjooRazor.Areas.Admin.Pages
                         }
 
                         Verses = _FilterSectionVerses(PoemSection, PageInformation.Poem.Verses);
+                    }
+
+                    if (DeletedUserSections)
+                    {
+                        var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms?sortOnVerseCount=true");
+                        if (!rhythmResponse.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await rhythmResponse.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+
+                        RhythmsByVerseCount = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
+
+                        List<GanjoorMetre> rhythmsByVerseCount = new List<GanjoorMetre>(RhythmsByVerseCount);
+                        rhythmsByVerseCount.Sort((a, b) => a.Rhythm.CompareTo(b.Rhythm));
+                        rhythmsByVerseCount.Insert(0, new GanjoorMetre()
+                        {
+                            Rhythm = "null"
+                        }
+                        );
+                        rhythmsByVerseCount.Insert(0, new GanjoorMetre()
+                        {
+                            Rhythm = ""
+                        }
+                        );
+
+                        RhythmsAlphabetically = rhythmsByVerseCount.ToArray();
                     }
 
                 }
