@@ -4,12 +4,29 @@
 @using DNTPersianUtils.Core
 @{
     Layout = "_AdminLayout";
+}
+
+@if (Model.DeletedUserSections)
+{
+    ViewData["Title"] = "وزن‌های نیافته";
+}
+else
+{
     ViewData["Title"] = "بازبینی ویرایش‌های قطعات";
 }
 
+
 <h1>@ViewData["Title"]</h1>
 
-<a role="button" href="/Admin/ReviewPartEdits/?deletedUserSections=true" class="pagebutton">پیشنهادهای سیستمی</a>
+@if (Model.DeletedUserSections == false)
+{
+    <a role="button" href="/Admin/ReviewPartEdits/?deletedUserSections=true" class="pagebutton">وزن‌های نیافته</a>
+}
+else
+{
+    <a role="button" href="/Admin/ReviewPartEdits" class="pagebutton">پیشنهادهای عادی</a>
+}
+
 
 
 
@@ -67,10 +84,10 @@ else
                     titleReviewNote: $('#title_review_note') == null ? null : $('#title_review_note').val(),
                     reviewNote: $('#review_note').val()
                 },
-                success: function() {
+                success: function () {
                     location.reload(true);
                 },
-                error: function(e) {
+                error: function (e) {
                     if (e.responseText == null)
                         alert(e);
                     else
@@ -346,7 +363,7 @@ else
         </tr>
 
 
-        @if(Model.PoemSection != null)
+        @if (Model.PoemSection != null)
         {
             <tr>
                 <td colspan="2">
