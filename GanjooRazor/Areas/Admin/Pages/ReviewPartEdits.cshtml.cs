@@ -401,20 +401,23 @@ namespace GanjooRazor.Areas.Admin.Pages
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await moderationResponse.Content.ReadAsStringAsync()));
                     }
 
-                    GanjoorPoemSectionCorrectionViewModel correction = new GanjoorPoemSectionCorrectionViewModel()
+                    if(!string.IsNullOrEmpty(rhythm))
                     {
-                        SectionId = sectionId,
-                        Rhythm = rhythm,
-                    };
+                        GanjoorPoemSectionCorrectionViewModel correction = new GanjoorPoemSectionCorrectionViewModel()
+                        {
+                            SectionId = sectionId,
+                            Rhythm = rhythm,
+                        };
 
-                    HttpResponseMessage response = await secureClient.PostAsync(
-                        $"{APIRoot.Url}/api/ganjoor/section/correction",
-                        new StringContent(JsonConvert.SerializeObject(correction),
-                        Encoding.UTF8,
-                        "application/json"));
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        HttpResponseMessage response = await secureClient.PostAsync(
+                            $"{APIRoot.Url}/api/ganjoor/section/correction",
+                            new StringContent(JsonConvert.SerializeObject(correction),
+                            Encoding.UTF8,
+                            "application/json"));
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        }
                     }
 
                     return new OkObjectResult(true);
