@@ -117,52 +117,23 @@ else if (Model.DeletedUserSections)
         <tr>
             <td>
                 <script>
-                    function saveSectionCorrection(id, verseCount) {
-
-                        var breakFromVIndices = [];
-                        for (var i = 0; i <= verseCount; i++) {
-                            var checkVIndex = '#break-from-' + i.toString();
-                            if ($(checkVIndex).is(":checked")) {
-                                breakFromVIndices.push(i);
-                            }
-                        }
-
-                        if (breakFromVIndices.length > 10) {
-                            alert('در هر نوبت حداکثر از ۱۰ محل می‌توانید قطعه را بشکنید.');
-                            return;
-                        }
-
+                    function suggestRhythmForDeletedUser(id, correctionId) {
                         var rhythm_new = $('#rhythm-new').val();
-                        if (rhythm_new == $('#rhythm-old').text()) {
-                            rhythm_new = null;
-                        }
-
-                        var rhyme_letters = $('#rhyme-letters').val();
-                        if (rhyme_letters == $('#rhyme-letters-old').text()) {
-                            rhyme_letters = null;
-                        }
-
-                        if (breakFromVIndices.length == 0 && rhythm_new == null && rhyme_letters == null) {
-                            alert('شما هیچ تغییری در متن نداده‌اید!');
-                            return;
-                        }
+                       
 
                         $('#savecorrections').hide();
                         $('#saving').text('در حال ذخیره ...');
 
 
-                        var url = '?handler=SendSectionCorrections';
+                        var url = '?handler=SuggestRhythm';
 
                         $.ajax({
                             type: "POST",
                             url: url,
                             data: {
                                 sectionId: id,
-                                rhythm: rhythm_new,
-                                rhyme: rhyme_letters,
-                                breakFromVIndices: breakFromVIndices,
-                                note: $('#note').val()
-
+                                correctionId: correctionId, 
+                                rhythm: rhythm_new
                             },
                             success: function () {
                                 location.reload(true);
@@ -201,7 +172,7 @@ else if (Model.DeletedUserSections)
                         });
                     }
                 </script>
-                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="saveSectionCorrection(@Model.PoemSection.Id, @Model.Verses.Count)">ذخیره</a>
+                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="suggestRhythmForDeletedUser(@Model.PoemSection.Id, @Model.Correction.Id)">ذخیره</a>
             </td>
         </tr>
     </table>
@@ -409,15 +380,6 @@ else
                 </td>
             </tr>
 
-
-            @if (Model.PoemSection != null)
-            {
-                <tr>
-                    <td>
-                        <a role="button" href=@($"/User/Section?poemId={Model.PoemSection.PoemId}&index={Model.PoemSection.Index}") class="pagebutton" target="_blank">خودم ویرایش کنم</a>
-                    </td>
-                </tr>
-            }
         }
 
         @if (Model.Correction.RhymeLetters != null)
