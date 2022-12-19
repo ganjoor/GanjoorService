@@ -10,7 +10,7 @@
         var recitaion = Model.Recitations[nRecitationIndex];
         <div class="@Model.CSSClass(nRecitationIndex)" id="@recitaion.Id">
             <audio id="audio-@(nRecitationIndex + 1)" preload="none" controls>
-                <source src="@recitaion.Mp3Url" title="@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")" data-track-number="@(nRecitationIndex + 1)" />
+                <source src="@recitaion.Mp3Url" title="@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")" data-track-number="@(nRecitationIndex + 1)">
                 مرورگر شما از پخش صدای HTML 5 پشتیبانی نمی‌کند.
             </audio>
             @if (nRecitationIndex != (Model.Recitations.Length - 1))
@@ -53,7 +53,7 @@
                                 {
                                     <a href="@($"#bn{mistake.CoupletIndex + 1}")">#</a>
                                 }
-                                @Html.Raw(mistake.Mistake.Replace("\r\n", "<br />"))
+                                @Html.Raw(mistake.Mistake.Replace("\r\n", "<br>"))
                             </p>
                         </div>
                     }

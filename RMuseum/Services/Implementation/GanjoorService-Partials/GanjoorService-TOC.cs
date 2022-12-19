@@ -226,11 +226,11 @@ namespace RMuseum.Services.Implementation
                     if((subCats.Count + poems.Count) > 7)
                     {
                         html += $"<div class=\"clear-both\">{Environment.NewLine}";
-                        html += $"<input type=\"text\" id=\"findpoet\" placeholder=\"جستجو در عناوین\" size=\"35\" value=\"\" oninput=\"onInlineSearch(this.value, 'found-items', 'part-title-block')\" />{Environment.NewLine}";
+                        html += $"<input type=\"text\" id=\"findpoet\" placeholder=\"جستجو در عناوین\" size=\"35\" value=\"\" oninput=\"onInlineSearch(this.value, 'found-items', 'part-title-block')\">{Environment.NewLine}";
                         html += $"<div class=\"spacer\" id=\"found-items\"></div>{Environment.NewLine}";
                         html += $"</div>{Environment.NewLine}";
 
-                        html += $"<br />{Environment.NewLine}";
+                        html += $"<br>{Environment.NewLine}";
                     }
                     int nMixedModeOrder = 1;
                     while (subCats.Where(c => c.MixedModeOrder == nMixedModeOrder).Any() || poems.Where(p => p.MixedModeOrder == nMixedModeOrder).Any())
@@ -455,13 +455,13 @@ namespace RMuseum.Services.Implementation
                 if (poems.Count > 0)
                 {
                     html += $"<div class=\"clear-both\">{Environment.NewLine}";
-                    html += $"<input type=\"text\" id=\"findpoet\" placeholder=\"جستجو در عناوین\" size=\"35\" value=\"\" oninput=\"onInlineSearch(this.value, 'found-items', 'poem-excerpt')\" />{Environment.NewLine}";
+                    html += $"<input type=\"text\" id=\"findpoet\" placeholder=\"جستجو در عناوین\" size=\"35\" value=\"\" oninput=\"onInlineSearch(this.value, 'found-items', 'poem-excerpt')\">{Environment.NewLine}";
                     html += $"<div class=\"spacer\" id=\"found-items\"></div>{Environment.NewLine}";
                     html += $"</div>{Environment.NewLine}";
 
                     if (separatorForInlineSearch)
                     {
-                        html += $"<br />{Environment.NewLine}";
+                        html += $"<br>{Environment.NewLine}";
                     }
                 }
 

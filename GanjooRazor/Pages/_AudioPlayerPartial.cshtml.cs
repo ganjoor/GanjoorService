@@ -35,7 +35,7 @@ namespace GanjooRazor.Pages
 
             if (contributionLink)
             {
-                audiodesc += "<br /> <small>می‌خواهید شما بخوانید؟ <a href='http://ava.ganjoor.net/about/'>اینجا</a> را ببینید.</small>";
+                audiodesc += "<br> <small>می‌خواهید شما بخوانید؟ <a href='http://ava.ganjoor.net/about/'>اینجا</a> را ببینید.</small>";
             }
 
             return audiodesc;

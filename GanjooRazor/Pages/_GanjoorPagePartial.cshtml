@@ -2,11 +2,11 @@
 @using DNTPersianUtils.Core
 
 <div id="hdr2" class="clearfix">
-    <h1><a href="/" title="گنجور"><img src="/image/gdapk.png" alt="گنجور" /></a></h1>
+    <h1><a href="/" title="گنجور"><img src="/image/gdapk.png" alt="گنجور"></a></h1>
     <div class="actionbox">
         <form action="/search" method="get" id="searchform">
-            <input type="text" name="s" id="s" class="inputText" value="" placeholder="جستجو" />
-            <input type="hidden" name="es" id="es" value="1" />
+            <input type="text" name="s" id="s" class="inputText" value="" placeholder="جستجو">
+            <input type="hidden" name="es" id="es" value="1">
             <select name="author" id="author" onchange="onSelectedPoetChanged()">
 
                 @{
@@ -57,7 +57,7 @@
                 }
             }
 
-            <input type="submit" value="بیاب" />
+            <input type="submit" value="بیاب">
         </form>
     </div><!-- .actionbox -->
 </div><!-- #hdr2 -->
@@ -136,8 +136,8 @@
                             @if (Model.GanjoorPage.SecondPoet != null)
                             {
                                 <div id="poets">
-                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" class="poets-poet" /></a>
-                                    <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Name)" class="poets-poet" /></a>
+                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" class="poets-poet"></a>
+                                    <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Name)" class="poets-poet"></a>
                                 </div>
                                 <div id="page-hierarchy">
                                     @{
@@ -152,7 +152,7 @@
                             else
                             {
                                 <div id="poet-image">
-                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" /></a>
+                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)"></a>
                                 </div>
                                 <div id="page-hierarchy" class="width-100per margin-auto">
                                     @{
@@ -242,9 +242,9 @@
                                 var popup = new L.Popup();
                                 oms.addListener('click', function(marker) {
 
-                                    var poemDesc = marker.order + ' - ' + marker.poemGeoTag.Location.Name + '<br /> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
+                                    var poemDesc = marker.order + ' - ' + marker.poemGeoTag.Location.Name + '<br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
                                     if (marker.poemGeoTag.LunarYear != null) {
-                                        poemDesc += '<br /> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
+                                        poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
                                     }
                                     popup.setContent(poemDesc);
                                     popup.setLatLng(marker.getLatLng());
@@ -464,7 +464,7 @@
                                                 {
                                                     <div class="inlinesimi">
                                                         <div class="poet-pic-wrap">
-                                                            <a href="@Html.Raw(s.Top6RelatedSections[i].FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  s.Top6RelatedSections[i].PoetImageUrl)" alt="@s.Top6RelatedSections[i].PoetName" /></a>
+                                                            <a href="@Html.Raw(s.Top6RelatedSections[i].FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  s.Top6RelatedSections[i].PoetImageUrl)" alt="@s.Top6RelatedSections[i].PoetName"></a>
                                                         </div>
                                                         <div class="inlinesimi-poem-title">
                                                             <a href="@Html.Raw(s.Top6RelatedSections[i].FullUrl)">@s.Top6RelatedSections[i].FullTitle</a><span></span>
@@ -527,7 +527,7 @@
                                                     <i class="info-buttons queue_music"></i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
                                                     @if (song.TrackType == RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify)
                                                     {
-                                                        <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img class="spotify-track-icon" src="/image/sp16.png" alt="اسپاتیفای" height="16" /></a>
+                                                        <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img class="spotify-track-icon" src="/image/sp16.png" alt="اسپاتیفای" height="16"></a>
                                                     }
                                                     @if (Model.CanEdit)
                                                     {
@@ -635,8 +635,8 @@
                                                             <div class="required">
                                                                 <textarea name="comment" id="comment" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
                                                             </div>
-                                                            <input type="hidden" name="poemId" id="poemId" value="@Model.GanjoorPage.Id" />
-                                                            <input type="hidden" name="coupletIndex" value="-1" />
+                                                            <input type="hidden" name="poemId" id="poemId" value="@Model.GanjoorPage.Id">
+                                                            <input type="hidden" name="coupletIndex" value="-1">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -678,8 +678,8 @@
                                                     <tr>
                                                         <td>
                                                             <textarea name="editCommentText" id="editCommentText" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
-                                                            <input type="hidden" name="editCommentId" id="editCommentId" value="" />
-                                                            <input type="hidden" name="editCommentCoupletIndex" id="editCommentCoupletIndex" value="" />
+                                                            <input type="hidden" name="editCommentId" id="editCommentId" value="">
+                                                            <input type="hidden" name="editCommentCoupletIndex" id="editCommentCoupletIndex" value="">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -699,9 +699,9 @@
                                                     <tr>
                                                         <td>
                                                             <textarea name="replyCommentText" id="replyCommentText" class="inputTextarea editor width-100per" tabindex="4" rows="10"></textarea>
-                                                            <input type="hidden" name="refPoemId" id="refPoemId" value="@Model.GanjoorPage.Id" />
-                                                            <input type="hidden" name="refCommentId" id="refCommentId" value="" />
-                                                            <input type="hidden" name="refCommentDivSuffix" id="refCommentDivSuffix" value="" />
+                                                            <input type="hidden" name="refPoemId" id="refPoemId" value="@Model.GanjoorPage.Id">
+                                                            <input type="hidden" name="refCommentId" id="refCommentId" value="">
+                                                            <input type="hidden" name="refCommentDivSuffix" id="refCommentDivSuffix" value="">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -771,7 +771,7 @@
                 @if (Model.Banner != null)
                 {
                     <div class="margin-auto">
-                        <a href="@Model.Banner.TargetUrl"><img src="@($"{GanjooRazor.APIRoot.InternetUrl}/{Model.Banner.ImageUrl}")" alt="@Model.Banner.AlternateText" /></a>
+                        <a href="@Model.Banner.TargetUrl"><img src="@($"{GanjooRazor.APIRoot.InternetUrl}/{Model.Banner.ImageUrl}")" alt="@Model.Banner.AlternateText"></a>
                     </div>
                 }
 
