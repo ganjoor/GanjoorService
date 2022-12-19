@@ -1,15 +1,15 @@
 ﻿@model GanjooRazor.Pages.IndexModel
 @using DNTPersianUtils.Core
 <div id="hdr">
-    <h1><a href="/" title="گنجور"><img src="/image/gdap.png" alt="گنجور" class="home-logo" /></a></h1>
+    <h1><a href="/" title="گنجور"><img src="/image/gdap.png" alt="گنجور" class="home-logo"></a></h1>
 </div>
 
 <div id="fa">
 
     <div class="actionbox">
         <form action="/search" method="get" id="searchhorm">
-            <input type="text" name="s" id="s" placeholder="جستجو" class="inputText" size="35" value="" />
-            <input type="hidden" name="es" id="es" value="1" />
+            <input type="text" name="s" id="s" placeholder="جستجو" class="inputText" size="35" value="">
+            <input type="hidden" name="es" id="es" value="1">
             <select name="author" id="author">
                 <option value="0" selected>در آثار همهٔ سخنوران</option>
                 @{
@@ -19,11 +19,11 @@
                     }
                 }
             </select>
-            <input type="submit" value="بیاب" />
+            <input type="submit" value="بیاب">
         </form>
     </div>
 
-    <partial name="_InlineLoginPartial" model="Model" />
+    <partial name="_InlineLoginPartial" model="Model">
 
     <div id="main">
         <div id="guides">
@@ -46,7 +46,7 @@
                     {
                         <div class="poet">
                             <a href="@poet.FullUrl" title="@poet.Name">
-                                <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
+                                <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name">
                             </a>
                             <div class="caption">
                                 <a href="@poet.FullUrl">@poet.Nickname</a>
@@ -55,7 +55,7 @@
                     }
                 </div>
                 <div class="clear-both">
-                    <input type="text" id="findpoet" placeholder="جستجوی سخنور" size="35" value="" oninput="onInlineSearch(this.value, 'found-poets', 'poet')" />
+                    <input type="text" id="findpoet" placeholder="جستجوی سخنور" size="35" value="" oninput="onInlineSearch(this.value, 'found-poets', 'poet')">
                     <div class="spacer" id="found-poets"></div>
                 </div>
                 <div class="century" id="cl">
@@ -96,7 +96,7 @@
                             {
                                 <div class="poet" data-value="@poet.Nickname">
                                     <a href="@poet.FullUrl" title="@poet.Name">
-                                        <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name" />
+                                        <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name">
                                     </a>
                                     <div class="caption">
                                         <a href="@poet.FullUrl">@poet.Nickname</a>
@@ -136,7 +136,7 @@
             </div>
             <div class="spacer">
                 <div class="poet">
-                    <a href="/map"><img src="/image/map.gif" alt="نقشهٔ گنجور" /></a>
+                    <a href="/map"><img src="/image/map.gif" alt="نقشهٔ گنجور"></a>
                 </div>
             </div>
                        
@@ -146,6 +146,6 @@
 
     </div>
 
-    <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true}) />
+    <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true})>
 
 </div>
