@@ -1,6 +1,11 @@
 ﻿@model GanjooRazor.Pages.IndexModel
 @using DNTPersianUtils.Core
 
+
+@if(Model.GanjoorPage == null)
+{
+    return;
+}
 <div id="hdr2" class="clearfix">
     <h1><a href="/" title="گنجور"><img src="/image/gdapk.png" alt="گنجور"></a></h1>
     <div class="actionbox">

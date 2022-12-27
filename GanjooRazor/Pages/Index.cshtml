@@ -39,25 +39,29 @@
     }
     else
     {
-        <link rel="canonical" href="@Model.CanonicalUrl">
-        if (Model.IsPoemPage)
+        if (Model.GanjoorPage != null)
         {
-            <script>
-                $(document).ready(function() {
-                    checkWebShareSupport();
-                    if (lineNumbers) {
-                        btshmr(@Model.GanjoorPage.Id);
-                    }
-                    checkIfBookmarked(@Model.GanjoorPage.Id);
-                });
-            </script>
-
-        }
-        <script type="application/ld+json">
+            <link rel="canonical" href="@Model.CanonicalUrl">
+            if (Model.IsPoemPage)
             {
-            @Html.Raw(@ViewData["BrearCrumpList"])
+                <script>
+                    $(document).ready(function () {
+                        checkWebShareSupport();
+                        if (lineNumbers) {
+                            btshmr(@Model.GanjoorPage.Id);
+                        }
+                        checkIfBookmarked(@Model.GanjoorPage.Id);
+                    });
+                </script>
+
             }
-        </script>
+            <script type="application/ld+json">
+                {
+                @Html.Raw(@ViewData["BrearCrumpList"])
+                }
+            </script>
+        }
+
     }
 
     @if (Model.IsCatPage && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
@@ -79,7 +83,7 @@
 
     @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
     {
-         <link rel="stylesheet" href="/css/leaflet.css">
+        <link rel="stylesheet" href="/css/leaflet.css">
         <style>
             .leaflet-container {
                 background-color: #c5e8ff;
@@ -110,18 +114,18 @@
                 var nLastHighlight = -1;
                 var vCount = 0;
 
-                var _setXml = function(xmlUrl) {
+                var _setXml = function (xmlUrl) {
                     $.ajax({
                         type: "GET",
                         url: xmlUrl,
                         dataType: "xml",
-                        success: function(xml) {
+                        success: function (xml) {
                             var nOneSecondBugFix = 2000;
-                            $(xml).find('OneSecondBugFix').each(function() {
+                            $(xml).find('OneSecondBugFix').each(function () {
                                 nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
                             });
                             var v = 0;
-                            $(xml).find('SyncInfo').each(function() {
+                            $(xml).find('SyncInfo').each(function () {
                                 verseStart[v] = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
                                 verseIndex[v] = parseInt($(this).find('VerseOrder').text());
                                 if (v > 0)
@@ -136,7 +140,7 @@
                     });
                 }
 
-                var _trackTimeChanged = function(audio) {
+                var _trackTimeChanged = function (audio) {
                     var currentTime = audio.currentTime;
 
                     if (currentTime > 0) {
@@ -193,16 +197,16 @@
     @{
         if (!string.IsNullOrEmpty(Model.PinterestUrl))
         {
-                    <script>
-                        $(function() {
-                            $("a").attr('href', function(i, h) {
-                                if (h != null) {
-                                    return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
-                                }
-                                return h;
-                            });
-                        });
-                    </script>
+            <script>
+                $(function () {
+                    $("a").attr('href', function (i, h) {
+                        if (h != null) {
+                            return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
+                        }
+                        return h;
+                    });
+                });
+            </script>
         }
     }
 
@@ -230,8 +234,8 @@
                 paste_remove_styles_if_webkit: true,
                 paste_strip_class_attributes: true,
                 a11y_advanced_options: true,
-                setup: function(editor) {
-                    editor.on('tap', function(e, f) {
+                setup: function (editor) {
+                    editor.on('tap', function (e, f) {
                         var editor_id = e.view.frameElement.id.slice(0, -4);
                         if (editor_id != 'editNoteText') {
                             if (userNotifiedOnEditInsteadOfComment == false) {
@@ -241,7 +245,7 @@
                         }
                     },
                     );
-                    editor.on('click', function(e, f) {
+                    editor.on('click', function (e, f) {
                         var editor_id = e.view.frameElement.id.slice(0, -4);
                         if (editor_id != 'editNoteText') {
                             if (userNotifiedOnEditInsteadOfComment == false) {
@@ -255,7 +259,7 @@
             });
         </script>
     }
-    @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
+    @if (ViewData["GoogleAnalyticsCode"] != null && !string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
     {
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=@(ViewData["GoogleAnalyticsCode"])"></script>
