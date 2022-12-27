@@ -202,9 +202,10 @@ namespace RMuseum.Services.Implementation
                         {
                             if (verses.Count == 2 && verseTextList.Count == 2)
                             {
+                                rhyme = PrepareTextForFindingRhyme(verseTextList[1]);
                                 return new GanjooRhymeAnalysisResult()
                                 {
-                                    Rhyme = PrepareTextForFindingRhyme(verseTextList[1]),
+                                    Rhyme = rhyme.Length > 50 ? "" : rhyme,
                                     FailVerse = "",
                                 };
                             }
@@ -223,6 +224,15 @@ namespace RMuseum.Services.Implementation
                         {
                             return FindRhyme(verses, true);
                         }
+                    }
+
+                    if(rhyme.Length > 50)
+                    {
+                        return new GanjooRhymeAnalysisResult()
+                        {
+                            Rhyme = "",
+                            FailVerse = "",
+                        };
                     }
 
                     return new GanjooRhymeAnalysisResult()
