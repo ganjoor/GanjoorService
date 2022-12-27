@@ -297,7 +297,23 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     if(!moderationResponse.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await moderationResponse.Content.ReadAsStringAsync()));
+                        string err = await moderationResponse.Content.ReadAsStringAsync();
+                        if(string.IsNullOrEmpty(err)) 
+                        { 
+                            if(!string.IsNullOrEmpty(moderationResponse.ReasonPhrase))
+                            {
+                                err = moderationResponse.ReasonPhrase;
+                            }
+                            else
+                            {
+                                err = $"Error Code: {moderationResponse.StatusCode}";
+                            }
+                        }
+                        else
+                        {
+                            err = JsonConvert.DeserializeObject<string>(err);
+                        }
+                        return new BadRequestObjectResult(err);
                     }
 
                     return new OkObjectResult(true);
