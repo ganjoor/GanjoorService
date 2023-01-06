@@ -21,6 +21,7 @@ using System.Net.Http;
 using System.Web;
 using System.Text.RegularExpressions;
 using RMuseum.Models.Auth.Memory;
+using System.IO;
 
 namespace RMuseum.Services.Implementation
 {
@@ -1472,7 +1473,7 @@ namespace RMuseum.Services.Implementation
                  select new PoemRelatedImage()
                  {
                      PoemRelatedImageType = PoemRelatedImageType.MuseumLink,
-                     ThumbnailImageUrl = $"https://i.ganjoor.net/museum/{link.Item.Images.First().FolderName}/{link.Item.Images.First().ThumbnailImageStoredFileName.Replace("\\", "/")}",
+                     ThumbnailImageUrl = $"https://i.ganjoor.net/museum/{link.Item.Images.First().FolderName}/thumb/{Path.GetFileName(link.Item.Images.First().ThumbnailImageStoredFileName)}",
                      TargetPageUrl = link.LinkToOriginalSource ? link.OriginalSourceUrl : $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
                      AltText = $"{link.Artifact.Name} » {link.Item.Name}",
                      IsTextOriginalSource = link.IsTextOriginalSource
@@ -1491,7 +1492,7 @@ namespace RMuseum.Services.Implementation
                  select new PoemRelatedImage()
                  {
                      PoemRelatedImageType = PoemRelatedImageType.ExternalLink,
-                     ThumbnailImageUrl = $"https://i.ganjoor.net/museum/{link.Item.Images.First().FolderName}/{link.Item.Images.First().ThumbnailImageStoredFileName.Replace("\\", "/")}",
+                     ThumbnailImageUrl = $"https://i.ganjoor.net/museum/{link.Item.Images.First().FolderName}/thumb/{Path.GetFileName(link.Item.Images.First().ThumbnailImageStoredFileName)}",
                      TargetPageUrl = link.PinterestUrl,
                      AltText = link.AltText,
                      IsTextOriginalSource = false
