@@ -88,17 +88,6 @@ namespace RMuseum.Models.Artifact
         public DateTime LastModifiedMeta { get; set; }
 
         /// <summary>
-        /// External Image Url Part (you should prefix it with the host url) sample output: folder1/thumb/0001.jpg
-        /// </summary>
-        /// <param name="size">
-        /// thumb, norm, orig
-        /// </param>
-        public string GetExternalImageUrlPart(string size = "norm")
-        {
-            return $"{FolderName}/{size}/{OriginalFileName}";
-        }
-
-        /// <summary>
         /// duplicated a picture record (Id is missing so you should store this to get a new Id)
         /// </summary>
         /// <param name="src"></param>
