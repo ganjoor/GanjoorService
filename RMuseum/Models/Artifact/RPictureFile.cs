@@ -88,6 +88,13 @@ namespace RMuseum.Models.Artifact
         public DateTime LastModifiedMeta { get; set; }
 
         /// <summary>
+        /// url to access this image from THE external host, contanins '/norm/' which when
+        /// you replace it with '/thumb/' you would have ExternalThumbnailImageUrl
+        /// and if you replace it with '/orig/' you would have a url for ExternalOriginalSizeImageUrl which MIGHT NOT EXIST and end in a 404 error
+        /// </summary>
+        public string ExternalNormalSizeImageUrl { get; set; }
+
+        /// <summary>
         /// duplicated a picture record (Id is missing so you should store this to get a new Id)
         /// </summary>
         /// <param name="src"></param>
@@ -121,7 +128,8 @@ namespace RMuseum.Models.Artifact
                      Status = src.Status,
                      ThumbnailImageHeight = src.ThumbnailImageHeight,
                      ThumbnailImageStoredFileName = src.ThumbnailImageStoredFileName,
-                     ThumbnailImageWidth = src.ThumbnailImageWidth
+                     ThumbnailImageWidth = src.ThumbnailImageWidth,
+                     ExternalNormalSizeImageUrl = src.ExternalNormalSizeImageUrl,
                  };
         }
         
