@@ -39,7 +39,7 @@ namespace RMuseum.Models.Artifact
         /// order in the collection it belongs to it
         /// </summary>
         public int Order { get; set; }
-        
+
         /// <summary>
         /// نام فایل ذخیره شده با بالاترین کیفیت
         /// </summary>
@@ -86,6 +86,16 @@ namespace RMuseum.Models.Artifact
         /// </summary>
         public DateTime LastModifiedMeta { get; set; }
 
+        /// <summary>
+        /// External Image Url Part (you should prefix it with the host url) sample output: folder1/thumb/0001.jpg
+        /// </summary>
+        /// <param name="size">
+        /// thumb, norm, orig
+        /// </param>
+        public string GetExternalImageUrlPart(string size = "norm")
+        {
+            return $"{FolderName}/{size}/{OriginalFileName}";
+        }
 
 
         /// <summary>

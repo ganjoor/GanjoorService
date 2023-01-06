@@ -1452,8 +1452,7 @@ namespace RMuseum.Services.Implementation
 
 
         /// <summary>
-        /// get poem images by id (some fields are intentionally field with blank or null),
-        /// EntityImageId : the most important data field, image url is {WebServiceUrl.Url}/api/images/thumb/{EntityImageId}.jpg or {WebServiceUrl.Url}/api/images/norm/{EntityImageId}.jpg
+        /// get poem images by id (some fields are intentionally field with blank or null)
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -1473,7 +1472,7 @@ namespace RMuseum.Services.Implementation
                  select new PoemRelatedImage()
                  {
                      PoemRelatedImageType = PoemRelatedImageType.MuseumLink,
-                     ThumbnailImageUrl = $"https://i.ganjoor.net/museum/{link.Item.Images.First().FolderName}/thumb/{link.Item.Images.First().OriginalFileName}",
+                     ThumbnailImageUrl = $"https://i.ganjoor.net/images/{link.Item.Images.First().GetExternalImageUrlPart("thumb")}",
                      TargetPageUrl = link.LinkToOriginalSource ? link.OriginalSourceUrl : $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
                      AltText = $"{link.Artifact.Name} » {link.Item.Name}",
                      IsTextOriginalSource = link.IsTextOriginalSource
@@ -1492,7 +1491,7 @@ namespace RMuseum.Services.Implementation
                  select new PoemRelatedImage()
                  {
                      PoemRelatedImageType = PoemRelatedImageType.ExternalLink,
-                     ThumbnailImageUrl = $"https://i.ganjoor.net/museum/{link.Item.Images.First().FolderName}/thumb/{link.Item.Images.First().OriginalFileName}",
+                     ThumbnailImageUrl = $"https://i.ganjoor.net/images/{link.Item.Images.First().GetExternalImageUrlPart("thumb")}",
                      TargetPageUrl = link.PinterestUrl,
                      AltText = link.AltText,
                      IsTextOriginalSource = false
