@@ -93,44 +93,10 @@ namespace RMuseum.Models.Artifact
         /// <param name="size">
         /// thumb, norm, orig
         /// </param>
-        private string GetExternalImageUrlPart(string size = "norm")
+        public string GetExternalImageUrlPart(string size = "norm")
         {
             return $"{FolderName}/{size}/{OriginalFileName}";
         }
-
-        /// <summary>
-        /// Ganjoor Thumbnail Image Url
-        /// </summary>
-        public string GanjoorThumbnailImageUrl
-        {
-            get
-            {
-                return $"https://i.ganjoor.net/images/{GetExternalImageUrlPart("thumb")}";
-            }
-        }
-
-        /// <summary>
-        /// Ganjoor Normal Size Image Url
-        /// </summary>
-        public string GanjoorNormalSizeImageUrl
-        {
-            get
-            {
-                return $"https://i.ganjoor.net/images/{GetExternalImageUrlPart("norm")}";
-            }
-        }
-
-        /// <summary>
-        /// Ganjoor Original Size Image Url (Warning: high possibility of 404 error because of file deletion)
-        /// </summary>
-        public string GanjoorOriginalImageUrl
-        {
-            get
-            {
-                return $"https://i.ganjoor.net/images/{GetExternalImageUrlPart("orig")}";
-            }
-        }
-
 
         /// <summary>
         /// duplicated a picture record (Id is missing so you should store this to get a new Id)
