@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="DNTPersianUtils.Core" Version="5.4.5" />
+    <PackageReference Include="FluentFTP" Version="43.0.1" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
