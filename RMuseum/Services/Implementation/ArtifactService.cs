@@ -302,10 +302,13 @@ namespace RMuseum.Services.Implementation
 
                     foreach (var val in values)
                     {
-                        var firstItem = _context.Artifacts.AsNoTracking().Include(a => a.Tags).Where(a => a.Status == PublishStatus.Published
+                        var firstItem = _context.Artifacts.AsNoTracking().Include(a => a.Tags).Include(a => a.CoverImage).Where(a => a.Status == PublishStatus.Published
                                     && a.Tags.Any(t => t.RTagId == tag.Id && t.Value == val.Name)).FirstOrDefault();
                         if (firstItem != null)
+                        {
                             val.ImageId = firstItem.CoverImageId;
+                            val.ExternalNormalSizeImageUrl = firstItem.CoverImage == null ? "" : firstItem.CoverImage.ExternalNormalSizeImageUrl;
+                        }
                         else
                             val.Count = 0;
                     }
