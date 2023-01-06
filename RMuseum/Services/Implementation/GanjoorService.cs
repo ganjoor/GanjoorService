@@ -1472,7 +1472,7 @@ namespace RMuseum.Services.Implementation
                  select new PoemRelatedImage()
                  {
                      PoemRelatedImageType = PoemRelatedImageType.MuseumLink,
-                     ThumbnailImageUrl = $"{WebServiceUrl.Url}/api/images/thumb/{link.Item.Images.First().Id}.jpg",
+                     ThumbnailImageUrl = $"https://i.ganjoor.net/museum/{link.Item.Images.First().FolderName}/{link.Item.Images.First().ThumbnailImageStoredFileName.Replace("\\", "/")}",
                      TargetPageUrl = link.LinkToOriginalSource ? link.OriginalSourceUrl : $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
                      AltText = $"{link.Artifact.Name} » {link.Item.Name}",
                      IsTextOriginalSource = link.IsTextOriginalSource
@@ -1491,7 +1491,7 @@ namespace RMuseum.Services.Implementation
                  select new PoemRelatedImage()
                  {
                      PoemRelatedImageType = PoemRelatedImageType.ExternalLink,
-                     ThumbnailImageUrl = $"{WebServiceUrl.Url}/api/images/thumb/{link.Item.Images.First().Id}.jpg",
+                     ThumbnailImageUrl = $"https://i.ganjoor.net/museum/{link.Item.Images.First().FolderName}/{link.Item.Images.First().ThumbnailImageStoredFileName.Replace("\\", "/")}",
                      TargetPageUrl = link.PinterestUrl,
                      AltText = link.AltText,
                      IsTextOriginalSource = false
