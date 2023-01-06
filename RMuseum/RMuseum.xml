@@ -3087,6 +3087,18 @@
             PoemGeoDateTags
             </summary>
         </member>
+        <member name="T:RMuseum.Migrations.PictureFileExtUrl">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.PictureFileExtUrl.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.PictureFileExtUrl.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.PictureFileExtUrl.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -3508,6 +3520,13 @@
         <member name="P:RMuseum.Models.Artifact.RPictureFile.LastModifiedMeta">
             <summary>
             Last Modified for caching purposes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.RPictureFile.ExternalNormalSizeImageUrl">
+            <summary>
+            url to access this image from THE external host, contains '/norm/' which when
+            you replace it with '/thumb/' you would have ExternalThumbnailImageUrl
+            and if you replace it with '/orig/' you would have a url for ExternalOriginalSizeImageUrl which MIGHT NOT EXIST and end in a 404 error
             </summary>
         </member>
         <member name="M:RMuseum.Models.Artifact.RPictureFile.Duplicate(RMuseum.Models.Artifact.RPictureFile)">

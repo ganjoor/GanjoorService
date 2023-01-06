@@ -88,7 +88,7 @@ namespace RMuseum.Models.Artifact
         public DateTime LastModifiedMeta { get; set; }
 
         /// <summary>
-        /// url to access this image from THE external host, contanins '/norm/' which when
+        /// url to access this image from THE external host, contains '/norm/' which when
         /// you replace it with '/thumb/' you would have ExternalThumbnailImageUrl
         /// and if you replace it with '/orig/' you would have a url for ExternalOriginalSizeImageUrl which MIGHT NOT EXIST and end in a 404 error
         /// </summary>
