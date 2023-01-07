@@ -3696,6 +3696,11 @@
             parent image
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.ParentExternalNormalSizeImageUrl">
+            <summary>
+            parent image external url
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.ParentItemCount">
             <summary>
             parent item count
@@ -3711,6 +3716,11 @@
             next image
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.NextItemExternalNormalSizeImageUrl">
+            <summary>
+            next image external url
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.PreviousItemFriendlyUrl">
             <summary>
             empty or null means this is first item
@@ -3719,6 +3729,11 @@
         <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.PrevItemImageId">
             <summary>
             prev image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.PrevItemExternalNormalSizeImageUrl">
+            <summary>
+            prev image external url
             </summary>
         </member>
         <member name="P:RMuseum.Models.Artifact.ViewModels.RArtifactItemRecordViewModel.FormattedTags">
@@ -3902,6 +3917,13 @@
         <member name="P:RMuseum.Models.Artifact.ViewModels.RTagBundleValueViewModel.ImageId">
             <summary>
             Item Image Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Artifact.ViewModels.RTagBundleValueViewModel.ExternalNormalSizeImageUrl">
+            <summary>
+            url to access the image from THE external host, contains '/norm/' which when
+            you replace it with '/thumb/' you would have ExternalThumbnailImageUrl
+            and if you replace it with '/orig/' you would have a url for ExternalOriginalSizeImageUrl which MIGHT NOT EXIST and end in a 404 error
             </summary>
         </member>
         <member name="T:RMuseum.Models.Artifact.ViewModels.RTagBundleViewModel">

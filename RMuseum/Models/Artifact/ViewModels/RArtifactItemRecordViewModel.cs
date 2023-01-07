@@ -83,6 +83,11 @@ namespace RMuseum.Models.Artifact.ViewModels
         public Guid ParentImageId { get; set; }
 
         /// <summary>
+        /// parent image external url
+        /// </summary>
+        public string ParentExternalNormalSizeImageUrl { get; set; }
+
+        /// <summary>
         /// parent item count
         /// </summary>
         public int ParentItemCount { get; set; }
@@ -98,6 +103,11 @@ namespace RMuseum.Models.Artifact.ViewModels
         public Guid? NextItemImageId { get; set; }
 
         /// <summary>
+        /// next image external url
+        /// </summary>
+        public string NextItemExternalNormalSizeImageUrl { get; set; }
+
+        /// <summary>
         /// empty or null means this is first item
         /// </summary>
         public string PreviousItemFriendlyUrl { get; set; }
@@ -106,6 +116,11 @@ namespace RMuseum.Models.Artifact.ViewModels
         /// prev image
         /// </summary>
         public Guid? PrevItemImageId { get; set; }
+
+        /// <summary>
+        /// prev image external url
+        /// </summary>
+        public string PrevItemExternalNormalSizeImageUrl { get; set; }
 
         /// <summary>
         /// Formatted Tags

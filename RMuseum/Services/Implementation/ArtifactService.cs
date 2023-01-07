@@ -1089,11 +1089,14 @@ namespace RMuseum.Services.Implementation
                 ParentFriendlyUrl = parent.FriendlyUrl,
                 ParentName = parent.Name,
                 ParentImageId = parent.CoverImage.Id,
+                ParentExternalNormalSizeImageUrl = parent.CoverImage.ExternalNormalSizeImageUrl,
                 ParentItemCount = parent.Items.Count(),
                 NextItemFriendlyUrl = nextItem == null ? "" : nextItem.FriendlyUrl,
-                NextItemImageId = nextItem == null ? (Guid?)null : nextItem.Images.First().Id,
+                NextItemImageId = nextItem == null ? null : nextItem.Images.First().Id,
+                NextItemExternalNormalSizeImageUrl = nextItem == null ? null : nextItem.Images.First().ExternalNormalSizeImageUrl,
                 PreviousItemFriendlyUrl = prevItem == null ? "" : prevItem.FriendlyUrl,
-                PrevItemImageId = prevItem == null ? (Guid?)null : prevItem.Images.First().Id,
+                PrevItemImageId = prevItem == null ? null : prevItem.Images.First().Id,
+                PrevItemExternalNormalSizeImageUrl = prevItem == null ? null :  prevItem.Images.First().ExternalNormalSizeImageUrl,
             };
             return new RServiceResult<RArtifactItemRecordViewModel>(res);
         }
