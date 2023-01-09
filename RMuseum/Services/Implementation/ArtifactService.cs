@@ -2218,7 +2218,8 @@ namespace RMuseum.Services.Implementation
                         continue;
 
                     model.RelatedEntityName = note.RArtifactItemRecord.Name;
-                    model.RelatedEntityImageId = note.RArtifactItemRecord.Images.FirstOrDefault().Id;
+                    model.RelatedEntityImageId = note.RArtifactItemRecord.Images.First().Id;
+                    model.RelatedEntityExternalNormalSizeImageUrl = note.RArtifactItemRecord.Images.First().ExternalNormalSizeImageUrl;
                     model.RelatedEntityFriendlyUrl = parent.FriendlyUrl + "/" + note.RArtifactItemRecord.FriendlyUrl;
                     model.RelatedItemParentName = parent.Name;
                 }
@@ -2227,6 +2228,7 @@ namespace RMuseum.Services.Implementation
                 {
                     model.RelatedEntityName = note.RArtifactMasterRecord.Name;
                     model.RelatedEntityImageId = note.RArtifactMasterRecord.CoverImage.Id;
+                    model.RelatedEntityExternalNormalSizeImageUrl = note.RArtifactMasterRecord.CoverImage.ExternalNormalSizeImageUrl;
                     model.RelatedEntityFriendlyUrl = note.RArtifactMasterRecord.FriendlyUrl;
                 }
                 finalList.Add(model);
@@ -2316,7 +2318,8 @@ namespace RMuseum.Services.Implementation
                         continue;
 
                     model.RelatedEntityName = note.RArtifactItemRecord.Name;
-                    model.RelatedEntityImageId = note.RArtifactItemRecord.Images.FirstOrDefault().Id;
+                    model.RelatedEntityImageId = note.RArtifactItemRecord.Images.First().Id;
+                    model.RelatedEntityExternalNormalSizeImageUrl = note.RArtifactItemRecord.Images.First().ExternalNormalSizeImageUrl;
                     model.RelatedEntityFriendlyUrl = parent.FriendlyUrl + "/" + note.RArtifactItemRecord.FriendlyUrl;
                     model.RelatedItemParentName = parent.Name;
                 }
@@ -2326,6 +2329,7 @@ namespace RMuseum.Services.Implementation
                     model.RelatedEntityName = note.RArtifactMasterRecord.Name;
                     model.RelatedEntityImageId = note.RArtifactMasterRecord.CoverImage.Id;
                     model.RelatedEntityFriendlyUrl = note.RArtifactMasterRecord.FriendlyUrl;
+                    model.RelatedEntityExternalNormalSizeImageUrl = note.RArtifactMasterRecord.CoverImage.ExternalNormalSizeImageUrl;
                 }
                 finalList.Add(model);
             }

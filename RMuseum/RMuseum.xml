@@ -10942,6 +10942,11 @@
             It is set only in cummulative api calls
             </remarks>
         </member>
+        <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.RelatedEntityExternalNormalSizeImageUrl">
+            <summary>
+            Related entity external normal size image url
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.RelatedItemParentName">
             <summary>
             Related Item Artifact Name

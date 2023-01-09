@@ -89,6 +89,11 @@ namespace RMuseum.Models.Note.ViewModels
         public string RelatedEntityFriendlyUrl { get; set; }
 
         /// <summary>
+        /// Related entity external normal size image url
+        /// </summary>
+        public string RelatedEntityExternalNormalSizeImageUrl { get; set; }
+
+        /// <summary>
         /// Related Item Artifact Name
         /// </summary>
         /// <remarks>
