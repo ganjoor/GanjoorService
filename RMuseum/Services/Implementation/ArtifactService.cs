@@ -26,6 +26,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using DNTPersianUtils.Core;
+using FluentFTP;
 
 namespace RMuseum.Services.Implementation
 {
@@ -3031,159 +3032,184 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> ReviewSuggestedPinterestLink(Guid linkId, Guid userId, string altText, ReviewResult result, string reviewDesc, string imageUrl)
         {
-            PinterestLink link =
-            await _context.PinterestLinks
-                 .Where(l => l.Id == linkId)
-                 .SingleOrDefaultAsync();
-
-            link.ReviewResult = result;
-            link.ReviewerId = userId;
-            link.ReviewDate = DateTime.Now;
-            if (!string.IsNullOrEmpty(altText))
-                link.AltText = altText;
-            if (!string.IsNullOrEmpty(imageUrl))
-                link.PinterestImageUrl = imageUrl;
-            link.ReviewDesc = reviewDesc;
-
-            if (link.ReviewResult == ReviewResult.Approved)
+            try
             {
-                PinterestLink relatedArtifactLink =
+                PinterestLink link =
                 await _context.PinterestLinks
-                    .Where(p => p.PinterestUrl == link.PinterestUrl && p.PinterestImageUrl == link.PinterestImageUrl
-                                               && link.Id != p.Id
-                                               && p.ReviewResult == ReviewResult.Approved)
-                    .FirstOrDefaultAsync();
-                string titleInToc = link.AltText;
-                if (titleInToc.IndexOfAny(new char[] { '\n', '\r' }) != -1)
+                     .Where(l => l.Id == linkId)
+                     .SingleOrDefaultAsync();
+
+                link.ReviewResult = result;
+                link.ReviewerId = userId;
+                link.ReviewDate = DateTime.Now;
+                if (!string.IsNullOrEmpty(altText))
+                    link.AltText = altText;
+                if (!string.IsNullOrEmpty(imageUrl))
+                    link.PinterestImageUrl = imageUrl;
+                link.ReviewDesc = reviewDesc;
+
+                if (link.ReviewResult == ReviewResult.Approved)
                 {
-                    string[] lines = titleInToc.Replace('\n', '\r').Split('\r', StringSplitOptions.RemoveEmptyEntries);
-                    titleInToc = lines[0];
-                }
-                if (relatedArtifactLink != null)
-                {
-
-                    link.ArtifactId = relatedArtifactLink.ArtifactId;
-                    link.ItemId = relatedArtifactLink.ItemId;
-
-                    //TODO: append tags to this existing artifact and its items
-
-
-                }
-                else
-                {
-                    using (var client = new HttpClient())
+                    PinterestLink relatedArtifactLink =
+                    await _context.PinterestLinks
+                        .Where(p => p.PinterestUrl == link.PinterestUrl && p.PinterestImageUrl == link.PinterestImageUrl
+                                                   && link.Id != p.Id
+                                                   && p.ReviewResult == ReviewResult.Approved)
+                        .FirstOrDefaultAsync();
+                    string titleInToc = link.AltText;
+                    if (titleInToc.IndexOfAny(new char[] { '\n', '\r' }) != -1)
                     {
-                        var imageResult = await client.GetAsync(link.PinterestImageUrl);
+                        string[] lines = titleInToc.Replace('\n', '\r').Split('\r', StringSplitOptions.RemoveEmptyEntries);
+                        titleInToc = lines[0];
+                    }
+                    if (relatedArtifactLink != null)
+                    {
+
+                        link.ArtifactId = relatedArtifactLink.ArtifactId;
+                        link.ItemId = relatedArtifactLink.ItemId;
+
+                        //TODO: append tags to this existing artifact and its items
 
 
-                        int _ImportRetryCount = 5;
-                        int _ImportRetryInitialSleep = 500;
-                        int retryCount = 0;
-                        while (retryCount < _ImportRetryCount && !imageResult.IsSuccessStatusCode && imageResult.StatusCode == HttpStatusCode.ServiceUnavailable)
+                    }
+                    else
+                    {
+                        using (var client = new HttpClient())
                         {
-                            imageResult.Dispose();
-                            Thread.Sleep(_ImportRetryInitialSleep * (retryCount + 1));
-                            imageResult = await client.GetAsync(link.PinterestImageUrl);
-                            retryCount++;
-                        }
+                            var imageResult = await client.GetAsync(link.PinterestImageUrl);
 
-                        if (imageResult.IsSuccessStatusCode)
-                        {
-                            using (Stream imageStream = await imageResult.Content.ReadAsStreamAsync())
+
+                            int _ImportRetryCount = 5;
+                            int _ImportRetryInitialSleep = 500;
+                            int retryCount = 0;
+                            while (retryCount < _ImportRetryCount && !imageResult.IsSuccessStatusCode && imageResult.StatusCode == HttpStatusCode.ServiceUnavailable)
                             {
-                                string friendlyUrl = Guid.NewGuid().ToString();
-                                string fileName = friendlyUrl + ".jpg";
-                                while ((await _context.PictureFiles.Where(p => p.OriginalFileName == fileName).FirstOrDefaultAsync()) != null)
+                                imageResult.Dispose();
+                                Thread.Sleep(_ImportRetryInitialSleep * (retryCount + 1));
+                                imageResult = await client.GetAsync(link.PinterestImageUrl);
+                                retryCount++;
+                            }
+
+                            if (imageResult.IsSuccessStatusCode)
+                            {
+                                using (Stream imageStream = await imageResult.Content.ReadAsStreamAsync())
                                 {
-                                    fileName = Guid.NewGuid() + "-" + friendlyUrl + ".jpg";
+                                    string friendlyUrl = Guid.NewGuid().ToString();
+                                    string fileName = friendlyUrl + ".jpg";
+                                    while ((await _context.PictureFiles.Where(p => p.OriginalFileName == fileName).FirstOrDefaultAsync()) != null)
+                                    {
+                                        fileName = Guid.NewGuid() + "-" + friendlyUrl + ".jpg";
+                                    }
+                                    RServiceResult<RPictureFile> picture = await _pictureFileService.Add(link.GanjoorTitle, link.AltText, 1, null, link.PinterestUrl, imageStream, fileName, "Pinterest");
+                                    if (picture.Result == null)
+                                    {
+                                        return new RServiceResult<bool>(false, $"_pictureFileService.Add : {picture.ExceptionString}");
+                                    }
+                                    
+                                    var ftpClient = new AsyncFtpClient
+                                        (
+                                            Configuration.GetSection("AudioSFPServer")["Host"],
+                                            Configuration.GetSection("AudioSFPServer")["Username"],
+                                            Configuration.GetSection("AudioSFPServer")["Password"]
+                                        );
+                                    await ftpClient.AutoConnect();
+                                    ftpClient.Config.RetryAttempts = 3;
+                                    foreach (var imageSizeString in new string[] { "orig", "norm", "thumb"})
+                                    {
+                                        var localFilePath = _pictureFileService.GetImagePath(picture.Result, imageSizeString).Result;
+                                        if(imageSizeString == "orig")
+                                        {
+                                            picture.Result.ExternalNormalSizeImageUrl = $"https://i.ganjoor.net/images/Pinterest/orig/{Path.GetFileName(localFilePath)}";
+                                        }
+                                        var remoteFilePath = $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}/images/Pinterest/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                                        await ftpClient.UploadFile(localFilePath, remoteFilePath);
+                                    }
+                                    await ftpClient.Disconnect();
+
+                                    RArtifactMasterRecord book = new RArtifactMasterRecord(titleInToc, titleInToc)
+                                    {
+                                        Status = PublishStatus.Published,
+                                        DateTime = DateTime.Now,
+                                        LastModified = DateTime.Now,
+                                        CoverItemIndex = 0,
+                                        FriendlyUrl = friendlyUrl
+                                    };
+
+                                    List<RTagValue> meta = new List<RTagValue>();
+
+                                    RTagValue tag = await TagHandler.PrepareAttribute(_context, "Title", titleInToc, 1);
+                                    meta.Add(tag);
+
+                                    tag = await TagHandler.PrepareAttribute(_context, "Description", link.AltText, 1);
+                                    meta.Add(tag);
+
+                                    tag = await TagHandler.PrepareAttribute(_context, "Source", link.LinkType == LinkType.Pinterest ? "Pinterest" : link.LinkType == LinkType.Instagram ? "Instagram" : link.PinterestUrl, 1);
+                                    tag.ValueSupplement = link.PinterestUrl;
+
+                                    meta.Add(tag);
+
+                                    tag = await TagHandler.PrepareAttribute(_context, "Ganjoor Link", link.GanjoorTitle, 1);
+                                    tag.ValueSupplement = link.GanjoorUrl;
+
+                                    meta.Add(tag);
+
+                                    tag = await TagHandler.PrepareAttribute(_context, "Title in TOC", titleInToc, 1);
+                                    tag.ValueSupplement = "1";//font size
+
+                                    meta.Add(tag);
+
+                                    book.Tags = meta.ToArray();
+
+                                    List<RArtifactItemRecord> pages = new List<RArtifactItemRecord>();
+
+                                    int order = 1;
+
+                                    RArtifactItemRecord page = new RArtifactItemRecord()
+                                    {
+                                        Name = titleInToc,
+                                        NameInEnglish = titleInToc,
+                                        Description = link.AltText,
+                                        DescriptionInEnglish = link.AltText,
+                                        Order = order,
+                                        FriendlyUrl = $"p{$"{order}".PadLeft(4, '0')}",
+                                        LastModified = DateTime.Now
+                                    };
+
+                                    page.Images = new RPictureFile[] { picture.Result };
+                                    page.CoverImageIndex = 0;
+
+                                    page.Tags = meta.ToArray();
+
+                                    book.CoverImage = RPictureFile.Duplicate(picture.Result);
+
+                                    pages.Add(page);
+
+                                    book.Items = pages.ToArray();
+                                    book.ItemCount = pages.Count;
+
+                                    await _context.Artifacts.AddAsync(book);
+                                    await _context.SaveChangesAsync();
+
+                                    link.ArtifactId = book.Id;
+                                    link.ItemId = (await _context.Items.Where(i => i.RArtifactMasterRecordId == link.ArtifactId).FirstOrDefaultAsync()).Id;
                                 }
-                                RServiceResult<RPictureFile> picture = await _pictureFileService.Add(link.GanjoorTitle, link.AltText, 1, null, link.PinterestUrl, imageStream, fileName, "Pinterest");
-                                if (picture.Result == null)
-                                {
-                                    return new RServiceResult<bool>(false, $"_pictureFileService.Add : {picture.ExceptionString}");
-                                }
-
-
-
-                                RArtifactMasterRecord book = new RArtifactMasterRecord(titleInToc, titleInToc)
-                                {
-                                    Status = PublishStatus.Published,
-                                    DateTime = DateTime.Now,
-                                    LastModified = DateTime.Now,
-                                    CoverItemIndex = 0,
-                                    FriendlyUrl = friendlyUrl
-                                };
-
-                                List<RTagValue> meta = new List<RTagValue>();
-
-                                RTagValue tag = await TagHandler.PrepareAttribute(_context, "Title", titleInToc, 1);
-                                meta.Add(tag);
-
-                                tag = await TagHandler.PrepareAttribute(_context, "Description", link.AltText, 1);
-                                meta.Add(tag);
-
-                                tag = await TagHandler.PrepareAttribute(_context, "Source", link.LinkType == LinkType.Pinterest ? "Pinterest" : link.LinkType == LinkType.Instagram ? "Instagram" : link.PinterestUrl, 1);
-                                tag.ValueSupplement = link.PinterestUrl;
-
-                                meta.Add(tag);
-
-                                tag = await TagHandler.PrepareAttribute(_context, "Ganjoor Link", link.GanjoorTitle, 1);
-                                tag.ValueSupplement = link.GanjoorUrl;
-
-                                meta.Add(tag);
-
-                                tag = await TagHandler.PrepareAttribute(_context, "Title in TOC", titleInToc, 1);
-                                tag.ValueSupplement = "1";//font size
-
-                                meta.Add(tag);
-
-                                book.Tags = meta.ToArray();
-
-                                List<RArtifactItemRecord> pages = new List<RArtifactItemRecord>();
-
-                                int order = 1;
-
-                                RArtifactItemRecord page = new RArtifactItemRecord()
-                                {
-                                    Name = titleInToc,
-                                    NameInEnglish = titleInToc,
-                                    Description = link.AltText,
-                                    DescriptionInEnglish = link.AltText,
-                                    Order = order,
-                                    FriendlyUrl = $"p{$"{order}".PadLeft(4, '0')}",
-                                    LastModified = DateTime.Now
-                                };
-
-                                page.Images = new RPictureFile[] { picture.Result };
-                                page.CoverImageIndex = 0;
-
-                                page.Tags = meta.ToArray();
-
-                                book.CoverImage = RPictureFile.Duplicate(picture.Result);
-
-                                pages.Add(page);
-
-                                book.Items = pages.ToArray();
-                                book.ItemCount = pages.Count;
-
-                                await _context.Artifacts.AddAsync(book);
-                                await _context.SaveChangesAsync();
-
-                                link.ArtifactId = book.Id;
-                                link.ItemId = (await _context.Items.Where(i => i.RArtifactMasterRecordId == link.ArtifactId).FirstOrDefaultAsync()).Id;
+                            }
+                            else
+                            {
+                                return new RServiceResult<bool>(false, $"Http result is not ok (url {link.PinterestImageUrl}");
                             }
                         }
-                        else
-                        {
-                            return new RServiceResult<bool>(false, $"Http result is not ok (url {link.PinterestImageUrl}");
-                        }
-                    }
 
+                    }
                 }
+                _context.PinterestLinks.Update(link);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
             }
-            _context.PinterestLinks.Update(link);
-            await _context.SaveChangesAsync();
-            return new RServiceResult<bool>(true);
+            catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
         }
 
         /// <summary>
