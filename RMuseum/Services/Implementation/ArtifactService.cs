@@ -3112,6 +3112,7 @@ namespace RMuseum.Services.Implementation
                                             Configuration.GetSection("AudioSFPServer")["Username"],
                                             Configuration.GetSection("AudioSFPServer")["Password"]
                                         );
+                                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
                                     await ftpClient.AutoConnect();
                                     ftpClient.Config.RetryAttempts = 3;
                                     foreach (var imageSizeString in new string[] { "orig", "norm", "thumb"})
@@ -3210,6 +3211,11 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
+        }
+
+        private void FtpClient_ValidateCertificate(FluentFTP.Client.BaseClient.BaseFtpClient control, FtpSslValidationEventArgs e)
+        {
+            e.Accept = true;
         }
 
         /// <summary>
