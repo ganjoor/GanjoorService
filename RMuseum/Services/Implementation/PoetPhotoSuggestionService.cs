@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentFTP;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
 using RMuseum.Models.Auth.Memory;
@@ -236,8 +238,27 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-
                 var dbModel = await _context.GanjoorPoetSuggestedPictures.Include(p => p.Picture).Where(s => s.Id == model.Id).SingleAsync();
+                var ftpClient = new AsyncFtpClient
+                                        (
+                                            Configuration.GetSection("AudioSFPServer")["Host"],
+                                            Configuration.GetSection("AudioSFPServer")["Username"],
+                                            Configuration.GetSection("AudioSFPServer")["Password"]
+                                        );
+                ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                await ftpClient.AutoConnect();
+                ftpClient.Config.RetryAttempts = 3;
+                foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
+                {
+                    var localFilePath = _pictureFileService.GetImagePath(dbModel.Picture, imageSizeString).Result;
+                    if (imageSizeString == "orig")
+                    {
+                        dbModel.Picture.ExternalNormalSizeImageUrl = $"https://i.ganjoor.net/images/PoetsPhotoSuggestions/orig/{Path.GetFileName(localFilePath)}";
+                    }
+                    var remoteFilePath = $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}/images/PoetsPhotoSuggestions/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                    await ftpClient.UploadFile(localFilePath, remoteFilePath);
+                }
+                await ftpClient.Disconnect();
                 bool publishIsChanged = model.Published != dbModel.Published;
                 bool newlyChosenOne = model.ChosenOne && !dbModel.ChosenOne;
                 if (newlyChosenOne)
@@ -306,6 +327,11 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        private void FtpClient_ValidateCertificate(FluentFTP.Client.BaseClient.BaseFtpClient control, FtpSslValidationEventArgs e)
+        {
+            e.Accept = true;
+        }
+
         /// <summary>
         /// delete  a suggested photo for poets
         /// </summary>
@@ -365,18 +391,26 @@ namespace RMuseum.Services.Implementation
         protected readonly IAppUserService _appUserService;
 
         /// <summary>
+        /// Configuration
+        /// </summary>
+        protected IConfiguration Configuration { get; }
+
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="pictureFileService"></param>
         /// <param name="notificationService"></param>
         /// <param name="appUserService"></param>
-        public PoetPhotoSuggestionService(RMuseumDbContext context, IPictureFileService pictureFileService, IRNotificationService notificationService, IAppUserService appUserService)
+        /// <param name="configuration"></param>
+        public PoetPhotoSuggestionService(RMuseumDbContext context, IPictureFileService pictureFileService, IRNotificationService notificationService, IAppUserService appUserService, IConfiguration configuration)
         {
             _context = context;
             _pictureFileService = pictureFileService;
             _notificationService = notificationService;
             _appUserService = appUserService;
+            Configuration = configuration;
         }
     }
 }

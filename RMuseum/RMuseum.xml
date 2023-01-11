@@ -16163,7 +16163,12 @@
             IAppUserService instance
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.#ctor(RMuseum.DbContext.RMuseumDbContext,RMuseum.Services.IPictureFileService,RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IAppUserService)">
+        <member name="P:RMuseum.Services.Implementation.PoetPhotoSuggestionService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.#ctor(RMuseum.DbContext.RMuseumDbContext,RMuseum.Services.IPictureFileService,RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IAppUserService,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             constructor
             </summary>
@@ -16171,6 +16176,7 @@
             <param name="pictureFileService"></param>
             <param name="notificationService"></param>
             <param name="appUserService"></param>
+            <param name="configuration"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.RecitationsRssBuilder">
             <summary>
