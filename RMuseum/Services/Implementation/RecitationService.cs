@@ -357,49 +357,47 @@ namespace RMuseum.Services.Implementationa
 
             if (recitation.ReviewStatus == AudioReviewStatus.Approved)
             {
-                string audioTitle = recitation.AudioTitle;
+
                 int GanjoorPostId = recitation.GanjoorPostId;
 
-                await FinalizeDelete(recitation);
+                recitation.AudioSyncStatus = AudioSyncStatus.Deleted;
+                _context.Recitations.Update(recitation);
+                await _context.SaveChangesAsync();
 
-                await _notificationService.PushNotification
-                (
-                    userId,
-                    "حذف نهایی خوانش ارسالی",
-                    $"خوانش ارسالی {audioTitle} حذف شد.{Environment.NewLine}" +
-                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
-                );
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                  (
+                  async token =>
+                  {
+                      using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                      {
+                          RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                          {
+                              PoemNarrationId = recitation.Id,
+                              StartDate = DateTime.Now,
+                              XmlFileCopied = false,
+                              Mp3FileCopied = false,
+                              FirstDbUpdated = false,
+                              SecondDbUpdated = false,
+                          };
+                          context.RecitationPublishingTrackers.Add(tracker);
+                          await context.SaveChangesAsync();
+
+                          await _DeleteNarrationFromRemote(recitation, tracker, context);
+                      }
+
+                  });
 
                 await _ganjoorService.CacheCleanForPageById(GanjoorPostId);
             }
             else
             {
-                await FinalizeDelete(recitation);
+                await _FinalizeDelete(_context, recitation);
             }
 
             return new RServiceResult<bool>(true);
         }
 
-        private async Task<string> FinalizeDelete(Recitation recitation)
-        {
-            bool rejected = recitation.ReviewStatus == AudioReviewStatus.Rejected;
-            string mp3 = recitation.LocalMp3FilePath;
-            string xml = recitation.LocalXmlFilePath;
-            _context.Recitations.Remove(recitation);
-            await _context.SaveChangesAsync();
-
-            if (!rejected)
-            {
-                if (File.Exists(mp3))
-                    File.Delete(mp3);
-                if (File.Exists(xml))
-                    File.Delete(xml);
-            }
-
-            return "";
-        }
-
-
+   
         /// <summary>
         /// Gets Verse Sync Range Information
         /// </summary>
@@ -540,7 +538,7 @@ namespace RMuseum.Services.Implementationa
                                         (
                                             (Guid)moderator.Id,
                                             "درخواست بررسی خوانش",
-                                            $"درخواستی برای بررسی خوانشی از «{narration.AudioArtist}» ثبت شده است. در صورت تمایل به بررسی، بخش «خوانش‌های در انتظار تأیید» را ببینید.{ Environment.NewLine}" +
+                                            $"درخواستی برای بررسی خوانشی از «{narration.AudioArtist}» ثبت شده است. در صورت تمایل به بررسی، بخش «خوانش‌های در انتظار تأیید» را ببینید.{Environment.NewLine}" +
                                             $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی خوانش‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
                                         );
                     }
@@ -831,7 +829,7 @@ namespace RMuseum.Services.Implementationa
                                 if (preUploadedRecitaion != null)
                                 {
                                     var preUploadedPoem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == preUploadedRecitaion.GanjoorPostId).SingleOrDefaultAsync();
-                                    session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg 
+                                    session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg
                                             = $"فایل صوتیی همسان با فایل ارسالی پیشتر بارگذاری شده است.{Environment.NewLine}" +
                                             $"مشخصات فایل موجود: {preUploadedRecitaion.AudioTitle} - {preUploadedRecitaion.AudioArtist} - شناسهٔ شعر: {preUploadedRecitaion.GanjoorPostId} {Environment.NewLine}" +
                                             $"{(preUploadedPoem == null ? "شعر نامشخص" : preUploadedPoem.FullTitle)} - کاربر: {preUploadedRecitaion.Owner.NickName}";
@@ -841,7 +839,7 @@ namespace RMuseum.Services.Implementationa
                                      (
                                          session.UseId,
                                          "خطا در پردازش فایل ارسالی",
-                                         $"فایل صوتیی همسان با فایل ارسالی پیشتر آپلود شده است.{ Environment.NewLine}" +
+                                         $"فایل صوتیی همسان با فایل ارسالی پیشتر آپلود شده است.{Environment.NewLine}" +
                                          $"{file.FileName}"
                                      );
                                 }
@@ -891,7 +889,7 @@ namespace RMuseum.Services.Implementationa
                                      (
                                          session.UseId,
                                          "خطا در پردازش فایل ارسالی",
-                                         $"فایل mp3 متناظر یافت نشد(توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است.اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).{ Environment.NewLine}" +
+                                         $"فایل mp3 متناظر یافت نشد(توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است.اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).{Environment.NewLine}" +
                                          $"{file.FileName}"
                                      );
                                     }
@@ -913,7 +911,7 @@ namespace RMuseum.Services.Implementationa
                                             }
                                         }
 
-                                        if(overCrowdedPoem)
+                                        if (overCrowdedPoem)
                                         {
                                             session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg = $"این شعر در حال حاضر دارای دست کم {maxRecitationsPerPoem.ToPersianNumbers()} خوانش است و امکان ارسال خوانش جدید برای آن وجود ندارد. اگر روی ارسال خوانش برای این شعر اصرار دارید لطفاً خوانش‌های موجود آن را بررسی کنید و اشکالاتی که منطقاً خوانش را قابل حذف می‌کند از طریق ابزار گزارش خطا گزارش کنید. راه دیگر آن است که برای اشعار دیگری که تعداد زیادی خوانش ندارند خوانش ارسال کنید.";
                                             context.UploadSessions.Update(session);
@@ -1057,7 +1055,7 @@ namespace RMuseum.Services.Implementationa
                                      (
                                          session.UseId,
                                          "خطا در پردازش فایل ارسالی",
-                                         $"{exp}{ Environment.NewLine}" +
+                                         $"{exp}{Environment.NewLine}" +
                                          $"{file.FileName}"
                                      );
                         }
@@ -1080,7 +1078,7 @@ namespace RMuseum.Services.Implementationa
                                      (
                                          session.UseId,
                                          "خطا در پردازش فایل ارسالی",
-                                         $"فایل mp3 متناظر یافت نشد(توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است.اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).{ Environment.NewLine}" +
+                                         $"فایل mp3 متناظر یافت نشد(توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است.اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).{Environment.NewLine}" +
                                          $"{file.FileName}"
                                      );
 
@@ -1179,7 +1177,7 @@ namespace RMuseum.Services.Implementationa
                             await _PublishNarration(narration, tracker, context);
                         }
                     });
-                
+
                 await _ganjoorService.CacheCleanForPageById(narration.GanjoorPostId);
             }
 
@@ -1209,7 +1207,7 @@ namespace RMuseum.Services.Implementationa
                     ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
                     await ftpClient.AutoConnect();
                     ftpClient.Config.RetryAttempts = 3;
-                   
+
                     await ftpClient.UploadFile(narration.LocalXmlFilePath, $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
                     tracker.XmlFileCopied = true;
                     context.RecitationPublishingTrackers.Update(tracker);
@@ -1280,7 +1278,7 @@ namespace RMuseum.Services.Implementationa
 
             try
             {
-                
+
 
                 if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
                 {
@@ -1294,7 +1292,7 @@ namespace RMuseum.Services.Implementationa
                     await ftpClient.AutoConnect();
                     ftpClient.Config.RetryAttempts = 3;
 
-                    if(true == await ftpClient.FileExists($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}"))
+                    if (true == await ftpClient.FileExists($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}"))
                     {
                         await ftpClient.DeleteFile($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
                     }
@@ -1792,9 +1790,9 @@ namespace RMuseum.Services.Implementationa
         /// <returns></returns>
         public async Task<RServiceResult<UserRecitationProfileViewModel>> AddUserNarrationProfiles(UserRecitationProfileViewModel profile)
         {
-            if(!string.IsNullOrEmpty(profile.ArtistUrl))
+            if (!string.IsNullOrEmpty(profile.ArtistUrl))
             {
-                if(profile.ArtistUrl.ToLower().IndexOf("http") != 0)
+                if (profile.ArtistUrl.ToLower().IndexOf("http") != 0)
                 {
                     return new RServiceResult<UserRecitationProfileViewModel>(null, $"نشانی سایت یا صفحهٔ‌اینستاگرام یا کانال تلگرام باید با http:// یا https:// شروع شود. {profile.ArtistUrl} قابل قبول نیست.");
                 }
@@ -2096,7 +2094,7 @@ namespace RMuseum.Services.Implementationa
                                         (
                                             newOwnerId,
                                             "انتقال مالکیت خوانش‌ها به شما",
-                                            $"مالکیت {recitations.Count} خوانش تأیید شده از خوانشگری به نام «{artistName}» توسط کاربری با پست الکترونیکی «{user.Result.Email}» به شما منتقل شد.{ Environment.NewLine}"
+                                            $"مالکیت {recitations.Count} خوانش تأیید شده از خوانشگری به نام «{artistName}» توسط کاربری با پست الکترونیکی «{user.Result.Email}» به شما منتقل شد.{Environment.NewLine}"
                                         );
 
             return new RServiceResult<int>(recitations.Count);
@@ -2226,7 +2224,7 @@ namespace RMuseum.Services.Implementationa
                                         (
                                             (Guid)moderator.Id,
                                             "گزارش خطا در خوانش",
-                                            $"گزارش خطایی برای یک خوانش ثبت شده است. لطفاً خوانش‌های گزارش شده را در پیشخان خوانشگران مشاهده کنید.{ Environment.NewLine}" +
+                                            $"گزارش خطایی برای یک خوانش ثبت شده است. لطفاً خوانش‌های گزارش شده را در پیشخان خوانشگران مشاهده کنید.{Environment.NewLine}" +
                                             $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی خوانش‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
                                         );
                     }
@@ -2692,7 +2690,7 @@ namespace RMuseum.Services.Implementationa
                                             if (audio.FileCheckSum != mp3CheckSum)
                                             {
                                                 string backupFile = recitation.LocalMp3FilePath.Replace("C:\\inetpub\\iganjoor", "C:\\audiobackups-restored");
-                                                if(File.Exists(backupFile))
+                                                if (File.Exists(backupFile))
                                                 {
                                                     File.Copy(backupFile, recitation.LocalMp3FilePath, true);
                                                     replacedFiles.Add(recitation.LocalMp3FilePath);
@@ -2720,7 +2718,7 @@ namespace RMuseum.Services.Implementationa
                                             await jobProgressServiceEF.UpdateJob(job.Id, progress);
                                         }
                                     }
-                                    if(replacedFiles.Count > 0)
+                                    if (replacedFiles.Count > 0)
                                     {
                                         File.WriteAllLines("C:\\audiobackups-restored\\list.txt", replacedFiles.ToArray());
                                     }
