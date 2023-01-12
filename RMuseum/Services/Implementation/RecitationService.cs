@@ -554,7 +554,28 @@ namespace RMuseum.Services.Implementationa
                 _context.Recitations.Update(narration);
                 await _context.SaveChangesAsync();
 
-                await UpdateRecitation(narration, true);
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                  (
+                  async token =>
+                  {
+                      using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                      {
+                          RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                          {
+                              PoemNarrationId = narration.Id,
+                              StartDate = DateTime.Now,
+                              XmlFileCopied = false,
+                              Mp3FileCopied = false,
+                              FirstDbUpdated = false,
+                              SecondDbUpdated = false,
+                          };
+                          context.RecitationPublishingTrackers.Add(tracker);
+                          await context.SaveChangesAsync();
+
+                          await _UpdateRemoteRecitations(narration, tracker, context, true);
+                      }
+
+                  });
 
                 await _ganjoorService.CacheCleanForPageById(narration.GanjoorPostId);
 
@@ -1159,6 +1180,7 @@ namespace RMuseum.Services.Implementationa
                         }
                     });
                 
+                await _ganjoorService.CacheCleanForPageById(narration.GanjoorPostId);
             }
 
             return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync(), ""));
@@ -2099,7 +2121,20 @@ namespace RMuseum.Services.Implementationa
                     _context.Recitations.Update(other);
 
 
-                    await UpdateRecitation(other, false /* owner of this recitation did nothing to expect any notifications*/);
+                    RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                    {
+                        PoemNarrationId = other.Id,
+                        StartDate = DateTime.Now,
+                        XmlFileCopied = false,
+                        Mp3FileCopied = false,
+                        FirstDbUpdated = false,
+                        SecondDbUpdated = false,
+                    };
+                    _context.RecitationPublishingTrackers.Add(tracker);
+
+                    await _context.SaveChangesAsync();
+
+                    await _UpdateRemoteRecitations(other, tracker, _context, false /* owner of this recitation did nothing to expect any notifications*/);
 
                     await _ganjoorService.CacheCleanForPageById(other.GanjoorPostId);
                 }
@@ -2108,9 +2143,23 @@ namespace RMuseum.Services.Implementationa
                 recitation.AudioSyncStatus = AudioSyncStatus.MetadataChanged;
                 _context.Recitations.Update(recitation);
 
-                await UpdateRecitation(recitation, true);
+                RecitationPublishingTracker trackerMain = new RecitationPublishingTracker()
+                {
+                    PoemNarrationId = recitation.Id,
+                    StartDate = DateTime.Now,
+                    XmlFileCopied = false,
+                    Mp3FileCopied = false,
+                    FirstDbUpdated = false,
+                    SecondDbUpdated = false,
+                };
+                _context.RecitationPublishingTrackers.Add(trackerMain);
+
+                await _context.SaveChangesAsync();
+
+                await _UpdateRemoteRecitations(recitation, trackerMain, _context, true);
 
                 await _ganjoorService.CacheCleanForPageById(recitation.GanjoorPostId);
+
             }
             return new RServiceResult<int>(recitations.Count);
         }
