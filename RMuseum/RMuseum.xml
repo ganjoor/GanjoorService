@@ -2523,6 +2523,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.RetryPublish">
+            <summary>
+            retry publish unpublished narrations
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.RecitationController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -17099,6 +17105,11 @@
             </summary>
             <param name="userId"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.RetryPublish">
+            <summary>
+            retry publish unpublished narrations
+            </summary>
         </member>
         <member name="P:RMuseum.Services.IRecitationService.UploadEnabled">
             <summary>

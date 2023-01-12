@@ -281,6 +281,11 @@ namespace RMuseum.Services
         RServiceResult<bool> StartCheckingRecitationsHealthCheck(Guid userId);
 
         /// <summary>
+        /// retry publish unpublished narrations
+        /// </summary>
+        Task RetryPublish();
+
+        /// <summary>
         /// Upload Enabled (temporary switch off/on for upload)
         /// </summary>
         bool UploadEnabled { get; }
