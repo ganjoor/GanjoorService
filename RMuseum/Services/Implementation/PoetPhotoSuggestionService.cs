@@ -239,26 +239,30 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var dbModel = await _context.GanjoorPoetSuggestedPictures.Include(p => p.Picture).Where(s => s.Id == model.Id).SingleAsync();
-                var ftpClient = new AsyncFtpClient
-                                        (
-                                            Configuration.GetSection("AudioSFPServer")["Host"],
-                                            Configuration.GetSection("AudioSFPServer")["Username"],
-                                            Configuration.GetSection("AudioSFPServer")["Password"]
-                                        );
-                ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
-                await ftpClient.AutoConnect();
-                ftpClient.Config.RetryAttempts = 3;
-                foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
+                if (model.Published && bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
                 {
-                    var localFilePath = _pictureFileService.GetImagePath(dbModel.Picture, imageSizeString).Result;
-                    if (imageSizeString == "orig")
+                    var ftpClient = new AsyncFtpClient
+                                        (
+                                            Configuration.GetSection("ExternalFTPServer")["Host"],
+                                            Configuration.GetSection("ExternalFTPServer")["Username"],
+                                            Configuration.GetSection("ExternalFTPServer")["Password"]
+                                        );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+                    foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
                     {
-                        dbModel.Picture.ExternalNormalSizeImageUrl = $"https://i.ganjoor.net/images/PoetsPhotoSuggestions/orig/{Path.GetFileName(localFilePath)}";
+                        var localFilePath = _pictureFileService.GetImagePath(dbModel.Picture, imageSizeString).Result;
+                        if (imageSizeString == "orig")
+                        {
+                            dbModel.Picture.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/PoetsPhotoSuggestions/orig/{Path.GetFileName(localFilePath)}";
+                        }
+                        var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/PoetsPhotoSuggestions/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                        await ftpClient.UploadFile(localFilePath, remoteFilePath);
                     }
-                    var remoteFilePath = $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}/images/PoetsPhotoSuggestions/{imageSizeString}/{Path.GetFileName(localFilePath)}";
-                    await ftpClient.UploadFile(localFilePath, remoteFilePath);
+                    await ftpClient.Disconnect();
                 }
-                await ftpClient.Disconnect();
+                    
                 bool publishIsChanged = model.Published != dbModel.Published;
                 bool newlyChosenOne = model.ChosenOne && !dbModel.ChosenOne;
                 if (newlyChosenOne)

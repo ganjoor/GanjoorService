@@ -1097,7 +1097,7 @@ namespace RMuseum.Services.Implementation
                 NextItemExternalNormalSizeImageUrl = nextItem == null ? null : nextItem.Images.First().ExternalNormalSizeImageUrl,
                 PreviousItemFriendlyUrl = prevItem == null ? "" : prevItem.FriendlyUrl,
                 PrevItemImageId = prevItem == null ? null : prevItem.Images.First().Id,
-                PrevItemExternalNormalSizeImageUrl = prevItem == null ? null :  prevItem.Images.First().ExternalNormalSizeImageUrl,
+                PrevItemExternalNormalSizeImageUrl = prevItem == null ? null : prevItem.Images.First().ExternalNormalSizeImageUrl,
             };
             return new RServiceResult<RArtifactItemRecordViewModel>(res);
         }
@@ -3105,27 +3105,31 @@ namespace RMuseum.Services.Implementation
                                     {
                                         return new RServiceResult<bool>(false, $"_pictureFileService.Add : {picture.ExceptionString}");
                                     }
-                                    
-                                    var ftpClient = new AsyncFtpClient
-                                        (
-                                            Configuration.GetSection("AudioSFPServer")["Host"],
-                                            Configuration.GetSection("AudioSFPServer")["Username"],
-                                            Configuration.GetSection("AudioSFPServer")["Password"]
-                                        );
-                                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
-                                    await ftpClient.AutoConnect();
-                                    ftpClient.Config.RetryAttempts = 3;
-                                    foreach (var imageSizeString in new string[] { "orig", "norm", "thumb"})
+
+                                    if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
                                     {
-                                        var localFilePath = _pictureFileService.GetImagePath(picture.Result, imageSizeString).Result;
-                                        if(imageSizeString == "orig")
+                                        var ftpClient = new AsyncFtpClient
+                                        (
+                                            Configuration.GetSection("ExternalFTPServer")["Host"],
+                                            Configuration.GetSection("ExternalFTPServer")["Username"],
+                                            Configuration.GetSection("ExternalFTPServer")["Password"]
+                                        );
+                                        ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                                        await ftpClient.AutoConnect();
+                                        ftpClient.Config.RetryAttempts = 3;
+                                        foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
                                         {
-                                            picture.Result.ExternalNormalSizeImageUrl = $"https://i.ganjoor.net/images/Pinterest/orig/{Path.GetFileName(localFilePath)}";
+                                            var localFilePath = _pictureFileService.GetImagePath(picture.Result, imageSizeString).Result;
+                                            if (imageSizeString == "orig")
+                                            {
+                                                picture.Result.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/Pinterest/orig/{Path.GetFileName(localFilePath)}";
+                                            }
+                                            var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/Pinterest/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                                            await ftpClient.UploadFile(localFilePath, remoteFilePath);
                                         }
-                                        var remoteFilePath = $"{Configuration.GetSection("AudioSFPServer")["RootPath"]}/images/Pinterest/{imageSizeString}/{Path.GetFileName(localFilePath)}";
-                                        await ftpClient.UploadFile(localFilePath, remoteFilePath);
+                                        await ftpClient.Disconnect();
                                     }
-                                    await ftpClient.Disconnect();
+
 
                                     RArtifactMasterRecord book = new RArtifactMasterRecord(titleInToc, titleInToc)
                                     {
@@ -3207,7 +3211,7 @@ namespace RMuseum.Services.Implementation
                 await _context.SaveChangesAsync();
                 return new RServiceResult<bool>(true);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
@@ -3329,7 +3333,7 @@ namespace RMuseum.Services.Implementation
             (PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items) paginatedResult =
                await QueryablePaginator<RArtifactMasterRecord>.Paginate(source, paging);
 
-            
+
             return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactMasterRecord[] Items)>(paginatedResult);
         }
 
@@ -3395,7 +3399,7 @@ namespace RMuseum.Services.Implementation
             foreach (var item in paginatedResult.Items)
             {
                 RArtifactItemRecordViewModel model = new RArtifactItemRecordViewModel();
-                if(!item.Images.Any())//?! this sometimes happen!
+                if (!item.Images.Any())//?! this sometimes happen!
                 {
                     item.Images = (await _context.Items.AsNoTracking().Include(i => i.Images).Where(i => i.Id == item.Id).SingleAsync()).Images;
                 }
