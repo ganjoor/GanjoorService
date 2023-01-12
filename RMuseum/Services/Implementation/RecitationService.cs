@@ -1,4 +1,5 @@
 ﻿using DNTPersianUtils.Core;
+using FluentFTP;
 using ganjoor;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -1144,7 +1145,272 @@ namespace RMuseum.Services.Implementationa
         }
 
 
-        #region Old Remote Update Codes (now contains segments of reusable codes)
+        #region Remote Update
+
+        private void FtpClient_ValidateCertificate(FluentFTP.Client.BaseClient.BaseFtpClient control, FtpSslValidationEventArgs e)
+        {
+            e.Accept = true;
+        }
+        private async Task _PublishNarration(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context)
+        {
+            bool replace = narration.AudioSyncStatus == AudioSyncStatus.SoundOrXMLFilesChanged;
+            try
+            {
+                if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
+                {
+                    var ftpClient = new AsyncFtpClient
+                    (
+                        Configuration.GetSection("ExternalFTPServer")["Host"],
+                        Configuration.GetSection("ExternalFTPServer")["Username"],
+                        Configuration.GetSection("ExternalFTPServer")["Password"]
+                    );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+                   
+                    await ftpClient.UploadFile(narration.LocalXmlFilePath, $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                    tracker.XmlFileCopied = true;
+                    context.RecitationPublishingTrackers.Update(tracker);
+                    await context.SaveChangesAsync();
+
+                    await ftpClient.UploadFile(narration.LocalMp3FilePath, $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteMp3FilePath}");
+                    tracker.Mp3FileCopied = true;
+                    context.RecitationPublishingTrackers.Update(tracker);
+                    await context.SaveChangesAsync();
+
+                    await ftpClient.Disconnect();
+                }
+
+                narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
+                context.Recitations.Update(narration);
+                await context.SaveChangesAsync();
+
+                tracker.Finished = true;
+                tracker.FinishDate = DateTime.Now;
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
+                await new RNotificationService(context).PushNotification
+                (
+                    narration.OwnerId,
+                    "انتشار نهایی خوانش ارسالی",
+                    $"خوانش ارسالی {narration.AudioTitle} منتشر شد.{Environment.NewLine}" +
+                    $"لطفا توجه فرمایید که ممکن است ظاهر شدن تأثیر تغییرات روی سایت به دلیل تنظیمات حفظ کارایی گنجور تا یک روز طول بکشد.{Environment.NewLine}" +
+                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                );
+
+            }
+            catch (Exception exp)
+            {
+                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
+                tracker.LastException = exp.ToString();
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
+                await new RNotificationService(context).PushNotification
+               (
+                   narration.OwnerId,
+                   replace ? "خطا در به‌روزآوری نهایی اطلاعات خوانش ارسالی" : "خطا در انتشار نهایی خوانش ارسالی",
+                   $"انتشار یا به‌روزآوری خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
+                   $"لطفاً در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
+               );
+
+                //I mean admins!
+                var importers = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ImportOperationShortName);
+                if (string.IsNullOrEmpty(importers.ExceptionString)) //if not, do nothing!
+                {
+                    foreach (var moderator in importers.Result)
+                    {
+                        await new RNotificationService(_context).PushNotification
+                                        (
+                                            (Guid)moderator.Id,
+                                            replace ? "خطا در به‌روزآوری نهایی اطلاعات خوانش ارسالی" : "خطا در انتشار نهایی خوانش ارسالی",
+                                            $"لطفا صف انتظار را بررسی کنید.{Environment.NewLine}"
+                                        );
+                    }
+                }
+            }
+
+        }
+
+        private async Task _DeleteNarrationFromRemote(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context)
+        {
+
+            try
+            {
+                
+
+                if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
+                {
+                    var ftpClient = new AsyncFtpClient
+                    (
+                        Configuration.GetSection("ExternalFTPServer")["Host"],
+                        Configuration.GetSection("ExternalFTPServer")["Username"],
+                        Configuration.GetSection("ExternalFTPServer")["Password"]
+                    );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+
+                    if(true == await ftpClient.FileExists($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}"))
+                    {
+                        await ftpClient.DeleteFile($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                    }
+
+                    if (true == await ftpClient.FileExists($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}"))
+                    {
+                        await ftpClient.DeleteFile($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                    }
+
+                    await ftpClient.Disconnect();
+                }
+
+                string audioTitle = narration.AudioTitle;
+                int GanjoorPostId = narration.GanjoorPostId;
+                Guid userId = narration.OwnerId;
+
+                await _FinalizeDelete(context, narration);
+
+                tracker.Finished = true;
+                tracker.FinishDate = DateTime.Now;
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
+                await new RNotificationService(context).PushNotification
+                (
+                    userId,
+                    "حذف نهایی خوانش ارسالی",
+                    $"خوانش ارسالی {audioTitle} حذف شد.{Environment.NewLine}" +
+                    $"لطفاً توجه فرمایید که ممکن است ظاهر شدن تأثیر تغییرات روی وبگاه به دلیل تنظیمات حفظ کارایی گنجور تا یک روز طول بکشد.{Environment.NewLine}" +
+                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                );
+
+
+            }
+            catch (Exception exp)
+            {
+                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
+                tracker.LastException = exp.ToString();
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
+                await new RNotificationService(context).PushNotification
+               (
+                   narration.OwnerId,
+                   "خطا در حذف نهایی خوانش ارسالی",
+                   $"حذف نهایی خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
+                   $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
+               );
+
+                //I mean admins!
+                var importers = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ImportOperationShortName);
+                if (string.IsNullOrEmpty(importers.ExceptionString)) //if not, do nothing!
+                {
+                    foreach (var moderator in importers.Result)
+                    {
+                        await new RNotificationService(_context).PushNotification
+                                        (
+                                            (Guid)moderator.Id,
+                                            "خطا در حذف نهایی خوانش ارسالی",
+                                            $"لطفا صف انتظار را بررسی کنید.{Environment.NewLine}"
+                                        );
+                    }
+                }
+            }
+
+        }
+
+        private async Task<string> _FinalizeDelete(RMuseumDbContext context, Recitation recitation)
+        {
+            try
+            {
+                bool rejected = recitation.ReviewStatus == AudioReviewStatus.Rejected;
+                string mp3 = recitation.LocalMp3FilePath;
+                string xml = recitation.LocalXmlFilePath;
+                context.Recitations.Remove(recitation);
+                await context.SaveChangesAsync();
+
+                if (!rejected)
+                {
+                    if (File.Exists(mp3))
+                        File.Delete(mp3);
+                    if (File.Exists(xml))
+                        File.Delete(xml);
+                }
+
+                return "";
+            }
+            catch (Exception exp)
+            {
+                return exp.ToString();
+            }
+        }
+
+        private async Task _UpdateRemoteRecitations(Recitation narration, RecitationPublishingTracker tracker, RMuseumDbContext context, bool notify)
+        {
+
+            try
+            {
+                narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
+                context.Recitations.Update(narration);
+                await context.SaveChangesAsync();
+
+                tracker.Finished = true;
+                tracker.FinishDate = DateTime.Now;
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
+                if (notify)
+                {
+                    await new RNotificationService(context).PushNotification
+                (
+                    narration.OwnerId,
+                    "به‌روزآوری نهایی اطلاعات خوانش ارسالی",
+                    $"اطلاعات خوانش ارسالی {narration.AudioTitle} به‌روز شد.{Environment.NewLine}" +
+                    $"لطفا توجه فرمایید که فایل‌های صوتی معمولاً روی مرورگرها کَش می‌شوند. جهت اطمینان از جایگزینی فایل می‌بایست با مرورگری که تا به حال شعر را با آن ندیده‌اید بررسی بفرمایید.{Environment.NewLine}" +
+                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                );
+                }
+
+
+            }
+            catch (Exception exp)
+            {
+                //if an error occurs, narration.AudioSyncStatus is not updated and narration can be idetified later to do "retrypublish" attempts  
+                tracker.LastException = exp.ToString();
+                context.RecitationPublishingTrackers.Update(tracker);
+                await context.SaveChangesAsync();
+
+                if (notify)
+                {
+                    await new RNotificationService(context).PushNotification
+                   (
+                       narration.OwnerId,
+                       "خطا در به‌روزآوری نهایی اطلاعات خوانش ارسالی",
+                       $"به‌روزآوری اطلاعات خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
+                       $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
+                   );
+                }
+
+
+                //I mean admins!
+                var importers = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.AudioRecitationEntityShortName, RMuseumSecurableItem.ImportOperationShortName);
+                if (string.IsNullOrEmpty(importers.ExceptionString)) //if not, do nothing!
+                {
+                    foreach (var moderator in importers.Result)
+                    {
+                        await new RNotificationService(_context).PushNotification
+                                        (
+                                            (Guid)moderator.Id,
+                                            "خطا در به روزآوری نهایی خوانش ارسالی",
+                                            $"لطفا صف انتظار را بررسی کنید.{Environment.NewLine}"
+                                        );
+                    }
+                }
+            }
+
+        }
+
         private async Task UpdateRecitation(Recitation narration, bool notify)
         {
 
@@ -1166,8 +1432,70 @@ namespace RMuseum.Services.Implementationa
             }
 
         }
+        /// <summary>
+        /// retry publish unpublished narrations
+        /// </summary>
+        public async Task RetryPublish()
+        {
+            if (_backgroundTaskQueue.Count > 0)
+                return;
 
+            var unpublishedQueue = await _context.RecitationPublishingTrackers.ToArrayAsync();
+            if (unpublishedQueue.Length > 0)
+            {
+                _context.RecitationPublishingTrackers.RemoveRange(unpublishedQueue);
+                await _context.SaveChangesAsync();
+            }
+
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                    (
+                    async token =>
+                    {
+                        using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                        {
+                            var list = await context.Recitations.Where(a => a.ReviewStatus == AudioReviewStatus.Approved && a.AudioSyncStatus != AudioSyncStatus.SynchronizedOrRejected).ToListAsync();
+                            foreach (Recitation narration in list)
+                            {
+                                RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                                {
+                                    PoemNarrationId = narration.Id,
+                                    StartDate = DateTime.Now,
+                                    XmlFileCopied = false,
+                                    Mp3FileCopied = false,
+                                    FirstDbUpdated = false,
+                                    SecondDbUpdated = false,
+                                };
+                                context.RecitationPublishingTrackers.Add(tracker);
+                                await context.SaveChangesAsync();
+                                switch (narration.AudioSyncStatus)
+                                {
+                                    case AudioSyncStatus.NewItem:
+                                    case AudioSyncStatus.SoundOrXMLFilesChanged:
+                                        {
+
+                                            await _PublishNarration(narration, tracker, context);
+                                        }
+                                        break;
+                                    case AudioSyncStatus.MetadataChanged:
+                                        await _UpdateRemoteRecitations(narration, tracker, context, true);//this might send unexpected notications for users not expecting it in case of reordering recitations
+                                        break;
+                                    case AudioSyncStatus.Deleted:
+                                        await _DeleteNarrationFromRemote(narration, tracker, context);
+                                        break;
+                                }
+
+                            }
+                        }
+                    });
+        }
         #endregion
+
+
+
+
+
+
+
 
         /// <summary>
         /// Get Upload Session (including files)

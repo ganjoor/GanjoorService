@@ -16438,6 +16438,11 @@
             <param name="model"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.RetryPublish">
+            <summary>
+            retry publish unpublished narrations
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.GetUploadSession(System.Guid)">
             <summary>
             Get Upload Session (including files)
