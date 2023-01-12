@@ -1451,27 +1451,6 @@ namespace RMuseum.Services.Implementationa
 
         }
 
-        private async Task UpdateRecitation(Recitation narration, bool notify)
-        {
-
-            narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
-            _context.Recitations.Update(narration);
-            await _context.SaveChangesAsync();
-
-
-            if (notify)
-            {
-                await _notificationService.PushNotification
-            (
-                narration.OwnerId,
-                "به‌روزآوری نهایی اطلاعات خوانش ارسالی",
-                $"اطلاعات خوانش ارسالی {narration.AudioTitle} به‌روز شد.{Environment.NewLine}" +
-                $"لطفا توجه فرمایید که فایل‌های صوتی معمولاً روی مرورگرها کَش می‌شوند. جهت اطمینان از جایگزینی فایل می‌بایست با مرورگری که تا به حال شعر را با آن ندیده‌اید بررسی بفرمایید.{Environment.NewLine}" +
-                $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
-            );
-            }
-
-        }
         /// <summary>
         /// retry publish unpublished narrations
         /// </summary>
