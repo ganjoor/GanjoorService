@@ -936,19 +936,32 @@ namespace RMuseum.Services.Implementationa
                                                     }
 
                                                     await context.SaveChangesAsync();
-
-                                                    await new RNotificationService(context).PushNotification
-                                                    (
-                                                        existing.OwnerId,
-                                                        "انتشار نهایی خوانش ارسالی",
-                                                        $"خوانش ارسالی {existing.AudioTitle} منتشر شد.{Environment.NewLine}" +
-                                                        $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={existing.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
-                                                    );
-
                                                     if (recomputeOrders)
                                                     {
                                                         await _ComputePoemRecitationsOrdersAsync(context, existing.GanjoorPostId, true);
                                                     }
+
+                                                    _backgroundTaskQueue.QueueBackgroundWorkItem
+                                                            (
+                                                            async token =>
+                                                            {
+                                                                using (RMuseumDbContext publishcontext = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                                                                {
+                                                                    RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                                                                    {
+                                                                        PoemNarrationId = existing.Id,
+                                                                        StartDate = DateTime.Now,
+                                                                        XmlFileCopied = false,
+                                                                        Mp3FileCopied = false,
+                                                                        FirstDbUpdated = false,
+                                                                        SecondDbUpdated = false,
+                                                                    };
+                                                                    publishcontext.RecitationPublishingTrackers.Add(tracker);
+                                                                    await publishcontext.SaveChangesAsync();
+
+                                                                    await _PublishNarration(existing, tracker, publishcontext);
+                                                                }
+                                                            });
 
                                                 }
                                             }
@@ -1124,21 +1137,28 @@ namespace RMuseum.Services.Implementationa
             }
             else //approved:
             {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                    (
+                    async token =>
+                    {
+                        using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                        {
+                            RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                            {
+                                PoemNarrationId = narration.Id,
+                                StartDate = DateTime.Now,
+                                XmlFileCopied = false,
+                                Mp3FileCopied = false,
+                                FirstDbUpdated = false,
+                                SecondDbUpdated = false,
+                            };
+                            context.RecitationPublishingTrackers.Add(tracker);
+                            await context.SaveChangesAsync();
 
-                narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
-                _context.Recitations.Update(narration);
-                await _context.SaveChangesAsync();
-
-                await _notificationService.PushNotification
-                (
-                    narration.OwnerId,
-                    "انتشار نهایی خوانش ارسالی",
-                    $"خوانش ارسالی {narration.AudioTitle} منتشر شد.{Environment.NewLine}" +
-                    $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
-                );
-
-
-                await _ganjoorService.CacheCleanForPageById(narration.GanjoorPostId);
+                            await _PublishNarration(narration, tracker, context);
+                        }
+                    });
+                
             }
 
             return new RServiceResult<RecitationViewModel>(new RecitationViewModel(narration, narration.Owner, await _context.GanjoorPoems.Where(p => p.Id == narration.GanjoorPostId).SingleOrDefaultAsync(), ""));
@@ -1193,7 +1213,7 @@ namespace RMuseum.Services.Implementationa
                 await new RNotificationService(context).PushNotification
                 (
                     narration.OwnerId,
-                    "انتشار نهایی خوانش ارسالی",
+                    replace ? "به‌روزآوری نهایی خوانش ارسالی" : "انتشار نهایی خوانش ارسالی",
                     $"خوانش ارسالی {narration.AudioTitle} منتشر شد.{Environment.NewLine}" +
                     $"لطفا توجه فرمایید که ممکن است ظاهر شدن تأثیر تغییرات روی سایت به دلیل تنظیمات حفظ کارایی گنجور تا یک روز طول بکشد.{Environment.NewLine}" +
                     $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
