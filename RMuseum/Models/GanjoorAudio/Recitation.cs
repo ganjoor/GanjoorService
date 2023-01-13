@@ -62,36 +62,25 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// MP3 File Path
         /// </summary>
-        public string RemoteMp3FilePath { get { return $"/i/{SoundFilesFolder}/{FileNameWithoutExtension}.mp3"; } }
+        public string RemoteMp3FilePath { get { return $"/{SoundFilesFolder}/{FileNameWithoutExtension}.mp3"; } }
 
         /// <summary>
         /// MP3 url
         /// </summary>
         public string Mp3Url { get { return $"https://i.ganjoor.net/{SoundFilesFolder}/{FileNameWithoutExtension}.mp3";  } }
 
-        
-        /// <summary>
-        /// OGG File Path
-        /// </summary>
-        public string RemoteOggFilePath { get { return $"/i/{SoundFilesFolder}/{FileNameWithoutExtension}.ogg"; } }
-
-        /// <summary>
-        /// OGG url
-        /// </summary>
-        public string OggUrl { get { return $"https://i.ganjoor.net/{SoundFilesFolder}/{FileNameWithoutExtension}.ogg"; } }
-
         /// <summary>
         /// This is also a legacy field
         /// </summary>
         /// <sample>
-        /// "/i/a2/x"
+        /// "/a2/x"
         /// </sample>
         /// <remarks>
         /// XML Schema is defined based on Desktop Ganjoor (https://github.com/ganjoor/ganjoor) code, for
         /// more information take a look at this code:
         /// https://github.com/ganjoor/ganjoor/blob/master/ganjoor/Audio%20Support/PoemAudioListProcessor.cs
         /// </remarks>
-        public string RemoteXMLFilePath { get { return $"/i/{SoundFilesFolder}/x/{FileNameWithoutExtension}.xml"; } }
+        public string RemoteXMLFilePath { get { return $"/{SoundFilesFolder}/x/{FileNameWithoutExtension}.xml"; } }
 
         /// <summary>
         /// XML url

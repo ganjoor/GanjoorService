@@ -1208,12 +1208,12 @@ namespace RMuseum.Services.Implementationa
                     await ftpClient.AutoConnect();
                     ftpClient.Config.RetryAttempts = 3;
 
-                    await ftpClient.UploadFile(narration.LocalXmlFilePath, $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                    await ftpClient.UploadFile(narration.LocalXmlFilePath, $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}", createRemoteDir: true);
                     tracker.XmlFileCopied = true;
                     context.RecitationPublishingTrackers.Update(tracker);
                     await context.SaveChangesAsync();
 
-                    await ftpClient.UploadFile(narration.LocalMp3FilePath, $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteMp3FilePath}");
+                    await ftpClient.UploadFile(narration.LocalMp3FilePath, $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteMp3FilePath}", createRemoteDir: true);
                     tracker.Mp3FileCopied = true;
                     context.RecitationPublishingTrackers.Update(tracker);
                     await context.SaveChangesAsync();
