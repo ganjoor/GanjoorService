@@ -4512,22 +4512,12 @@
             MP3 url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.RemoteOggFilePath">
-            <summary>
-            OGG File Path
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.OggUrl">
-            <summary>
-            OGG url
-            </summary>
-        </member>
         <member name="P:RMuseum.Models.GanjoorAudio.Recitation.RemoteXMLFilePath">
             <summary>
             This is also a legacy field
             </summary>
             <sample>
-            "/i/a2/x"
+            "/a2/x"
             </sample>
             <remarks>
             XML Schema is defined based on Desktop Ganjoor (https://github.com/ganjoor/ganjoor) code, for

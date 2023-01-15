@@ -22,6 +22,9 @@ using System.Web;
 using System.Text.RegularExpressions;
 using RMuseum.Models.Auth.Memory;
 using System.IO;
+using NAudio.Gui;
+using RSecurityBackend.Models.Image;
+using FluentFTP;
 
 namespace RMuseum.Services.Implementation
 {
@@ -3031,11 +3034,49 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> ChangePoetImageAsync(int poetId, Guid imageId)
         {
-            var dbPoet = await _context.GanjoorPoets.Where(p => p.Id == poetId).SingleAsync();
-            dbPoet.RImageId = imageId;
-            _context.GanjoorPoets.Update(dbPoet);
-            await _context.SaveChangesAsync();
-            return new RServiceResult<bool>(true);
+            try
+            {
+                RServiceResult<RImage> img =
+                   await _imageFileService.GetImage(imageId);
+                if(!string.IsNullOrEmpty(img.ExceptionString))
+                {
+                    return new RServiceResult<bool>(false, img.ExceptionString);
+                }
+                if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
+                {
+                    var ftpClient = new AsyncFtpClient
+                                        (
+                                            Configuration.GetSection("ExternalFTPServer")["Host"],
+                                            Configuration.GetSection("ExternalFTPServer")["Username"],
+                                            Configuration.GetSection("ExternalFTPServer")["Password"]
+                                        );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+                    RServiceResult<string> imgPath = _imageFileService.GetImagePath(img.Result);
+                    if (!string.IsNullOrEmpty(imgPath.ExceptionString))
+                        return new RServiceResult<bool>(false, imgPath.ExceptionString);
+
+                    var localFilePath = imgPath.Result;
+                    var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/PoetImages/{Path.GetFileName(localFilePath)}";
+                    await ftpClient.UploadFile(localFilePath, remoteFilePath);
+                    await ftpClient.Disconnect();
+                }
+                var dbPoet = await _context.GanjoorPoets.Where(p => p.Id == poetId).SingleAsync();
+                dbPoet.RImageId = imageId;
+                _context.GanjoorPoets.Update(dbPoet);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        private void FtpClient_ValidateCertificate(FluentFTP.Client.BaseClient.BaseFtpClient control, FtpSslValidationEventArgs e)
+        {
+            e.Accept = true;
         }
 
         /// <summary>
