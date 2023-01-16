@@ -13607,6 +13607,14 @@
             <param name="resourcePrefix"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.UploadArtifactToExternalServer(RMuseum.Models.Artifact.RArtifactMasterRecord,RMuseum.DbContext.RMuseumDbContext)">
+            <summary>
+            upload artifact to external server
+            </summary>
+            <param name="book"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.RescheduleJobs(RMuseum.Models.ImportJob.JobType)">
             <summary>
             reschedule jobs

@@ -328,6 +328,19 @@ namespace RMuseum.Services.Implementation
                                     await context.Artifacts.AddAsync(book);
                                     await context.SaveChangesAsync();
 
+                                    var resFTPUpload = await UploadArtifactToExternalServer(book, context);
+                                    if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
+                                    {
+                                        job.EndTime = DateTime.Now;
+                                        job.Status = ImportJobStatus.Failed;
+                                        job.Exception = $"UploadArtifactToExternalServer: {resFTPUpload.ExceptionString}";
+                                        job.ArtifactId = book.Id;
+                                        job.EndTime = DateTime.Now;
+                                        context.Update(job);
+                                        await context.SaveChangesAsync();
+                                        return;
+                                    }
+
                                     job.ProgressPercent = 100;
                                     job.Status = ImportJobStatus.Succeeded;
                                     job.ArtifactId = book.Id;
