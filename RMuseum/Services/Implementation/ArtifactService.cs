@@ -1212,7 +1212,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="book"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> UploadArtifactToExternalServer(RArtifactMasterRecord book, RMuseumDbContext context)
+        private async Task<RServiceResult<bool>> _UploadArtifactToExternalServer(RArtifactMasterRecord book, RMuseumDbContext context)
         {
             try
             {
@@ -1233,11 +1233,11 @@ namespace RMuseum.Services.Implementation
                         var localFilePath = _pictureFileService.GetImagePath(book.CoverImage, imageSizeString).Result;
                         if (imageSizeString == "orig")
                         {
-                            book.CoverImage.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/Pinterest/orig/{Path.GetFileName(localFilePath)}";
+                            book.CoverImage.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/{book.CoverImage.FolderName}/orig/{Path.GetFileName(localFilePath)}";
                             context.Update(book.CoverImage);
                         }
-                        var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/Pinterest/{imageSizeString}/{Path.GetFileName(localFilePath)}";
-                        await ftpClient.UploadFile(localFilePath, remoteFilePath);
+                        var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.CoverImage.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                        await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
                     }
 
 
@@ -1250,11 +1250,11 @@ namespace RMuseum.Services.Implementation
                                 var localFilePath = _pictureFileService.GetImagePath(image, imageSizeString).Result;
                                 if (imageSizeString == "orig")
                                 {
-                                    image.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/Pinterest/orig/{Path.GetFileName(localFilePath)}";
+                                    image.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/{image.FolderName}/orig/{Path.GetFileName(localFilePath)}";
                                     context.Update(image);
                                 }
-                                var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/Pinterest/{imageSizeString}/{Path.GetFileName(localFilePath)}";
-                                await ftpClient.UploadFile(localFilePath, remoteFilePath);
+                                var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.CoverImage.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                                await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
                             }
                         }
                     }

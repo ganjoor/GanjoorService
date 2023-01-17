@@ -138,7 +138,7 @@ namespace RMuseum.Services.Implementation
                                     await context.Artifacts.AddAsync(book);
                                     await context.SaveChangesAsync();
 
-                                    var resFTPUpload = await UploadArtifactToExternalServer(book, context);
+                                    var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
                                     if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                     {
                                         job.EndTime = DateTime.Now;
@@ -249,7 +249,7 @@ namespace RMuseum.Services.Implementation
                                     context.Update(book);
                                     await context.SaveChangesAsync();
 
-                                    var resFTPUpload = await UploadArtifactToExternalServer(book, context);
+                                    var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
                                     if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                     {
                                         job.EndTime = DateTime.Now;
