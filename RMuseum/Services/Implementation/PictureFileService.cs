@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentFTP;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -226,9 +227,39 @@ namespace RMuseum.Services.Implementation
                 File.Delete(GetImagePath(rPictureFile, "norm").Result + ".bak");
                 File.Delete(origPath + ".bak");
 
+                if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
+                {
+                    var ftpClient = new AsyncFtpClient
+                    (
+                        Configuration.GetSection("ExternalFTPServer")["Host"],
+                        Configuration.GetSection("ExternalFTPServer")["Username"],
+                        Configuration.GetSection("ExternalFTPServer")["Password"]
+                    );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+
+                    foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
+                    {
+                        var localFilePath = GetImagePath(rPictureFile, imageSizeString).Result;
+                        var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{rPictureFile.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                        await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                    }
+
+                    await ftpClient.Disconnect();
+                }
+
                 return result;
             }
         }
+
+        private void FtpClient_ValidateCertificate(FluentFTP.Client.BaseClient.BaseFtpClient control, FtpSslValidationEventArgs e)
+        {
+            e.Accept = true;
+        }
+
+
+
 
         /// <summary>
         /// find image encodder
