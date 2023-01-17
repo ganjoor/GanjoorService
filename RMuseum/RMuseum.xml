@@ -626,6 +626,13 @@
             <param name="artifactId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.StartUploadingArtifactToExternalServer(System.Guid)">
+            <summary>
+            upload artifact to external server
+            </summary>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.ArtifactController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -11731,6 +11738,13 @@
             <param name="artifactId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IArtifactService.StartUploadingArtifactToExternalServer(System.Guid)">
+            <summary>
+            upload artifact to external server
+            </summary>
+            <param name="artifactId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>
             donation service
@@ -13605,6 +13619,13 @@
             <param name="resourceNumber">119/foldername</param>
             <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
             <param name="resourcePrefix"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartUploadingArtifactToExternalServer(System.Guid)">
+            <summary>
+            upload artifact to external server
+            </summary>
+            <param name="artifactId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService._UploadArtifactToExternalServer(RMuseum.Models.Artifact.RArtifactMasterRecord,RMuseum.DbContext.RMuseumDbContext)">

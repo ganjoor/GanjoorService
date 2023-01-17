@@ -2076,6 +2076,32 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// upload artifact to external server
+        /// </summary>
+        /// <param name="artifactId"></param>
+        /// <returns></returns>
+
+        [HttpPut("upload/external/{artifactId}")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult StartUploadingArtifactToExternalServer(Guid artifactId)
+        {
+            try
+            {
+                var res = _artifactService.StartUploadingArtifactToExternalServer(artifactId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode

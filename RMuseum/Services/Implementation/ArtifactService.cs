@@ -1205,6 +1205,54 @@ namespace RMuseum.Services.Implementation
                  await StartImportingFromTheLibraryOfCongress(resourceNumber, friendlyUrl, resourcePrefix);
         }
 
+        /// <summary>
+        /// upload artifact to external server
+        /// </summary>
+        /// <param name="artifactId"></param>
+        /// <returns></returns>
+        public RServiceResult<bool> StartUploadingArtifactToExternalServer(Guid artifactId)
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                   var job = (await jobProgressServiceEF.NewJob($"StartUploadingArtifactToExternalServer : {artifactId}", "Query data")).Result;
+
+                                   try
+                                   {
+                                       var book = await context.Artifacts.Include(a => a.Items).ThenInclude(i => i.Images).Include(a => a.CoverImage).SingleAsync();
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 2, $"بارگذاری {book.Name}");
+                                       var resUpload = await _UploadArtifactToExternalServer(book, context);
+                                       if(!string.IsNullOrEmpty(resUpload.ExceptionString))
+                                       {
+                                           await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, resUpload.ExceptionString);
+                                       }
+                                       if(!resUpload.Result)
+                                       {
+                                           await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, "_UploadArtifactToExternalServer returned false");
+                                       }
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, succeeded: true);
+                                   }
+                                   catch (Exception exp)
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                   }
+
+                               }
+                           });
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// upload artifact to external server

@@ -587,5 +587,13 @@ namespace RMuseum.Services
         /// <returns></returns>
         RServiceResult<bool> StartSettingArtifactAsTextOriginalSource(int ganjoorCatId, Guid artifactId);
 
+
+        /// <summary>
+        /// upload artifact to external server
+        /// </summary>
+        /// <param name="artifactId"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartUploadingArtifactToExternalServer(Guid artifactId);
+
     }
 }
