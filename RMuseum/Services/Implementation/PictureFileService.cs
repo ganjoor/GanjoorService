@@ -157,7 +157,7 @@ namespace RMuseum.Services.Implementation
                 pictureFile = await _context.PictureFiles.AsNoTracking()
                      .Where(p => p.Id == id)
                      .SingleOrDefaultAsync();
-                if(ImageInfoCacheEnabled)
+                if (ImageInfoCacheEnabled)
                 {
                     _memoryCache.Set(cachKey, pictureFile);
                 }
@@ -508,54 +508,79 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RImage>> GenerateCroppedImageBasedOnThumbnailCoordinates(Guid id, decimal left, decimal top, decimal width, decimal height)
         {
-            RPictureFile rPictureFile =
-                await _context.PictureFiles
-                     .Where(p => p.Id == id)
-                     .SingleOrDefaultAsync();
-
-            int adjustedImageWidth = (int)(width * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth);
-            if (adjustedImageWidth > rPictureFile.ThumbnailImageWidth)
-                adjustedImageWidth = rPictureFile.ThumbnailImageWidth;
-
-            int adjustedImageHeight = (int)(height * adjustedImageWidth / width);
-            int adjusttedLeft = (int)(left * adjustedImageWidth / width);
-            int adjusttedTop = (int)(top * adjustedImageHeight / height);
-
-            string normalImagePath = GetImagePath(rPictureFile, "norm").Result;
-            using (Image targetImage = new Bitmap(adjustedImageWidth, adjustedImageHeight))
+            try
             {
-                using (Graphics g = Graphics.FromImage(targetImage))
+                RPictureFile rPictureFile =
+                    await _context.PictureFiles
+                         .Where(p => p.Id == id)
+                         .SingleOrDefaultAsync();
+
+                int adjustedImageWidth = (int)(width * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth);
+                if (adjustedImageWidth > rPictureFile.ThumbnailImageWidth)
+                    adjustedImageWidth = rPictureFile.ThumbnailImageWidth;
+
+                int adjustedImageHeight = (int)(height * adjustedImageWidth / width);
+                int adjusttedLeft = (int)(left * adjustedImageWidth / width);
+                int adjusttedTop = (int)(top * adjustedImageHeight / height);
+
+                string normalImagePath = GetImagePath(rPictureFile, "norm").Result;
+                using (Image targetImage = new Bitmap(adjustedImageWidth, adjustedImageHeight))
                 {
-                    using (Image img = Image.FromFile(normalImagePath))
+                    using (Graphics g = Graphics.FromImage(targetImage))
                     {
-                        g.DrawImage(img, new Rectangle(0, 0, adjustedImageWidth, adjustedImageHeight),
-                            (int)(left * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth),
-                            (int)(top * rPictureFile.NormalSizeImageHeight / rPictureFile.ThumbnailImageHeight),
-                            (int)(width * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth),
-                            (int)(height * rPictureFile.NormalSizeImageHeight / rPictureFile.ThumbnailImageHeight),
-                            GraphicsUnit.Pixel,
-                            new ImageAttributes()
-                            );
+                        using (Image img = Image.FromFile(normalImagePath))
+                        {
+                            g.DrawImage(img, new Rectangle(0, 0, adjustedImageWidth, adjustedImageHeight),
+                                (int)(left * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth),
+                                (int)(top * rPictureFile.NormalSizeImageHeight / rPictureFile.ThumbnailImageHeight),
+                                (int)(width * rPictureFile.NormalSizeImageWidth / rPictureFile.ThumbnailImageWidth),
+                                (int)(height * rPictureFile.NormalSizeImageHeight / rPictureFile.ThumbnailImageHeight),
+                                GraphicsUnit.Pixel,
+                                new ImageAttributes()
+                                );
+                        }
+                    }
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        targetImage.Save(ms, ImageFormat.Jpeg);
+                        ms.Position = 0;
+                        RServiceResult<RImage> res = await _simpleImageStorage.Add(null, ms, $"{Path.GetFileNameWithoutExtension(rPictureFile.OriginalFileName)}-cropped-{left}-{top}-{width}-{height}.jpg", "CroppedImages");
+                        if (string.IsNullOrEmpty(res.ExceptionString))
+                        {
+                            RImage image = res.Result;
+                            _context.GeneralImages.Add(image);
+                            await _context.SaveChangesAsync();
+                            if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
+                            {
+                                var ftpClient = new AsyncFtpClient
+                                (
+                                    Configuration.GetSection("ExternalFTPServer")["Host"],
+                                    Configuration.GetSection("ExternalFTPServer")["Username"],
+                                    Configuration.GetSection("ExternalFTPServer")["Password"]
+                                );
+                                ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                                await ftpClient.AutoConnect();
+                                ftpClient.Config.RetryAttempts = 3;
+
+                                var localFilePath = _simpleImageStorage.GetImagePath(image).Result;
+                                var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/CroppedImages/{Path.GetFileName(localFilePath)}";
+                                await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+
+                                await ftpClient.Disconnect();
+                            }
+                            return new RServiceResult<RImage>(image);
+                        }
+                        return res;
                     }
                 }
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    targetImage.Save(ms, ImageFormat.Jpeg);
-                    ms.Position = 0;
-                    RServiceResult<RImage> res = await _simpleImageStorage.Add(null, ms, $"{Path.GetFileNameWithoutExtension(rPictureFile.OriginalFileName)}-cropped-{left}-{top}-{width}-{height}.jpg", "CroppedImages");
-                    if (string.IsNullOrEmpty(res.ExceptionString))
-                    {
-                        RImage image = res.Result;
-                        _context.GeneralImages.Add(image);
-                        await _context.SaveChangesAsync();
-                        return new RServiceResult<RImage>(image);
-                    }
-                    return res;
-                }
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<RImage>(null, exp.ToString());
             }
         }
 
-        
+
 
         /// <summary>
         /// Database Contetxt
