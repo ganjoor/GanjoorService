@@ -98,39 +98,93 @@
     <div class="w3-sidebar w3-bar-block" style="display:none;z-index:5" id="mySidebar">
         <button class="w3-bar-item w3-button w3-xxlarge sticky sidebar-close" onclick="w3_close()">بستن &times;</button>
 
-        @if (!string.IsNullOrEmpty(Model.PreviousUrl))
+        @if (Model.LoggedIn)
         {
             <div class="w3-bar-item w3-button">
-                <a href="@Html.Raw(Model.PreviousUrl)" role="button" class="cursor-pointer">
-                    <div class="circled-number">
-                        <i class="noindent-info-button right-btn"></i>
+                <a onclick="switchBookmark(@Model.GanjoorPage.Id, 0, '')" role="button" class="cursor-pointer">
+                    <div class="circled-number" id="bookmark">
+                        <i class="noindent-info-button" id="bookmark-icon">star_border</i>
                     </div>
-                    شعر قبلی
+                    نشان کردن شعر
                 </a>
             </div>
-        }
 
-        @if (!string.IsNullOrEmpty(Model.NextUrl))
-        {
             <div class="w3-bar-item w3-button">
-                <a href="@Html.Raw(Model.NextUrl)" role="button" class="w3tooltip cursor-pointer">
+                <a href="/User/Editor?id=@Model.GanjoorPage.Id" role="button" class="cursor-pointer">
                     <div class="circled-number">
-                        <i class="noindent-info-button left-btn"></i>
+                        <i class="noindent-info-button edit-poem-button"></i>
                     </div>
-                    شعر بعدی
+                    ویرایش شعر
                 </a>
             </div>
         }
 
         <div class="w3-bar-item w3-button">
-            <a onclick="w3_close_showHelp();" role="button" class="cursor-pointer">
+            <a onclick="btshmr(@Model.GanjoorPage.Id)" role="button" class="cursor-pointer">
                 <div class="circled-number">
-                    <i class="noindent-info-button help-button mirror"></i>
+                    <i class="noindent-info-button format_list_numbered_rtl" id="bnum-button"></i>
                 </div>
-                راهنمای سریع
+                شماره‌گذاری
             </a>
         </div>
 
+        <div class="w3-bar-item w3-button">
+            <a onclick="copyPoemLink()" role="button" class="cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button copylink-icon"></i>
+                </div>
+                <span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span>
+            </a>
+        </div>
+
+        <div class="w3-bar-item w3-button">
+            <a onclick="copyPoemText()" role="button" class="cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button copytext-icon"></i>
+                </div>
+                <span class="w3tooltiptext" id="copytext-tooltip">رونوشت متن</span>
+            </a>
+        </div>
+
+        <div class="w3-bar-item w3-button" id="share_span">
+            <a onclick="webSharePoem()" role="button" class="cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button share-icon"></i>
+                </div>
+                همرسانی
+            </a>
+        </div>
+
+        @if (Model.SectionsWithMetreAndRhymes != null)
+        {
+            @if (Model.SectionsWithMetreAndRhymes.Any())
+            {
+                <text>
+                    <div class="w3-bar-item w3-button">
+                        <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" role="button" class="cursor-pointer">
+                            <div class="circled-number">
+                                <i class="noindent-info-button rhyming-poems"></i>
+                            </div>
+                            مشابه‌یابی بر اساس وزن و قافیه
+                        </a>
+                    </div>
+                </text>
+
+                @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
+                {
+                    <div class="w3-bar-item w3-button">
+                        <text>
+                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" role="button" class="cursor-pointer">
+                                <div class="circled-number">
+                                    <i class="noindent-info-button rhyming-poems"></i>
+                                </div>
+                                موارد هم آهنگ (وزن @((nSectionIndex + 1).ToPersianNumbers()))
+                            </a>
+                        </text>
+                    </div>
+                }
+            }
+        }
 
 
         <div class="w3-bar-item w3-button">
@@ -203,72 +257,6 @@
             </div>
         }
 
-        <div class="w3-bar-item w3-button">
-            <a onclick="btshmr(@Model.GanjoorPage.Id)" role="button" class="cursor-pointer">
-                <div class="circled-number">
-                    <i class="noindent-info-button format_list_numbered_rtl" id="bnum-button"></i>
-                </div>
-                شماره‌گذاری
-            </a>
-        </div>
-
-        <div class="w3-bar-item w3-button">
-            <a onclick="copyPoemLink()" role="button" class="cursor-pointer">
-                <div class="circled-number">
-                    <i class="noindent-info-button copylink-icon"></i>
-                </div>
-                <span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span>
-            </a>
-        </div>
-
-        <div class="w3-bar-item w3-button">
-            <a onclick="copyPoemText()" role="button" class="cursor-pointer">
-                <div class="circled-number">
-                    <i class="noindent-info-button copytext-icon"></i>
-                </div>
-                <span class="w3tooltiptext" id="copytext-tooltip">رونوشت متن</span>
-            </a>
-        </div>
-
-        <div class="w3-bar-item w3-button" id="share_span">
-            <a onclick="webSharePoem()" role="button" class="cursor-pointer">
-                <div class="circled-number">
-                    <i class="noindent-info-button share-icon"></i>
-                </div>
-                همرسانی
-            </a>
-        </div>
-
-        @if (Model.SectionsWithMetreAndRhymes != null)
-        {
-            @if (Model.SectionsWithMetreAndRhymes.Any())
-            {
-                <text>
-                    <div class="w3-bar-item w3-button">
-                        <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" role="button" class="cursor-pointer">
-                            <div class="circled-number">
-                                <i class="noindent-info-button rhyming-poems"></i>
-                            </div>
-                            مشابه‌یابی بر اساس وزن و قافیه
-                        </a>
-                    </div>
-                </text>
-
-                @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
-                {
-                    <div class="w3-bar-item w3-button">
-                        <text>
-                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" role="button" class="cursor-pointer">
-                                <div class="circled-number">
-                                    <i class="noindent-info-button rhyming-poems"></i>
-                                </div>
-                                موارد هم آهنگ (وزن @((nSectionIndex + 1).ToPersianNumbers()))
-                            </a>
-                        </text>
-                    </div>
-                }
-            }
-        }
 
         <div class="w3-bar-item w3-button">
             <a href="/t6e?p=@Model.GanjoorPage.Id" role="button" class="cursor-pointer" target="_blank">
@@ -279,26 +267,38 @@
             </a>
         </div>
 
-        @if (Model.LoggedIn)
+        @if (!string.IsNullOrEmpty(Model.PreviousUrl))
         {
             <div class="w3-bar-item w3-button">
-                <a onclick="switchBookmark(@Model.GanjoorPage.Id, 0, '')" role="button" class="cursor-pointer">
-                    <div class="circled-number" id="bookmark">
-                        <i class="noindent-info-button" id="bookmark-icon">star_border</i>
-                    </div>
-                    نشان کردن شعر
-                </a>
-            </div>
-
-            <div class="w3-bar-item w3-button">
-                <a href="/User/Editor?id=@Model.GanjoorPage.Id" role="button" class="cursor-pointer">
+                <a href="@Html.Raw(Model.PreviousUrl)" role="button" class="cursor-pointer">
                     <div class="circled-number">
-                        <i class="noindent-info-button edit-poem-button"></i>
+                        <i class="noindent-info-button right-btn"></i>
                     </div>
-                    ویرایش شعر
+                    شعر قبلی
                 </a>
             </div>
         }
+
+        @if (!string.IsNullOrEmpty(Model.NextUrl))
+        {
+            <div class="w3-bar-item w3-button">
+                <a href="@Html.Raw(Model.NextUrl)" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button left-btn"></i>
+                    </div>
+                    شعر بعدی
+                </a>
+            </div>
+        }
+
+        <div class="w3-bar-item w3-button">
+            <a onclick="w3_close_showHelp();" role="button" class="cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button help-button mirror"></i>
+                </div>
+                راهنمای سریع
+            </a>
+        </div>
 
 
         
