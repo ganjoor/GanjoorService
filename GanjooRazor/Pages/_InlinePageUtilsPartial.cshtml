@@ -1,0 +1,129 @@
+﻿@model GanjooRazor.Pages.LoginPartialEnabledPageModel
+@using DNTPersianUtils.Core
+
+<div id="utils-navbar">
+    @if (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null)
+    {
+        <div class="clear-both utilbar">
+
+            @if (Model.LoggedIn)
+            {
+                <a href="/User/Editor?id=@Model.GanjoorPage.Id" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button edit-poem-button"></i>
+                    </div>
+                    <span class="w3tooltiptext">ویرایش</span>
+                </a>
+
+                <a onclick="switchBookmark(@Model.GanjoorPage.Id, 0, '')" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number" id="bookmark">
+                        <i class="noindent-info-button" id="bookmark-icon">star_border</i>
+                    </div>
+                    <span class="w3tooltiptext">نشان کردن</span>
+                </a>
+            }
+
+
+ 
+
+            <a onclick="btshmr(@Model.GanjoorPage.Id)" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button format_list_numbered_rtl" id="bnum-button"></i>
+                </div>
+                <span class="w3tooltiptext">شماره‌گذاری</span>
+            </a>
+
+            <a onclick="copyPoemLink()" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button copylink-icon"></i>
+                </div>
+                <span class="w3tooltiptext" id="copylink-tooltip">رونوشت نشانی</span>
+            </a>
+
+            <a onclick="copyPoemText()" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button copytext-icon"></i>
+                </div>
+                <span class="w3tooltiptext" id="copytext-tooltip">رونوشت متن</span>
+            </a>
+
+            <a onclick="webSharePoem()" role="button" class="w3tooltip cursor-pointer" id="share_span">
+                <div class="circled-number">
+                    <i class="noindent-info-button share-icon"></i>
+                </div>
+                <span class="w3tooltiptext">همرسانی</span>
+            </a>
+
+            <a href="#discussions" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button recitation-comments"></i>
+                </div>
+                <span class="w3tooltiptext">حاشیه‌ها</span>
+            </a>
+
+            <a href="#manuscripts" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button recitation-manuscripts"></i>
+                </div>
+                <span class="w3tooltiptext">نگاره‌ها</span>
+            </a>
+
+            <a href="#songs" role="button" class="w3tooltip cursor-pointer">
+                <div class="circled-number">
+                    <i class="noindent-info-button recitation-music"></i>
+                </div>
+                <span class="w3tooltiptext">ترانه‌ها</span>
+            </a>
+
+            @if (Model.SectionsWithRelated.Count > 0)
+            {
+                <a href="#rpoems" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button recitation-explore"></i>
+                    </div>
+                    <span class="w3tooltiptext">هم‌آهنگ‌ها</span>
+                </a>
+            }
+
+            @if (Model.GanjoorPage.Poem.Recitations.Length > 0)
+            {
+                <a href="#recitations" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button recitation-listen"></i>
+                    </div>
+                    <span class="w3tooltiptext">خوانش‌ها</span>
+                </a>
+            }
+
+            @if (Model.SectionsWithMetreAndRhymes != null)
+            {
+                @if (Model.SectionsWithMetreAndRhymes.Any())
+                {
+                    <text>
+                        <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" role="button" class="w3tooltip cursor-pointer">
+                            <div class="circled-number">
+                                <i class="noindent-info-button rhyming-poems"></i>
+                            </div>
+                            <span class="w3tooltiptext">موارد هم آهنگ</span>
+                        </a>
+                    </text>
+
+                    @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
+                    {
+                        <text>
+                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" role="button" class="w3tooltip cursor-pointer">
+                                <div class="circled-number">
+                                    <i class="noindent-info-button rhyming-poems"></i>
+                                </div>
+                                <span class="w3tooltiptext">موارد هم آهنگ (وزن @((nSectionIndex + 1).ToPersianNumbers()))</span>
+                            </a>
+                        </text>
+                    }
+                }
+            }
+
+
+        </div>
+    }
+
+</div>

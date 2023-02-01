@@ -1780,7 +1780,7 @@ fieldset {
     text-align: right;
 }
 
-#main-navbar, .sticky {
+#main-navbar, .sticky, .utilbar {
     max-width: 752px;
     margin: auto;
     margin-top: 2px;
@@ -1805,6 +1805,12 @@ fieldset {
     #main-navbar .circled-number {
         background-color: darkred;
     }
+
+.utilbar{
+    background:none;
+    border:none;
+    overflow:visible;
+}
 /* The sticky class is added to the navbar with JS when it reaches its scroll position */
 .sticky {
     position: sticky !important;
