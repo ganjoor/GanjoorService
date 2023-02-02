@@ -64,5 +64,10 @@
         /// mark for delete result
         /// </summary>
         public CorrectionReviewResult MarkForDeleteResult { get; set; }
+
+        /// <summary>
+        /// new verse, if it is a new verse you should insert it in VORder position and shift verses previously positioned at VORder and after that
+        /// </summary>
+        public bool NewVerse { get; set; }
     }
 }
