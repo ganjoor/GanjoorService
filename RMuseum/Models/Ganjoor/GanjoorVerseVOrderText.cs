@@ -69,5 +69,10 @@
         /// new verse, if it is a new verse you should insert it in VORder position and shift verses previously positioned at VORder and after that
         /// </summary>
         public bool NewVerse { get; set; }
+
+        /// <summary>
+        /// new verse result
+        /// </summary>
+        public CorrectionReviewResult NewVerseResult { get; set; }
     }
 }
