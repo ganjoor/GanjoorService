@@ -8191,6 +8191,11 @@
             mark for delete result
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.NewVerse">
+            <summary>
+            new verse, if it is a new verse you should insert it in VORder position and shift verses previously positioned at VORder and after that
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemGeoDateTag">
             <summary>
             Geo + date tags for poems

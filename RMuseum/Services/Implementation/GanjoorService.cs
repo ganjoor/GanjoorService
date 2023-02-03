@@ -1818,7 +1818,10 @@ namespace RMuseum.Services.Implementation
             var poem = (await GetPoemById(correction.PoemId, false, false, true, false, false, false, false, true, false)).Result;
             foreach (var verse in correction.VerseOrderText)
             {
-                verse.OriginalText = poem.Verses.Where(v => v.VOrder == verse.VORder).Single().Text;
+                if(!verse.NewVerse)
+                {
+                    verse.OriginalText = poem.Verses.Where(v => v.VOrder == verse.VORder).Single().Text;
+                }
             }
             GanjoorPoemCorrection dbCorrection = new GanjoorPoemCorrection()
             {
