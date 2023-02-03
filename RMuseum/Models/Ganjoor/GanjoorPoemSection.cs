@@ -96,6 +96,11 @@ namespace RMuseum.Models.Ganjoor
         public int CachedFirstCoupletIndex { get; set; }
 
         /// <summary>
+        /// language, null means farsi
+        /// </summary>
+        public string Language { get; set; }
+
+        /// <summary>
         /// top 6 related sections
         /// </summary>
         [NotMapped]
