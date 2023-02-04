@@ -1,4 +1,114 @@
 ﻿@page
 @model GanjooRazor.Areas.User.Pages.SuggestNewVersesModel
+@using DNTPersianUtils.Core
 @{
+    Layout = null;
 }
+
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>پیشنهاد اضافه شدن مصرع‌های جا افتاده</title>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <link href="/css/p8.css?version=53" rel="stylesheet" type="text/css" />
+    <style>
+        label {
+            width: 100px;
+            display: block;
+        }
+
+        input#submit {
+            text-align: center;
+            background-color: #fff;
+            border: 2px solid #300;
+            color: #300
+        }
+
+            input#submit:hover {
+                background-color: #300;
+                color: #fff;
+                border: 2px solid #433;
+            }
+    </style>
+</head>
+<body>
+    <div id="fa">
+        @if (!string.IsNullOrEmpty(Model.LastError))
+        {
+            <div class="width-100per">
+                <div class="width-100per text-align-center">
+                    <p class="alert-text">
+                        @Model.LastError
+                    </p>
+                </div>
+            </div>
+        }
+        else
+        if (!Model.LoggedIn)
+        {
+            <div class="width-100per">
+                <div class="width-100per text-align-center">
+                    <p class="alert-text">
+                        برای ثبت خطا در خوانش‌ها لازم است ابتدا با نام کاربری خود وارد گنجور شوید.
+                    </p>
+                    <p class="text-align-center">
+                        <a href=@Html.Raw($"/login/?redirect=/User/SuggestNewVerses?id={Model.PageInformation.Id}")>ورود به گنجور</a>
+                    </p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="poem">
+                <h2>پیشنهاد اضافه شدن مصرع‌های جا افتاده</h2>
+                @if (Model.PostSuccess)
+                {
+                    <p>درخواست شما ثبت شد. این درخواست در فرصت مناسب بررسی و در صورت تناسب با معیارهای اضافه شدن مصرع‌های جا افتاده، این متن به‌روزرسانی خواهد شد.</p>
+                }
+                else
+                {
+                    <p>
+                        <span style="color:red">لطفاً</span> تنها در صورتی که مصرع‌های پیشنهادی مربوط به نسخهٔ دیگری است که مرجع گنجور نیست آنها را در قالب حاشیه ثبت فرمایید.
+                    </p>
+                }
+            </div>
+            @if (!Model.PostSuccess)
+            {
+             
+
+                <div class="content">
+                    <form method="post">
+                        <table class="width-100per">
+                            <tr>
+                                <td>
+                                    مصرع‌ها قبل از کدام خط می‌بایست درج شوند:
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select>
+                                        @foreach (var item in Model.Couplets)
+                                        {
+                                            <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> 
+                                    <input type="submit" name="submit" id="submit" value="ثبت" />
+                                </td>
+                            </tr>
+
+                        </table>
+                    </form>
+                </div>
+            }
+        }
+    </div>
+</body>
+</html>
+

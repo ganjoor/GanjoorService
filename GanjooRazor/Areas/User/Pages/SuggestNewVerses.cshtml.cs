@@ -68,7 +68,6 @@ namespace GanjooRazor.Areas.User.Pages
             LastError = "";
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
-            
 
             if (!string.IsNullOrEmpty(Request.Query["id"]))
             {
