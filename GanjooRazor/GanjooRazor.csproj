@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Areas\User\Pages\SuggestNewVerses.cshtml" />
+    <Content Remove="Areas\User\Pages\EditorAdd.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,16 +33,11 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Areas\User\Pages\SectionEdits.cshtml" />
-    <_ContentIncludedByDefault Remove="Areas\User\Pages\SuggestNewVerses.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Areas\User\Pages\SectionEdits.cshtml" />
-    <None Include="Areas\User\Pages\SuggestNewVerses.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Areas\User\Pages\SuggestNewVerses.cshtml" />
+    <None Include="Areas\User\Pages\EditorAdd.cshtml" />
   </ItemGroup>
 
 </Project>

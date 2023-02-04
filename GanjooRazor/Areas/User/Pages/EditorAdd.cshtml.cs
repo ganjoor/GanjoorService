@@ -13,7 +13,7 @@ using System;
 namespace GanjooRazor.Areas.User.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public class SuggestNewVersesModel : PageModel
+    public class EditorAddModel : PageModel
     {
         /// <summary>
         /// HttpClient instance
@@ -30,7 +30,7 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         /// <param name="httpClient"></param>
         /// <param name="configuration"></param>
-        public SuggestNewVersesModel(HttpClient httpClient, IConfiguration configuration)
+        public EditorAddModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             Configuration = configuration;

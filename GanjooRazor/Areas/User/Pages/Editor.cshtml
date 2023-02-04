@@ -23,7 +23,7 @@
         alert('انجام شد.');
     }
 
- 
+
 
     function savePoemCorrections(id, verseCount) {
         var verseOrderText = [];
@@ -148,8 +148,8 @@
         });
     }
 
-    function savemeta(id){
-         $('#saving').text('در حال ذخیره ...');
+    function savemeta(id) {
+        $('#saving').text('در حال ذخیره ...');
 
         var url = '?handler=SaveMeta';
 
@@ -545,6 +545,10 @@ else
             </tr>
 
         }
+        <tr>
+            <td><a role="button" href="/User/EditorAdd/?id=@Model.PageInformation.Id" class="pagebutton">اضافه کردن مصرع‌های جاافتاده</a></td>
+        </tr>
+
         @if (Model.CanEdit && !Model.ShowAdminOps)
         {
             <tr>
