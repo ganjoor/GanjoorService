@@ -8,163 +8,162 @@
 
 <h1>@ViewData["Title"]</h1>
 
-@if(!string.IsNullOrEmpty(Model.LastResult))
+@if (!string.IsNullOrEmpty(Model.LastResult))
 {
     <p>
         @Html.Raw(Model.LastResult)
     </p>
 }
+else
+{
+    <form method="post" action="/Admin/Poet/?Handler=EditPoet&id=@Model.Poet.Id">
 
-<form method="post" action="/Admin/Poet/?Handler=EditPoet&id=@Model.Poet.Id">
+        <table>
+            <tr>
+                <td>نام کوتاه:</td>
+                <td><input asp-for="Poet.Nickname" /> </td>
+            </tr>
+            <tr>
+                <td>نامک:</td>
+                <td><input style="text-align:left;direction:ltr;" asp-for="Poet.FullUrl" /> </td>
+            </tr>
+            <tr>
+                <td>نام کامل:</td>
+                <td><input asp-for="Poet.Name" /> </td>
+            </tr>
+            <tr>
+                <td>منتشر شده:</td>
+                <td><input asp-for="Poet.Published" /> </td>
+            </tr>
+            <tr>
+                <td>زاده:</td>
+                <td><input asp-for="Poet.BirthYearInLHijri" /> </td>
+            </tr>
+            <tr>
+                <td>تاریخ تولد مستند است:</td>
+                <td><input asp-for="Poet.ValidBirthDate" /> </td>
+            </tr>
+            <tr>
+                <td><a href="/Admin/Locations" target="_blank">زادگاه</a></td>
+                <td>
+                    <select asp-for="Poet.BirthPlace">
+                        @{
+                            foreach (var location in Model.Locations)
+                            {
+                                <option value="@location.Name">@location.Name</option>
+                            }
+                        }
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>درگذشته:</td>
+                <td><input asp-for="Poet.DeathYearInLHijri" /> </td>
+            </tr>
+            <tr>
+                <td>تاریخ وفات مستند است:</td>
+                <td><input asp-for="Poet.ValidDeathDate" /> </td>
+            </tr>
+            <tr>
+                <td>آرامگاه:</td>
+                <td>
+                    <select asp-for="Poet.DeathPlace">
+                        @{
+                            foreach (var location in Model.Locations)
+                            {
+                                <option value="@location.Name">@location.Name</option>
+                            }
+                        }
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <p>
+                        <a href="/Admin/Locations">خاستگاه‌ها</a>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>چسبانی:</td>
+                <td><input asp-for="Poet.PinOrder" /> </td>
+            </tr>
+            <tr>
+                <td>زندگینامه:</td>
+                <td><textarea asp-for="Poet.Description" tabindex="4" rows="20" cols="80"></textarea></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="ویرایش" />
+                </td>
+            </tr>
+        </table>
+
+    </form>
 
     <table>
         <tr>
-            <td>نام کوتاه:</td>
-            <td><input asp-for="Poet.Nickname" /> </td>
-        </tr>
-        <tr>
-            <td>نامک:</td>
-            <td><input style="text-align:left;direction:ltr;" asp-for="Poet.FullUrl" /> </td>
-        </tr>
-        <tr>
-            <td>نام کامل:</td>
-            <td><input asp-for="Poet.Name" /> </td>
-        </tr>
-        <tr>
-            <td>منتشر شده:</td>
-            <td><input asp-for="Poet.Published" /> </td>
-        </tr>
-        <tr>
-            <td>زاده:</td>
-            <td><input asp-for="Poet.BirthYearInLHijri" /> </td>
-        </tr>
-        <tr>
-            <td>تاریخ تولد مستند است:</td>
-            <td><input asp-for="Poet.ValidBirthDate" /> </td>
-        </tr>
-        <tr>
-            <td><a href="/Admin/Locations" target="_blank">زادگاه</a></td>
-            <td>
-                <select asp-for="Poet.BirthPlace">
-                    @{
-                        foreach (var location in Model.Locations)
-                        {
-                            <option value="@location.Name">@location.Name</option>
-                        }
-                    }
-                </select>
+            <td colspan="2">
+                <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{Model.Poet.ImageUrl}")" alt="@Model.Poet.Name" />
             </td>
         </tr>
         <tr>
-            <td>درگذشته:</td>
-            <td><input asp-for="Poet.DeathYearInLHijri" /> </td>
-        </tr>
-        <tr>
-            <td>تاریخ وفات مستند است:</td>
-            <td><input asp-for="Poet.ValidDeathDate" /> </td>
-        </tr>
-        <tr>
-            <td>آرامگاه:</td>
+            <td>تصویر جدید:</td>
             <td>
-                <select asp-for="Poet.DeathPlace">
-                    @{
-                        foreach (var location in Model.Locations)
-                        {
-                            <option value="@location.Name">@location.Name</option>
-                        }
-                    }
-                </select>
+                <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadImage&id=@Model.Poet.Id">
+                    <input type="file" asp-for="Image" />
+                    <input type="submit" value="بارگذاری" />
+                </form>
             </td>
         </tr>
         <tr>
             <td colspan="2">
-                <p>
-                    <a href="/Admin/Locations">خاستگاه‌ها</a>
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <td>چسبانی:</td>
-            <td><input asp-for="Poet.PinOrder" /> </td>
-        </tr>
-        <tr>
-            <td>زندگینامه:</td>
-            <td><textarea asp-for="Poet.Description" tabindex="4" rows="20" cols="80"></textarea></td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type="submit" value="ویرایش" />
+                @if (Model.Poet != null)
+                {
+                    <a href="@Model.Poet.FullUrl">صفحهٔ متناظر سخنور</a>
+                }
             </td>
         </tr>
     </table>
 
-</form>
 
-<table>
-    <tr>
-        <td colspan="2">
-            <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{Model.Poet.ImageUrl}")" alt="@Model.Poet.Name" />
-        </td>
-    </tr>
-    <tr>
-        <td>تصویر جدید:</td>
-        <td>
-            <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadImage&id=@Model.Poet.Id">
-                <input type="file" asp-for="Image" />
-                <input type="submit" value="بارگذاری" />
-            </form>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            @if(Model.Poet != null)
-            {
-                <a href="@Model.Poet.FullUrl">صفحهٔ متناظر سخنور</a>
-            }
-        </td>
-    </tr>
-</table>
+    <table>
+        <tr>
+            <td>بارگذاری پایگاه داده‌ها:</td>
+            <td>
+                <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadDb&id=@Model.Poet.Id">
+                    <input type="file" asp-for="SQLiteDb" />
+                    <input type="submit" value="بارگذاری" />
+                </form>
+            </td>
+        </tr>
+    </table>
 
+    <table>
+        <tr>
+            <td>تصحیح از طریق پایگاه داده‌ها:</td>
+            <td>
+                <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadCorrectionDb&id=@Model.Poet.Id">
+                    <input type="file" asp-for="CorrecionDbModel.Db" />
+                    <input asp-for="CorrecionDbModel.Note" size="50" />
+                    <input type="submit" value="بارگذاری" />
+                </form>
+            </td>
+        </tr>
+    </table>
 
-<table>
-    <tr>
-        <td>بارگذاری پایگاه داده‌ها:</td>
-        <td>
-            <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadDb&id=@Model.Poet.Id">
-                <input type="file" asp-for="SQLiteDb" />
-                <input type="submit" value="بارگذاری" />
-            </form>
-        </td>
-    </tr>
-</table>
+    <table>
+        <tr>
+            <td><a role="button" href="/Admin/Poet/?Handler=DownloadSqliteDb&id=@Model.Poet.Id" class="actionlink">sqlite</a></td>
+        </tr>
+    </table>
 
-<table>
-    <tr>
-        <td>تصحیح از طریق پایگاه داده‌ها:</td>
-        <td>
-            <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadCorrectionDb&id=@Model.Poet.Id">
-                <input type="file" asp-for="CorrecionDbModel.Db" />
-                <input asp-for="CorrecionDbModel.Note" size="50" />
-                <input type="submit" value="بارگذاری" />
-            </form>
-        </td>
-    </tr>
-</table>
+    <p><a role="button" onclick="$('#Poet_Description').val($('#Poet_Description').text().replace(/<\/?[^>]+(>|$)/g, ''))" class="actionlink" title="حذف تگها">حذف تگهای زندگینامه</a></p>
 
-<table>
-    <tr>
-        <td><a role="button" href="/Admin/Poet/?Handler=DownloadSqliteDb&id=@Model.Poet.Id" class="actionlink">sqlite</a></td>
-    </tr>
-</table>
-
-
-<p><a role="button" onclick="$('#Poet_Description').val($('#Poet_Description').text().replace(/<\/?[^>]+(>|$)/g, ''))" class="actionlink" title="حذف تگها">حذف تگهای زندگینامه</a></p>
-
-<table>
-    <tr>
-        <td><a role="button" href="/Admin/PoetDel/?id=@Model.Poet.Id" class="actionlink">حذف سخنور</a></td>
-    </tr>
-</table>
-
-    
+    <table>
+        <tr>
+            <td><a role="button" href="/Admin/PoetDel/?id=@Model.Poet.Id" class="actionlink">حذف سخنور</a></td>
+        </tr>
+    </table>
+}
 
