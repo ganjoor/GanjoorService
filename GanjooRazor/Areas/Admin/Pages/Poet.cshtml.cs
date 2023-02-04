@@ -116,7 +116,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 }
                 else
                 {
-                    LastResult = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    LastResult = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
                 }
 
             }

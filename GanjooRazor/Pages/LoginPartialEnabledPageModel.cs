@@ -159,7 +159,7 @@ namespace GanjooRazor.Pages
                     return new OkObjectResult(res.ToString().ToPersianNumbers());
                 }
             }
-            return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+            return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
         /// <summary>

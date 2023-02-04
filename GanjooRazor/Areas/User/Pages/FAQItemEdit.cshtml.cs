@@ -48,7 +48,7 @@ namespace GanjooRazor.Areas.User.Pages
                     }
                     else
                     {
-                        LastMessage = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                        LastMessage = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
                     }
                 }
             }

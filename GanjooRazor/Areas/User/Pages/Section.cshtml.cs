@@ -159,7 +159,7 @@ namespace GanjooRazor.Areas.User.Pages
                 }
                 else
                 {
-                    FatalError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    FatalError = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
                 }
             }
             return Page();
@@ -298,7 +298,7 @@ namespace GanjooRazor.Areas.User.Pages
                 }
                 else
                 {
-                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
         }
@@ -319,7 +319,7 @@ namespace GanjooRazor.Areas.User.Pages
                 }
                 else
                 {
-                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
         }

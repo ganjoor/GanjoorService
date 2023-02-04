@@ -188,7 +188,7 @@ namespace GanjooRazor.Pages
                             Model = new _CommentPartialModel()
                             {
                                 Comment = null,
-                                Error = "لطفا از گنجور خارج و مجددا به آن وارد شوید.",
+                                Error = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.",
                                 InReplyTo = null
                             }
                         }
@@ -217,7 +217,7 @@ namespace GanjooRazor.Pages
                 }
                 else
                 {
-                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
@@ -243,7 +243,7 @@ namespace GanjooRazor.Pages
                 }
                 else
                 {
-                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);
@@ -907,7 +907,7 @@ namespace GanjooRazor.Pages
                 }
                 else
                 {
-                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
         }
@@ -968,7 +968,7 @@ namespace GanjooRazor.Pages
                     return new OkObjectResult(res);
                 }
             }
-            return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+            return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
         public async Task<ActionResult> OnPostSwitchRecitationUpVoteAsync(int id)
@@ -988,7 +988,7 @@ namespace GanjooRazor.Pages
                 }
                 else
                 {
-                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
         }
@@ -1022,7 +1022,7 @@ namespace GanjooRazor.Pages
                 }
                 else
                 {
-                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
         }
@@ -1041,7 +1041,7 @@ namespace GanjooRazor.Pages
                 }
                 else
                 {
-                    return new BadRequestObjectResult("لطفا از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
                 }
             }
             return new JsonResult(true);

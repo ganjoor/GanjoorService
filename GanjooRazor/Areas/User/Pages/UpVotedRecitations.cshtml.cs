@@ -147,7 +147,7 @@ namespace GanjooRazor.Areas.User.Pages
                 }
                 else
                 {
-                    LastError = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                    LastError = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
                 }
             return Page();
         }

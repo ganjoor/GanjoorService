@@ -83,7 +83,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     }
                     else
                     {
-                        Error = "لطفا از گنجور خارج و مجددا به آن وارد شوید.";
+                        Error = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
                     }
                 }
 
