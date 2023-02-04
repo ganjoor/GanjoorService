@@ -49,6 +49,10 @@ namespace GanjooRazor.Areas.User.Pages
 
         public bool PostSuccess { get; set; }
 
+        public int  CoupletIndex { get; set; }
+
+        public string[] NewLines { get; set; }
+
         /// <summary>
         /// Couplets
         /// </summary>

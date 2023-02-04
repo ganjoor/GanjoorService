@@ -89,7 +89,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <select>
+                                    <select asp-for="CoupletIndex">
                                         @foreach (var item in Model.Couplets)
                                         {
                                             <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
@@ -97,6 +97,17 @@
                                     </select>
                                 </td>
                             </tr>
+                             <tr>
+                                <td>
+                                    مصرع‌های جا افتاده (هر مصرع یک خط):
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <textarea rows="4" asp-for="NewLines"></textarea>
+                                </td>
+                            </tr>
+                           
                             <tr>
                                 <td> 
                                     <input type="submit" name="submit" id="submit" value="ثبت" />
