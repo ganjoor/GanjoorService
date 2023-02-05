@@ -6,14 +6,14 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System;
 
 namespace GanjooRazor.Areas.User.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public class EditorAddModel : PageModel
+    public class VerseAddModel : PageModel
     {
         /// <summary>
         /// HttpClient instance
@@ -30,12 +30,11 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         /// <param name="httpClient"></param>
         /// <param name="configuration"></param>
-        public EditorAddModel(HttpClient httpClient, IConfiguration configuration)
+        public VerseAddModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             Configuration = configuration;
         }
-
 
         /// <summary>
         /// is logged on
@@ -49,7 +48,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public bool PostSuccess { get; set; }
 
-        public int  CoupletIndex { get; set; }
+        public int CoupletIndex { get; set; }
 
         public string[] NewLines { get; set; }
 
@@ -127,10 +126,10 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            
+
             LastError = "";
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
-            
+
 
             using (HttpClient _httpClient = new HttpClient())
             {

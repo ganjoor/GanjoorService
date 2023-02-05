@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Areas\User\Pages\EditorAdd.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\RMuseum\RMuseum.csproj" />
   </ItemGroup>
 
@@ -37,7 +33,6 @@
 
   <ItemGroup>
     <None Include="Areas\User\Pages\SectionEdits.cshtml" />
-    <None Include="Areas\User\Pages\EditorAdd.cshtml" />
   </ItemGroup>
 
 </Project>

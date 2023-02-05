@@ -1,5 +1,5 @@
 ﻿@page
-@model GanjooRazor.Areas.User.Pages.EditorAddModel
+@model GanjooRazor.Areas.User.Pages.VerseAddModel
 @using DNTPersianUtils.Core
 @{
     Layout = null;
@@ -77,7 +77,7 @@
             </div>
             @if (!Model.PostSuccess)
             {
-             
+
 
                 <div class="content">
                     <form method="post">
@@ -97,7 +97,7 @@
                                     </select>
                                 </td>
                             </tr>
-                             <tr>
+                            <tr>
                                 <td>
                                     مصرع‌های جا افتاده (هر مصرع یک خط):
                                 </td>
@@ -107,9 +107,9 @@
                                     <textarea rows="4" asp-for="NewLines"></textarea>
                                 </td>
                             </tr>
-                           
+
                             <tr>
-                                <td> 
+                                <td>
                                     <input type="submit" name="submit" id="submit" value="ثبت" />
                                 </td>
                             </tr>
@@ -122,4 +122,3 @@
     </div>
 </body>
 </html>
-
