@@ -84,19 +84,24 @@
                         <table class="width-100per">
                             <tr>
                                 <td>
-                                    مصرع‌ها قبل از کدام خط می‌بایست درج شوند:
+                                    مصرع‌ها قبل از کدام مصرع می‌بایست درج شوند:
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     <select asp-for="CoupletIndex">
-                                        @foreach (var item in Model.Couplets)
+                                        @if(Model.PageInformation.Poem.Verses.Length == 0)
                                         {
-                                            <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
+                                            <option value="0">*</option>
+                                        }
+                                        else
+                                        foreach (var verse in Model.PageInformation.Poem.Verses)
+                                        {
+                                            <option value="@verse.VOrder">@($"{(verse.CoupletIndex + 1).ToPersianNumbers()} - {verse.Text}")</option>
                                         }
                                     </select>
                                 </td>
-                            </tr>
+                            </tr>س
                             <tr>
                                 <td>
                                     مصرع‌های جا افتاده (هر مصرع یک خط):

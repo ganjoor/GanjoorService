@@ -52,11 +52,6 @@ namespace GanjooRazor.Areas.User.Pages
 
         public string[] NewLines { get; set; }
 
-        /// <summary>
-        /// Couplets
-        /// </summary>
-        public Tuple<int, string>[] Couplets { get; set; }
-
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
 
 
@@ -91,30 +86,7 @@ namespace GanjooRazor.Areas.User.Pages
                 PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
 
-                int coupetIndex = -1;
-                string coupletText = "";
-                List<Tuple<int, string>> couplets = new List<Tuple<int, string>>
-                {
-                    new Tuple<int, string>(-1, "*")
-                };
-                foreach (var verse in PageInformation.Poem.Verses)
-                {
-                    if (verse.CoupletIndex != null && verse.CoupletIndex != coupetIndex && verse.CoupletIndex >= 0)
-                    {
-                        if (!string.IsNullOrEmpty(coupletText))
-                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
-                        coupetIndex = (int)verse.CoupletIndex;
-                        coupletText = "";
-                    }
-                    if (!string.IsNullOrEmpty(coupletText))
-                        coupletText += " ";
-                    coupletText += verse.Text;
-                }
-
-                if (!string.IsNullOrEmpty(coupletText))
-                    couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
-
-                Couplets = couplets.ToArray();
+                
             }
             else
             {
