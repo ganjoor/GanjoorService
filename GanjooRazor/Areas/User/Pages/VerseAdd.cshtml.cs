@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace GanjooRazor.Areas.User.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public class VerseAddModel : PageModel
+    public class VerseAddPageModel : PageModel
     {
         /// <summary>
         /// HttpClient instance
@@ -30,7 +30,7 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         /// <param name="httpClient"></param>
         /// <param name="configuration"></param>
-        public VerseAddModel(HttpClient httpClient, IConfiguration configuration)
+        public VerseAddPageModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             Configuration = configuration;
