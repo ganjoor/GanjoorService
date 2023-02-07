@@ -87,7 +87,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <select asp-for="CoupletIndex" style="width:100%">
+                                    <select asp-for="NewVerses.VOrder" style="width:100%">
                                         @if(Model.PageInformation.Poem.Verses.Length == 0)
                                         {
                                             <option value="0">*</option>
@@ -107,12 +107,13 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <textarea rows="4"  style="width:100%" asp-for="NewLines"></textarea>
+                                    <textarea rows="4" style="width:100%" asp-for="NewVerses.Lines"></textarea>
                                 </td>
                             </tr>
 
                             <tr>
                                 <td>
+                                    <input type="hidden" asp-for="NewVerses.PoemId" />
                                     <input style="width:100%" type="submit" name="submit" id="submit" value="ثبت" />
                                 </td>
                             </tr>

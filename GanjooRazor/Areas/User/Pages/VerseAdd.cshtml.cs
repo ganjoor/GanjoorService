@@ -5,10 +5,14 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
-using System.Collections.Generic;
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using GanjooRazor.Models;
+using RMuseum.Models.Ganjoor;
+using System.Collections.Generic;
+using System;
+using Org.BouncyCastle.Asn1.X509;
+using System.Text;
 
 namespace GanjooRazor.Areas.User.Pages
 {
@@ -48,9 +52,8 @@ namespace GanjooRazor.Areas.User.Pages
 
         public bool PostSuccess { get; set; }
 
-        public int CoupletIndex { get; set; }
-
-        public string[] NewLines { get; set; }
+        [BindProperty]
+        public NewVersesModel NewVerses { get; set; }
 
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
 
@@ -85,7 +88,12 @@ namespace GanjooRazor.Areas.User.Pages
                 }
                 PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
-
+                NewVerses = new NewVersesModel()
+                {
+                    PoemId = PageInformation.Id,
+                    VOrder = 0,
+                    Lines = "",
+                };
                 
             }
             else
@@ -107,9 +115,32 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(_httpClient, Request, Response))
                 {
-                    //var stringContent = new StringContent(JsonConvert.SerializeObject(Report), Encoding.UTF8, "application/json");
-                    var methodUrl = $"{APIRoot.Url}/api/audio/errors/report";
-                    var response = await _httpClient.PostAsync(methodUrl, null /*stringContent*/);
+                    
+                    List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
+                    VersePosition versePosition = VersePosition.Right;
+                    foreach (string v in NewVerses.Lines.Split(new char[] { '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        vOrderTexts.Add
+                                (
+                                new GanjoorVerseVOrderText()
+                                {
+                                    VORder = NewVerses.VOrder,
+                                    Text = v.Replace("ۀ", "هٔ").Replace("ك", "ک"),
+                                    NewVerse= true,
+                                    VersePosition = versePosition,
+                                }
+                                );
+                        versePosition = versePosition == VersePosition.Right ? VersePosition.Left : VersePosition.Right;
+                    }
+                    GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel()
+                    {
+                        PoemId = NewVerses.PoemId,
+                        VerseOrderText = vOrderTexts.ToArray(),
+                        Note = "پیشنهاد مصرع‌های جاافتاده"
+                    };
+                    var stringContent = new StringContent(JsonConvert.SerializeObject(correction), Encoding.UTF8, "application/json");
+                    var methodUrl = $"{APIRoot.Url}/api/ganjoor/poem/correction";
+                    var response = await _httpClient.PostAsync(methodUrl, stringContent);
                     if (!response.IsSuccessStatusCode)
                     {
                         LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
