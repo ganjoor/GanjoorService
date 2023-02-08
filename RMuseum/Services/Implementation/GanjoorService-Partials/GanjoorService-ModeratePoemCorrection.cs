@@ -238,6 +238,7 @@ namespace RMuseum.Services.Implementation
                         verseIndex++;
                     } while (verseIndex < addedVerses.Count);
                     _context.UpdateRange(poemVerses);
+                    await _context.SaveChangesAsync();//temporary ids should be saved
                 }
 
                 if (versesDeleted || verseAdded)
