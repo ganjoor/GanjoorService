@@ -488,14 +488,23 @@ namespace GanjooRazor.Pages
 
         private async Task<bool> _PreparePoetGroups()
         {
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/centuries");
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/centuries");
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return false;
+                }
+                PoetGroups = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCenturyViewModel>>();
+                return true;
+            }
+            catch
+            {
+                LastError = "خطا در دسترسی به وب سرویس گنجور";
                 return false;
             }
-            PoetGroups = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCenturyViewModel>>();
-            return true;
+            
         }
 
         /// <summary>
