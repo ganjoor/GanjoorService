@@ -263,6 +263,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                                 Correction.VerseOrderText[i].MarkForDeleteResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
                             }
                             else
+                            if (Correction.VerseOrderText[i].NewVerse)
+                            {
+                                Correction.VerseOrderText[i].NewVerseResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
+                            }
+                            else
                             {
                                 Correction.VerseOrderText[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
                                 if (Correction.VerseOrderText[i].VersePosition != null)

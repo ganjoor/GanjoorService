@@ -198,8 +198,8 @@ namespace RMuseum.Services.Implementation
 
                             if(poemVerses.Any(v => v.VOrder >= moderatedVerse.VORder))
                             {
-                                var previousVerse = poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).Single();
-                                int insertionIndex = poemVerses.IndexOf(previousVerse);
+                                var previousVerse = poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).SingleOrDefault();
+                                int insertionIndex = previousVerse == null ? 0 : poemVerses.IndexOf(previousVerse);
                                 
                                 foreach (var nextVerse in poemVerses.Where(v => v.VOrder >= moderatedVerse.VORder).ToList())
                                 {
@@ -211,10 +211,10 @@ namespace RMuseum.Services.Implementation
                                     VOrder = moderatedVerse.VORder,
                                     VersePosition = (VersePosition)moderatedVerse.VersePosition,
                                     Text = moderatedVerse.Text.Replace("  ", " ").ApplyCorrectYeKe().Trim(),
-                                    SectionIndex1 = previousVerse.SectionIndex1,
-                                    SectionIndex2 = previousVerse.SectionIndex2,
-                                    SectionIndex3 = previousVerse.SectionIndex3,
-                                    SectionIndex4 = previousVerse.SectionIndex4,
+                                    SectionIndex1 = previousVerse == null ? 0 : previousVerse.SectionIndex1,
+                                    SectionIndex2 = previousVerse == null ? null : previousVerse.SectionIndex2,
+                                    SectionIndex3 = previousVerse == null ? null : previousVerse.SectionIndex3,
+                                    SectionIndex4 = previousVerse == null ? null : previousVerse.SectionIndex4,
                                     
                                 });
                             }

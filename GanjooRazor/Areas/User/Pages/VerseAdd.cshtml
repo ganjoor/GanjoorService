@@ -91,7 +91,7 @@
                                     <select asp-for="NewVerses.VOrder" style="width:100%">
                                         @if(Model.PageInformation.Poem.Verses.Length == 0)
                                         {
-                                            <option value="0">*</option>
+                                            <option value="1">*</option>
                                         }
                                         else
                                         foreach (var verse in Model.PageInformation.Poem.Verses)

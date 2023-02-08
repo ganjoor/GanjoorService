@@ -118,19 +118,21 @@ namespace GanjooRazor.Areas.User.Pages
                     
                     List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
                     VersePosition versePosition = VersePosition.Right;
+                    int vOrderNext = 0;
                     foreach (string v in NewVerses.Lines.Split(new char[] { '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries))
                     {
                         vOrderTexts.Add
                                 (
                                 new GanjoorVerseVOrderText()
                                 {
-                                    VORder = NewVerses.VOrder,
+                                    VORder = NewVerses.VOrder + vOrderNext,
                                     Text = v.Replace("ۀ", "هٔ").Replace("ك", "ک"),
                                     NewVerse= true,
                                     VersePosition = versePosition,
                                 }
                                 );
                         versePosition = versePosition == VersePosition.Right ? VersePosition.Left : VersePosition.Right;
+                        vOrderNext++;
                     }
                     GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel()
                     {

@@ -64,7 +64,8 @@
         var verseReviewResult = [];
         var versePosReviewResult = [];
         var verseReviewNotes = [];
-        for (var i = 0; i <= verseCount; i++) {
+        
+        for (var i = 0; i <= (verseCount + 100); i++) {
 
             var elementId = '#verse' + (i + 1).toString() + '_review_result_Approved';
             if ($(elementId).length > 0) {
