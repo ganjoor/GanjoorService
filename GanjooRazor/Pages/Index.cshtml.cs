@@ -1,4 +1,5 @@
-﻿using GanjooRazor.Utils;
+﻿using Azure;
+using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -448,17 +449,26 @@ namespace GanjooRazor.Pages
             var cacheKey = $"/api/ganjoor/poets";
             if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
             {
-                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
-                if (!response.IsSuccessStatusCode)
+                try
                 {
-                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return false;
+                    }
+                    poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
+                    if (AggressiveCacheEnabled)
+                    {
+                        _memoryCache.Set(cacheKey, poets);
+                    }
+                }
+                catch
+                {
+                    LastError = "خطا در دسترسی به وب سرویس گنجور";
                     return false;
                 }
-                poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-                if (AggressiveCacheEnabled)
-                {
-                    _memoryCache.Set(cacheKey, poets);
-                }
+               
             }
 
             Poets = poets;
