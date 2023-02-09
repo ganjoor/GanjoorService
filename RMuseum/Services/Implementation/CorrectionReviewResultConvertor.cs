@@ -28,6 +28,8 @@ namespace RMuseum.Services.Implementation
                     return "تغییر سلیقه‌ای یا بی دلیل است";
                 case CorrectionReviewResult.Rejected:
                     return "به دلیل دیگری رد می‌شود";
+                case CorrectionReviewResult.NotSuggestedByUser:
+                    return "ایراد نرم‌افزار گنجور";
             }
             return "بررسی نشده";
         }

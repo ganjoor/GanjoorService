@@ -246,6 +246,33 @@ else
                                 </td>
                             </tr>
                         }
+                        else if(verse.NewVerse)
+                        {
+                            <tr>
+                                <td>
+                                    <p>پیشنهاد مصرع جدید</p>
+                                    
+                                </td>
+                                <td>
+                                    <p>@verse.Text</p>
+                                </td>
+                                <td>
+                                    @if (verse.NewVerseResult == CorrectionReviewResult.NotReviewed)
+                                    {
+                                        <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.NewVerseResult)</p>
+                                    }
+                                    else
+                                   if (verse.NewVerseResult == CorrectionReviewResult.Approved)
+                                    {
+                                        <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.NewVerseResult)</p>
+                                    }
+                                    else
+                                    {
+                                        <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.NewVerseResult)</p>
+                                    }
+                                </td>
+                            </tr>
+                        }
                         else
                         {
                             <tr>
@@ -272,7 +299,7 @@ else
                                 </td>
                             </tr>
                         }
-                        @if (verse.VersePosition != null)
+                        @if (verse.VersePosition != null && !verse.NewVerse)
                         {
                             <tr>
                                 <td>
