@@ -106,6 +106,21 @@ else
                                 </tr>
                             }
                         }
+                        else if(verse.NewVerse)
+                        {
+                            if (verse.NewVerseResult == CorrectionReviewResult.Approved)
+                            {
+                                <tr>
+                                    <td>
+                                        <p style="color:green">@verse.Text</p>
+                                    </td>
+                                    <td>
+                                        <p style="color:green">اضافه شد</p>
+                                    </td>
+
+                                </tr>
+                            }
+                        }
                         else
                         {
                             if (verse.Result == CorrectionReviewResult.Approved)
