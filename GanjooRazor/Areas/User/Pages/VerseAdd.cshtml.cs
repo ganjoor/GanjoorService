@@ -116,7 +116,7 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(_httpClient, Request, Response))
                 {
-                    var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={NewVerses.VOrder}");
+                    var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={NewVerses.PoemId}");
                     if (!pageUrlResponse.IsSuccessStatusCode)
                     {
                         LastError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
@@ -164,7 +164,7 @@ namespace GanjooRazor.Areas.User.Pages
                                     VersePosition = versePosition,
                                 }
                                 );
-                        if(versePosition != VersePosition.Paragraph || versePosition != VersePosition.Single)
+                        if(versePosition != VersePosition.Paragraph && versePosition != VersePosition.Single)
                         {
                             versePosition = versePosition == VersePosition.Right ? VersePosition.Left : VersePosition.Right;
                         }
