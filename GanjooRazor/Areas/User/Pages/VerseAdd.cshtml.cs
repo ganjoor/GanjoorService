@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System;
 using Org.BouncyCastle.Asn1.X509;
 using System.Text;
+using System.Linq;
 
 namespace GanjooRazor.Areas.User.Pages
 {
@@ -115,9 +116,41 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(_httpClient, Request, Response))
                 {
-                    
-                    List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
+                    var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={NewVerses.VOrder}");
+                    if (!pageUrlResponse.IsSuccessStatusCode)
+                    {
+                        LastError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+
+                    var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
+                    if (!pageQuery.IsSuccessStatusCode)
+                    {
+                        LastError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
                     VersePosition versePosition = VersePosition.Right;
+                    if(PageInformation.Poem.Verses.Any(v => v.VOrder == NewVerses.VOrder))
+                    {
+                        if(PageInformation.Poem.Verses.Single(v => v.VOrder == NewVerses.VOrder).VersePosition== VersePosition.Right)
+                        {
+                            versePosition = VersePosition.Left;
+                        }
+                        else
+                        if (
+                            PageInformation.Poem.Verses.Single(v => v.VOrder == NewVerses.VOrder).VersePosition == VersePosition.Paragraph
+                            ||
+                            PageInformation.Poem.Verses.Single(v => v.VOrder == NewVerses.VOrder).VersePosition == VersePosition.Single
+                            )
+                        {
+                            versePosition = PageInformation.Poem.Verses.Single(v => v.VOrder == NewVerses.VOrder).VersePosition;
+                        }
+                    }
+
+                    List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
+
                     int vOrderNext = 0;
                     foreach (string v in NewVerses.Lines.Split(new char[] { '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries))
                     {
@@ -131,7 +164,10 @@ namespace GanjooRazor.Areas.User.Pages
                                     VersePosition = versePosition,
                                 }
                                 );
-                        versePosition = versePosition == VersePosition.Right ? VersePosition.Left : VersePosition.Right;
+                        if(versePosition != VersePosition.Paragraph || versePosition != VersePosition.Single)
+                        {
+                            versePosition = versePosition == VersePosition.Right ? VersePosition.Left : VersePosition.Right;
+                        }
                         vOrderNext++;
                     }
                     GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel()
