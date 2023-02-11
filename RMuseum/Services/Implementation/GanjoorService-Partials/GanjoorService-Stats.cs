@@ -53,8 +53,8 @@ namespace RMuseum.Services.Implementation
         private async Task _UpdatePoetStatsPage(Guid editingUserId, GanjoorPoet poet, List<GanjoorMetre> rhythms, RMuseumDbContext context, int wholeCoupletsCount)
         {
             var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
-                                                .Where(s => s.PoetId == poet.Id && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR") && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem)
-                                                .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId, Versetype = s.VerseType })
+                                                .Where(s => s.PoetId == poet.Id && (string.IsNullOrEmpty(s.Language) || s.Language == "fa-IR") && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem)
+                                                .Select(s => new { s.PoemId, s.Index, s.GanjoorMetreId, Versetype = s.VerseType })
                                                 .ToListAsync();
 
             Dictionary<int?, int> metreCounts = new Dictionary<int?, int>();
@@ -296,7 +296,7 @@ namespace RMuseum.Services.Implementation
                                                     &&
                                                     (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1))
                                                     .GroupBy(v => new { v.Poem.Cat.PoetId })
-                                                    .Select(g => new { PoetId = g.Key.PoetId, Count = g.Count() })
+                                                    .Select(g => new { g.Key.PoetId, Count = g.Count() })
                                                     .ToListAsync();
                                         poetsCoupletCounts.Sort((a, b) => b.Count - a.Count);
                                         var sumPoetsCouplets = poetsCoupletCounts.Sum(c => c.Count);
@@ -341,8 +341,8 @@ namespace RMuseum.Services.Implementation
                                         await jobProgressServiceEF.UpdateJob(job.Id, 1, "Counting whole sections");
 
                                         var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
-                                                .Where(s => s.Poem.Cat.Poet.Published && (string.IsNullOrEmpty(s.Poem.Language) || s.Poem.Language == "fa-IR") && s.SectionType == PoemSectionType.WholePoem)
-                                                .Select(s => new { PoemId = s.PoemId, Index = s.Index, GanjoorMetreId = s.GanjoorMetreId, Versetype = s.VerseType })
+                                                .Where(s => s.Poem.Cat.Poet.Published && (string.IsNullOrEmpty(s.Language) || s.Language == "fa-IR") && s.SectionType == PoemSectionType.WholePoem)
+                                                .Select(s => new { s.PoemId,  s.Index, s.GanjoorMetreId, Versetype = s.VerseType })
                                                 .ToListAsync();
 
                                         Dictionary<int, int> metreCounts = new Dictionary<int, int>();
