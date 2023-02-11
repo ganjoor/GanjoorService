@@ -146,5 +146,20 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// rhyme letters review result
         /// </summary>
         public CorrectionReviewResult RhymeLettersReviewResult { get; set; }
+
+        /// <summary>
+        /// language
+        /// </summary>
+        public string Language { get; set; }
+
+        /// <summary>
+        /// original language
+        /// </summary>
+        public string OriginalLanguage { get; set; }
+
+        /// <summary>
+        /// language review resukt
+        /// </summary>
+        public CorrectionReviewResult LanguageReviewResult { get; set; }
     }
 }
