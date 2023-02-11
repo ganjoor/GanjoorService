@@ -147,13 +147,6 @@ namespace RMuseum.Services.Implementation
                     updatePoem = true;
                 }
 
-
-                if (updatePoem)
-                {
-                    _context.Update(dbPoem);
-                    _context.Update(dbPage);
-                }
-
                 bool versesDeleted = false;
                 foreach (var moderatedVerse in moderation.VerseOrderText.Where(v => v.MarkForDelete == true).ToList())
                 {
@@ -173,8 +166,6 @@ namespace RMuseum.Services.Implementation
                         _context.Remove(poemVerse);
                     }
                 }
-
-                
 
                 bool verseAdded = false;
                 if(moderation.VerseOrderText.Any(v => v.NewVerse == true))
@@ -273,9 +264,6 @@ namespace RMuseum.Services.Implementation
                     poemVerses = undeletedPoemVerss;
                 }
 
-
-
-
                 if (modifiedVerses.Count > 0 || versesDeleted || verseAdded)
                 {
                     foreach (var section in sections)
@@ -348,8 +336,6 @@ namespace RMuseum.Services.Implementation
                         mainSection.Modified = true;
                     }
                 }
-
-
 
                 if (dbCorrection.Rhythm != null)
                 {
@@ -572,6 +558,7 @@ namespace RMuseum.Services.Implementation
                         dbCorrection.OriginalLanguage = dbPoem.Language;
                         dbCorrection.Language = moderation.Language;
                         dbCorrection.AffectedThePoem = true;
+                        dbPoem.Language = dbCorrection.Language;
                         updatePoem = true;
 
                         foreach (var section in sections)
@@ -580,6 +567,12 @@ namespace RMuseum.Services.Implementation
                             _context.Update(section);
                         }
                     }
+                }
+
+                if (updatePoem)
+                {
+                    _context.Update(dbPoem);
+                    _context.Update(dbPage);
                 }
 
                 dbCorrection.Reviewed = true;
