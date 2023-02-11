@@ -101,7 +101,6 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-
                 int maxSections = sections.Count == 0 ? 0 : sections.Max(s => s.Index);
 
                 var poemVerses = await _context.GanjoorVerses.Where(p => p.PoemId == dbCorrection.PoemId).OrderBy(v => v.VOrder).ToListAsync();
@@ -559,6 +558,26 @@ namespace RMuseum.Services.Implementation
                                 section.Modified = secondMetreSection.Modified;
                                 _context.Update(section);
                             }
+                        }
+                    }
+                }
+
+                if (dbCorrection.Language != null)
+                {
+                    if (moderation.LanguageReviewResult == CorrectionReviewResult.NotReviewed)
+                        return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات زبان بررسی نشده است.");
+                    dbCorrection.LanguageReviewResult = moderation.LanguageReviewResult;
+                    if (dbCorrection.LanguageReviewResult == CorrectionReviewResult.Approved)
+                    {
+                        dbCorrection.OriginalLanguage = dbPoem.Language;
+                        dbCorrection.Language = moderation.Language;
+                        dbCorrection.AffectedThePoem = true;
+                        updatePoem = true;
+
+                        foreach (var section in sections)
+                        {
+                            section.Language = dbCorrection.Language;
+                            _context.Update(section);
                         }
                     }
                 }
