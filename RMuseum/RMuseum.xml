@@ -9525,21 +9525,6 @@
             rhyme letters review result
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Language">
-            <summary>
-            language
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.OriginalLanguage">
-            <summary>
-            original language
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.LanguageReviewResult">
-            <summary>
-            language review resukt
-            </summary>
-        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel">
             <summary>
             poem section correction view model
@@ -9743,6 +9728,21 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.RhymeLettersReviewResult">
             <summary>
             rhyme letters review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.Language">
+            <summary>
+            language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.OriginalLanguage">
+            <summary>
+            original language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.LanguageReviewResult">
+            <summary>
+            language review resukt
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel">

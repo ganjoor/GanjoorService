@@ -115,6 +115,30 @@ namespace RMuseum.Services.Implementation
 
                 }
 
+                if (dbCorrection.Language != null)
+                {
+                    if (moderation.LanguageReviewResult == CorrectionReviewResult.NotReviewed)
+                        return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null, "تغییرات زبان بررسی نشده است.");
+                    dbCorrection.LanguageReviewResult = moderation.LanguageReviewResult;
+                    if (dbCorrection.LanguageReviewResult == CorrectionReviewResult.Approved)
+                    {
+                        dbCorrection.OriginalLanguage = editingSectionNotTracked.Language;
+                        dbCorrection.Language = moderation.Language;
+                        dbCorrection.AffectedThePoem = true;
+
+                        var section = sections.Single(s => s.Id == editingSectionNotTracked.Id);
+                        section.Language = moderation.Language;
+                        section.Modified = true;
+
+                        if (editingSectionNotTracked.SectionType == PoemSectionType.WholePoem)
+                        {
+                            var trackedPoem = await _context.GanjoorPoems.Where(p => p.Id == editingSectionNotTracked.PoemId).SingleAsync();
+                            trackedPoem.Language = dbCorrection.Language;
+                            _context.Update(trackedPoem);
+                        }
+                    }
+                }
+
                 foreach (var section in sections)
                 {
                     if (section.Modified)
@@ -293,6 +317,8 @@ namespace RMuseum.Services.Implementation
                         await _context.SaveChangesAsync();
                     }
                 }
+
+                
                 dbCorrection.Reviewed = true;
                 _context.GanjoorPoemSectionCorrections.Update(dbCorrection);
                 await _context.SaveChangesAsync();
