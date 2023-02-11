@@ -132,9 +132,18 @@ namespace RMuseum.Services.Implementation
 
                         if (editingSectionNotTracked.SectionType == PoemSectionType.WholePoem)
                         {
-                            var trackedPoem = await _context.GanjoorPoems.Where(p => p.Id == editingSectionNotTracked.PoemId).SingleAsync();
-                            trackedPoem.Language = dbCorrection.Language;
-                            _context.Update(trackedPoem);
+                            if(sections.Count(s => s.SectionType == PoemSectionType.WholePoem) == 1)
+                            {
+                                if(false == await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == editingSectionNotTracked.PoemId 
+                                        && 
+                                        (v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single ) ).AnyAsync())
+                                {
+                                    var trackedPoem = await _context.GanjoorPoems.Where(p => p.Id == editingSectionNotTracked.PoemId).SingleAsync();
+                                    trackedPoem.Language = dbCorrection.Language;
+                                    _context.Update(trackedPoem);
+                                }
+                               
+                            }
                         }
                     }
                 }
