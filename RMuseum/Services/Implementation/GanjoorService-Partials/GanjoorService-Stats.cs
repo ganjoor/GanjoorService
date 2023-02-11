@@ -152,7 +152,7 @@ namespace RMuseum.Services.Implementation
 
             if (sumRhythmsCouplets != wholeCoupletsCount)
             {
-                var langaugesCoupletsCountsUnprocessed =
+                var languagesCoupletsCountsUnprocessed =
                                                     await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
                                                     .Where(v =>
                                                     v.Poem.Cat.Poet.Published
@@ -164,7 +164,7 @@ namespace RMuseum.Services.Implementation
                                                     .GroupBy(v => new { v.Poem.Language })
                                                     .Select(g => new LanguageCoupletCount() { Language = g.Key.Language, Count = g.Count() })
                                                     .ToListAsync();
-                var fa = langaugesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").SingleOrDefault();
+                var fa = languagesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").SingleOrDefault();
                 if (fa == null)
                 {
                     fa = new LanguageCoupletCount()
@@ -172,24 +172,24 @@ namespace RMuseum.Services.Implementation
                         Language = "fa-IR",
                         Count = 0
                     };
-                    langaugesCoupletsCountsUnprocessed.Add
+                    languagesCoupletsCountsUnprocessed.Add
                         (
                         fa
                         );
                 }
-                foreach (var langaugesCoupletsCount in langaugesCoupletsCountsUnprocessed)
+                foreach (var languagesCoupletsCount in languagesCoupletsCountsUnprocessed)
                 {
-                    if (string.IsNullOrEmpty(langaugesCoupletsCount.Language))
+                    if (string.IsNullOrEmpty(languagesCoupletsCount.Language))
                     {
-                        fa.Count += langaugesCoupletsCount.Count;
+                        fa.Count += languagesCoupletsCount.Count;
                     }
                 }
-                var langaugesCoupletsCounts = langaugesCoupletsCountsUnprocessed
+                var languagesCoupletsCounts = languagesCoupletsCountsUnprocessed
                             .Where(l => !string.IsNullOrEmpty(l.Language))
                             .ToList();
-                langaugesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
+                languagesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
 
-                if (langaugesCoupletsCounts.Count > 1)
+                if (languagesCoupletsCounts.Count > 1)
                 {
                     htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ {poet.Name} با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
@@ -201,7 +201,7 @@ namespace RMuseum.Services.Implementation
                         $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
                         $"</tr>{Environment.NewLine}";
 
-                    for (int i = 0; i < langaugesCoupletsCounts.Count; i++)
+                    for (int i = 0; i < languagesCoupletsCounts.Count; i++)
                     {
                         if (i % 2 == 0)
                             htmlText += $"<tr class=\"e\">{Environment.NewLine}";
@@ -209,22 +209,22 @@ namespace RMuseum.Services.Implementation
                             htmlText += $"<tr>{Environment.NewLine}";
 
                         htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                        string langauge = "فارسی";
-                        switch (langaugesCoupletsCounts[i].Language)
+                        string language = "فارسی";
+                        switch (languagesCoupletsCounts[i].Language)
                         {
                             case "azb":
-                                langauge = "ترکی";
+                                language = "ترکی";
                                 break;
                             case "ar":
-                                langauge = "عربی";
+                                language = "عربی";
                                 break;
                             case "ckb":
-                                langauge = "کردی";
+                                language = "کردی";
                                 break;
                         }
-                        htmlText += $"<td class=\"c2\">{langauge}</td>{Environment.NewLine}";
-                        htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(langaugesCoupletsCounts[i].Count)}</td>{Environment.NewLine}";
-                        htmlText += $"<td class=\"c4\">{(langaugesCoupletsCounts[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"c2\">{language}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(languagesCoupletsCounts[i].Count)}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"c4\">{(languagesCoupletsCounts[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
                         htmlText += $"</tr>{Environment.NewLine}";
                     }
@@ -232,7 +232,7 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-            var poetUrl = (await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == poet.Id).SingleAsync()).FullUrl;
+            var poetUrl = (await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == null && c.PoetId == poet.Id).SingleAsync()).FullUrl;
 
             var pageUrl = $"{poetUrl}/vazn";
 
