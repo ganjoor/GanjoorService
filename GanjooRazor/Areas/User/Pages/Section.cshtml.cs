@@ -154,6 +154,10 @@ namespace GanjooRazor.Areas.User.Pages
                     RhythmsAlphabetically = rhythmsByVerseCount.ToArray();
 
                     PoemSection = PageInformation.Poem.Sections.Where(s => s.Index == int.Parse(Request.Query["index"])).Single();
+                    if(string.IsNullOrEmpty(PoemSection.Language))
+                    {
+                        PoemSection.Language = "fa-IR";
+                    }
 
                     int index = Array.IndexOf(PageInformation.Poem.Sections, PoemSection);
                     if(index > 0)
@@ -183,7 +187,7 @@ namespace GanjooRazor.Areas.User.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostSendSectionCorrectionsAsync(int sectionId, string rhythm, string rhyme, int[] breakFromVIndices, string note)
+        public async Task<IActionResult> OnPostSendSectionCorrectionsAsync(int sectionId, string rhythm, string rhyme, int[] breakFromVIndices, string note, string lang)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -300,7 +304,8 @@ namespace GanjooRazor.Areas.User.Pages
                         BreakFromVerse8VOrder = breakFromVerse8VOrder,
                         BreakFromVerse9VOrder = breakFromVerse9VOrder,
                         BreakFromVerse10VOrder = breakFromVerse10VOrder,
-                        Note = note
+                        Note = note,
+                        Language = lang,
                     };
 
                     HttpResponseMessage response = await secureClient.PostAsync(

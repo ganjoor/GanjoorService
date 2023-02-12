@@ -62,7 +62,12 @@ else
                 rhyme_letters = null;
             }
 
-            if (breakFromVIndices.length == 0 && rhythm_new == null && rhyme_letters == null) {
+            var section_lang = $('#language').val();
+            if (section_lang == $('#language-old').text()) {
+                section_lang = null;
+            }
+
+            if (breakFromVIndices.length == 0 && rhythm_new == null && rhyme_letters == null && section_lang == null) {
                 alert('شما هیچ تغییری در متن نداده‌اید!');
                 return;
             }
@@ -81,7 +86,8 @@ else
                     rhythm: rhythm_new,
                     rhyme: rhyme_letters,
                     breakFromVIndices: breakFromVIndices,
-                    note: $('#note').val()
+                    note: $('#note').val(),
+                    lang: section_lang
 
                 },
                 success: function () {
@@ -345,7 +351,8 @@ else
 
         <tr>
             <td>
-                <p id="language-old">@Model.LanguageNameFromCode(Model.PoemSection.Language)</p>
+                @Model.LanguageNameFromCode(Model.PoemSection.Language)
+                <div id="language-old">@Model.PoemSection.Language</div>
             </td>
         </tr>
 

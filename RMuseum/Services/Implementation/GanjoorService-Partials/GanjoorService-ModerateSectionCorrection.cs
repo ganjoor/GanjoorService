@@ -883,6 +883,8 @@ namespace RMuseum.Services.Implementation
                     Date = DateTime.Now,
                     Reviewed = false,
                     AffectedThePoem = false,
+                    Language = correction.Language,
+                    LanguageReviewResult = CorrectionReviewResult.NotReviewed,
                 };
                 _context.GanjoorPoemSectionCorrections.Add(dbCorrection);
                 await _context.SaveChangesAsync();
