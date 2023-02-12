@@ -84,10 +84,10 @@ else
                     note: $('#note').val()
 
                 },
-                success: function() {
+                success: function () {
                     location.reload(true);
                 },
-                error: function(e) {
+                error: function (e) {
                     if (e.responseText == null)
                         alert(e);
                     else
@@ -108,13 +108,13 @@ else
                 data: {
                     id: sectionId
                 },
-                error: function(e) {
+                error: function (e) {
                     if (e.responseText == null)
                         alert(e);
                     else
                         alert(e.responseText);
                 },
-                success: function(rhyme) {
+                success: function (rhyme) {
                     $(elementId).val(rhyme);
                     return false;
                 },
@@ -336,6 +336,83 @@ else
             }
         }
 
+
+        <tr>
+            <td>
+                زبان فعلی:
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <p id="language-old">@Model.LanguageNameFromCode(Model.PoemSection.Language)</p>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="language">زبان:</label>
+                <br />
+                <select id="language">
+                    @if (Model.MyLastEdit != null && (string.IsNullOrEmpty(Model.MyLastEdit.Language) || Model.MyLastEdit.Language == "fa-IR"))
+                    {
+                        <option value="" selected>فارسی</option>
+                    }
+                    else
+                    {
+                        <option value="">فارسی</option>
+                    }
+
+                    @if (Model.MyLastEdit != null && (string.IsNullOrEmpty(Model.MyLastEdit.Language) || Model.MyLastEdit.Language == "fa-IR"))
+                    {
+                        <option value="fa-IR" selected>فارسی</option>
+                    }
+                    else
+                    {
+                        <option value="fa-IR">فارسی</option>
+                    }
+
+                    @if (Model.MyLastEdit != null && Model.MyLastEdit.Language == "azb")
+                    {
+                        <option value="azb" selected>ترکی</option>
+                    }
+                    else
+                    {
+                        <option value="azb">ترکی</option>
+                    }
+
+                    @if (Model.MyLastEdit != null && Model.MyLastEdit.Language == "ar")
+                    {
+                        <option value="ar" selected>عربی</option>
+                    }
+                    else
+                    {
+                        <option value="ar">عربی</option>
+                    }
+
+                    @if (Model.MyLastEdit != null && Model.MyLastEdit.Language == "ckb")
+                    {
+                        <option value="ckb" selected>کردی</option>
+                    }
+                    else
+                    {
+                        <option value="ckb">کردی</option>
+                    }
+
+                    @if (Model.MyLastEdit != null && Model.MyLastEdit.Language == "glk")
+                    {
+                        <option value="glk" selected>گیلکی</option>
+                    }
+                    else
+                    {
+                        <option value="glk">گیلکی</option>
+                    }
+                </select>
+
+
+
+            </td>
+        </tr>
         <tr>
             <td>
                 توضیح این ویرایش:
