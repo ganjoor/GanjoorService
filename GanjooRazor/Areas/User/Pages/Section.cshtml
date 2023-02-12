@@ -363,15 +363,6 @@ else
                         <option value="">فارسی</option>
                     }
 
-                    @if (Model.MyLastEdit != null && (string.IsNullOrEmpty(Model.MyLastEdit.Language) || Model.MyLastEdit.Language == "fa-IR"))
-                    {
-                        <option value="fa-IR" selected>فارسی</option>
-                    }
-                    else
-                    {
-                        <option value="fa-IR">فارسی</option>
-                    }
-
                     @if (Model.MyLastEdit != null && Model.MyLastEdit.Language == "azb")
                     {
                         <option value="azb" selected>ترکی</option>
