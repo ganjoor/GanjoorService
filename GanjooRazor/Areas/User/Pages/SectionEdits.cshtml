@@ -83,7 +83,7 @@ else
                             <p style="color:green">@correction.Rhythm</p>
                         </td>
                         <td>
-                            @if (correction.RhythmResult == CorrectionReviewResult.Approved)
+                            @if (correction.RhythmResult == CorrectionReviewResult.NotReviewed)
                             {
                                 <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
                             }
@@ -118,7 +118,7 @@ else
                             <p style="color:green">@correction.RhymeLetters</p>
                         </td>
                         <td>
-                            @if (correction.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
+                            @if (correction.RhymeLettersReviewResult == CorrectionReviewResult.NotReviewed)
                             {
                                 <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.RhymeLettersReviewResult)</p>
                             }
@@ -130,6 +130,41 @@ else
                             else
                             {
                                 <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.RhymeLettersReviewResult)</p>
+                            }
+                        </td>
+                    </tr>
+                    @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                    {
+                        <tr>
+                            <td colspan="3">
+                                <p>@correction.ReviewNote</p>
+                            </td>
+                        </tr>
+                    }
+                }
+
+                @if (correction.Language != null)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">زبان: @correction.OriginalLanguage</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.Language</p>
+                        </td>
+                        <td>
+                            @if (correction.LanguageReviewResult == CorrectionReviewResult.NotReviewed)
+                            {
+                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.LanguageReviewResult)</p>
+                            }
+                            else
+                            @if (correction.LanguageReviewResult == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.LanguageReviewResult)</p>
+                            }
+                            else
+                            {
+                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.LanguageReviewResult)</p>
                             }
                         </td>
                     </tr>
