@@ -2291,6 +2291,7 @@ namespace RMuseum.Services.Implementation
                                 Id = section.Poet.Id,
                             }
                         },
+                        SectionIndex = section.Index
 
                     }
                 ).AsNoTracking();

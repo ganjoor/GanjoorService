@@ -126,5 +126,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// geo/date tags
         /// </summary>
         public PoemGeoDateTag[] GeoDateTags { get; set; }
+
+        /// <summary>
+        /// section index
+        /// </summary>
+        public int? SectionIndex { get; set; }
     }
 }

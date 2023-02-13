@@ -9419,6 +9419,11 @@
             geo/date tags
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.SectionIndex">
+            <summary>
+            section index
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel">
             <summary>
             poem correction view model
