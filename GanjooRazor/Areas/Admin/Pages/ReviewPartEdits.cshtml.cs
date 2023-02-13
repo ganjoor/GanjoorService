@@ -217,6 +217,8 @@ namespace GanjooRazor.Areas.Admin.Pages
             string rhymeReviewResult,
             int[] breakFromVIndices,
             string titleReviewNote,
+            string languageReviewResult, 
+            string languageReviewNote,
             string reviewNote)
         {
             using (HttpClient secureClient = new HttpClient())
@@ -347,6 +349,19 @@ namespace GanjooRazor.Areas.Admin.Pages
                         }
                     }
 
+                    if(Correction.Language != null)
+                    {
+                        if(languageReviewResult == null)
+                        {
+                            return new BadRequestObjectResult("لطفا تغییر زبان را بازبینی کنید.");
+                        }
+                        else
+                        {
+                            Correction.LanguageReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), languageReviewResult);
+                            Correction.ReviewNote = languageReviewNote;
+                        }
+                    }
+
                     Correction.BreakFromVerse1VOrder = breakFromVerse1VOrder;
                     Correction.BreakFromVerse2VOrder = breakFromVerse2VOrder;
                     Correction.BreakFromVerse3VOrder = breakFromVerse3VOrder;
@@ -359,6 +374,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                     Correction.BreakFromVerse10VOrder = breakFromVerse10VOrder;
 
                     Correction.ReviewNote = reviewNote;
+
+                    
 
 
                     var moderationResponse = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/section/moderate",

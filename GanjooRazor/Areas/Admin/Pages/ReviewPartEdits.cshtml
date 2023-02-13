@@ -156,7 +156,7 @@ else if (Model.DeletedUserSections)
             </td>
         </tr>
 
-        </tr>
+        
     </table>
 }
 else
@@ -191,6 +191,11 @@ else
                 rhymeReviewResult = $('input[name=rhyme_review_result]:checked').val()
             }
 
+            var languageReviewResult = 'DontCare';
+            if ($('#language_review_result_Approved').length > 0) {
+                languageReviewResult = $('input[name=language_review_result]:checked').val()
+            }
+
 
             var url = '?handler=SendCorrectionsModeration';
 
@@ -203,6 +208,8 @@ else
                     rhymeReviewResult: rhymeReviewResult,
                     breakFromVIndices: breakFromVIndices,
                     titleReviewNote: $('#title_review_note') == null ? null : $('#title_review_note').val(),
+                    languageReviewResult: languageReviewResult,
+                    languageReviewNote: $('#language_review_note') == null ? null : $('#language_review_note').val(),
                     reviewNote: $('#review_note').val()
                 },
                 success: function () {
@@ -420,6 +427,55 @@ else
             </tr>
         }
 
+        @if (Model.Correction.Language != null)
+        {
+            <tr>
+                <td colspan="2">
+                    زبان
+                </td>
+            </tr>
+            <tr>
+                <td>متن اولیه</td>
+                <td>پیشنهاد</td>
+            </tr>
+            <tr>
+                <td>
+                    <p id="original-language" class="red-color">@Model.Correction.OriginalLanguage</p>
+                </td>
+                <td>
+                    <p id="edited-language" class="green-color">@Model.Correction.Language</p>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    @if (Model.Correction.LanguageReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                    {
+                        <input type="radio" id="language_review_result_Approved" name="language_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                        <label for="language_review_result_Approved">تأیید می‌شود</label>
+
+                        <br>
+                        <input type="radio" id="language_review_result_NotChanged" name="language_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
+                    }
+                    else
+                    {
+                        <input type="radio" id="language_review_result_Approved" name="language_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                        <label for="language_review_result_Approved">تأیید می‌شود</label>
+
+                        <br>
+                        <input type="radio" id="language_review_result_NotChanged" name="language_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
+                    }
+                    <label for="language_review_result_NotChanged">تغییری نکرده</label><br>
+                    <input type="radio" id="language_review_result_RejectedBecauseWrong" name="language_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
+                    <label for="language_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <input type="radio" id="language_review_result_RejectedBecauseVariant" name="language_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
+                    <label for="language_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
+                    <input type="radio" id="language_review_result_Rejected" name="language_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
+                    <label for="language_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                    <input type="text" id="language_review_note" name="language_review_note" value="" size="50" />
+                </td>
+            </tr>
+        }
 
         @if (!string.IsNullOrEmpty(Model.Correction.Note))
         {
