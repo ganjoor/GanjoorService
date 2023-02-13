@@ -35,8 +35,8 @@ document.addEventListener('selectionchange', function() {
 
 	
 	$meaning.attr({
-		href: 'https://www.vajehyab.com/?q=' + encodeURI(text), 
-		title: 'جستجو در واژه‌یاب',
+		href: 'https://dehkhoda.ut.ac.ir/fa/dictionary/' + encodeURI(text), 
+		title: 'جستجو در لغتنامه',
 		target: '_blank'
 	})
 	$abjad.attr({
