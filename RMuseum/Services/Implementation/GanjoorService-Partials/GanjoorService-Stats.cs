@@ -152,18 +152,27 @@ namespace RMuseum.Services.Implementation
 
             if (sumRhythmsCouplets != wholeCoupletsCount)
             {
-                var languagesCoupletsCountsUnprocessed =
-                                                    await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
-                                                    .Where(v =>
-                                                    v.Poem.Cat.Poet.Published
-                                                    &&
-                                                    (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
-                                                    &&
-                                                    v.Poem.Cat.PoetId == poet.Id
-                                                    )
-                                                    .GroupBy(v => new { v.Poem.Language })
-                                                    .Select(g => new LanguageCoupletCount() { Language = g.Key.Language, Count = g.Count() })
-                                                    .ToListAsync();
+                var linqResult = await (from v in context.GanjoorVerses.AsNoTracking().Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet)
+                        from s in context.GanjoorPoemSections
+                        where v.PoemId == s.PoemId && v.SectionIndex1 == s.Index
+                        &&
+                        v.Poem.Cat.Poet.Published
+                        &&
+                        (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                        &&
+                        v.Poem.Cat.PoetId == poet.Id
+                        group s.Language by s.Language into g
+                        select new { Language = g.Key, Count = g.Count() }).ToListAsync();
+                        
+                List<LanguageCoupletCount> languagesCoupletsCountsUnprocessed = new List<LanguageCoupletCount>();
+                foreach (var item in linqResult)
+                {
+                    languagesCoupletsCountsUnprocessed.Add(new LanguageCoupletCount()
+                    {
+                        Language = item.Language,
+                        Count = item.Count
+                    });
+                }
                 var fa = languagesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").SingleOrDefault();
                 if (fa == null)
                 {
