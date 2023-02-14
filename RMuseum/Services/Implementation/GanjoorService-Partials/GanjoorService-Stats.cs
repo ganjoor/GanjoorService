@@ -1,5 +1,6 @@
 ﻿using DNTPersianUtils.Core;
 using Microsoft.EntityFrameworkCore;
+using NAudio.Gui;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
@@ -311,16 +312,27 @@ namespace RMuseum.Services.Implementation
                                         var sumPoetsCouplets = poetsCoupletCounts.Sum(c => c.Count);
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 1, "Counting Languages");
-                                        var langaugesCoupletsCountsUnprocessed =
-                                                    await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
-                                                    .Where(v =>
-                                                    v.Poem.Cat.Poet.Published
-                                                    &&
-                                                    (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1))
-                                                    .GroupBy(v => new { v.Poem.Language })
-                                                    .Select(g => new LanguageCoupletCount() { Language = g.Key.Language, Count = g.Count() })
-                                                    .ToListAsync();
-                                        var fa = langaugesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").SingleOrDefault();
+                                        var linqResult = await (from v in context.GanjoorVerses.AsNoTracking().Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet)
+                                                                from s in context.GanjoorPoemSections
+                                                                where v.PoemId == s.PoemId && v.SectionIndex1 == s.Index
+                                                                &&
+                                                                v.Poem.Cat.Poet.Published
+                                                                &&
+                                                                (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                                                                group s.Language by s.Language into g
+                                                                select new { Language = g.Key, Count = g.Count() }).ToListAsync();
+
+                                        List<LanguageCoupletCount> languagesCoupletsCountsUnprocessed = new List<LanguageCoupletCount>();
+                                        foreach (var item in linqResult)
+                                        {
+                                            languagesCoupletsCountsUnprocessed.Add(new LanguageCoupletCount()
+                                            {
+                                                Language = item.Language,
+                                                Count = item.Count
+                                            });
+                                        }
+                                        var fa = languagesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").SingleOrDefault();
+
                                         if (fa == null)
                                         {
                                             fa = new LanguageCoupletCount()
@@ -328,19 +340,19 @@ namespace RMuseum.Services.Implementation
                                                 Language = "fa-IR",
                                                 Count = 0
                                             };
-                                            langaugesCoupletsCountsUnprocessed.Add
+                                            languagesCoupletsCountsUnprocessed.Add
                                                 (
                                                 fa
                                                 );
                                         }
-                                        foreach (var langaugesCoupletsCount in langaugesCoupletsCountsUnprocessed)
+                                        foreach (var langaugesCoupletsCount in languagesCoupletsCountsUnprocessed)
                                         {
                                             if (string.IsNullOrEmpty(langaugesCoupletsCount.Language))
                                             {
                                                 fa.Count += langaugesCoupletsCount.Count;
                                             }
                                         }
-                                        var langaugesCoupletsCounts = langaugesCoupletsCountsUnprocessed
+                                        var langaugesCoupletsCounts = languagesCoupletsCountsUnprocessed
                                                     .Where(l => !string.IsNullOrEmpty(l.Language))
                                                     .ToList();
                                         langaugesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
