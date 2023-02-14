@@ -115,9 +115,9 @@ namespace RMuseum.Services.Implementation
             }
 
             string htmlText = $"<p>این آمار از میان {stats} در گنجور از {poet.Nickname} استخراج شده است.</p>{Environment.NewLine}";
-            htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در سایت (مثل آثار خیام) و همینطور یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمسها تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
+            htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در سایت (مثل آثار خیام) و همینطور یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمس‌ها تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
             htmlText += $"<p>آمار همهٔ شعرهای گنجور را <a href=\"/vazn\">اینجا</a> ببینید.</p>{Environment.NewLine}";
-            htmlText += $"<p>وزنیابی دستی در بیشتر موارد با ملاحظهٔ تنها یک مصرع از شعر صورت گرفته و امکان وجود اشکال در آن (مخصوصاً اشتباه در تشخیص وزنهای قابل تبدیل از قبیل وزن مثنوی مولوی به جای وزن عروضی سریع مطوی مکشوف) وجود دارد. وزنیابی ماشینی نیز که جدیداً با استفاده از امکانات <a href=\"http://www.sorud.info/\">تارنمای سرود</a> اضافه شده بعضاً خطا دارد. برخی از بخشها شامل اشعاری با بیش از یک وزن هستند که در این صورت عمدتاً وزن ابیات آغازین و برای بعضی منظومه‌ها وزن غالب منظومه به عنوان وزن آن بخش منظور شده است.</p>{Environment.NewLine}";
+            htmlText += $"<p>وزن‌یابی دستی در بیشتر موارد با ملاحظهٔ تنها یک مصرع از شعر صورت گرفته و امکان وجود اشکال در آن (مخصوصاً اشتباه در تشخیص وزنهای قابل تبدیل از قبیل وزن مثنوی مولوی به جای وزن عروضی سریع مطوی مکشوف) وجود دارد. وزن‌یابی ماشینی نیز که جدیداً با استفاده از امکانات <a href=\"http://www.sorud.info/\">تارنمای سرود</a> اضافه شده بعضاً خطا دارد. برخی از بخشها شامل اشعاری با بیش از یک وزن هستند که در این صورت عمدتاً وزن ابیات آغازین و برای بعضی منظومه‌ها وزن غالب منظومه به عنوان وزن آن بخش منظور شده است.</p>{Environment.NewLine}";
             if (secondMetreCoupletCount > 0)
             {
                 htmlText += $"<p>در {LanguageUtils.FormatMoney(secondMetreCoupletCount)} مورد ابیات به لحاظ چند وزنی بودن در جدول اوزان بیش از یک بار محاسبه شده‌اند و جمع آمار ناخالص ابیات با احتساب چندبارهٔ ابیات چندوزنی در جمع فهرست اوزان برابر {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت است که در محاسبهٔ نسبت درصد از کل استفاده شده است):</p>";
@@ -140,7 +140,7 @@ namespace RMuseum.Services.Implementation
                 htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
                 string rhythm = rhythmsCoupletCounts[i].GanjoorMetreId == null
                     ?
-                    $"<a href=\"/simi/?v=null&amp;a={poet.Id}\">وزنیابی نشده</a>" :
+                    $"<a href=\"/simi/?v=null&amp;a={poet.Id}\">وزن‌یابی نشده</a>" :
                                 $"<a href=\"/simi/?v={Uri.EscapeDataString(rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm)}&amp;a={poet.Id}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
                 htmlText += $"<td class=\"c2\">{rhythm}</td>{Environment.NewLine}";
                 htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(rhythmsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
@@ -492,7 +492,7 @@ namespace RMuseum.Services.Implementation
                                                 context.Update(rhythm);
                                             }
                                             string rhythmName = rhythmsCoupletCounts[i].GanjoorMetreId == null ?
-                                            $"<a href=\"/simi/?v=null\">وزنیابی نشده</a>"
+                                            $"<a href=\"/simi/?v=null\">وزن‌یابی نشده</a>"
                                             :
                                             $"<a href=\"/simi/?v={Uri.EscapeDataString(rhythm.Rhythm)}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
                                             htmlText += $"<td class=\"c2\">{rhythmName}</td>{Environment.NewLine}";

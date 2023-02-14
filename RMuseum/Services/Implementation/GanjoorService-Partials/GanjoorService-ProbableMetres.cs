@@ -88,7 +88,7 @@ namespace RMuseum.Services.Implementation
                                                     SectionId = section.Id,
                                                     UserId = userId,
                                                     Rhythm = res.Result,
-                                                    Note = "وزنیابی سیستمی",
+                                                    Note = "وزن‌یابی سیستمی",
                                                     Date = DateTime.Now,
                                                     RhythmResult = CorrectionReviewResult.NotReviewed,
                                                     Reviewed = false,

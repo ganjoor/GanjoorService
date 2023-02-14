@@ -121,7 +121,7 @@ else if (Model.DeletedUserSections)
                 <select id="rhythm-new" name="rhythm-new">
                     @foreach (var rhythm in Model.RhythmsAlphabetically)
                     {
-                        <option value="@rhythm.Rhythm">@(rhythm.Rhythm == "" ? "هیچکدام" : rhythm.Rhythm == "null" ? "وزنیابی نشده" : rhythm.Rhythm)</option>
+                        <option value="@rhythm.Rhythm">@(rhythm.Rhythm == "" ? "هیچکدام" : rhythm.Rhythm == "null" ? "وزن‌یابی نشده" : rhythm.Rhythm)</option>
                     }
                 </select>
                 <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
