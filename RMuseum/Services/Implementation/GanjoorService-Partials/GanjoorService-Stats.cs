@@ -164,36 +164,30 @@ namespace RMuseum.Services.Implementation
                         v.Poem.Cat.PoetId == poet.Id
                         group s.Language by s.Language into g
                         select new { Language = g.Key, Count = g.Count() }).ToListAsync();
-                        
-                List<LanguageCoupletCount> languagesCoupletsCountsUnprocessed = new List<LanguageCoupletCount>();
-                foreach (var item in linqResult)
+
+                List<LanguageCoupletCount> languagesCoupletsCountsUnprocessed = new List<LanguageCoupletCount>
                 {
-                    languagesCoupletsCountsUnprocessed.Add(new LanguageCoupletCount()
-                    {
-                        Language = item.Language,
-                        Count = item.Count
-                    });
-                }
-                var fa = languagesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").SingleOrDefault();
-                if (fa == null)
-                {
-                    fa = new LanguageCoupletCount()
+                    new LanguageCoupletCount()
                     {
                         Language = "fa-IR",
                         Count = 0
-                    };
-                    languagesCoupletsCountsUnprocessed.Add
-                        (
-                        fa
-                        );
-                }
-                foreach (var languagesCoupletsCount in languagesCoupletsCountsUnprocessed)
-                {
-                    if (string.IsNullOrEmpty(languagesCoupletsCount.Language))
-                    {
-                        fa.Count += languagesCoupletsCount.Count;
                     }
+                };
+                foreach (var item in linqResult)
+                {
+                    if (item.Language == "fa-IR" || string.IsNullOrEmpty(item.Language))
+                    {
+                        var fa = languagesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").Single();
+                        fa.Count += item.Count;
+                    }
+                    else
+                        languagesCoupletsCountsUnprocessed.Add(new LanguageCoupletCount()
+                        {
+                            Language = item.Language,
+                            Count = item.Count
+                        });
                 }
+
                 var languagesCoupletsCounts = languagesCoupletsCountsUnprocessed
                             .Where(l => !string.IsNullOrEmpty(l.Language))
                             .ToList();
@@ -331,7 +325,7 @@ namespace RMuseum.Services.Implementation
                                                 Count = item.Count
                                             });
                                         }
-                                        var fa = languagesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").SingleOrDefault();
+                                        var fa = languagesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").Single();
 
                                         if (fa == null)
                                         {
