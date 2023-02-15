@@ -1096,6 +1096,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// delete a poem section (section should not be linked to a poem verse of types other than paragraphs or comments)
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="sectionIndex"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("section/{poemId}/{sectionIndex}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> DeletePoemSectionByPoemIdAndIndexAsync(int poemId, int sectionIndex)
+        {
+            var res = await _ganjoorService.DeletePoemSectionByPoemIdAndIndexAsync(poemId, sectionIndex);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if(res.Result == false)
+                return NotFound();
+            return Ok();
+        }
+
+        /// <summary>
         /// delete a poem
         /// </summary>
         /// <param name="id"></param>
