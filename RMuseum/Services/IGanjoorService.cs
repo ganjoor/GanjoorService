@@ -998,6 +998,14 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoemSection>> GetPoemSectionByIdAsync(int sectionId);
 
         /// <summary>
+        /// delete a poem section
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="sectionIndex"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePoemSectionByPoemIdAndIndexAsync(int poemId, int sectionIndex);
+
+        /// <summary>
         /// last unreviewed user correction for a section
         /// </summary>
         /// <param name="userId"></param>

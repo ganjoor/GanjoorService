@@ -723,6 +723,68 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// delete a poem section
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="sectionIndex"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePoemSectionByPoemIdAndIndexAsync(int poemId, int sectionIndex)
+        {
+            try
+            {
+                var section = await _context.GanjoorPoemSections.Where(s => s.PoemId == poemId && s.Index == sectionIndex).SingleOrDefaultAsync();
+                if (section == null)
+                {
+                    return new RServiceResult<bool>(false);//Not found
+                }
+                var connextedVerses =
+                    await _context.GanjoorVerses
+                        .Where
+                        (
+                        v => v.PoemId == poemId
+                        &&
+                        (v.SectionIndex1 == sectionIndex || v.SectionIndex2 == sectionIndex || v.SectionIndex3 == sectionIndex || v.SectionIndex4 == sectionIndex)
+                        ).ToListAsync();
+                foreach (var verse in connextedVerses)
+                {
+                    if (section.SectionType == PoemSectionType.WholePoem)
+                    {
+                        if (verse.VersePosition != VersePosition.Paragraph && verse.VersePosition != VersePosition.Comment)
+                        {
+                            return new RServiceResult<bool>(false, "قطعه شامل مصرع‌های غیرپاراگرافی است.");
+                        }
+                    }
+                    if (verse.SectionIndex1 == sectionIndex)
+                    {
+                        verse.SectionIndex1 = null;
+                    }
+                    if (verse.SectionIndex2 == sectionIndex)
+                    {
+                        verse.SectionIndex2 = null;
+                    }
+                    if (verse.SectionIndex3 == sectionIndex)
+                    {
+                        verse.SectionIndex3 = null;
+                    }
+                    if (verse.SectionIndex4 == sectionIndex)
+                    {
+                        verse.SectionIndex4 = null;
+                    }
+
+                }
+
+                _context.UpdateRange(connextedVerses);
+                _context.Remove(section);
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<bool>(false, e.ToString());
+            }
+        }
+
+        /// <summary>
         /// start band couplets fix
         /// </summary>
         /// <returns></returns>

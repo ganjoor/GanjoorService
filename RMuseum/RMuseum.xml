@@ -13094,6 +13094,14 @@
             <param name="sectionId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePoemSectionByPoemIdAndIndexAsync(System.Int32,System.Int32)">
+            <summary>
+            delete a poem section
+            </summary>
+            <param name="poemId"></param>
+            <param name="sectionIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetLastUnreviewedUserCorrectionForSection(System.Guid,System.Int32)">
             <summary>
             last unreviewed user correction for a section
@@ -15013,6 +15021,14 @@
             get a specific poem sections
             </summary>
             <param name="sectionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemSectionByPoemIdAndIndexAsync(System.Int32,System.Int32)">
+            <summary>
+            delete a poem section
+            </summary>
+            <param name="poemId"></param>
+            <param name="sectionIndex"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartOnTimeBandCoupletsFix">
