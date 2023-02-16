@@ -155,7 +155,7 @@ namespace RMuseum.Services.Implementation
             {
                 var linqResult = await (from v in context.GanjoorVerses.AsNoTracking().Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet)
                                         from s in context.GanjoorPoemSections
-                                        where v.PoemId == s.PoemId && v.SectionIndex1 == s.Index
+                                        where v.PoemId == s.PoemId && v.SectionIndex1 == s.Index && s.SectionType == PoemSectionType.WholePoem
                                         &&
                                         v.Poem.Cat.Poet.Published
                                         &&
@@ -308,7 +308,7 @@ namespace RMuseum.Services.Implementation
                                         await jobProgressServiceEF.UpdateJob(job.Id, 1, "Counting Languages");
                                         var linqResult = await (from v in context.GanjoorVerses.AsNoTracking().Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet)
                                                                 from s in context.GanjoorPoemSections
-                                                                where v.PoemId == s.PoemId && v.SectionIndex1 == s.Index
+                                                                where v.PoemId == s.PoemId && v.SectionIndex1 == s.Index && s.SectionType == PoemSectionType.WholePoem
                                                                 &&
                                                                 v.Poem.Cat.Poet.Published
                                                                 &&
