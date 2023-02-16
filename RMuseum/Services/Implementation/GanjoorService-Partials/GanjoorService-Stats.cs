@@ -188,12 +188,9 @@ namespace RMuseum.Services.Implementation
                         });
                 }
 
-                var languagesCoupletsCounts = languagesCoupletsCountsUnprocessed
-                            .Where(l => l.Language != "fa-IR")
-                            .ToList();
-                languagesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
+                languagesCoupletsCountsUnprocessed.Sort((a, b) => b.Count - a.Count);
 
-                if (languagesCoupletsCounts.Count > 1)
+                if (languagesCoupletsCountsUnprocessed.Count > 1)
                 {
                     htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ {poet.Name} با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
@@ -205,7 +202,7 @@ namespace RMuseum.Services.Implementation
                         $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
                         $"</tr>{Environment.NewLine}";
 
-                    for (int i = 0; i < languagesCoupletsCounts.Count; i++)
+                    for (int i = 0; i < languagesCoupletsCountsUnprocessed.Count; i++)
                     {
                         if (i % 2 == 0)
                             htmlText += $"<tr class=\"e\">{Environment.NewLine}";
@@ -214,7 +211,7 @@ namespace RMuseum.Services.Implementation
 
                         htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
                         string language = "فارسی";
-                        switch (languagesCoupletsCounts[i].Language)
+                        switch (languagesCoupletsCountsUnprocessed[i].Language)
                         {
                             case "azb":
                                 language = "ترکی";
@@ -230,8 +227,8 @@ namespace RMuseum.Services.Implementation
                                 break;
                         }
                         htmlText += $"<td class=\"c2\">{language}</td>{Environment.NewLine}";
-                        htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(languagesCoupletsCounts[i].Count)}</td>{Environment.NewLine}";
-                        htmlText += $"<td class=\"c4\">{(languagesCoupletsCounts[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(languagesCoupletsCountsUnprocessed[i].Count)}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"c4\">{(languagesCoupletsCountsUnprocessed[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
                         htmlText += $"</tr>{Environment.NewLine}";
                     }
@@ -343,10 +340,7 @@ namespace RMuseum.Services.Implementation
                                                 });
                                         }
 
-                                        var languagesCoupletsCounts = languagesCoupletsCountsUnprocessed
-                                                    .Where(l => l.Language != "fa-IR")
-                                                    .ToList();
-                                        languagesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
+                                        languagesCoupletsCountsUnprocessed.Sort((a, b) => b.Count - a.Count);
 
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 1, "Counting whole sections");
@@ -445,7 +439,7 @@ namespace RMuseum.Services.Implementation
                                             $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
                                             $"</tr>{Environment.NewLine}";
 
-                                        for (int i = 0; i < languagesCoupletsCounts.Count; i++)
+                                        for (int i = 0; i < languagesCoupletsCountsUnprocessed.Count; i++)
                                         {
                                             if (i % 2 == 0)
                                                 htmlText += $"<tr class=\"e\">{Environment.NewLine}";
@@ -454,7 +448,7 @@ namespace RMuseum.Services.Implementation
 
                                             htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
                                             string language = "فارسی";
-                                            switch (languagesCoupletsCounts[i].Language)
+                                            switch (languagesCoupletsCountsUnprocessed[i].Language)
                                             {
                                                 case "azb":
                                                     language = "ترکی (گزیده‌ای از اشعار استاد شهریار و ...)";
@@ -471,8 +465,8 @@ namespace RMuseum.Services.Implementation
 
                                             }
                                             htmlText += $"<td class=\"c2\">{language}</td>{Environment.NewLine}";
-                                            htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(languagesCoupletsCounts[i].Count)}</td>{Environment.NewLine}";
-                                            htmlText += $"<td class=\"c4\">{(languagesCoupletsCounts[i].Count * 100.0 / sumPoetsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(languagesCoupletsCountsUnprocessed[i].Count)}</td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c4\">{(languagesCoupletsCountsUnprocessed[i].Count * 100.0 / sumPoetsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
                                             htmlText += $"</tr>{Environment.NewLine}";
                                         }
