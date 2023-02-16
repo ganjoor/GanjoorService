@@ -776,6 +776,9 @@ namespace RMuseum.Services.Implementation
                 _context.UpdateRange(connextedVerses);
                 _context.Remove(section);
 
+                await _context.SaveChangesAsync();
+
+
                 return new RServiceResult<bool>(true);
             }
             catch (Exception e)

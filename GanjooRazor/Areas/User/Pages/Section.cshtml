@@ -460,5 +460,12 @@ else
                 </td>
             </tr>
         }
+
+        @if (Model.CanEdit)
+        {
+            <tr>
+                <td><a role="button" href="/Admin/SectionDel?poemId=@Model.PageInformation.Id&sectionIndex=@Model.PoemSection.Index" class="pagebutton">حذف قطعه</a></td>
+            </tr>
+        }
     </table>
 }

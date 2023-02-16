@@ -102,12 +102,18 @@ namespace GanjooRazor.Areas.User.Pages
 
         public GanjoorPoemSection Previous { get; set; }
 
+        /// <summary>
+        /// can edit
+        /// </summary>
+        public bool CanEdit { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
                 return Redirect("/");
 
             FatalError = "";
+            CanEdit = Request.Cookies["CanEdit"] == "True";
 
             using (HttpClient secureClient = new HttpClient())
             {

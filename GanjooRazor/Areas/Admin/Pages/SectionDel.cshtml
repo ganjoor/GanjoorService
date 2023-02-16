@@ -1,0 +1,40 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.SectionDelModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "حذف قطعه";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (!string.IsNullOrEmpty(Model.LastResult))
+{
+    <p>
+        @Model.LastResult
+    </p>
+    <p>
+        <a role="button" href="/User/Section?poemId=@(Request.Query["poemId"])&index=@(Request.Query["sectionIndex"])" class="actionlink">برگشت</a>
+    </p>
+}
+else
+{
+    <table>
+        <tr>
+            <td colspan="2">
+                آیا از حذف این قطعه اطمینان دارید؟
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <form method="post">
+                    <input type="submit" value="بله" />
+                </form>
+            </td>
+            <td>
+                <a role="button" href="/User/Section?poemId=@(Request.Query["poemId"])&index=@(Request.Query["sectionIndex"])" class="actionlink">خیر / برگشت</a>
+            </td>
+        </tr>
+    </table>
+}
+
