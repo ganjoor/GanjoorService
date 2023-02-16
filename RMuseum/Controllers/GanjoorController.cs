@@ -2248,6 +2248,31 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// language tagged poem sections
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="language">fa-IR, ar, ...</param>
+        /// <param name="poetId">0 means all poets</param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("sections/tagged/language")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetLanguageTaggedPoemSections([FromQuery] PagingParameterModel paging, string language, int poetId = 0)
+        {
+            var pagedResult = await _ganjoorService.GetLanguageTaggedPoemSections(paging, language, poetId == 0 ? (int?)null : poetId);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.Items);
+        }
+
+        /// <summary>
         /// search
         /// </summary>
         /// <param name="paging"></param>

@@ -2331,6 +2331,82 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// language tagged poem sections
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="language"></param>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetLanguageTaggedPoemSections(PagingParameterModel paging, string language, int? poetId)
+        {
+            if(string.IsNullOrEmpty(language))
+            {
+                language = "fa-IR";
+            }
+            var source =
+                _context.GanjoorPoemSections.Include(s => s.Poem).Include(s => s.Poet).Include(s => s.GanjoorMetre)
+                .Where(s =>
+                        (poetId == null || s.PoetId == poetId)
+                        &&
+                        ((language == "fa-IR" && string.IsNullOrEmpty(s.Language)) || s.Language == language)
+                        && 
+                        s.SectionType == PoemSectionType.WholePoem
+                        )
+                .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.Poet.Nickname).ThenBy(p => p.Poem.Id)
+                .Select
+                (
+                    section =>
+                    new GanjoorPoemCompleteViewModel()
+                    {
+                        Id = section.Poem.Id,
+                        Title = section.Poem.Title,
+                        FullTitle = section.Poem.FullTitle,
+                        FullUrl = section.CachedFirstCoupletIndex == 0 ? section.Poem.FullUrl : section.Poem.FullUrl + "#bn" + (section.CachedFirstCoupletIndex + 1).ToString(),
+                        UrlSlug = section.Poem.UrlSlug,
+                        HtmlText = section.HtmlText,
+                        PlainText = section.PlainText,
+                        MixedModeOrder = section.Poem.MixedModeOrder,
+                        Published = section.Poem.Published,
+                        Language = section.Poem.Language,
+                        Category = new GanjoorPoetCompleteViewModel()
+                        {
+                            Poet = new GanjoorPoetViewModel()
+                            {
+                                Id = section.Poet.Id,
+                            }
+                        },
+                        SectionIndex = section.Index
+
+                    }
+                ).AsNoTracking();
+
+
+            (PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items) paginatedResult =
+               await QueryablePaginator<GanjoorPoemCompleteViewModel>.Paginate(source, paging);
+
+
+            Dictionary<int, GanjoorPoetCompleteViewModel> cachedPoets = new Dictionary<int, GanjoorPoetCompleteViewModel>();
+
+            foreach (var item in paginatedResult.Items)
+            {
+                if (cachedPoets.TryGetValue(item.Category.Poet.Id, out GanjoorPoetCompleteViewModel poet))
+                {
+                    item.Category = poet;
+                }
+                else
+                {
+                    poet = (await GetPoetById(item.Category.Poet.Id)).Result;
+
+                    cachedPoets.Add(item.Category.Poet.Id, poet);
+
+                    item.Category = poet;
+                }
+            }
+
+            return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
+        }
+
 
 
         /// <summary>

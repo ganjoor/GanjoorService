@@ -1529,6 +1529,15 @@
             <param name="poetId">send 0 for all</param>
             <returns>return value is not complete or valid for some parts, you should use only the valid parts!</returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetLanguageTaggedPoemSections(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32)">
+            <summary>
+            language tagged poem sections
+            </summary>
+            <param name="paging"></param>
+            <param name="language">fa-IR, ar, ...</param>
+            <param name="poetId">0 means all poets</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.Search(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">
             <summary>
             search
@@ -12564,6 +12573,15 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetLanguageTaggedPoemSections(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Nullable{System.Int32})">
+            <summary>
+            language tagged poem sections
+            </summary>
+            <param name="paging"></param>
+            <param name="language"></param>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.UpdatePageAsync(System.Int32,System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
             <summary>
             modify page
@@ -15604,6 +15622,15 @@
             <param name="paging"></param>
             <param name="metre"></param>
             <param name="rhyme"></param>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLanguageTaggedPoemSections(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Nullable{System.Int32})">
+            <summary>
+            language tagged poem sections
+            </summary>
+            <param name="paging"></param>
+            <param name="language"></param>
             <param name="poetId"></param>
             <returns></returns>
         </member>
