@@ -14,7 +14,7 @@
         @Model.LastResult
     </p>
     <p>
-        <a role="button" href="/User/Section?poemId=@(Request.Query["poemId"])&index=@(Request.Query["sectionIndex"])" class="actionlink">برگشت</a>
+        <a role="button" href="/User/AllPoemSections?id=@(Request.Query["poemId"])" class="actionlink">برگشت</a>
     </p>
 }
 else
