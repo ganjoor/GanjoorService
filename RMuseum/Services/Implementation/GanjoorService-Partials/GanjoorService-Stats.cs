@@ -69,13 +69,13 @@ namespace RMuseum.Services.Implementation
                         (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
                         &&
                          (
-                            ( section.Versetype == VersePoemSectionType.First &&  v.SectionIndex1 == section.Index )
+                            (section.Versetype == VersePoemSectionType.First && v.SectionIndex1 == section.Index)
                             ||
-                            ( section.Versetype == VersePoemSectionType.Second && v.SectionIndex2 == section.Index )
+                            (section.Versetype == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
                             ||
-                            ( section.Versetype == VersePoemSectionType.Third && v.SectionIndex3 == section.Index )
+                            (section.Versetype == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
                             ||
-                            ( section.Versetype == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index )
+                            (section.Versetype == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
                          )
                         ).CountAsync();
                 var metreId = section.GanjoorMetreId == null ? 0 : (int)section.GanjoorMetreId;
@@ -154,16 +154,16 @@ namespace RMuseum.Services.Implementation
             if (sumRhythmsCouplets != wholeCoupletsCount)
             {
                 var linqResult = await (from v in context.GanjoorVerses.AsNoTracking().Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet)
-                        from s in context.GanjoorPoemSections
-                        where v.PoemId == s.PoemId && v.SectionIndex1 == s.Index
-                        &&
-                        v.Poem.Cat.Poet.Published
-                        &&
-                        (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
-                        &&
-                        v.Poem.Cat.PoetId == poet.Id
-                        group s.Language by s.Language into g
-                        select new { Language = g.Key, Count = g.Count() }).ToListAsync();
+                                        from s in context.GanjoorPoemSections
+                                        where v.PoemId == s.PoemId && v.SectionIndex1 == s.Index
+                                        &&
+                                        v.Poem.Cat.Poet.Published
+                                        &&
+                                        (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                                        &&
+                                        v.Poem.Cat.PoetId == poet.Id
+                                        group s.Language by s.Language into g
+                                        select new { Language = g.Key, Count = g.Count() }).ToListAsync();
 
                 List<LanguageCoupletCount> languagesCoupletsCountsUnprocessed = new List<LanguageCoupletCount>
                 {
@@ -189,7 +189,7 @@ namespace RMuseum.Services.Implementation
                 }
 
                 var languagesCoupletsCounts = languagesCoupletsCountsUnprocessed
-                            .Where(l => !string.IsNullOrEmpty(l.Language))
+                            .Where(l => l.Language != "fa-IR")
                             .ToList();
                 languagesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
 
@@ -224,6 +224,9 @@ namespace RMuseum.Services.Implementation
                                 break;
                             case "ckb":
                                 language = "کردی";
+                                break;
+                            case "glk":
+                                language = "گیلکی";
                                 break;
                         }
                         htmlText += $"<td class=\"c2\">{language}</td>{Environment.NewLine}";
@@ -316,48 +319,41 @@ namespace RMuseum.Services.Implementation
                                                                 group s.Language by s.Language into g
                                                                 select new { Language = g.Key, Count = g.Count() }).ToListAsync();
 
-                                        List<LanguageCoupletCount> languagesCoupletsCountsUnprocessed = new List<LanguageCoupletCount>();
-                                        foreach (var item in linqResult)
-                                        {
-                                            languagesCoupletsCountsUnprocessed.Add(new LanguageCoupletCount()
-                                            {
-                                                Language = item.Language,
-                                                Count = item.Count
-                                            });
-                                        }
-                                        var fa = languagesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").Single();
 
-                                        if (fa == null)
+                                        List<LanguageCoupletCount> languagesCoupletsCountsUnprocessed = new List<LanguageCoupletCount>
                                         {
-                                            fa = new LanguageCoupletCount()
+                                            new LanguageCoupletCount()
                                             {
                                                 Language = "fa-IR",
                                                 Count = 0
-                                            };
-                                            languagesCoupletsCountsUnprocessed.Add
-                                                (
-                                                fa
-                                                );
-                                        }
-                                        foreach (var langaugesCoupletsCount in languagesCoupletsCountsUnprocessed)
-                                        {
-                                            if (string.IsNullOrEmpty(langaugesCoupletsCount.Language))
-                                            {
-                                                fa.Count += langaugesCoupletsCount.Count;
                                             }
+                                        };
+                                        foreach (var item in linqResult)
+                                        {
+                                            if (item.Language == "fa-IR" || string.IsNullOrEmpty(item.Language))
+                                            {
+                                                var fa = languagesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").Single();
+                                                fa.Count += item.Count;
+                                            }
+                                            else
+                                                languagesCoupletsCountsUnprocessed.Add(new LanguageCoupletCount()
+                                                {
+                                                    Language = item.Language,
+                                                    Count = item.Count
+                                                });
                                         }
-                                        var langaugesCoupletsCounts = languagesCoupletsCountsUnprocessed
-                                                    .Where(l => !string.IsNullOrEmpty(l.Language))
-                                                    .ToList();
-                                        langaugesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
 
+                                        var languagesCoupletsCounts = languagesCoupletsCountsUnprocessed
+                                                    .Where(l => l.Language != "fa-IR")
+                                                    .ToList();
+                                        languagesCoupletsCounts.Sort((a, b) => b.Count - a.Count);
 
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 1, "Counting whole sections");
 
                                         var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
                                                 .Where(s => s.Poem.Cat.Poet.Published && (string.IsNullOrEmpty(s.Language) || s.Language == "fa-IR") && s.SectionType == PoemSectionType.WholePoem)
-                                                .Select(s => new { s.PoemId,  s.Index, s.GanjoorMetreId, Versetype = s.VerseType })
+                                                .Select(s => new { s.PoemId, s.Index, s.GanjoorMetreId, Versetype = s.VerseType })
                                                 .ToListAsync();
 
                                         Dictionary<int, int> metreCounts = new Dictionary<int, int>();
@@ -449,7 +445,7 @@ namespace RMuseum.Services.Implementation
                                             $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
                                             $"</tr>{Environment.NewLine}";
 
-                                        for (int i = 0; i < langaugesCoupletsCounts.Count; i++)
+                                        for (int i = 0; i < languagesCoupletsCounts.Count; i++)
                                         {
                                             if (i % 2 == 0)
                                                 htmlText += $"<tr class=\"e\">{Environment.NewLine}";
@@ -457,22 +453,26 @@ namespace RMuseum.Services.Implementation
                                                 htmlText += $"<tr>{Environment.NewLine}";
 
                                             htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                                            string langauge = "فارسی";
-                                            switch (langaugesCoupletsCounts[i].Language)
+                                            string language = "فارسی";
+                                            switch (languagesCoupletsCounts[i].Language)
                                             {
                                                 case "azb":
-                                                    langauge = "ترکی (گزیده‌ای از اشعار استاد شهریار و ...)";
+                                                    language = "ترکی (گزیده‌ای از اشعار استاد شهریار و ...)";
                                                     break;
                                                 case "ar":
-                                                    langauge = "عربی (اشعار عربی سعدی، خاقانی و ...)";
+                                                    language = "عربی (اشعار عربی سعدی، خاقانی و ...)";
                                                     break;
                                                 case "ckb":
-                                                    langauge = "کردی (مولانا خالد نقشبندی)";
+                                                    language = "کردی (مولانا خالد نقشبندی)";
                                                     break;
+                                                case "glk":
+                                                    language = "گیلکی (قاسم انوار)";
+                                                    break;
+
                                             }
-                                            htmlText += $"<td class=\"c2\">{langauge}</td>{Environment.NewLine}";
-                                            htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(langaugesCoupletsCounts[i].Count)}</td>{Environment.NewLine}";
-                                            htmlText += $"<td class=\"c4\">{(langaugesCoupletsCounts[i].Count * 100.0 / sumPoetsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c2\">{language}</td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(languagesCoupletsCounts[i].Count)}</td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c4\">{(languagesCoupletsCounts[i].Count * 100.0 / sumPoetsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
                                             htmlText += $"</tr>{Environment.NewLine}";
                                         }
