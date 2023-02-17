@@ -28,7 +28,7 @@
                     {
                         Code = "fa-IR",
                         Name = "فارسی",
-                        Description = ""
+                        Description = "فارسی"
                     },
                     new GTaggedLanguage()
                     {
