@@ -135,32 +135,27 @@
                                 }
                             </select>
 
-                            <label for="v" class="width-100per">وزن:</label>
-                            <input class="width-100per" type="text" id="select-search" placeholder="جستجوی وزن" oninput="doSearchInRhythmsCombo('select-search', 'v')" list="inputRhythms" autocomplete="off" size="50" />
+                            <label for="v" class="width-100per">زبان غالب:</label>
                             <datalist id="inputRhythms">
-                                @if (Model.RhythmsByVerseCount != null)
-                                    @foreach (var rhythm in Model.RhythmsByVerseCount)
+                                @foreach (var language in RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Languages)
                                     {
-                                        <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                                        <option value="@language.Code">@language.Name</option>
                                     }
                             </datalist>
-                            <select id="v" name="v" class="width-100per">
-                                @foreach (var rhythm in Model.RhythmsAlphabetically)
+                            <select id="l" name="l" class="width-100per">
+                                @foreach (var language in RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Languages)
                                 {
-                                    if (Model.Metre == rhythm.Rhythm)
+                                    if (Model.Language == language.Code)
                                     {
-                                        <option value="@rhythm.Rhythm" selected>@(rhythm.Rhythm == "" ? "هیچکدام" : rhythm.Rhythm == "null" ? "وزن‌یابی نشده" : rhythm.Rhythm)</option>
+                                        <option value="@language.Code" selected>@language.Name</option>
                                     }
                                     else
                                     {
-                                        <option value="@rhythm.Rhythm">@(rhythm.Rhythm == "" ? "هیچکدام" : rhythm.Rhythm == "null" ? "وزن‌یابی نشده" : rhythm.Rhythm)</option>
+                                        <option value="@language.Code">@language.Name</option>
                                     }
 
                                 }
                             </select>
-
-                            <label for="g" class="width-100per">قافیه:</label>
-                            <input type="text" name="g" id="g" class="width-100per" value="@Model.Rhyme" placeholder="حروف قافیه" />
 
                             <input type="submit" class="width-100per margin-top-5px" value="اعمال ورودی‌ها" />
 
@@ -171,7 +166,7 @@
                 @if (Model.Poems == null)
                 {
                     <div class="sitem">
-                        <p>لطفاً وزن یا قافیهٔ ابیات مد نظر را وارد کنید.</p>
+                        <p>لطفاً زبان ابیات مد نظر را وارد کنید.</p>
                     </div>
                 }
                 else

@@ -10327,6 +10327,21 @@
             text
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Code">
+            <summary>
+            code
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Description">
+            <summary>
+            description
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel">
             <summary>
             Ganjoor Poem related music track model
