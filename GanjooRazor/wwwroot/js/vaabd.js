@@ -35,7 +35,7 @@ document.addEventListener('selectionchange', function() {
 
 	
 	$meaning.attr({
-		href: 'https://dehkhoda.ut.ac.ir/fa/dictionary/' + encodeURI(text), 
+		href: 'https://vajje.com/fa/search?query=' + encodeURI(text), 
 		title: 'جستجو در لغتنامه',
 		target: '_blank'
 	})
