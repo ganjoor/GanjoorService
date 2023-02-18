@@ -3397,6 +3397,12 @@ namespace RMuseum.Services.Implementation
                 foreach (var poem in poemList)
                 {
                     poem.Language = language;
+                    var poemSections = await _context.GanjoorPoemSections.Where(s => s.PoemId == poem.Id && s.SectionType == PoemSectionType.WholePoem).ToListAsync();
+                    foreach (var section in poemSections)
+                    {
+                        section.Language = language;
+                    }
+                    _context.UpdateRange(poemSections);
                 }
                 _context.UpdateRange(poemList);
                 await _context.SaveChangesAsync();
