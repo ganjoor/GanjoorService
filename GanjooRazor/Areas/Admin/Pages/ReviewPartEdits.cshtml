@@ -182,8 +182,8 @@ else
             }
 
             var rhythmReviewResult = 'DontCare';
-            if ($('#rhyme_review_result_Approved').length > 0) {
-                rhythmReviewResult = $('input[name=rhyme_review_result]:checked').val()
+            if ($('#rhythm_review_result_Approved').length > 0) {
+                rhythmReviewResult = $('input[name=rhythm_review_result]:checked').val()
             }
 
             var rhymeReviewResult = 'DontCare';
@@ -346,25 +346,25 @@ else
 
                     @if (Model.Correction.RhythmResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                     {
-                        <input type="radio" id="rhyme_review_result_Approved" name="rhyme_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                        <label for="rhyme_review_result_Approved">تأیید می‌شود</label>
+                        <input type="radio" id="rhythm" name="rhythm_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                        <label for="rhythm_review_result_Approved">تأیید می‌شود</label>
 
                         <br>
-                        <input type="radio" id="rhyme_review_result_NotChanged" name="rhyme_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
+                        <input type="radio" id="rhythm_review_result_NotChanged" name="rhythm_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
                     }
                     else
                     {
-                        <input type="radio" id="rhyme_review_result_Approved" name="rhyme_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                        <label for="rhyme_review_result_Approved">تأیید می‌شود</label>
+                        <input type="radio" id="rhythm_review_result_Approved" name="rhythm_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                        <label for="rhythm_review_result_Approved">تأیید می‌شود</label>
 
                         <br>
-                        <input type="radio" id="rhyme_review_result_NotChanged" name="rhyme_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
+                        <input type="radio" id="rhythm_review_result_NotChanged" name="rhythm_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                     }
-                    <label for="rhyme_review_result_NotChanged">تغییری نکرده</label><br>
-                    <input type="radio" id="rhyme_review_result_RejectedBecauseWrong" name="rhyme_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                    <label for="rhyme_review_result_RejectedBecauseWrong">درست نیست</label><br>
-                    <input type="radio" id="rhyme_review_result_RejectedBecauseVariant" name="rhyme_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
-                    <label for="rhyme_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                    <label for="rhythm_review_result_NotChanged">تغییری نکرده</label><br>
+                    <input type="radio" id="rhythm_review_result_RejectedBecauseWrong" name="rhythm_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
+                    <label for="rhythm_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <input type="radio" id="rhythm_review_result_RejectedBecauseVariant" name="rhythm_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
+                    <label for="rhythm_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
                     <input type="text" id="title_review_note" name="title_review_note" value="" size="50" />
                 </td>
             </tr>
