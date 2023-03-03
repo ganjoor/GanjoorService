@@ -48,7 +48,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 
-                HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/section/{Request.Query["poemId"]}/{Request.Query["sectionIndex"]}");
+                HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/section/{Request.Query["poemId"]}/{Request.Query["sectionIndex"]}/{true}");
                 if (!response.IsSuccessStatusCode)
                 {
                     LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
