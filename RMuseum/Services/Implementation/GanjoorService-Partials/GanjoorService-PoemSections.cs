@@ -727,8 +727,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="poemId"></param>
         /// <param name="sectionIndex"></param>
+        /// <param name="convertVerses"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> DeletePoemSectionByPoemIdAndIndexAsync(int poemId, int sectionIndex)
+        public async Task<RServiceResult<bool>> DeletePoemSectionByPoemIdAndIndexAsync(int poemId, int sectionIndex, bool convertVerses)
         {
             try
             {
@@ -751,7 +752,14 @@ namespace RMuseum.Services.Implementation
                     {
                         if (verse.VersePosition != VersePosition.Paragraph && verse.VersePosition != VersePosition.Comment)
                         {
-                            return new RServiceResult<bool>(false, "قطعه شامل مصرع‌های غیرپاراگرافی است.");
+                            if (convertVerses)
+                            {
+                                verse.VersePosition = VersePosition.Paragraph;
+                            }
+                            else
+                            {
+                                return new RServiceResult<bool>(false, "قطعه شامل مصرع‌های غیرپاراگرافی است.");
+                            }
                         }
                     }
                     if (verse.SectionIndex1 == sectionIndex)

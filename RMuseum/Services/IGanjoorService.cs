@@ -1011,8 +1011,9 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="poemId"></param>
         /// <param name="sectionIndex"></param>
+        /// <param name="convertVerses"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> DeletePoemSectionByPoemIdAndIndexAsync(int poemId, int sectionIndex);
+        Task<RServiceResult<bool>> DeletePoemSectionByPoemIdAndIndexAsync(int poemId, int sectionIndex, bool convertVerses);
 
         /// <summary>
         /// last unreviewed user correction for a section

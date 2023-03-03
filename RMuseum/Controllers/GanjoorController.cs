@@ -1100,16 +1100,17 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="poemId"></param>
         /// <param name="sectionIndex"></param>
+        /// <param name="convertVerses"></param>
         /// <returns></returns>
         [HttpDelete]
-        [Route("section/{poemId}/{sectionIndex}")]
+        [Route("section/{poemId}/{sectionIndex}/{convertVerses}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> DeletePoemSectionByPoemIdAndIndexAsync(int poemId, int sectionIndex)
+        public async Task<IActionResult> DeletePoemSectionByPoemIdAndIndexAsync(int poemId, int sectionIndex, bool convertVerses)
         {
-            var res = await _ganjoorService.DeletePoemSectionByPoemIdAndIndexAsync(poemId, sectionIndex);
+            var res = await _ganjoorService.DeletePoemSectionByPoemIdAndIndexAsync(poemId, sectionIndex, convertVerses);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             if(res.Result == false)

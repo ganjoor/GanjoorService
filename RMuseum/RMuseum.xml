@@ -1219,12 +1219,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemSectionByPoemIdAndIndexAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemSectionByPoemIdAndIndexAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             delete a poem section (section should not be linked to a poem verse of types other than paragraphs or comments)
             </summary>
             <param name="poemId"></param>
             <param name="sectionIndex"></param>
+            <param name="convertVerses"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemAsync(System.Int32)">
@@ -13135,12 +13136,13 @@
             <param name="sectionId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.DeletePoemSectionByPoemIdAndIndexAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePoemSectionByPoemIdAndIndexAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             delete a poem section
             </summary>
             <param name="poemId"></param>
             <param name="sectionIndex"></param>
+            <param name="convertVerses"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetLastUnreviewedUserCorrectionForSection(System.Guid,System.Int32)">
@@ -15064,12 +15066,13 @@
             <param name="sectionId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemSectionByPoemIdAndIndexAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemSectionByPoemIdAndIndexAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             delete a poem section
             </summary>
             <param name="poemId"></param>
             <param name="sectionIndex"></param>
+            <param name="convertVerses"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartOnTimeBandCoupletsFix">
