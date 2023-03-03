@@ -205,7 +205,7 @@ namespace RMuseum.Services.Implementation
                                 rhyme = PrepareTextForFindingRhyme(verseTextList[1]);
                                 return new GanjooRhymeAnalysisResult()
                                 {
-                                    Rhyme = rhyme.Length > 50 ? "" : rhyme,
+                                    Rhyme = rhyme, //rhyme.Length > 50 condition check removed to search using prosody meters
                                     FailVerse = "",
                                 };
                             }
@@ -226,14 +226,15 @@ namespace RMuseum.Services.Implementation
                         }
                     }
 
-                    if(rhyme.Length > 50)
+                    ////rhyme.Length > 50 condition check removed to search using prosody meters
+                    /*if (rhyme.Length > 50)
                     {
                         return new GanjooRhymeAnalysisResult()
                         {
                             Rhyme = "",
                             FailVerse = "",
                         };
-                    }
+                    }*/
 
                     return new GanjooRhymeAnalysisResult()
                     {
