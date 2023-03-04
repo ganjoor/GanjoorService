@@ -9,6 +9,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RSecurityBackend.Models.Generic.Db;
+using Azure;
+using System.Data.Common;
 
 namespace RMuseum.Services.Implementation
 {
@@ -746,6 +748,7 @@ namespace RMuseum.Services.Implementation
                         &&
                         (v.SectionIndex1 == sectionIndex || v.SectionIndex2 == sectionIndex || v.SectionIndex3 == sectionIndex || v.SectionIndex4 == sectionIndex)
                         ).ToListAsync();
+                bool regenPageHtml = false;
                 foreach (var verse in connextedVerses)
                 {
                     if (section.SectionType == PoemSectionType.WholePoem)
@@ -755,6 +758,7 @@ namespace RMuseum.Services.Implementation
                             if (convertVerses)
                             {
                                 verse.VersePosition = VersePosition.Paragraph;
+                                regenPageHtml = true;
                             }
                             else
                             {
@@ -785,6 +789,19 @@ namespace RMuseum.Services.Implementation
                 _context.Remove(section);
 
                 await _context.SaveChangesAsync();
+
+                if(regenPageHtml)
+                {
+                    var poemVerses = await _context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
+                    var dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleAsync();
+                    var dbPage = await _context.GanjoorPages.Where(p => p.Id == poemId).SingleAsync();
+                    dbPoem.HtmlText = PrepareHtmlText(poemVerses);
+                    dbPoem.PlainText = PreparePlainText(poemVerses);
+                    dbPage.HtmlText = dbPoem.HtmlText;
+                    _context.Update(dbPoem);
+                    _context.Update(dbPage);
+                    await _context.SaveChangesAsync();
+                }
 
 
                 return new RServiceResult<bool>(true);
