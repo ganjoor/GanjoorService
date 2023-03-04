@@ -124,13 +124,22 @@ namespace GanjooRazor.Areas.Admin.Pages
                         if (Correction.VerseOrderText != null)
                             foreach (var verse in Correction.VerseOrderText)
                             {
+                                
                                 var v = PageInformation.Poem.Verses.Where(v => v.VOrder == verse.VORder).SingleOrDefault();
                                 if (v != null)
                                 {
-                                    verse.OriginalText = v.Text;
-                                    verse.CoupletIndex = v.CoupletIndex;
-                                    if (verse.OriginalText == verse.Text)
-                                        verse.Result = CorrectionReviewResult.NotChanged;
+                                    if (!verse.NewVerse)
+                                    {
+                                        verse.OriginalText = v.Text;
+                                        verse.CoupletIndex = v.CoupletIndex;
+                                        if (verse.OriginalText == verse.Text)
+                                            verse.Result = CorrectionReviewResult.NotChanged;
+                                    }
+                                    else
+                                    {
+                                        verse.OriginalText = "";
+                                    }
+                                    
                                 }
                             }
 

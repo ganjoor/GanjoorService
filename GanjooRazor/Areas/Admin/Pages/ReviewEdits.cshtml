@@ -495,6 +495,51 @@ else
                         </td>
                     </tr>
                 }
+                else if(verse.NewVerse)
+                {
+                    <tr>
+                        <td colspan="2">
+                            مصرع جدید
+                        </td>
+                    </tr>
+                   
+                    <tr>  
+                        <td colspan="2">
+                            <p class="green-color" id="verse-edited-@verse.VORder">@verse.Text</p>
+                        </td>
+                    </tr>
+                   
+                    <tr>
+                        <td colspan="2">
+                            @if (verse.NewVerseResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                            {
+                                <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                                <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+
+                                <br>
+                                <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
+                            }
+                            else
+                            {
+                                <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                                <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+
+                                <br>
+                                <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
+                            }
+                            <label for="verse@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
+                            <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
+                            <label for="verse@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                            <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseVariant" name="verse@(verse.VORder)_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
+                            <label for="verse@(verse.VORder)_review_result_RejectedBecauseVariant">مربوط به نسخهٔ دیگری است</label><br>
+                            <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange" name="verse@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
+                            <label for="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
+                            <input type="radio" id="verse@(verse.VORder)_review_result_Rejected" name="verse@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
+                            <label for="verse@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                            <input type="text" id="verse@(verse.VORder)_review_note" name="verse@(verse.VORder)_review_note" value="" size="50" />
+                        </td>
+                    </tr>
+                }
                 else
                 {
 
