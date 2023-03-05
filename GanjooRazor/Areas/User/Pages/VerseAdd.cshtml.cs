@@ -11,7 +11,6 @@ using GanjooRazor.Models;
 using RMuseum.Models.Ganjoor;
 using System.Collections.Generic;
 using System;
-using Org.BouncyCastle.Asn1.X509;
 using System.Text;
 using System.Linq;
 
@@ -133,12 +132,7 @@ namespace GanjooRazor.Areas.User.Pages
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
                     VersePosition versePosition = VersePosition.Right;
                     if(PageInformation.Poem.Verses.Any(v => v.VOrder == NewVerses.VOrder))
-                    {
-                        if(PageInformation.Poem.Verses.Single(v => v.VOrder == NewVerses.VOrder).VersePosition== VersePosition.Right)
-                        {
-                            versePosition = VersePosition.Left;
-                        }
-                        else
+                    {  
                         if (
                             PageInformation.Poem.Verses.Single(v => v.VOrder == NewVerses.VOrder).VersePosition == VersePosition.Paragraph
                             ||
