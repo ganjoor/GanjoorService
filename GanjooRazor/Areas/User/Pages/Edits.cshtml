@@ -299,7 +299,7 @@ else
                                 </td>
                             </tr>
                         }
-                        @if (verse.VersePosition != null && !verse.NewVerse)
+                        @if (verse.VersePosition != null && !verse.NewVerse && verse.VersePositionResult != CorrectionReviewResult.NotSuggestedByUser)
                         {
                             <tr>
                                 <td>
