@@ -170,63 +170,68 @@ namespace RMuseum.Services.Implementation
                 bool verseAdded = false;
                 if(moderation.VerseOrderText.Any(v => v.NewVerse == true))
                 {
-                    var addedVerses = moderation.VerseOrderText.Where(v => v.NewVerse == true).OrderByDescending(v => v.VORder).ToList();
-                    int verseIndex = 0;
-                    do
+                    var addedVerses = moderation.VerseOrderText.Where(v => v.NewVerse == true).OrderBy(v => v.VORder).ToList();
+                    int nextVORder = addedVerses.First().VORder;
+                    bool anyVerseAdded = false;
+                    foreach (var addedVerse in addedVerses)
                     {
-                        var moderatedVerse = addedVerses[verseIndex];
-                        if (moderatedVerse.NewVerseResult == CorrectionReviewResult.NotReviewed)
-                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"نتیجهٔ پیشنهاد اضافه شدن مصرع {moderatedVerse.VORder} بررسی نشده است.");
-                        var dbVerse = dbCorrection.VerseOrderText.Where(c => c.VORder == moderatedVerse.VORder).Single();
-                        dbVerse.NewVerseResult = moderatedVerse.NewVerseResult;
-                        dbVerse.ReviewNote = moderatedVerse.ReviewNote;
-                        if (dbVerse.NewVerseResult == CorrectionReviewResult.Approved)
+                        if (addedVerse.NewVerseResult == CorrectionReviewResult.NotReviewed)
                         {
-                            dbCorrection.AffectedThePoem = true;
-                            verseAdded = true;
-                            updatePoem = true;
-
-                            if(poemVerses.Any(v => v.VOrder >= moderatedVerse.VORder))
-                            {
-                                var previousVerse = poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).SingleOrDefault();
-                                int insertionIndex = previousVerse == null ? 0 : poemVerses.IndexOf(previousVerse);
-                                
-                                foreach (var nextVerse in poemVerses.Where(v => v.VOrder >= moderatedVerse.VORder).ToList())
-                                {
-                                    nextVerse.VOrder = nextVerse.VOrder + 1;
-                                }
-                                poemVerses.Insert(insertionIndex, new GanjoorVerse()
-                                {
-                                    PoemId = dbCorrection.PoemId,
-                                    VOrder = moderatedVerse.VORder,
-                                    VersePosition = (VersePosition)moderatedVerse.VersePosition,
-                                    Text = moderatedVerse.Text.Replace("  ", " ").ApplyCorrectYeKe().Trim(),
-                                    SectionIndex1 = previousVerse == null ? 0 : previousVerse.SectionIndex1,
-                                    SectionIndex2 = previousVerse == null ? null : previousVerse.SectionIndex2,
-                                    SectionIndex3 = previousVerse == null ? null : previousVerse.SectionIndex3,
-                                    SectionIndex4 = previousVerse == null ? null : previousVerse.SectionIndex4,
-                                    
-                                });
-                            }
-                            else
-                            {
-                                var lastVerse = poemVerses.LastOrDefault();
-                                poemVerses.Add(new GanjoorVerse()
-                                {
-                                    PoemId = dbCorrection.PoemId,
-                                    VOrder = moderatedVerse.VORder,
-                                    VersePosition = (VersePosition)moderatedVerse.VersePosition,
-                                    Text = moderatedVerse.Text.Replace("  ", " ").ApplyCorrectYeKe().Trim(),
-                                    SectionIndex1 = lastVerse == null ? 0 : null,
-                                    SectionIndex2 = lastVerse == null ? null : lastVerse.SectionIndex2,
-                                    SectionIndex3 = lastVerse == null ? null : lastVerse.SectionIndex3,
-                                    SectionIndex4 = lastVerse == null ? null : lastVerse.SectionIndex4,
-
-                                });
-                            }
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"نتیجهٔ پیشنهاد اضافه شدن مصرع {addedVerse.VORder} بررسی نشده است.");
                         }
-                        verseIndex++;
-                    } while (verseIndex < addedVerses.Count);
+                        else
+                        if (addedVerse.NewVerseResult == CorrectionReviewResult.Approved)
+                        {
+                            anyVerseAdded = true;
+                            if (addedVerse.VORder != nextVORder)
+                            {
+                                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "مصرع‌های اضافه شده تأیید شده پشت سر هم نیستند.");
+                            }
+                            nextVORder++;
+                        }
+                        else
+                        {
+                            var dbVerse = dbCorrection.VerseOrderText.Where(c => c.VORder == addedVerse.VORder).Single();
+                            dbVerse.NewVerseResult = addedVerse.NewVerseResult;
+                            dbVerse.ReviewNote = addedVerse.ReviewNote;
+                        }
+                    }
+
+                    if(anyVerseAdded)
+                    {
+                        dbCorrection.AffectedThePoem = true;
+                        verseAdded = true;
+                        updatePoem = true;
+
+                        var lastInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).Last();
+                        var firstInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).First();
+                        int x = 1;
+                        foreach (var nextVerse in poemVerses.Where(v => v.VOrder >= firstInsertedVerse.VORder).OrderBy(v => v.VOrder).ToList())
+                        {
+                            nextVerse.VOrder = lastInsertedVerse.VORder + x;
+                            x++;
+                        }
+                        var previousVerse = poemVerses.Where(v => v.VOrder == firstInsertedVerse.VORder).SingleOrDefault();
+                        int insertionIndex = previousVerse == null ? 0 : poemVerses.IndexOf(previousVerse);
+                        x = 0;
+                        foreach (var newVerse in addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).ToList())
+                        {
+                            poemVerses.Insert(insertionIndex + x, new GanjoorVerse()
+                            {
+                                PoemId = dbCorrection.PoemId,
+                                VOrder = newVerse.VORder,
+                                VersePosition = (VersePosition)newVerse.VersePosition,
+                                Text = newVerse.Text.Replace("  ", " ").ApplyCorrectYeKe().Trim(),
+                                SectionIndex1 = previousVerse == null ? 0 : previousVerse.SectionIndex1,
+                                SectionIndex2 = previousVerse == null ? null : previousVerse.SectionIndex2,
+                                SectionIndex3 = previousVerse == null ? null : previousVerse.SectionIndex3,
+                                SectionIndex4 = previousVerse == null ? null : previousVerse.SectionIndex4,
+
+                            });
+                            x++;
+                        }
+
+                    }
                     _context.UpdateRange(poemVerses);
                     await _context.SaveChangesAsync();//temporary ids should be saved
                 }
