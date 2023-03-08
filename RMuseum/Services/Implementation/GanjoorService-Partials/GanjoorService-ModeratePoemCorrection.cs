@@ -211,10 +211,10 @@ namespace RMuseum.Services.Implementation
                         }
                         var previousVerse = poemVerses.Where(v => v.VOrder == firstInsertedVerse.VORder).SingleOrDefault();
                         int insertionIndex = previousVerse == null ? 0 : poemVerses.IndexOf(previousVerse);
-                        int x = 0;
-                        foreach (var newVerse in addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).ToList())
+                       
+                        foreach (var newVerse in addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderByDescending(v => v.VORder).ToList())
                         {
-                            poemVerses.Insert(insertionIndex + x, new GanjoorVerse()
+                            poemVerses.Insert(insertionIndex, new GanjoorVerse()
                             {
                                 PoemId = dbCorrection.PoemId,
                                 VOrder = newVerse.VORder,
@@ -226,7 +226,6 @@ namespace RMuseum.Services.Implementation
                                 SectionIndex4 = previousVerse == null ? null : previousVerse.SectionIndex4,
 
                             });
-                            x++;
                         }
 
                     }
