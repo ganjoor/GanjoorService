@@ -205,15 +205,13 @@ namespace RMuseum.Services.Implementation
 
                         var lastInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).Last();
                         var firstInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).First();
-                        int x = 1;
-                        foreach (var nextVerse in poemVerses.Where(v => v.VOrder >= firstInsertedVerse.VORder).OrderBy(v => v.VOrder).ToList())
+                        foreach (var nextVerse in poemVerses.Where(v => v.VOrder >= lastInsertedVerse.VORder).OrderBy(v => v.VOrder).ToList())
                         {
-                            nextVerse.VOrder = lastInsertedVerse.VORder + x;
-                            x++;
+                            nextVerse.VOrder = lastInsertedVerse.VORder + 1;
                         }
                         var previousVerse = poemVerses.Where(v => v.VOrder == firstInsertedVerse.VORder).SingleOrDefault();
                         int insertionIndex = previousVerse == null ? 0 : poemVerses.IndexOf(previousVerse);
-                        x = 0;
+                        int x = 0;
                         foreach (var newVerse in addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).ToList())
                         {
                             poemVerses.Insert(insertionIndex + x, new GanjoorVerse()
@@ -238,7 +236,7 @@ namespace RMuseum.Services.Implementation
 
                 if (versesDeleted || verseAdded)
                 {
-                    var undeletedPoemVerss = poemVerses.Where(v => !moderation.VerseOrderText.Any(mv => mv.VORder == v.VOrder && mv.MarkForDelete == true)).ToList();
+                    var undeletedPoemVerss = poemVerses.OrderBy(v => v.VOrder).Where(v => !moderation.VerseOrderText.Any(mv => mv.VORder == v.VOrder && mv.MarkForDelete == true)).ToList();
                     for (int vOrder = 1; vOrder <= undeletedPoemVerss.Count; vOrder++)
                     {
                         if (undeletedPoemVerss[vOrder - 1].VOrder != vOrder)
