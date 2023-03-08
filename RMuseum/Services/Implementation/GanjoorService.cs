@@ -3318,8 +3318,7 @@ namespace RMuseum.Services.Implementation
             var section = await _context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == id && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).OrderBy(s => s.Index).FirstOrDefaultAsync();
             if (section == null)
                 return new RServiceResult<GanjooRhymeAnalysisResult>(null, "no sections");
-            var verses = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == id).OrderBy(v => v.VOrder).ToListAsync();
-            return new RServiceResult<GanjooRhymeAnalysisResult>(LanguageUtils.FindRhyme(FilterSectionVerses(section, verses)));
+            return await FindSectionRhyme(section.Id);
         }
 
         /// <summary>
