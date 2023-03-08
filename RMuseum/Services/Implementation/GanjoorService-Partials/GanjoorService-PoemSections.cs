@@ -735,7 +735,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var section = await _context.GanjoorPoemSections.Where(s => s.PoemId == poemId && s.Index == sectionIndex).SingleOrDefaultAsync();
+                var section = await _context.GanjoorPoemSections.Where(s => s.PoemId == poemId && s.Index == sectionIndex ).FirstOrDefaultAsync();
                 if (section == null)
                 {
                     return new RServiceResult<bool>(false);//Not found
