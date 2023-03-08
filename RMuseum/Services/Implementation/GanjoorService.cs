@@ -3328,11 +3328,23 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjooRhymeAnalysisResult>> FindSectionRhyme(int id)
         {
-            var section = await _context.GanjoorPoemSections.AsNoTracking().Where(s => s.Id == id).FirstOrDefaultAsync();
+            var section = await _context.GanjoorPoemSections.Include(s => s.GanjoorMetre).AsNoTracking().Where(s => s.Id == id).FirstOrDefaultAsync();
             if (section == null)
                 return new RServiceResult<GanjooRhymeAnalysisResult>(null, "no sections");
             var verses = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).ToListAsync();
-            return new RServiceResult<GanjooRhymeAnalysisResult>(LanguageUtils.FindRhyme(FilterSectionVerses(section, verses)));
+            var rhymeAnalysisResult = LanguageUtils.FindRhyme(FilterSectionVerses(section, verses));
+            if(rhymeAnalysisResult.Rhyme.Length > 30 && verses.Count == 2 && section.GanjoorMetre != null)//single verse
+            {
+                var rhymingSection = await _context.GanjoorPoemSections.AsNoTracking()
+                                        .Where(s => s.GanjoorMetreId == section.GanjoorMetreId && section.RhymeLetters != null && rhymeAnalysisResult.Rhyme.Contains(s.RhymeLetters))
+                                        .OrderByDescending(s => s.RhymeLetters.Length)
+                                        .FirstOrDefaultAsync();
+                if(rhymingSection != null)
+                {
+                    rhymeAnalysisResult.Rhyme = rhymingSection.RhymeLetters;
+                }
+            }
+            return new RServiceResult<GanjooRhymeAnalysisResult>(rhymeAnalysisResult);
         }
 
         private async Task _FindCategoryPoemsRhymesInternal(int catId, bool retag)
