@@ -189,12 +189,9 @@ namespace RMuseum.Services.Implementation
                             }
                             nextVORder++;
                         }
-                        else
-                        {
-                            var dbVerse = dbCorrection.VerseOrderText.Where(c => c.VORder == addedVerse.VORder).Single();
-                            dbVerse.NewVerseResult = addedVerse.NewVerseResult;
-                            dbVerse.ReviewNote = addedVerse.ReviewNote;
-                        }
+                        var dbVerse = dbCorrection.VerseOrderText.Where(c => c.VORder == addedVerse.VORder).Single();
+                        dbVerse.NewVerseResult = addedVerse.NewVerseResult;
+                        dbVerse.ReviewNote = addedVerse.ReviewNote;
                     }
 
                     if(anyVerseAdded)
@@ -203,29 +200,30 @@ namespace RMuseum.Services.Implementation
                         verseAdded = true;
                         updatePoem = true;
 
-                        var lastInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).Last();
-                        var firstInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).First();
+                        var lastInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderBy(v => v.VORder).Last();
+                        var firstInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderBy(v => v.VORder).First();
                         foreach (var nextVerse in poemVerses.Where(v => v.VOrder >= lastInsertedVerse.VORder).OrderBy(v => v.VOrder).ToList())
                         {
-                            nextVerse.VOrder = lastInsertedVerse.VORder + 1;
+                            nextVerse.VOrder = nextVerse.VOrder + 1;
                         }
                         var previousVerse = poemVerses.Where(v => v.VOrder == firstInsertedVerse.VORder).SingleOrDefault();
                         int insertionIndex = previousVerse == null ? 0 : poemVerses.IndexOf(previousVerse);
                        
                         foreach (var newVerse in addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderByDescending(v => v.VORder).ToList())
                         {
-                            poemVerses.Insert(insertionIndex, new GanjoorVerse()
-                            {
-                                PoemId = dbCorrection.PoemId,
-                                VOrder = newVerse.VORder,
-                                VersePosition = (VersePosition)newVerse.VersePosition,
-                                Text = newVerse.Text.Replace("  ", " ").ApplyCorrectYeKe().Trim(),
-                                SectionIndex1 = previousVerse == null ? 0 : previousVerse.SectionIndex1,
-                                SectionIndex2 = previousVerse == null ? null : previousVerse.SectionIndex2,
-                                SectionIndex3 = previousVerse == null ? null : previousVerse.SectionIndex3,
-                                SectionIndex4 = previousVerse == null ? null : previousVerse.SectionIndex4,
-
-                            });
+                            poemVerses.Insert(
+                                insertionIndex,
+                                new GanjoorVerse()
+                                {
+                                    PoemId = dbCorrection.PoemId,
+                                    VOrder = newVerse.VORder,
+                                    VersePosition = (VersePosition)newVerse.VersePosition,
+                                    Text = newVerse.Text.Replace("  ", " ").ApplyCorrectYeKe().Trim(),
+                                    SectionIndex1 = previousVerse == null ? 0 : previousVerse.SectionIndex1,
+                                    SectionIndex2 = previousVerse == null ? null : previousVerse.SectionIndex2,
+                                    SectionIndex3 = previousVerse == null ? null : previousVerse.SectionIndex3,
+                                    SectionIndex4 = previousVerse == null ? null : previousVerse.SectionIndex4,
+                                });
                         }
 
                     }
