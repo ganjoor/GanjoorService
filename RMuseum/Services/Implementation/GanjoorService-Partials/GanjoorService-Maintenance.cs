@@ -728,5 +728,64 @@ namespace RMuseum.Services.Implementation
 
             return new RServiceResult<bool>(true);
         }
+
+
+        /// <summary>
+        /// start finding rhymes for single couplets
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> StartFindingRhymesForSingleCouplets()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+            (
+            async token =>
+            {
+                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                {
+                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                    var job = (await jobProgressServiceEF.NewJob("FindingRhymesForSingleCouplets", "Query data")).Result;
+
+                    try
+                    {
+                        var sections = await context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.GanjoorMetre != null && (s.RhymeLetters.Length >= 30 || s.RhymeLetters.Length < 2)).ToListAsync();
+
+
+                        int percent = 0;
+                        for (int i = 0; i < sections.Count; i++)
+                        {
+                            if (i * 100 / sections.Count > percent)
+                            {
+                                percent++;
+                                await jobProgressServiceEF.UpdateJob(job.Id, percent);
+                            }
+
+                            var res = await _FindSectionRhyme(context, sections[i].Id);
+                            if(string.IsNullOrEmpty(res.ExceptionString))
+                            {
+                                if(!string.IsNullOrEmpty(res.Result.Rhyme) && res.Result.Rhyme != sections[i].RhymeLetters)
+                                {
+                                    var oldRhyme = sections[i].RhymeLetters;
+                                    sections[i].RhymeLetters = res.Result.Rhyme;
+                                    context.Update(sections[i]);
+                                    await context.SaveChangesAsync();
+                                    await _UpdateRelatedSections(context, (int)sections[i].GanjoorMetreId, oldRhyme, jobProgressServiceEF, job, percent);
+                                    await _UpdateRelatedSections(context, (int)sections[i].GanjoorMetreId, res.Result.Rhyme, jobProgressServiceEF, job, percent);
+                                }
+                            }
+                        }
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                    }
+                    catch (Exception exp)
+                    {
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                    }
+
+                }
+            }
+            );
+
+            return new RServiceResult<bool>(true);
+        }
     }
 }

@@ -1594,6 +1594,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartFindingRhymesForSingleCouplets">
+            <summary>
+            start finding rhymes
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.RegerneratePoemsPlainText(System.Int32)">
             <summary>
             separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
@@ -12724,6 +12730,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartFindingRhymesForSingleCouplets">
+            <summary>
+            start finding rhymes for single couplets
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.RegerneratePoemsPlainText(System.Int32)">
             <summary>
             separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
@@ -14845,6 +14857,12 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.RegeneratePoemsFullTitles">
             <summary>
             regenerate poem full titles to fix an old bug
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingRhymesForSingleCouplets">
+            <summary>
+            start finding rhymes for single couplets
             </summary>
             <returns></returns>
         </member>

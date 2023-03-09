@@ -588,6 +588,12 @@ namespace RMuseum.Services
         RServiceResult<bool> RegeneratePoemsFullTitles();
 
         /// <summary>
+        /// start finding rhymes for single couplets
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartFindingRhymesForSingleCouplets();
+
+        /// <summary>
         /// separate verses in poem.PlainText with  Environment.NewLine instead of SPACE
         /// </summary>
         /// <param name="catId"></param>
