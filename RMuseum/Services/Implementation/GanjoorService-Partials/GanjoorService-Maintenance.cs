@@ -764,12 +764,13 @@ namespace RMuseum.Services.Implementation
                             {
                                 if(!string.IsNullOrEmpty(res.Result.Rhyme) && res.Result.Rhyme != sections[i].RhymeLetters)
                                 {
-                                    var oldRhyme = sections[i].RhymeLetters;
-                                    sections[i].RhymeLetters = res.Result.Rhyme;
-                                    context.Update(sections[i]);
+                                    var sectionTracked = await context.GanjoorPoemSections.Where(s => s.Id == sections[i].Id).SingleAsync();
+                                    var oldRhyme = sectionTracked.RhymeLetters;
+                                    sectionTracked.RhymeLetters = res.Result.Rhyme;
+                                    context.Update(sectionTracked);
                                     await context.SaveChangesAsync();
-                                    await _UpdateRelatedSections(context, (int)sections[i].GanjoorMetreId, oldRhyme, jobProgressServiceEF, job, percent);
-                                    await _UpdateRelatedSections(context, (int)sections[i].GanjoorMetreId, res.Result.Rhyme, jobProgressServiceEF, job, percent);
+                                    await _UpdateRelatedSections(context, (int)sectionTracked.GanjoorMetreId, oldRhyme, jobProgressServiceEF, job, percent);
+                                    await _UpdateRelatedSections(context, (int)sectionTracked.GanjoorMetreId, res.Result.Rhyme, jobProgressServiceEF, job, percent);
                                 }
                             }
                         }
