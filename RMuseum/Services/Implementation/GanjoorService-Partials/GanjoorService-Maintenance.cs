@@ -747,7 +747,7 @@ namespace RMuseum.Services.Implementation
 
                     try
                     {
-                        var sections = await context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.GanjoorMetre != null && (s.RhymeLetters.Length >= 30 || s.RhymeLetters.Length < 2)).ToListAsync();
+                        var sections = await context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.SectionType == PoemSectionType.WholePoem && s.GanjoorMetre != null && (s.RhymeLetters.Length >= 30 || s.RhymeLetters.Length < 2)).ToListAsync();
 
 
                         int percent = 0;
