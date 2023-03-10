@@ -16,6 +16,11 @@
         public int EarlynessAdvantage { get; set; }
 
         /// <summary>
+        /// initial score
+        /// </summary>
+        public int InitialScore { get; set; }
+
+        /// <summary>
         /// upvotes from users other than the owner
         /// </summary>
         public int UpVotes { get; set; }

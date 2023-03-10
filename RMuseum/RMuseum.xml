@@ -4692,6 +4692,11 @@
             Review Message
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.InitialScore">
+            <summary>
+            initial score for ordering recitations
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorAudio.RecitationApprovedMistake">
             <summary>
             Recitation approved mistake
@@ -5147,6 +5152,11 @@
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationOrderingViewModel.EarlynessAdvantage">
             <summary>
             earlyness advatage
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationOrderingViewModel.InitialScore">
+            <summary>
+            initial score
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationOrderingViewModel.UpVotes">

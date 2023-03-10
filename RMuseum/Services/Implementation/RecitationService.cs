@@ -2423,6 +2423,7 @@ namespace RMuseum.Services.Implementationa
                     {
                         RecitationId = recitation.Id,
                         EarlynessAdvantage = recitations.Count - 1 - i,
+                        InitialScore = recitations[i].InitialScore,
                         UpVotes = await context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == recitation.Id && r.UserId != recitation.OwnerId)
                         .CountAsync(),
                         Mistakes = await context.RecitationApprovedMistakes.AsNoTracking().Where(m => m.RecitationId == recitation.Id).SumAsync(m => m.NumberOfLinesAffected)
@@ -2430,6 +2431,7 @@ namespace RMuseum.Services.Implementationa
 
 
                     score.TotalScores = score.EarlynessAdvantage
+                         + score.InitialScore
                          + score.UpVotes
                          - (5 * score.Mistakes);
 

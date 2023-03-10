@@ -182,6 +182,9 @@ namespace RMuseum.Models.GanjoorAudio
         /// </summary>
         public string ReviewMsg { get; set; }
 
-
+        /// <summary>
+        /// initial score for ordering recitations
+        /// </summary>
+        public int InitialScore { get; set; }
     }
 }

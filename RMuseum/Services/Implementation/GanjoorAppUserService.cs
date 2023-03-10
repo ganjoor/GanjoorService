@@ -488,6 +488,7 @@ namespace RMuseum.Services.Implementation
                 {
                     RecitationId = recitation.Id,
                     EarlynessAdvantage = recitations.Count - 1 - i,
+                    InitialScore = recitations[i].InitialScore,
                     UpVotes = await context.RecitationUserUpVotes.AsNoTracking().Where(r => r.RecitationId == recitation.Id && r.UserId != recitation.OwnerId)
                     .CountAsync(),
                     Mistakes = await context.RecitationApprovedMistakes.AsNoTracking().Where(m => m.RecitationId == recitation.Id).SumAsync(m => m.NumberOfLinesAffected)
@@ -495,10 +496,12 @@ namespace RMuseum.Services.Implementation
 
 
                 score.TotalScores = score.EarlynessAdvantage
+                    +
+                    score.InitialScore
                      + score.UpVotes
                      - (5 * score.Mistakes);
 
-                //audio order is used as a temporary variable in the following line and soon is get replaced by computed value
+                //audio order is used as a temporary variable in the following line and soon is getting replaced by computed value
                 recitation.AudioOrder = score.TotalScores;
 
                 scores.Add(score);
