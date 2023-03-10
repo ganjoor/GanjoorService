@@ -2560,6 +2560,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.MakeFFRecitationsFirst">
+            <summary>
+            Makes recitations of فریدون فرح‌اندوز first recitations
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.RecitationController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -3170,6 +3176,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.PoemCorLang.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.RecitationInitialScore">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.RecitationInitialScore.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.RecitationInitialScore.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.RecitationInitialScore.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">

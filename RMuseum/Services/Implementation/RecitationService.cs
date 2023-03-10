@@ -2086,57 +2086,13 @@ namespace RMuseum.Services.Implementationa
         /// <returns></returns>
         public async Task<RServiceResult<int>> MakeArtistRecitationsFirst(string artistName)
         {
-            var recitations = await _context.Recitations.Where(r => r.AudioArtist == artistName && r.AudioOrder != 1).ToListAsync();
+            var recitations = await _context.Recitations.Where(r => r.AudioArtist == artistName).ToListAsync();
             foreach (Recitation recitation in recitations)
             {
-                var otherRecitaions = await _context.Recitations.Where(r => r.GanjoorPostId == recitation.GanjoorPostId && r.AudioArtist != artistName).ToListAsync();
-
-                foreach (Recitation other in otherRecitaions)
-                {
-                    other.AudioOrder += 1;
-                    other.AudioSyncStatus = AudioSyncStatus.MetadataChanged;
-                    _context.Recitations.Update(other);
-
-
-                    RecitationPublishingTracker tracker = new RecitationPublishingTracker()
-                    {
-                        PoemNarrationId = other.Id,
-                        StartDate = DateTime.Now,
-                        XmlFileCopied = false,
-                        Mp3FileCopied = false,
-                        FirstDbUpdated = false,
-                        SecondDbUpdated = false,
-                    };
-                    _context.RecitationPublishingTrackers.Add(tracker);
-
-                    await _context.SaveChangesAsync();
-
-                    await _UpdateRemoteRecitations(other, tracker, _context, false /* owner of this recitation did nothing to expect any notifications*/);
-
-                    await _ganjoorService.CacheCleanForPageById(other.GanjoorPostId);
-                }
-
-                recitation.AudioOrder = 1;
-                recitation.AudioSyncStatus = AudioSyncStatus.MetadataChanged;
-                _context.Recitations.Update(recitation);
-
-                RecitationPublishingTracker trackerMain = new RecitationPublishingTracker()
-                {
-                    PoemNarrationId = recitation.Id,
-                    StartDate = DateTime.Now,
-                    XmlFileCopied = false,
-                    Mp3FileCopied = false,
-                    FirstDbUpdated = false,
-                    SecondDbUpdated = false,
-                };
-                _context.RecitationPublishingTrackers.Add(trackerMain);
-
+                recitation.InitialScore = 100;
+                _context.Update(recitation);
                 await _context.SaveChangesAsync();
-
-                await _UpdateRemoteRecitations(recitation, trackerMain, _context, true);
-
-                await _ganjoorService.CacheCleanForPageById(recitation.GanjoorPostId);
-
+                await ComputePoemRecitationsOrdersAsync(recitation.GanjoorPostId);
             }
             return new RServiceResult<int>(recitations.Count);
         }

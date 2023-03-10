@@ -1045,6 +1045,23 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Makes recitations of فریدون فرح‌اندوز first recitations
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("ff")]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        public async Task<IActionResult> MakeFFRecitationsFirst()
+        {
+            var resExec = await _audioService.MakeArtistRecitationsFirst("فریدون فرح‌اندوز");
+            if (!string.IsNullOrEmpty(resExec.ExceptionString))
+                return BadRequest(resExec.ExceptionString);
+            return Ok(resExec.Result);
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode
