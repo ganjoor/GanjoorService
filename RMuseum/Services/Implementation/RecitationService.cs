@@ -2086,7 +2086,7 @@ namespace RMuseum.Services.Implementationa
         /// <returns></returns>
         public async Task<RServiceResult<int>> MakeArtistRecitationsFirst(string artistName)
         {
-            var recitations = await _context.Recitations.Where(r => r.AudioArtist == artistName).ToListAsync();
+            var recitations = await _context.Recitations.Where(r => r.AudioArtist == artistName && r.InitialScore == 0).ToListAsync();
             foreach (Recitation recitation in recitations)
             {
                 recitation.InitialScore = 100;
