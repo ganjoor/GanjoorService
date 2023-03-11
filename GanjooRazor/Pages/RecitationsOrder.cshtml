@@ -59,7 +59,7 @@
                                 @($"{score.Recitation.AudioTitle} به خوانش {score.Recitation.AudioArtist}")
                             </td>
                             <td>
-                                @score.EarlynessAdvantage.ToPersianNumbers()
+                                @((score.EarlynessAdvantage + score.InitialScore).ToPersianNumbers())
                             </td>
                             <td>
                                 @score.UpVotes.ToPersianNumbers()
