@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -265,8 +266,8 @@ namespace GanjooRazor.Pages
                 htmlText = $"<div>{Environment.NewLine}";
                 string queryFilterUserId = string.IsNullOrEmpty(filterUserId) ? "" : $"&amp;userid={filterUserId}";
                 if (!string.IsNullOrEmpty(Query))
-                {
-                    queryFilterUserId += $"&amp;w={Query}";
+                { 
+                    queryFilterUserId += $"&amp;w={WebUtility.UrlEncode(Query)}";
                 }
                 if (paginationMetadata.currentPage > 3)
                 {
