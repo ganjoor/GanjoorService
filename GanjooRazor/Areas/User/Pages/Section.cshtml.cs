@@ -53,22 +53,6 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public List<GanjoorVerseViewModel> Verses { get; set; }
 
-        public string LanguageNameFromCode(string code)
-        {
-            switch (code)
-            {
-                case "ar":
-                    return "عربی";
-                case "azb":
-                    return "ترکی";
-                case "ckb":
-                    return "کردی";
-                case "glk":
-                    return "گیلکی";
-                default:
-                    return "فارسی";
-            }
-        }
 
         private List<GanjoorVerseViewModel> _FilterSectionVerses(GanjoorPoemSection section, GanjoorVerseViewModel[] verses)
         {

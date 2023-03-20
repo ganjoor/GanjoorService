@@ -351,7 +351,7 @@ else
 
         <tr>
             <td>
-                @Model.LanguageNameFromCode(Model.PoemSection.Language)
+                @RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.LanguageNameFromCode(Model.PoemSection.Language)
                 <div id="language-old" class="hidden-recitation">@Model.PoemSection.Language</div>
             </td>
         </tr>
@@ -361,54 +361,18 @@ else
                 <label for="language">زبان:</label>
                 <br />
                 <select id="language">
-                    @if (Model.MyLastEdit != null && (string.IsNullOrEmpty(Model.MyLastEdit.Language) || Model.MyLastEdit.Language == "fa-IR"))
+                    @foreach (var lang in RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Languages)
                     {
-                        <option value="" selected>فارسی</option>
-                    }
-                    else
-                    {
-                        <option value="">فارسی</option>
-                    }
-
-                    @if (Model.MyLastEdit != null && Model.MyLastEdit.Language == "azb")
-                    {
-                        <option value="azb" selected>ترکی</option>
-                    }
-                    else
-                    {
-                        <option value="azb">ترکی</option>
-                    }
-
-                    @if (Model.MyLastEdit != null && Model.MyLastEdit.Language == "ar")
-                    {
-                        <option value="ar" selected>عربی</option>
-                    }
-                    else
-                    {
-                        <option value="ar">عربی</option>
-                    }
-
-                    @if (Model.MyLastEdit != null && Model.MyLastEdit.Language == "ckb")
-                    {
-                        <option value="ckb" selected>کردی</option>
-                    }
-                    else
-                    {
-                        <option value="ckb">کردی</option>
-                    }
-
-                    @if (Model.MyLastEdit != null && Model.MyLastEdit.Language == "glk")
-                    {
-                        <option value="glk" selected>گیلکی</option>
-                    }
-                    else
-                    {
-                        <option value="glk">گیلکی</option>
+                        @if (Model.MyLastEdit != null && (Model.MyLastEdit.Language == lang.Code || (string.IsNullOrEmpty(Model.MyLastEdit.Language) && lang.Code == "fa-IR")))
+                        {
+                            <option value="@lang.Code" selected>@lang.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@lang.Code">@lang.Name</option>
+                        }
                     }
                 </select>
-
-
-
             </td>
         </tr>
         <tr>

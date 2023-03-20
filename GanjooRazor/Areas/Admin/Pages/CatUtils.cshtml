@@ -354,11 +354,17 @@
             </td>
             <td>
                 <select id="cat-poem-language">
-                    <option value="">فارسی</option>
-                    <option value="azb">ترکی</option>
-                    <option value="ar">عربی</option>
-                    <option value="ckb">کردی</option>
-                    <option value="glk">گیلکی</option>
+                    @foreach (var lang in RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Languages)
+                    {
+                        @if(lang.Code == "fa-IR")
+                        {
+                            <option value="">@lang.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@lang.Code">@lang.Name</option>
+                        } 
+                    }
                 </select>
             </td>
         </tr>

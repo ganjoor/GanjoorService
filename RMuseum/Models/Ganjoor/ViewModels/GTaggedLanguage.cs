@@ -1,4 +1,6 @@
-﻿namespace RMuseum.Models.Ganjoor.ViewModels
+﻿using System.Linq;
+
+namespace RMuseum.Models.Ganjoor.ViewModels
 {
     public class GTaggedLanguage
     {
@@ -17,7 +19,15 @@
         /// </summary>
         public string Description { get; set; }
 
-
+        public static string LanguageNameFromCode(string code)
+        {
+            var lang = Languages.Where(l => l.Code == code).FirstOrDefault();
+            if (lang != null)
+            {
+                return lang.Name;
+            }
+            return "فارسی";
+        }
         public static GTaggedLanguage[] Languages
         {
             get
@@ -53,6 +63,12 @@
                         Code = "glk",
                         Name = "گیلکی",
                         Description = "گیلکی (قاسم انوار)"
+                    },
+                    new GTaggedLanguage()
+                    {
+                        Code = "mzn",
+                        Name = "مازندرانی",
+                        Description = "مازندرانی (امیر پازواری)"
                     }
                 };
             }
