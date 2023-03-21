@@ -379,6 +379,15 @@ else
                 </select>
             </td>
         </tr>
+        @if(Model.CanEdit)
+        {
+            <tr>
+                <td>
+                    <a href="/User/Languages" role="button" class="pagebutton">زبان‌ها</a>
+                </td>
+            </tr>
+        }
+        
         <tr>
             <td>
                 توضیح این ویرایش:
