@@ -354,7 +354,7 @@
             </td>
             <td>
                 <select id="cat-poem-language">
-                    @foreach (var lang in RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Languages)
+                    @foreach (var lang in Model.Languages)
                     {
                         @if(lang.Code == "fa-IR")
                         {

@@ -73,6 +73,19 @@ namespace GanjooRazor.Areas.Admin.Pages
         [BindProperty]
         public GanjoorNumbering NumberingModel { get; set; }
 
+        public GanjoorLanguage[] Languages { get; set; }
+
+        private async Task ReadLanguagesAsync()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
+            if (!response.IsSuccessStatusCode)
+            {
+                LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return;
+            }
+
+            Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
+        }
 
         [BindProperty]
         public IFormFile SQLiteDb { get; set; }
@@ -110,6 +123,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                 return false;
             }
             Numberings = JsonConvert.DeserializeObject<GanjoorNumbering[]>(await numberings.Content.ReadAsStringAsync());
+
+            await ReadLanguagesAsync();
             return true;
         }
 

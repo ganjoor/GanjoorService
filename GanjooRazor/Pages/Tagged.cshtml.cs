@@ -70,6 +70,20 @@ namespace GanjooRazor.Pages
         public string LastError { get; set; }
         public string Language { get; set; }
 
+        public GanjoorLanguage[] Languages { get; set; }
+
+        private async Task ReadLanguagesAsync()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
+            if (!response.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return;
+            }
+
+            Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
+        }
+
         private async Task<bool> preparePoets()
         {
             var cacheKey = $"/api/ganjoor/poets";
@@ -89,6 +103,8 @@ namespace GanjooRazor.Pages
             }
 
             Poets = poets;
+
+            await ReadLanguagesAsync();
             return true;
         }
 
@@ -194,7 +210,7 @@ namespace GanjooRazor.Pages
                     title += $"{poetInfo.Nickname} ";
                 }
             }
-            var langModel = GTaggedLanguage.Languages.Where(l => l.Code == Language).FirstOrDefault();
+            var langModel = Languages.Where(l => l.Code == Language).FirstOrDefault();
             if(langModel != null)
             {
                 title += $"با زبان غالب «{langModel.Name}»";

@@ -137,13 +137,13 @@
 
                             <label for="v" class="width-100per">زبان غالب:</label>
                             <datalist id="inputRhythms">
-                                @foreach (var language in RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Languages)
+                                @foreach (var language in Model.Languages)
                                     {
                                         <option value="@language.Code">@language.Name</option>
                                     }
                             </datalist>
                             <select id="l" name="l" class="width-100per">
-                                @foreach (var language in RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Languages)
+                                @foreach (var language in Model.Languages)
                                 {
                                     if (Model.Language == language.Code)
                                     {

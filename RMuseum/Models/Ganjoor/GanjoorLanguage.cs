@@ -1,4 +1,8 @@
-﻿namespace RMuseum.Models.Ganjoor
+﻿
+using System.Collections.Generic;
+using System.Linq;
+
+namespace RMuseum.Models.Ganjoor
 {
     /// <summary>
     /// Language or system of writing for translating poems
@@ -38,6 +42,22 @@
         public override string ToString()
         {
             return Name; 
+        }
+
+        /// <summary>
+        /// language from code
+        /// </summary>
+        /// <param name="languages"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public static string LanguageNameFromCode(GanjoorLanguage[] languages, string code)
+        {
+            var lang = languages.Where(l => l.Code == code).FirstOrDefault();
+            if (lang != null)
+            {
+                return lang.Name;
+            }
+            return "فارسی";
         }
     }
 }

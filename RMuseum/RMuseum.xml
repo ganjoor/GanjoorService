@@ -6590,6 +6590,14 @@
             description
             </summary>
         </member>
+        <member name="M:RMuseum.Models.Ganjoor.GanjoorLanguage.LanguageNameFromCode(RMuseum.Models.Ganjoor.GanjoorLanguage[],System.String)">
+            <summary>
+            language from code
+            </summary>
+            <param name="languages"></param>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorMetre">
             <summary>
             Poem prosodic Metre
@@ -10362,17 +10370,17 @@
             text
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Code">
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage1.Code">
             <summary>
             code
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Name">
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage1.Name">
             <summary>
             name
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Description">
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage1.Description">
             <summary>
             description
             </summary>

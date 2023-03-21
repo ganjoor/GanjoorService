@@ -53,6 +53,20 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public List<GanjoorVerseViewModel> Verses { get; set; }
 
+        public GanjoorLanguage[] Languages { get; set; }
+
+        private async Task ReadLanguagesAsync(HttpClient secureClient)
+        {
+            HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
+            if (!response.IsSuccessStatusCode)
+            {
+                FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return;
+            }
+
+            Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
+        }
+
 
         private List<GanjoorVerseViewModel> _FilterSectionVerses(GanjoorPoemSection section, GanjoorVerseViewModel[] verses)
         {
@@ -168,6 +182,8 @@ namespace GanjooRazor.Areas.User.Pages
                     MyLastEdit = JsonConvert.DeserializeObject<GanjoorPoemSectionCorrectionViewModel>(await editResponse.Content.ReadAsStringAsync());
 
                     Verses = _FilterSectionVerses(PoemSection, PageInformation.Poem.Verses);
+
+                    await ReadLanguagesAsync(secureClient);
                 }
                 else
                 {

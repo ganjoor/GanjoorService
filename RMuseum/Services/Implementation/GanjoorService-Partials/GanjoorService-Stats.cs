@@ -211,7 +211,7 @@ namespace RMuseum.Services.Implementation
                             htmlText += $"<tr>{Environment.NewLine}";
 
                         htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                        var langModel = GTaggedLanguage.Languages.Where(l => l.Code == languagesCoupletsCountsUnprocessed[i].Language).Single();
+                        var langModel = await context.GanjoorLanguages.AsNoTracking().Where(l => l.Code == languagesCoupletsCountsUnprocessed[i].Language).SingleAsync();
                         string language = langModel.Name;
                         htmlText += $"<td class=\"c2\"><a href=\"/tagged/?l={Uri.EscapeDataString(langModel.Code)}&amp;a={poet.Id}\">{language}</a></td>{Environment.NewLine}";
                         htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(languagesCoupletsCountsUnprocessed[i].Count)}</td>{Environment.NewLine}";
@@ -434,7 +434,7 @@ namespace RMuseum.Services.Implementation
                                                 htmlText += $"<tr>{Environment.NewLine}";
 
                                             htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                                            var langModel = GTaggedLanguage.Languages.Where(l => l.Code == languagesCoupletsCountsUnprocessed[i].Language).Single();
+                                            var langModel = await context.GanjoorLanguages.AsNoTracking().Where(l => l.Code == languagesCoupletsCountsUnprocessed[i].Language).SingleAsync();
                                             string language = langModel.Description;  
                                             htmlText += $"<td class=\"c2\"><a href=\"/tagged/?l={Uri.EscapeDataString(langModel.Code)}\">{language}</a></td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(languagesCoupletsCountsUnprocessed[i].Count)}</td>{Environment.NewLine}";

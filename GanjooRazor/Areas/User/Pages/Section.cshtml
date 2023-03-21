@@ -351,7 +351,7 @@ else
 
         <tr>
             <td>
-                @RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.LanguageNameFromCode(Model.PoemSection.Language)
+                @RMuseum.Models.Ganjoor.GanjoorLanguage.LanguageNameFromCode(Model.Languages, Model.PoemSection.Language)
                 <div id="language-old" class="hidden-recitation">@Model.PoemSection.Language</div>
             </td>
         </tr>
@@ -361,7 +361,7 @@ else
                 <label for="language">زبان:</label>
                 <br />
                 <select id="language">
-                    @foreach (var lang in RMuseum.Models.Ganjoor.ViewModels.GTaggedLanguage.Languages)
+                    @foreach (var lang in Model.Languages)
                     {
                         @if (Model.MyLastEdit != null && (Model.MyLastEdit.Language == lang.Code || (string.IsNullOrEmpty(Model.MyLastEdit.Language) && lang.Code == "fa-IR")))
                         {

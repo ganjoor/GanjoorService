@@ -2,7 +2,7 @@
 
 namespace RMuseum.Models.Ganjoor.ViewModels
 {
-    public class GTaggedLanguage
+    public class GTaggedLanguage1
     {
         /// <summary>
         /// code
@@ -28,43 +28,43 @@ namespace RMuseum.Models.Ganjoor.ViewModels
             }
             return "فارسی";
         }
-        public static GTaggedLanguage[] Languages
+        public static GTaggedLanguage1[] Languages
         {
             get
             {
-                return new GTaggedLanguage[]
+                return new GTaggedLanguage1[]
                 {
-                    new GTaggedLanguage()
+                    new GTaggedLanguage1()
                     {
                         Code = "fa-IR",
                         Name = "فارسی",
                         Description = "فارسی"
                     },
-                    new GTaggedLanguage()
+                    new GTaggedLanguage1()
                     {
                         Code = "ar",
                         Name = "عربی",
                         Description = "عربی (اشعار عربی سعدی، خاقانی و ...)"
                     },
-                    new GTaggedLanguage()
+                    new GTaggedLanguage1()
                     {
                         Code = "azb",
                         Name = "ترکی",
                         Description = "ترکی (گزیده‌ای از اشعار استاد شهریار و ...)"
                     },
-                    new GTaggedLanguage()
+                    new GTaggedLanguage1()
                     {
                         Code = "ckb",
                         Name = "کردی",
                         Description = "کردی (مولانا خالد نقشبندی)"
                     },
-                    new GTaggedLanguage()
+                    new GTaggedLanguage1()
                     {
                         Code = "glk",
                         Name = "گیلکی",
                         Description = "گیلکی (قاسم انوار)"
                     },
-                    new GTaggedLanguage()
+                    new GTaggedLanguage1()
                     {
                         Code = "mzn",
                         Name = "مازندرانی",
