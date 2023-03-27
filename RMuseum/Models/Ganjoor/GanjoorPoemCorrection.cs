@@ -203,5 +203,10 @@ namespace RMuseum.Models.Ganjoor
         /// summary review result
         /// </summary>
         public CorrectionReviewResult SummaryReviewResult { get; set; }
+
+        /// <summary>
+        /// hide the editors name
+        /// </summary>
+        public bool HideMyName { get; set; }
     }
 }

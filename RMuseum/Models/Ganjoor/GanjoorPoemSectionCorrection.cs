@@ -256,5 +256,9 @@ namespace RMuseum.Models.Ganjoor
         /// </summary>
         public CorrectionReviewResult PoemFormatReviewResult { get; set; }
 
+        /// <summary>
+        /// hide the editors name
+        /// </summary>
+        public bool HideMyName { get; set; }
     }
 }
