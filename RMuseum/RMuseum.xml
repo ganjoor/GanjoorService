@@ -7047,6 +7047,11 @@
             language  (this is intended to affect html page encodings and not determine actuallly accents and ....)
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoem.PoemSummary">
+            <summary>
+            poem summary
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemCorrection">
             <summary>
             poem correction
@@ -8190,6 +8195,21 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.SectionIndex4">
             <summary>
             forth GanjoorPoemSection index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.LanguageId">
+            <summary>
+            language id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.Language">
+            <summary>
+            language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.CoupletSummary">
+            <summary>
+            couplet summary
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Id">

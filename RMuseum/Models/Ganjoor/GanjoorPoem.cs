@@ -108,5 +108,10 @@ namespace RMuseum.Models.Ganjoor
         /// language  (this is intended to affect html page encodings and not determine actuallly accents and ....)
         /// </summary>
         public string Language { get; set; }
+
+        /// <summary>
+        /// poem summary
+        /// </summary>
+        public string PoemSummary { get; set; }
     }
 }
