@@ -241,5 +241,20 @@ namespace RMuseum.Models.Ganjoor
         /// </summary>
         public CorrectionReviewResult LanguageReviewResult { get; set; }
 
+        /// <summary>
+        /// poem format
+        /// </summary>
+        public GanjoorPoemFormat? PoemFormat { get; set; }
+
+        /// <summary>
+        /// original poem format
+        /// </summary>
+        public GanjoorPoemFormat? OriginalPoemFormat { get; set; }
+
+        /// <summary>
+        /// poem format review result
+        /// </summary>
+        public CorrectionReviewResult PoemFormatReviewResult { get; set; }
+
     }
 }

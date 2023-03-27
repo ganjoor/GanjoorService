@@ -7750,6 +7750,21 @@
             language review resukt
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.PoemFormat">
+            <summary>
+            poem format
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.OriginalPoemFormat">
+            <summary>
+            original poem format
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.PoemFormatReviewResult">
+            <summary>
+            poem format review result
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
             <summary>
             poem translation
