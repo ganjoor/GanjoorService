@@ -74,5 +74,35 @@
         /// new verse result
         /// </summary>
         public CorrectionReviewResult NewVerseResult { get; set; }
+
+        /// <summary>
+        /// language id
+        /// </summary>
+        public int? LanguageId { get; set; }
+
+        /// <summary>
+        /// original language id
+        /// </summary>
+        public int? OriginalLanguageId { get; set; }
+
+        /// <summary>
+        /// language review result
+        /// </summary>
+        public CorrectionReviewResult LanguageReviewResult { get; set; }
+
+        /// <summary>
+        /// suggested couplet summary
+        /// </summary>
+        public string CoupletSummary { get; set; }
+
+        /// <summary>
+        /// original couplet summary
+        /// </summary>
+        public string OriginalCoupletSummary { get; set; }
+
+        /// <summary>
+        /// summary review result
+        /// </summary>
+        public CorrectionReviewResult SummaryReviewResult { get; set; }
     }
 }

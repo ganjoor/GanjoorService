@@ -237,7 +237,7 @@ namespace RMuseum.Models.Ganjoor
         public string OriginalLanguage { get; set; }
 
         /// <summary>
-        /// language review resukt
+        /// language review result
         /// </summary>
         public CorrectionReviewResult LanguageReviewResult { get; set; }
 

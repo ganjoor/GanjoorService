@@ -7237,6 +7237,21 @@
             language review resukt
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.PoemSummary">
+            <summary>
+            suggested poem summary
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.OriginalPoemSummary">
+            <summary>
+            original poem summary
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.SummaryReviewResult">
+            <summary>
+            summary review result
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemFormat">
             <summary>
             poem format
@@ -7747,7 +7762,7 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.LanguageReviewResult">
             <summary>
-            language review resukt
+            language review result
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.PoemFormat">
@@ -8365,6 +8380,36 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.NewVerseResult">
             <summary>
             new verse result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.LanguageId">
+            <summary>
+            language id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.OriginalLanguageId">
+            <summary>
+            original language id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.LanguageReviewResult">
+            <summary>
+            language review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.CoupletSummary">
+            <summary>
+            suggested couplet summary
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.OriginalCoupletSummary">
+            <summary>
+            original couplet summary
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.SummaryReviewResult">
+            <summary>
+            summary review result
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemGeoDateTag">
