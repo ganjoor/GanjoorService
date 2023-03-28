@@ -210,7 +210,15 @@ namespace RMuseum.Services.Implementation
                     }
                 }
             }
-            return title;
+            return title
+                       .Replace("ّ", "")//tashdid
+                       .Replace("َ", "")//a
+                       .Replace("ِ", "")//e
+                       .Replace("ُ", "")//o
+                       .Replace("ً", "")//an
+                       .Replace("ٍ", "")//en
+                       .Replace("ٌ", "")//on
+                       ;
         }
         private async Task<RServiceResult<string>> _GenerateTableOfContents(RMuseumDbContext context, int catId, GanjoorTOC options)
         {
