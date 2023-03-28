@@ -63,7 +63,7 @@
         /// <summary>
         /// language id
         /// </summary>
-        public int LanguageId { get; set; }
+        public int? LanguageId { get; set; }
 
         /// <summary>
         /// language
