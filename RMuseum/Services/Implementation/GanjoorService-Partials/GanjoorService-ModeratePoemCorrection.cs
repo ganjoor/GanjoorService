@@ -101,6 +101,19 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
+                if(dbCorrection.PoemSummary != null)
+                {
+                    if(moderation.SummaryReviewResult == CorrectionReviewResult.NotSuggestedByUser)
+                        return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات خلاصه به نثر روان بررسی نشده است.");
+                    dbCorrection.SummaryReviewResult = moderation.SummaryReviewResult;
+                    if(dbCorrection.SummaryReviewResult == CorrectionReviewResult.Approved)
+                    {
+                        dbCorrection.AffectedThePoem = true;
+                        dbPoem.PoemSummary = moderation.PoemSummary.Replace("ۀ", "هٔ").Replace("ك", "ک");
+                        updatePoem = true;
+                    }
+                }
+
                 int maxSections = sections.Count == 0 ? 0 : sections.Max(s => s.Index);
 
                 var poemVerses = await _context.GanjoorVerses.Where(p => p.PoemId == dbCorrection.PoemId).OrderBy(v => v.VOrder).ToListAsync();
@@ -125,7 +138,26 @@ namespace RMuseum.Services.Implementation
                             return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"تغییرات نوع مصرع {moderatedVerse.VORder} بررسی نشده است.");
                         dbVerse.VersePositionResult = moderatedVerse.VersePositionResult;
                     }
-                    if (dbVerse.Result == CorrectionReviewResult.Approved || dbVerse.VersePositionResult == CorrectionReviewResult.Approved)
+                    if(dbVerse.CoupletSummary != null)
+                    {
+                        if(moderatedVerse.SummaryReviewResult == CorrectionReviewResult.NotReviewed)
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"نثر روان مصرع {moderatedVerse.VORder} بررسی نشده است.");
+                        dbVerse.SummaryReviewResult = moderatedVerse.SummaryReviewResult;
+                    }
+                    if(dbVerse.LanguageId != null)
+                    {
+                        if(moderatedVerse.LanguageReviewResult == CorrectionReviewResult.NotReviewed)
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"زبان مصرع {moderatedVerse.VORder} بررسی نشده است.");
+                        dbVerse.LanguageReviewResult = moderatedVerse.LanguageReviewResult;
+                    }
+                    if (dbVerse.Result == CorrectionReviewResult.Approved
+                        ||
+                        dbVerse.VersePositionResult == CorrectionReviewResult.Approved
+                        ||
+                        dbVerse.SummaryReviewResult == CorrectionReviewResult.Approved
+                        ||
+                        dbVerse.LanguageReviewResult == CorrectionReviewResult.Approved
+                        )
                     {
                         dbCorrection.AffectedThePoem = true;
                         var poemVerse = poemVerses.Where(v => v.VOrder == moderatedVerse.VORder).Single();
@@ -133,6 +165,10 @@ namespace RMuseum.Services.Implementation
                             poemVerse.Text = moderatedVerse.Text.Replace("ۀ", "هٔ").Replace("ك", "ک");
                         if (dbVerse.VersePositionResult == CorrectionReviewResult.Approved)
                             poemVerse.VersePosition = (VersePosition)dbVerse.VersePosition;
+                        if (dbVerse.SummaryReviewResult == CorrectionReviewResult.Approved)
+                            poemVerse.CoupletSummary = dbVerse.CoupletSummary;
+                        if (dbVerse.LanguageReviewResult == CorrectionReviewResult.Approved)
+                            poemVerse.LanguageId = dbVerse.LanguageId;
                         modifiedVerses.Add(poemVerse);
                     }
                 }
