@@ -22,7 +22,6 @@ using System.Web;
 using System.Text.RegularExpressions;
 using RMuseum.Models.Auth.Memory;
 using System.IO;
-using NAudio.Gui;
 using RSecurityBackend.Models.Image;
 using FluentFTP;
 

@@ -148,6 +148,25 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
+                if(dbCorrection.PoemFormat != null)
+                {
+                    if(moderation.PoemFormatReviewResult == CorrectionReviewResult.NotReviewed)
+                        return new RServiceResult<GanjoorPoemSectionCorrectionViewModel>(null, "تغییرات قالب شعری بررسی نشده است.");
+                    
+                    dbCorrection.PoemFormatReviewResult = moderation.PoemFormatReviewResult;
+                    if(dbCorrection.PoemFormatReviewResult == CorrectionReviewResult.Approved)
+                    {
+                        dbCorrection.OriginalPoemFormat = editingSectionNotTracked.PoemFormat;
+                        dbCorrection.PoemFormat = moderation.PoemFormat;
+                        dbCorrection.AffectedThePoem = true;
+
+                        var section = sections.Single(s => s.Id == editingSectionNotTracked.Id);
+                        section.PoemFormat = moderation.PoemFormat;
+                        section.Modified = true;
+
+                    }
+                }
+
                 foreach (var section in sections)
                 {
                     if (section.Modified)
@@ -894,6 +913,9 @@ namespace RMuseum.Services.Implementation
                     AffectedThePoem = false,
                     Language = correction.Language,
                     LanguageReviewResult = CorrectionReviewResult.NotReviewed,
+                    PoemFormat = correction.PoemFormat,
+                    PoemFormatReviewResult = CorrectionReviewResult.NotReviewed,
+                    HideMyName = correction.HideMyName,
                 };
                 _context.GanjoorPoemSectionCorrections.Add(dbCorrection);
                 await _context.SaveChangesAsync();
