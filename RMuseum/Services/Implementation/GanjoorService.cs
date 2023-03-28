@@ -1815,11 +1815,16 @@ namespace RMuseum.Services.Implementation
                 .ToListAsync();
 
             var poem = (await GetPoemById(correction.PoemId, false, false, true, false, false, false, false, true, false)).Result;
+            var dbVerses = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == correction.PoemId).ToListAsync();
             foreach (var verse in correction.VerseOrderText)
             {
                 if(!verse.NewVerse)
                 {
-                    verse.OriginalText = poem.Verses.Where(v => v.VOrder == verse.VORder).Single().Text;
+                    var dbVerse = dbVerses.Where(v => v.VOrder == verse.VORder).Single();
+                    verse.OriginalText = dbVerse.Text;
+                    verse.OriginalVersePosition = dbVerse.VersePosition;
+                    verse.OriginalLanguageId = dbVerse.LanguageId;
+                    verse.OriginalCoupletSummary = dbVerse.CoupletSummary;
                 }
             }
             GanjoorPoemCorrection dbCorrection = new GanjoorPoemCorrection()
@@ -1839,7 +1844,11 @@ namespace RMuseum.Services.Implementation
                 Date = DateTime.Now,
                 Result = CorrectionReviewResult.NotReviewed,
                 Reviewed = false,
-                AffectedThePoem = false
+                AffectedThePoem = false,
+                //Language = correction.Language, not used
+                PoemSummary = correction.PoemSummary,
+                HideMyName = correction.HideMyName,
+
             };
             _context.GanjoorPoemCorrections.Add(dbCorrection);
             await _context.SaveChangesAsync();
