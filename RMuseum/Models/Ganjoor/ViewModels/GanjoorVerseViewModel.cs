@@ -50,6 +50,16 @@
         /// </summary>
         public string Text { get; set; }
 
+        /// <summary>
+        /// language id
+        /// </summary>
+        public int? LanguageId { get; set; }
+
+        /// <summary>
+        /// couplet summary
+        /// </summary>
+        public string CoupletSummary { get; set; }
+
         public override string ToString()
         {
             return Text;

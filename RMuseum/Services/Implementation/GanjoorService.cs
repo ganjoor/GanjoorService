@@ -1672,6 +1672,8 @@ namespace RMuseum.Services.Implementation
                                                             SectionIndex2 = v.SectionIndex2,
                                                             SectionIndex3 = v.SectionIndex3,
                                                             SectionIndex4 = v.SectionIndex4,
+                                                            LanguageId = v.LanguageId,
+                                                            CoupletSummary = v.CoupletSummary,
                                                         }
                                                     ).AsNoTracking().ToArrayAsync();
                 };
@@ -1729,6 +1731,7 @@ namespace RMuseum.Services.Implementation
                     MixedModeOrder = poem.MixedModeOrder,
                     Published = poem.Published,
                     Language = poem.Language,
+                    PoemSummary = poem.PoemSummary,
                     Category = cat,
                     Next = next,
                     Previous = previous,
@@ -1815,16 +1818,16 @@ namespace RMuseum.Services.Implementation
                 .ToListAsync();
 
             var poem = (await GetPoemById(correction.PoemId, false, false, true, false, false, false, false, true, false)).Result;
-            var dbVerses = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == correction.PoemId).ToListAsync();
+            
             foreach (var verse in correction.VerseOrderText)
             {
                 if(!verse.NewVerse)
                 {
-                    var dbVerse = dbVerses.Where(v => v.VOrder == verse.VORder).Single();
-                    verse.OriginalText = dbVerse.Text;
-                    verse.OriginalVersePosition = dbVerse.VersePosition;
-                    verse.OriginalLanguageId = dbVerse.LanguageId;
-                    verse.OriginalCoupletSummary = dbVerse.CoupletSummary;
+                    var v = poem.Verses.Where(v => v.VOrder == verse.VORder).Single();
+                    verse.OriginalText = v.Text;
+                    verse.OriginalVersePosition = v.VersePosition;
+                    verse.OriginalLanguageId = v.LanguageId;
+                    verse.OriginalCoupletSummary = v.CoupletSummary;
                 }
             }
             GanjoorPoemCorrection dbCorrection = new GanjoorPoemCorrection()
@@ -2292,6 +2295,7 @@ namespace RMuseum.Services.Implementation
                         MixedModeOrder = section.Poem.MixedModeOrder,
                         Published = section.Poem.Published,
                         Language = section.Poem.Language,
+                        PoemSummary = section.Poem.PoemSummary,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()
@@ -2377,6 +2381,7 @@ namespace RMuseum.Services.Implementation
                         MixedModeOrder = section.Poem.MixedModeOrder,
                         Published = section.Poem.Published,
                         Language = section.Poem.Language,
+                        PoemSummary = section.Poem.PoemSummary,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()
@@ -2505,6 +2510,7 @@ namespace RMuseum.Services.Implementation
                         MixedModeOrder = poem.MixedModeOrder,
                         Published = poem.Published,
                         Language = poem.Language,
+                        PoemSummary = poem.PoemSummary,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()

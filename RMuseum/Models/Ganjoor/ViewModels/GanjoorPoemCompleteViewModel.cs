@@ -78,6 +78,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public string Language { get; set; }
 
         /// <summary>
+        /// poem summary
+        /// </summary>
+        public string PoemSummary { get; set; }
+
+        /// <summary>
         /// category
         /// </summary>
         public GanjoorPoetCompleteViewModel Category { get; set; }
