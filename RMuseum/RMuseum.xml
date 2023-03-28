@@ -7252,6 +7252,11 @@
             summary review result
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.HideMyName">
+            <summary>
+            hide the editors name
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemFormat">
             <summary>
             poem format
@@ -7778,6 +7783,11 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.PoemFormatReviewResult">
             <summary>
             poem format review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection.HideMyName">
+            <summary>
+            hide the editors name
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemTranslation">
@@ -9724,6 +9734,26 @@
             language review resukt
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.PoemSummary">
+            <summary>
+            suggested poem summary
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.OriginalPoemSummary">
+            <summary>
+            original poem summary
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.SummaryReviewResult">
+            <summary>
+            summary review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.HideMyName">
+            <summary>
+            hide the editors name
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel">
             <summary>
             poem section correction view model
@@ -9942,6 +9972,26 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.LanguageReviewResult">
             <summary>
             language review resukt
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.PoemFormat">
+            <summary>
+            poem format
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.OriginalPoemFormat">
+            <summary>
+            original poem format
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.PoemFormatReviewResult">
+            <summary>
+            poem format review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel.HideMyName">
+            <summary>
+            hide the editors name
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel">

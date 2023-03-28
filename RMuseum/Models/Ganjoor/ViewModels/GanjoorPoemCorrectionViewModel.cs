@@ -161,5 +161,25 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// language review resukt
         /// </summary>
         public CorrectionReviewResult LanguageReviewResult { get; set; }
+
+        /// <summary>
+        /// suggested poem summary
+        /// </summary>
+        public string PoemSummary { get; set; }
+
+        /// <summary>
+        /// original poem summary
+        /// </summary>
+        public string OriginalPoemSummary { get; set; }
+
+        /// <summary>
+        /// summary review result
+        /// </summary>
+        public CorrectionReviewResult SummaryReviewResult { get; set; }
+
+        /// <summary>
+        /// hide the editors name
+        /// </summary>
+        public bool HideMyName { get; set; }
     }
 }
