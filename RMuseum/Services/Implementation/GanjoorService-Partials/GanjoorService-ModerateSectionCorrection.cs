@@ -142,7 +142,17 @@ namespace RMuseum.Services.Implementation
                                     trackedPoem.Language = dbCorrection.Language;
                                     _context.Update(trackedPoem);
                                 }
-                               
+                            }
+
+                            var ganjoorLanguage = await _context.GanjoorLanguages.AsNoTracking().Where(l => l.Code == moderation.Language).SingleOrDefaultAsync();
+                            if(ganjoorLanguage != null )
+                            {
+                                var dbVerses = await _context.GanjoorVerses.Where(v => v.PoemId == editingSectionNotTracked.PoemId && v.SectionIndex1 == editingSectionNotTracked.Index).ToListAsync();
+                                foreach (var dbVerse in dbVerses)
+                                {
+                                    dbVerse.LanguageId = ganjoorLanguage.Id;
+                                }
+                                _context.UpdateRange(dbVerses);
                             }
                         }
                     }
