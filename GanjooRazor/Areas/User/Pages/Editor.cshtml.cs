@@ -263,7 +263,7 @@ namespace GanjooRazor.Areas.User.Pages
             return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
-        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, VersePosition[] versePositions, string rhythm, string rhythm2, string rhyme, string note)
+        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, VersePosition[] versePositions, string rhythm, string rhythm2, string rhyme, string[] verseOrderSummaries, string note)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -306,6 +306,33 @@ namespace GanjooRazor.Areas.User.Pages
                                     OriginalVersePosition = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition,
                                 }
                                 );
+                        }
+                    }
+
+                    foreach ( string v in verseOrderSummaries )
+                    {
+                        var vParts = v.Split("TextSeparator", System.StringSplitOptions.RemoveEmptyEntries);
+                        int vOrder = int.Parse(vParts[0]);
+                        if(vOrder != 0)
+                        {
+                            if(vOrderTexts.Where(t => t.VORder == vOrder).Any())
+                            {
+                                vOrderTexts.First(t => t.VORder == vOrder).CoupletSummary = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک");
+                            }
+                            else
+                            {
+                                vOrderTexts.Add
+                                (
+                                new GanjoorVerseVOrderText()
+                                {
+                                    VORder = vOrder,
+                                    Text = null,
+                                    MarkForDelete = false,
+                                    VersePosition = null,
+                                    CoupletSummary = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک"),
+                                }
+                                );
+                            }
                         }
                     }
 
