@@ -1904,13 +1904,16 @@ namespace RMuseum.Services.Implementation
                     RhymeLetters = dbCorrection.RhymeLetters,
                     OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
                     RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
+                    PoemSummary = dbCorrection.PoemSummary,
+                    OriginalPoemSummary = dbCorrection.OriginalPoemSummary,
+                    SummaryReviewResult = dbCorrection.SummaryReviewResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                    UserNickname = dbCorrection.HideMyName ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 ); ;
         }
@@ -1955,13 +1958,16 @@ namespace RMuseum.Services.Implementation
                     RhymeLetters = dbCorrection.RhymeLetters,
                     OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
                     RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
+                    PoemSummary = dbCorrection.PoemSummary,
+                    OriginalPoemSummary = dbCorrection.OriginalPoemSummary,
+                    SummaryReviewResult = dbCorrection.SummaryReviewResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                    UserNickname = dbCorrection.HideMyName ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 );
             }
@@ -2019,6 +2025,9 @@ namespace RMuseum.Services.Implementation
                     RhymeLetters = dbCorrection.RhymeLetters,
                     OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
                     RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
+                    PoemSummary = dbCorrection.PoemSummary,
+                    OriginalPoemSummary = dbCorrection.OriginalPoemSummary,
+                    SummaryReviewResult = dbCorrection.SummaryReviewResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
@@ -2066,13 +2075,16 @@ namespace RMuseum.Services.Implementation
                     RhymeLetters = dbCorrection.RhymeLetters,
                     OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
                     RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
+                    PoemSummary = dbCorrection.PoemSummary,
+                    OriginalPoemSummary = dbCorrection.OriginalPoemSummary,
+                    SummaryReviewResult = dbCorrection.SummaryReviewResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
                     Result = dbCorrection.Result,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                    UserNickname = dbCorrection.HideMyName ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 );
         }
@@ -2113,6 +2125,9 @@ namespace RMuseum.Services.Implementation
                     RhymeLetters = dbCorrection.RhymeLetters,
                     OriginalRhymeLetters = dbCorrection.OriginalRhymeLetters,
                     RhymeLettersReviewResult = dbCorrection.RhymeLettersReviewResult,
+                    PoemSummary = dbCorrection.PoemSummary,
+                    OriginalPoemSummary = dbCorrection.OriginalPoemSummary,
+                    SummaryReviewResult = dbCorrection.SummaryReviewResult,
                     Note = dbCorrection.Note,
                     Date = dbCorrection.Date,
                     Reviewed = dbCorrection.Reviewed,
@@ -2122,7 +2137,7 @@ namespace RMuseum.Services.Implementation
                     Rhythm2Result = dbCorrection.Rhythm2Result,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                    UserNickname = dbCorrection.HideMyName ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
                 }
                 );
         }
