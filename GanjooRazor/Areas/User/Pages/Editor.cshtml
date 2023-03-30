@@ -563,7 +563,12 @@ else
             </tr>
 
         }
-       
+
+        <tr>
+            <td class="td-button-container">
+                <a role="button" href="#summaries" class="editor-button background-gray">لغزش به بخش معنی </a>
+            </td>
+        </tr>
 
         @if (Model.CanEdit && !Model.ShowAdminOps)
         {
@@ -1023,7 +1028,20 @@ else
         </tr>
 
         <tr>
-            <td id="summaries">خلاصه و معنی به نثر روان</td>
+            <td id="summaries" style="background-color:black; color: white">خلاصه و معنی</td>
+        </tr>
+        <tr>
+            <td style="background-color:#ffffe1">
+                <p>توجه فرمایید که هدف از بخش تفسیر متن اشعار <span style="color:red">نیست</span>. انتظار می‌رود در این بخش برای متون و اشعاری مثل داستان‌ها خلاصه یا لب مطلب را بنویسید (برای بعضی از انواع اشعار مثل غزل‌ها ممکن است خلاصهٔ کلی معنی نداشته باشد). برای خطوط یا ابیات نیز برگردان متن به نثر قابل فهم امروزی نوشته شود (لازم نیست برای همهٔ خطوط برگردان نثر نوشته شود). برای تفسیر یا درج عقاید شخصی خود راجع به اشعار از حاشیه‌ها استفاده کنید.</p>
+                <p>متن باید خلاصه، به زبان نوشتاری رسمی (غیرمحاوره‌ای)، خالی از لغات نامأنوس (زبان همه‌کس فهم و ناسره) و بدون غلط املایی و تایپی باشد.</p>
+                <p>
+                    اگر متن موجود به اندازهٔ کافی خوب باشد ممکن است متن خیلی متفاوت جایگزین تأیید نشود.
+                </p>
+                <p>
+                    نام و مشخصات نویسندهٔ متن در صفحهٔ شعر نمایش داده نمی‌شود اما در تاریخچهٔ تغییرات نگهداری می‌شود.
+                </p>
+
+            </td>
         </tr>
         @for (int verseIndex = 0; verseIndex < Model.PageInformation.Poem.Verses.Length; verseIndex++)
         {
@@ -1033,7 +1051,15 @@ else
            || Model.PageInformation.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph
            )
             {
-                <tr style="background-color:#ffffe1">
+                if (color == "#eee")
+                {
+                    color = "#ddd";
+                }
+                else
+                {
+                    color = "#eee";
+                }
+                <tr style="background-color:@color">
                     <td>
                         @if (Model.PageInformation.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph)
                         {
@@ -1062,28 +1088,28 @@ else
                         }
                     </td>
                 </tr>
-                <tr style="background-color:#ffffe1">
+                <tr  style="background-color:@color">
                     <td>
-                        معنای بیت:
+                        معنای خط یا بیت:
                     </td>
-                </tr>
+                </tr  style="background-color:@color">
 
-                <tr style="background-color:#ffffe1">
+                <tr style="background-color:@color" >
                     <td>
                         <p id="originalsummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
                         @if (string.IsNullOrEmpty(Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary))
                         {
-                            <p>متنی برای معنای بیت نوشته نشده است.</p>
+                            <p>هنوز متنی برای معنی نوشته نشده است.</p>
                         }
                     </td>
                 </tr>
-                <tr style="background-color:#ffffe1">
+                <tr style="background-color:@color" >
                     <td>
                         معنای ویراستهٔ من (به زبان غیرمحاوره‌ای و ناسره):
                     </td>
                 </tr>
 
-                <tr style="background-color:#ffffe1">
+                <tr  style="background-color:@color">
                     <td>
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder && !string.IsNullOrEmpty(v.CoupletSummary)).Any())
                         {
@@ -1110,25 +1136,31 @@ else
                         }
                     </td>
                 </tr>
-                <tr style="background-color:#ffffe1">
+                <tr style="background-color:@color" >
                     <td>
                         تغییرات:
                     </td>
                 </tr>
-                <tr style="background-color:#ffffe1">
+                <tr style="background-color:@color" >
                     <td>
                         <p id="comparesummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
+                    </td>
+                </tr>
+
+                <tr style="background-color:black">
+                    <td>
+                        
                     </td>
                 </tr>
             }
         }
 
 
-
+        
         @if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) > 1)
         {
             <tr>
-                <td>
+                <td id="poem-sections">
                     قطعات:
                 </td>
             </tr>
@@ -1170,7 +1202,7 @@ else
             foreach (var poemSetion in Model.PageInformation.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First).ToList())
             {
                 <tr>
-                    <td>
+                    <td id="poem-sections">
                         <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index" role="button" class="pagebutton">
                             شکستن شعر به قطعات مجزا
                         </a>
@@ -1179,7 +1211,7 @@ else
             }
         }
 
-        <tr id="poem-sections">
+        <tr>
             <td>
                 <a href="/User/AllPoemSections?id=@Model.PageInformation.Id" role="button" class="pagebutton">
                     همهٔ قطعات شعر
