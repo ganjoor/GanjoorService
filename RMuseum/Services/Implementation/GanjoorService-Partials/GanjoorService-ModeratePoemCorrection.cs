@@ -602,8 +602,20 @@ namespace RMuseum.Services.Implementation
                             section.Language = dbCorrection.Language;
                             _context.Update(section);
                         }
+
+                        var ganjoorLanguage = await _context.GanjoorLanguages.AsNoTracking().Where(l => l.Code == moderation.Language).SingleOrDefaultAsync();
+                        if (ganjoorLanguage != null)
+                        {
+                            var dbVerses = await _context.GanjoorVerses.Where(v => v.PoemId == dbPoem.Id).ToListAsync();
+                            foreach (var dbVerse in dbVerses)
+                            {
+                                dbVerse.LanguageId = ganjoorLanguage.Id;
+                            }
+                            _context.UpdateRange(dbVerses);
+                        }
                     }
                 }
+
 
                 if (updatePoem)
                 {
