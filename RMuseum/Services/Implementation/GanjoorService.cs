@@ -1913,7 +1913,11 @@ namespace RMuseum.Services.Implementation
                     Result = dbCorrection.Result,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = dbCorrection.HideMyName ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    PoemFormat = dbCorrection.PoemFormat,
+                    OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
+                    PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
+                    HideMyName = dbCorrection.HideMyName,
                 }
                 ); ;
         }
@@ -1967,7 +1971,11 @@ namespace RMuseum.Services.Implementation
                     Result = dbCorrection.Result,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = dbCorrection.HideMyName ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    PoemFormat = dbCorrection.PoemFormat,
+                    OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
+                    PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
+                    HideMyName = dbCorrection.HideMyName,
                 }
                 );
             }
@@ -2034,6 +2042,9 @@ namespace RMuseum.Services.Implementation
                     Result = dbCorrection.Result,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
+                    PoemFormat = dbCorrection.PoemFormat,
+                    OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
+                    PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
                 }
                 );
             }
@@ -2084,7 +2095,11 @@ namespace RMuseum.Services.Implementation
                     Result = dbCorrection.Result,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = dbCorrection.HideMyName ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    PoemFormat = dbCorrection.PoemFormat,
+                    OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
+                    PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
+                    HideMyName = dbCorrection.HideMyName,
                 }
                 );
         }
@@ -2137,7 +2152,11 @@ namespace RMuseum.Services.Implementation
                     Rhythm2Result = dbCorrection.Rhythm2Result,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = dbCorrection.HideMyName ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    PoemFormat = dbCorrection.PoemFormat,
+                    OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
+                    PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
+                    HideMyName = dbCorrection.HideMyName,
                 }
                 );
         }

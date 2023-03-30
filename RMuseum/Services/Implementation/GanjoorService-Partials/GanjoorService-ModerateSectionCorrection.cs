@@ -704,12 +704,16 @@ namespace RMuseum.Services.Implementation
                     Reviewed = dbCorrection.Reviewed,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
                     PoemId = section == null ? 0 : section.PoemId,
                     SectionIndex = section == null ? 0 : section.Index,
                     Language = dbCorrection.Language,
                     OriginalLanguage= dbCorrection.OriginalLanguage,
                     LanguageReviewResult = dbCorrection.LanguageReviewResult,
+                    PoemFormat = dbCorrection.PoemFormat,
+                    OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
+                    PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
+                    HideMyName = dbCorrection.HideMyName,
                 }
                 );
             }
@@ -797,10 +801,14 @@ namespace RMuseum.Services.Implementation
                     Reviewed = dbCorrection.Reviewed,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
                     Language = dbCorrection.Language,
                     OriginalLanguage = dbCorrection.OriginalLanguage,
                     LanguageReviewResult = dbCorrection.LanguageReviewResult,
+                    PoemFormat = dbCorrection.PoemFormat,
+                    OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
+                    PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
+                    HideMyName = dbCorrection.HideMyName,
                 }
                 );
             }
@@ -867,10 +875,14 @@ namespace RMuseum.Services.Implementation
                     Reviewed = dbCorrection.Reviewed,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
                     Language = dbCorrection.Language,
                     OriginalLanguage = dbCorrection.OriginalLanguage,
                     LanguageReviewResult = dbCorrection.LanguageReviewResult,
+                    PoemFormat = dbCorrection.PoemFormat,
+                    OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
+                    PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
+                    HideMyName = dbCorrection.HideMyName,
                 }
                 );
         }
@@ -1025,7 +1037,7 @@ namespace RMuseum.Services.Implementation
                     Reviewed = dbCorrection.Reviewed,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
                     Language = dbCorrection.Language,
                     OriginalLanguage = dbCorrection.OriginalLanguage,
                     LanguageReviewResult = dbCorrection.LanguageReviewResult,
@@ -1088,10 +1100,14 @@ namespace RMuseum.Services.Implementation
                     Reviewed = dbCorrection.Reviewed,
                     ReviewNote = dbCorrection.ReviewNote,
                     ReviewDate = dbCorrection.ReviewDate,
-                    UserNickname = string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
                     Language = dbCorrection.Language,
                     OriginalLanguage = dbCorrection.OriginalLanguage,
                     LanguageReviewResult = dbCorrection.LanguageReviewResult,
+                    PoemFormat = dbCorrection.PoemFormat,
+                    OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
+                    PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
+                    HideMyName = dbCorrection.HideMyName,
                 }
                 );
         }

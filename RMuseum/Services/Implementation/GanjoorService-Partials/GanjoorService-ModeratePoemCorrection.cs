@@ -616,6 +616,29 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
+                if (dbCorrection.PoemFormat != null)
+                {
+                    if (moderation.PoemFormatReviewResult == CorrectionReviewResult.NotReviewed)
+                        return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات قالب شعر بررسی نشده است.");
+                    dbCorrection.PoemFormatReviewResult = moderation.PoemFormatReviewResult;
+                    if (dbCorrection.PoemFormatReviewResult == CorrectionReviewResult.Approved)
+                    {
+                        if (mainSection == null)
+                        {
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "شعر فاقد بخش اصلی برای ذخیرهٔ قالب شعر است.");
+                        }
+                        if (poemVerses.Where(v => v.VersePosition == VersePosition.Paragraph).Any())
+                        {
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "امکان انتساب قالب به متون مخلوط از طریق ویرایشگر کاربر وجود ندارد.");
+                        }
+
+                        dbCorrection.AffectedThePoem = true;
+                        dbCorrection.OriginalPoemFormat = mainSection.PoemFormat;
+                        mainSection.PoemFormat = dbCorrection.PoemFormat;
+
+                        mainSection.Modified = true;
+                    }
+                }
 
                 if (updatePoem)
                 {
