@@ -132,6 +132,18 @@ namespace GanjooRazor.Areas.Admin.Pages
                                     {
                                         verse.OriginalText = v.Text;
                                         verse.CoupletIndex = v.CoupletIndex;
+                                        if(string.IsNullOrEmpty(verse.Text))
+                                        {
+                                            verse.Text = v.Text;
+                                        }
+                                        if(!string.IsNullOrEmpty(verse.CoupletSummary))
+                                        {
+                                            verse.OriginalCoupletSummary = v.CoupletSummary;
+                                            if(verse.CoupletSummary == verse.OriginalCoupletSummary)
+                                            {
+                                                verse.SummaryReviewResult = CorrectionReviewResult.NotChanged;
+                                            }
+                                        }
                                         if (verse.OriginalText == verse.Text)
                                             verse.Result = CorrectionReviewResult.NotChanged;
                                     }
@@ -192,6 +204,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             string titleReviewResult, string rhythmReviewResult, string rhythm2ReviewResult, string rhymeReviewResult,
             string titleReviewNote, string[] verseReviewResult,
             string[] versePosReviewResult,
+            string[] verseSummaryResults,
             string[] verseReviewNotes
             )
         {
@@ -302,6 +315,19 @@ namespace GanjooRazor.Areas.Admin.Pages
                                         Correction.VerseOrderText[i].VersePositionResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), versePosReviewResult[i]);
                                     }
                                     
+                                }
+
+                                if (Correction.VerseOrderText[i].CoupletSummary != null)
+                                {
+                                    if (verseSummaryResults[i] == null)
+                                    {
+                                        return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
+                                    }
+                                    else
+                                    {
+                                        Correction.VerseOrderText[i].SummaryReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseSummaryResults[i]);
+                                    }
+
                                 }
                             }
                             Correction.VerseOrderText[i].ReviewNote = verseReviewNotes[i];
