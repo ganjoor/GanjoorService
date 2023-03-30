@@ -30,6 +30,18 @@ namespace RMuseum.Services.Implementation
                     return "به دلیل دیگری رد می‌شود";
                 case CorrectionReviewResult.NotSuggestedByUser:
                     return "ایراد نرم‌افزار گنجور";
+                case CorrectionReviewResult.RejectedParaphraseBecauseInformal:
+                    return "محاوره‌ای است";
+                case CorrectionReviewResult.RejectedParaphraseBecauseArtificial:
+                    return "سره است یا در آن از واژه‌های نامأنوس استفاده شده است";
+                case CorrectionReviewResult.RejectedParaphraseBecauseUnfathomable:
+                    return "نامفهوم است";
+                case CorrectionReviewResult.RejectedParaphraseBecauseContainsOwnIdeas:
+                    return "شامل تفسیرهای شخصی است"
+                case CorrectionReviewResult.RejectedParaphraseBecauseHasServeralTypoErrors:
+                    return "غلطهای تایپی و املایی زیاد دارد";
+                case CorrectionReviewResult.RejectedParaphraseBecauseNotBetter:
+                    return "از متن قبلی بهتر نیست";
             }
             return "بررسی نشده";
         }
