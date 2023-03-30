@@ -771,71 +771,7 @@ else
 
             </tr>
 
-            @if(
-                verse.VersePosition == RMuseum.Models.Ganjoor.VersePosition.Right 
-                || verse.VersePosition == RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1
-                || verse.VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph
-                )
-            {
-                <tr style="background-color:#ffffe1">
-                <td>
-                  معنای بیت:
-                </td>
-                </tr>
-
-                <tr style="background-color:#ffffe1">
-                    <td>
-                        <p id="originalsummary-@($"{verse.VOrder}")">@verse.CoupletSummary</p>
-                        @if(string.IsNullOrEmpty(verse.CoupletSummary))
-                        {
-                            <p>متنی برای معنای بیت نوشته نشده است.</p>
-                        }
-                    </td>
-                </tr>
-                <tr style="background-color:#ffffe1">
-                    <td>
-                        معنای ویراستهٔ من (به زبان غیرمحاوره‌ای و ناسره):
-                    </td>
-                </tr>
-
-                <tr style="background-color:#ffffe1">
-                    <td>
-                        @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && !string.IsNullOrEmpty(v.CoupletSummary)).Any())
-                        {
-                            <div id="summary-@($"{verse.VOrder}")" name="summary-@($"{verse.VOrder}")" contenteditable="true" class="background-white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().CoupletSummary</div>
-
-
-                            <script>
-                                document.getElementById("summary-@($"{verse.VOrder}")").addEventListener("input", function () {
-                                    summarycompare(@verse.VOrder)
-                                }, false);
-                                $(document).ready(function () {
-                                    summarycompare(@verse.VOrder);
-                                });
-                            </script>
-                        }
-                        else
-                        {
-                            <div id="summary-@($"{verse.VOrder}")" name="summary-@($"{verse.VOrder}")" contenteditable="true" class="background-white">@verse.CoupletSummary</div>
-                            <script>
-                                document.getElementById("summary-@($"{verse.VOrder}")").addEventListener("input", function () {
-                                    summarycompare(@verse.VOrder)
-                                }, false);
-                            </script>
-                        }
-                    </td>
-                </tr>
-                <tr style="background-color:#ffffe1">
-                    <td>
-                        تغییرات:
-                    </td>
-                </tr>
-                <tr style="background-color:#ffffe1">
-                    <td>
-                        <p id="comparesummary-@($"{verse.VOrder}")">@verse.CoupletSummary</p>
-                    </td>
-                </tr>
-            }
+           
 
             <tr style="background-color:@color">
                 <td>
@@ -1085,6 +1021,107 @@ else
                 }
             </td>
         </tr>
+
+        <tr>
+            <td id="summaries">خلاصه و معنی به نثر روان</td>
+        </tr>
+        @for (int verseIndex = 0; verseIndex < Model.PageInformation.Poem.Verses.Length; verseIndex++)
+        {
+            @if (
+           Model.PageInformation.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Right
+           || Model.PageInformation.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1
+           || Model.PageInformation.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph
+           )
+            {
+                <tr style="background-color:#ffffe1">
+                    <td>
+                        @if (Model.PageInformation.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph)
+                        {
+                            @Model.PageInformation.Poem.Verses[verseIndex].Text
+                        }
+                        else
+                        {
+                            <table>
+                                @for (int nIndex = verseIndex; nIndex < Model.PageInformation.Poem.Verses.Length &&
+
+                               (nIndex == verseIndex
+                               ||
+                                (
+                               Model.PageInformation.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Right
+                               && Model.PageInformation.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1
+                               && Model.PageInformation.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Paragraph
+                                ))
+                                ; nIndex++)
+                                {
+                                    <tr>
+                                        <td>@Model.PageInformation.Poem.Verses[nIndex].Text</td>
+                                    </tr>
+                                }
+                            </table>
+                            
+                        }
+                    </td>
+                </tr>
+                <tr style="background-color:#ffffe1">
+                    <td>
+                        معنای بیت:
+                    </td>
+                </tr>
+
+                <tr style="background-color:#ffffe1">
+                    <td>
+                        <p id="originalsummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
+                        @if (string.IsNullOrEmpty(Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary))
+                        {
+                            <p>متنی برای معنای بیت نوشته نشده است.</p>
+                        }
+                    </td>
+                </tr>
+                <tr style="background-color:#ffffe1">
+                    <td>
+                        معنای ویراستهٔ من (به زبان غیرمحاوره‌ای و ناسره):
+                    </td>
+                </tr>
+
+                <tr style="background-color:#ffffe1">
+                    <td>
+                        @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder && !string.IsNullOrEmpty(v.CoupletSummary)).Any())
+                        {
+                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" contenteditable="true" class="background-white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder).First().CoupletSummary</div>
+
+
+                            <script>
+                                document.getElementById("summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")").addEventListener("input", function () {
+                                    summarycompare(@Model.PageInformation.Poem.Verses[verseIndex].VOrder)
+                                }, false);
+                                $(document).ready(function () {
+                                    summarycompare(@Model.PageInformation.Poem.Verses[verseIndex].VOrder);
+                                });
+                            </script>
+                        }
+                        else
+                        {
+                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" contenteditable="true" class="background-white">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</div>
+                            <script>
+                                document.getElementById("summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")").addEventListener("input", function () {
+                                    summarycompare(@Model.PageInformation.Poem.Verses[verseIndex].VOrder)
+                                }, false);
+                            </script>
+                        }
+                    </td>
+                </tr>
+                <tr style="background-color:#ffffe1">
+                    <td>
+                        تغییرات:
+                    </td>
+                </tr>
+                <tr style="background-color:#ffffe1">
+                    <td>
+                        <p id="comparesummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
+                    </td>
+                </tr>
+            }
+        }
 
 
 
