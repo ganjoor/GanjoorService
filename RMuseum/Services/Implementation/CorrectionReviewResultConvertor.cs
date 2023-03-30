@@ -37,7 +37,7 @@ namespace RMuseum.Services.Implementation
                 case CorrectionReviewResult.RejectedParaphraseBecauseUnfathomable:
                     return "نامفهوم است";
                 case CorrectionReviewResult.RejectedParaphraseBecauseContainsOwnIdeas:
-                    return "شامل تفسیرهای شخصی است"
+                    return "شامل تفسیرهای شخصی است";
                 case CorrectionReviewResult.RejectedParaphraseBecauseHasServeralTypoErrors:
                     return "غلطهای تایپی و املایی زیاد دارد";
                 case CorrectionReviewResult.RejectedParaphraseBecauseNotBetter:
