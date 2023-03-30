@@ -13,5 +13,11 @@
         RejectedBecauseUnnecessaryChange = 5,
         Rejected = 6,
         NotSuggestedByUser = 7,
+        RejectedParaphraseBecauseInformal = 8,
+        RejectedParaphraseBecauseArtificial = 9,
+        RejectedParaphraseBecauseUnfathomable = 10,
+        RejectedParaphraseBecauseContainsOwnIdeas = 11,
+        RejectedParaphraseBecauseHasServeralTypoErrors = 12,
+        RejectedParaphraseBecauseNotBetter = 13,
     }
 }
