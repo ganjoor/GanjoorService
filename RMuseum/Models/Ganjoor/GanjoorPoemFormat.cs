@@ -125,5 +125,10 @@
         /// </summary>
         MultiBand = 2032,
 
+        /// <summary>
+        /// بحر طویل
+        /// </summary>
+        BahreTavil = 2048,
+
     }
 }

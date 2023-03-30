@@ -178,6 +178,21 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public CorrectionReviewResult SummaryReviewResult { get; set; }
 
         /// <summary>
+        /// poem format
+        /// </summary>
+        public GanjoorPoemFormat? PoemFormat { get; set; }
+
+        /// <summary>
+        /// original poem format
+        /// </summary>
+        public GanjoorPoemFormat? OriginalPoemFormat { get; set; }
+
+        /// <summary>
+        /// poem format review result
+        /// </summary>
+        public CorrectionReviewResult PoemFormatReviewResult { get; set; }
+
+        /// <summary>
         /// hide the editors name
         /// </summary>
         public bool HideMyName { get; set; }

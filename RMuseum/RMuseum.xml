@@ -7394,6 +7394,11 @@
             چند بندی
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.BahreTavil">
+            <summary>
+            بحر طویل
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre">
             <summary>
             Probable Prosody Information for a poem
@@ -9764,6 +9769,21 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.SummaryReviewResult">
             <summary>
             summary review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.PoemFormat">
+            <summary>
+            poem format
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.OriginalPoemFormat">
+            <summary>
+            original poem format
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.PoemFormatReviewResult">
+            <summary>
+            poem format review result
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.HideMyName">
@@ -14794,6 +14814,18 @@
             </summary>
             <param name="context"></param>
             <param name="backgroundTaskQueue"></param>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.GanjoorPoemFormatConvertor">
+            <summary>
+            poem format convertor
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(RMuseum.Models.Ganjoor.GanjoorPoemFormat)">
+            <summary>
+            تبدیل به رشته
+            </summary>
+            <param name="format"></param>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorService">
             <summary>
