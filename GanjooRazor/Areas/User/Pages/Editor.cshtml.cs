@@ -309,11 +309,16 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                     }
 
+                    string poemSummary = null;
                     foreach ( string v in verseOrderSummaries )
                     {
                         var vParts = v.Split("TextSeparator", System.StringSplitOptions.RemoveEmptyEntries);
                         int vOrder = int.Parse(vParts[0]);
-                        if(vOrder != 0)
+                        if (vOrder == 0)
+                        {
+                            poemSummary = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک");
+                        }
+                        else
                         {
                             if(vOrderTexts.Where(t => t.VORder == vOrder).Any())
                             {
@@ -336,7 +341,7 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                     }
 
-                    if (title == null && vOrderTexts.Count == 0 && rhythm == null && rhythm2 == null && rhyme == null)
+                    if (title == null && poemSummary == null && vOrderTexts.Count == 0 && rhythm == null && rhythm2 == null && rhyme == null)
                         return new BadRequestObjectResult("شما هیچ تغییری در متن نداده‌اید!");
 
                     if (rhythm == "null")
@@ -361,6 +366,7 @@ namespace GanjooRazor.Areas.User.Pages
                         Rhythm = rhythm,
                         Rhythm2 = rhythm2,
                         RhymeLetters = rhyme,
+                        PoemSummary = poemSummary,
                         Note = note
                     };
 

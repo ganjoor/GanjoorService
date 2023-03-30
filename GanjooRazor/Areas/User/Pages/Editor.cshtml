@@ -449,6 +449,20 @@ else
                     </td>
                 </tr>
             }
+            @if (Model.MyLastEdit.PoemSummary != null)
+            {
+                <tr>
+                    <td colspan="2">خلاصهٔ پیشنهادی من</td>
+                </tr>
+                <tr>
+                    <td>
+                        <p class="red-color">@Model.MyLastEdit.OriginalPoemSummary</p>
+                    </td>
+                    <td>
+                        <p class="green-color">@Model.MyLastEdit.PoemSummary</p>
+                    </td>
+                </tr>
+            }
             @if (Model.MyLastEdit.VerseOrderText != null)
                 @foreach (var verse in Model.MyLastEdit.VerseOrderText)
                 {
