@@ -46,8 +46,7 @@
 
             var oldSummaryName = '#originalsummary-' + i.toString();
             var newSummaryName = '#summary-' + i.toString();
-            if($(oldSummaryName) != null && $(newSummaryName) != null && $(oldSummaryName).text() != $(newSummaryName).text())
-            {
+            if ($(oldSummaryName) != null && $(newSummaryName) != null && $(oldSummaryName).text() != $(newSummaryName).text()) {
                 verseOrderSummaries.push(i.toString() + 'TextSeparator' + $(newSummaryName).text());
             }
         }
@@ -185,7 +184,7 @@
         });
     }
 
-   
+
 
     function internalEditorcompare(id, originalPrefix, editedPrefix, comparePrefix) {
         var a = document.getElementById(originalPrefix + id.toString());
@@ -221,7 +220,7 @@
         result.appendChild(fragment);
     }
 
-   function editorcompare(id) {
+    function editorcompare(id) {
         internalEditorcompare(id, 'original-', 'id-', 'compare-');
     }
 
@@ -482,7 +481,7 @@ else
                                 </td>
                             </tr>
                         }
-                        @if(verse.Text != null)
+                        @if (verse.Text != null)
                         {
                             <tr>
                                 <td>
@@ -493,7 +492,7 @@ else
                                 </td>
                             </tr>
                         }
-                        @if(verse.CoupletSummary != null)
+                        @if (verse.CoupletSummary != null)
                         {
                             <tr>
                                 <td colspan="2">
@@ -510,7 +509,7 @@ else
                             </tr>
                         }
 
-    }
+                    }
 
                 }
             @if (!string.IsNullOrEmpty(Model.MyLastEdit.Note))
@@ -796,7 +795,7 @@ else
 
             </tr>
 
-           
+
 
             <tr style="background-color:@color">
                 <td>
@@ -1063,6 +1062,77 @@ else
 
             </td>
         </tr>
+        <tr>
+            <td style="background-color:black; color: white">خلاصه یا مفهوم کلی شعر یا متن:</td>
+        </tr>
+        <tr>
+            <td style="background-color:#ffffe1">
+                اگر متن یا شعر یک مفهوم و خلاصهٔ کلی ندارد (مثل خیلی از غزلیات حافظ) برای آن متن کلی وارد نکنید.
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <p id="originalsummary-0">@Model.PageInformation.Poem.PoemSummary</p>
+                @if (string.IsNullOrEmpty(Model.PageInformation.Poem.PoemSummary))
+                {
+                    <p>هنوز متنی برای خلاصهٔ کلی نوشته نشده است.</p>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>
+                خلاصهٔ ویراستهٔ من (به زبان غیرمحاوره‌ای و ناسره):
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                @if (Model.MyLastEdit != null && Model.MyLastEdit.PoemSummary != null)
+                {
+                    <div id="summary-0" name="summary-0" contenteditable="true" class="background-white">@Model.MyLastEdit.PoemSummary</div>
+
+
+                    <script>
+                        document.getElementById("summary-0").addEventListener("input", function () {
+                            summarycompare(0)
+                        }, false);
+                        $(document).ready(function () {
+                            summarycompare(0);
+                        });
+                    </script>
+                }
+                else
+                {
+                    <div id="summary-0" name="summary-0" contenteditable="true" class="background-white">@Model.PageInformation.Poem.PoemSummary</div>
+                    <script>
+                        document.getElementById("summary-0").addEventListener("input", function () {
+                            summarycompare(0)
+                        }, false);
+                    </script>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>
+                تغییرات:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p id="comparesummary-0">@Model.PageInformation.Poem.PoemSummary</p>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="td-button-container">
+                <a role="button" href="#savecorrections" class="editor-button background-gray">لغزش به دکمهٔ ذخیره</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="background-color:black; color: white">برگردان خطوط به نثر روان:</td>
+        </tr>
         @for (int verseIndex = 0; verseIndex < Model.PageInformation.Poem.Verses.Length; verseIndex++)
         {
             @if (
@@ -1092,29 +1162,29 @@ else
 
                                (nIndex == verseIndex
                                ||
-                                (
+                               (
                                Model.PageInformation.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Right
                                && Model.PageInformation.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1
                                && Model.PageInformation.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Paragraph
-                                ))
-                                ; nIndex++)
+                               ))
+                               ; nIndex++)
                                 {
                                     <tr>
                                         <td>@Model.PageInformation.Poem.Verses[nIndex].Text</td>
                                     </tr>
                                 }
                             </table>
-                            
+
                         }
                     </td>
                 </tr>
-                <tr  style="background-color:@color">
+                <tr style="background-color:@color">
                     <td>
                         معنای خط یا بیت:
                     </td>
-                </tr  style="background-color:@color">
+                </tr>
 
-                <tr style="background-color:@color" >
+                <tr style="background-color:@color">
                     <td>
                         <p id="originalsummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
                         @if (string.IsNullOrEmpty(Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary))
@@ -1123,13 +1193,13 @@ else
                         }
                     </td>
                 </tr>
-                <tr style="background-color:@color" >
+                <tr style="background-color:@color">
                     <td>
                         معنای ویراستهٔ من (به زبان غیرمحاوره‌ای و ناسره):
                     </td>
                 </tr>
 
-                <tr  style="background-color:@color">
+                <tr style="background-color:@color">
                     <td>
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder && !string.IsNullOrEmpty(v.CoupletSummary)).Any())
                         {
@@ -1156,12 +1226,12 @@ else
                         }
                     </td>
                 </tr>
-                <tr style="background-color:@color" >
+                <tr style="background-color:@color">
                     <td>
                         تغییرات:
                     </td>
                 </tr>
-                <tr style="background-color:@color" >
+                <tr style="background-color:@color">
                     <td>
                         <p id="comparesummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
                     </td>
@@ -1176,7 +1246,7 @@ else
         }
 
 
-        
+
         @if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) > 1)
         {
             <tr>
