@@ -1123,10 +1123,10 @@ namespace RMuseum.Services.Implementation
 
             await CacheCleanForComment(report.GanjoorCommentId);
 
-            if(reportUserId != null)
+            if (reportUserId != null)
             {
                 await _notificationService.PushNotification((Guid)reportUserId, "حذف حاشیهٔ گزارش شده توسط شما",
-                    $"گزارش شما برای حاشیه‌ای با متن ذیل پذیرفته و حاشیه حذف شد. متن حاشیهٔ گزارش شده توسط شما:{Environment.NewLine}" + 
+                    $"گزارش شما برای حاشیه‌ای با متن ذیل پذیرفته و حاشیه حذف شد. متن حاشیهٔ گزارش شده توسط شما:{Environment.NewLine}" +
                     commentHtmltext
                     );
             }
@@ -1539,6 +1539,43 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get poem verses
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorVerseViewModel[]>> GetPoemVersesAsync(int id, int coupletIndex)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorVerseViewModel[]>(await _context.GanjoorVerses
+                                                    .Where(v => v.PoemId == id && (coupletIndex == -1 || v.CoupletIndex == coupletIndex))
+                                                    .OrderBy(v => v.VOrder)
+                                                    .Select
+                                                    (
+                                                        v => new GanjoorVerseViewModel()
+                                                        {
+                                                            Id = v.Id,
+                                                            VOrder = v.VOrder,
+                                                            CoupletIndex = v.CoupletIndex,
+                                                            VersePosition = v.VersePosition,
+                                                            Text = v.Text,
+                                                            SectionIndex1 = v.SectionIndex1,
+                                                            SectionIndex2 = v.SectionIndex2,
+                                                            SectionIndex3 = v.SectionIndex3,
+                                                            SectionIndex4 = v.SectionIndex4,
+                                                            LanguageId = v.LanguageId,
+                                                            CoupletSummary = v.CoupletSummary,
+                                                        }
+                                                    ).AsNoTracking().ToArrayAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorVerseViewModel[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Get Poem By Id
         /// </summary>
         /// <param name="id"></param>
@@ -1818,10 +1855,10 @@ namespace RMuseum.Services.Implementation
                 .ToListAsync();
 
             var poem = (await GetPoemById(correction.PoemId, false, false, true, false, false, false, false, true, false)).Result;
-            
+
             foreach (var verse in correction.VerseOrderText)
             {
-                if(!verse.NewVerse)
+                if (!verse.NewVerse)
                 {
                     var v = poem.Verses.Where(v => v.VOrder == verse.VORder).Single();
                     verse.OriginalText = v.Text;
@@ -1842,7 +1879,7 @@ namespace RMuseum.Services.Implementation
                 Rhythm2 = correction.Rhythm2,
                 OriginalRhythm2 = (secondSection == null || secondSection.GanjoorMetre == null) ? null : secondSection.GanjoorMetre.Rhythm,
                 RhymeLetters = correction.RhymeLetters,
-                OriginalRhymeLetters = mainSection == null  ? null : mainSection.RhymeLetters,
+                OriginalRhymeLetters = mainSection == null ? null : mainSection.RhymeLetters,
                 Note = correction.Note,
                 Date = DateTime.Now,
                 Result = CorrectionReviewResult.NotReviewed,
@@ -2005,8 +2042,8 @@ namespace RMuseum.Services.Implementation
                          dbCorrection.SummaryReviewResult == CorrectionReviewResult.Approved
                          ||
                          dbCorrection.VerseOrderText
-                            .Any(v => 
-                                v.Result == CorrectionReviewResult.Approved 
+                            .Any(v =>
+                                v.Result == CorrectionReviewResult.Approved
                                 ||
                                 v.VersePositionResult == CorrectionReviewResult.Approved
                                 ||
@@ -2399,7 +2436,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetLanguageTaggedPoemSections(PagingParameterModel paging, string language, int? poetId)
         {
-            if(string.IsNullOrEmpty(language))
+            if (string.IsNullOrEmpty(language))
             {
                 language = "fa-IR";
             }
@@ -2409,7 +2446,7 @@ namespace RMuseum.Services.Implementation
                         (poetId == null || s.PoetId == poetId)
                         &&
                         ((language == "fa-IR" && string.IsNullOrEmpty(s.Language)) || s.Language == language)
-                        && 
+                        &&
                         s.SectionType == PoemSectionType.WholePoem
                         )
                 .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.Poet.Nickname).ThenBy(p => p.Poem.Id)
@@ -2689,7 +2726,7 @@ namespace RMuseum.Services.Implementation
                                 try
                                 {
                                     var res = await _BreakPoemAsync(context, poemId, vOrder, userId, poem, parentPage, poemTitleStaticPart);
-                                    if(!string.IsNullOrEmpty(res.ExceptionString))
+                                    if (!string.IsNullOrEmpty(res.ExceptionString))
                                     {
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, res.ExceptionString);
                                         return;
@@ -3181,7 +3218,7 @@ namespace RMuseum.Services.Implementation
             {
                 RServiceResult<RImage> img =
                    await _imageFileService.GetImage(imageId);
-                if(!string.IsNullOrEmpty(img.ExceptionString))
+                if (!string.IsNullOrEmpty(img.ExceptionString))
                 {
                     return new RServiceResult<bool>(false, img.ExceptionString);
                 }
@@ -3362,7 +3399,7 @@ namespace RMuseum.Services.Implementation
 
                 return new RServiceResult<bool>(true);
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
@@ -3392,7 +3429,7 @@ namespace RMuseum.Services.Implementation
             return await _FindSectionRhyme(_context, id);
         }
 
-        
+
         private async Task<RServiceResult<GanjooRhymeAnalysisResult>> _FindSectionRhyme(RMuseumDbContext context, int id)
         {
             var section = await context.GanjoorPoemSections.Include(s => s.GanjoorMetre).AsNoTracking().Where(s => s.Id == id).FirstOrDefaultAsync();
@@ -3400,13 +3437,13 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjooRhymeAnalysisResult>(null, "no sections");
             var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).ToListAsync();
             var rhymeAnalysisResult = LanguageUtils.FindRhyme(FilterSectionVerses(section, verses));
-            if(rhymeAnalysisResult.Rhyme.Length > 30 && verses.Count == 2 && section.GanjoorMetre != null)//single verse
+            if (rhymeAnalysisResult.Rhyme.Length > 30 && verses.Count == 2 && section.GanjoorMetre != null)//single verse
             {
                 var rhymingSection = await context.GanjoorPoemSections.AsNoTracking()
                                         .Where(s => s.GanjoorMetreId == section.GanjoorMetreId && section.RhymeLetters != null && s.RhymeLetters.Length < 15 && rhymeAnalysisResult.Rhyme.Contains(s.RhymeLetters))
                                         .OrderByDescending(s => s.RhymeLetters.Length)
                                         .FirstOrDefaultAsync();
-                if(rhymingSection != null)
+                if (rhymingSection != null)
                 {
                     rhymeAnalysisResult.Rhyme = rhymingSection.RhymeLetters;
                 }
@@ -3535,7 +3572,7 @@ namespace RMuseum.Services.Implementation
             {
                 var poemVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).ToListAsync();
                 var verses = FilterSectionVerses(section, poemVerses);
-                if(verses.Any(v => v.VersePosition == VersePosition.Paragraph))
+                if (verses.Any(v => v.VersePosition == VersePosition.Paragraph))
                 {
                     return new RServiceResult<string>("paragraph");
                 }
@@ -3671,8 +3708,8 @@ namespace RMuseum.Services.Implementation
                     var dupPoem = await _context.GanjoorDuplicates.AsNoTracking().Where(d => d.SrcCatId == catId && d.SrcPoemId == poem.Id).FirstOrDefaultAsync();
                     GanjoorPoem destPoem = dupPoem == null || dupPoem.DestPoemId == null ? null :
                                     await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == dupPoem.DestPoemId).SingleAsync();
-                   var destPoemFirstVerse = dupPoem == null || dupPoem.DestPoemId == null ? null :
-                                    await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == dupPoem.DestPoemId).OrderBy(v => v.VOrder).FirstAsync();
+                    var destPoemFirstVerse = dupPoem == null || dupPoem.DestPoemId == null ? null :
+                                     await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == dupPoem.DestPoemId).OrderBy(v => v.VOrder).FirstAsync();
                     dups.Add
                         (
                         new GanjoorDuplicateViewModel()

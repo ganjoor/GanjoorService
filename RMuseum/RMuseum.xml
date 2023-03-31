@@ -1148,6 +1148,14 @@
             <param name="relatedpoems"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemVerses(System.Int32,System.Int32)">
+            <summary>
+            get poem verses by id
+            </summary>
+            <param name="id"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemByUrl(System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get poem by url
@@ -12486,6 +12494,14 @@
             <param name="sections"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemVersesAsync(System.Int32,System.Int32)">
+            <summary>
+            get poem verses
+            </summary>
+            <param name="id"></param>
+            <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemByUrl(System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Url
@@ -15793,6 +15809,14 @@
             <param name="comments"></param>
             <param name="verseDetails"></param>
             <param name="navigation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemVersesAsync(System.Int32,System.Int32)">
+            <summary>
+            get poem verses
+            </summary>
+            <param name="id"></param>
+            <param name="coupletIndex"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">

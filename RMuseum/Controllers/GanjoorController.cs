@@ -921,6 +921,29 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get poem verses by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="coupletIndex"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/{id}/verses")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorVerseViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPoemVerses(int id, int coupletIndex = -1)
+        {
+            RServiceResult<GanjoorVerseViewModel[]> res =
+                await _ganjoorService.GetPoemVersesAsync(id, coupletIndex);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// get poem by url
         /// </summary>
         /// <param name="url"></param>
