@@ -663,6 +663,10 @@ td.c2 {
     margin-left: 0px;
 }
 
+.b, .b1, .n {
+    scroll-margin-top: 43px;
+}
+
 .normalbnum {
     float: right;
     position: relative;
@@ -970,16 +974,20 @@ ol {
         transition: opacity 0.3s;
     }
 
-        .w3tooltip .w3tooltiptext::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #555 transparent transparent transparent;
-        }
+.w3tooltiptext {
+    bottom: 25% !important;
+}
+
+    .w3tooltip .w3tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
 
     .w3tooltip:hover .w3tooltiptext {
         visibility: visible;
