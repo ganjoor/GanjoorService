@@ -35,6 +35,24 @@
     }
 </table>
 
+@foreach(var verse in Model.Verses.Where(v => !string.IsNullOrEmpty(v.CoupletSummary)).ToList())
+{
+    <div id="summary-block-@Model.CoupletIndex-@verse.VOrder" class="width-100per">
+        <div class="notice">
+            <p>@verse.CoupletSummary</p>
+            @if (Model.LoggedIn)
+            {
+                <a href="@($"/User/Editor?id={Model.PoemId}#summary-{verse.VOrder}")" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button edit-poem-button"></i>
+                    </div>
+                    <span class="w3tooltiptext">ویرایش</span>
+                </a>
+            }
+        </div>
+    </div>
+}
+
 <div id="play-block-@Model.CoupletIndex" class="width-100per">
     <select id="narrators-@Model.CoupletIndex" class="bnum-partial-narrators"></select>
     <a role="button" id="listen-@Model.CoupletIndex" class="bnum-partial-narrate-btn" onclick="playCouplet(@Model.CoupletIndex)">از اینجا بخواند</a>

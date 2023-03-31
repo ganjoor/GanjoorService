@@ -845,6 +845,12 @@ namespace GanjooRazor.Pages
             {
                 return BadRequest(JsonConvert.DeserializeObject<string>(await responseCoupletSections.Content.ReadAsStringAsync()));
             }
+            var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}??catInfo=false&catPoems=false&rhymes=false&recitations=false&images=false&songs=false&comments=false&verseDetails=true&navigation=false&relatedpoems=false");
+            if (!responsePoem.IsSuccessStatusCode)
+            {
+                return BadRequest(JsonConvert.DeserializeObject<string>(await responsePoem.Content.ReadAsStringAsync()));
+            }
+            var poem = JObject.Parse(await responsePoem.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
             var sections = JArray.Parse(await responseCoupletSections.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemSection>>();
             var sectionsWithMetreAndRhymes = new List<GanjoorPoemSection>();
             foreach (var section in sections)
@@ -904,6 +910,7 @@ namespace GanjooRazor.Pages
                         Numbers = numbers,
                         Sections = sections,
                         SectionsWithMetreAndRhymes = sectionsWithMetreAndRhymes,
+                        Verses = poem.Verses.Where(v => v.CoupletIndex == coupletIndex).ToList(),
                     }
                 }
             };

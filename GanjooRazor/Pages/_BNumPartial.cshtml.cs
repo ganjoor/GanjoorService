@@ -70,6 +70,11 @@ namespace GanjooRazor.Pages
         /// </summary>
         public List<GanjoorPoemSection> SectionsWithMetreAndRhymes { get; set; }
 
+        /// <summary>
+        /// verses
+        /// </summary>
+        public List<GanjoorVerseViewModel> Verses { get; set; }
+
         public _CommentPartialModel GetCommentModel(GanjoorCommentSummaryViewModel comment)
         {
             return new _CommentPartialModel()
