@@ -471,7 +471,7 @@
                                                     <blockquote id="summaey-@Model.GanjoorPage.Poem.Verses[verseIndex].VOrder">
                                                         @if (Model.GanjoorPage.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph)
                                                         {
-                                                            <p>@Model.GanjoorPage.Poem.Verses[verseIndex].Text</p>
+                                                            <p><a href="#bn@(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletIndex + 1)">#</a> @Model.GanjoorPage.Poem.Verses[verseIndex].Text</p>
                                                         }
                                                         else
                                                         {
@@ -487,9 +487,19 @@
                                                        ))
                                                        ; nIndex++)
                                                             {
-                                                                <p>
-                                                                    @Model.GanjoorPage.Poem.Verses[nIndex].Text
-                                                                </p>
+                                                                if(nIndex == verseIndex)
+                                                                {
+                                                                    <p>
+                                                                        <a href="#bn@(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletIndex + 1)">#</a> @Model.GanjoorPage.Poem.Verses[nIndex].Text
+                                                                    </p>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <p>
+                                                                        @Model.GanjoorPage.Poem.Verses[nIndex].Text
+                                                                    </p>
+                                                                }
+                                                               
                                                             }
 
 
