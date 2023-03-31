@@ -2014,7 +2014,7 @@ namespace RMuseum.Services.Implementation
                                 ||
                                 v.NewVerseResult == CorrectionReviewResult.Approved
                                 ||
-                                v.SummaryReviewResult != CorrectionReviewResult.Approved
+                                v.SummaryReviewResult == CorrectionReviewResult.Approved
                                 )
                          )
                          orderby dbCorrection.Id descending
