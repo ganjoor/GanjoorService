@@ -142,6 +142,41 @@ else
                     }
                 }
 
+                @if (correction.PoemSummary != null)
+                {
+                    <tr>
+                        <td>
+                            خلاصه: <p style="color:red">@correction.OriginalPoemSummary</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.PoemSummary</p>
+                        </td>
+                        <td>
+                            @if (correction.SummaryReviewResult == CorrectionReviewResult.NotReviewed)
+                            {
+                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.SummaryReviewResult)</p>
+                            }
+                            else
+                            @if (correction.SummaryReviewResult == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.SummaryReviewResult)</p>
+                            }
+                            else
+                            {
+                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.SummaryReviewResult)</p>
+                            }
+                        </td>
+                    </tr>
+                    @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                    {
+                        <tr>
+                            <td colspan="3">
+                                <p>@correction.ReviewNote</p>
+                            </td>
+                        </tr>
+                    }
+                }
+
                 @if (correction.RhymeLetters != null)
                 {
                     <tr>
@@ -273,7 +308,7 @@ else
                                 </td>
                             </tr>
                         }
-                        else
+                        else if(verse.Text != null)
                         {
                             <tr>
                                 <td>
@@ -295,6 +330,32 @@ else
                                     else
                                     {
                                         <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.Result)</p>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        @if (verse.CoupletSummary != null)
+                        {
+                            <tr>
+                                <td>
+                                    معنی: <p style="color:red">@verse.OriginalCoupletSummary</p>
+                                </td>
+                                <td>
+                                    <p style="color:green">@verse.CoupletSummary</p>
+                                </td>
+                                <td>
+                                    @if (verse.SummaryReviewResult == CorrectionReviewResult.NotReviewed)
+                                    {
+                                        <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.SummaryReviewResult)</p>
+                                    }
+                                    else
+                                   if (verse.SummaryReviewResult == CorrectionReviewResult.Approved)
+                                    {
+                                        <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.SummaryReviewResult)</p>
+                                    }
+                                    else
+                                    {
+                                        <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.SummaryReviewResult)</p>
                                     }
                                 </td>
                             </tr>

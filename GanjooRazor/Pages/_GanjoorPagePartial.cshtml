@@ -463,12 +463,12 @@
 
                                         @if (Model.GanjoorPage.Poem.Verses.Any(v => string.IsNullOrEmpty(v.CoupletSummary)))
                                         {
-                                            <div class="century">برگردان به نثر روان</div>
+                                            <div class="century" id="summaries">برگردان به نثر روان</div>
                                             @for (int verseIndex = 0; verseIndex < Model.GanjoorPage.Poem.Verses.Length; verseIndex++)
                                             {
                                                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary))
                                                 {
-                                                    <blockquote>
+                                                    <blockquote id="summaey-@Model.GanjoorPage.Poem.Verses[verseIndex].VOrder">
                                                         @if (Model.GanjoorPage.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph)
                                                         {
                                                             <p>@Model.GanjoorPage.Poem.Verses[verseIndex].Text</p>
