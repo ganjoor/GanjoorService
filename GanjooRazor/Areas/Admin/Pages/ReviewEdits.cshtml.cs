@@ -201,7 +201,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         }
 
         public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId, 
-            string titleReviewResult, string rhythmReviewResult, string rhythm2ReviewResult, string rhymeReviewResult,
+            string titleReviewResult, string summaryReviewResult, string rhythmReviewResult, string rhythm2ReviewResult, string rhymeReviewResult,
             string titleReviewNote, string[] verseReviewResult,
             string[] versePosReviewResult,
             string[] verseSummaryResults,
@@ -229,6 +229,19 @@ namespace GanjooRazor.Areas.Admin.Pages
                         else
                         {
                             Correction.Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), titleReviewResult);
+                            Correction.ReviewNote = titleReviewNote;
+                        }
+                    }
+
+                    if (Correction.PoemSummary != null)
+                    {
+                        if (summaryReviewResult == null)
+                        {
+                            return new BadRequestObjectResult("لطفاً تغییر خلاصه را بازبینی کنید.");
+                        }
+                        else
+                        {
+                            Correction.SummaryReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), summaryReviewResult);
                             Correction.ReviewNote = titleReviewNote;
                         }
                     }

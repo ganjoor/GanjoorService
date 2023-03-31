@@ -44,6 +44,11 @@
             titleReviewResult = $('input[name=title_review_result]:checked').val()
         }
 
+        var summaryReviewResult = 'DontCare';
+        if ($('#poem-summary_review_result_Approved').length > 0) { //has summary
+            summaryReviewResult = $('input[name=poem-summary_review_result]:checked').val()
+        }
+
 
         var rhythmReviewResult = 'DontCare';
         if ($('#rhythm_review_result_Approved').length > 0) {
@@ -113,6 +118,7 @@
             data: {
                 correctionId: correctionId,
                 titleReviewResult: titleReviewResult,
+                summaryReviewResult: summaryReviewResult,
                 rhythmReviewResult: rhythmReviewResult,
                 rhythm2ReviewResult: rhythm2ReviewResult,
                 rhymeReviewResult: rhymeReviewResult,
@@ -470,6 +476,77 @@ else
                 </td>
             </tr>
         }
+
+
+        @if (Model.Correction.PoemSummary != null)
+        {
+            <tr>
+                <td colspan="2">
+                    خلاصه
+                </td>
+            </tr>
+            <tr>
+                <td>متن اولیه</td>
+                <td>پیشنهاد</td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="color:red" id="poem-summary-original">@Model.PageInformation.Poem.PoemSummary</p>
+                </td>
+                <td>
+                    <p style="color:green" id="poem-summary-edited">@Model.Correction.PoemSummary</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <p id="poem-summary-compare">@Model.PageInformation.Poem.PoemSummary</p>
+                    <script>
+                        $(document).ready(function () {
+                            compareCorrectionBlocks('poem-summary-original', 'poem-summary-edited', 'poem-summary-compare');
+                        });
+                    </script>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @if (Model.Correction.SummaryReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                    {
+                        <input type="radio" id="poem-summary_review_result_Approved" name="poem-summary_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                        <label for="poem-summary_review_result_Approved">تأیید می‌شود</label>
+
+                        <br>
+                        <input type="radio" id="poem-summary_review_result_NotChanged" name="poem-summary_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
+                    }
+                    else
+                    {
+                        <input type="radio" id="poem-summary_review_result_Approved" name="poem-summary_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                        <label for="poem-summary_review_result_Approved">تأیید می‌شود</label>
+
+                        <br>
+                        <input type="radio" id="poem-summary_review_result_NotChanged" name="poem-summary_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
+                    }
+                    <label for="poem-summary_review_result_NotChanged">تغییری نکرده</label><br>
+                    <input type="radio" id="poem-summary_review_result_RejectedBecauseWrong" name="poem-summary_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
+                    <label for="poem-summary_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseInformal" name="poem-summary_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseInformal">محاوره‌ای است</label><br>
+                    <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseArtificial" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseArtificial">سره است یا در آن از واژه‌های نامأنوس استفاده شده است</label><br>
+                    <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseUnfathomable" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseUnfathomable">نامفهوم است</label><br>
+                    <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseContainsOwnIdeas" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseContainsOwnIdeas">شامل تفسیرهای شخصی است</label><br>
+                    <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseHasServeralTypoErrors" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseHasServeralTypoErrors">غلطهای تایپی و املایی زیاد دارد</label><br>
+                    <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseNotBetter" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseNotBetter">از متن قبلی بهتر نیست</label><br>
+                    <input type="radio" id="poem-summary_review_result_Rejected" name="poem-summary_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
+                    <label for="poem-summary_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                    <input type="text" id="poem-summary_review_note" name="poem-summary_review_note" value="" size="50" />
+                </td>
+            </tr>
+        }
+
         @if (Model.Correction.VerseOrderText != null)
             @foreach (var verse in Model.Correction.VerseOrderText)
             {
