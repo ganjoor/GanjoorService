@@ -68,7 +68,9 @@
     @if (Model.LoggedIn)
     {
         <a role="button" id="bookmark-@Model.CoupletIndex" class="cursor-pointer" onclick="switchBookmark(@Model.PoemId, @Model.CoupletIndex, '-@Model.CoupletIndex')" title="@Model.BookmarkingText"><i class="material-icons color-white" id="bookmark-icon-@Model.CoupletIndex">@Model.BookmarkingIcon</i></a>
-        <a role="button" id="listen-@Model.CoupletIndex" class="cursor-pointer" onclick="editCouplet(@Model.PoemId, @Model.CoupletIndex)" title="ویرایش از اینجا"><i class="material-icons color-white">edit</i></a>
+        
+        <a role="button" id="editcouplet-@Model.CoupletIndex" class="cursor-pointer" onclick="editCouplet(@Model.PoemId, @Model.CoupletIndex, 'tr')" title="ویرایش از اینجا"><i class="material-icons color-white">edit</i></a>
+        <a role="button" id="editcoupletsummary-@Model.CoupletIndex" class="cursor-pointer" onclick="editCouplet(@Model.PoemId, @Model.CoupletIndex, 'summary')" title="نوشتن معنی به زبان ساده"><i class="material-icons color-white">edit_note</i></a>
     }
     @if (Model.SectionsWithMetreAndRhymes.Any())
     {

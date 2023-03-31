@@ -1264,6 +1264,10 @@ ol {
     content: 'edit';
 }
 
+.edit-note-poem-button::after {
+    content: 'edit_note';
+}
+
 .autorenew::after {
     content: 'autorenew';
 }

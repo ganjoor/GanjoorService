@@ -410,10 +410,10 @@ function playCouplet(coupletIndex) {
     }
 }
 
-function editCouplet(poemId, coupletIndex) {
+function editCouplet(poemId, coupletIndex, blockId) {
 
     var vIndex = getVerseIndexFromCoupleIndex(coupletIndex);
-    location.href = '/User/Editor?id=' + poemId + '#tr-' + String(vIndex + 1);
+    location.href = '/User/Editor?id=' + poemId + '#' + blockId  + '-' + String(vIndex + 1);
 }
 
 function switchBookmark(poemId, coupletIndex, divSuffix) {

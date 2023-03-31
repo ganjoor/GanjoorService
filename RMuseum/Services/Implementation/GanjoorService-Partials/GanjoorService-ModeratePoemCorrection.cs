@@ -104,7 +104,7 @@ namespace RMuseum.Services.Implementation
                 if(dbCorrection.PoemSummary != null)
                 {
                     if(moderation.SummaryReviewResult == CorrectionReviewResult.NotSuggestedByUser)
-                        return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات خلاصه به نثر روان بررسی نشده است.");
+                        return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "تغییرات خلاصه به زبان ساده بررسی نشده است.");
                     dbCorrection.SummaryReviewResult = moderation.SummaryReviewResult;
                     if(dbCorrection.SummaryReviewResult == CorrectionReviewResult.Approved)
                     {
@@ -141,7 +141,7 @@ namespace RMuseum.Services.Implementation
                     if(dbVerse.CoupletSummary != null)
                     {
                         if(moderatedVerse.SummaryReviewResult == CorrectionReviewResult.NotReviewed)
-                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"نثر روان مصرع {moderatedVerse.VORder} بررسی نشده است.");
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"زبان سادهٔ مصرع {moderatedVerse.VORder} بررسی نشده است.");
                         dbVerse.SummaryReviewResult = moderatedVerse.SummaryReviewResult;
                     }
                     if(dbVerse.LanguageId != null)

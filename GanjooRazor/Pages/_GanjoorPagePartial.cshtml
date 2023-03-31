@@ -463,7 +463,7 @@
 
                                         @if (Model.GanjoorPage.Poem.Verses.Any(v => !string.IsNullOrEmpty(v.CoupletSummary)))
                                         {
-                                            <div class="century" id="summaries">برگردان به نثر روان</div>
+                                            <div class="century" id="summaries">برگردان به زبان ساده</div>
                                             @for (int verseIndex = 0; verseIndex < Model.GanjoorPage.Poem.Verses.Length; verseIndex++)
                                             {
                                                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary))
