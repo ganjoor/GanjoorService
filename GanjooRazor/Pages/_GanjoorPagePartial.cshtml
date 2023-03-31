@@ -2,7 +2,7 @@
 @using DNTPersianUtils.Core
 
 
-@if(Model.GanjoorPage == null)
+@if (Model.GanjoorPage == null)
 {
     return;
 }
@@ -231,7 +231,7 @@
                                 color: '#300',
                             }
 
-                            $.getJSON(myGeoJSONPath, function(data) {
+                            $.getJSON(myGeoJSONPath, function (data) {
                                 var map = L.map('catmap').setView([34, 53.6880], 4);
                                 L.geoJson(data, {
                                     clickable: false,
@@ -245,7 +245,7 @@
                                 poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
 
                                 var popup = new L.Popup();
-                                oms.addListener('click', function(marker) {
+                                oms.addListener('click', function (marker) {
 
                                     var poemDesc = marker.order + ' - ' + marker.poemGeoTag.Location.Name + '<br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
                                     if (marker.poemGeoTag.LunarYear != null) {
@@ -261,7 +261,7 @@
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
-                                                                                                                                                                ]).addTo(map);
+                                                                                                                                                                                                                        ]).addTo(map);
 
                                 for (var i = 0; i < poemGeoTags.length; i++) {
                                     var poemGeoTag = poemGeoTags[i];
@@ -291,7 +291,7 @@
                                 color: '#300',
                             }
 
-                            $.getJSON(myGeoJSONPath, function(data) {
+                            $.getJSON(myGeoJSONPath, function (data) {
                                 poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.GanjoorPage.Poem.GeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
                                 var map = L.map('catmap').setView([poemGeoTags[0].Location.Latitude, poemGeoTags[0].Location.Longitude], 4);
                                 L.geoJson(data, {
@@ -306,7 +306,7 @@
 
 
                                 var popup = new L.Popup();
-                                oms.addListener('click', function(marker) {
+                                oms.addListener('click', function (marker) {
 
                                     popup.setContent(marker.poemGeoTag.Location.Name);
                                     popup.setLatLng(marker.getLatLng());
@@ -439,6 +439,26 @@
                                                 }
 
                                             </table>
+                                        }
+
+
+                                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.PoemSummary))
+                                        {
+                                            <div class="notice" id="summary">
+                                                <div class="century">خلاصه</div>
+                                                <p>
+                                                    @Model.GanjoorPage.Poem.PoemSummary
+                                                </p>
+                                                @if (Model.LoggedIn)
+                                                {
+                                                    <a href="/User/Editor?id=@Model.GanjoorPage.Id#summaries" role="button" class="w3tooltip cursor-pointer">
+                                                        <div class="circled-number">
+                                                            <i class="noindent-info-button edit-poem-button"></i>
+                                                        </div>
+                                                        <span class="w3tooltiptext">ویرایش</span>
+                                                    </a>
+                                                }
+                                            </div>
                                         }
                                     </div>
                                 </div>
@@ -677,7 +697,7 @@
 
                                         <div id="id02" class="modal">
                                             <span onclick="document.getElementById('id02').style.display='none'"
-                                      class="close" title="بستن">&times;</span>
+                                                  class="close" title="بستن">&times;</span>
                                             <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
                                                 <table class="comment-table">
                                                     <tr>
@@ -698,7 +718,7 @@
 
                                         <div id="id03" class="modal">
                                             <span onclick="document.getElementById('id03').style.display='none'"
-                                      class="close" title="بستن">&times;</span>
+                                                  class="close" title="بستن">&times;</span>
                                             <form class="modal-content animate" method="post" id="replycommentform" action="?handler=Reply">
                                                 <table class="comment-table">
                                                     <tr>
