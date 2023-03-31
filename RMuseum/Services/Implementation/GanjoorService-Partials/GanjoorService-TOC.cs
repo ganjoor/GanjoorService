@@ -219,22 +219,7 @@ namespace RMuseum.Services.Implementation
                        .Replace("ٍ", "")//en
                        .Replace("ٌ", "")//on
                        .Replace("ْ", "")//sokoon
-                       .Replace(".", "")//dot
-                       .Replace("،", "")//virgool
-                       .Replace("!", "")
-                       .Replace("؟", "")
                        .Replace("ٔ", "")//ye
-                       .Replace("؛", "")
-                       .Replace(";", "")
-                       .Replace("*", "")
-                       .Replace(")", "")
-                       .Replace("(", "")
-                       .Replace("[", "")
-                       .Replace("]", "")
-                       .Replace("\"", "")
-                       .Replace("'", "")
-                       .Replace("«", "")
-                       .Replace("»", "")
                        ;
         }
         private async Task<RServiceResult<string>> _GenerateTableOfContents(RMuseumDbContext context, int catId, GanjoorTOC options)
