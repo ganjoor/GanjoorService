@@ -261,7 +261,7 @@
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
-                                                                                                                                                                                                                        ]).addTo(map);
+                                                                                                                                                                                                                                                                                ]).addTo(map);
 
                                 for (var i = 0; i < poemGeoTags.length; i++) {
                                     var poemGeoTag = poemGeoTags[i];
@@ -459,6 +459,56 @@
                                                     </a>
                                                 }
                                             </div>
+                                        }
+
+                                        @if (Model.GanjoorPage.Poem.Verses.Any(v => string.IsNullOrEmpty(v.CoupletSummary)))
+                                        {
+                                            <div class="century">برگردان به نثر روان</div>
+                                            @for (int verseIndex = 0; verseIndex < Model.GanjoorPage.Poem.Verses.Length; verseIndex++)
+                                            {
+                                                @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary))
+                                                {
+                                                    <blockquote>
+                                                        @if (Model.GanjoorPage.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph)
+                                                        {
+                                                            <p>@Model.GanjoorPage.Poem.Verses[verseIndex].Text</p>
+                                                        }
+                                                        else
+                                                        {
+
+                                                            @for (int nIndex = verseIndex; nIndex < Model.GanjoorPage.Poem.Verses.Length &&
+
+                                                       (nIndex == verseIndex
+                                                       ||
+                                                       (
+                                                       Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Right
+                                                       && Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1
+                                                       && Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Paragraph
+                                                       ))
+                                                       ; nIndex++)
+                                                            {
+                                                                <p>
+                                                                    @Model.GanjoorPage.Poem.Verses[nIndex].Text
+                                                                </p>
+                                                            }
+
+
+                                                        }
+                                                    </blockquote>
+                                                    <div class="notice">
+                                                        <p>@Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary</p>
+                                                        @if (Model.LoggedIn)
+                                                        {
+                                                            <a href="@($"/User/Editor?id={Model.GanjoorPage.Id}#summary-{Model.GanjoorPage.Poem.Verses[verseIndex].VOrder}")" role="button" class="w3tooltip cursor-pointer">
+                                                                <div class="circled-number">
+                                                                    <i class="noindent-info-button edit-poem-button"></i>
+                                                                </div>
+                                                                <span class="w3tooltiptext">ویرایش</span>
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                }
+                                            }
                                         }
                                     </div>
                                 </div>
