@@ -30,6 +30,7 @@
         var verseOrderMarkedForDelete = [];
         var versePositions = [];
         var verseOrderSummaries = [];
+        var verseLanguages = [];
         for (var i = 0; i <= verseCount; i++) {
             var oldElementName = '#original-' + i.toString();
             var newElementName = '#id-' + i.toString();
@@ -37,7 +38,10 @@
             var oldVersePosition = '#versepostion-original-' + i.toString();
             var newVersePosition = '#versepostion-' + i.toString();
             versePositions.push($(newVersePosition).val());
-            if ($(newElementName).text() != $(oldElementName).text() || $(checkVIndex).is(":checked") || $(newVersePosition).val() != $(oldVersePosition).val()) {
+            var oldVerseLanguage = '#language-old-' + i.toString();
+            var newVerseLanguage = '#language-' + i.toString();
+            verseLanguages.push($(newVerseLanguage).val());
+            if ($(newElementName).text() != $(oldElementName).text() || $(checkVIndex).is(":checked") || $(newVersePosition).val() != $(oldVersePosition).val() || $(newVerseLanguage).val() != $(oldVerseLanguage).val()) {
                 verseOrderText.push(i.toString() + 'TextSeparator' + $(newElementName).text());
                 if ($(checkVIndex).is(":checked")) {
                     verseOrderMarkedForDelete.push(i);
@@ -93,6 +97,7 @@
                 rhythm2: rhythm_new2,
                 rhyme: rhyme_letters,
                 verseOrderSummaries: verseOrderSummaries,
+                verseLanguages: verseLanguages,
                 note: $('#note').val(),
                 hideMyName: $('#hide-my-name').is(":checked")
 
@@ -822,21 +827,21 @@ else
                     @if(verse.LanguageId == null)
                     {
                         @("فارسی")
-                        <div id="language-old" class="hidden-recitation">1</div>
+                        <div id="language-old-@verse.VOrder" class="hidden-recitation">1</div>
                     }
                     else
                     {
                         @Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name
-                        <div id="language-old" class="hidden-recitation">odel.Languages.Where(l => l.Id == verse.LanguageId).Single().Id</div>
+                        <div id="language-old-@verse.VOrder" class="hidden-recitation">odel.Languages.Where(l => l.Id == verse.LanguageId).Single().Id</div>
                     }
                 </td>
             </tr>
 
             <tr style="background-color:@color">
                 <td>
-                    <label for="language">زبان:</label>
+                    <label for="language-@verse.VOrder">زبان:</label>
                     <br />
-                    <select id="language">
+                    <select id="language-@verse.VOrder">
                         @foreach (var lang in Model.Languages)
                         {
                             @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.LanguageId == lang.Id).Any())

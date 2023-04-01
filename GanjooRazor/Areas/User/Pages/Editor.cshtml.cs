@@ -279,7 +279,7 @@ namespace GanjooRazor.Areas.User.Pages
             return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
-        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, VersePosition[] versePositions, string rhythm, string rhythm2, string rhyme, string[] verseOrderSummaries, string note, bool hideMyName)
+        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, VersePosition[] versePositions, string rhythm, string rhythm2, string rhyme, string[] verseOrderSummaries, int[] verseLanguages, string note, bool hideMyName)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -311,6 +311,11 @@ namespace GanjooRazor.Areas.User.Pages
                             title = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک");
                         else
                         {
+                            int? langaugeId = null;
+                            if (!(verseLanguages[vOrder - 1] == 1 && pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).LanguageId == null))
+                            {
+                                langaugeId = verseLanguages[vOrder - 1];
+                            }
                             vOrderTexts.Add
                                 (
                                 new GanjoorVerseVOrderText()
@@ -320,6 +325,8 @@ namespace GanjooRazor.Areas.User.Pages
                                     MarkForDelete = verseOrderMarkedForDelete.Any(v => v == vOrder),
                                     VersePosition = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : versePositions[vOrder - 1],
                                     OriginalVersePosition = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition,
+                                    LanguageId = langaugeId,
+                                    OriginalLanguageId = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).LanguageId
                                 }
                                 );
                         }
