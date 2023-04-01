@@ -51,6 +51,7 @@
             }
         }
 
+
         var rhyme_letters = $('#rhyme-letters').val();
         if (rhyme_letters == $('#rhyme-letters-old').text()) {
             rhyme_letters = null;
@@ -92,7 +93,8 @@
                 rhythm2: rhythm_new2,
                 rhyme: rhyme_letters,
                 verseOrderSummaries: verseOrderSummaries,
-                note: $('#note').val()
+                note: $('#note').val(),
+                hideMyName: $('#hide-my-name').is(":checked")
 
             },
             success: function () {
@@ -1395,6 +1397,20 @@ else
             </tr>
         }
 
+        <tr>
+            <td>
+                @if (Model.MyLastEdit != null && Model.MyLastEdit.HideMyName)
+                {
+                    <input type="checkbox" name="hide-my-name" id="hide-my-name" checked />
+                }
+                else
+                {
+                    <input type="checkbox" name="hide-my-name" id="hide-my-name" />
+                }
+                <label for="hide-my-name">مشخصات من در تاریخچهٔ ویرایش‌های این شعر نمایش داده نشود</label>
+
+            </td>
+        </tr>
         <tr>
             <td class="td-button-container">
                 <a role="button" id="savecorrections" class="editor-button background-green" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
