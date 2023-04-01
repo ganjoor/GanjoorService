@@ -41,7 +41,13 @@
             var oldVerseLanguage = '#language-old-' + i.toString();
             var newVerseLanguage = '#language-' + i.toString();
             verseLanguages.push($(newVerseLanguage).val());
-            if ($(newElementName).text() != $(oldElementName).text() || $(checkVIndex).is(":checked") || $(newVersePosition).val() != $(oldVersePosition).val() || $(newVerseLanguage).val() != $(oldVerseLanguage).val()) {
+            var textChanged = $(newElementName).text() != $(oldElementName).text();
+            var checkedForDelete = i == 0 ? false : $(checkVIndex).is(":checked");
+            var positionChanged = i == 0 ? false : $(newVersePosition).val() != $(oldVersePosition).val();
+            var newLang = i == 0 ? '1' : $(newVerseLanguage).val();
+            var oldLang = i == 0 ? '1' : $(oldVerseLanguage).text();
+            var langChanged = newLang != oldLang;
+            if (textChanged || checkedForDelete || positionChanged || langChanged) {
                 verseOrderText.push(i.toString() + 'TextSeparator' + $(newElementName).text());
                 if ($(checkVIndex).is(":checked")) {
                     verseOrderMarkedForDelete.push(i);
@@ -73,7 +79,7 @@
 
         if (verseOrderText.length == 0 && verseOrderSummaries.length == 0) {
             if (rhythm_new == null && rhythm_new2 == null && rhyme_letters == null) {
-                alert('شما هیچ تغییری در متن نداده‌اید!');
+                alert('شما هیچ تغییری در اطلاعات نداده‌اید!');
                 return;
             }
         }
@@ -832,7 +838,7 @@ else
                     else
                     {
                         @Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name
-                        <div id="language-old-@verse.VOrder" class="hidden-recitation">odel.Languages.Where(l => l.Id == verse.LanguageId).Single().Id</div>
+                        <div id="language-old-@verse.VOrder" class="hidden-recitation">@Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Id</div>
                     }
                 </td>
             </tr>

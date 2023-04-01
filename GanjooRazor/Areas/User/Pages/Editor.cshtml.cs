@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -316,19 +317,25 @@ namespace GanjooRazor.Areas.User.Pages
                             {
                                 langaugeId = verseLanguages[vOrder - 1];
                             }
-                            vOrderTexts.Add
+                            string verseText = pageInformation.Poem.Verses.Where(verse => verse.VOrder == vOrder).Single().Text == vParts[1] ? null : vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک");
+                            VersePosition? versePos = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : versePositions[vOrder - 1];
+                            bool markedForDelete = verseOrderMarkedForDelete.Any(v => v == vOrder);
+                            
+                            if(verseText != null || markedForDelete || versePos != null || langaugeId != null)
+                            {
+                                vOrderTexts.Add
                                 (
                                 new GanjoorVerseVOrderText()
                                 {
                                     VORder = vOrder,
-                                    Text = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک"),
-                                    MarkForDelete = verseOrderMarkedForDelete.Any(v => v == vOrder),
-                                    VersePosition = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : versePositions[vOrder - 1],
-                                    OriginalVersePosition = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition,
+                                    Text = verseText,
+                                    MarkForDelete = markedForDelete,
+                                    VersePosition = versePos,
                                     LanguageId = langaugeId,
-                                    OriginalLanguageId = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).LanguageId
                                 }
                                 );
+                            }
+                            
                         }
                     }
 
@@ -365,7 +372,7 @@ namespace GanjooRazor.Areas.User.Pages
                     }
 
                     if (title == null && poemSummary == null && vOrderTexts.Count == 0 && rhythm == null && rhythm2 == null && rhyme == null)
-                        return new BadRequestObjectResult("شما هیچ تغییری در متن نداده‌اید!");
+                        return new BadRequestObjectResult("شما هیچ تغییری در اطلاعات نداده‌اید!");
 
                     if (rhythm == "null")
                         rhythm = "";
